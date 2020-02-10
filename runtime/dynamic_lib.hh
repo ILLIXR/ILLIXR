@@ -23,30 +23,26 @@ private:
 	{ }
 
 public:
-	static dynamic_lib create(const std::string& path) {
+	static dynamic_lib create(const std::string_view& path) {
 		char* error;
-		void* handle = dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
-		if ((error = dlerror()) != nullptr || !handle)
+		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
+		if ((error = dlerror()) || !handle)
 			throw std::runtime_error{
 				"dlopen(): " + (error == nullptr ? "NULL" : std::string{error})};
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
 			char* error;
 			int ret = dlclose(handle);
-			if ((error = dlerror()) != nullptr || ret)
-				/* I can't throw exception in a destructor, but I should
-				   tell someone about this. (this is also exceedingly
-				   unlikely) */
-				std::cerr
-					<< "dlclose(): " << (error == nullptr ? "NULL" : error)
-					<< std::endl;
+			if ((error = dlerror()) || ret)
+				throw std::runtime_error{
+					"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
 		}}};
 	}
 
 	const void* operator[](const std::string& symbol_name) const {
 		char* error;
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
-		if ((error = dlerror()) != nullptr)
+		if ((error = dlerror()))
 			throw std::runtime_error{
 				"dlsym(): " + (error == nullptr ? "NULL" : std::string{error})};
 		return symbol;

@@ -27,12 +27,15 @@ public:
 	virtual ~abstract_imu() { }
 };
 
+	/* In this implementation, all of the asynchrony happens inside
+	   the components. feed_cam_frame_nobl could add a camera frame to
+	   a queue. produce_nobl can be read from a double buffer. */
 class abstract_slam {
 public:
 	virtual void feed_cam_frame_nonbl(cam_frame&) = 0;
 	virtual void feed_accel_nonbl(accel&) = 0;
 	virtual pose& produce_nonbl() = 0;
-	virtual ~abstract_slam() { };
+	virtual ~abstract_slam() { }
 };
 
 }

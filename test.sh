@@ -11,6 +11,11 @@ cd slam1
 bazel build slam1
 cd ..
 
+cd slam2
+[ -n "${clean}" ] && bazel clean
+bazel build slam2
+cd ..
+
 cd cam1
 [ -n "${clean}" ] && bazel clean
 bazel build cam1
@@ -34,4 +39,5 @@ cd ..
 ./runtime/bazel-bin/main \
 	slam1/bazel-bin/libslam1.so \
 	cam1/bazel-bin/libcam1.so \
-	imu1/bazel-bin/libimu1.so
+	imu1/bazel-bin/libimu1.so \
+	slam2/bazel-bin/libslam2.so

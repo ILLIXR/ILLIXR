@@ -1,6 +1,7 @@
 #ifndef CONCURRENT_UTILS_HH
 #define CONCURRENT_UTILS_HH
 
+#include <sched.h>
 #include <atomic>
 #include <future>
 #include <unistd.h>
@@ -22,6 +23,11 @@ public:
 class concurrent_process {
 public:
 	void start() {
+		// 0
+		// 	| CLONE_FILES
+		// 	| CLONE_FS
+		// 	| CLONE_VM
+			// leave unset: CLONE_PID, CLONE_SIGHAND
 		pid_t pid = fork();
 		if (pid == 0) {
 			// child process
