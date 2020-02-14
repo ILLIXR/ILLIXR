@@ -104,3 +104,7 @@ This is how Python distributes [third-party C-modules](https://docs.python.org/3
 
 - Wherever possible, the RT should own the concurrent-main-loop, and call out to the component synchronously. Then the component author does not need to write concurrent code, and we can ensure that the concurrency is done properly.
   - This is not possible for all components; SLAM probably wants to manage its own main-loop.
+
+- We should write correctness and accuracy tests for component-authors to pull.
+  - This reduces the setup-time for component-authors and ensures some quality.
+  - Could distribute as a "template" repo.

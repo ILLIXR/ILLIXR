@@ -8,11 +8,12 @@ I am demonstrating  the following claims:
 - The components are hot-swappable.
 - The components can be compiled separately from the runtime (henceforth RT).
 - The components can be tested independently.
+- Other languages (Python) can easily be used.
 
 I am still in the process of demonstrating the following claims:
 - A component can be killed, and all of its threads (and other resources) will be cleaned up.
-- Other languages can easily be used.
 - A crash in one component does not affect the others.
+- Python can be used by multiple components.
 
 ## Structure
 

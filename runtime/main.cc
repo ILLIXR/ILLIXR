@@ -59,12 +59,12 @@ int main(int argc, char** argv) {
 
 		std::async(std::launch::async, [&](){
 			std::default_random_engine generator;
-			std::uniform_int_distribution<int> distribution{500, 2000};
+			std::uniform_int_distribution<int> distribution{200, 600};
 
 			std::cout << "Model an XR app by calling for a pose sporadically."
 					  << std::endl;
 
-			for (int i = 0; i < 5; ++i) {
+			for (int i = 0; i < 4; ++i) {
 				int delay = distribution(generator);
 				std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 				const pose& cur_pose = slow_pose->produce();
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 			// slow_pose.swap(new_slow_pose);
 			slow_pose.reset(new slow_pose_producer{slam2, cam, imu});
 
-			for (int i = 0; i < 5; ++i) {
+			for (int i = 0; i < 4; ++i) {
 				int delay = distribution(generator);
 				std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 				const pose& cur_pose = slow_pose->produce();
