@@ -24,8 +24,8 @@ static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool vi
 
 public:
 	timewarp_gl() {
-		window = initWindow(500, 500, 0, true);
-		glfwMakeContextCurrent(window);
+		printf("hello!");
+		
 	}
 
 private:
@@ -37,11 +37,14 @@ private:
 public:
 	/* compatibility interface */
 	
-	virtual void init(rendered_frame frame_handle) override {
+	virtual void init(rendered_frame frame_handle, GLFWwindow* shared_context) override {
+		window = initWindow(500, 500, shared_context, true);
 		this->frame = frame_handle;
 	}
 
-	virtual void warp(float time) override { }
+	virtual void warp(float time) override {
+		window = initWindow(500, 500, 0, true);
+	}
 
 	virtual ~timewarp_gl() override { }
 };

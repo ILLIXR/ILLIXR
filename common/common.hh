@@ -1,7 +1,8 @@
 #include "GL/gl.h"
+#include <GLFW/glfw3.h>
 
 namespace ILLIXR {
-	
+
 	struct cam_frame { };
 
 	/* I use "accel" instead of "3-vector" as a datatype, because
@@ -33,7 +34,7 @@ namespace ILLIXR {
 
 	class abstract_timewarp {
 	public:
-		virtual void init(rendered_frame frame_handle) = 0;
+		virtual void init(rendered_frame frame_handle, GLFWwindow* shared_context) = 0;
 		virtual void warp(float time) = 0;
 		virtual ~abstract_timewarp() { }
 	};
