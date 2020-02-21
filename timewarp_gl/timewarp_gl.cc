@@ -40,6 +40,10 @@ public:
 	virtual void init(rendered_frame frame_handle) override {
 		this->frame = frame_handle;
 	}
+
+	virtual void warp(float time) override { }
+
+	virtual ~timewarp_gl() override { }
 };
 
 ILLIXR_make_dynamic_factory(abstract_timewarp, timewarp_gl)

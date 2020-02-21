@@ -34,7 +34,7 @@ namespace ILLIXR {
 	class abstract_timewarp {
 	public:
 		virtual void init(rendered_frame frame_handle) = 0;
-		virtual void warp(float time);
+		virtual void warp(float time) = 0;
 		virtual ~abstract_timewarp() { }
 	};
 
