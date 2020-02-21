@@ -26,6 +26,11 @@ cd imu1
 bazel build imu1
 cd ..
 
+cd timewarp_gl
+[ -n "${clean}" ] && bazel clean
+bazel build timewarp_gl
+cd ..
+
 cd runtime
 [ -n "${clean}" ] && bazel clean
 bazel build main
@@ -40,4 +45,5 @@ cd ..
 	slam1/bazel-bin/libslam1.so \
 	cam1/bazel-bin/libcam1.so \
 	imu1/bazel-bin/libimu1.so \
-	slam2/bazel-bin/libslam2.so
+	slam2/bazel-bin/libslam2.so \
+	timewarp_gl/bazel-bin/libtimewarp_gl.so

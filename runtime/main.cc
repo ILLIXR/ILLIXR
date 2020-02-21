@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <memory>
 #include <random>
 #include <chrono>
@@ -38,12 +40,28 @@ private:
 		lib.get<abstract_type*(*)()>("make_" #abstract_type)() \
 	};
 
+
+
+static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool visible)
+{
+	GLFWwindow* win;
+	if(visible)
+		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+	else 
+		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    win = glfwCreateWindow(width, height, "ILLIXR", 0, shared);
+	return win;	
+}
+
+
 int main(int argc, char** argv) {
+
 	// this would be set by a config file
 	dynamic_lib slam_lib = dynamic_lib::create(std::string{argv[1]});
 	dynamic_lib cam_lib = dynamic_lib::create(std::string{argv[2]});
 	dynamic_lib imu_lib = dynamic_lib::create(std::string{argv[3]});
 	dynamic_lib slam2_lib = dynamic_lib::create(std::string{argv[4]});
+	dynamic_lib timewarp_gl_lib = dynamic_lib::create(std::string{argv[5]});
 
 	/* I enter a lexical scope after creating the dynamic_libs,
 	   because I need to be sure that they are destroyed AFTER the
@@ -54,6 +72,7 @@ int main(int argc, char** argv) {
 		std::shared_ptr<abstract_slam> slam = create_from_dynamic_factory(abstract_slam, slam_lib);
 		std::shared_ptr<abstract_cam> cam = create_from_dynamic_factory(abstract_cam, cam_lib);
 		std::shared_ptr<abstract_imu> imu = create_from_dynamic_factory(abstract_imu, imu_lib);
+		std::shared_ptr<abstract_timewarp> tw = create_from_dynamic_factory(abstract_timewarp, timewarp_gl_lib);
 
 		auto slow_pose = std::make_unique<slow_pose_producer>(slam, cam, imu);
 
