@@ -1,14 +1,12 @@
 #include <cmath>
-#include "hmd.h"
+#include "hmd.hh"
 
-const int   NUM_EYES        = 2;
-const int   NUM_COLOR_CHANNELS = 3;
 
-float MaxFloat( const float x, const float y ) { return ( x > y ) ? x : y; }
-float MinFloat( const float x, const float y ) { return ( x < y ) ? x : y; }
+float HMD::MaxFloat( const float x, const float y ) { return ( x > y ) ? x : y; }
+float HMD::MinFloat( const float x, const float y ) { return ( x < y ) ? x : y; }
 
 // A Catmull-Rom spline through the values K[0], K[1], K[2] ... K[numKnots-1] evenly spaced from 0.0 to 1.0
-float EvaluateCatmullRomSpline( float value, float * K, int numKnots )
+float HMD::EvaluateCatmullRomSpline( float value, float * K, int numKnots )
 {
 	const float scaledValue = (float)( numKnots - 1 ) * value;
 	const float scaledValueFloor = MaxFloat( 0.0f, MinFloat( (float)( numKnots - 1 ), floorf( scaledValue ) ) );
@@ -55,7 +53,57 @@ float EvaluateCatmullRomSpline( float value, float * K, int numKnots )
 	return res;
 }
 
-void GetDefaultHmdInfo( const int displayPixelsWide, const int displayPixelsHigh, hmd_info_t* hmd_info)
+void HMD::BuildDistortionMeshes( mesh_coord2d_t * distort_coords[NUM_EYES][NUM_COLOR_CHANNELS], hmd_info_t * hmdInfo )
+{
+	const float horizontalShiftMeters = ( hmdInfo->lensSeparationInMeters / 2 ) - ( hmdInfo->visibleMetersWide / 4 );
+	const float horizontalShiftView = horizontalShiftMeters / ( hmdInfo->visibleMetersWide / 2 );
+
+	for ( int eye = 0; eye < NUM_EYES; eye++ )
+	{
+		for ( int y = 0; y <= hmdInfo->eyeTilesHigh; y++ )
+		{
+			const float yf = 1.0f - (float)y / (float)hmdInfo->eyeTilesHigh;
+
+			for ( int x = 0; x <= hmdInfo->eyeTilesWide; x++ )
+			{
+				const float xf = (float)x / (float)hmdInfo->eyeTilesWide;
+
+				const float in[2] = { ( eye ? -horizontalShiftView : horizontalShiftView ) + xf, yf };
+				const float ndcToPixels[2] = { hmdInfo->visiblePixelsWide * 0.25f, hmdInfo->visiblePixelsHigh * 0.5f };
+				const float pixelsToMeters[2] = { hmdInfo->visibleMetersWide / hmdInfo->visiblePixelsWide, hmdInfo->visibleMetersHigh / hmdInfo->visiblePixelsHigh };
+
+				float theta[2];
+				for ( int i = 0; i < 2; i++ )
+				{
+					const float unit = in[i];
+					const float ndc = 2.0f * unit - 1.0f;
+					const float pixels = ndc * ndcToPixels[i];
+					const float meters = pixels * pixelsToMeters[i];
+					const float tanAngle = meters / hmdInfo->metersPerTanAngleAtCenter;
+					theta[i] = tanAngle;
+				}
+
+				const float rsq = theta[0] * theta[0] + theta[1] * theta[1];
+				const float scale = HMD::EvaluateCatmullRomSpline( rsq, hmdInfo->K, hmdInfo->numKnots );
+				const float chromaScale[] =
+				{
+					scale * ( 1.0f + hmdInfo->chromaticAberration[0] + rsq * hmdInfo->chromaticAberration[1] ),
+					scale,
+					scale * ( 1.0f + hmdInfo->chromaticAberration[2] + rsq * hmdInfo->chromaticAberration[3] )
+				};
+
+				const int vertNum = y * ( hmdInfo->eyeTilesWide + 1 ) + x;
+				for ( int channel = 0; channel < NUM_COLOR_CHANNELS; channel++ )
+				{
+					distort_coords[eye][channel][vertNum].x = chromaScale[channel] * theta[0];
+					distort_coords[eye][channel][vertNum].y = chromaScale[channel] * theta[1];
+				}
+			}
+		}
+	}
+}
+
+void HMD::GetDefaultHmdInfo( const int displayPixelsWide, const int displayPixelsHigh, hmd_info_t* hmd_info)
 {
 	hmd_info->displayPixelsWide = displayPixelsWide;
 	hmd_info->displayPixelsHigh = displayPixelsHigh;
@@ -87,32 +135,7 @@ void GetDefaultHmdInfo( const int displayPixelsWide, const int displayPixelsHigh
 	hmd_info->chromaticAberration[3] =  0.0f;
 }
 
-void GetDefaultBodyInfo(body_info_t* body_info)
+void HMD::GetDefaultBodyInfo(body_info_t* body_info)
 {
 	body_info->interpupillaryDistance	= 0.0640f;	// average interpupillary distance
 }
-
-/*
-static void ksGpuTriangleIndexArray_CreateFromBuffer( ksGpuTriangleIndexArray * indices, const int indexCount, const ksGpuBuffer * buffer )
-{
-	indices->indexCount = indexCount;
-	indices->indexArray = NULL;
-	indices->buffer = buffer;
-}
-
-static void ksGpuTriangleIndexArray_Alloc( ksGpuTriangleIndexArray * indices, const int indexCount, const ksGpuTriangleIndex * data )
-{
-	indices->indexCount = indexCount;
-	indices->indexArray = (ksGpuTriangleIndex *) malloc( indexCount * sizeof( ksGpuTriangleIndex ) );
-	if ( data != NULL )
-	{
-		memcpy( indices->indexArray, data, indexCount * sizeof( ksGpuTriangleIndex ) );
-	}
-	indices->buffer = NULL;
-}
-
-static void ksGpuTriangleIndexArray_Free( ksGpuTriangleIndexArray * indices )
-{
-	free( indices->indexArray );
-	memset( indices, 0, sizeof( ksGpuTriangleIndexArray ) );
-}*/

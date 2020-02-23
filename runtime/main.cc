@@ -11,6 +11,9 @@
 
 using namespace ILLIXR;
 
+static constexpr int   EYE_TEXTURE_WIDTH   = 1024;  // NOTE: texture size cannot be larger than
+static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;  // the rendering window size in non-FBO mode
+
 class slow_pose_producer {
 public:
 	slow_pose_producer(
@@ -30,6 +33,9 @@ public:
 		return _m_slam->produce_nonbl();
 	}
 private:
+
+	
+
 	std::shared_ptr<abstract_slam> _m_slam;
 	std::shared_ptr<abstract_cam> _m_cam;
 	std::shared_ptr<abstract_imu> _m_imu;
@@ -78,13 +84,13 @@ int createSharedEyebuffer(rendered_frame* sharedTexture, GLuint* eyeTextureFBO, 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, 256, 256, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, 0); // unbind texture, will rebind later
 
 	// Create a framebuffer to draw some things to the eye texture
 	glGenFramebuffers(1, eyeTextureFBO);
 	// Bind the FBO as the active framebuffer.
-    glBindFramebuffer(GL_FRAMEBUFFER, *eyeTextureFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, (*eyeTextureFBO));
 	//glViewport(0, 0, 256, 256);
 
 	if(glGetError()){
@@ -92,9 +98,9 @@ int createSharedEyebuffer(rendered_frame* sharedTexture, GLuint* eyeTextureFBO, 
     }
 
 	glGenRenderbuffers(1, eyeTextureDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, *eyeTextureDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 256, 256);
-    //glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    glBindRenderbuffer(GL_RENDERBUFFER, (*eyeTextureDepth));
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+    //glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// Bind eyebuffer texture
@@ -156,7 +162,7 @@ int main(int argc, char** argv) {
 
 	// Bind FBO to draw to eye texture
 	glBindFramebuffer(GL_FRAMEBUFFER, eye_texture_fbo);
-	glViewport(0, 0, 256, 256);
+	glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -182,7 +188,7 @@ int main(int argc, char** argv) {
 		std::shared_ptr<abstract_cam> cam = create_from_dynamic_factory(abstract_cam, cam_lib);
 		std::shared_ptr<abstract_imu> imu = create_from_dynamic_factory(abstract_imu, imu_lib);
 		std::shared_ptr<abstract_timewarp> tw = create_from_dynamic_factory(abstract_timewarp, timewarp_gl_lib);
-		tw->init(eye_texture, headless_window);
+		tw->init(eye_texture, headless_window, NULL);
 
 		auto slow_pose = std::make_unique<slow_pose_producer>(slam, cam, imu);
 
@@ -203,10 +209,19 @@ int main(int argc, char** argv) {
 						  << cur_pose.data[1] << ", "
 						  << cur_pose.data[2] << std::endl;
 
-				
 				glBindFramebuffer(GL_FRAMEBUFFER, eye_texture_fbo);
+				glBindTexture(GL_TEXTURE_2D_ARRAY, eye_texture.texture_handle);
+				glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eye_texture.texture_handle, 0, 0);
+   	 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 				glClearColor(sin(glfwGetTime() * 10.0f + 3.0f), sin(glfwGetTime() * 10.0f + 5.0f), sin(glfwGetTime() * 10.0f + 7.0f), 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				
+				glBindTexture(GL_TEXTURE_2D_ARRAY, eye_texture.texture_handle);
+				glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eye_texture.texture_handle, 0, 1);
+   	 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+				glClearColor(cos(glfwGetTime() * 10.0f + 3.0f), cos(glfwGetTime() * 10.0f + 5.0f), cos(glfwGetTime() * 10.0f + 7.0f), 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				glFlush();
 				
 			}
