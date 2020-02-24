@@ -1,43 +1,33 @@
-#!/bin/sh
+#!/bin/bash
 set -o noclobber -o errexit -o nounset -o xtrace
 
 # cd to the root of the project
 cd "$(dirname "${0}")"
 
 clean=true
+extra_flags="--compilation_mode dbg"
 
 cd slam1
 [ -n "${clean}" ] && bazel clean
-bazel build slam1
-cd ..
-
-cd slam2
-[ -n "${clean}" ] && bazel clean
-bazel build slam2
+bazel build ${extra_flags} slam1
 cd ..
 
 cd cam1
 [ -n "${clean}" ] && bazel clean
-bazel build cam1
-cd ..
-
-cd imu1
-[ -n "${clean}" ] && bazel clean
-bazel build imu1
+bazel build ${extra_flags} cam1
 cd ..
 
 cd runtime
 [ -n "${clean}" ] && bazel clean
-bazel build main
+bazel build ${extra_flags} main
 cd ..
 
 # I opted not to put this in one bazel package because in production,
 # these packages do not know about each other. The user builds them
 # separately or downloads binaries from the devs. All the user needs
-# is all three .so files and the runtime binary.
+# is all each .so files and the runtime binary.
 
 ./runtime/bazel-bin/main \
 	slam1/bazel-bin/libslam1.so \
 	cam1/bazel-bin/libcam1.so \
-	imu1/bazel-bin/libimu1.so \
-	slam2/bazel-bin/libslam2.so
+;

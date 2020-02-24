@@ -1,93 +1,62 @@
+#include <any>
 #include <memory>
 #include <random>
 #include <chrono>
 #include <future>
 #include <thread>
-#include "common/common.hh"
-#include "concurrent_utils.hh"
+#include "common/component.hh"
+#include "switchboard_impl.hh"
 #include "dynamic_lib.hh"
 
 using namespace ILLIXR;
 
-class slow_pose_producer {
-public:
-	slow_pose_producer(
-		std::shared_ptr<abstract_slam> slam,
-		std::shared_ptr<abstract_cam> cam,
-		std::shared_ptr<abstract_imu> imu)
-		: _m_slam{slam}
-		, _m_cam{cam}
-		, _m_imu{imu}
-	{ }
-
-	void main_loop() {
-		_m_slam->feed_cam_frame_nonbl(_m_cam->produce_blocking());
-		_m_slam->feed_accel_nonbl(_m_imu->produce_nonbl());
-	}
-	const pose& produce() {
-		return _m_slam->produce_nonbl();
-	}
-private:
-	std::shared_ptr<abstract_slam> _m_slam;
-	std::shared_ptr<abstract_cam> _m_cam;
-	std::shared_ptr<abstract_imu> _m_imu;
-};
-
-#define create_from_dynamic_factory(abstract_type, lib) \
-	std::shared_ptr<abstract_type>{ \
-		lib.get<abstract_type*(*)()>("make_" #abstract_type)() \
-	};
-
 int main(int argc, char** argv) {
-	// this would be set by a config file
-	dynamic_lib slam_lib = dynamic_lib::create(std::string_view{argv[1]});
-	dynamic_lib cam_lib = dynamic_lib::create(std::string_view{argv[2]});
-	dynamic_lib imu_lib = dynamic_lib::create(std::string_view{argv[3]});
-	dynamic_lib slam2_lib = dynamic_lib::create(std::string_view{argv[4]});
+	/* TODO: use a config-file instead of cmd-line args. Config file
+	   can be more complex and can be distributed more easily (checked
+	   into git repository). */
 
-	/* dynamiclaly load the .so-lib provider and call its factory. I
-	   use pointers for the polymorphism. */
-	std::shared_ptr<abstract_slam> slam = create_from_dynamic_factory(abstract_slam, slam_lib);
-	std::shared_ptr<abstract_cam> cam = create_from_dynamic_factory(abstract_cam, cam_lib);
-	std::shared_ptr<abstract_imu> imu = create_from_dynamic_factory(abstract_imu, imu_lib);
-	std::shared_ptr<abstract_slam> slam2 = create_from_dynamic_factory(abstract_slam, slam2_lib);
+	auto sb = create_switchboard();
 
-	auto slow_pose = std::make_unique<slow_pose_producer>(slam, cam, imu);
+	// I have to keep the dynamic libs in scope until the program is dead
+	std::vector<dynamic_lib> libs;
+	std::vector<std::unique_ptr<component>> components;
+	for (int i = 1; i < argc; ++i) {
+		auto lib = dynamic_lib::create(std::string_view{argv[i]});
+		auto comp = std::unique_ptr<component>(lib.get<create_component_fn>("create_component")(sb.get()));
+		comp->start();
+		libs.push_back(std::move(lib));
+		components.push_back(std::move(comp));
+	}
 
-	std::async(std::launch::async, [&](){
+	auto t = std::thread([&]() {
 		std::default_random_engine generator;
 		std::uniform_int_distribution<int> distribution{200, 600};
 
 		std::cout << "Model an XR app by calling for a pose sporadically."
 				  << std::endl;
 
-		for (int i = 0; i < 4; ++i) {
-			int delay = distribution(generator);
-			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-			const pose& cur_pose = slow_pose->produce();
-			std::cout << "pose = "
-					  << cur_pose.data[0] << ", "
-					  << cur_pose.data[1] << ", "
-					  << cur_pose.data[2] << std::endl;
-		}
-
-		std::cout << "Hot swap slam1 for slam2 (should see negative drift now)."
-				  << std::endl;
-
-		// auto new_slow_pose = std::make_unique<slow_pose_producer>(slam2, cam, imu);
-		// slow_pose.swap(new_slow_pose);
-		slow_pose.reset(new slow_pose_producer{slam2, cam, imu});
+		auto pose_sub = sb->subscribe_latest<pose>("pose");
 
 		for (int i = 0; i < 4; ++i) {
 			int delay = distribution(generator);
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-			const pose& cur_pose = slow_pose->produce();
-			std::cout << "pose = "
-					  << cur_pose.data[0] << ", "
-					  << cur_pose.data[1] << ", "
-					  << cur_pose.data[2] << std::endl;
+			auto cur_pose = std::any_cast<const pose*>(pose_sub->get_latest_ro());
+
+			// If there is no writer, cur_pose might be null
+			if (cur_pose) {
+				std::cout << *cur_pose << std::endl;
+			} else {
+				std::cout << "No cur_pose published yet" << std::endl;
+			}
 		}
+
 	});
+
+	t.join();
+
+	for (auto&& comp : components) {
+		comp->stop();
+	}
 
 	return 0;
 }
