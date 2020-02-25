@@ -66,6 +66,12 @@ namespace ILLIXR {
 		virtual ~abstract_slam() { }
 	};
 
+	class abstract_gldemo {
+	public:	
+		virtual void init(rendered_frame frame_handle, GLFWwindow* shared_context) = 0;
+		virtual ~abstract_gldemo() { }
+	};
+
 }
 
 #define ILLIXR_make_dynamic_factory(abstract_type, implementation) \

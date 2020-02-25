@@ -44,6 +44,8 @@ private:
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
 
+	double lastTime;
+
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
 
@@ -229,9 +231,10 @@ private:
 public:
 
 	void main_loop() {
+		lastTime = glfwGetTime();
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
-			std::this_thread::sleep_for(10ms);
+			//std::this_thread::sleep_for(1ms);
 			warp(glfwGetTime());
 		}
 	}
@@ -273,7 +276,7 @@ public:
 
 		this->frame = frame_handle;
 
-
+		glfwSwapInterval(0);
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &tw_vao);
@@ -354,7 +357,6 @@ public:
 	}
 
 	virtual void warp(float time) override {
-		printf("Warping\n");
 		glfwMakeContextCurrent(window);
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -456,7 +458,13 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
+		
+		double swapStart = glfwGetTime();
 		glfwSwapBuffers(window);
+		double swapEnd = glfwGetTime();
+		printf("[TIMEWARP] Swap time: %f\n", (float)(swapEnd - swapStart));
+		printf("[TIMEWARP] Submitting frame, frametime %f, FPS: %f\n", (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+		lastTime = glfwGetTime();
 	}
 
 	virtual ~timewarp_gl() override {

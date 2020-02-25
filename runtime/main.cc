@@ -71,7 +71,7 @@ static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool vi
 	return win;	
 }
 
-int createSharedEyebuffer(rendered_frame* sharedTexture, GLuint* eyeTextureFBO, GLuint* eyeTextureDepth){
+int createSharedEyebuffer(rendered_frame* sharedTexture){
 
 	// Create the shared eye texture handle.
 	glGenTextures(1, &(sharedTexture->texture_handle));
@@ -85,35 +85,8 @@ int createSharedEyebuffer(rendered_frame* sharedTexture, GLuint* eyeTextureFBO, 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
 	glBindTexture(GL_TEXTURE_2D_ARRAY, 0); // unbind texture, will rebind later
-
-	// Create a framebuffer to draw some things to the eye texture
-	glGenFramebuffers(1, eyeTextureFBO);
-	// Bind the FBO as the active framebuffer.
-    glBindFramebuffer(GL_FRAMEBUFFER, (*eyeTextureFBO));
-	//glViewport(0, 0, 256, 256);
-
-	if(glGetError()){
-        printf("displayCB, error after creating fbo\n");
-    }
-
-	glGenRenderbuffers(1, eyeTextureDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, (*eyeTextureDepth));
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-    //glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	// Bind eyebuffer texture
-	printf("About to bind eyebuffer texture, texture handle: %d\n", sharedTexture->texture_handle);
-	glBindTexture(GL_TEXTURE_2D_ARRAY, sharedTexture->texture_handle);
-	glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, sharedTexture->texture_handle, 0, 0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-
-	// attach a renderbuffer to depth attachment point
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *eyeTextureDepth);
-
-	// Unbind FBO.
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	if(glGetError()){
         return 0;
@@ -150,26 +123,15 @@ int main(int argc, char** argv) {
 
 	// Creat our fake eye texture (again, usually would come from Monado's swapchain)
 	rendered_frame eye_texture;
-	GLuint eye_texture_fbo;
-	GLuint eye_texture_depth;
 
-	if(!createSharedEyebuffer(&eye_texture, &eye_texture_fbo, &eye_texture_depth)){
+	if(!createSharedEyebuffer(&eye_texture)){
 		std::cout << "Failed to create shared eye texture resources, quitting" << std::endl;
 		glfwDestroyWindow(headless_window);
 		glfwTerminate();
 		return -1;
 	}
 
-	// Bind FBO to draw to eye texture
-	glBindFramebuffer(GL_FRAMEBUFFER, eye_texture_fbo);
-	glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Unbind framebuffer after we're done.
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//glfwMakeContextCurrent(NULL);
+	glfwMakeContextCurrent(NULL);
 
 	// this would be set by a config file
 	dynamic_lib slam_lib = dynamic_lib::create(std::string{argv[1]});
@@ -177,6 +139,7 @@ int main(int argc, char** argv) {
 	dynamic_lib imu_lib = dynamic_lib::create(std::string{argv[3]});
 	dynamic_lib slam2_lib = dynamic_lib::create(std::string{argv[4]});
 	dynamic_lib timewarp_gl_lib = dynamic_lib::create(std::string{argv[5]});
+	dynamic_lib gldemo_lib = dynamic_lib::create(std::string{argv[6]});
 
 	/* I enter a lexical scope after creating the dynamic_libs,
 	   because I need to be sure that they are destroyed AFTER the
@@ -188,7 +151,15 @@ int main(int argc, char** argv) {
 		std::shared_ptr<abstract_cam> cam = create_from_dynamic_factory(abstract_cam, cam_lib);
 		std::shared_ptr<abstract_imu> imu = create_from_dynamic_factory(abstract_imu, imu_lib);
 		std::shared_ptr<abstract_timewarp> tw = create_from_dynamic_factory(abstract_timewarp, timewarp_gl_lib);
+		std::shared_ptr<abstract_gldemo> demo = create_from_dynamic_factory(abstract_gldemo, gldemo_lib);
+
+		// Init the timewarp component, will grab
+		// eye buffers at 60fps
 		tw->init(eye_texture, headless_window, NULL);
+
+		// Init the demo GL app, it will spin up a thread
+		// that draws things into the shared eye buffers for us!
+		demo->init(eye_texture, headless_window);
 
 		auto slow_pose = std::make_unique<slow_pose_producer>(slam, cam, imu);
 
@@ -199,7 +170,6 @@ int main(int argc, char** argv) {
 			std::cout << "Model an XR app by calling for a pose sporadically."
 					  << std::endl;
 
-			glfwMakeContextCurrent(headless_window);
 			for (int i = 0; i < 20; ++i) {
 				int delay = distribution(generator);
 				std::this_thread::sleep_for(std::chrono::milliseconds(delay));
@@ -208,22 +178,6 @@ int main(int argc, char** argv) {
 						  << cur_pose.data[0] << ", "
 						  << cur_pose.data[1] << ", "
 						  << cur_pose.data[2] << std::endl;
-
-				glBindFramebuffer(GL_FRAMEBUFFER, eye_texture_fbo);
-				glBindTexture(GL_TEXTURE_2D_ARRAY, eye_texture.texture_handle);
-				glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eye_texture.texture_handle, 0, 0);
-   	 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-				glClearColor(sin(glfwGetTime() * 10.0f + 3.0f), sin(glfwGetTime() * 10.0f + 5.0f), sin(glfwGetTime() * 10.0f + 7.0f), 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				
-				glBindTexture(GL_TEXTURE_2D_ARRAY, eye_texture.texture_handle);
-				glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eye_texture.texture_handle, 0, 1);
-   	 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-				glClearColor(cos(glfwGetTime() * 10.0f + 3.0f), cos(glfwGetTime() * 10.0f + 5.0f), cos(glfwGetTime() * 10.0f + 7.0f), 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-				glFlush();
-				
 			}
 
 			std::cout << "Hot swap slam1 for slam2 (should see negative drift now)."
