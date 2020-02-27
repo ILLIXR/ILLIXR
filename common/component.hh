@@ -25,7 +25,6 @@ private:
 	   the concurrent thread loop. However, leaving this default will
 	   help the RT optimally schedule your computation. */
 	virtual void _p_start() {
-		std::cout << "in _p_start" << std::endl;
 		_m_thread = std::thread([this]() {
 			while (!_m_terminate.load()) {
 				compute_one_iteration();
