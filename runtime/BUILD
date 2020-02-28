@@ -7,7 +7,7 @@ cc_binary(
     srcs = ["src"],
     linkopts = ["-pthread", "-ldl"],
 	deps = ["//common"],
-    copts = ["--std=c++2a"],
+    copts = ["-std=c++2a", "-stdlib=libc++"],
 )
 
 filegroup(

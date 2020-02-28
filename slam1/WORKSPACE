@@ -1,0 +1,5 @@
+new_local_repository(
+    name = "libokvis",
+    path = "okvis/install/lib",
+    build_file = "libokvis.BUILD"
+)

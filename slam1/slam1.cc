@@ -3,6 +3,8 @@
 #include "common/component.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
+#include <okvis/VioParametersReader.hpp>
+#include <okvis/ThreadedKFVio.hpp>
 
 using namespace ILLIXR;
 

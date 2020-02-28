@@ -8,8 +8,13 @@ clean=true
 extra_flags="--compilation_mode fastbuild"
 
 cd slam1
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} slam1
+#[ -n "${clean}" ] && bazel clean
+#bazel build ${extra_flags} slam1
+if [ ! -e "okvis/install" ] 
+then
+	cd okvis && ./build.sh  && cd ..
+fi
+${CXX-clang++} slam1.cc okvis/install/lib/*.a -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
 cd ..
 
 cd cam1
@@ -28,6 +33,6 @@ cd ..
 # is all each .so files and the runtime binary.
 
 ./runtime/bazel-bin/main \
-	slam1/bazel-bin/libslam1.so \
+	slam1/libslam1.so \
 	cam1/bazel-bin/libcam1.so \
 ;
