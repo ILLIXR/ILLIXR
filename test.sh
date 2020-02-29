@@ -7,13 +7,18 @@ cd "$(dirname "${0}")"
 
 CXX=${CXX-clang++}
 
-# cd slam1
-# if [ ! -e "okvis/install" ] 
-# then
-# 	cd okvis && ./build.sh  && cd ..
-# fi
-# "${CXX}" slam1.cc okvis/install/lib/*.a -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
-# cd ..
+cd slam1
+if [ ! -e "okvis/install" ] 
+then
+	if [ ! -e "okvis" ]
+	then
+		git submodule update --init okvis
+	fi
+	
+	cd okvis && ./build.sh  && cd ..
+fi
+"${CXX}" slam1.cc okvis/install/lib/*.a -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
+cd ..
 
 cd offline_imu_cam
 "${CXX}" offline_imu_cam.cc -std=c++2a -pthread `pkg-config --libs --cflags opencv` -shared -o liboffline_imu_cam.so -fpic
