@@ -6,6 +6,7 @@ cc_library(
     name = "cam1",
     srcs = ["src"],
 	deps = ["//common"],
+    copts = ["--std=c++2a"],
 )
 
 filegroup(
