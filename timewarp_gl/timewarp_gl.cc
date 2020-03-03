@@ -39,9 +39,9 @@ private:
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 0.5;
+	static constexpr double DELAY_FRACTION = 0.7;
 
-	static constexpr double RUNNING_AVG_ALPHA = 0.33; // 0.33 roughly means 3 sample history
+	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
 	GLFWwindow* window;
 	rendered_frame frame;
@@ -259,6 +259,7 @@ public:
 			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
 			// MTP here. More you wait, closer to the display sync you sample the pose.
 			double sleep_start = glfwGetTime();
+			glfwPollEvents();
 			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
 			warp(glfwGetTime());
 		}
@@ -298,6 +299,8 @@ public:
 		
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
+
+		glfwSwapInterval(1);
 
 		this->frame = frame_handle;
 
@@ -381,7 +384,7 @@ public:
 
 	virtual void warp(float time) override {
 		glfwMakeContextCurrent(window);
-		glfwSwapInterval(1);
+		
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glClearColor(0, 0, 0, 0);

@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
 		std::cout << "Model an XR app by calling for a pose sporadically."
 				  << std::endl;
 
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < 40; ++i) {
 			int delay = distribution(generator);
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 			const pose& cur_pose = slow_pose->produce();
