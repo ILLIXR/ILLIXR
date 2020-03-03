@@ -29,3 +29,8 @@ In production, each directory directly under the root would be its own repositor
 ## How does it work
 
 Component-authors write their own code which gets dynamically loaded by the RT. There is only one method which must be dynamically called: the create method. Once the component-author's object is created in the RT, the rest of the component-author's methods are called by the object's vtable since they are virtual.
+
+## Changes
+
+(Incorrectly) predetermine input streams
+(Incorrectly) hardcode method structure

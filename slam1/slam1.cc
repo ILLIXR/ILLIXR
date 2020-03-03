@@ -1,56 +1,66 @@
 #include <chrono>
-#include <future>
-#include <iostream>
 #include <thread>
-#include "common/common.hh"
+#include "common/component.hh"
+#include "common/switchboard.hh"
+#include "common/data_format.hh"
 
 using namespace ILLIXR;
 
-class slam1 : public abstract_slam {
+class slam1 : public component {
 public:
-	slam1() {
-		/* You can do anything (processes, threads, network). Most
-		   SLAMs already manage their own mainloop. That would go
-		   here. */
-		_m_current_pose.data[0] = 0;
-		_m_current_pose.data[1] = 0;
-		_m_current_pose.data[2] = 0;
-		_m_thread = std::thread{&slam1::main_loop, this};
-	}
-	void main_loop() {
-		while (!_m_terminate.load()) {
-			using namespace std::chrono_literals;
-			std::this_thread::sleep_for(200ms);
-			_m_current_pose.data[0] += 1;
+	/* Provide handles to slam1 */
+	slam1(std::unique_ptr<reader_latest<camera_frame>>&& camera,
+		  std::unique_ptr<writer<pose>>&& pose)
+		: _m_camera{std::move(camera)}
+		, _m_pose{std::move(pose)}
+		, state{0}
+	{ }
 
-			/*
-			  1. look at cam_frame (already fed in)
-			  2. look at accel (already fed in)
-			  3. do computation (could go to network here)
-			  4. write to _m_current_pose
-			*/
+	virtual void _p_compute_one_iteration() override {
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(100ms);
+
+		/* The component can read the latest value from its
+		   subscription. */
+		auto frame = _m_camera->get_latest_ro();
+		if (frame) {
+			state += frame->pixel[0];
 		}
-	}
-private:
-	pose _m_current_pose;
-	std::thread _m_thread;
-	std::atomic<bool> _m_terminate {false};
 
-public:
-	/* compatibility interface */
-	virtual void feed_cam_frame_nonbl(cam_frame&) override { }
-	virtual void feed_accel_nonbl(accel&) override { }
+		/* Instead of allocating a new buffer with malloc/new, the
+		   topic can optionally recycle old buffers (completing the
+		   swap-chain). Unfortunately, this doesn't work yet.
+		pose* buf = std::any_cast<pose*>(_m_pose->allocate());
+		*/
+		
+		// RT will delete this memory when it gets replaced with a newer value.
+		pose* buf = new pose;
+		buf->data[0] = state;
+		buf->data[1] = 0;
+		buf->data[2] = 0;
+
+		/* Publish this buffer to the topic. */
+		_m_pose->put(buf);
+	}
+
 	virtual ~slam1() override {
-		_m_terminate.store(true);
-		_m_thread.join();
 		/*
 		  This developer is responsible for killing their processes
 		  and deallocating their resources here.
 		*/
 	}
-	virtual pose& produce_nonbl() override {
-		return _m_current_pose;
-	}
+
+private:
+	std::unique_ptr<reader_latest<camera_frame>> _m_camera;
+	std::unique_ptr<writer<pose>> _m_pose;
+	int state;
 };
 
-ILLIXR_make_dynamic_factory(abstract_slam, slam1)
+extern "C" component* create_component(switchboard* sb) {
+	/* First, we declare intent to read/write topics. Switchboard
+	   returns handles to those topics. */
+	auto camera_ev = sb->subscribe_latest<camera_frame>("camera");
+	auto pose_ev = sb->publish<pose>("pose");
+
+	return new slam1 {std::move(camera_ev), std::move(pose_ev)};
+}
