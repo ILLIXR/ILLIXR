@@ -37,6 +37,12 @@ private:
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
 
+	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
+	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
+	static constexpr double DELAY_FRACTION = 0.5;
+
+	static constexpr double RUNNING_AVG_ALPHA = 0.33; // 0.33 roughly means 3 sample history
+
 	GLFWwindow* window;
 	rendered_frame frame;
 	GLuint timewarpShaderProgram;
@@ -44,7 +50,9 @@ private:
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
 
-	double lastTime;
+	double lastSwapTime;
+	double lastFrameTime;
+	double averageFramerate = DISPLAY_REFRESH_RATE;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -227,14 +235,31 @@ private:
 		ksAlgebra::ksMatrix4x4f_Multiply( transform, &texCoordProjection, &inverseDeltaViewMatrix );
 	}
 
+	// Get the estimated time of the next swap/next Vsync.
+	// This is an estimate, used to wait until *just* before vsync.
+	double GetNextSwapTimeEstimate(){
+		return lastSwapTime + (1.0/DISPLAY_REFRESH_RATE);
+	}
+
+	// Get the estimated amount of time to put the CPU thread to sleep,
+	// given a specified percentage of the total Vsync period to delay.
+	double EstimateTimeToSleep(double framePercentage){
+		return (GetNextSwapTimeEstimate() - glfwGetTime()) * framePercentage;
+	}
+
 
 public:
 
 	void main_loop() {
-		lastTime = glfwGetTime();
+		lastSwapTime = glfwGetTime();
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
-			//std::this_thread::sleep_for(1ms);
+			// Sleep for approximately 90% of the time until the next vsync.
+			// Scheduling granularity can't be assumed to be super accurate here,
+			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
+			// MTP here. More you wait, closer to the display sync you sample the pose.
+			double sleep_start = glfwGetTime();
+			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
 			warp(glfwGetTime());
 		}
 	}
@@ -275,8 +300,6 @@ public:
 		glDebugMessageCallback( MessageCallback, 0 );
 
 		this->frame = frame_handle;
-
-		glfwSwapInterval(0);
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &tw_vao);
@@ -348,7 +371,7 @@ public:
 	{
 
 		// FIXME: use double?
-		const float offset = time * 2.0f;
+		const float offset = time * 6.0f;
 		const float degrees = 10.0f;
 		const float degreesX = sinf( offset ) * degrees;
 		const float degreesY = cosf( offset ) * degrees;
@@ -358,6 +381,7 @@ public:
 
 	virtual void warp(float time) override {
 		glfwMakeContextCurrent(window);
+		glfwSwapInterval(1);
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glClearColor(0, 0, 0, 0);
@@ -367,6 +391,10 @@ public:
 		
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
+
+		double warpStart = glfwGetTime();
+		double cursor_x, cursor_y;
+		glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
 		// Identity viewMatrix, simulates
 		// the rendered scene's view matrix.
@@ -386,8 +414,11 @@ public:
 		// Get HMD view matrices, one for the beginning of the
 		// panel refresh, one for the end. (This is set to a 0.1s panel
 		// refresh duration, for exaggerated effect)
-		GetHmdViewMatrixForTime(&viewMatrixBegin, glfwGetTime());
-		GetHmdViewMatrixForTime(&viewMatrixEnd, glfwGetTime() + 0.1f);
+		//GetHmdViewMatrixForTime(&viewMatrixBegin, glfwGetTime());
+		//GetHmdViewMatrixForTime(&viewMatrixEnd, glfwGetTime() + 0.1f);
+
+		ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixBegin, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
+		ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixEnd, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
 
 		// Calculate the timewarp transformation matrices.
 		// These are a product of the last-known-good view matrix
@@ -459,12 +490,20 @@ public:
 		}
 
 		
-		double swapStart = glfwGetTime();
+		
+		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		glfwSwapBuffers(window);
-		double swapEnd = glfwGetTime();
-		printf("[TIMEWARP] Swap time: %f\n", (float)(swapEnd - swapStart));
-		printf("[TIMEWARP] Submitting frame, frametime %f, FPS: %f\n", (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
-		lastTime = glfwGetTime();
+		lastSwapTime = glfwGetTime();
+		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
+
+		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
+
+		
+		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
+			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
+		}
+		lastFrameTime = glfwGetTime();
+		
 	}
 
 	virtual ~timewarp_gl() override {

@@ -20,7 +20,7 @@ public:
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
-			std::this_thread::sleep_for(100ms);
+			std::this_thread::sleep_for(160ms);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
 			
@@ -38,7 +38,7 @@ public:
 			glClearColor(cos(glfwGetTime() * 10.0f + 3.0f), cos(glfwGetTime() * 10.0f + 5.0f), cos(glfwGetTime() * 10.0f + 7.0f), 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
-			printf("[GL DEMO APP] Submitting frame, frametime %f, FPS: %f\n", (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame, frametime %f, FPS: %f\n", (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 			lastTime = glfwGetTime();
 			glFlush();
 			
