@@ -8,13 +8,12 @@ cd "$(dirname "${0}")"
 CXX=${CXX-clang++}
 
 cd slam1
-if [ ! -e "okvis/install" ] 
+if [ ! -e "okvis/build" ]
 then
 	if [ ! -e "okvis" ]
 	then
 		git submodule update --init okvis
 	fi
-	
 	cd okvis && ./build.sh  && cd ..
 fi
 "${CXX}" slam1.cc okvis/install/lib/*.a -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic

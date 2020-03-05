@@ -15,4 +15,4 @@ ENV CC=clang CXX=clang++
 
 WORKDIR /app
 
-RUN apt-get install -y git sudo
+RUN apt-get install -y sudo libblas-dev

@@ -13,4 +13,4 @@ else
 	cmd=/bin/bash
 fi
 
-docker run -v "${PWD}:/app" -it illixr ${cmd}
+docker run --rm -v "${PWD}:/app" -it illixr ${cmd}
