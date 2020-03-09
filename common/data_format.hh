@@ -2,6 +2,7 @@
 #define DATA_HH
 
 #include <iostream>
+#include <chrono>
 #include "GL/gl.h"
 #include <GLFW/glfw3.h> // This is... ew. Look into making this more modular/generalized.
 
@@ -34,9 +35,16 @@ namespace ILLIXR {
 		vector3_t position;
 	};
 
+	// A particular pose, sampled at a particular point in time.
+	struct pose_sample {
+		pose_t pose;
+		std::chrono::time_point<std::chrono::system_clock> sample_time; 
+	};
+
 	struct rendered_frame {
 		GLuint texture_handle;
-		pose_t render_pose; // The pose used when rendering this frame.
+		pose_sample render_pose; // The pose used when rendering this frame.
+		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
 
 	/* I use "accel" instead of "3-vector" as a datatype, because
@@ -59,17 +67,13 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
-
-	class pose {
-	public:
-		int data[3];
-	};
-
-	std::ostream& operator<<(std::ostream& out, const pose& pose) {
-		return out << "pose{"
-				<< pose.data[0] << ", "
-				<< pose.data[1] << ", "
-				<< pose.data[2] << "}";
+	
+	std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
+		return out << "pose: quat(xyzw){"
+				<< pose.orientation.x << ", "
+				<< pose.orientation.y << ", "
+				<< pose.orientation.z << ", "
+				<< pose.orientation.w << "}";
 	}
 
 }

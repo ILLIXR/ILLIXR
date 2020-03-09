@@ -7,13 +7,15 @@
 #include "common/component.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
-#include "utils/shader_util.hh"
+#include "common/shader_util.hh"
 #include "utils/algebra.hh"
 #include "utils/hmd.hh"
 #include "shaders/basic_shader.hh"
 #include "shaders/timewarp_shader.hh"
+#include "common/linalg.h"
 
 using namespace ILLIXR;
+using namespace linalg::aliases;
 
 class timewarp_gl : public component {
 
@@ -35,7 +37,7 @@ public:
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose>>&& pose_plug,
+		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
@@ -60,7 +62,7 @@ private:
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
 
 	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose>> _m_pose;
+	std::unique_ptr<reader_latest<pose_sample>> _m_pose;
 
 	// Switchboard plug for global config data, including GLFW/GPU context handles.
 	std::unique_ptr<reader_latest<global_config>> _m_config;
@@ -279,6 +281,7 @@ public:
 			// Scheduling granularity can't be assumed to be super accurate here,
 			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
 			// MTP here. More you wait, closer to the display sync you sample the pose.
+			// TODO use more precise sleep.
 			double sleep_start = glfwGetTime();
 			glfwPollEvents();
 			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
@@ -395,18 +398,17 @@ public:
 		_m_thread = std::thread{&timewarp_gl::main_loop, this};
 	}
 
-	// PLACEHOLDER, REMOVE
-	// Will sample poses from main thread!
-	void GetHmdViewMatrixForTime( ksAlgebra::ksMatrix4x4f * viewMatrix, float time )
+	
+	void GetViewMatrixFromPose( ksAlgebra::ksMatrix4x4f* viewMatrix, const pose_t& pose )
 	{
-
-		// FIXME: use double?
-		const float offset = time * 6.0f;
-		const float degrees = 10.0f;
-		const float degreesX = sinf( offset ) * degrees;
-		const float degreesY = cosf( offset ) * degrees;
-
-		ksAlgebra::ksMatrix4x4f_CreateRotation( viewMatrix, degreesX, degreesY, 0.0f );
+		// Cast from the "standard" quaternion to our own, proprietary, Oculus-flavored quaternion
+		auto latest_quat = ksAlgebra::ksQuatf {
+			.x = pose.orientation.x,
+			.y = pose.orientation.y,
+			.z = pose.orientation.z,
+			.w = pose.orientation.w
+		};
+		ksAlgebra::ksMatrix4x4f_CreateFromQuaternion( viewMatrix, &latest_quat);
 	}
 
 	virtual void warp(float time) {
@@ -432,10 +434,13 @@ public:
 		double cursor_x, cursor_y;
 		glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
-		// Identity viewMatrix, simulates
-		// the rendered scene's view matrix.
+		// Generate "starting" view matrix, from the pose
+		// sampled at the time of rendering the frame.
 		ksAlgebra::ksMatrix4x4f viewMatrix;
-		ksAlgebra::ksMatrix4x4f_CreateIdentity(&viewMatrix);
+		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
+
+
+		
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -447,14 +452,26 @@ public:
 		ksAlgebra::ksMatrix4x4f viewMatrixBegin;
 		ksAlgebra::ksMatrix4x4f viewMatrixEnd;
 
+		// TODO: Right now, this samples the latest pose published to the "pose" topic.
+		// However, this should really be polling the high-frequency pose prediction topic,
+		// given a specified timestamp!
+		auto latest_pose = _m_pose->get_latest_ro();
+		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose->pose);
+
+		std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
+
+		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
+		// and we don't need to visualize this right now (we also don't have prediction setup yet!)
+		viewMatrixEnd = viewMatrixBegin;
+
 		// Get HMD view matrices, one for the beginning of the
 		// panel refresh, one for the end. (This is set to a 0.1s panel
 		// refresh duration, for exaggerated effect)
 		//GetHmdViewMatrixForTime(&viewMatrixBegin, glfwGetTime());
 		//GetHmdViewMatrixForTime(&viewMatrixEnd, glfwGetTime() + 0.1f);
 
-		ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixBegin, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
-		ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixEnd, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
+		//ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixBegin, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
+		//ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixEnd, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
 
 		// Calculate the timewarp transformation matrices.
 		// These are a product of the last-known-good view matrix
@@ -560,7 +577,7 @@ extern "C" component* create_component(switchboard* sb) {
 	auto frame_ev = sb->subscribe_latest<rendered_frame>("eyebuffer");
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose>("pose");
+	auto pose_ev = sb->subscribe_latest<pose_sample>("pose");
 
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");

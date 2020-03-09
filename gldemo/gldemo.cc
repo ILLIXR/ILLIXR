@@ -7,6 +7,9 @@
 #include "common/component.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
+#include "common/shader_util.hh"
+#include "block_i.hh"
+#include "shaders/blocki_shader.hh"
 #include <cmath>
 
 using namespace ILLIXR;
@@ -21,7 +24,7 @@ public:
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 	gldemo(std::unique_ptr<writer<rendered_frame>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose>>&& pose_plug,
+		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
@@ -33,7 +36,7 @@ public:
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
-			std::this_thread::sleep_for(100ms);
+			std::this_thread::sleep_for(400ms);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
 
@@ -60,12 +63,12 @@ public:
 
 			// Publish our submitted frame handle to Switchboard!
 			auto frame = new rendered_frame;
-			frame->texture_handle = eyeTextures[buffer_to_use]; 
+			frame->texture_handle = eyeTextures[buffer_to_use];
+			frame->render_pose = *_m_pose->get_latest_ro();
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			_m_eyebuffer->put(frame);
 			
 		}
-		
 		
 	}
 private:
@@ -79,7 +82,7 @@ private:
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 
 	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose>> _m_pose;
+	std::unique_ptr<reader_latest<pose_sample>> _m_pose;
 
 	// Switchboard plug for global config data, including GLFW/GPU context handles.
 	std::unique_ptr<reader_latest<global_config>> _m_config;
@@ -98,6 +101,15 @@ private:
 	// we'll keep it atomic just in case for now!
 	std::atomic<int> which_buffer = 0;
 
+
+	GLuint demo_vao;
+	GLuint demoShaderProgram;
+
+	GLuint vertexPosAttr;
+	GLuint modelViewAttr;
+	GLuint projectionAttr;
+
+	GLuint pos_vbo;
 
 
 	static void GLAPIENTRY
@@ -208,18 +220,38 @@ public:
 		// Initialize FBO and depth targets, attaching to the frame handle
 		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
 
+		// Create and bind global VAO object
+		glGenVertexArrays(1, &demo_vao);
+    	glBindVertexArray(demo_vao);
+
+		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+
+		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
+		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
+		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
+
+		// Config mesh position vbo
+		glGenBuffers(1, &pos_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (BLOCKI_NUM_VERTICES * 3) * sizeof(GLfloat), logo3d_vertex_data, GL_STATIC_DRAW);
+		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		// WIP WIP WIP
+		// Actively working on block-i demo.
+
 		glfwMakeContextCurrent(NULL);
 
 		_m_thread = std::thread{&gldemo::main_loop, this};
 
 	}
-	virtual ~gldemo() override {
+
+	virtual void _p_stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
-		/*
-		  This developer is responsible for killing their processes
-		  and deallocating their resources here.
-		*/
+	}
+
+	virtual ~gldemo() override {
+		// TODO: need to cleanup here!
 	}
 };
 
@@ -231,7 +263,7 @@ extern "C" component* create_component(switchboard* sb) {
 	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose>("pose");
+	auto pose_ev = sb->subscribe_latest<pose_sample>("pose");
 
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");

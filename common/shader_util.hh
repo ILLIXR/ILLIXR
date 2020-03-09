@@ -42,9 +42,6 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
         printf( "1 Error: %s\n", msg);
     }
 
-    //////////////////////////////////////////////////////////
-    // Create and compile timewarp distortion fragment shader
-
     GLint fragResult = GL_FALSE;
     fragment_shader_handle = glCreateShader(GL_FRAGMENT_SHADER);
     GLint fshader_len = strlen(fragment_shader);
