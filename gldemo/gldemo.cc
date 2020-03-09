@@ -4,43 +4,65 @@
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/common.hh"
+#include "common/component.hh"
+#include "common/switchboard.hh"
+#include "common/data_format.hh"
 #include <cmath>
 
 using namespace ILLIXR;
 
-class gldemo : public abstract_gldemo {
+static constexpr int   EYE_TEXTURE_WIDTH   = 1024;  // NOTE: texture size cannot be larger than
+static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;  // the rendering window size in non-FBO mode
+
+class gldemo : public component {
 public:
-	gldemo() {
-		
-	}
+	// Public constructor, create_component passes Switchboard handles ("plugs")
+	// to this constructor. In turn, the constructor fills in the private
+	// references to the switchboard plugs, so the component can read the
+	// data whenever it needs to.
+	gldemo(std::unique_ptr<writer<rendered_frame>>&& frame_plug,
+		  std::unique_ptr<reader_latest<pose>>&& pose_plug,
+		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
+		: _m_eyebuffer{std::move(frame_plug)}
+		, _m_pose{std::move(pose_plug)}
+		, _m_config{std::move(config_plug)}
+	{ }
 	void main_loop() {
 		double lastTime = glfwGetTime();
 		glfwMakeContextCurrent(hidden_window);
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
-			std::this_thread::sleep_for(160ms);
+			std::this_thread::sleep_for(100ms);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
+
+			// Determine which set of eye textures to be using.
+			int buffer_to_use = which_buffer.load();
 			
 			// Draw things to left eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, frame.texture_handle);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, frame.texture_handle, 0, 0);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 0);
 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 			glClearColor(sin(glfwGetTime() * 10.0f + 3.0f), sin(glfwGetTime() * 10.0f + 5.0f), sin(glfwGetTime() * 10.0f + 7.0f), 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
 			// Draw things to right eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, frame.texture_handle);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, frame.texture_handle, 0, 1);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 1);
 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 			glClearColor(cos(glfwGetTime() * 10.0f + 3.0f), cos(glfwGetTime() * 10.0f + 5.0f), cos(glfwGetTime() * 10.0f + 7.0f), 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
-			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame, frametime %f, FPS: %f\n", (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 			lastTime = glfwGetTime();
 			glFlush();
+
+			// Publish our submitted frame handle to Switchboard!
+			auto frame = new rendered_frame;
+			frame->texture_handle = eyeTextures[buffer_to_use]; 
+			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
+			_m_eyebuffer->put(frame);
 			
 		}
 		
@@ -49,11 +71,34 @@ public:
 private:
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
-	GLFWwindow* hidden_window;
-	rendered_frame frame;
+	
+	// Switchboard plug for application eye buffer.
+	// We're not "writing" the actual buffer data,
+	// we're just atomically writing the handle to the
+	// correct eye/framebuffer in the "swapchain".
+	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 
+	// Switchboard plug for pose prediction.
+	std::unique_ptr<reader_latest<pose>> _m_pose;
+
+	// Switchboard plug for global config data, including GLFW/GPU context handles.
+	std::unique_ptr<reader_latest<global_config>> _m_config;
+
+	GLFWwindow* hidden_window;
+
+	// These are two eye textures; however, each eye texture
+	// really contains two eyes. The reason we have two of
+	// them is for double buffering the Switchboard connection.
+	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;
 	GLuint eyeTextureDepthTarget;
+
+	// This doesn't really need to be atomic right now,
+	// as it's only used by the "app's" thread, but 
+	// we'll keep it atomic just in case for now!
+	std::atomic<int> which_buffer = 0;
+
+
 
 	static void GLAPIENTRY
 	MessageCallback( GLenum source,
@@ -69,26 +114,50 @@ private:
 				type, severity, message );
 	}
 
-	void createFBO(rendered_frame frame_to_attach){
-		// Create a framebuffer to draw some things to the eye texture
-		glGenFramebuffers(1, &eyeTextureFBO);
-		// Bind the FBO as the active framebuffer.
-    	glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
+	int createSharedEyebuffer(GLuint* texture_handle){
 
-		glGenRenderbuffers(1, &eyeTextureDepthTarget);
-    	glBindRenderbuffer(GL_RENDERBUFFER, eyeTextureDepthTarget);
-    	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+		// Create the shared eye texture handle.
+		glGenTextures(1, texture_handle);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, *texture_handle);
+
+		// Set the texture parameters for the texture that the FBO will be
+		// mapped into.
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0); // unbind texture, will rebind later
+
+		if(glGetError()){
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
+	void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_target){
+		// Create a framebuffer to draw some things to the eye texture
+		glGenFramebuffers(1, fbo);
+		// Bind the FBO as the active framebuffer.
+    	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+
+		glGenRenderbuffers(1, depth_target);
+    	glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
+    	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
     	//glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
     	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		// Bind eyebuffer texture
-		printf("About to bind eyebuffer texture, texture handle: %d\n", frame_to_attach.texture_handle);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, frame_to_attach.texture_handle);
-		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, frame_to_attach.texture_handle, 0, 0);
+		printf("About to bind eyebuffer texture, texture handle: %d\n", *texture_handle);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, *texture_handle);
+		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0, 0);
     	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
 		// attach a renderbuffer to depth attachment point
-    	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, eyeTextureDepthTarget);
+    	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
 
 		if(glGetError()){
         	printf("displayCB, error after creating fbo\n");
@@ -100,10 +169,19 @@ private:
 
 public:
 	/* compatibility interface */
-	virtual void init(rendered_frame frame_handle, GLFWwindow* shared_context) override {
+
+	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
+	// This may be changed later, but it really doesn't matter for this purpose because
+	// it will be replaced by a real, Monado-interfaced application.
+	virtual void _p_start() override {
 		// Create a hidden window, as we're drawing the demo "offscreen"
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, shared_context);
+
+		auto fetched_config = _m_config->get_latest_ro();
+		if(!fetched_config){
+			std::cerr << "Dummy GLDEMO app failed to fetch global config." << std::endl;
+		}
+		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, fetched_config->glfw_context);
 
 		if(hidden_window == NULL){
 			printf("Whoa, what?");
@@ -119,10 +197,16 @@ public:
 			printf("Failed to init GLEW\n");
 			glfwDestroyWindow(hidden_window);
 		}
-		this->frame = frame_handle;
+
+		// Create two shared eye textures.
+		// Note; each "eye texture" actually contains two eyes.
+		// The two eye textures here are actually for double-buffering
+		// the Switchboard connection.
+		createSharedEyebuffer(&(eyeTextures[0]));
+		createSharedEyebuffer(&(eyeTextures[1]));
 
 		// Initialize FBO and depth targets, attaching to the frame handle
-		createFBO(this->frame);
+		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
 
 		glfwMakeContextCurrent(NULL);
 
@@ -139,4 +223,19 @@ public:
 	}
 };
 
-ILLIXR_make_dynamic_factory(abstract_gldemo, gldemo)
+extern "C" component* create_component(switchboard* sb) {
+	/* First, we declare intent to read/write topics. Switchboard
+	   returns handles to those topics. */
+	
+	// We publish application frames to Switchboard.
+	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
+
+	// We sample the up-to-date, predicted pose.
+	auto pose_ev = sb->subscribe_latest<pose>("pose");
+
+	// We need global config data to create a shared GLFW context.
+	auto config_ev = sb->subscribe_latest<global_config>("global_config");
+
+	return new gldemo {std::move(frame_ev), std::move(pose_ev), std::move(config_ev)};
+}
+

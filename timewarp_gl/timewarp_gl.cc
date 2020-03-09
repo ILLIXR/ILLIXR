@@ -4,7 +4,9 @@
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/common.hh"
+#include "common/component.hh"
+#include "common/switchboard.hh"
+#include "common/data_format.hh"
 #include "utils/shader_util.hh"
 #include "utils/algebra.hh"
 #include "utils/hmd.hh"
@@ -13,7 +15,7 @@
 
 using namespace ILLIXR;
 
-class timewarp_gl : public abstract_timewarp {
+class timewarp_gl : public component {
 
 static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool visible)
 {
@@ -28,9 +30,17 @@ static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool vi
 
 
 public:
-	timewarp_gl() {
-		
-	}
+	// Public constructor, create_component passes Switchboard handles ("plugs")
+	// to this constructor. In turn, the constructor fills in the private
+	// references to the switchboard plugs, so the component can read the
+	// data whenever it needs to.
+	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame>>&& frame_plug,
+		  std::unique_ptr<reader_latest<pose>>&& pose_plug,
+		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
+		: _m_eyebuffer{std::move(frame_plug)}
+		, _m_pose{std::move(pose_plug)}
+		, _m_config{std::move(config_plug)}
+	{ }
 
 private:
 
@@ -45,6 +55,17 @@ private:
 
 	GLFWwindow* window;
 	rendered_frame frame;
+
+	// Switchboard plug for application eye buffer.
+	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
+
+	// Switchboard plug for pose prediction.
+	std::unique_ptr<reader_latest<pose>> _m_pose;
+
+	// Switchboard plug for global config data, including GLFW/GPU context handles.
+	std::unique_ptr<reader_latest<global_config>> _m_config;
+
+
 	GLuint timewarpShaderProgram;
 	GLuint basicShaderProgram;
 	std::thread _m_thread;
@@ -266,12 +287,21 @@ public:
 	}
 	/* compatibility interface */
 	
-	virtual void init(rendered_frame frame_handle, GLFWwindow* shared_context, hmd_physical_info* hmd_stats) override {
+	// ATW/Compositor overrides _p_start to control its own lifecycle/scheduling.
+	// This may be changed later, but for precision of vsync/etc we're going to
+	// use component-driven loop scheduling for now.
+	virtual void _p_start() override {
+
+		auto fetched_config = _m_config->get_latest_ro();
+		if(!fetched_config){
+			std::cerr << "Timewarp failed to fetch global config." << std::endl;
+		}
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
 		HMD::GetDefaultBodyInfo(&body_info);
 
+		/*
 		if(hmd_stats != NULL){
 			// Override generate reference stats with specified hmd_stats
 			for(int i = 0; i < 11; i++)
@@ -287,22 +317,19 @@ public:
 			hmd_info.lensSeparationInMeters = hmd_stats->lensSeparationInMeters;
 			hmd_info.metersPerTanAngleAtCenter = hmd_stats->metersPerTanAngleAtCenter;
 		}
-		
+		*/
 
 
     	// Construct timewarp meshes and other data
     	BuildTimewarp(&hmd_info);
-
-
-		window = initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, shared_context, true);
+		
+		window = initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, fetched_config->glfw_context, true);
 		glfwMakeContextCurrent(window);
 		
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
 
 		glfwSwapInterval(1);
-
-		this->frame = frame_handle;
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &tw_vao);
@@ -382,8 +409,14 @@ public:
 		ksAlgebra::ksMatrix4x4f_CreateRotation( viewMatrix, degreesX, degreesY, 0.0f );
 	}
 
-	virtual void warp(float time) override {
+	virtual void warp(float time) {
 		glfwMakeContextCurrent(window);
+
+		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
+		if(!most_recent_frame){
+			std::cerr << "ATW failed to grab most recent frame from Switchboard" << std::endl;
+			return;
+		}
 		
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -449,7 +482,7 @@ public:
 		glUniform1i(eye_sampler_0, 0);
 
 		// Bind the shared texture handle
-		glBindTexture(GL_TEXTURE_2D_ARRAY, frame.texture_handle);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
 
 		glBindVertexArray(tw_vao);
 
@@ -509,10 +542,28 @@ public:
 		
 	}
 
-	virtual ~timewarp_gl() override {
+	virtual void _p_stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
+
+	virtual ~timewarp_gl() override {
+		// TODO: Need to cleanup resources here!
+	}
 };
 
-ILLIXR_make_dynamic_factory(abstract_timewarp, timewarp_gl)
+extern "C" component* create_component(switchboard* sb) {
+	/* First, we declare intent to read/write topics. Switchboard
+	   returns handles to those topics. */
+	
+	// We sample the eyebuffer.
+	auto frame_ev = sb->subscribe_latest<rendered_frame>("eyebuffer");
+
+	// We sample the up-to-date, predicted pose.
+	auto pose_ev = sb->subscribe_latest<pose>("pose");
+
+	// We need global config data to create a shared GLFW context.
+	auto config_ev = sb->subscribe_latest<global_config>("global_config");
+
+	return new timewarp_gl {std::move(frame_ev), std::move(pose_ev), std::move(config_ev)};
+}
