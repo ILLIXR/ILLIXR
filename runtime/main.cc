@@ -39,6 +39,11 @@ static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool vi
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 	else 
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     win = glfwCreateWindow(width, height, "ILLIXR", 0, shared);
 	return win;	
 }
@@ -65,10 +70,12 @@ int main(int argc, char** argv) {
 	// to all the sub-components. (May not be necessary in the future.)
 	GLFWwindow* headless_window = initWindow(256,256,0,false);
 
+
 	glfwMakeContextCurrent(headless_window);
 	
 	// Init and verify GLEW
-	if(glewInit()){
+	glewExperimental = GL_TRUE;
+	if(glewInit() != GLEW_OK){
 		printf("Failed to init GLEW\n");
 		glfwDestroyWindow(headless_window);
 		glfwTerminate();		
@@ -104,7 +111,7 @@ int main(int argc, char** argv) {
 
 		auto pose_sub = sb->subscribe_latest<pose_sample>("pose");
 
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < 32; ++i) {
 			int delay = distribution(generator);
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 			auto cur_pose = pose_sub->get_latest_ro();

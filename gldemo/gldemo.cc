@@ -8,6 +8,7 @@
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
 #include "common/shader_util.hh"
+#include "utils/algebra.hh"
 #include "block_i.hh"
 #include "shaders/blocki_shader.hh"
 #include <cmath>
@@ -36,26 +37,89 @@ public:
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
-			std::this_thread::sleep_for(400ms);
+			std::this_thread::sleep_for(300ms);
+
+			glUseProgram(demoShaderProgram);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
 
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
+
+			const pose_sample* pose_ptr = _m_pose->get_latest_ro();
+
+			// We'll calculate this model view matrix
+			// using fresh pose data, if we have any.
+			ksAlgebra::ksMatrix4x4f modelViewMatrix;
+
+			// Model matrix is just a spinny fun animation
+			ksAlgebra::ksMatrix4x4f modelMatrix;
+			ksAlgebra::ksMatrix4x4f_CreateRotation(&modelMatrix, 40, 20, 20);
+
+			if(pose_ptr){
+				// We have a valid pose from our Switchboard plug.
+				pose_t fresh_pose = pose_ptr->pose;
+				auto latest_quat = ksAlgebra::ksQuatf {
+					.x = fresh_pose.orientation.x,
+					.y = fresh_pose.orientation.y,
+					.z = fresh_pose.orientation.z,
+					.w = fresh_pose.orientation.w
+				};
+				auto latest_position = ksAlgebra::ksVector3f {
+					.x = fresh_pose.position.x,
+					.y = fresh_pose.position.y,
+					.z = fresh_pose.position.z
+				};
+				auto scale = ksAlgebra::ksVector3f{1,1,1};
+				ksAlgebra::ksMatrix4x4f head_matrix;
+				std::cout<< "App using position: " << latest_position.z << std::endl;
+				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
+				ksAlgebra::ksMatrix4x4f viewMatrix;
+				// View matrix is the inverse of the camera's position/rotation/etc.
+				ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
+				ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
+			} else {
+				// We have no pose data from our pose topic :(
+				ksAlgebra::ksMatrix4x4f_CreateIdentity(&modelViewMatrix);
+			}
+
+			glUseProgram(demoShaderProgram);
+			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glClearDepth(1);
+
+			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)&(modelViewMatrix.m[0][0]));
+			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
+
+			glBindVertexArray(demo_vao);
 			
 			// Draw things to left eye.
 			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
 			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 0);
 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glClearColor(sin(glfwGetTime() * 10.0f + 3.0f), sin(glfwGetTime() * 10.0f + 5.0f), sin(glfwGetTime() * 10.0f + 7.0f), 1.0f);
+			glClearColor(0.3f * sin(glfwGetTime() * 10.0f + 3.0f), 0.3f * sin(glfwGetTime() * 10.0f + 5.0f), 0.3f * sin(glfwGetTime() * 10.0f + 7.0f), 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+
+			glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
+			glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(vertexPosAttr);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
 			
 			// Draw things to right eye.
 			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
 			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 1);
 			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glClearColor(cos(glfwGetTime() * 10.0f + 3.0f), cos(glfwGetTime() * 10.0f + 5.0f), cos(glfwGetTime() * 10.0f + 7.0f), 1.0f);
+			glClearColor(0.3f * cos(glfwGetTime() * 10.0f + 3.0f), 0.3f * cos(glfwGetTime() * 10.0f + 5.0f), 0.3f * cos(glfwGetTime() * 10.0f + 7.0f), 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
+			glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(vertexPosAttr);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
 			
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 			lastTime = glfwGetTime();
@@ -110,6 +174,9 @@ private:
 	GLuint projectionAttr;
 
 	GLuint pos_vbo;
+	GLuint idx_vbo;
+
+	ksAlgebra::ksMatrix4x4f basicProjection;
 
 
 	static void GLAPIENTRY
@@ -225,6 +292,7 @@ public:
     	glBindVertexArray(demo_vao);
 
 		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
 		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
@@ -233,11 +301,16 @@ public:
 		// Config mesh position vbo
 		glGenBuffers(1, &pos_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (BLOCKI_NUM_VERTICES * 3) * sizeof(GLfloat), logo3d_vertex_data, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, (BLOCKI_NUM_VERTICES * 3) * sizeof(GLfloat), &(logo3d_vertex_data[0]), GL_STATIC_DRAW);
 		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-		// WIP WIP WIP
-		// Actively working on block-i demo.
+		// Config mesh indices vbo
+		glGenBuffers(1, &idx_vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, (BLOCKI_NUM_POLYS * 3) * sizeof(GLuint), logo3d_poly_data, GL_STATIC_DRAW);
+
+		// Construct a basic perspective projection
+		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
 		glfwMakeContextCurrent(NULL);
 

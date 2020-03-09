@@ -254,8 +254,20 @@ private:
 		inverseDeltaViewMatrix.m[3][1] = 0.0f;
 		inverseDeltaViewMatrix.m[3][2] = 0.0f;
 
+		// TODO: Major issue. The original implementation uses inverseDeltaMatrix... as expected.
+		// This is because we are applying the /inverse/ of the delta between the original render
+		// view matrix and the new latepose. However, when used the inverse, the transformation
+		// was actually backwards. I'm not sure if this is an issue in the demo app/rendering thread,
+		// or if there's something messed up with the ATW code. In any case, using the actual
+		// delta matrix itself yields the correct result, which is very odd. Must investigate!
+
+		deltaViewMatrix.m[3][0] = 0.0f;
+		deltaViewMatrix.m[3][1] = 0.0f;
+		deltaViewMatrix.m[3][2] = 0.0f;
+
 		// Accumulate the transforms.
-		ksAlgebra::ksMatrix4x4f_Multiply( transform, &texCoordProjection, &inverseDeltaViewMatrix );
+		//ksAlgebra::ksMatrix4x4f_Multiply( transform, &texCoordProjection, &inverseDeltaViewMatrix );
+		ksAlgebra::ksMatrix4x4f_Multiply( transform, &texCoordProjection, &deltaViewMatrix );
 	}
 
 	// Get the estimated time of the next swap/next Vsync.
@@ -416,7 +428,7 @@ public:
 
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
 		if(!most_recent_frame){
-			std::cerr << "ATW failed to grab most recent frame from Switchboard" << std::endl;
+			//std::cerr << "ATW failed to grab most recent frame from Switchboard" << std::endl;
 			return;
 		}
 		

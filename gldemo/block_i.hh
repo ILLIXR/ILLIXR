@@ -4,8 +4,10 @@
 #ifndef BLOCK_I_HH
 #define BLOCK_I_HH
 
+#include <GL/gl.h>
+
 static constexpr int BLOCKI_NUM_VERTICES = 96;
-static float logo3d_vertex_data[] = {
+static GLfloat logo3d_vertex_data[] = {
 	0.96784, 0.0, 1.137038,
 	-0.96784, 0.0, 1.137038,
 	0.96784, 0.0, -1.152229,
@@ -105,7 +107,7 @@ static float logo3d_vertex_data[] = {
 };
 
 static constexpr int BLOCKI_NUM_POLYS = 188;
-static float logo3d_poly_data[] = {
+static GLuint logo3d_poly_data[] = {
 	15, 67, 7,
 	31, 94, 30,
 	39, 86, 10,
