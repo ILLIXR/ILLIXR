@@ -37,7 +37,7 @@ static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool vi
 	GLFWwindow* win;
 	if(visible)
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
-	else 
+	else
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -45,15 +45,21 @@ static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool vi
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     win = glfwCreateWindow(width, height, "ILLIXR", 0, shared);
-	return win;	
+	return win;
 }
 
-int main(int argc, char** argv) {
+std::unique_ptr<switchboard> sb;
+// I have to keep the dynamic libs in scope until the program is dead
+std::vector<dynamic_lib> libs;
+std::vector<std::unique_ptr<component>> components;
+std::thread t;
+
+extern "C" int illixrrt_start(char **argv, int argc) {
 	/* TODO: use a config-file instead of cmd-line args. Config file
 	   can be more complex and can be distributed more easily (checked
 	   into git repository). */
 
-	auto sb = create_switchboard();
+	sb = create_switchboard();
 
 	// Grab a writer object and declare that we're publishing to the "global_config" topic, used to provide
 	// components with global-scope general configuration information.
@@ -62,8 +68,8 @@ int main(int argc, char** argv) {
 
 	// Initialize the GLFW library.
 	if(!glfwInit()){
-		printf("Failed to initialize glfw\n");		
-		return 0;
+		printf("Failed to initialize glfw\n");
+		return -1;
 	}
 
 	// Create a hidden window so we can provide a shared context
@@ -72,13 +78,13 @@ int main(int argc, char** argv) {
 
 
 	glfwMakeContextCurrent(headless_window);
-	
+
 	// Init and verify GLEW
 	glewExperimental = GL_TRUE;
 	if(glewInit() != GLEW_OK){
 		printf("Failed to init GLEW\n");
 		glfwDestroyWindow(headless_window);
-		glfwTerminate();		
+		glfwTerminate();
 		return -1;
 	}
 
@@ -90,10 +96,7 @@ int main(int argc, char** argv) {
 	config->glfw_context = headless_window;
 	_m_config->put(config);
 
-	// I have to keep the dynamic libs in scope until the program is dead
-	std::vector<dynamic_lib> libs;
-	std::vector<std::unique_ptr<component>> components;
-	for (int i = 1; i < argc; ++i) {
+	for (int i = 0; i < argc; ++i) {
 		auto lib = dynamic_lib::create(std::string_view{argv[i]});
 		auto comp = std::unique_ptr<component>(lib.get<create_component_fn>("create_component")(sb.get()));
 		comp->start();
@@ -101,7 +104,7 @@ int main(int argc, char** argv) {
 		components.push_back(std::move(comp));
 	}
 
-	auto t = std::thread([&]() {
+	t = std::thread([&]() {
 
 		std::default_random_engine generator;
 		std::uniform_int_distribution<int> distribution{200, 600};
@@ -123,14 +126,26 @@ int main(int argc, char** argv) {
 				std::cout << "No cur_pose published yet" << std::endl;
 			}
 		}
-
 	});
 
-	t.join();
+	return 0;
+}
 
+extern "C" void illixrrt_join() {
+	t.join();
+}
+
+extern "C" void illixrrt_stop() {
 	for (auto&& comp : components) {
 		comp->stop();
 	}
+}
 
+int main(int argc, char **argv) {
+	if (illixrrt_start(argv+1, argc-1) != 0) {
+		return 1;
+	}
+	illixrrt_join();
+	illixrrt_stop();
 	return 0;
 }
