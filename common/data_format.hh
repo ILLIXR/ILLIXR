@@ -41,6 +41,18 @@ namespace ILLIXR {
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
 
+	// Struct that will hold the linear accel and gyro readings from an IMU
+	struct imu_measurement_t {
+		float ax, ay, az;
+		float gx, gy, gz;
+	};
+
+	// An IMU reading sampled at a particular point in time
+	struct imu_sample {
+		imu_measurement_t measurement;
+		std::chrono::time_point<std::chrono::system_clock> sample_time;
+	};
+
 	struct rendered_frame {
 		GLuint texture_handle;
 		pose_sample render_pose; // The pose used when rendering this frame.
