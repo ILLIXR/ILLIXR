@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
 		std::cout << "Model an XR app by calling for a pose sporadically."
 				  << std::endl;
 
-		auto pose_sub = sb->subscribe_latest<pose_sample>("pose");
+		auto pose_sub = sb->subscribe_latest<pose_sample>("fast_pose");
 
 		for (int i = 0; i < 32; ++i) {
 			int delay = distribution(generator);

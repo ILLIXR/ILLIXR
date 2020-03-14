@@ -102,7 +102,7 @@ extern "C" component* create_component(switchboard* sb) {
 	/* First, we declare intent to read/write topics. Switchboard
 	   returns handles to those topics. */
 	auto camera_ev = sb->subscribe_latest<camera_frame>("camera");
-	auto pose_ev = sb->publish<pose_sample>("pose");
+	auto pose_ev = sb->publish<pose_sample>("slow_pose");
 
 	return new slam1 {std::move(camera_ev), std::move(pose_ev)};
 }

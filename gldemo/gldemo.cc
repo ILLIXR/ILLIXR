@@ -336,7 +336,7 @@ extern "C" component* create_component(switchboard* sb) {
 	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_sample>("pose");
+	auto pose_ev = sb->subscribe_latest<pose_sample>("fast_pose");
 
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");
