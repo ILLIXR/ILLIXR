@@ -4,7 +4,6 @@ set -o noclobber -o errexit -o nounset -o xtrace
 # cd to the root of the project
 cd "$(dirname "${0}")"
 
-
 CXX=${CXX-clang++}
 
 cd slam1
