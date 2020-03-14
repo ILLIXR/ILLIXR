@@ -5,7 +5,13 @@ set -o noclobber -o errexit -o nounset -o xtrace
 cd "$(dirname "${0}")"
 
 clean=true
-extra_flags="--compilation_mode fastbuild"
+extra_flags="--compilation_mode dbg"
+# extra_flags="--compilation_mode fastbuild"
+
+cd runtime
+[ -n "${clean}" ] && bazel clean
+bazel build ${extra_flags} main
+cd ..
 
 cd slam1
 [ -n "${clean}" ] && bazel clean
@@ -15,11 +21,6 @@ cd ..
 cd cam1
 [ -n "${clean}" ] && bazel clean
 bazel build ${extra_flags} cam1
-cd ..
-
-cd runtime
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} main
 cd ..
 
 # I opted not to put this in one bazel package because in production,
