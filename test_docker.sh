@@ -4,7 +4,10 @@ set -e -x
 
 cd "$(dirname "${0}")"
 
-docker build . \
+mkdir -p blank
+
+docker build blank \
+	   --file Dockerfile \
 	   --tag illixr \
    	   --build-arg USER_ID="$(id --user)" --build-arg USER_NAME="$(id --user --name)" --build-arg GROUP_ID="$(id --group)" --build-arg GROUP_NAME="$(id --group --name)" \
 && true

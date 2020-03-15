@@ -13,13 +13,14 @@ then
 	then
 		git submodule update --init okvis
 	fi
-	cd okvis && ./build.sh  && cd ..
+	cd okvis && ./build.sh && cd ..
 fi
-"${CXX}" slam1.cc okvis/install/lib/*.a -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
+rm -rf build && mkdir build && cd build && cmake .. && make VERBOSE=1
+# "${CXX}" slam1.cc ./okvis/install/lib/*.a -L./okvis/install/lib/ -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
 cd ..
 
 cd offline_imu_cam
-"${CXX}" offline_imu_cam.cc -std=c++2a -pthread `pkg-config --libs --cflags opencv` -shared -o liboffline_imu_cam.so -fpic
+"${CXX}" offline_imu_cam.cc -std=c++2a -pthread -I /usr/include/opencv4 -shared -o liboffline_imu_cam.so -fpic
 cd ..
 
 cd runtime

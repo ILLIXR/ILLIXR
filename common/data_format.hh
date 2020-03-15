@@ -3,28 +3,30 @@
 
 #include <iostream>
 
+#include <opencv2/core/mat.hpp>
+#include <eigen3/Eigen/Dense>
+
 namespace ILLIXR {
 
-struct camera_frame {
-	int pixel[1];
-};
+typedef std::chrono::time_point<std::chrono::system_clock> time_type;
 
-/* I use "accel" instead of "3-vector" as a datatype, because
-   this checks that you meant to use an acceleration in a certain
-   place. */
-struct accel { };
+typedef struct {
+	time_type time;
+	Eigen::Vector3d angular_v;
+	Eigen::Vector3d linear_a;
+} imu_type;
 
-class pose {
-public:
-	int data[3];
-};
+typedef struct {
+	time_type time;
+	std::unique_ptr<cv::Mat> img;
+	unsigned char id;
+} cam_type;
 
-std::ostream& operator<<(std::ostream& out, const pose& pose) {
-	return out << "pose{"
-			   << pose.data[0] << ", "
-			   << pose.data[1] << ", "
-			   << pose.data[2] << "}";
-}
+typedef struct {
+	Eigen::Vector3d position;
+	Eigen::Quaterniond orientation;
+	Eigen::Matrix3d rot_mat;
+} pose_type;
 
 struct rendered_frame { };
 

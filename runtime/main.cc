@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 		std::cout << "Model an XR app by calling for a pose sporadically."
 				  << std::endl;
 
-		auto pose_sub = sb->subscribe_latest<pose>("pose");
+		auto pose_sub = sb->subscribe_latest<pose_type>("pose");
 
 		for (int i = 0; i < 4; ++i) {
 			int delay = distribution(generator);
@@ -43,7 +43,8 @@ int main(int argc, char** argv) {
 
 			// If there is no writer, cur_pose might be null
 			if (cur_pose) {
-				std::cout << "Application receives cur_pose = " << *cur_pose << std::endl;
+				auto r = cur_pose->position;
+				std::cout << "position = [" << r[0] << ", " << r[1] << ", " << r[2] << "]" << std::endl;
 			} else {
 				std::cout << "No cur_pose published yet" << std::endl;
 			}
