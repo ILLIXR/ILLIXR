@@ -46,9 +46,9 @@ public:
 		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
 		new_pose->pose.orientation = generateDummyOrientation(this_time.count());
 		new_pose->pose.position = vector3_t {
-			.x = 0,
-			.y = 0,
-			.z = 6
+			.x = cosf(this_time.count()) * 0.2f,
+			.y = cosf(this_time.count() + 0.2f) * 0.2f + 0.3f,
+			.z = sinf(this_time.count()) * 0.2f
 		};
 		new_pose->sample_time = std::chrono::system_clock::now();
 
@@ -72,9 +72,10 @@ private:
 	int state;
 
 	quaternion_t generateDummyOrientation(float time){
-		float rollIsPitch = 0.3f * sinf( time * 1.5f );
+		float rollIsPitch = 0.3f * sinf( time * 2.5f ) * 0.5f;
 		float yawIsRoll = 0;
-		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
+		float pitchIsYaw = 0.3f * cosf( time * 2.5f ) * 0.5f - 0.5f;
+
 		printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion

@@ -451,9 +451,6 @@ public:
 		ksAlgebra::ksMatrix4x4f viewMatrix;
 		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
 
-
-		
-
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
 		// and one at the end of display refresh.
@@ -490,6 +487,14 @@ public:
 		// and the predictive transforms.
 		ksAlgebra::ksMatrix4x4f timeWarpStartTransform4x4;
 		ksAlgebra::ksMatrix4x4f timeWarpEndTransform4x4;
+
+		// DEMONSTRATION:
+		// Every second, toggle timewarp on and off
+		// to show the effect of the reprojection.
+		if((int)glfwGetTime() % 2 == 0){
+			viewMatrixBegin = viewMatrix;
+			viewMatrixEnd = viewMatrix;
+		}
 
 		// Calculate timewarp transforms using predictive view transforms
 		CalculateTimeWarpTransform(&timeWarpStartTransform4x4, &basicProjection, &viewMatrix, &viewMatrixBegin);
