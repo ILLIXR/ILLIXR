@@ -491,11 +491,13 @@ public:
 		// DEMONSTRATION:
 		// Every second, toggle timewarp on and off
 		// to show the effect of the reprojection.
+		/*
 		if((int)glfwGetTime() % 2 == 0){
 			viewMatrixBegin = viewMatrix;
 			viewMatrixEnd = viewMatrix;
 		}
-
+		*/
+	
 		// Calculate timewarp transforms using predictive view transforms
 		CalculateTimeWarpTransform(&timeWarpStartTransform4x4, &basicProjection, &viewMatrix, &viewMatrixBegin);
 		CalculateTimeWarpTransform(&timeWarpEndTransform4x4, &basicProjection, &viewMatrix, &viewMatrixEnd);

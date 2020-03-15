@@ -20,13 +20,13 @@ static const char* const blocki_vertex_shader =
 static const char* const blocki_fragment_shader =
     "#version " GLSL_VERSION "\n"
     "precision mediump float;\n"
-    
+
     "uniform vec4 u_color;\n"
     "in mediump vec3 worldPos;\n"
     "in mediump vec3 norm;\n"
     "out lowp vec4 outcolor;\n"
     "void main() {\n"
     "    float dist = gl_FragCoord.z/gl_FragCoord.w;\n"
-    "    outcolor = u_color + vec4(1.0, 1.0, 1.0,1.0) * clamp(dist* 0.03, 0., 1.) * 0.2f;"
-    "    outcolor = outcolor * (0.8 + clamp(dot(norm, vec3(1., 0.7, 0.3)), 0., 1.) * 0.7);"
+    "    outcolor = u_color + vec4(1.0, 1.0, 1.0,1.0) * clamp(dist* 0.03, 0., 1.) * 0.7f;"
+    "    outcolor = outcolor * (0.9 + clamp(dot(norm, vec3(1., 0.7, 0.3)), 0., 1.) * 0.3);"
     "}\n";
