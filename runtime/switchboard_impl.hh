@@ -132,7 +132,7 @@ namespace ILLIXR {
 	};
 
 	const size_t MAX_EVENTS = 127;
-	const size_t MAX_THREADS = 2;
+	const size_t MAX_THREADS = 1;
 
 	class switchboard_impl : public switchboard {
 

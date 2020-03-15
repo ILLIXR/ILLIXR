@@ -6,25 +6,35 @@ cd "$(dirname "${0}")"
 
 CXX=${CXX-clang++}
 
-cd slam1
-if [ ! -e "okvis/build" ]
-then
-	if [ ! -e "okvis" ]
-	then
-		git submodule update --init okvis
-	fi
-	cd okvis && ./build.sh && cd ..
-fi
-rm -rf build && mkdir build && cd build && cmake -DOKVIS_INSTALLATION="$(pwd)"/okvis/install .. && make VERBOSE=1 && cd ..
-# "${CXX}" slam1.cc ./okvis/install/lib/*.a -L./okvis/install/lib/ -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
-cd ..
+# cd slam1
+# if [ ! -e "okvis/build" ]
+# then
+# 	if [ ! -e "okvis" ]
+# 	then
+# 		git submodule update --init okvis
+# 	fi
+# 	cd okvis && ./build.sh && cd ..
+# fi
+# rm -rf build && mkdir build && cd build && cmake -DOKVIS_INSTALLATION="$(pwd)"/okvis/install .. && make VERBOSE=1 && cd ..
+# # "${CXX}" slam1.cc ./okvis/install/lib/*.a -L./okvis/install/lib/ -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
+# cd ..
+
+path="${PWD}"
+cd slam2
+source /opt/ros/melodic/setup.bash
+mkdir -p /tmp/workspace/catkin_ws_ov/src/
+# cp -L -r open_vins /tmp/workspace/catkin_ws_ov/src/
+rsync -avzL open_vins /tmp/workspace/catkin_ws_ov/src
+cd /tmp/workspace/catkin_ws_ov/
+catkin build -DCMAKE_BUILD_TYPE=Debug
+cd "${path}"
 
 cd offline_imu_cam
-"${CXX}" offline_imu_cam.cc -std=c++2a -pthread -I /usr/include/opencv4 -shared -o liboffline_imu_cam.so -fpic
+"${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
 cd ..
 
 cd runtime
-"${CXX}" main.cc -std=c++2a -pthread -ldl -o main.exe
+"${CXX}" -g main.cc -std=c++2a -pthread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -o main.exe
 cd ..
 
 if [ ! -e "data" ]
@@ -45,6 +55,6 @@ fi
 # is all each .so files and the runtime binary.
 
 ./runtime/main.exe \
-	slam1/libslam1.so \
-	liboffline_imu_cam.so \
+	offline_imu_cam/liboffline_imu_cam.so \
+	/tmp/workspace/catkin_ws_ov/devel/lib/libslam2.so \
 ;

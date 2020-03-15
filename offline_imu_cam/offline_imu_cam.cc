@@ -29,15 +29,18 @@ public:
 		, _m_cams{std::move(cams)}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	{
-		last_time = _m_sensor_data_it->first;
+		first_time = last_time = _m_sensor_data_it->first;
+		begin_time = std::chrono::system_clock::now();
+		assert(_m_imu0);
 	}
 
 	virtual void _p_compute_one_iteration() override {
+		assert(_m_imu0);
 		ullong target_ts = _m_sensor_data_it->first;
 
-		reliable_sleep(std::chrono::nanoseconds{target_ts});
+		reliable_sleep(std::chrono::nanoseconds{target_ts - last_time});
 
-		time_type ts = std::chrono::system_clock::now();
+		time_type ts = begin_time + std::chrono::nanoseconds{target_ts - first_time};
 
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
@@ -68,10 +71,18 @@ private:
 	std::unique_ptr<writer<imu_type>> _m_imu0;
 	std::unique_ptr<writer<cam_type>> _m_cams;
 	ullong last_time;
+	ullong first_time;
+	time_type begin_time;
 };
 
 extern "C" component* create_component(switchboard* sb) {
+	std::cout << "o.cc.0" << std::endl;
 	auto imu0_ev = sb->publish<imu_type>("imu0");
+	std::cout << "o.cc.1" << std::endl;
+	assert(imu0_ev);
 	auto cams_ev = sb->publish<cam_type>("cams");
-	return new offline_imu_cam {std::move(imu0_ev), std::move(cams_ev)};
+	std::cout << "o.cc.2" << std::endl;
+	auto f = new offline_imu_cam {std::move(imu0_ev), std::move(cams_ev)};
+	std::cout << "o.cc.3" << std::endl;
+	return f;
 }

@@ -19,4 +19,4 @@ else
 	cmd=/bin/bash
 fi
 
-docker run --init --rm -v "$(realpath "${PWD}"):/app:rw" -it illixr ${cmd}
+docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --init --rm -v "$(realpath "${PWD}"):/app:rw" -it illixr ${cmd}

@@ -24,6 +24,7 @@ public:
 	{ }
 	std::unique_ptr<cv::Mat> load() const {
 		auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_COLOR)}};
+		assert(!img->empty());
 		cv::cvtColor(*img, *img, cv::COLOR_BGR2GRAY);
 		assert(!img->empty());
 		return img;
@@ -40,7 +41,7 @@ typedef struct {
 } sensor_types;
 
 static
-std::map<ullong, sensor_types>&&
+std::map<ullong, sensor_types>
 load_data(const std::string& data_path) {
 	std::map<ullong, sensor_types> data;
 
@@ -55,15 +56,15 @@ load_data(const std::string& data_path) {
 	std::ifstream cam0_file {data_path + "cam0/data.csv"};
 	for(CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
-		data[t].cam0 = {data_path + "cam0/" + row[1]};
+		data[t].cam0 = {data_path + "cam0/data/" + row[1]};
 	}
 
 	std::ifstream cam1_file{data_path + "cam1/data.csv"};
 	for(CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		std::string fname = row[1];
-		data[t].cam1 = {data_path + "cam1/" + row[1]};
+		data[t].cam1 = {data_path + "cam1/data/" + row[1]};
 	}
 
-	return std::move(data);
+	return data;
 }

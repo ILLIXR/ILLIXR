@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 
 		auto pose_sub = sb->subscribe_latest<pose_type>("pose");
 
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < 200; ++i) {
 			int delay = distribution(generator);
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 			auto cur_pose = pose_sub->get_latest_ro();

@@ -15,6 +15,8 @@ public:
 		std::string line;
 		std::getline(str, line);
 
+		line = line.substr(0, line.find_last_not_of("\r\n\t \v") + 1);
+
 		std::stringstream lineStream(line);
 		std::string cell;
 
