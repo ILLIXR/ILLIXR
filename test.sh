@@ -15,7 +15,7 @@ then
 	fi
 	cd okvis && ./build.sh && cd ..
 fi
-rm -rf build && mkdir build && cd build && cmake .. && make VERBOSE=1
+rm -rf build && mkdir build && cd build && cmake -DOKVIS_INSTALLATION="$(pwd)"/okvis/install .. && make VERBOSE=1 && cd ..
 # "${CXX}" slam1.cc ./okvis/install/lib/*.a -L./okvis/install/lib/ -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
 cd ..
 
