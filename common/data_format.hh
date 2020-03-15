@@ -18,8 +18,8 @@ typedef struct {
 
 typedef struct {
 	time_type time;
-	std::unique_ptr<cv::Mat> img;
-	unsigned char id;
+	std::unique_ptr<cv::Mat> img0;
+	std::unique_ptr<cv::Mat> img1;
 } cam_type;
 
 typedef struct {

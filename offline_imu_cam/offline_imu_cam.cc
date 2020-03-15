@@ -23,12 +23,10 @@ class offline_imu_cam : public component {
 public:
 	offline_imu_cam(
 		 std::unique_ptr<writer<imu_type>>&& imu0,
-		 std::unique_ptr<writer<cam_type>>&& cam0,
-		 std::unique_ptr<writer<cam_type>>&& cam1)
+		 std::unique_ptr<writer<cam_type>>&& cams)
 		: _m_sensor_data{load_data(data_path)}
 		, _m_imu0{std::move(imu0)}
-		, _m_cam0{std::move(cam0)}
-		, _m_cam1{std::move(cam1)}
+		, _m_cams{std::move(cams)}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	{
 		last_time = _m_sensor_data_it->first;
@@ -51,17 +49,11 @@ public:
 			});
 		}
 		if (sensor_datum.cam0) {
-			_m_cam0->put(new cam_type{
+			assert(sensor_datum.cam1);
+			_m_cams->put(new cam_type{
 				ts,
 				sensor_datum.cam0.value().load(),
-				0,
-			});
-		}
-		if (sensor_datum.cam1) {
-			_m_cam0->put(new cam_type{
-				ts,
-				sensor_datum.cam0.value().load(),
-				1,
+				sensor_datum.cam1.value().load(),
 			});
 		}
 
@@ -74,14 +66,12 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	std::unique_ptr<writer<imu_type>> _m_imu0;
-	std::unique_ptr<writer<cam_type>> _m_cam0;
-	std::unique_ptr<writer<cam_type>> _m_cam1;
+	std::unique_ptr<writer<cam_type>> _m_cams;
 	ullong last_time;
 };
 
 extern "C" component* create_component(switchboard* sb) {
 	auto imu0_ev = sb->publish<imu_type>("imu0");
-	auto cam0_ev = sb->publish<cam_type>("cam0");
-	auto cam1_ev = sb->publish<cam_type>("cam1");
-	return new offline_imu_cam {std::move(imu0_ev), std::move(cam0_ev), std::move(cam1_ev)};
+	auto cams_ev = sb->publish<cam_type>("cams");
+	return new offline_imu_cam {std::move(imu0_ev), std::move(cams_ev)};
 }
