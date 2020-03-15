@@ -93,8 +93,7 @@ extern "C" component* create_component(switchboard* sb) {
 
 	auto this_slam1 = new slam1{std::move(pose_ev), parameters};
 
-	sb->schedule<cam_type>("cam0", std::bind(&slam1::feed_cam, this_slam1, std::placeholders::_1));
-	sb->schedule<cam_type>("cam1", std::bind(&slam1::feed_cam, this_slam1, std::placeholders::_1));
+	sb->schedule<cam_type>("cams", std::bind(&slam1::feed_cam, this_slam1, std::placeholders::_1));
 	sb->schedule<imu_type>("imu0", std::bind(&slam1::feed_imu, this_slam1, std::placeholders::_1));
 
 	return this_slam1;
