@@ -32,7 +32,10 @@ public:
 
     // Overridden method from the component interface. This specifies one interation of the main loop 
     virtual void _p_compute_one_iteration() override { 
-	    const pose_sample fresh_pose = *(_m_slow_pose->get_latest_ro());
+		auto pose_sample_nullable = _m_slow_pose->get_latest_ro();
+		std::cout << "_p_compute_one_iteration" << std::endl;
+		assert(!pose_sample_nullable);
+	    const pose_sample fresh_pose = *pose_sample_nullable;
 
         // If the SB has a new slow pose value from SLAM
         if (fresh_pose.sample_time > _last_slow_pose_update_time) {
@@ -145,7 +148,10 @@ extern "C" component* create_component(switchboard* sb) {
 	auto fast_pose_plug = sb->publish<pose_sample>("fast_pose");
 
 	/* This ensures pose is available at startup. */
-	fast_pose_plug->put(slow_pose_plug->get_latest_ro());
+	auto nullable_pose = slow_pose_plug->get_latest_ro();
+	assert(nullable_pose);
+	std::cout << "create_component" << std::endl;
+	fast_pose_plug->put(nullable_pose);
 
 	return new pose_prediction {std::move(slow_pose_plug), std::move(imu_plug), std::move(fast_pose_plug)};
 }
