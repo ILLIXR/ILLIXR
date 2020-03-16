@@ -50,19 +50,13 @@ public:
 		new_pose->pose.position = vector3_t {
 			.x = 0,
 			.y = 0,
-			.z = 6
+			.z = 6,
 		};
 		new_pose->sample_time = std::chrono::system_clock::now();
 
 		/* Publish this buffer to the topic. */
 		_m_pose->put(new_pose);
 	}
-
-	virtual void _p_start() override {
-		/* All of my work is already scheduled synchronously. Nohting to do here. */
-	}
-
-	virtual void _p_stop() override { }
 
 	virtual ~slam1() override {
 		/*
@@ -118,7 +112,7 @@ extern "C" component* create_component(switchboard* sb) {
 			.position = {
 				.x = 0,
 				.y = 0,
-				.z = 0,
+				.z = 6,
 			},
 			.orientation = {
 				/* I think these next three coords are supposed to be
