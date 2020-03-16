@@ -5,7 +5,8 @@ set -o noclobber -o errexit -o nounset -o xtrace
 cd "$(dirname "${0}")"
 
 clean=true
-extra_flags="--compilation_mode fastbuild"
+extra_flags="--compilation_mode dbg"
+# extra_flags="--compilation_mode fastbuild"
 
 cd slam1
 [ -n "${clean}" ] && bazel clean
