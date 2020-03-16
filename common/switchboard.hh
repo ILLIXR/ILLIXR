@@ -51,14 +51,14 @@ private:
 	std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& name, std::size_t ty) = 0;
 
 	virtual
-	void _p_schedule(const std::string& name, std::function<void()> fn, std::size_t ty) = 0;
+	void _p_schedule(const std::string& name, std::function<void(const void*)> fn, std::size_t ty) = 0;
 
 	/* TODO: (usability) add a method which queries if a topic has a writer. Readers might assert this. */
 
 public:
 
 	template <typename event>
-	void schedule(std::string name, std::function<void()> fn) {
+	void schedule(std::string name, std::function<void(const void*)> fn) {
 		_p_schedule(name, fn, typeid(event).hash_code());
 	}
 	/* I have opted not to pass the event in here, because I would

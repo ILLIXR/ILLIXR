@@ -128,7 +128,9 @@ public:
 			// Publish our submitted frame handle to Switchboard!
 			auto frame = new rendered_frame;
 			frame->texture_handle = eyeTextures[buffer_to_use];
-			frame->render_pose = *_m_pose->get_latest_ro();
+			auto pose = _m_pose->get_latest_ro();
+			frame->render_pose = *pose;
+			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			_m_eyebuffer->put(frame);
 			

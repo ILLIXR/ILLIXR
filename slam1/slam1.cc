@@ -40,7 +40,9 @@ public:
 		   swap-chain). Unfortunately, this doesn't work yet.
 		pose* buf = std::any_cast<pose*>(_m_pose->allocate());
 		*/
-		
+
+		std::cout << "Slam" << std::endl;
+
 		// RT will delete this memory when it gets replaced with a newer value.
 		pose_sample* new_pose = new pose_sample;
 		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
@@ -48,7 +50,7 @@ public:
 		new_pose->pose.position = vector3_t {
 			.x = 0,
 			.y = 0,
-			.z = 6
+			.z = 6,
 		};
 		new_pose->sample_time = std::chrono::system_clock::now();
 
@@ -104,5 +106,26 @@ extern "C" component* create_component(switchboard* sb) {
 	auto camera_ev = sb->subscribe_latest<camera_frame>("camera");
 	auto pose_ev = sb->publish<pose_sample>("pose");
 
-	return new slam1 {std::move(camera_ev), std::move(pose_ev)};
+	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
+	pose_sample* new_pose = new pose_sample{
+		.pose = {
+			.position = {
+				.x = 0,
+				.y = 0,
+				.z = 6,
+			},
+			.orientation = {
+				/* I think these next three coords are supposed to be
+				   a unit vector, so I will use [1, 0, 0] */
+				1,
+				0,
+				0,
+				0, /* w last, since this is Quaternion{const Scalar *data} */
+			},
+		},
+		.sample_time = {},
+	};
+	pose_ev->put(new_pose);
+	auto this_slam1 = new slam1{std::move(camera_ev), std::move(pose_ev)};
+	return this_slam1;
 }
