@@ -56,8 +56,8 @@ std::vector<float> kalman_filter::predict_values(imu_sample data) {
     _state_estimate += K * y_tilde;
     P = (Eigen::MatrixXd::Identity(4, 4) - K * C) * P;
 
-    _phi_estimate = _state_estimate[0];
-    _theta_estimate = _state_estimate[2];
+    _phi_estimate = _state_estimate(0);
+    _theta_estimate = _state_estimate(2);
 
     /* Reason why we dont predict yaw taken from another project - 
     Set the yaw of actual observation to follow 

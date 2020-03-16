@@ -79,15 +79,6 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
-	
-	std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
-		return out << "pose: quat(xyzw){"
-				<< pose.orientation.x << ", "
-				<< pose.orientation.y << ", "
-				<< pose.orientation.z << ", "
-				<< pose.orientation.w << "}";
-	}
-
 }
 
 #endif

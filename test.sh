@@ -28,6 +28,11 @@ cd gldemo
 bazel build gldemo
 cd ..
 
+cd pose_prediction
+[ -n "${clean}" ] && bazel clean
+bazel build pose_prediction
+cd ..
+
 cd runtime
 [ -n "${clean}" ] && bazel clean
 bazel build ${extra_flags} main
@@ -40,6 +45,8 @@ cd ..
 
 ./runtime/bazel-bin/main \
 	slam1/bazel-bin/libslam1.so \
+	pose_prediction/bazel-bin/libpose_prediction.so \
 	cam1/bazel-bin/libcam1.so \
 	timewarp_gl/bazel-bin/libtimewarp_gl.so \
-	gldemo/bazel-bin/libgldemo.so
+	gldemo/bazel-bin/libgldemo.so \
+;

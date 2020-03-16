@@ -24,7 +24,7 @@ public:
         pose_sample _latest_pose = {pose_t{quaternion_t{0, 0, 0, 1}, vector3_t{0, 0, 0}}, current_time};
         _last_slow_pose_update_time = current_time;
 
-        _filter = new kalman_filter::kalman_filter(current_time);
+        _filter = new kalman_filter{current_time};
         _latest_vel = std::vector<float>{0, 0, 0};
         _latest_acc = std::vector<float>{0, 0, 0};
         _latest_gyro = std::vector<float>{0, 0, 0};
@@ -128,9 +128,9 @@ private:
 
         // Calculate the new pose transform by .5*a*t^2 + v*t + d
         vector3_t predicted_position = {
-            0.5 * _latest_acc[0] * pow(time_delta, 2) + _latest_vel[0] * time_delta + _latest_pose.pose.position.x,
-            0.5 * _latest_acc[1] * pow(time_delta, 2) + _latest_vel[1] * time_delta + _latest_pose.pose.position.y,
-            0.5 * _latest_acc[2] * pow(time_delta, 2) + _latest_vel[2] * time_delta + _latest_pose.pose.position.z
+            static_cast<float>(0.5 * _latest_acc[0] * pow(time_delta, 2) + _latest_vel[0] * time_delta + _latest_pose.pose.position.x),
+            static_cast<float>(0.5 * _latest_acc[1] * pow(time_delta, 2) + _latest_vel[1] * time_delta + _latest_pose.pose.position.y),
+            static_cast<float>(0.5 * _latest_acc[2] * pow(time_delta, 2) + _latest_vel[2] * time_delta + _latest_pose.pose.position.z),
         };
 
         return pose_t{predicted_orientation, predicted_position};
@@ -143,6 +143,9 @@ extern "C" component* create_component(switchboard* sb) {
     auto slow_pose_plug = sb->subscribe_latest<pose_sample>("slow_pose");
 	auto imu_plug = sb->subscribe_latest<imu_sample>("imu");
 	auto fast_pose_plug = sb->publish<pose_sample>("fast_pose");
+
+	/* This ensures pose is available at startup. */
+	fast_pose_plug->put(slow_pose_plug->get_latest_ro());
 
 	return new pose_prediction {std::move(slow_pose_plug), std::move(imu_plug), std::move(fast_pose_plug)};
 }

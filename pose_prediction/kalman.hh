@@ -2,13 +2,14 @@
 #define KALMAN_HH__
 
 #include <chrono>
-#include "pose_prediction.hh"
+#include "common/data_format.hh"
+#include <Eigen/Dense>
 
 using namespace ILLIXR;
 
 class kalman_filter {
     public:
-        kalman_filter(std::chrono::time_point<std::chrono::system_clock> _init_time) {}
+        kalman_filter(std::chrono::time_point<std::chrono::system_clock> _init_time);
         std::vector<float> predict_values(imu_sample);
 
     private:
