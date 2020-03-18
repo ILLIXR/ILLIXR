@@ -21,7 +21,7 @@ public:
     , _m_fast_pose{std::move(predicted_pose_plug)} {
 
         std::chrono::time_point<std::chrono::system_clock> current_time = std::chrono::system_clock::now();
-        pose_sample _latest_pose = {pose_t{quaternion_t{0, 0, 0, 1}, vector3_t{0, 0, 0}}, current_time};
+        _latest_pose = {pose_t{quaternion_t{0, 0, 0, 1}, vector3_t{0, 0, 0}}, current_time};
         _last_slow_pose_update_time = current_time;
 
         _filter = new kalman_filter{current_time};
@@ -31,22 +31,24 @@ public:
     }
 
     // Overridden method from the component interface. This specifies one interation of the main loop 
-    virtual void _p_compute_one_iteration() override { 
+    virtual void _p_compute_one_iteration() override {
 		auto pose_sample_nullable = _m_slow_pose->get_latest_ro();
-		std::cout << "_p_compute_one_iteration" << std::endl;
-		assert(!pose_sample_nullable);
+		assert(pose_sample_nullable != NULL);
 	    const pose_sample fresh_pose = *pose_sample_nullable;
 
         // If the SB has a new slow pose value from SLAM
+		//std::cout << fresh_pose.sample_time << " " << _last_slow_pose_update_time << std::endl;
         if (fresh_pose.sample_time > _last_slow_pose_update_time) {
             _update_slow_pose(fresh_pose);
         }
 
-        const imu_sample fresh_imu_measurement = *(_m_imu->get_latest_ro());
+        const imu_sample* fresh_imu_measurement = _m_imu->get_latest_ro();
+
+		assert(fresh_imu_measurement != NULL);
 
         // If queried IMU is fresher than the pose mesaurement and the local IMU copy we have, update it and the pose
-        if (fresh_imu_measurement.sample_time > _latest_pose.sample_time) {
-            _update_fast_pose(fresh_imu_measurement);
+        if (fresh_imu_measurement->sample_time > _latest_pose.sample_time) {
+            _update_fast_pose(*fresh_imu_measurement);
         }
     }
 
@@ -72,8 +74,13 @@ private:
 
     // Helper that will push to the SB if a newer pose is pulled from the SB/SLAM
     void _update_slow_pose(const pose_sample fresh_pose) {
-        float time_difference = std::chrono::duration_cast<std::chrono::milliseconds>
-                (fresh_pose.sample_time - _latest_pose.sample_time).count();
+        float time_difference = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
+												   (fresh_pose.sample_time - _latest_pose.sample_time).count()) / 1000.0f;
+
+		std::cout << "time diff = " << time_difference << std::endl;
+		//std::cout << fresh_pose.sample_time << " - " << _latest_pose.sample_time << std::endl;
+		//std::cout << "we already checked " << fresh_pose.sample_time << " > " << _last_slow_pose_update_time << std::endl;
+		//assert(time_difference != 0.0f);
 
         // Update the velocity with the pose position difference over time. This is done because
         // Accelerometer readings have lots of noise and will lead to bad dead reckoning
@@ -84,6 +91,7 @@ private:
         _latest_pose = fresh_pose;
         _last_slow_pose_update_time = fresh_pose.sample_time;
         _m_fast_pose->put(&_latest_pose);
+		/* TODO: write to a freshly allocated buffer to avoid synchronization errors */
     }
 
     // Helper that updates the pose with new IMU readings and pushed to the SB
@@ -99,7 +107,10 @@ private:
         (fresh_imu_measurement.sample_time - _latest_pose.sample_time).count();
 
         _latest_pose = {_calculate_pose(time_difference), fresh_imu_measurement.sample_time};
-        _m_fast_pose->put(&_latest_pose);
+		//std::cout << "latest pose " << _latest_pose.pose.position.x << " " << _latest_pose.pose.position.y << " " << _latest_pose.pose.position.z << std::endl;
+		//std::cout << "latest vel " << _latest_vel[0] << " " << _latest_vel[1] << " " << _latest_vel[2] << std::endl;
+		_m_fast_pose->put(&_latest_pose);
+		/* TODO: write to a freshly allocated buffer to avoid synchronization errors */
     }
 
     // Helper that does all the math to calculate the poses
@@ -129,6 +140,8 @@ private:
             coeffs(0),
         };
 
+		std::cout << "a[0], v[0], d[0] " << _latest_acc[0] << " " << _latest_vel[0] << " " << _latest_pose.pose.position.x << std::endl;
+
         // Calculate the new pose transform by .5*a*t^2 + v*t + d
         vector3_t predicted_position = {
             static_cast<float>(0.5 * _latest_acc[0] * pow(time_delta, 2) + _latest_vel[0] * time_delta + _latest_pose.pose.position.x),
@@ -136,6 +149,7 @@ private:
             static_cast<float>(0.5 * _latest_acc[2] * pow(time_delta, 2) + _latest_vel[2] * time_delta + _latest_pose.pose.position.z),
         };
 
+		std::cout << "predicted position " << predicted_position.x << std::endl;
         return pose_t{predicted_orientation, predicted_position};
     }
 };
@@ -149,8 +163,7 @@ extern "C" component* create_component(switchboard* sb) {
 
 	/* This ensures pose is available at startup. */
 	auto nullable_pose = slow_pose_plug->get_latest_ro();
-	assert(nullable_pose);
-	std::cout << "create_component" << std::endl;
+	assert(nullable_pose != NULL);
 	fast_pose_plug->put(nullable_pose);
 
 	return new pose_prediction {std::move(slow_pose_plug), std::move(imu_plug), std::move(fast_pose_plug)};

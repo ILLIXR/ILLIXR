@@ -54,6 +54,7 @@ namespace ILLIXR {
 			}
 
 			virtual void put(const void* contents) override {
+				assert(contents);
 				const void* old __attribute__((unused)) =
 					_m_topic->_m_latest.exchange(contents);
 

@@ -40,7 +40,6 @@ public:
 		   swap-chain). Unfortunately, this doesn't work yet.
 		pose* buf = std::any_cast<pose*>(_m_pose->allocate());
 		*/
-
 		std::cout << "Slam" << std::endl;
 
 		// RT will delete this memory when it gets replaced with a newer value.
@@ -77,7 +76,7 @@ private:
 		float rollIsPitch = 0.3f * sinf( time * 1.5f );
 		float yawIsRoll = 0;
 		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
-		printf("Yaw: %f\n", pitchIsYaw);
+		// printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
 

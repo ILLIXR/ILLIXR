@@ -20,17 +20,22 @@ cd ..
 
 cd timewarp_gl
 [ -n "${clean}" ] && bazel clean
-bazel build timewarp_gl
+bazel build ${extra_flags} timewarp_gl
 cd ..
 
 cd gldemo
 [ -n "${clean}" ] && bazel clean
-bazel build gldemo
+bazel build ${extra_flags} gldemo
 cd ..
 
 cd pose_prediction
 [ -n "${clean}" ] && bazel clean
-bazel build pose_prediction
+bazel build ${extra_flags} pose_prediction
+cd ..
+
+cd imu1
+[ -n "${clean}" ] && bazel clean
+bazel build ${extra_flags} imu1
 cd ..
 
 cd runtime
@@ -44,9 +49,10 @@ cd ..
 # is all each .so files and the runtime binary.
 
 ./runtime/bazel-bin/main \
+	cam1/bazel-bin/libcam1.so \
+	imu1/bazel-bin/libimu1.so \
 	slam1/bazel-bin/libslam1.so \
 	pose_prediction/bazel-bin/libpose_prediction.so \
-	cam1/bazel-bin/libcam1.so \
 	timewarp_gl/bazel-bin/libtimewarp_gl.so \
 	gldemo/bazel-bin/libgldemo.so \
 ;

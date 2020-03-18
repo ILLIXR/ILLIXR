@@ -21,11 +21,11 @@ class kalman_filter {
         float _phi_estimate = 0;
         float _theta_estimate = 0;
 
-	Eigen::MatrixXd C{4, 2};
+        Eigen::MatrixXd C{2, 4};
         Eigen::MatrixXd P = Eigen::MatrixXd::Identity(4, 4);
         Eigen::MatrixXd Q = Eigen::MatrixXd::Identity(4, 4);
         Eigen::MatrixXd R = Eigen::MatrixXd::Identity(2, 2);
-	Eigen::MatrixXd _state_estimate{4, 1};
+        Eigen::MatrixXd _state_estimate{4, 1};
         
         std::chrono::time_point<std::chrono::system_clock> _last_measurement;
 };

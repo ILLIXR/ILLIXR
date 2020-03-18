@@ -23,13 +23,13 @@ std::vector<float> kalman_filter::predict_values(imu_sample data) {
             (data.sample_time - _last_measurement).count();
     _last_measurement = data.sample_time;
 
-    Eigen::MatrixXd A;
+    Eigen::MatrixXd A{4,4};
     A << 1, -time_interval, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, -time_interval,
         0, 0, 0, 1;
     
-    Eigen::MatrixXd B;
+    Eigen::MatrixXd B{4,2};
     B << time_interval, 0,
         0, 0,
         0, time_interval,
@@ -39,14 +39,14 @@ std::vector<float> kalman_filter::predict_values(imu_sample data) {
             cos(_phi_estimate) * tan(_theta_estimate) * data.measurement.gz;
     float theta_dot = cos(_phi_estimate) * data.measurement.gy - sin(_phi_estimate) * data.measurement.gz;
 
-    Eigen::MatrixXd gyro_input;
+    Eigen::MatrixXd gyro_input{2,1};
     gyro_input << phi_dot,
                 theta_dot; 
 
     _state_estimate = A * _state_estimate + B * gyro_input;
     P = A * (P * A.transpose()) + Q;
         
-    Eigen::MatrixXd measurement;
+    Eigen::MatrixXd measurement{2,1};
     measurement << phi_acc,
                 theta_acc;
 
