@@ -40,15 +40,17 @@ public:
 		   swap-chain). Unfortunately, this doesn't work yet.
 		pose* buf = std::any_cast<pose*>(_m_pose->allocate());
 		*/
-		
+
+		std::cout << "Slam" << std::endl;
+
 		// RT will delete this memory when it gets replaced with a newer value.
 		pose_sample* new_pose = new pose_sample;
 		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
 		new_pose->pose.orientation = generateDummyOrientation(this_time.count());
 		new_pose->pose.position = vector3_t {
-			.x = 0,
-			.y = 0,
-			.z = 6
+			.x = cosf(this_time.count()) * 0.2f,
+			.y = cosf(this_time.count() + 0.2f) * 0.2f + 0.3f,
+			.z = sinf(this_time.count()) * 0.2f
 		};
 		new_pose->sample_time = std::chrono::system_clock::now();
 
@@ -72,9 +74,10 @@ private:
 	int state;
 
 	quaternion_t generateDummyOrientation(float time){
-		float rollIsPitch = 0.3f * sinf( time * 1.5f );
+		float rollIsPitch = 0.3f * sinf( time * 2.5f ) * 0.5f;
 		float yawIsRoll = 0;
-		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
+		float pitchIsYaw = 0.3f * cosf( time * 2.5f ) * 0.5f - 0.5f;
+
 		printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
@@ -104,5 +107,26 @@ extern "C" component* create_component(switchboard* sb) {
 	auto camera_ev = sb->subscribe_latest<camera_frame>("camera");
 	auto pose_ev = sb->publish<pose_sample>("pose");
 
-	return new slam1 {std::move(camera_ev), std::move(pose_ev)};
+	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
+	pose_sample* new_pose = new pose_sample{
+		.pose = {
+			.position = {
+				.x = 0,
+				.y = 0,
+				.z = 6,
+			},
+			.orientation = {
+				/* I think these next three coords are supposed to be
+				   a unit vector, so I will use [1, 0, 0] */
+				1,
+				0,
+				0,
+				0, /* w last, since this is Quaternion{const Scalar *data} */
+			},
+		},
+		.sample_time = {},
+	};
+	pose_ev->put(new_pose);
+	auto this_slam1 = new slam1{std::move(camera_ev), std::move(pose_ev)};
+	return this_slam1;
 }
