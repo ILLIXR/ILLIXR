@@ -478,7 +478,7 @@ public:
 		auto latest_pose = _m_pose->get_latest_ro();
 		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose->pose);
 
-		std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
+		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
 
 		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
 		// and we don't need to visualize this right now (we also don't have prediction setup yet!)

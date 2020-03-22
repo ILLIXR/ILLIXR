@@ -79,6 +79,30 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
+	
+	std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
+		return out << "pose: quat(xyzw){"
+				<< pose.orientation.x << ", "
+				<< pose.orientation.y << ", "
+				<< pose.orientation.z << ", "
+				<< pose.orientation.w << "}";
+	}
+
+	// High-level HMD specification, timewarp component
+	// may/will calculate additional HMD info based on these specifications
+	struct hmd_physical_info {
+		float   ipd;
+		int		displayPixelsWide;
+		int		displayPixelsHigh;
+		float	chromaticAberration[4];
+		float	K[11];
+		int		visiblePixelsWide;
+		int		visiblePixelsHigh;
+		float	visibleMetersWide;
+		float	visibleMetersHigh;
+		float	lensSeparationInMeters;
+		float	metersPerTanAngleAtCenter;
+	};
 }
 
 #endif

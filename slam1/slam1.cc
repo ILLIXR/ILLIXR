@@ -57,6 +57,12 @@ public:
 		_m_pose->put(new_pose);
 	}
 
+	virtual void _p_start() override {
+		/* All of my work is already scheduled synchronously. Nohting to do here. */
+	}
+
+	virtual void _p_stop() override { }
+
 	virtual ~slam1() override {
 		/*
 		  This developer is responsible for killing their processes
@@ -76,7 +82,7 @@ private:
 		float rollIsPitch = 0.3f * sinf( time * 1.5f );
 		float yawIsRoll = 0;
 		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
-		// printf("Yaw: %f\n", pitchIsYaw);
+		printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
 
@@ -108,11 +114,6 @@ extern "C" component* create_component(switchboard* sb) {
 	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
 	pose_sample* new_pose = new pose_sample{
 		.pose = {
-			.position = {
-				.x = 0,
-				.y = 0,
-				.z = 6,
-			},
 			.orientation = {
 				/* I think these next three coords are supposed to be
 				   a unit vector, so I will use [1, 0, 0] */
@@ -120,6 +121,11 @@ extern "C" component* create_component(switchboard* sb) {
 				0,
 				0,
 				0, /* w last, since this is Quaternion{const Scalar *data} */
+			},
+			.position = {
+				.x = 0,
+				.y = 0,
+				.z = 6,
 			},
 		},
 		.sample_time = {},
