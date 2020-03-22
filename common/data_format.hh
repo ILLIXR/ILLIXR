@@ -3,106 +3,47 @@
 
 #include <iostream>
 #include <chrono>
+
+#include <opencv2/core/mat.hpp>
+#include <eigen3/Eigen/Dense>
+
 #include "GL/gl.h"
 #include <GLFW/glfw3.h> // This is... ew. Look into making this more modular/generalized.
 
 namespace ILLIXR {
+	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
 
-	struct camera_frame {
+	typedef struct {
+		time_type time;
+		Eigen::Vector3d angular_v;
+		Eigen::Vector3d linear_a;
+	} imu_type;
+
+	typedef struct {
+		time_type time;
+		std::unique_ptr<cv::Mat> img0;
+		std::unique_ptr<cv::Mat> img1;
+	} cam_type;
+
+	typedef struct {
+		Eigen::Vector3d position;
+		Eigen::Quaterniond orientation;
+		time_type time; 
+	} pose_type;
+
+	typedef struct {
 		int pixel[1];
-	};
+	} camera_frame;
 
-	struct global_config {
+	typedef struct {
 		GLFWwindow* glfw_context;
-	};
+	} global_config;
 
-	// Designed to be a drop-in replacement for
-	// the XrQuaternionf datatype. 
-	struct quaternion_t {
-		float x,y,z,w;
-	};
-
-	// Designed to be a drop-in replacement for
-	// the XrVector3f datatype. 
-	struct vector3_t {
-		float x,y,z;
-	};
-
-	// Designed to be a drop-in replacement for
-	// the XrPosef datatype. 
-	struct pose_t {
-		quaternion_t orientation;
-		vector3_t position;
-	};
-
-	// A particular pose, sampled at a particular point in time.
-	struct pose_sample {
-		pose_t pose;
-		std::chrono::time_point<std::chrono::system_clock> sample_time; 
-	};
-
-	// Struct that will hold the linear accel and gyro readings from an IMU
-	struct imu_measurement_t {
-		float ax, ay, az;
-		float gx, gy, gz;
-	};
-
-	// An IMU reading sampled at a particular point in time
-	struct imu_sample {
-		imu_measurement_t measurement;
-		std::chrono::time_point<std::chrono::system_clock> sample_time;
-	};
-
-	struct rendered_frame {
+	typedef struct {
 		GLuint texture_handle;
-		pose_sample render_pose; // The pose used when rendering this frame.
+		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
-	};
-
-	/* I use "accel" instead of "3-vector" as a datatype, because
-	this checks that you meant to use an acceleration in a certain
-	place. */
-	struct accel { };
-
-	// High-level HMD specification, timewarp component
-	// may/will calculate additional HMD info based on these specifications
-	struct hmd_physical_info {
-		float   ipd;
-		int		displayPixelsWide;
-		int		displayPixelsHigh;
-		float	chromaticAberration[4];
-		float	K[11];
-		int		visiblePixelsWide;
-		int		visiblePixelsHigh;
-		float	visibleMetersWide;
-		float	visibleMetersHigh;
-		float	lensSeparationInMeters;
-		float	metersPerTanAngleAtCenter;
-	};
-	
-	std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
-		return out << "pose: quat(xyzw){"
-				<< pose.orientation.x << ", "
-				<< pose.orientation.y << ", "
-				<< pose.orientation.z << ", "
-				<< pose.orientation.w << "}";
-	}
-
-	// High-level HMD specification, timewarp component
-	// may/will calculate additional HMD info based on these specifications
-	struct hmd_physical_info {
-		float   ipd;
-		int		displayPixelsWide;
-		int		displayPixelsHigh;
-		float	chromaticAberration[4];
-		float	K[11];
-		int		visiblePixelsWide;
-		int		visiblePixelsHigh;
-		float	visibleMetersWide;
-		float	visibleMetersHigh;
-		float	lensSeparationInMeters;
-		float	metersPerTanAngleAtCenter;
-	};
+	} rendered_frame;
 }
 
 #endif
