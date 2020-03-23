@@ -19,11 +19,10 @@ public:
 		std::this_thread::sleep_for(5ms);
 		auto buf = new imu_type {
 			std::chrono::system_clock::now(),
-			{0, 0, 0},
+			{0, 0, 1},
 			{0, 0, 1},
 		};
 		_m_output->put(buf);
-		std::cout << "IMU" << std::endl;
 	}
 
 	virtual ~imu1() override { }

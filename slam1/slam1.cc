@@ -26,7 +26,7 @@ public:
 		// Until we have pose prediction, we'll run our magical
 		// make-believe SLAM system at an unreasonably high
 		// frequency, like 120hz!
-		std::this_thread::sleep_for(8.3ms);
+		std::this_thread::sleep_for(20ms);
 
 		/* The component can read the latest value from its
 		   subscription. */
@@ -40,24 +40,18 @@ public:
 		   swap-chain). Unfortunately, this doesn't work yet.
 		pose* buf = std::any_cast<pose*>(_m_pose->allocate());
 		*/
-		std::cout << "Slam" << std::endl;
+		// std::cout << "Slam" << std::endl;
 
 		// RT will delete this memory when it gets replaced with a newer value.
 		pose_type* new_pose = new pose_type;
 		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
 		new_pose->time = std::chrono::system_clock::now();
-		new_pose->position = Eigen::Vector3f{0, 0, 0};
+		new_pose->position = Eigen::Vector3f{0, 0, 6};
 		new_pose->orientation = generateDummyOrientation(this_time.count());
 
 		/* Publish this buffer to the topic. */
 		_m_pose->put(new_pose);
 	}
-
-	virtual void _p_start() override {
-		/* All of my work is already scheduled synchronously. Nohting to do here. */
-	}
-
-	virtual void _p_stop() override { }
 
 	virtual ~slam1() override {
 		/*
@@ -78,7 +72,7 @@ private:
 		float rollIsPitch = 0.3f * sinf( time * 1.5f );
 		float yawIsRoll = 0;
 		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
-		printf("Yaw: %f\n", pitchIsYaw);
+		// printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
 		double cy = cos(yawIsRoll * 0.5);
@@ -104,8 +98,9 @@ extern "C" component* create_component(switchboard* sb) {
 	auto pose_ev = sb->publish<pose_type>("slow_pose");
 
 	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
-	pose_type* new_pose = new pose_type{std::chrono::system_clock::now(), Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
+	pose_type* new_pose = new pose_type{std::chrono::system_clock::now(), Eigen::Vector3f{0, 0, 6}, Eigen::Quaternionf{1, 0, 0, 0}};
 	pose_ev->put(new_pose);
+
 	auto this_slam1 = new slam1{std::move(camera_ev), std::move(pose_ev)};
 	return this_slam1;
 }

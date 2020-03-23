@@ -19,8 +19,8 @@ Eigen::Vector3f kalman_filter::predict_values(imu_type data) {
     data.angular_v[1] *= M_PI / 180.0;
     data.angular_v[2] *= M_PI / 180.0;
 
-    float time_interval = std::chrono::duration_cast<std::chrono::milliseconds>
-            (data.time - _last_measurement).count();
+    float time_interval = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
+			    						   (data.time - _last_measurement).count()) / 1000000000.0f;
     _last_measurement = data.time;
 
     Eigen::MatrixXf A{4,4};

@@ -20,7 +20,7 @@ public:
 		auto buf = new camera_frame;
 		buf->pixel[0] = 1;
 		_m_output->put(buf);
-		std::cout << "Cam" << std::endl;
+		// std::cout << "Cam" << std::endl;
 	}
 
 	virtual ~cam1() override { }
