@@ -25,7 +25,7 @@ public:
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 	gldemo(std::unique_ptr<writer<rendered_frame>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
+		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
@@ -46,7 +46,7 @@ public:
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
 
-			const pose_sample* pose_ptr = _m_pose->get_latest_ro();
+			const pose_type* pose_ptr = _m_pose->get_latest_ro();
 
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
@@ -58,17 +58,16 @@ public:
 
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.
-				pose_t fresh_pose = pose_ptr->pose;
 				auto latest_quat = ksAlgebra::ksQuatf {
-					.x = fresh_pose.orientation.x,
-					.y = fresh_pose.orientation.y,
-					.z = fresh_pose.orientation.z,
-					.w = fresh_pose.orientation.w
+					.x = pose_ptr->orientation.x(),
+					.y = pose_ptr->orientation.y(),
+					.z = pose_ptr->orientation.z(),
+					.w = pose_ptr->orientation.w()
 				};
 				auto latest_position = ksAlgebra::ksVector3f {
-					.x = fresh_pose.position.x,
-					.y = fresh_pose.position.y,
-					.z = fresh_pose.position.z
+					.x = pose_ptr->position[0],
+					.y = pose_ptr->position[1],
+					.z = pose_ptr->position[2]
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};
 				ksAlgebra::ksMatrix4x4f head_matrix;
@@ -148,7 +147,7 @@ private:
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 
 	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose_sample>> _m_pose;
+	std::unique_ptr<reader_latest<pose_type>> _m_pose;
 
 	// Switchboard plug for global config data, including GLFW/GPU context handles.
 	std::unique_ptr<reader_latest<global_config>> _m_config;
@@ -338,7 +337,7 @@ extern "C" component* create_component(switchboard* sb) {
 	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_sample>("slow_pose");
+	auto pose_ev = sb->subscribe_latest<pose_type>("slow_pose");
 
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");

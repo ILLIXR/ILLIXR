@@ -8,53 +8,53 @@ kalman_filter::kalman_filter(std::chrono::time_point<std::chrono::system_clock> 
          0, 0, 1, 0;
 }
 
-std::vector<float> kalman_filter::predict_values(imu_sample data) {
-    float phi_acc = atan2(data.measurement.ay, sqrt(pow(data.measurement.ax, 2.0) + pow(data.measurement.az, 2.0)));
-    float theta_acc = atan2(-data.measurement.ax, sqrt(pow(data.measurement.ay, 2.0) + pow(data.measurement.az, 2.0)));
+Eigen::Vector3f kalman_filter::predict_values(imu_type data) {
+    float phi_acc = atan2(data.linear_a[1], sqrt(pow(data.linear_a[0], 2.0) + pow(data.linear_a[2], 2.0)));
+    float theta_acc = atan2(-data.linear_a[0], sqrt(pow(data.linear_a[1], 2.0) + pow(data.linear_a[2], 2.0)));
      
     phi_acc -= _phi_offset;
     theta_acc -= _theta_offset;
         
-    data.measurement.gx *= M_PI / 180.0;
-    data.measurement.gy *= M_PI / 180.0;
-    data.measurement.gz *= M_PI / 180.0;
+    data.angular_v[0] *= M_PI / 180.0;
+    data.angular_v[1] *= M_PI / 180.0;
+    data.angular_v[2] *= M_PI / 180.0;
 
     float time_interval = std::chrono::duration_cast<std::chrono::milliseconds>
-            (data.sample_time - _last_measurement).count();
-    _last_measurement = data.sample_time;
+            (data.time - _last_measurement).count();
+    _last_measurement = data.time;
 
-    Eigen::MatrixXd A{4,4};
+    Eigen::MatrixXf A{4,4};
     A << 1, -time_interval, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, -time_interval,
         0, 0, 0, 1;
     
-    Eigen::MatrixXd B{4,2};
+    Eigen::MatrixXf B{4,2};
     B << time_interval, 0,
         0, 0,
         0, time_interval,
         0, 0;
 
-    float phi_dot = data.measurement.gx + sin(_phi_estimate) * tan(_theta_estimate) * data.measurement.gy + 
-            cos(_phi_estimate) * tan(_theta_estimate) * data.measurement.gz;
-    float theta_dot = cos(_phi_estimate) * data.measurement.gy - sin(_phi_estimate) * data.measurement.gz;
+    float phi_dot = data.angular_v[0] + sin(_phi_estimate) * tan(_theta_estimate) * data.angular_v[1] + 
+            cos(_phi_estimate) * tan(_theta_estimate) * data.angular_v[2];
+    float theta_dot = cos(_phi_estimate) * data.angular_v[1]- sin(_phi_estimate) * data.angular_v[2];
 
-    Eigen::MatrixXd gyro_input{2,1};
+    Eigen::MatrixXf gyro_input{2,1};
     gyro_input << phi_dot,
                 theta_dot; 
 
     _state_estimate = A * _state_estimate + B * gyro_input;
     P = A * (P * A.transpose()) + Q;
         
-    Eigen::MatrixXd measurement{2,1};
+    Eigen::MatrixXf measurement{2,1};
     measurement << phi_acc,
                 theta_acc;
 
-    Eigen::MatrixXd y_tilde = measurement - C * _state_estimate;
-    Eigen::MatrixXd S = C * (P * C.transpose()) + R;
-    Eigen::MatrixXd K = P * (C.transpose() * (S.inverse()));
+    Eigen::MatrixXf y_tilde = measurement - C * _state_estimate;
+    Eigen::MatrixXf S = C * (P * C.transpose()) + R;
+    Eigen::MatrixXf K = P * (C.transpose() * (S.inverse()));
     _state_estimate += K * y_tilde;
-    P = (Eigen::MatrixXd::Identity(4, 4) - K * C) * P;
+    P = (Eigen::MatrixXf::Identity(4, 4) - K * C) * P;
 
     _phi_estimate = _state_estimate(0);
     _theta_estimate = _state_estimate(2);
@@ -71,5 +71,5 @@ std::vector<float> kalman_filter::predict_values(imu_sample data) {
 	project. The following step ensures that the gyro 
 	integration error does not affect the calculation of 
 	innovation, and thus the estimates of roll and pitch. */
-    return std::vector<float>{_phi_estimate, data.measurement.gy, _theta_estimate};
+    return Eigen::Vector3f(_phi_estimate, data.angular_v[1], _theta_estimate);
 }

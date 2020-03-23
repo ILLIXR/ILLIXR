@@ -12,7 +12,7 @@ class slam1 : public component {
 public:
 	/* Provide handles to slam1 */
 	slam1(std::unique_ptr<reader_latest<camera_frame>>&& camera,
-		  std::unique_ptr<writer<pose_sample>>&& pose)
+		  std::unique_ptr<writer<pose_type>>&& pose)
 		: _m_camera{std::move(camera)}
 		, _m_pose{std::move(pose)}
 		, state{0}
@@ -43,15 +43,11 @@ public:
 		std::cout << "Slam" << std::endl;
 
 		// RT will delete this memory when it gets replaced with a newer value.
-		pose_sample* new_pose = new pose_sample;
+		pose_type* new_pose = new pose_type;
 		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
-		new_pose->pose.orientation = generateDummyOrientation(this_time.count());
-		new_pose->pose.position = vector3_t {
-			.x = 0,
-			.y = 0,
-			.z = 6,
-		};
-		new_pose->sample_time = std::chrono::system_clock::now();
+		new_pose->time = std::chrono::system_clock::now();
+		new_pose->position = Eigen::Vector3f{0, 0, 0};
+		new_pose->orientation = generateDummyOrientation(this_time.count());
 
 		/* Publish this buffer to the topic. */
 		_m_pose->put(new_pose);
@@ -72,36 +68,32 @@ public:
 
 private:
 	std::unique_ptr<reader_latest<camera_frame>> _m_camera;
-	std::unique_ptr<writer<pose_sample>> _m_pose;
+	std::unique_ptr<writer<pose_type>> _m_pose;
 
 	std::chrono::time_point<std::chrono::system_clock> start_time;
 	
 	int state;
 
-	quaternion_t generateDummyOrientation(float time){
+	Eigen::Quaternionf generateDummyOrientation(float time) {
 		float rollIsPitch = 0.3f * sinf( time * 1.5f );
 		float yawIsRoll = 0;
 		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
 		printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
-
-
 		double cy = cos(yawIsRoll * 0.5);
 		double sy = sin(yawIsRoll * 0.5);
 		double cp = cos(pitchIsYaw * 0.5);
 		double sp = sin(pitchIsYaw * 0.5);
 		double cr = cos(rollIsPitch * 0.5);
 		double sr = sin(rollIsPitch * 0.5);
-
-		quaternion_t q;
-		q.w = cy * cp * cr + sy * sp * sr;
-		q.x = cy * cp * sr - sy * sp * cr;
-		q.y = sy * cp * sr + cy * sp * cr;
-		q.z = sy * cp * cr - cy * sp * sr;
 		
-		return q;
+		float w = cy * cp * cr + sy * sp * sr;
+		float x = cy * cp * sr - sy * sp * cr;
+		float y = sy * cp * sr + cy * sp * cr;
+		float z = sy * cp * cr - cy * sp * sr;
 
+		return Eigen::Quaternionf{w, x, y, z};
 	}
 };
 
@@ -109,27 +101,10 @@ extern "C" component* create_component(switchboard* sb) {
 	/* First, we declare intent to read/write topics. Switchboard
 	   returns handles to those topics. */
 	auto camera_ev = sb->subscribe_latest<camera_frame>("camera");
-	auto pose_ev = sb->publish<pose_sample>("slow_pose");
+	auto pose_ev = sb->publish<pose_type>("slow_pose");
 
 	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
-	pose_sample* new_pose = new pose_sample{
-		.pose = {
-			.orientation = {
-				/* I think these next three coords are supposed to be
-				   a unit vector, so I will use [1, 0, 0] */
-				1,
-				0,
-				0,
-				0, /* w last, since this is Quaternion{const Scalar *data} */
-			},
-			.position = {
-				.x = 0,
-				.y = 0,
-				.z = 6,
-			},
-		},
-		.sample_time = {},
-	};
+	pose_type* new_pose = new pose_type{std::chrono::system_clock::now(), Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
 	pose_ev->put(new_pose);
 	auto this_slam1 = new slam1{std::move(camera_ev), std::move(pose_ev)};
 	return this_slam1;

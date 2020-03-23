@@ -17,12 +17,12 @@
 using namespace ILLIXR;
 using namespace linalg::aliases;
 
-std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
+std::ostream& operator<<(std::ostream& out, const pose_type& pose) {
 	return out << "pose: quat(xyzw){"
-			   << pose.orientation.x << ", "
-			   << pose.orientation.y << ", "
-			   << pose.orientation.z << ", "
-			   << pose.orientation.w << "}";
+			   << pose.orientation.x() << ", "
+			   << pose.orientation.y() << ", "
+			   << pose.orientation.z() << ", "
+			   << pose.orientation.w() << "}";
 }
 
 class timewarp_gl : public component {
@@ -45,7 +45,7 @@ public:
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
+		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
@@ -70,7 +70,7 @@ private:
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
 
 	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose_sample>> _m_pose;
+	std::unique_ptr<reader_latest<pose_type>> _m_pose;
 
 	// Switchboard plug for global config data, including GLFW/GPU context handles.
 	std::unique_ptr<reader_latest<global_config>> _m_config;
@@ -419,14 +419,13 @@ public:
 	}
 
 	
-	void GetViewMatrixFromPose( ksAlgebra::ksMatrix4x4f* viewMatrix, const pose_t& pose )
-	{
+	void GetViewMatrixFromPose( ksAlgebra::ksMatrix4x4f* viewMatrix, const pose_type& pose) {
 		// Cast from the "standard" quaternion to our own, proprietary, Oculus-flavored quaternion
 		auto latest_quat = ksAlgebra::ksQuatf {
-			.x = pose.orientation.x,
-			.y = pose.orientation.y,
-			.z = pose.orientation.z,
-			.w = pose.orientation.w
+			.x = pose.orientation.x(),
+			.y = pose.orientation.y(),
+			.z = pose.orientation.z(),
+			.w = pose.orientation.w()
 		};
 		ksAlgebra::ksMatrix4x4f_CreateFromQuaternion( viewMatrix, &latest_quat);
 	}
@@ -457,10 +456,7 @@ public:
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
 		ksAlgebra::ksMatrix4x4f viewMatrix;
-		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
-
-
-		
+		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -476,7 +472,7 @@ public:
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
 		auto latest_pose = _m_pose->get_latest_ro();
-		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose->pose);
+		GetViewMatrixFromPose(&viewMatrixBegin, *latest_pose);
 
 		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
 
@@ -597,7 +593,7 @@ extern "C" component* create_component(switchboard* sb) {
 	auto frame_ev = sb->subscribe_latest<rendered_frame>("eyebuffer");
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_sample>("fast_pose");
+	auto pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
 
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");

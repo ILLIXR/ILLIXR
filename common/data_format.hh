@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <memory>
 
 #include <opencv2/core/mat.hpp>
 #include <eigen3/Eigen/Dense>
@@ -15,8 +16,8 @@ namespace ILLIXR {
 
 	typedef struct {
 		time_type time;
-		Eigen::Vector3d angular_v;
-		Eigen::Vector3d linear_a;
+		Eigen::Vector3f angular_v;
+		Eigen::Vector3f linear_a;
 	} imu_type;
 
 	typedef struct {
@@ -26,9 +27,9 @@ namespace ILLIXR {
 	} cam_type;
 
 	typedef struct {
-		Eigen::Vector3d position;
-		Eigen::Quaterniond orientation;
 		time_type time; 
+		Eigen::Vector3f position;
+		Eigen::Quaternionf orientation;
 	} pose_type;
 
 	typedef struct {
