@@ -72,11 +72,9 @@ private:
 	int state;
 
 	quaternion_t generateDummyOrientation(float time){
-		float rollIsPitch = 0.3f * sinf( time * 2.5f ) * 0.5f;
+		float rollIsPitch = 0.3f * sinf( time * 2.5f ) * 0.0f;
 		float yawIsRoll = 0;
 		float pitchIsYaw = 0.3f * cosf( time * 2.5f ) * 0.5f - 0.5f;
-
-		printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
 

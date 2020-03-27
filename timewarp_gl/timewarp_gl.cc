@@ -492,7 +492,7 @@ public:
 		// Every second, toggle timewarp on and off
 		// to show the effect of the reprojection.
 		/*
-		if((int)glfwGetTime() % 2 == 0){
+		if(glfwGetTime() < 9.0){
 			viewMatrixBegin = viewMatrix;
 			viewMatrixEnd = viewMatrix;
 		}

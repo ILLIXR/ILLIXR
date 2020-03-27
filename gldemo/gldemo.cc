@@ -89,7 +89,7 @@ public:
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
 			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
-			std::this_thread::sleep_for(150ms);
+			std::this_thread::sleep_for(100ms);
 			glUseProgram(demoShaderProgram);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
