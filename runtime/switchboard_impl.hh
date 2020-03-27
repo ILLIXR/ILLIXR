@@ -6,8 +6,9 @@
 #include <iostream>
 #include <cassert>
 
-#include <unistd.h>
-#include <signal.h>
+#include "concurrentqueue.h"
+template <typename T>
+using queue = moodycamel::ConcurrentQueue<T>;
 
 namespace ILLIXR {
 
@@ -60,12 +61,13 @@ namespace ILLIXR {
 				/* TODO: (feature:allocate) Free old.*/
 				/* TODO: (optimization:free-list) return to free-list. */
 
-				for (const auto& callback __attribute__((unused)) : _m_topic->_m_callbacks) {
-					throw std::runtime_error{"this doesn't work yet"};
-					/* TODO: (feature) I need to schedule these
-					   callbacks to run on a thread-worker.*/
-				}
+				assert((
+					_m_topic->_m_queue.enqueue(
+						std::make_pair(_m_topic->_m_name, contents)
+					)
+				));
 			}
+
 			topic_writer(topic* topic) : _m_topic{topic} { }
 			virtual ~topic_writer() { }
 
@@ -89,14 +91,16 @@ namespace ILLIXR {
 			return std::make_unique<topic_reader_latest>(this);
 		}
 
-		void schedule(std::function<void()> callback) {
+		void schedule(std::function<void(const void*)> callback) {
 			_m_callbacks.push_back(callback);
 		}
 
 		std::size_t ty() { return _m_ty; }
 
-		topic(std::size_t ty)
+		topic(std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
 			: _m_ty{ty}
+			, _m_name{name}
+			, _m_queue{queue}
 		{ }
 
 		~topic() {
@@ -107,13 +111,19 @@ namespace ILLIXR {
 			/* TODO: (optimization:free-list) free the elements of free-list. */
 		}
 
+		const std::vector<std::function<void(const void*)>>& callbacks() {
+			return _m_callbacks;
+		}
+
 	private:
 
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
-		std::vector<std::function<void()>> _m_callbacks;
+		std::vector<std::function<void(const void*)>> _m_callbacks;
+		const std::string _m_name;
+		queue<std::pair<std::string, const void*>>& _m_queue;
 		/* - const because nobody should write to the _m_latest in
-		   place.
+		   place. This is not thread-safe.
 		   - atomic because it will be accessed from different threads. */
 		/* TODO: (optimization) use unique_ptr when there is only one
 		   subscriber. */
@@ -121,20 +131,52 @@ namespace ILLIXR {
 
 	};
 
+	const size_t MAX_EVENTS = 127;
+	const size_t MAX_THREADS = 2;
+
 	class switchboard_impl : public switchboard {
 
 	public:
 
-		virtual ~switchboard_impl() { }
+		switchboard_impl()
+		{
+			for (size_t i = 0; i < MAX_THREADS; ++i) {
+				_m_threads.push_back(std::thread{[this]() {
+					this->check_queues();
+				}});
+			}
+		}
+
+		virtual void stop() {
+			_m_terminate.store(true);
+			for (std::thread& thread : _m_threads) {
+				thread.join();
+			}
+		}
+
+		virtual ~switchboard_impl() {
+		}
 
 	private:
-		virtual void _p_schedule(const std::string& name, std::function<void()> callback, std::size_t ty) {
-			_m_registry.try_emplace(name, ty);
+
+		void check_queues() {
+			while (!_m_terminate.load()) {
+				std::pair<std::string, const void*> t;
+				if (_m_queue.try_dequeue(t)) {
+					for (std::function<void(const void*)> callback : _m_registry.at(t.first).callbacks()) {
+						callback(t.second);
+					}
+				}
+			}
+		}
+
+		virtual void _p_schedule(const std::string& name, std::function<void(const void*)> callback, std::size_t ty) {
+			_m_registry.try_emplace(name, ty, name, _m_queue);
 			_m_registry.at(name).schedule(callback);
 		}
 
 		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& name, std::size_t ty) {
-			_m_registry.try_emplace(name, ty);
+			_m_registry.try_emplace(name, ty, name, _m_queue);
 			topic& topic = _m_registry.at(name);
 			assert(topic.ty() == ty);
 			return std::unique_ptr<writer<void>>(topic.get_writer().release());
@@ -144,7 +186,7 @@ namespace ILLIXR {
 		}
 
 		virtual std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& name, std::size_t ty) {
-			_m_registry.try_emplace(name, ty);
+			_m_registry.try_emplace(name, ty, name, _m_queue);
 			topic& topic = _m_registry.at(name);
 			assert(topic.ty() == ty);
 			return std::unique_ptr<reader_latest<void>>(topic.get_reader_latest().release());
@@ -154,23 +196,13 @@ namespace ILLIXR {
 		}
 
 		std::unordered_map<std::string, topic> _m_registry;
+		std::vector<std::thread> _m_threads;
+		std::atomic<bool> _m_terminate {false};
+		queue<std::pair<std::string, const void*>> _m_queue;
+
 	};
 
 	std::unique_ptr<switchboard> create_switchboard() {
-		// return std::move(std::unique_ptr<switchboard>{new switchboard_impl});
-
-		// return std::move(std::unique_ptr<switchboard>{
-		// 	static_cast<switchboard*>(std::make_unique<switchboard_impl>().release())
-		// });
-
-		// return std::move(std::unique_ptr<switchboard>{
-		// 	static_cast<switchboard*>(new switchboard_impl)
-		// });
-
-		// return std::unique_ptr<switchboard>{
-		// 	static_cast<switchboard*>(new switchboard_impl)
-		// };
-
 		return std::unique_ptr<switchboard>{new switchboard_impl};
 	}
 }
