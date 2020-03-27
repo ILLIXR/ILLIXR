@@ -37,7 +37,7 @@ public:
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
-			std::this_thread::sleep_for(300ms);
+			std::this_thread::sleep_for(100ms);
 
 			glUseProgram(demoShaderProgram);
 
@@ -337,7 +337,7 @@ extern "C" component* create_component(switchboard* sb) {
 	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_type>("slow_pose");
+	auto pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
 
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");

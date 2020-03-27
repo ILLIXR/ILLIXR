@@ -67,5 +67,9 @@ Eigen::Vector3f kalman_filter::predict_values(imu_type data) {
 	project. The following step ensures that the gyro 
 	integration error does not affect the calculation of 
 	innovation, and thus the estimates of roll and pitch. */
+
+    //float phi_degrees = _phi_estimate * (180.0 / M_PI);
+    //float theta_degrees = _theta_estimate * (180.0 / M_PI);
+
     return Eigen::Vector3f(_phi_estimate, data.angular_v[1], _theta_estimate);
 }

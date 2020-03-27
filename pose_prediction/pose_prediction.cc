@@ -112,8 +112,10 @@ private:
             fresh_imu_measurement.linear_a[2]
         };
 
-        // _latest_gyro = _filter->predict_values(fresh_imu_measurement);
-        _latest_gyro = Eigen::Vector3f(fresh_imu_measurement.angular_v[0], fresh_imu_measurement.angular_v[1], fresh_imu_measurement.angular_v[2]);
+        //_latest_gyro = _filter->predict_values(fresh_imu_measurement);
+        _latest_gyro = Eigen::Vector3f{fresh_imu_measurement.angular_v[0], 
+                                        fresh_imu_measurement.angular_v[1], 
+                                        fresh_imu_measurement.angular_v[2] };
 
         float time_difference = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
                                 (fresh_imu_measurement.time - _latest_pose.time).count()) / 1000000000.0f;
@@ -146,9 +148,11 @@ private:
 
         // Convert the quaternion to euler angles and calculate the new rotation
         Eigen::Vector3f orientation_euler = _latest_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+        
         orientation_euler(0) += _latest_gyro[0] * time_delta;
         orientation_euler(1) += _latest_gyro[1] * time_delta;
         orientation_euler(2) += _latest_gyro[2] * time_delta;
+        
 
         // Convert euler angles back into a quaternion
         Eigen::Quaternionf predicted_orientation = Eigen::AngleAxisf(orientation_euler(0), Eigen::Vector3f::UnitX())
