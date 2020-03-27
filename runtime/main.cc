@@ -111,14 +111,15 @@ int main(int argc, char** argv) {
 
 		auto pose_sub = sb->subscribe_latest<pose_type>("pose");
 
-		for (int i = 0; i < 32; ++i) {
+		for (int i = 0; i < 200; ++i) {
 			int delay = distribution(generator);
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 			auto cur_pose = pose_sub->get_latest_ro();
 
 			// If there is no writer, cur_pose might be null
 			if (cur_pose) {
-				std::cout << "Application receives cur_pose = " << cur_pose << std::endl;
+				auto r = cur_pose->position;
+				std::cout << "position = [" << r[0] << ", " << r[1] << ", " << r[2] << "]" << std::endl;
 			} else {
 				std::cout << "No cur_pose published yet" << std::endl;
 			}

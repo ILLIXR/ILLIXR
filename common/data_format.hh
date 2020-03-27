@@ -8,9 +8,6 @@
 #include <opencv2/core/mat.hpp>
 #include <eigen3/Eigen/Dense>
 
-#include "GL/gl.h"
-#include <GLFW/glfw3.h> // This is... ew. Look into making this more modular/generalized.
-
 namespace ILLIXR {
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
 
