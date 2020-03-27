@@ -19,12 +19,34 @@ using namespace ILLIXR;
 static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
+// Monado-style eyebuffers:
+// These are two eye textures; however, each eye texture
+// represnts a swapchain. eyeTextures[0] is a swapchain of
+// left eyes, and eyeTextures[1] is a swapchain of right eyes
+
+// ILLIXR-style eyebuffers:
+// These are two eye textures; however, each eye texture
+// really contains two eyes. The reason we have two of
+// them is for double buffering the Switchboard connection.
+
+// If this is defined, gldemo will use Monado-style eyebuffers
+#define USE_ALT_EYE_FORMAT
+
 class gldemo : public component {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
+	#ifdef USE_ALT_EYE_FORMAT
+	gldemo(std::unique_ptr<writer<rendered_frame_alt>>&& frame_plug,
+		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
+		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
+		: _m_eyebuffer{std::move(frame_plug)}
+		, _m_pose{std::move(pose_plug)}
+		, _m_config{std::move(config_plug)}
+	{ }
+	#else
 	gldemo(std::unique_ptr<writer<rendered_frame>>&& frame_plug,
 		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
@@ -32,7 +54,7 @@ public:
 		, _m_pose{std::move(pose_plug)}
 		, _m_config{std::move(config_plug)}
 	{ }
-
+	#endif
 
 	void draw_scene() {
 
@@ -144,6 +166,33 @@ public:
 			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
 
 			glBindVertexArray(demo_vao);
+
+			#ifdef USE_ALT_EYE_FORMAT
+
+			// Draw things to left eye.
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[0]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0, buffer_to_use);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			draw_scene();
+
+			
+			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
+			
+			
+			// Draw things to right eye.
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[1]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0, buffer_to_use);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			draw_scene();
+
+			#else
 			
 			// Draw things to left eye.
 			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
@@ -168,6 +217,8 @@ public:
 
 			draw_scene();
 
+			#endif
+
 			/*
 			glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
 			glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -181,12 +232,26 @@ public:
 			glFlush();
 
 			// Publish our submitted frame handle to Switchboard!
-			auto frame = new rendered_frame;
-			frame->texture_handle = eyeTextures[buffer_to_use];
+			#ifdef USE_ALT_EYE_FORMAT
+			auto frame = new rendered_frame_alt;
+			frame->texture_handles[0] = eyeTextures[0];
+			frame->texture_handles[1] = eyeTextures[1];
+			frame->swap_indices[0] = buffer_to_use;
+			frame->swap_indices[1] = buffer_to_use;
 			auto pose = _m_pose->get_latest_ro();
 			frame->render_pose = *pose;
 			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
+			#else
+			auto frame = new rendered_frame;
+			frame->texture_handle = eyeTextures[buffer_to_use];
+			
+			auto pose = _m_pose->get_latest_ro();
+			frame->render_pose = *pose;
+			assert(pose);
+			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
+			#endif
+
 			_m_eyebuffer->put(frame);
 			
 		}
@@ -200,7 +265,11 @@ private:
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
 	// correct eye/framebuffer in the "swapchain".
+	#ifdef USE_ALT_EYE_FORMAT
+	std::unique_ptr<writer<rendered_frame_alt>> _m_eyebuffer;
+	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
+	#endif
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_sample>> _m_pose;
@@ -210,9 +279,9 @@ private:
 
 	GLFWwindow* hidden_window;
 
-	// These are two eye textures; however, each eye texture
-	// really contains two eyes. The reason we have two of
-	// them is for double buffering the Switchboard connection.
+	
+	
+
 	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;
 	GLuint eyeTextureDepthTarget;
@@ -442,7 +511,11 @@ extern "C" component* create_component(switchboard* sb) {
 	   returns handles to those topics. */
 	
 	// We publish application frames to Switchboard.
+	#ifdef USE_ALT_EYE_FORMAT
+	auto frame_ev = sb->publish<rendered_frame_alt>("eyebuffer");
+	#else
 	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
+	#endif
 
 	// We sample the up-to-date, predicted pose.
 	auto pose_ev = sb->subscribe_latest<pose_sample>("pose");

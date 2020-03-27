@@ -41,8 +41,6 @@ public:
 		pose* buf = std::any_cast<pose*>(_m_pose->allocate());
 		*/
 
-		std::cout << "Slam" << std::endl;
-
 		// RT will delete this memory when it gets replaced with a newer value.
 		pose_sample* new_pose = new pose_sample;
 		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
@@ -108,11 +106,6 @@ extern "C" component* create_component(switchboard* sb) {
 	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
 	pose_sample* new_pose = new pose_sample{
 		.pose = {
-			.position = {
-				.x = 0,
-				.y = 0,
-				.z = 6,
-			},
 			.orientation = {
 				/* I think these next three coords are supposed to be
 				   a unit vector, so I will use [1, 0, 0] */
@@ -121,6 +114,11 @@ extern "C" component* create_component(switchboard* sb) {
 				0,
 				0, /* w last, since this is Quaternion{const Scalar *data} */
 			},
+			.position = {
+				.x = 0,
+				.y = 0,
+				.z = 6,
+			}
 		},
 		.sample_time = {},
 	};
