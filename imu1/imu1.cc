@@ -11,16 +11,18 @@ public:
 	imu1(std::unique_ptr<writer<imu_type>>&& output)
 		: _m_output{std::move(output)}
 	{
+		start_time = std::chrono::system_clock::now();
 		_p_compute_one_iteration();
 	}
 
 	virtual void _p_compute_one_iteration() override {
 		using namespace std::chrono_literals;
 		std::this_thread::sleep_for(5ms);
+		std::chrono::duration<float> this_time = std::chrono::system_clock::now() - start_time;
 		auto buf = new imu_type {
 			std::chrono::system_clock::now(),
-			{0, 0, 1},
-			{0, 0, 1},
+			{0.5, 0.5, 0.0},
+			{0.0, 0.0, 0},
 		};
 		_m_output->put(buf);
 	}
@@ -29,6 +31,7 @@ public:
 
 private:
 	std::unique_ptr<writer<imu_type>> _m_output;
+	std::chrono::time_point<std::chrono::system_clock> start_time;
 };
 
 extern "C" component* create_component(switchboard* sb) {

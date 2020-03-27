@@ -102,7 +102,10 @@ private:
             fresh_imu_measurement.linear_a[2]
         };
 
-        _latest_gyro = _filter->predict_values(fresh_imu_measurement);
+        //_latest_gyro = _filter->predict_values(fresh_imu_measurement);
+        _latest_gyro = Eigen::Vector3f{fresh_imu_measurement.angular_v[0], 
+                                        fresh_imu_measurement.angular_v[1], 
+                                        fresh_imu_measurement.angular_v[2] };
 
         float time_difference = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
                                 (fresh_imu_measurement.time - _latest_pose.time).count()) / 1000000000.0f;
@@ -117,7 +120,8 @@ private:
 		std::cout << "latest linear acc " << _latest_acc[0] << ", " << _latest_acc[1] << ", " << _latest_acc[2] << std::endl;
         std::cout << "latest vel " << _latest_vel[0] << ", " << _latest_vel[1] << ", " << _latest_vel[2] << std::endl;
 		std::cout << "predicted position " << _latest_pose.position[0] << ", " << _latest_pose.position[1] << ", " << _latest_pose.position[2] << std::endl;
-		_m_fast_pose->put(new pose_type(_latest_pose));
+		std::cout << "predicted orientation " << _latest_pose.orientation.w() << std::endl;
+        _m_fast_pose->put(new pose_type(_latest_pose));
     }
 
     // Helper that does all the math to calculate the poses
@@ -125,9 +129,11 @@ private:
 
         // Convert the quaternion to euler angles and calculate the new rotation
         Eigen::Vector3f orientation_euler = _latest_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+        
         orientation_euler(0) += _latest_gyro[0] * time_delta;
         orientation_euler(1) += _latest_gyro[1] * time_delta;
         orientation_euler(2) += _latest_gyro[2] * time_delta;
+        
 
         // Convert euler angles back into a quaternion
         Eigen::Quaternionf predicted_orientation = Eigen::AngleAxisf(orientation_euler(0), Eigen::Vector3f::UnitX())

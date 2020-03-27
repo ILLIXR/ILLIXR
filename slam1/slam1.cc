@@ -26,7 +26,7 @@ public:
 		// Until we have pose prediction, we'll run our magical
 		// make-believe SLAM system at an unreasonably high
 		// frequency, like 120hz!
-		std::this_thread::sleep_for(20ms);
+		std::this_thread::sleep_for(500ms);
 
 		/* The component can read the latest value from its
 		   subscription. */
@@ -69,9 +69,9 @@ private:
 	int state;
 
 	Eigen::Quaternionf generateDummyOrientation(float time) {
-		float rollIsPitch = 0.3f * sinf( time * 1.5f );
+		float rollIsPitch = 0.3f * sinf( time * 1.5f ) * 0.0f;
 		float yawIsRoll = 0;
-		float pitchIsYaw = 0.3f * cosf( time * 1.5f );
+		float pitchIsYaw = 0.3f * cosf( time * 1.5f ) * 0.0f;
 		// printf("Yaw: %f\n", pitchIsYaw);
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
