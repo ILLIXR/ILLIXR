@@ -1,33 +1,23 @@
 #!/bin/bash
+{
+
 set -o noclobber -o errexit -o nounset -o xtrace
 
 # cd to the root of the project
 cd "$(dirname "${0}")"
 
 CXX=${CXX-clang++}
+clean=true
+extra_flags=
 
-# cd slam1
-# if [ ! -e "okvis/build" ]
-# then
-# 	if [ ! -e "okvis" ]
-# 	then
-# 		git submodule update --init okvis
-# 	fi
-# 	cd okvis && ./build.sh && cd ..
-# fi
-# rm -rf build && mkdir build && cd build && cmake -DOKVIS_INSTALLATION="$(pwd)"/okvis/install .. && make VERBOSE=1 && cd ..
-# # "${CXX}" slam1.cc ./okvis/install/lib/*.a -L./okvis/install/lib/ -Iokvis/install/include -std=c++2a -I /usr/include/eigen3/ -lpthread -shared -o libslam1.so -fpic
-# cd ..
-
-path="${PWD}"
-cd slam2
-source /opt/ros/melodic/setup.bash
-mkdir -p /tmp/workspace/catkin_ws_ov/src/
-# cp -L -r open_vins /tmp/workspace/catkin_ws_ov/src/
-rsync -avzL open_vins /tmp/workspace/catkin_ws_ov/src
-cd /tmp/workspace/catkin_ws_ov/
-catkin build -DCMAKE_BUILD_TYPE=Debug
-cd "${path}"
+# Necessary for Open VINS standalone build
+cd slam2/open_vins/ov_standalone/ov_msckf/
+rm -rf build/
+mkdir build/
+cd build/
+cmake ..
+make -j8
+cd ../../../../..
 
 cd offline_imu_cam
 "${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
@@ -37,29 +27,19 @@ cd runtime
 "${CXX}" -g main.cc -std=c++2a -pthread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -o main.exe
 cd ..
 
-cd timewarp_gl
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} timewarp_gl
-cd ..
+# cd timewarp_gl
+# [ -n "${clean}" ] && bazel clean
+# bazel build ${extra_flags} timewarp_gl
+# cd ..
 
-cd gldemo
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} gldemo
-cd ..
+# cd gldemo
+# [ -n "${clean}" ] && bazel clean
+# bazel build ${extra_flags} gldemo
+# cd ..
 
 cd pose_prediction
 [ -n "${clean}" ] && bazel clean
 bazel build ${extra_flags} pose_prediction
-cd ..
-
-cd imu1
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} imu1
-cd ..
-
-cd runtime
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} main
 cd ..
 
 if [ ! -e "data" ]
@@ -79,13 +59,16 @@ fi
 # separately or downloads binaries from the devs. All the user needs
 # is all each .so files and the runtime binary.
 
-./runtime/bazel-bin/main \
-	cam1/bazel-bin/libcam1.so \
-	imu1/bazel-bin/libimu1.so \
-	slam1/bazel-bin/libslam1.so \
-	pose_prediction/bazel-bin/libpose_prediction.so \
-	timewarp_gl/bazel-bin/libtimewarp_gl.so \
-	gldemo/bazel-bin/libgldemo.so \
+./runtime/main.exe \
+	slam2/open_vins/ov_standalone/ov_msckf/build/libslam2.so \
 	offline_imu_cam/liboffline_imu_cam.so \
-	/tmp/workspace/catkin_ws_ov/devel/lib/libslam2.so \
+	pose_prediction/bazel-bin/libpose_prediction.so \
 ;
+	# cam1/bazel-bin/libcam1.so \
+	# imu1/bazel-bin/libimu1.so \
+	# slam1/bazel-bin/libslam1.so \
+	# timewarp_gl/bazel-bin/libtimewarp_gl.so \
+	# gldemo/bazel-bin/libgldemo.so \
+
+exit;
+}

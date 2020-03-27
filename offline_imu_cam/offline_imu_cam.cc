@@ -47,8 +47,8 @@ public:
 		if (sensor_datum.imu0) {
 			_m_imu0->put(new imu_type{
 				ts,
-				sensor_datum.imu0.value().angular_v,
-				sensor_datum.imu0.value().linear_a,
+				(sensor_datum.imu0.value().angular_v).cast<float>(),
+				(sensor_datum.imu0.value().linear_a).cast<float>(),
 			});
 		}
 		if (sensor_datum.cam0) {
@@ -60,6 +60,7 @@ public:
 			});
 		}
 
+		last_time = target_ts;
 		++_m_sensor_data_it;
 	}
 
@@ -76,13 +77,11 @@ private:
 };
 
 extern "C" component* create_component(switchboard* sb) {
-	std::cout << "o.cc.0" << std::endl;
 	auto imu0_ev = sb->publish<imu_type>("imu0");
-	std::cout << "o.cc.1" << std::endl;
+	imu0_ev->put(new imu_type{std::chrono::system_clock::now(), Eigen::Vector3f{0, 0, 0}, Eigen::Vector3f{0, 0, 0}});
 	assert(imu0_ev);
+	
 	auto cams_ev = sb->publish<cam_type>("cams");
-	std::cout << "o.cc.2" << std::endl;
 	auto f = new offline_imu_cam {std::move(imu0_ev), std::move(cams_ev)};
-	std::cout << "o.cc.3" << std::endl;
 	return f;
 }

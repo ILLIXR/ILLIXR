@@ -1,5 +1,6 @@
 #include <vector>
 #include <chrono>
+#include <math.h>
 #include "kalman.hh"
 #include "common/component.hh"
 #include "common/switchboard.hh"
@@ -14,9 +15,11 @@ public:
     // references to the switchboard plugs, so the component can read the
     // data whenever it needs to.
     pose_prediction(std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
+      std::unique_ptr<reader_latest<bool>>&& slam_ready,
 	  std::unique_ptr<reader_latest<imu_type>>&& imu_plug,
       std::unique_ptr<writer<pose_type>>&& predicted_pose_plug)
 	: _m_slow_pose{std::move(pose_plug)}
+    , _m_slam_ready{std::move(slam_ready)}
 	, _m_imu{std::move(imu_plug)}
     , _m_fast_pose{std::move(predicted_pose_plug)} {
 
@@ -33,6 +36,12 @@ public:
 
     // Overridden method from the component interface. This specifies one interation of the main loop 
     virtual void _p_compute_one_iteration() override {
+        auto is_slam_ready = _m_slam_ready->get_latest_ro();
+        assert(is_slam_ready != NULL);
+        if (*is_slam_ready == false) {
+            return;
+        }
+
 		auto pose_sample_nullable = _m_slow_pose->get_latest_ro();
 		assert(pose_sample_nullable != NULL);
 
@@ -63,6 +72,7 @@ public:
 private:
     // Switchboard plugs for writing / reading data.
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
+    std::unique_ptr<reader_latest<bool>> _m_slam_ready;
     std::unique_ptr<reader_latest<imu_type>> _m_imu;
     std::unique_ptr<writer<pose_type>> _m_fast_pose;
 
@@ -78,7 +88,7 @@ private:
     // Helper that will push to the SB if a newer pose is pulled from the SB/SLAM
     void _update_slow_pose(const pose_type fresh_pose) {
         float time_difference = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
-												   (fresh_pose.time - _latest_pose.time).count()) / 1000000000.0f;
+												   (fresh_pose.time - _last_slow_pose_update_time).count()) / 1000000000.0f;
 
         // Update the velocity with the pose position difference over time. This is done because
         // Accelerometer readings have lots of noise and will lead to bad dead reckoning
@@ -102,7 +112,8 @@ private:
             fresh_imu_measurement.linear_a[2]
         };
 
-        _latest_gyro = _filter->predict_values(fresh_imu_measurement);
+        // _latest_gyro = _filter->predict_values(fresh_imu_measurement);
+        _latest_gyro = Eigen::Vector3f(fresh_imu_measurement.angular_v[0], fresh_imu_measurement.angular_v[1], fresh_imu_measurement.angular_v[2]);
 
         float time_difference = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
                                 (fresh_imu_measurement.time - _latest_pose.time).count()) / 1000000000.0f;
@@ -114,10 +125,20 @@ private:
         _latest_pose = _calculate_pose(time_difference);
         _latest_pose.time = fresh_imu_measurement.time;
 
-		std::cout << "latest linear acc " << _latest_acc[0] << ", " << _latest_acc[1] << ", " << _latest_acc[2] << std::endl;
-        std::cout << "latest vel " << _latest_vel[0] << ", " << _latest_vel[1] << ", " << _latest_vel[2] << std::endl;
-		std::cout << "predicted position " << _latest_pose.position[0] << ", " << _latest_pose.position[1] << ", " << _latest_pose.position[2] << std::endl;
-		_m_fast_pose->put(new pose_type(_latest_pose));
+		// std::cout << "latest linear acc " << _latest_acc[0] << ", " << _latest_acc[1] << ", " << _latest_acc[2] << std::endl;
+        // std::cout << "latest vel " << _latest_vel[0] << ", " << _latest_vel[1] << ", " << _latest_vel[2] << std::endl;
+        std::cout << "Predicted Orientation " << _latest_gyro[0] << ", " << _latest_gyro[1] << ", " << _latest_gyro[2] << std::endl;
+		std::cout << "Predicted Position " << _latest_pose.position[0] << ", " << _latest_pose.position[1] << ", " << _latest_pose.position[2] << std::endl;
+		
+        assert(isfinite(_latest_pose.orientation.w()));
+        assert(isfinite(_latest_pose.orientation.x()));
+        assert(isfinite(_latest_pose.orientation.y()));
+        assert(isfinite(_latest_pose.orientation.z()));
+        assert(isfinite(_latest_pose.position[0]));
+        assert(isfinite(_latest_pose.position[1]));
+        assert(isfinite(_latest_pose.position[2]));
+
+        _m_fast_pose->put(new pose_type(_latest_pose));
     }
 
     // Helper that does all the math to calculate the poses
@@ -149,7 +170,8 @@ extern "C" component* create_component(switchboard* sb) {
 	/* First, we declare intent to read/write topics. Switchboard
 	   returns handles to those topics. */
     auto slow_pose_plug = sb->subscribe_latest<pose_type>("slow_pose");
-	auto imu_plug = sb->subscribe_latest<imu_type>("imu");
+    auto slam_ready = sb->subscribe_latest<bool>("slam_ready");
+	auto imu_plug = sb->subscribe_latest<imu_type>("imu0");
 	auto fast_pose_plug = sb->publish<pose_type>("fast_pose");
 
 	/* This ensures pose is available at startup. */
@@ -157,5 +179,5 @@ extern "C" component* create_component(switchboard* sb) {
 	assert(nullable_pose != NULL);
 	fast_pose_plug->put(nullable_pose);
 
-	return new pose_prediction{std::move(slow_pose_plug), std::move(imu_plug), std::move(fast_pose_plug)};
+	return new pose_prediction{std::move(slow_pose_plug), std::move(slam_ready), std::move(imu_plug), std::move(fast_pose_plug)};
 }
