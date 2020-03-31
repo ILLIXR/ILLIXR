@@ -9,8 +9,10 @@ using namespace ILLIXR;
 
 class kalman_filter {
     public:
-        kalman_filter(std::chrono::time_point<std::chrono::system_clock> _init_time);
-        Eigen::Vector3f predict_values(imu_type);
+        kalman_filter();
+        Eigen::Vector3f predict_values(imu_type, float);
+        void add_estimate(imu_type);
+        void update_estimates(Eigen::Quaternionf);
 
     private:
         // We dont do anything with these here but they should be calculated per device which is
@@ -20,14 +22,13 @@ class kalman_filter {
 
         float _phi_estimate = 0;
         float _theta_estimate = 0;
+        float _rho_est = 0;
 
         Eigen::MatrixXf C{2, 4};
         Eigen::MatrixXf P = Eigen::MatrixXf::Identity(4, 4);
         Eigen::MatrixXf Q = Eigen::MatrixXf::Identity(4, 4);
         Eigen::MatrixXf R = Eigen::MatrixXf::Identity(2, 2);
         Eigen::MatrixXf _state_estimate{4, 1};
-        
-        std::chrono::time_point<std::chrono::system_clock> _last_measurement;
 };
 
 #endif
