@@ -38,6 +38,7 @@ void kalman_filter::update_estimates(Eigen::Quaternionf fresh_orientation) {
     _state_estimate = fresh_orientation.toRotationMatrix().eulerAngles(0, 1, 2);
 }
 
+// We have to pass in an accel rotated to fit world coordinates because roll is bound by -PI and PI
 Eigen::Vector3f kalman_filter::predict_values(imu_type data_input, Eigen::Vector3f rotated_accel, float dt) {
     imu_type data = data_input;
     rotated_accel -= _linear_accel_bias;
@@ -59,7 +60,6 @@ Eigen::Vector3f kalman_filter::predict_values(imu_type data_input, Eigen::Vector
         0, 0, dt;
 
     _state_estimate = A * _state_estimate + B * data.angular_v;
-    std::cout << "State: " << _state_estimate(0) << ", " << _state_estimate(1) << ", " << _state_estimate(2) << std::endl;
     P = A * (P * A.transpose()) + Q;
 
     Eigen::MatrixXf measurement{3,1};
@@ -68,14 +68,8 @@ Eigen::Vector3f kalman_filter::predict_values(imu_type data_input, Eigen::Vector
                 yaw;
 
     Eigen::MatrixXf y_tilde = measurement - _state_estimate;
-    std::cout << "RPY: " << roll << ", " << pitch << ", " << yaw << std::endl;
-
     Eigen::MatrixXf S = P + R;
     Eigen::MatrixXf K = P * (S.inverse());
-    std::cout << K(0, 0) << " " << K(0, 1) << ", " << K(0, 2) << std::endl;
-    std::cout << K(1, 0) << " " << K(1, 1) << ", " << K(1, 2) << std::endl;
-    std::cout << K(2, 0) << " " << K(2, 1) << ", " << K(2, 2) << std::endl;
-
     _state_estimate += K * y_tilde;
 
     P = (Eigen::MatrixXf::Identity(3, 3) - K) * P;

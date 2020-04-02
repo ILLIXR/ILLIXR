@@ -104,9 +104,7 @@ private:
 
         Eigen::Vector3f orientation_euler = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
-        std::cout << "New Velocity: " << _fast_linear_vel[0] << ", " << _fast_linear_vel[1] << ", " << _fast_linear_vel[2] << std::endl;
         std::cout << "New Position " << temp_pose->position[0] << ", " << temp_pose->position[1] << ", " << temp_pose->position[2] << std::endl;
-        std::cout << "New Orientation Euler: " << orientation_euler[0] << ", " << orientation_euler[1] << ", " << orientation_euler[2] << std::endl;
         std::cout << "New Orientation Quat: " << temp_pose->orientation.w() << ", " << temp_pose->orientation.x() << ", " << temp_pose->orientation.y() << ", " << temp_pose->orientation.z() << std::endl << std::endl;
 
         _m_fast_pose->put(new pose_type(fresh_pose));
@@ -124,10 +122,6 @@ private:
         _fast_linear_vel[0] += rotated_accel[0] * time_difference;
         _fast_linear_vel[1] += rotated_accel[1] * time_difference;
         _fast_linear_vel[2] += rotated_accel[2] * time_difference;
-
-        std::cout << "IMU Values: " << time_difference << ", " << rotated_accel[0] << ", " << rotated_accel[1] << ", " << rotated_accel[2] << std::endl;
-        std::cout << "IMU Velocity: " << _fast_linear_vel[0] << ", " << _fast_linear_vel[1] << ", " << _fast_linear_vel[2] << std::endl;
-        std::cout << "Rotational Vel: " << fresh_imu_measurement.angular_v[0] << ", " << fresh_imu_measurement.angular_v[1] << ", " << fresh_imu_measurement.angular_v[2] << std::endl;
 
         // Calculate the new pose transform by .5*a*t^2 + v*t + d
         Eigen::Vector3f predicted_position = {
@@ -154,7 +148,6 @@ private:
         assert(isfinite(_current_fast_pose.position[1]));
         assert(isfinite(_current_fast_pose.position[2]));
 
-        std::cout << "Predicted Orientation Euler: " << orientation_euler[0] << ", " << orientation_euler[1] << ", " << orientation_euler[2] << std::endl;
         std::cout << "Predicted Orientation Quat: " << predicted_orientation.w() << ", " << predicted_orientation.x() << ", " << predicted_orientation.y() << ", " << predicted_orientation.z() << std::endl;
 		std::cout << "Predicted Position " << _current_fast_pose.position[0] << ", " << _current_fast_pose.position[1] << ", " << _current_fast_pose.position[2] << std::endl << std::endl;
 		
