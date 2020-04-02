@@ -11,13 +11,13 @@ clean=true
 extra_flags=
 
 # Necessary for Open VINS standalone build
-# cd slam2/open_vins/ov_standalone/ov_msckf/
-# rm -rf build/
-# mkdir build/
-# cd build/
-# cmake ..
-# make -j8
-# cd ../../../../..
+cd slam2/open_vins/ov_standalone/ov_msckf/
+rm -rf build/
+mkdir build/
+cd build/
+cmake ..
+make -j8
+cd ../../../../..
 
 cd offline_imu_cam
 "${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
@@ -69,6 +69,7 @@ fi
 	# slam1/bazel-bin/libslam1.so \
 	# timewarp_gl/bazel-bin/libtimewarp_gl.so \
 	# gldemo/bazel-bin/libgldemo.so \
+	
 
 exit;
 }
