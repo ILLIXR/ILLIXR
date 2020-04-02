@@ -73,5 +73,5 @@ Eigen::Vector3f kalman_filter::predict_values(imu_type data_input, Eigen::Vector
     _state_estimate += K * y_tilde;
 
     P = (Eigen::MatrixXf::Identity(3, 3) - K) * P;
-    return Eigen::Vector3f(_state_estimate(0), _state_estimate(1), _state_estimate(2));
+    return _state_estimate;
 }

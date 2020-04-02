@@ -98,14 +98,21 @@ private:
         _fast_linear_vel[1] = (temp_pose->position[1] - _previous_slow_pose.position[1]) / time_difference;
         _fast_linear_vel[2] = (temp_pose->position[2] - _previous_slow_pose.position[2]) / time_difference;
 
+        Eigen::Vector3f new_slow_orientation = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+        Eigen::Vector3f latest_fast_orientation = _current_fast_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+
+        std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
+        std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0] 
+                << ", " << temp_pose->position[1] - _current_fast_pose.position[1]
+                << ", " << temp_pose->position[2] - _current_fast_pose.position[2] << std::endl;
+
+        std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0] 
+                << ", " << new_slow_orientation[1] - latest_fast_orientation[1]
+                << ", " << new_slow_orientation[2] - latest_fast_orientation[2] << std::endl;
+
         _previous_slow_pose = *temp_pose;
         _current_fast_pose = *temp_pose;
         _filter->update_estimates(temp_pose->orientation);
-
-        Eigen::Vector3f orientation_euler = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-        std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
-        std::cout << "New Position " << temp_pose->position[0] << ", " << temp_pose->position[1] << ", " << temp_pose->position[2] << std::endl;
-        std::cout << "New Orientation Quat: " << temp_pose->orientation.w() << ", " << temp_pose->orientation.x() << ", " << temp_pose->orientation.y() << ", " << temp_pose->orientation.z() << std::endl << std::endl;
 
         _m_fast_pose->put(new pose_type(fresh_pose));
     }
@@ -116,9 +123,6 @@ private:
                                 (fresh_imu_measurement.time - _current_fast_pose.time).count()) / 1000000000.0f;
 
         Eigen::Vector3f rotated_accel = _current_fast_pose.orientation.inverse() * fresh_imu_measurement.linear_a;
-        // rotated_accel[2] -= 9.81;
-
-        // Yes this is intentional, the IMU on the drone for this dataset is installed sideways so that X is up, Y is left, and Z is front
         _fast_linear_vel[0] += rotated_accel[0] * time_difference;
         _fast_linear_vel[1] += rotated_accel[1] * time_difference;
         _fast_linear_vel[2] += rotated_accel[2] * time_difference;
@@ -135,8 +139,8 @@ private:
 
         Eigen::Vector3f orientation_euler = _filter->predict_values(fresh_imu_measurement, rotated_accel, time_difference);
         Eigen::Quaternionf predicted_orientation = Eigen::AngleAxisf(orientation_euler(0), Eigen::Vector3f::UnitX())
-                * Eigen::AngleAxisf(orientation_euler(2), Eigen::Vector3f::UnitY())
-                * Eigen::AngleAxisf(orientation_euler(1), Eigen::Vector3f::UnitZ());
+                * Eigen::AngleAxisf(orientation_euler(1), Eigen::Vector3f::UnitY())
+                * Eigen::AngleAxisf(orientation_euler(2), Eigen::Vector3f::UnitZ());
 
         _current_fast_pose = pose_type{fresh_imu_measurement.time, predicted_position, predicted_orientation};
 
@@ -147,9 +151,6 @@ private:
         assert(isfinite(_current_fast_pose.position[0]));
         assert(isfinite(_current_fast_pose.position[1]));
         assert(isfinite(_current_fast_pose.position[2]));
-
-        std::cout << "Predicted Orientation Quat: " << predicted_orientation.w() << ", " << predicted_orientation.x() << ", " << predicted_orientation.y() << ", " << predicted_orientation.z() << std::endl;
-		std::cout << "Predicted Position " << _current_fast_pose.position[0] << ", " << _current_fast_pose.position[1] << ", " << _current_fast_pose.position[2] << std::endl << std::endl;
 		
 		_m_fast_pose->put(new pose_type(_current_fast_pose));
     }
