@@ -2,3 +2,4 @@ bazel-*
 /data.zip
 /data/
 *.exe
+*.so
