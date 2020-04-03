@@ -25,6 +25,9 @@ std::ostream& operator<<(std::ostream& out, const pose_type& pose) {
 			   << pose.orientation.w() << "}";
 }
 
+// If this is defined, gldemo will use Monado-style eyebuffers
+#define USE_ALT_EYE_FORMAT
+
 class timewarp_gl : public component {
 
 static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool visible)
@@ -44,6 +47,15 @@ public:
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
+	#ifdef USE_ALT_EYE_FORMAT
+	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame_alt>>&& frame_plug,
+		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
+		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
+		: _m_eyebuffer{std::move(frame_plug)}
+		, _m_pose{std::move(pose_plug)}
+		, _m_config{std::move(config_plug)}
+	{ }
+	#else
 	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame>>&& frame_plug,
 		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
@@ -51,6 +63,7 @@ public:
 		, _m_pose{std::move(pose_plug)}
 		, _m_config{std::move(config_plug)}
 	{ }
+	#endif
 
 private:
 
@@ -67,7 +80,11 @@ private:
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
+	#ifdef USE_ALT_EYE_FORMAT
+	std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
+	#else
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
+	#endif
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;
@@ -456,7 +473,7 @@ public:
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
 		ksAlgebra::ksMatrix4x4f viewMatrix;
-		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose);
+		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -495,6 +512,16 @@ public:
 		ksAlgebra::ksMatrix4x4f timeWarpStartTransform4x4;
 		ksAlgebra::ksMatrix4x4f timeWarpEndTransform4x4;
 
+		// DEMONSTRATION:
+		// Every second, toggle timewarp on and off
+		// to show the effect of the reprojection.
+		/*
+		if(glfwGetTime() < 9.0){
+			viewMatrixBegin = viewMatrix;
+			viewMatrixEnd = viewMatrix;
+		}
+		*/
+	
 		// Calculate timewarp transforms using predictive view transforms
 		CalculateTimeWarpTransform(&timeWarpStartTransform4x4, &basicProjection, &viewMatrix, &viewMatrixBegin);
 		CalculateTimeWarpTransform(&timeWarpEndTransform4x4, &basicProjection, &viewMatrix, &viewMatrixEnd);
@@ -514,13 +541,20 @@ public:
 
 		glUniform1i(eye_sampler_0, 0);
 
+		#ifndef USE_ALT_EYE_FORMAT
 		// Bind the shared texture handle
 		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
+		#endif
 
 		glBindVertexArray(tw_vao);
 
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
+
+			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
+			glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handles[eye]);
+			glUniform1i(tw_eye_index_unif, most_recent_frame->swap_indices[eye]);
+			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
 			// the distortion mesh for both eyes! They are contiguously
@@ -548,9 +582,12 @@ public:
 			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
 			glEnableVertexAttribArray(distortion_uv2_attr);
 
+
+			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
 			// Specify which layer of the eye texture we're going to be using.
 			// Each eye has its own layer.
 			glUniform1i(tw_eye_index_unif, eye);
+			#endif
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
 			// reused for both eyes. Therefore glDrawElements can be immediately called,
@@ -590,7 +627,11 @@ extern "C" component* create_component(switchboard* sb) {
 	   returns handles to those topics. */
 	
 	// We sample the eyebuffer.
+	#ifdef USE_ALT_EYE_FORMAT
+	auto frame_ev = sb->subscribe_latest<rendered_frame_alt>("eyebuffer");
+	#else
 	auto frame_ev = sb->subscribe_latest<rendered_frame>("eyebuffer");
+	#endif
 
 	// We sample the up-to-date, predicted pose.
 	auto pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
