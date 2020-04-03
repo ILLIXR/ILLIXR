@@ -143,7 +143,7 @@ public:
 
 				counter++;
 
-				Eigen::Quaternionf combinedQuat =  offsetQuat.inverse() * pose_ptr->orientation;
+				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
 
 				auto latest_quat = ksAlgebra::ksQuatf {
 					.x = combinedQuat.x(),
@@ -153,9 +153,9 @@ public:
 				};
 
 				auto latest_position = ksAlgebra::ksVector3f {
-					.x = pose_ptr->position[0],
-					.y = pose_ptr->position[1] + 5.0f,
-					.z = pose_ptr->position[2]
+					.x = pose_ptr->position[0] + 5.0f,
+					.y = pose_ptr->position[1] + 2.0f,
+					.z = pose_ptr->position[2] + -3.0f
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};
 				ksAlgebra::ksMatrix4x4f head_matrix;
