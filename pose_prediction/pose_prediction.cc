@@ -33,6 +33,7 @@ public:
         _current_fast_pose = init_pose;
         _fast_linear_vel = Eigen::Vector3f(0, 0, 0);
         _slam_received = false;
+        start = std::chrono::system_clock::now();
     }
 
     // Overridden method from the component interface. This specifies one interation of the main loop 
@@ -54,13 +55,13 @@ public:
 		assert(fresh_imu_measurement != NULL);
 
         // If queried IMU is fresher than the pose mesaurement and the local IMU copy we have, update it and the pose
-        if (fresh_imu_measurement->time > _current_fast_pose.time) {
-            if (_slam_received) {
-                _update_fast_pose(*fresh_imu_measurement);
-            } else {
-                _filter->add_bias(*fresh_imu_measurement);
-            }
-        }
+        // if (fresh_imu_measurement->time > _current_fast_pose.time) {
+        //     if (_slam_received) {
+        //         _update_fast_pose(*fresh_imu_measurement);
+        //     } else {
+        //         _filter->add_bias(*fresh_imu_measurement);
+        //     }
+        // }
     }
 
     /*
@@ -74,6 +75,8 @@ private:
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
     std::unique_ptr<reader_latest<imu_type>> _m_imu;
     std::unique_ptr<writer<pose_type>> _m_fast_pose;
+
+    time_type start;
 
     kalman_filter* _filter;
     pose_type _previous_slow_pose;
@@ -110,11 +113,46 @@ private:
                 << ", " << new_slow_orientation[1] - latest_fast_orientation[1]
                 << ", " << new_slow_orientation[2] - latest_fast_orientation[2] << std::endl;
 
+
+        float time = (fresh_pose.time - start).count();
+
+        float aroundZ = 0.3f * sinf( time * 2.5f ) * 0.0f;
+		float aroundY = 0;
+		float aroundX = 0.3f * cosf( time * 2.5f ) * 0.5f - 0.5f;
+
+		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
+
+
+		double cy = cos(aroundZ * 0.5);
+		double sy = sin(aroundZ * 0.5);
+		double cp = cos(aroundY * 0.5);
+		double sp = sin(aroundY * 0.5);
+		double cr = cos(aroundX * 0.5);
+		double sr = sin(aroundX * 0.5);
+
+		Eigen::Quaternionf dummy_q;
+		dummy_q.w() = cy * cp * cr + sy * sp * sr;
+		dummy_q.x() = cy * cp * sr - sy * sp * cr;
+		dummy_q.y() = sy * cp * sr + cy * sp * cr;
+		dummy_q.z() = sy * cp * cr - cy * sp * sr;
+
+
+        pose_type* swapped_pose = new pose_type(fresh_pose);
+        
+        swapped_pose->position.x() = -fresh_pose.position.y();
+        swapped_pose->position.y() = fresh_pose.position.z();
+        swapped_pose->position.z() = -fresh_pose.position.x();
+
+        swapped_pose->orientation.w() = dummy_q.w();
+        swapped_pose->orientation.x() = dummy_q.x();
+        swapped_pose->orientation.y() = dummy_q.y();
+        swapped_pose->orientation.z() = dummy_q.z(); 
+
         _previous_slow_pose = *temp_pose;
         _current_fast_pose = *temp_pose;
         _filter->update_estimates(temp_pose->orientation);
 
-        _m_fast_pose->put(new pose_type(fresh_pose));
+        _m_fast_pose->put(swapped_pose);
     }
 
     // Helper that updates the pose with new IMU readings and pushed to the SB

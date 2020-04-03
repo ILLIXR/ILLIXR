@@ -40,7 +40,7 @@ public:
 	// data whenever it needs to.
 	#ifdef USE_ALT_EYE_FORMAT
 	gldemo(std::unique_ptr<writer<rendered_frame_alt>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
+		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
@@ -111,7 +111,7 @@ public:
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
 			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
-			std::this_thread::sleep_for(100ms);
+			std::this_thread::sleep_for(16ms);
 			glUseProgram(demoShaderProgram);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
@@ -139,7 +139,7 @@ public:
 				};
 				auto latest_position = ksAlgebra::ksVector3f {
 					.x = pose_ptr->position[0],
-					.y = pose_ptr->position[1],
+					.y = pose_ptr->position[1] + 5.0f,
 					.z = pose_ptr->position[2]
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};

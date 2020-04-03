@@ -41,10 +41,10 @@ namespace ILLIXR {
 	} global_config;
 
 	// A particular pose, sampled at a particular point in time.
-	struct pose_sample {
-		pose_t pose;
-		std::chrono::time_point<std::chrono::system_clock> sample_time; 
-	};
+	// struct pose_sample {
+	// 	pose_type pose;
+	// 	std::chrono::time_point<std::chrono::system_clock> sample_time; 
+	// };
 
 	// Single-texture format; arrayed by left/right eye
 	struct rendered_frame {
@@ -59,8 +59,7 @@ namespace ILLIXR {
 	struct rendered_frame_alt {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
-
-		pose_sample render_pose; // The pose used when rendering this frame.
+		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
 
@@ -85,13 +84,6 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 	
-	std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
-		return out << "pose: quat(xyzw){"
-				<< pose.orientation.x << ", "
-				<< pose.orientation.y << ", "
-				<< pose.orientation.z << ", "
-				<< pose.orientation.w << "}";
-	}
 
 }
 

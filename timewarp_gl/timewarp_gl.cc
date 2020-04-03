@@ -17,14 +17,6 @@
 using namespace ILLIXR;
 using namespace linalg::aliases;
 
-std::ostream& operator<<(std::ostream& out, const pose_type& pose) {
-	return out << "pose: quat(xyzw){"
-			   << pose.orientation.x() << ", "
-			   << pose.orientation.y() << ", "
-			   << pose.orientation.z() << ", "
-			   << pose.orientation.w() << "}";
-}
-
 // If this is defined, gldemo will use Monado-style eyebuffers
 #define USE_ALT_EYE_FORMAT
 
@@ -49,7 +41,7 @@ public:
 	// data whenever it needs to.
 	#ifdef USE_ALT_EYE_FORMAT
 	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame_alt>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_sample>>&& pose_plug,
+		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
@@ -473,7 +465,7 @@ public:
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
 		ksAlgebra::ksMatrix4x4f viewMatrix;
-		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
+		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
