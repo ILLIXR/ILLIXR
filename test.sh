@@ -16,7 +16,7 @@ rm -rf build/
 mkdir build/
 cd build/
 cmake ..
-make -j8
+make -j`(nproc)`
 cd ../../../../..
 
 cd offline_imu_cam
@@ -28,18 +28,21 @@ cd runtime
 cd ..
 
 cd timewarp_gl
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} timewarp_gl
+#[ -n "${clean}" ] && bazel clean
+#bazel build ${extra_flags} timewarp_gl
+"${CXX}" -g utils/*.cpp timewarp_gl.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp  -shared  -o libtimewarp_gl.so -fpic
 cd ..
 
 cd gldemo
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} gldemo
+#[ -n "${clean}" ] && bazel clean
+#bazel build ${extra_flags} gldemo
+"${CXX}" -g utils/*.cpp gldemo.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libgldemo.so -fpic
 cd ..
 
 cd pose_prediction
-[ -n "${clean}" ] && bazel clean
-bazel build ${extra_flags} pose_prediction
+#[ -n "${clean}" ] && bazel clean
+#bazel build ${extra_flags} pose_prediction
+"${CXX}" -g pose_prediction.cc kalman.cc --std=c++2a -I/usr/include/eigen3 -shared -o libpose_prediction.so -fpic
 cd ..
 
 if [ ! -e "data" ]
@@ -62,9 +65,9 @@ fi
 ./runtime/main.exe \
 	slam2/open_vins/ov_standalone/ov_msckf/build/libslam2.so \
 	offline_imu_cam/liboffline_imu_cam.so \
-	pose_prediction/bazel-bin/libpose_prediction.so \
-	timewarp_gl/bazel-bin/libtimewarp_gl.so \
-	gldemo/bazel-bin/libgldemo.so \
+	pose_prediction/libpose_prediction.so \
+	timewarp_gl/libtimewarp_gl.so \
+	gldemo/libgldemo.so \
 ;
 	# cam1/bazel-bin/libcam1.so \
 	# imu1/bazel-bin/libimu1.so \
