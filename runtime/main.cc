@@ -61,33 +61,33 @@ int main(int argc, char** argv) {
 	std::unique_ptr<writer<global_config>> _m_config = sb->publish<global_config>("global_config");
 
 	// Initialize the GLFW library.
-	// if(!glfwInit()){
-	// 	printf("Failed to initialize glfw\n");		
-	// 	return 0;
-	// }
+	if(!glfwInit()){
+		printf("Failed to initialize glfw\n");		
+	 	return 0;
+	}
 
 	// Create a hidden window so we can provide a shared context
 	// to all the sub-components. (May not be necessary in the future.)
-	// GLFWwindow* headless_window = initWindow(256,256,0,false);
+	GLFWwindow* headless_window = initWindow(256,256,0,false);
 
 
-	// glfwMakeContextCurrent(headless_window);
+	glfwMakeContextCurrent(headless_window);
 	
 	// Init and verify GLEW
-	// glewExperimental = GL_TRUE;
-	// if(glewInit() != GLEW_OK){
-	// 	printf("Failed to init GLEW\n");
-	// 	glfwDestroyWindow(headless_window);
-	// 	glfwTerminate();		
-	// 	return -1;
-	// }
+	glewExperimental = GL_TRUE;
+	if(glewInit() != GLEW_OK){
+		printf("Failed to init GLEW\n");
+		glfwDestroyWindow(headless_window);
+		glfwTerminate();		
+		return -1;
+	}
 
-	// glEnable              ( GL_DEBUG_OUTPUT );
-	// glDebugMessageCallback( MessageCallback, 0 );
+	glEnable              ( GL_DEBUG_OUTPUT );
+	glDebugMessageCallback( MessageCallback, 0 );
 
 	// Now that we have our shared GLFW context, publish a pointer to our context using Switchboard!
 	auto config = new global_config;
-	// config->glfw_context = headless_window;
+	config->glfw_context = headless_window;
 	_m_config->put(config);
 
 	// I have to keep the dynamic libs in scope until the program is dead
