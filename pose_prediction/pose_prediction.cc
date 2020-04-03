@@ -104,6 +104,8 @@ private:
         Eigen::Vector3f new_slow_orientation = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         Eigen::Vector3f latest_fast_orientation = _current_fast_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
 
+        std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
+
         std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
         std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0] 
                 << ", " << temp_pose->position[1] - _current_fast_pose.position[1]
@@ -116,12 +118,12 @@ private:
 
         float time = (fresh_pose.time - start).count();
 
-        float aroundZ = 0.3f * sinf( time * 2.5f ) * 0.0f;
-		float aroundY = 0;
+        float aroundZ = 0.0f;
+		float aroundY = 0.0f;
 		float aroundX = 0.3f * cosf( time * 2.5f ) * 0.5f - 0.5f;
+        aroundX = 0.0f;
 
 		//https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
-
 
 		double cy = cos(aroundZ * 0.5);
 		double sy = sin(aroundZ * 0.5);
@@ -139,14 +141,14 @@ private:
 
         pose_type* swapped_pose = new pose_type(fresh_pose);
         
-        swapped_pose->position.x() = -fresh_pose.position.y();
-        swapped_pose->position.y() = fresh_pose.position.z();
-        swapped_pose->position.z() = -fresh_pose.position.x();
+        swapped_pose->position.x() = fresh_pose.position.y();
+        swapped_pose->position.y() = fresh_pose.position.x();
+        swapped_pose->position.z() = -fresh_pose.position.z();
 
-        swapped_pose->orientation.w() = dummy_q.w();
-        swapped_pose->orientation.x() = dummy_q.x();
-        swapped_pose->orientation.y() = dummy_q.y();
-        swapped_pose->orientation.z() = dummy_q.z(); 
+        swapped_pose->orientation.w() = fresh_pose.orientation.w();
+        swapped_pose->orientation.x() = fresh_pose.orientation.y();
+        swapped_pose->orientation.y() = fresh_pose.orientation.x();
+        swapped_pose->orientation.z() = -fresh_pose.orientation.z();
 
         _previous_slow_pose = *temp_pose;
         _current_fast_pose = *temp_pose;

@@ -127,16 +127,31 @@ public:
 
 			// Model matrix is just a spinny fun animation
 			ksAlgebra::ksMatrix4x4f modelMatrix;
-			ksAlgebra::ksMatrix4x4f_CreateRotation(&modelMatrix, 0, 0, 0);
+			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
+
+			ksAlgebra::ksMatrix4x4f offsetRotation;
+
+			
 
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.
+
+				if(counter == 50){
+					std::cerr << "First pose received: quat(wxyz) is " << pose_ptr->orientation.w() << ", " << pose_ptr->orientation.x() << ", " << pose_ptr->orientation.y() << ", " << pose_ptr->orientation.z() << std::endl;
+					offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
+				}
+
+				counter++;
+
+				Eigen::Quaternionf combinedQuat =  offsetQuat.inverse() * pose_ptr->orientation;
+
 				auto latest_quat = ksAlgebra::ksQuatf {
-					.x = pose_ptr->orientation.x(),
-					.y = pose_ptr->orientation.y(),
-					.z = pose_ptr->orientation.z(),
-					.w = pose_ptr->orientation.w()
+					.x = combinedQuat.x(),
+					.y = combinedQuat.y(),
+					.z = combinedQuat.z(),
+					.w = combinedQuat.w()
 				};
+
 				auto latest_position = ksAlgebra::ksVector3f {
 					.x = pose_ptr->position[0],
 					.y = pose_ptr->position[1] + 5.0f,
@@ -278,8 +293,8 @@ private:
 
 	GLFWwindow* hidden_window;
 
-	
-	
+	uint counter = 0;
+	Eigen::Quaternionf offsetQuat;
 
 	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;
