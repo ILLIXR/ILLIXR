@@ -54,7 +54,7 @@ std::vector<dynamic_lib> libs;
 std::vector<std::unique_ptr<component>> components;
 std::thread t;
 
-extern "C" int illixrrt_start(char **argv, int argc) {
+extern "C" int illixrrt_init() {
 	/* TODO: use a config-file instead of cmd-line args. Config file
 	   can be more complex and can be distributed more easily (checked
 	   into git repository). */
@@ -96,14 +96,24 @@ extern "C" int illixrrt_start(char **argv, int argc) {
 	config->glfw_context = headless_window;
 	_m_config->put(config);
 
-	for (int i = 0; i < argc; ++i) {
-		auto lib = dynamic_lib::create(std::string_view{argv[i]});
-		auto comp = std::unique_ptr<component>(lib.get<create_component_fn>("create_component")(sb.get()));
-		comp->start();
-		libs.push_back(std::move(lib));
-		components.push_back(std::move(comp));
-	}
+	return 0;
+}
 
+extern "C" void illixrrt_load_component(const char *path) {
+	auto lib = dynamic_lib::create(std::string_view{path});
+	auto comp = std::unique_ptr<component>(lib.get<create_component_fn>("create_component")(sb.get()));
+	comp->start();
+	libs.push_back(std::move(lib));
+	components.push_back(std::move(comp));
+}
+
+extern "C" void illixrrt_attach_component(create_component_fn f) {
+	auto comp = std::unique_ptr<component>(f(sb.get()));
+	comp->start();
+	components.push_back(std::move(comp));
+}
+
+extern "C" void illixrrt_run() {
 	t = std::thread([&]() {
 
 		std::default_random_engine generator;
@@ -127,25 +137,27 @@ extern "C" int illixrrt_start(char **argv, int argc) {
 			}
 		}
 	});
-
-	return 0;
 }
 
 extern "C" void illixrrt_join() {
 	t.join();
 }
 
-extern "C" void illixrrt_stop() {
+extern "C" void illixrrt_destroy() {
 	for (auto&& comp : components) {
 		comp->stop();
 	}
 }
 
 int main(int argc, char **argv) {
-	if (illixrrt_start(argv+1, argc-1) != 0) {
+	if (illixrrt_init() != 0) {
 		return 1;
 	}
+	for (int i = 1; i < argc; ++i) {
+		illixrrt_load_component(argv[i]);
+	}
+	illixrrt_run();
 	illixrrt_join();
-	illixrrt_stop();
+	illixrrt_destroy();
 	return 0;
 }

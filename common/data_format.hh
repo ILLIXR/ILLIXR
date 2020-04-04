@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <chrono>
-#include "GL/gl.h"
 #include <GLFW/glfw3.h> // This is... ew. Look into making this more modular/generalized.
 
 namespace ILLIXR {
@@ -42,7 +41,7 @@ namespace ILLIXR {
 	};
 
 	struct rendered_frame {
-		GLuint texture_handle;
+		uint32_t texture_handle;
 		pose_sample render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
