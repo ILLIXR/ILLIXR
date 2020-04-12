@@ -58,8 +58,8 @@ private:
 public:
 
 	template <typename event>
-	void schedule(std::string name, std::function<void(const void*)> fn) {
-		_p_schedule(name, fn, typeid(event).hash_code());
+	void schedule(std::string name, std::function<void(const event*)> fn) {
+		_p_schedule(name, [=](const void* ptr){ fn(reinterpret_cast<const event*>(ptr)); }, typeid(event).hash_code());
 	}
 	/* I have opted not to pass the event in here, because I would
 	   have to code a different case for read-only, read-copying, and

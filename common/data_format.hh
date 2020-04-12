@@ -3,47 +3,63 @@
 
 #include <iostream>
 #include <chrono>
+#include <memory>
+
+#include <opencv2/core/mat.hpp>
+#include <eigen3/Eigen/Dense>
+
 #include "GL/gl.h"
-#include <GLFW/glfw3.h> // This is... ew. Look into making this more modular/generalized.
+#include <GLFW/glfw3.h>
 
 namespace ILLIXR {
+	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
 
-	struct camera_frame {
+	typedef struct {
+		time_type time;
+		Eigen::Vector3f angular_v;
+		Eigen::Vector3f linear_a;
+	} imu_type;
+
+	typedef struct {
+		time_type time;
+		std::unique_ptr<cv::Mat> img0;
+		std::unique_ptr<cv::Mat> img1;
+	} cam_type;
+
+	typedef struct {
+		time_type time; 
+		Eigen::Vector3f position;
+		Eigen::Quaternionf orientation;
+	} pose_type;
+
+	typedef struct {
 		int pixel[1];
-	};
+	} camera_frame;
 
-	struct global_config {
+	typedef struct {
 		GLFWwindow* glfw_context;
-	};
-
-	// Designed to be a drop-in replacement for
-	// the XrQuaternionf datatype. 
-	struct quaternion_t {
-		float x,y,z,w;
-	};
-
-	// Designed to be a drop-in replacement for
-	// the XrVector3f datatype. 
-	struct vector3_t {
-		float x,y,z;
-	};
-
-	// Designed to be a drop-in replacement for
-	// the XrPosef datatype. 
-	struct pose_t {
-		quaternion_t orientation;
-		vector3_t position;
-	};
+	} global_config;
 
 	// A particular pose, sampled at a particular point in time.
-	struct pose_sample {
-		pose_t pose;
+	// struct pose_sample {
+	// 	pose_type pose;
+	// 	std::chrono::time_point<std::chrono::system_clock> sample_time; 
+	// };
+
+	// Single-texture format; arrayed by left/right eye
+	struct rendered_frame {
+		GLuint texture_handle;
+		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
 
-	struct rendered_frame {
-		GLuint texture_handle;
-		pose_sample render_pose; // The pose used when rendering this frame.
+	// Using arrays as a swapchain
+	// Array of left eyes, array of right eyes
+	// This more closely matches the format used by Monado
+	struct rendered_frame_alt {
+		GLuint texture_handles[2]; // Does not change between swaps in swapchain
+		GLuint swap_indices[2]; // Which element of the swapchain
+		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
 
@@ -68,13 +84,6 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 	
-	std::ostream& operator<<(std::ostream& out, const pose_t& pose) {
-		return out << "pose: quat(xyzw){"
-				<< pose.orientation.x << ", "
-				<< pose.orientation.y << ", "
-				<< pose.orientation.z << ", "
-				<< pose.orientation.w << "}";
-	}
 
 }
 
