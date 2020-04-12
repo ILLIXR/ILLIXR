@@ -1,6 +1,5 @@
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
-#include <unordered_map>
 #include <atomic>
 #include <vector>
 #include <iostream>

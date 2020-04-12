@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include "GL/gl.h"
-#include <GLFW/glfw3.h> // This is... ew. Look into making this more modular/generalized.
+#include <GLFW/glfw3.h> // TODO: Look into making this more modular/generalized.
 
 namespace ILLIXR {
 
