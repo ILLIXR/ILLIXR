@@ -1,0 +1,6 @@
+[submodule "slam1/okvis"]
+	path = slam1/okvis
+	url = https://github.com/ILLIXR/okvis.git
+[submodule "slam2/open_vins"]
+	path = slam2/open_vins
+	url = git@github.com:ILLIXR/open_vins.git

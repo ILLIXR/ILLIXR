@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	// Initialize the GLFW library.
 	if(!glfwInit()){
 		printf("Failed to initialize glfw\n");		
-		return 0;
+	 	return 0;
 	}
 
 	// Create a hidden window so we can provide a shared context
@@ -101,32 +101,8 @@ int main(int argc, char** argv) {
 		components.push_back(std::move(comp));
 	}
 
-	auto t = std::thread([&]() {
-
-		std::default_random_engine generator;
-		std::uniform_int_distribution<int> distribution{200, 600};
-
-		std::cout << "Model an XR app by calling for a pose sporadically."
-				  << std::endl;
-
-		auto pose_sub = sb->subscribe_latest<pose_sample>("pose");
-
-		for (int i = 0; i < 32; ++i) {
-			int delay = distribution(generator);
-			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-			auto cur_pose = pose_sub->get_latest_ro();
-
-			// If there is no writer, cur_pose might be null
-			if (cur_pose) {
-				std::cout << "Application receives cur_pose = " << cur_pose->pose << std::endl;
-			} else {
-				std::cout << "No cur_pose published yet" << std::endl;
-			}
-		}
-
-	});
-
-	t.join();
+	for (;;) {
+	}
 
 	for (auto&& comp : components) {
 		comp->stop();
