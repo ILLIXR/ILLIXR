@@ -10,10 +10,25 @@ CXX=${CXX-clang++}
 clean=true
 extra_flags=
 
+if ! pkg-config --libs opencv
+then
+	old_PWD="${PWD}"
+	cd /opt
+	sudo mkdir -p opencv opencv_contrib
+	sudo chown "${USER}" opencv opencv_contrib
+	git clone --branch 3.4.6 https://github.com/opencv/opencv/
+	git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/
+	mkdir opencv/build/
+	cd opencv/build/
+	cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
+	make -j8
+	sudo make install
+	cd "${old_PWD}"
+fi
+
 # Necessary for Open VINS standalone build
 cd slam2/open_vins/ov_standalone/ov_msckf/
-rm -rf build/
-mkdir build/
+mkdir -p build/
 cd build/
 cmake ..
 make -j`(nproc)`
@@ -69,11 +84,6 @@ fi
 	timewarp_gl/libtimewarp_gl.so \
 	gldemo/libgldemo.so \
 ;
-	# cam1/bazel-bin/libcam1.so \
-	# imu1/bazel-bin/libimu1.so \
-	# slam1/bazel-bin/libslam1.so \
-	
-	
 
 exit;
 }
