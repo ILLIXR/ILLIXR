@@ -6,8 +6,10 @@ There is a [Dependency Injection service](https://en.wikipedia.org/wiki/Dependen
 
 It's as easy as 
 
-    switchboard* sb = pb->lookup_impl<switchboard>();
-    std::unique_ptr<reader_latest<pose_type>> slow_pose_plug = sb->subscribe_latest<pose_type>("slow_pose");
+```C++
+switchboard* sb = pb->lookup_impl<switchboard>();
+std::unique_ptr<reader_latest<pose_type>> slow_pose_plug = sb->subscribe_latest<pose_type>("slow_pose");
+```
 
 ## Defining services
 
@@ -27,21 +29,23 @@ You may be wondering if new plugins should be publish phonebook service or a swi
 - Constructors should have one arg, `phonebook* pb` instead of `switchboard* sb`, which is now a phonebook service.
 - `PLUGIN_MAIN(plugin_class)` will export a class instead of `create_component`; all of the initialization code should go in the constructor.
 
-    class pose_prediction : public threadloop {
-    public:
-        pose_prediction(phonebook* pb)
-    		: sb{pb->lookup_impl<switchboard>()} // first we get lookup the switchboard
-    		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")} // and then use it to look up the plugs
-    		, _m_imu{sb->subscribe_latest<imu_type>("imu0")}
-    		, _m_fast_pose{sb->publish<pose_type>("fast_pose")}
-    	{ /* ... */ }
+```C++
+class pose_prediction : public threadloop {
+public:
+    pose_prediction(phonebook* pb)
+		: sb{pb->lookup_impl<switchboard>()} // first we get lookup the switchboard
+		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")} // and then use it to look up the plugs
+		, _m_imu{sb->subscribe_latest<imu_type>("imu0")}
+		, _m_fast_pose{sb->publish<pose_type>("fast_pose")}
+	{ /* ... */ }
 
-    	/* ... */
+	/* ... */
 
-    private:
-    	switchboard * const sb;
+private:
+	switchboard * const sb;
 
-    	/* ... */
+	/* ... */
 
-    };
-    PLUGIN_MAIN(pose_predict)
+};
+PLUGIN_MAIN(pose_predict)
+```
