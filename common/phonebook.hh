@@ -27,4 +27,6 @@ namespace ILLIXR {
 	};
 }
 
+#define PHONEBOOK_EXPORT_IMPL(_class) extern "C" destructible* phonebook_main(phonebook* pb) { return new _class {pb}; }
+
 #endif

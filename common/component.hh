@@ -3,7 +3,7 @@
 
 #include <atomic>
 #include <future>
-#include "switchboard.hh"
+#include "phonebook.hh"
 
 namespace ILLIXR {
 
@@ -49,21 +49,6 @@ private:
 	std::atomic<bool> _m_terminate {false};
 	std::thread _m_thread;
 };
-
-/*
-Define a new type, which will be a function type.
-        [ret type]   [---type name-----]   [----arg type----] */
-typedef component* (*create_component_fn) (const switchboard*);
-
-/*
-Component SO's must define the following method
-
-    extern "C" component* create_component(switchboard* sb) {
-        // ...
-    }
-
- */
-
 
 }
 

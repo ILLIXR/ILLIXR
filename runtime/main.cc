@@ -1,13 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <memory>
-#include <random>
-#include <chrono>
-#include <future>
-#include <thread>
-#include "common/component.hh"
-#include "switchboard_impl.hh"
 #include "dynamic_lib.hh"
+#include "phonebook_impl.hh"
 
 using namespace ILLIXR;
 
@@ -53,13 +47,6 @@ int main(int argc, char** argv) {
 	   can be more complex and can be distributed more easily (checked
 	   into git repository). */
 
-	auto sb = create_switchboard();
-
-	// Grab a writer object and declare that we're publishing to the "global_config" topic, used to provide
-	// components with global-scope general configuration information.
-	std::cout << "Main is publishing global config data to Switchboard" << std::endl;
-	std::unique_ptr<writer<global_config>> _m_config = sb->publish<global_config>("global_config");
-
 	// Initialize the GLFW library.
 	if(!glfwInit()){
 		printf("Failed to initialize glfw\n");		
@@ -86,27 +73,22 @@ int main(int argc, char** argv) {
 	glDebugMessageCallback( MessageCallback, 0 );
 
 	// Now that we have our shared GLFW context, publish a pointer to our context using Switchboard!
-	auto config = new global_config;
-	config->glfw_context = headless_window;
-	_m_config->put(config);
+
+	auto pb = create_phonebook();
+	pb.register_impl<global_config*>(new global_config {headless_window})
 
 	// I have to keep the dynamic libs in scope until the program is dead
+	// so I will add them to a vector
 	std::vector<dynamic_lib> libs;
-	std::vector<std::unique_ptr<component>> components;
+	std::vector<std::unique_ptr<destructible>> plugins;
 	for (int i = 1; i < argc; ++i) {
 		auto lib = dynamic_lib::create(std::string_view{argv[i]});
-		auto comp = std::unique_ptr<component>(lib.get<create_component_fn>("create_component")(sb.get()));
-		comp->start();
+		phonebook* plugin = lib.get<void(phonebook*)>("phonebook_main")(pb.get());
+		plugins.emplace_back(plugin);
 		libs.push_back(std::move(lib));
-		components.push_back(std::move(comp));
 	}
 
-	for (;;) {
-	}
-
-	for (auto&& comp : components) {
-		comp->stop();
-	}
+	while (true) { }
 
 	return 0;
 }
