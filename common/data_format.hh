@@ -7,9 +7,11 @@
 
 #include <opencv2/core/mat.hpp>
 #include <eigen3/Eigen/Dense>
-
-#include "GL/gl.h"
+#include <GL/gl.h>
 #include <GLFW/glfw3.h> // TODO: Look into making this more modular/generalized.
+#include "phonebook.hh"
+
+#define USE_ALT_EYE_FORMAT
 
 namespace ILLIXR {
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
@@ -36,9 +38,11 @@ namespace ILLIXR {
 		int pixel[1];
 	} camera_frame;
 
-	typedef struct {
+	class global_config : public service {
+	public:
+		global_config(GLFWwindow* _glfw_context) : glfw_context(_glfw_context) { }
 		GLFWwindow* glfw_context;
-	} global_config;
+	};
 
 	// A particular pose, sampled at a particular point in time.
 	// struct pose_sample {
@@ -48,17 +52,15 @@ namespace ILLIXR {
 
 	// Single-texture format; arrayed by left/right eye
 	struct rendered_frame {
-		GLuint texture_handle;
-		pose_type render_pose; // The pose used when rendering this frame.
-		std::chrono::time_point<std::chrono::system_clock> sample_time; 
-	};
-
-	// Using arrays as a swapchain
-	// Array of left eyes, array of right eyes
-	// This more closely matches the format used by Monado
-	struct rendered_frame_alt {
+		#ifdef USE_ALT_EYE_FORMAT
+		// Using arrays as a swapchain
+		// Array of left eyes, array of right eyes
+		// This more closely matches the format used by Monado
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
+		#else
+		GLuint texture_handle;
+		#endif
 		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};

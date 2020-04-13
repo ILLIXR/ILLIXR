@@ -5,6 +5,8 @@
 #include <memory>
 #include <functional>
 
+#include "phonebook.hh"
+
 namespace ILLIXR {
 
 template <typename event>
@@ -40,7 +42,7 @@ public:
    Interface pattern:
    https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-Virtual_Interface
 */
-class switchboard {
+class switchboard : public service {
 
 private:
 

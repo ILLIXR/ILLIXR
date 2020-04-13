@@ -1,7 +1,11 @@
+#include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "common/plugin.hh"
+#include "common/data_format.hh"
 #include "dynamic_lib.hh"
 #include "phonebook_impl.hh"
+#include "switchboard_impl.hh"
 
 using namespace ILLIXR;
 
@@ -75,16 +79,19 @@ int main(int argc, char** argv) {
 	// Now that we have our shared GLFW context, publish a pointer to our context using Switchboard!
 
 	auto pb = create_phonebook();
-	pb.register_impl<global_config*>(new global_config {headless_window})
+	pb->register_impl<global_config>(new global_config {headless_window});
+
+	auto sb = create_switchboard().release();
+	pb->register_impl<switchboard>(sb);
 
 	// I have to keep the dynamic libs in scope until the program is dead
 	// so I will add them to a vector
 	std::vector<dynamic_lib> libs;
-	std::vector<std::unique_ptr<destructible>> plugins;
+	std::vector<std::unique_ptr<plugin>> plugins;
 	for (int i = 1; i < argc; ++i) {
 		auto lib = dynamic_lib::create(std::string_view{argv[i]});
-		phonebook* plugin = lib.get<void(phonebook*)>("phonebook_main")(pb.get());
-		plugins.emplace_back(plugin);
+		plugin* p = lib.get<plugin* (*) (phonebook*)>("plugin_main")(pb.get());
+		plugins.emplace_back(p);
 		libs.push_back(std::move(lib));
 	}
 
