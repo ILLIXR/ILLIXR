@@ -201,7 +201,7 @@ private:
 extern "C" component* create_component(switchboard* sb) {
 	/* First, we declare intent to read/write topics. Switchboard
 	   returns handles to those topics. */
-    auto slow_pose_plug = sb->subscribe_latest<pose_type>("slow_pose");
+    auto slow_pose_plug = sb->subscribe_latest<pose_type>("true_pose");
 	auto imu_plug = sb->subscribe_latest<imu_type>("imu0");
 	auto fast_pose_plug = sb->publish<pose_type>("fast_pose");
 

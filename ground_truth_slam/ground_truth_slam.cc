@@ -4,6 +4,7 @@
 #include "data_loading.hh"
 #include "common/data_format.hh"
 #include <chrono>
+#include <iomanip>
 
 using namespace ILLIXR;
 
@@ -46,6 +47,13 @@ public:
 		pose_type *p = new pose_type{_m_sensor_data_it->second};
 		p->time = real_nowish;
 		_m_true_pose->put(p);
+		// std::cout
+		// 	<< std::setprecision(2)
+		// 	<< p->orientation.w() << ", "
+		// 	<< p->orientation.x() << ", "
+		// 	<< p->orientation.y() << ", "
+		// 	<< p->orientation.z() << ", "
+		// 	<< std::endl;
 
 		dataset_last_time = dataset_now;
 		++_m_sensor_data_it;
