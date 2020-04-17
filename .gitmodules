@@ -4,3 +4,6 @@
 [submodule "slam2/open_vins"]
 	path = slam2/open_vins
 	url = git@github.com:ILLIXR/open_vins.git
+[submodule "hologram"]
+	path = hologram
+	url = https://github.com/ILLIXR/HOTlab
