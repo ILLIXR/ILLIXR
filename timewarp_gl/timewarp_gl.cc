@@ -14,25 +14,33 @@
 #include "shaders/timewarp_shader.hh"
 #include "common/linalg.h"
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+#include <GL/glu.h>
+
 using namespace ILLIXR;
 using namespace linalg::aliases;
+
+//GLX context magics
+#define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
+#define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
+typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
 // If this is defined, gldemo will use Monado-style eyebuffers
 #define USE_ALT_EYE_FORMAT
 
-class timewarp_gl : public component {
-
-static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool visible)
+typedef struct xserverWindow
 {
-	GLFWwindow* win;
-	if(visible)
-		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
-	else 
-		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-    win = glfwCreateWindow(width, height, "ILLIXR", 0, shared);
-	return win;	
-}
+	Display                 *dpy;
+	Window                  win;
+	GLXContext              glc;
+	XWindowAttributes       gwa;
+	XEvent                  xev;
+} XWin;
 
+class timewarp_gl : public component {
 
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
@@ -42,10 +50,12 @@ public:
 	#ifdef USE_ALT_EYE_FORMAT
 	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame_alt>>&& frame_plug,
 		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
-		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
+		  std::unique_ptr<reader_latest<global_config>>&& config_plug,
+		  std::unique_ptr<writer<hologram_input>>&& hologram_plug)
 		: _m_eyebuffer{std::move(frame_plug)}
 		, _m_pose{std::move(pose_plug)}
 		, _m_config{std::move(config_plug)}
+		, _m_hologram{std::move(hologram_plug)}
 	{ }
 	#else
 	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame>>&& frame_plug,
@@ -68,7 +78,7 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	GLFWwindow* window;
+	XWin xwin;
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
@@ -83,6 +93,9 @@ private:
 
 	// Switchboard plug for global config data, including GLFW/GPU context handles.
 	std::unique_ptr<reader_latest<global_config>> _m_config;
+
+	// Switchboard plug for sending hologram calls
+	std::unique_ptr<writer<hologram_input>> _m_hologram;
 
 
 	GLuint timewarpShaderProgram;
@@ -108,11 +121,11 @@ private:
 	GLfloat plane_vertices[8] = {  // Coordinates for the vertices of a plane.
          -1, 1,   1, 1,
           -1, -1,   1, -1 };
-          
+
 	GLfloat plane_uvs[8] = {  // UVs for plane
 			0, 1,   1, 1,
 			0, 0,   1, 0 };
-			
+
 	GLuint plane_indices[6] = {  // Plane indices
 			0,2,3, 1,0,3 };
 
@@ -155,7 +168,106 @@ private:
 	// Basic perspective projection matrix
 	ksAlgebra::ksMatrix4x4f basicProjection;
 
-	
+	// Hologram call data
+	long long _hologram_seq{0};
+
+	void initWindow(int width, int height, GLXContext ctx){
+		xwin.dpy = XOpenDisplay(NULL);
+		if(xwin.dpy == NULL) {
+		 	printf("\n\tcannot connect to X server\n\n");
+		        exit(0);
+		}
+		Window root = DefaultRootWindow(xwin.dpy);
+		// Get a matching FB config
+		static int visual_attribs[] =
+		{
+			GLX_X_RENDERABLE    , True,
+			GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+			GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+			GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
+			GLX_RED_SIZE        , 8,
+			GLX_GREEN_SIZE      , 8,
+			GLX_BLUE_SIZE       , 8,
+			GLX_ALPHA_SIZE      , 8,
+			GLX_DEPTH_SIZE      , 24,
+			GLX_STENCIL_SIZE    , 8,
+			GLX_DOUBLEBUFFER    , True,
+			//GLX_SAMPLE_BUFFERS  , 1,
+			//GLX_SAMPLES         , 4,
+			None
+		};
+		// vi = glXChooseVisual(xwin.dpy, 0, att);
+		// if(vi == NULL) {
+		// 	printf("\n\tno appropriate visual found\n\n");
+		//         exit(0);
+		// }
+		// else {
+		// 	printf("\n\tvisual %p selected\n", (void *)vi->visualid); /* %p creates hexadecimal output like in glxinfo */
+		// }
+
+		printf( "Getting matching framebuffer configs\n" );
+		int fbcount;
+		GLXFBConfig* fbc = glXChooseFBConfig(xwin.dpy, DefaultScreen(xwin.dpy), visual_attribs, &fbcount);
+		if (!fbc)
+		{
+		  printf( "Failed to retrieve a framebuffer config\n" );
+		  exit(1);
+		}
+		printf( "Found %d matching FB configs.\n", fbcount );
+		// Pick the FB config/visual with the most samples per pixel
+		printf( "Getting XVisualInfos\n" );
+		int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
+		int i;
+		for (i=0; i<fbcount; ++i)
+		{
+		  XVisualInfo *vi = glXGetVisualFromFBConfig( xwin.dpy, fbc[i] );
+		  if ( vi )
+		  {
+		    int samp_buf, samples;
+		    glXGetFBConfigAttrib( xwin.dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
+		    glXGetFBConfigAttrib( xwin.dpy, fbc[i], GLX_SAMPLES       , &samples  );
+
+		    printf( "  Matching fbconfig %d, visual ID 0x%2x: SAMPLE_BUFFERS = %d,"
+		            " SAMPLES = %d\n",
+		            i, vi -> visualid, samp_buf, samples );
+		    if ( best_fbc < 0 || samp_buf && samples > best_num_samp )
+		      best_fbc = i, best_num_samp = samples;
+		    if ( worst_fbc < 0 || !samp_buf || samples < worst_num_samp )
+		      worst_fbc = i, worst_num_samp = samples;
+		  }
+		  XFree( vi );
+		}
+		GLXFBConfig bestFbc = fbc[ best_fbc ];
+		// Be sure to free the FBConfig list allocated by glXChooseFBConfig()
+		XFree( fbc );
+		// Get a visual
+		XVisualInfo *vi = glXGetVisualFromFBConfig( xwin.dpy, bestFbc );
+		printf( "Chosen visual ID = 0x%x\n", vi->visualid );
+
+		Colormap cmap = XCreateColormap(xwin.dpy, root, vi->visual, AllocNone);
+		XSetWindowAttributes swa;
+		swa.colormap = cmap;
+		swa.event_mask = ExposureMask | KeyPressMask;
+		xwin.win = XCreateWindow(xwin.dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
+		XMapWindow(xwin.dpy, xwin.win);
+		XStoreName(xwin.dpy, xwin.win, "ILLIXR Extended Window");
+
+		//xwin.glc = glXCreateContext(xwin.dpy, vi, *ctx, true);
+		// calling glXGetProcAddressARB
+		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
+		glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)
+        	glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
+        int context_attribs[] =
+			{
+				GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
+				GLX_CONTEXT_MINOR_VERSION_ARB, 0,
+				//GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+				None
+			};
+		printf( "Creating context\n" );
+		xwin.glc = glXCreateContextAttribsARB( xwin.dpy, bestFbc, ctx,
+											   True, context_attribs );
+	}
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -183,7 +295,7 @@ private:
 				distortion_indices[offset + 5] = (GLuint)( ( y + 1 ) * ( hmdInfo->eyeTilesWide + 1 ) + ( x + 1 ) );
 			}
 		}
-		
+
 		// Allocate memory for the distortion coordinates.
 		// These are NOT the actual distortion mesh's vertices,
 		// they are calculated distortion grid coefficients
@@ -206,7 +318,7 @@ private:
 			distortion_uv1 = (HMD::uv_coord_t *) malloc(HMD::NUM_EYES * num_distortion_vertices * sizeof(HMD::uv_coord_t));
 			distortion_uv2 = (HMD::uv_coord_t *) malloc(HMD::NUM_EYES * num_distortion_vertices * sizeof(HMD::uv_coord_t));
 		}
-		
+
 		for ( int eye = 0; eye < HMD::NUM_EYES; eye++ )
 		{
 			for ( int y = 0; y <= hmdInfo->eyeTilesHigh; y++ )
@@ -229,7 +341,7 @@ private:
 					distortion_uv1[eye * num_distortion_vertices + index].v = distort_coords[eye][1][index].y;
 					distortion_uv2[eye * num_distortion_vertices + index].u = distort_coords[eye][2][index].x;
 					distortion_uv2[eye * num_distortion_vertices + index].v = distort_coords[eye][2][index].y;
-					
+
 				}
 			}
 		}
@@ -312,13 +424,13 @@ public:
 			// MTP here. More you wait, closer to the display sync you sample the pose.
 			// TODO use more precise sleep.
 			double sleep_start = glfwGetTime();
-			glfwPollEvents();
+			// TODO: poll GLX window events
 			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
 			warp(glfwGetTime());
 		}
 	}
 	/* compatibility interface */
-	
+
 	// ATW/Compositor overrides _p_start to control its own lifecycle/scheduling.
 	// This may be changed later, but for precision of vsync/etc we're going to
 	// use component-driven loop scheduling for now.
@@ -333,35 +445,34 @@ public:
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
 		HMD::GetDefaultBodyInfo(&body_info);
 
-		/*
-		if(hmd_stats != NULL){
-			// Override generate reference stats with specified hmd_stats
-			for(int i = 0; i < 11; i++)
-				hmd_info.K[i] = hmd_stats->K[i];
-			for(int i = 0; i < 4; i++)
-				hmd_info.chromaticAberration[i] = hmd_stats->chromaticAberration[i];
-
-			body_info.interpupillaryDistance = hmd_stats->ipd;
-			hmd_info.displayPixelsWide = hmd_stats->displayPixelsWide;
-			hmd_info.displayPixelsHigh = hmd_stats->displayPixelsHigh;
-			hmd_info.visiblePixelsWide = hmd_stats->visiblePixelsWide;
-			hmd_info.visiblePixelsHigh = hmd_stats->visiblePixelsHigh;
-			hmd_info.lensSeparationInMeters = hmd_stats->lensSeparationInMeters;
-			hmd_info.metersPerTanAngleAtCenter = hmd_stats->metersPerTanAngleAtCenter;
+		// Initialize the GLFW library, still need it to get time
+		if(!glfwInit()){
+			printf("Failed to initialize glfw\n");
 		}
-		*/
-
 
     	// Construct timewarp meshes and other data
     	BuildTimewarp(&hmd_info);
-		
-		window = initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, fetched_config->glfw_context, true);
-		glfwMakeContextCurrent(window);
-		
+
+		// includes setting swap interval
+		initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, (GLXContext)fetched_config->glctx);
+		glXMakeCurrent(xwin.dpy, xwin.win, xwin.glc);
+
+		// set swap interval for 1
+		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
+		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");
+		glXSwapIntervalEXT(xwin.dpy, xwin.win, 1);
+
+		// Init and verify GLEW
+		glewExperimental = GL_TRUE;
+		if(glewInit() != GLEW_OK){
+			printf("Failed to init GLEW\n");
+			// clean up ?
+		}
+
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
 
-		glfwSwapInterval(1);
+		// TODO: X window v-synch
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &tw_vao);
@@ -370,8 +481,8 @@ public:
 		timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
 		// Acquire attribute and uniform locations from the compiled and linked shader program
 
-		
-		
+
+
     	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
     	distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
     	distortion_uv1_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv1");
@@ -381,9 +492,9 @@ public:
     	tw_eye_index_unif = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
     	eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
     	eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
-		
-		
-		
+
+
+
 		// Config distortion mesh position vbo
 		glGenBuffers(1, &distortion_positions_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
@@ -391,7 +502,7 @@ public:
 		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_pos_attr);
 
-		
+
 
 		// Config distortion uv0 vbo
 		glGenBuffers(1, &distortion_uv0_vbo);
@@ -400,7 +511,7 @@ public:
 		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_uv0_attr);
 
-		
+
 		// Config distortion uv1 vbo
 		glGenBuffers(1, &distortion_uv1_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
@@ -408,7 +519,7 @@ public:
 		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_uv1_attr);
 
-		
+
 		// Config distortion uv2 vbo
 		glGenBuffers(1, &distortion_uv2_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
@@ -416,18 +527,18 @@ public:
 		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_uv2_attr);
 
-		
+
 		// Config distortion mesh indices vbo
 		glGenBuffers(1, &distortion_indices_vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
-		
-		glfwMakeContextCurrent(NULL);
+
+		glXMakeCurrent(xwin.dpy, None, NULL);
 
 		_m_thread = std::thread{&timewarp_gl::main_loop, this};
 	}
 
-	
+
 	void GetViewMatrixFromPose( ksAlgebra::ksMatrix4x4f* viewMatrix, const pose_type& pose) {
 		// Cast from the "standard" quaternion to our own, proprietary, Oculus-flavored quaternion
 		auto latest_quat = ksAlgebra::ksQuatf {
@@ -440,27 +551,27 @@ public:
 	}
 
 	virtual void warp(float time) {
-		glfwMakeContextCurrent(window);
+		glXMakeCurrent(xwin.dpy, xwin.win, xwin.glc);
 
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
 		if(!most_recent_frame){
 			//std::cerr << "ATW failed to grab most recent frame from Switchboard" << std::endl;
 			return;
 		}
-		
+
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glClearColor(0, 0, 0, 0);
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glDepthFunc(GL_LEQUAL);
-		
-		
+
+
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
 
 		double warpStart = glfwGetTime();
-		double cursor_x, cursor_y;
-		glfwGetCursorPos(window, &cursor_x, &cursor_y);
+		//double cursor_x, cursor_y;
+		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
@@ -513,7 +624,7 @@ public:
 			viewMatrixEnd = viewMatrix;
 		}
 		*/
-	
+
 		// Calculate timewarp transforms using predictive view transforms
 		CalculateTimeWarpTransform(&timeWarpStartTransform4x4, &basicProjection, &viewMatrix, &viewMatrixBegin);
 		CalculateTimeWarpTransform(&timeWarpEndTransform4x4, &basicProjection, &viewMatrix, &viewMatrixEnd);
@@ -544,8 +655,7 @@ public:
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
 
 			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
-			glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handles[eye]);
-			glUniform1i(tw_eye_index_unif, most_recent_frame->swap_indices[eye]);
+			glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
 			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
@@ -587,21 +697,25 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
-		
-		
+		// Call Hologram
+		auto hologram_params = new hologram_input;
+		hologram_params->seq = ++_hologram_seq;
+		_m_hologram->put(hologram_params);
+
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
-		glfwSwapBuffers(window);
+		// TODO: GLX V SYNCH SWAP BUFFER
+		glXSwapBuffers(xwin.dpy, xwin.win);
 		lastSwapTime = glfwGetTime();
 		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
 
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
 
-		
+
 		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
 			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
 		}
 		lastFrameTime = glfwGetTime();
-		
+
 	}
 
 	virtual void _p_stop() override {
@@ -611,13 +725,17 @@ public:
 
 	virtual ~timewarp_gl() override {
 		// TODO: Need to cleanup resources here!
+		glXMakeCurrent(xwin.dpy, None, NULL);
+ 		glXDestroyContext(xwin.dpy, xwin.glc);
+ 		XDestroyWindow(xwin.dpy, xwin.win);
+ 		XCloseDisplay(xwin.dpy);
 	}
 };
 
 extern "C" component* create_component(switchboard* sb) {
 	/* First, we declare intent to read/write topics. Switchboard
 	   returns handles to those topics. */
-	
+
 	// We sample the eyebuffer.
 	#ifdef USE_ALT_EYE_FORMAT
 	auto frame_ev = sb->subscribe_latest<rendered_frame_alt>("eyebuffer");
@@ -631,5 +749,8 @@ extern "C" component* create_component(switchboard* sb) {
 	// We need global config data to create a shared GLFW context.
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");
 
-	return new timewarp_gl {std::move(frame_ev), std::move(pose_ev), std::move(config_ev)};
+	// We initiate hologram calls
+	auto hologram_ev = sb->publish<hologram_input>("hologram_in");
+
+	return new timewarp_gl {std::move(frame_ev), std::move(pose_ev), std::move(config_ev), std::move(hologram_ev)};
 }

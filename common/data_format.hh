@@ -6,10 +6,10 @@
 #include <memory>
 
 #include <opencv2/core/mat.hpp>
+#undef Success
 #include <eigen3/Eigen/Dense>
 
 #include "GL/gl.h"
-#include <GLFW/glfw3.h>
 
 namespace ILLIXR {
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
@@ -66,7 +66,6 @@ namespace ILLIXR {
 	// This more closely matches the format used by Monado
 	struct rendered_frame_alt {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
-		GLuint swap_indices[2]; // Which element of the swapchain
 		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time;
 	};

@@ -27,7 +27,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
 
     // GL handles for intermediary objects.
     GLint result, vertex_shader_handle, fragment_shader_handle, shader_program;
-    
+
 
     vertex_shader_handle = glCreateShader(GL_VERTEX_SHADER);
     GLint vshader_len = strlen(vertex_shader);
@@ -58,7 +58,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
         glGetShaderInfoLog( fragment_shader_handle, sizeof( msg ), &length, msg );
         printf( "2 Error: %s\n", msg);
     }
-    
+
     // Create program and link shaders
     shader_program = glCreateProgram();
     glAttachShader(shader_program, vertex_shader_handle);
