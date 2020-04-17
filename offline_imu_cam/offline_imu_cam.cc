@@ -38,11 +38,12 @@ public:
 		assert(_m_imu0);
 
 		ullong target_ts = _m_sensor_data_it->first;
+		
 		reliable_sleep(std::chrono::nanoseconds{target_ts - last_time});
 
 		time_type ts = begin_time + std::chrono::nanoseconds{target_ts - first_time};
 
-		//std::cerr << "Now time: " << ts.time_since_epoch().count() << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{target_ts}).time_since_epoch().count() << std::endl;
+		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{target_ts}).time_since_epoch().count() << std::endl;
 
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		if (sensor_datum.imu0) {

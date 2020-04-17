@@ -103,8 +103,9 @@ private:
 
         Eigen::Vector3f new_slow_orientation = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         Eigen::Vector3f latest_fast_orientation = _current_fast_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-
-        //std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
+        
+        /*
+        std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
 
         std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
         std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0]
@@ -114,6 +115,7 @@ private:
         std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0]
                 << ", " << new_slow_orientation[1] - latest_fast_orientation[1]
                 << ", " << new_slow_orientation[2] - latest_fast_orientation[2] << std::endl;
+        */
 
 
         float time = (fresh_pose.time - start).count();
@@ -199,7 +201,7 @@ private:
 extern "C" component* create_component(switchboard* sb) {
 	/* First, we declare intent to read/write topics. Switchboard
 	   returns handles to those topics. */
-    auto slow_pose_plug = sb->subscribe_latest<pose_type>("slow_pose");
+    auto slow_pose_plug = sb->subscribe_latest<pose_type>("true_pose");
 	auto imu_plug = sb->subscribe_latest<imu_type>("imu0");
 	auto fast_pose_plug = sb->publish<pose_type>("fast_pose");
 
