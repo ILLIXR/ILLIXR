@@ -23,8 +23,8 @@ public:
 
         std::chrono::time_point<std::chrono::system_clock> current_time = std::chrono::system_clock::now();
         pose_type init_pose = pose_type{
-            current_time, 
-            Eigen::Vector3f{0.878612, 2.14247, 0.947262}, 
+            current_time,
+            Eigen::Vector3f{0.878612, 2.14247, 0.947262},
             Eigen::Quaternionf{0.060514, -0.828459, -0.058956, -0.553641}
         };
 
@@ -36,7 +36,7 @@ public:
         start = std::chrono::system_clock::now();
     }
 
-    // Overridden method from the component interface. This specifies one interation of the main loop 
+    // Overridden method from the component interface. This specifies one interation of the main loop
     virtual void _p_compute_one_iteration() override {
 
         // If the SB has a new slow pose value from SLAM
@@ -104,14 +104,14 @@ private:
         Eigen::Vector3f new_slow_orientation = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         Eigen::Vector3f latest_fast_orientation = _current_fast_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
 
-        std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
+        //std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
 
         std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
-        std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0] 
+        std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0]
                 << ", " << temp_pose->position[1] - _current_fast_pose.position[1]
                 << ", " << temp_pose->position[2] - _current_fast_pose.position[2] << std::endl;
 
-        std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0] 
+        std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0]
                 << ", " << new_slow_orientation[1] - latest_fast_orientation[1]
                 << ", " << new_slow_orientation[2] - latest_fast_orientation[2] << std::endl;
 
@@ -140,7 +140,7 @@ private:
 
 
         pose_type* swapped_pose = new pose_type(fresh_pose);
-        
+
         swapped_pose->position.x() = fresh_pose.position.y();
         swapped_pose->position.y() = fresh_pose.position.x();
         swapped_pose->position.z() = -fresh_pose.position.z();
@@ -191,7 +191,7 @@ private:
         assert(isfinite(_current_fast_pose.position[0]));
         assert(isfinite(_current_fast_pose.position[1]));
         assert(isfinite(_current_fast_pose.position[2]));
-		
+
 		_m_fast_pose->put(new pose_type(_current_fast_pose));
     }
 };

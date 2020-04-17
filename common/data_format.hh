@@ -37,8 +37,16 @@ namespace ILLIXR {
 	} camera_frame;
 
 	typedef struct {
-		GLFWwindow* glfw_context;
+		void* glctx;	// This is a GLXContext, please cast when using
 	} global_config;
+
+	typedef struct {
+		int seq;
+	} hologram_input;
+
+	typedef struct {
+		int dummy;
+	} hologram_output;
 
 	// A particular pose, sampled at a particular point in time.
 	// struct pose_sample {
