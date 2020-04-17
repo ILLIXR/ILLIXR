@@ -7,3 +7,6 @@
 [submodule "hologram"]
 	path = hologram
 	url = https://github.com/ILLIXR/HOTlab
+[submodule "audio_pipeline"]
+	path = audio_pipeline
+	url = https://github.com/ILLIXR/audio_pipeline.git
