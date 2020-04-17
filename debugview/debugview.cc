@@ -50,9 +50,11 @@ public:
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
-	debugview(std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
+	debugview(std::unique_ptr<reader_latest<pose_type>>&& fast_pose_plug,
+		  std::unique_ptr<reader_latest<pose_type>>&& slow_pose_plug,
 		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
-		: _m_pose{std::move(pose_plug)}
+		: _m_fast_pose{std::move(fast_pose_plug)}
+		, _m_slow_pose{std::move(slow_pose_plug)}
 		, _m_config{std::move(config_plug)}
 	{ }
 
@@ -89,19 +91,27 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 		}
 		ImGui::Spacing();
-		const pose_type* pose_ptr = _m_pose->get_latest_ro();
+		const pose_type* fast_pose_ptr = _m_fast_pose->get_latest_ro();
+		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
 		ImGui::Text("Switchboard connection status:");
+		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
-		if(pose_ptr){
-			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid pose pointer");
-			ImGui::Text("Pose position (XYZ):\n  (%f, %f, %f)", pose_ptr->position.x(), pose_ptr->position.y(), pose_ptr->position.z());
-			ImGui::Text("Pose quaternion (XYZW):\n  (%f, %f, %f, %f)", pose_ptr->orientation.x(), pose_ptr->orientation.y(), pose_ptr->orientation.z(), pose_ptr->orientation.w());
+		if(fast_pose_ptr){
+			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
+			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose_ptr->position.x(), fast_pose_ptr->position.y(), fast_pose_ptr->position.z());
+			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose_ptr->orientation.x(), fast_pose_ptr->orientation.y(), fast_pose_ptr->orientation.z(), fast_pose_ptr->orientation.w());
 		} else {
-			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid pose pointer");
+			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid fast pose pointer");
 		}
-		
-
-		
+		ImGui::Text("Slow pose topic:");
+		ImGui::SameLine();
+		if(slow_pose_ptr){
+			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
+			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", slow_pose_ptr->position.x(), slow_pose_ptr->position.y(), slow_pose_ptr->position.z());
+			ImGui::Text("Slow pose quaternion (XYZW):\n  (%f, %f, %f, %f)", slow_pose_ptr->orientation.x(), slow_pose_ptr->orientation.y(), slow_pose_ptr->orientation.z(), slow_pose_ptr->orientation.w());
+		} else {
+			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid slow pose pointer");
+		}
 
 		ImGui::End();
 		ImGui::ShowDemoWindow();
@@ -204,7 +214,7 @@ public:
 
 
 
-			const pose_type* pose_ptr = _m_pose->get_latest_ro();
+			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 			Eigen::Matrix4f headsetPosition = Eigen::Matrix4f::Identity();
@@ -296,7 +306,10 @@ private:
 	std::atomic<bool> _m_terminate {false};
 
 	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose_type>> _m_pose;
+	std::unique_ptr<reader_latest<pose_type>> _m_fast_pose;
+
+	// Switchboard plug for slow pose.
+	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
 
 	// Switchboard plug for global config data, including GLFW/GPU context handles.
 	std::unique_ptr<reader_latest<global_config>> _m_config;
@@ -500,11 +513,13 @@ extern "C" component* create_component(switchboard* sb) {
 	   returns handles to those topics. */
 
 	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
+	auto fast_pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
 
-	// We need global config data to create a shared GLFW context.
+	// We sample the slow pose.
+	auto slow_pose_ev = sb->subscribe_latest<pose_type>("slow_pose");
+
 	auto config_ev = sb->subscribe_latest<global_config>("global_config");
 
-	return new debugview {std::move(pose_ev), std::move(config_ev)};
+	return new debugview {std::move(fast_pose_ev), std::move(slow_pose_ev),std::move(config_ev)};
 }
 
