@@ -79,10 +79,11 @@ int main(int argc, char** argv) {
 	// Now that we have our shared GLFW context, publish a pointer to our context using Switchboard!
 
 	auto pb = create_phonebook();
-	pb->register_impl<global_config>(new global_config {headless_window});
 
 	auto sb = create_switchboard().release();
 	pb->register_impl<switchboard>(sb);
+
+	pb->register_impl<global_config>(new global_config {headless_window});
 
 	// I have to keep the dynamic libs in scope until the program is dead
 	// so I will add them to a vector

@@ -1,18 +1,18 @@
-#include <cmath>
 #include <chrono>
 #include <future>
 #include <iostream>
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "common/plugin.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
 #include "common/shader_util.hh"
-#include "common/threadloop.hh"
 #include "utils/algebra.hh"
 #include "block_i.hh"
 #include "demo_model.hh"
 #include "shaders/blocki_shader.hh"
+#include <cmath>
 
 using namespace ILLIXR;
 
@@ -32,109 +32,23 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 // If this is defined, gldemo will use Monado-style eyebuffers
 #define USE_ALT_EYE_FORMAT
 
-class gldemo : public threadloop {
+class gldemo : public plugin {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
+
 	gldemo(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 		, _m_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+#ifdef USE_ALT_EYE_FORMAT
+		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
+#else
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
-	{
-		constructor();
-	}
-
-	void constructor() {
-		// Create a hidden window, as we're drawing the demo "offscreen"
-		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-
-		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, glfw_context);
-
-		if(hidden_window == NULL){
-			printf("Whoa, what?");
-		}
-
-		glfwMakeContextCurrent(hidden_window);
-
-		glEnable              ( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( MessageCallback, 0 );
-		
-		// Init and verify GLEW
-		if(glewInit()){
-			printf("Failed to init GLEW\n");
-			glfwDestroyWindow(hidden_window);
-		}
-
-		// Create two shared eye textures.
-		// Note; each "eye texture" actually contains two eyes.
-		// The two eye textures here are actually for double-buffering
-		// the Switchboard connection.
-		createSharedEyebuffer(&(eyeTextures[0]));
-		createSharedEyebuffer(&(eyeTextures[1]));
-
-		// Initialize FBO and depth targets, attaching to the frame handle
-		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
-
-		// Create and bind global VAO object
-		glGenVertexArrays(1, &demo_vao);
-    	glBindVertexArray(demo_vao);
-
-		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
-		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
-
-		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
-		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
-		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
-		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
-
-		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
-
-		// Config mesh position vbo
-		glGenBuffers(1, &ground_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_vertex_data[0]), GL_STATIC_DRAW);
-
-		glGenBuffers(1, &ground_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_normal_data[0]), GL_STATIC_DRAW);
-		
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		// Config mesh indices vbo
-		//glGenBuffers(1, &idx_vbo);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, (BLOCKI_NUM_POLYS * 3) * sizeof(GLuint), logo3d_poly_data, GL_STATIC_DRAW);
-
-		// Construct a basic perspective projection
-		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
-
-		glfwMakeContextCurrent(NULL);
-
-		double lastTime = glfwGetTime();
-		glfwMakeContextCurrent(hidden_window);
-	}
+#endif
+	{ }
 
 	void draw_scene() {
 
@@ -184,162 +98,189 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
-	virtual void _p_one_iteration() override {
-		using namespace std::chrono_literals;
-		// This "app" is "very slow"!
-		//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
-		std::this_thread::sleep_for(16ms);
-		glUseProgram(demoShaderProgram);
+	void main_loop() {
+		double lastTime = glfwGetTime();
+		glfwMakeContextCurrent(hidden_window);
+		while (!_m_terminate.load()) {
+			using namespace std::chrono_literals;
+			// This "app" is "very slow"!
+			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
+			std::this_thread::sleep_for(16ms);
+			glUseProgram(demoShaderProgram);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
 
-		// Determine which set of eye textures to be using.
-		int buffer_to_use = which_buffer.load();
+			// Determine which set of eye textures to be using.
+			int buffer_to_use = which_buffer.load();
 
-		const pose_type* pose_ptr = _m_pose->get_latest_ro();
+			const pose_type* pose_ptr = _m_pose->get_latest_ro();
 
-		// We'll calculate this model view matrix
-		// using fresh pose data, if we have any.
-		ksAlgebra::ksMatrix4x4f modelViewMatrix;
+			// We'll calculate this model view matrix
+			// using fresh pose data, if we have any.
+			ksAlgebra::ksMatrix4x4f modelViewMatrix;
 
-		// Model matrix is just a spinny fun animation
-		ksAlgebra::ksMatrix4x4f modelMatrix;
-		ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
+			// Model matrix is just a spinny fun animation
+			ksAlgebra::ksMatrix4x4f modelMatrix;
+			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
 
-		ksAlgebra::ksMatrix4x4f offsetRotation;
+			ksAlgebra::ksMatrix4x4f offsetRotation;
 
 			
 
-		if(pose_ptr) {
-			// We have a valid pose from our Switchboard plug.
+			if(pose_ptr){
+				// We have a valid pose from our Switchboard plug.
 
-			if(counter == 50){
-				std::cerr << "First pose received: quat(wxyz) is " << pose_ptr->orientation.w() << ", " << pose_ptr->orientation.x() << ", " << pose_ptr->orientation.y() << ", " << pose_ptr->orientation.z() << std::endl;
-				offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
+				if(counter == 50){
+					std::cerr << "First pose received: quat(wxyz) is " << pose_ptr->orientation.w() << ", " << pose_ptr->orientation.x() << ", " << pose_ptr->orientation.y() << ", " << pose_ptr->orientation.z() << std::endl;
+					offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
+				}
+
+				counter++;
+
+				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
+
+				auto latest_quat = ksAlgebra::ksQuatf {
+					.x = combinedQuat.x(),
+					.y = combinedQuat.y(),
+					.z = combinedQuat.z(),
+					.w = combinedQuat.w()
+				};
+
+				auto latest_position = ksAlgebra::ksVector3f {
+					.x = pose_ptr->position[0] + 5.0f,
+					.y = pose_ptr->position[1] + 2.0f,
+					.z = pose_ptr->position[2] + -3.0f
+				};
+				auto scale = ksAlgebra::ksVector3f{1,1,1};
+				ksAlgebra::ksMatrix4x4f head_matrix;
+				std::cout<< "App using position: " << latest_position.z << std::endl;
+				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
+				ksAlgebra::ksMatrix4x4f viewMatrix;
+				// View matrix is the inverse of the camera's position/rotation/etc.
+				ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
+				ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
+			} else {
+				// We have no pose data from our pose topic :(
+				ksAlgebra::ksMatrix4x4f_CreateIdentity(&modelViewMatrix);
 			}
 
-			counter++;
+			glUseProgram(demoShaderProgram);
+			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glClearDepth(1);
 
-			Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
+			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)&(modelViewMatrix.m[0][0]));
+			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
 
-			auto latest_quat = ksAlgebra::ksQuatf {
-				.x = combinedQuat.x(),
-				.y = combinedQuat.y(),
-				.z = combinedQuat.z(),
-				.w = combinedQuat.w()
-			};
+			glBindVertexArray(demo_vao);
 
-			auto latest_position = ksAlgebra::ksVector3f {
-				.x = pose_ptr->position[0] + 5.0f,
-				.y = pose_ptr->position[1] + 2.0f,
-				.z = pose_ptr->position[2] + -3.0f
-			};
-			auto scale = ksAlgebra::ksVector3f{1,1,1};
-			ksAlgebra::ksMatrix4x4f head_matrix;
-			std::cout<< "App using position: " << latest_position.z << std::endl;
-			ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
-			ksAlgebra::ksMatrix4x4f viewMatrix;
-			// View matrix is the inverse of the camera's position/rotation/etc.
-			ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
-			ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
-		} else {
-			// We have no pose data from our pose topic :(
-			ksAlgebra::ksMatrix4x4f_CreateIdentity(&modelViewMatrix);
+			#ifdef USE_ALT_EYE_FORMAT
+
+			// Draw things to left eye.
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[0]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0, buffer_to_use);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			draw_scene();
+
+			
+			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
+			
+			
+			// Draw things to right eye.
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[1]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0, buffer_to_use);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			draw_scene();
+
+			#else
+			
+			// Draw things to left eye.
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 0);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			draw_scene();
+
+			
+			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
+			
+			
+			// Draw things to right eye.
+			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
+			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 1);
+			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			draw_scene();
+
+			#endif
+
+			/*
+			glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
+			glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(vertexPosAttr);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
+			*/
+			
+			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+			lastTime = glfwGetTime();
+			glFlush();
+
+			// Publish our submitted frame handle to Switchboard!
+			#ifdef USE_ALT_EYE_FORMAT
+			auto frame = new rendered_frame_alt;
+			frame->texture_handles[0] = eyeTextures[0];
+			frame->texture_handles[1] = eyeTextures[1];
+			frame->swap_indices[0] = buffer_to_use;
+			frame->swap_indices[1] = buffer_to_use;
+			auto pose = _m_pose->get_latest_ro();
+			frame->render_pose = *pose;
+			assert(pose);
+			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
+			#else
+			auto frame = new rendered_frame;
+			frame->texture_handle = eyeTextures[buffer_to_use];
+			
+			auto pose = _m_pose->get_latest_ro();
+			frame->render_pose = *pose;
+			assert(pose);
+			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
+			#endif
+
+			_m_eyebuffer->put(frame);
+			
 		}
-
-		glUseProgram(demoShaderProgram);
-		glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-		glClearDepth(1);
-
-		glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)&(modelViewMatrix.m[0][0]));
-		glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
-
-		glBindVertexArray(demo_vao);
-
-
-		// Draw things to left eye.
-#ifdef USE_ALT_EYE_FORMAT
-		glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[0]);
-		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0, buffer_to_use);
-#else
-		glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
-		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 0);
-#endif
-
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-		glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-		draw_scene();
-
-			
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-		//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			
-			
-		// Draw things to right eye.
-#ifndef USE_ALT_EYE_FORMAT
-		glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[1]);
-		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0, buffer_to_use);
-#else
-		glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
-		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 1);
-#endif
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-		glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		draw_scene();
-
-		/*
-		  glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-		  glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		  glEnableVertexAttribArray(vertexPosAttr);
-		  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-		  glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-		*/
-			
-		printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
-		lastTime = glfwGetTime();
-		glFlush();
-
-		// Publish our submitted frame handle to Switchboard!
-		auto frame = new rendered_frame;
-#ifdef USE_ALT_EYE_FORMAT
-		frame->texture_handles[0] = eyeTextures[0];
-		frame->texture_handles[1] = eyeTextures[1];
-		frame->swap_indices[0] = buffer_to_use;
-		frame->swap_indices[1] = buffer_to_use;
-#else
-		frame->texture_handle = eyeTextures[buffer_to_use];
-#endif
-		auto pose = _m_pose->get_latest_ro();
-		frame->render_pose = *pose;
-		assert(pose);
-		which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-
-		_m_eyebuffer->put(frame);
-			
+		
 	}
+
 private:
-	switchboard* sb;
-
 	GLFWwindow * const glfw_context;
-	GLFWwindow* window;
-
-	double lastTime;
-
+	switchboard* sb;
+	std::thread _m_thread;
+	std::atomic<bool> _m_terminate {false};
+	
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
 	// correct eye/framebuffer in the "swapchain".
-	// #ifdef USE_ALT_EYE_FORMAT
-	// std::unique_ptr<writer<rendered_frame_alt>> _m_eyebuffer;
-	// #else
-	// #endif
+	#ifdef USE_ALT_EYE_FORMAT
+	std::unique_ptr<writer<rendered_frame_alt>> _m_eyebuffer;
+	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
+	#endif
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;
@@ -467,8 +408,105 @@ private:
 public:
 	/* compatibility interface */
 
+	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
+	// This may be changed later, but it really doesn't matter for this purpose because
+	// it will be replaced by a real, Monado-interfaced application.
+	virtual void start() override {
+		// Create a hidden window, as we're drawing the demo "offscreen"
+		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
+		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, glfw_context);
+
+		if(hidden_window == NULL){
+			printf("Whoa, what?");
+		}
+
+		glfwMakeContextCurrent(hidden_window);
+
+		glEnable              ( GL_DEBUG_OUTPUT );
+		glDebugMessageCallback( MessageCallback, 0 );
+		
+		// Init and verify GLEW
+		if(glewInit()){
+			printf("Failed to init GLEW\n");
+			glfwDestroyWindow(hidden_window);
+		}
+
+		// Create two shared eye textures.
+		// Note; each "eye texture" actually contains two eyes.
+		// The two eye textures here are actually for double-buffering
+		// the Switchboard connection.
+		createSharedEyebuffer(&(eyeTextures[0]));
+		createSharedEyebuffer(&(eyeTextures[1]));
+
+		// Initialize FBO and depth targets, attaching to the frame handle
+		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
+
+		// Create and bind global VAO object
+		glGenVertexArrays(1, &demo_vao);
+    	glBindVertexArray(demo_vao);
+
+		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+
+		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
+		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
+		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
+		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
+
+		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
+
+		// Config mesh position vbo
+		glGenBuffers(1, &ground_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_vertex_data[0]), GL_STATIC_DRAW);
+		glGenBuffers(1, &water_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_vertex_data[0]), GL_STATIC_DRAW);
+		glGenBuffers(1, &trees_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_vertex_data[0]), GL_STATIC_DRAW);
+		glGenBuffers(1, &rocks_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_vertex_data[0]), GL_STATIC_DRAW);
+
+		glGenBuffers(1, &ground_normal_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_normal_data[0]), GL_STATIC_DRAW);
+		glGenBuffers(1, &water_normal_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_normal_data[0]), GL_STATIC_DRAW);
+		glGenBuffers(1, &trees_normal_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_normal_data[0]), GL_STATIC_DRAW);
+		glGenBuffers(1, &rocks_normal_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
+		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_normal_data[0]), GL_STATIC_DRAW);
+		
+		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		// Config mesh indices vbo
+		//glGenBuffers(1, &idx_vbo);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, (BLOCKI_NUM_POLYS * 3) * sizeof(GLuint), logo3d_poly_data, GL_STATIC_DRAW);
+
+		// Construct a basic perspective projection
+		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
+
+		glfwMakeContextCurrent(NULL);
+
+		_m_thread = std::thread{&gldemo::main_loop, this};
+
+	}
+
+	void stop() {
+		_m_terminate.store(true);
+		_m_thread.join();
+	}
+
 	virtual ~gldemo() override {
-		// TODO: need to cleanup here!
+		stop();
 	}
 };
 

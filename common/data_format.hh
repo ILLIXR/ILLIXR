@@ -51,16 +51,19 @@ namespace ILLIXR {
 	// };
 
 	// Single-texture format; arrayed by left/right eye
+	// Single-texture format; arrayed by left/right eye
 	struct rendered_frame {
-		#ifdef USE_ALT_EYE_FORMAT
-		// Using arrays as a swapchain
-		// Array of left eyes, array of right eyes
-		// This more closely matches the format used by Monado
+		GLuint texture_handle;
+		pose_type render_pose; // The pose used when rendering this frame.
+		std::chrono::time_point<std::chrono::system_clock> sample_time; 
+	};
+
+	// Using arrays as a swapchain
+	// Array of left eyes, array of right eyes
+	// This more closely matches the format used by Monado
+	struct rendered_frame_alt {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
-		#else
-		GLuint texture_handle;
-		#endif
 		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};

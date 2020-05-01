@@ -1,11 +1,10 @@
-
 #include <chrono>
 #include <future>
 #include <iostream>
 #include <thread>
-#include <type_traits>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "common/plugin.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
 #include "common/shader_util.hh"
@@ -14,12 +13,14 @@
 #include "shaders/basic_shader.hh"
 #include "shaders/timewarp_shader.hh"
 #include "common/linalg.h"
-#include "common/threadloop.hh"
 
 using namespace ILLIXR;
 using namespace linalg::aliases;
 
-class timewarp_gl : public threadloop {
+// If this is defined, gldemo will use Monado-style eyebuffers
+#define USE_ALT_EYE_FORMAT
+
+class timewarp_gl : public plugin {
 
 static GLFWwindow* initWindow(int width, int height, GLFWwindow* shared, bool visible)
 {
@@ -42,13 +43,16 @@ public:
 		: sb{pb->lookup_impl<switchboard>()}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 		, _m_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+	#ifdef USE_ALT_EYE_FORMAT
+		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
+	#else
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
-	{
-		constructor();
-	}
+	#endif
+	{ }
 
 private:
 	GLFWwindow * const glfw_context;
+	switchboard* sb;
 
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
@@ -59,17 +63,15 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	switchboard* sb;
-
 	GLFWwindow* window;
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
+	#ifdef USE_ALT_EYE_FORMAT
+	std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
+	#else
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
-	// #ifdef USE_ALT_EYE_FORMAT
-	// std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
-	// #else
-	// #endif
+	#endif
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;
@@ -77,6 +79,8 @@ private:
 
 	GLuint timewarpShaderProgram;
 	GLuint basicShaderProgram;
+	std::thread _m_thread;
+	std::atomic<bool> _m_terminate {false};
 
 	double lastSwapTime;
 	double lastFrameTime;
@@ -143,103 +147,7 @@ private:
 	// Basic perspective projection matrix
 	ksAlgebra::ksMatrix4x4f basicProjection;
 
-	void constructor() {
-		// Generate reference HMD and physical body dimensions
-    	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
-		HMD::GetDefaultBodyInfo(&body_info);
-
-		/*
-		if(hmd_stats != NULL){
-			// Override generate reference stats with specified hmd_stats
-			for(int i = 0; i < 11; i++)
-				hmd_info.K[i] = hmd_stats->K[i];
-			for(int i = 0; i < 4; i++)
-				hmd_info.chromaticAberration[i] = hmd_stats->chromaticAberration[i];
-
-			body_info.interpupillaryDistance = hmd_stats->ipd;
-			hmd_info.displayPixelsWide = hmd_stats->displayPixelsWide;
-			hmd_info.displayPixelsHigh = hmd_stats->displayPixelsHigh;
-			hmd_info.visiblePixelsWide = hmd_stats->visiblePixelsWide;
-			hmd_info.visiblePixelsHigh = hmd_stats->visiblePixelsHigh;
-			hmd_info.lensSeparationInMeters = hmd_stats->lensSeparationInMeters;
-			hmd_info.metersPerTanAngleAtCenter = hmd_stats->metersPerTanAngleAtCenter;
-		}
-		*/
-
-
-    	// Construct timewarp meshes and other data
-    	BuildTimewarp(&hmd_info);
-		
-		window = initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, glfw_context, true);
-		glfwMakeContextCurrent(window);
-		
-		glEnable              ( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( MessageCallback, 0 );
-
-		glfwSwapInterval(1);
-
-		// Create and bind global VAO object
-		glGenVertexArrays(1, &tw_vao);
-    	glBindVertexArray(tw_vao);
-
-		timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
-		// Acquire attribute and uniform locations from the compiled and linked shader program
-
-		
-		
-    	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
-    	distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
-    	distortion_uv1_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv1");
-    	distortion_uv2_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv2");
-    	tw_start_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpStartTransform");
-    	tw_end_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpEndTransform");
-    	tw_eye_index_unif = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
-    	eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
-    	eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
-		
-		
-		
-		// Config distortion mesh position vbo
-		glGenBuffers(1, &distortion_positions_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_pos_attr);
-
-		
-
-		// Config distortion uv0 vbo
-		glGenBuffers(1, &distortion_uv0_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv0_attr);
-
-		
-		// Config distortion uv1 vbo
-		glGenBuffers(1, &distortion_uv1_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv1_attr);
-
-		
-		// Config distortion uv2 vbo
-		glGenBuffers(1, &distortion_uv2_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv2_attr);
-
-		
-		// Config distortion mesh indices vbo
-		glGenBuffers(1, &distortion_indices_vbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
-		
-		glfwMakeContextCurrent(NULL);
-		lastSwapTime = glfwGetTime();
-	}
+	
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -386,20 +294,127 @@ private:
 
 public:
 
-	virtual void _p_one_iteration() override {
-		using namespace std::chrono_literals;
-		// Sleep for approximately 90% of the time until the next vsync.
-		// Scheduling granularity can't be assumed to be super accurate here,
-		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
-		// MTP here. More you wait, closer to the display sync you sample the pose.
-		// TODO use more precise sleep.
-		double sleep_start = glfwGetTime();
-		glfwPollEvents();
-		reliable_sleep(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		warp(glfwGetTime());
+	void main_loop() {
+		lastSwapTime = glfwGetTime();
+		while (!_m_terminate.load()) {
+			using namespace std::chrono_literals;
+			// Sleep for approximately 90% of the time until the next vsync.
+			// Scheduling granularity can't be assumed to be super accurate here,
+			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
+			// MTP here. More you wait, closer to the display sync you sample the pose.
+			// TODO use more precise sleep.
+			double sleep_start = glfwGetTime();
+			glfwPollEvents();
+			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
+			warp(glfwGetTime());
+		}
 	}
 	/* compatibility interface */
+	
+	// ATW/Compositor overrides _p_start to control its own lifecycle/scheduling.
+	// This may be changed later, but for precision of vsync/etc we're going to
+	// use component-driven loop scheduling for now.
+	virtual void start() override {
 
+		// Generate reference HMD and physical body dimensions
+    	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
+		HMD::GetDefaultBodyInfo(&body_info);
+
+		/*
+		if(hmd_stats != NULL){
+			// Override generate reference stats with specified hmd_stats
+			for(int i = 0; i < 11; i++)
+				hmd_info.K[i] = hmd_stats->K[i];
+			for(int i = 0; i < 4; i++)
+				hmd_info.chromaticAberration[i] = hmd_stats->chromaticAberration[i];
+
+			body_info.interpupillaryDistance = hmd_stats->ipd;
+			hmd_info.displayPixelsWide = hmd_stats->displayPixelsWide;
+			hmd_info.displayPixelsHigh = hmd_stats->displayPixelsHigh;
+			hmd_info.visiblePixelsWide = hmd_stats->visiblePixelsWide;
+			hmd_info.visiblePixelsHigh = hmd_stats->visiblePixelsHigh;
+			hmd_info.lensSeparationInMeters = hmd_stats->lensSeparationInMeters;
+			hmd_info.metersPerTanAngleAtCenter = hmd_stats->metersPerTanAngleAtCenter;
+		}
+		*/
+
+
+    	// Construct timewarp meshes and other data
+    	BuildTimewarp(&hmd_info);
+		
+		window = initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, glfw_context, true);
+		glfwMakeContextCurrent(window);
+		
+		glEnable              ( GL_DEBUG_OUTPUT );
+		glDebugMessageCallback( MessageCallback, 0 );
+
+		glfwSwapInterval(1);
+
+		// Create and bind global VAO object
+		glGenVertexArrays(1, &tw_vao);
+    	glBindVertexArray(tw_vao);
+
+		timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
+		// Acquire attribute and uniform locations from the compiled and linked shader program
+
+		
+		
+    	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
+    	distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
+    	distortion_uv1_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv1");
+    	distortion_uv2_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv2");
+    	tw_start_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpStartTransform");
+    	tw_end_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpEndTransform");
+    	tw_eye_index_unif = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
+    	eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
+    	eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
+		
+		
+		
+		// Config distortion mesh position vbo
+		glGenBuffers(1, &distortion_positions_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
+		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		//glEnableVertexAttribArray(distortion_pos_attr);
+
+		
+
+		// Config distortion uv0 vbo
+		glGenBuffers(1, &distortion_uv0_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
+		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		//glEnableVertexAttribArray(distortion_uv0_attr);
+
+		
+		// Config distortion uv1 vbo
+		glGenBuffers(1, &distortion_uv1_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
+		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		//glEnableVertexAttribArray(distortion_uv1_attr);
+
+		
+		// Config distortion uv2 vbo
+		glGenBuffers(1, &distortion_uv2_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
+		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		//glEnableVertexAttribArray(distortion_uv2_attr);
+
+		
+		// Config distortion mesh indices vbo
+		glGenBuffers(1, &distortion_indices_vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
+		
+		glfwMakeContextCurrent(NULL);
+
+		_m_thread = std::thread{&timewarp_gl::main_loop, this};
+	}
+
+	
 	void GetViewMatrixFromPose( ksAlgebra::ksMatrix4x4f* viewMatrix, const pose_type& pose) {
 		// Cast from the "standard" quaternion to our own, proprietary, Oculus-flavored quaternion
 		auto latest_quat = ksAlgebra::ksQuatf {
@@ -505,21 +520,20 @@ public:
 
 		glUniform1i(eye_sampler_0, 0);
 
-#ifndef USE_ALT_EYE_FORMAT
+		#ifndef USE_ALT_EYE_FORMAT
 		// Bind the shared texture handle
 		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
-#endif
+		#endif
 
 		glBindVertexArray(tw_vao);
 
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
 
-#ifdef USE_ALT_EYE_FORMAT
-			// If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
+			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
 			glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handles[eye]);
 			glUniform1i(tw_eye_index_unif, most_recent_frame->swap_indices[eye]);
-#endif
+			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
 			// the distortion mesh for both eyes! They are contiguously
@@ -548,12 +562,11 @@ public:
 			glEnableVertexAttribArray(distortion_uv2_attr);
 
 
-#ifdef USE_ALT_EYE_FORMAT
-			// If we are using normal ILLIXR-format eyebuffers
+			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
 			// Specify which layer of the eye texture we're going to be using.
 			// Each eye has its own layer.
 			glUniform1i(tw_eye_index_unif, eye);
-#endif
+			#endif
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
 			// reused for both eyes. Therefore glDrawElements can be immediately called,
@@ -578,9 +591,15 @@ public:
 		
 	}
 
+	void stop() {
+		_m_terminate.store(true);
+		_m_thread.join();
+	}
+
 	virtual ~timewarp_gl() override {
-		// TODO: Need to cleanup resources here!
+		stop();
 	}
 };
+
 
 PLUGIN_MAIN(timewarp_gl)

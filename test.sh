@@ -66,10 +66,10 @@ then
 	then
 		curl -o data.zip \
 			"http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_01_easy/V1_01_easy.zip"
-		unzip data.zip
 	fi
-	mv mav0 data
+	unzip data.zip
 	rm -rf __MACOSX
+	mv mav0 data
 fi
 
 # I opted not to put this in one bazel package because in production,
