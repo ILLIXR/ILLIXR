@@ -37,8 +37,11 @@ protected:
 	}
 
 	template< class Rep, class Period >
-	void reliable_sleep(const std::chrono::duration<Rep, Period>& sleep_duration) {
+	// stop time is 5ms + 2020 time
+	void reliable_sleep(const std::chrono::time_point<std::chrono::system_clock>& stop) {
 		auto start = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<Rep, Period>& sleep_duration = stop - start;
+
 		auto sleep_quantum = std::min<std::common_type_t<decltype(sleep_duration), decltype(MAX_TIMEOUT)>>(
 			sleep_duration / SLEEP_SAFETY_FACTOR,
 			MAX_TIMEOUT
