@@ -19,23 +19,16 @@ public:
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	{
 		_m_imu0->put(new imu_type{std::chrono::system_clock::now(), Eigen::Vector3f{0, 0, 0}, Eigen::Vector3f{0, 0, 0}});
-		// 2014 Time
 		first_time = _m_sensor_data_it->first;
 		// last_time = _m_sensor_data_it->first;
 		
-		// 2020 Time
 		begin_time = std::chrono::system_clock::now();
 	}
 
 protected:
 	virtual void _p_one_iteration() override {
-		// target_ts 2014 time
 		ullong target_ts = _m_sensor_data_it->first;
-
-		// Sleep for like 5ms + current 2020 time
 		reliable_sleep(std::chrono::nanoseconds{target_ts - first_time} + begin_time);
-
-		// When the sleep is SUPPOSED to end
 		time_type ts = begin_time + std::chrono::nanoseconds{target_ts - first_time};
 
 		//std::cerr << "Now time: " << ts.time_since_epoch().count() << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{target_ts}).time_since_epoch().count() << std::endl;
