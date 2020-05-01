@@ -27,12 +27,12 @@ then
 fi
 
 # Necessary for Open VINS standalone build
-cd slam2/open_vins/ov_standalone/ov_msckf/
+cd slam2/open_vins/
 mkdir -p build/
 cd build/
 cmake ..
 make -j`(nproc)`
-cd ../../../../..
+cd ../../..
 
 cd offline_imu_cam
 "${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
@@ -78,7 +78,7 @@ fi
 # is all each .so files and the runtime binary.
 
 ./runtime/main.exe \
-	slam2/open_vins/ov_standalone/ov_msckf/build/libslam2.so \
+	slam2/open_vins/build/ov_msckf/libslam2.so \
 	offline_imu_cam/liboffline_imu_cam.so \
 	pose_prediction/libpose_prediction.so \
 	timewarp_gl/libtimewarp_gl.so \

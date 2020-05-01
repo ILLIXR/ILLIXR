@@ -335,11 +335,11 @@ private:
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
 	// correct eye/framebuffer in the "swapchain".
-	#ifdef USE_ALT_EYE_FORMAT
-	std::unique_ptr<writer<rendered_frame_alt>> _m_eyebuffer;
-	#else
+	// #ifdef USE_ALT_EYE_FORMAT
+	// std::unique_ptr<writer<rendered_frame_alt>> _m_eyebuffer;
+	// #else
+	// #endif
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
-	#endif
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;

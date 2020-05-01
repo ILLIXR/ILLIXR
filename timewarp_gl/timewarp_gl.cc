@@ -65,11 +65,11 @@ private:
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
-	#ifdef USE_ALT_EYE_FORMAT
-	std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
-	#else
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
-	#endif
+	// #ifdef USE_ALT_EYE_FORMAT
+	// std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
+	// #else
+	// #endif
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;
