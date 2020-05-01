@@ -28,6 +28,10 @@ We request that you cite our following paper when you use ILLIXR for a publicati
 
 Each component of ILLIXR is packaged as its own repository for modularity. Please refer to the setup instructions of each individual component in `benchmark/`.
 
+To clone this repo use the following command:
+```
+git clone https://github.com/ILLIXR/ILLIXR.git --recursive
+```
 # Acknowledgements
 
 Muhammad Huzaifa led the development of ILLIXR in [Sarita Adve’s research group](http://rsim.cs.illinois.edu/) at the University of Illinois at Urbana-Champaign. Other major contributors include Rishi Desai, Xutao Jiang, Joseph Ravichandran, and Finn Sinclair.
