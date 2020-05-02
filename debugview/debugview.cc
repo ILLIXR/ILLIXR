@@ -54,16 +54,59 @@ public:
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_fast_pose{sb->subscribe_latest<pose_type>("fast_pose")}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
+		, _m_true_pose{sb->subscribe_latest<pose_type>("fast_true_pose")}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{ }
+
+	// Struct for drawable debug objects (scenery, headset visualization, etc)
+	struct DebugDrawable {
+		DebugDrawable() {}
+		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
+
+		GLuint num_triangles;
+		GLuint positionVBO;
+		GLuint positionAttribute;
+		GLuint normalVBO;
+		GLuint normalAttribute;
+		GLuint colorUniform;
+		std::vector<GLfloat> color;
+
+		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
+					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
+
+			this->positionAttribute = positionAttribute;
+			this->normalAttribute = normalAttribute;
+			this->colorUniform = colorUniform;
+			this->num_triangles = num_triangles;
+
+			glGenBuffers(1, &positionVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
+			
+			glGenBuffers(1, &normalVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
+
+		}
+
+		void drawMe() {
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(positionAttribute);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(normalAttribute);
+			glUniform4fv(colorUniform, 1, color.data());
+			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+		}
+	};
 
 	void draw_GUI() {
 		// Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-		// Create a window called "My First Tool", with a menu bar.
+		ImGui::SetNextWindowSize(ImVec2(200, 900), ImGuiCond_FirstUseEver);
 		ImGui::Begin("ILLIXR Debug View");
 
 		ImGui::Text("Adjust options for the runtime debug view.");
@@ -92,6 +135,7 @@ public:
 		ImGui::Spacing();
 		const pose_type* fast_pose_ptr = _m_fast_pose->get_latest_ro();
 		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
+		const pose_type* true_pose_ptr = _m_true_pose->get_latest_ro();
 		ImGui::Text("Switchboard connection status:");
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
@@ -111,6 +155,16 @@ public:
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid slow pose pointer");
 		}
+		ImGui::Text("GROUND TRUTH pose topic:");
+		ImGui::SameLine();
+		if(true_pose_ptr){
+			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
+			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose_ptr->position.x(), true_pose_ptr->position.y(), true_pose_ptr->position.z());
+			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose_ptr->orientation.x(), true_pose_ptr->orientation.y(), true_pose_ptr->orientation.z(), true_pose_ptr->orientation.w());
+		} else {
+			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
+		}
+
 
 		ImGui::End();
 		ImGui::ShowDemoWindow();
@@ -124,57 +178,33 @@ public:
 		// Please excuse the strange GL_CW and GL_CCW mode switches.
 		
 		glFrontFace(GL_CW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(ground_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Ground_plane_NUM_TRIANGLES * 3);
-
+		groundObject.drawMe();
 		glFrontFace(GL_CCW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(water_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Water_plane001_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(tree_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Trees_cone_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(rock_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Rocks_plane002_NUM_TRIANGLES * 3);
-
+		waterObject.drawMe();
+		treesObject.drawMe();
+		rocksObject.drawMe();
 		glFrontFace(GL_CCW);
 	}
 
 	void draw_headset(){
-		glBindBuffer(GL_ARRAY_BUFFER, headset_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, headset_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(rock_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, headset_NUM_TRIANGLES * 3);
+
+		headsetObject.drawMe();
+	}
+
+	Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation, const Eigen::Vector3f& positionOffset){
+		Eigen::Matrix4f headsetPosition;
+		headsetPosition << 1, 0, 0, position.x() + positionOffset.x(),
+						   0, 1, 0, position.y() + positionOffset.y(),
+						   0, 0, 1, position.z() + positionOffset.z(),
+						   0, 0, 0, 1;
+
+		// We need to convert the headset rotation quaternion to a 4x4 homogenous matrix.
+		// First of all, we convert to 3x3 matrix, then extend to 4x4 by augmenting.
+		Eigen::Matrix3f rotationMatrix = rotation.toRotationMatrix();
+		Eigen::Matrix4f rotationMatrixHomogeneous = Eigen::Matrix4f::Identity();
+		rotationMatrixHomogeneous.block(0,0,3,3) = rotationMatrix;
+		// Then we apply the headset rotation.
+		return headsetPosition * rotationMatrixHomogeneous; 
 	}
 
 	
@@ -230,22 +260,7 @@ public:
 				counter++;
 
 				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
-
-				
-				headsetPosition << 1, 0, 0, pose_ptr->position.x() + tracking_position_offset.x(),
-				               	   0, 1, 0, pose_ptr->position.y() + tracking_position_offset.y(),
-							       0, 0, 1, pose_ptr->position.z() + tracking_position_offset.z(),
-							       0, 0, 0, 1;
-
-				// We need to convert the headset rotation quaternion to a 4x4 homogenous matrix.
-				// First of all, we convert to 3x3 matrix, then extend to 4x4 by augmenting.
-				Eigen::Matrix3f combinedRot = combinedQuat.toRotationMatrix();
-				Eigen::Matrix4f combinedRotHomogeneous = Eigen::Matrix4f::Identity();
-				combinedRotHomogeneous.block(0,0,3,3) = combinedRot;
-
-				// Then we apply the headset rotation.
-				headsetPose = headsetPosition * combinedRotHomogeneous;
-				//headsetPose = headsetPosition;
+				headsetPose = generateHeadsetTransform(pose_ptr->position, combinedQuat, tracking_position_offset);
 			}
 
 			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
@@ -289,8 +304,18 @@ public:
 
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
+			headsetObject.color = {0.2,0.2,0.2,1};
+			headsetObject.drawMe();
 
-			draw_headset();
+			const pose_type* groundtruth_pose_ptr = _m_true_pose->get_latest_ro();
+			if(groundtruth_pose_ptr){
+				headsetPose = generateHeadsetTransform(groundtruth_pose_ptr->position, groundtruth_pose_ptr->orientation, tracking_position_offset);
+			}
+			modelView = userView * headsetPose;
+			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
+
+			headsetObject.color = {0,0.8,0,1};
+			headsetObject.drawMe();
 
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -309,6 +334,7 @@ private:
 
 	std::unique_ptr<reader_latest<pose_type>> _m_fast_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
+	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
 	GLFWwindow* gui_window;
 
 	uint counter = 0;
@@ -350,24 +376,16 @@ private:
 
 	GLuint colorUniform;
 
-	GLfloat water_color[4] = {
-		0.0, 0.3, 0.5, 1.0
-	};
+	// Scenery
+	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
+	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
+	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
+	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
-	GLfloat ground_color[4] = {
-		0.1, 0.2, 0.1, 1.0
-	};
-
-	GLfloat tree_color[4] = {
-		0.0, 0.3, 0.0, 1.0
-	};
-
-	GLfloat rock_color[4] = {
-		0.3, 0.3, 0.3, 1.0
-	};
+	// Headset debug model
+	DebugDrawable headsetObject = DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
-
 
 	static void GLAPIENTRY
 	MessageCallback( GLenum source,
@@ -438,42 +456,50 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		// Config mesh position vbo
-		glGenBuffers(1, &ground_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_vertex_data[0]), GL_STATIC_DRAW);
+		groundObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Ground_plane_NUM_TRIANGLES,
+			&(Ground_Plane_vertex_data[0]),
+			&(Ground_Plane_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
-		glGenBuffers(1, &ground_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_normal_data[0]), GL_STATIC_DRAW);
+		waterObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Water_plane001_NUM_TRIANGLES,
+			&(Water_Plane001_vertex_data[0]),
+			&(Water_Plane001_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
-		glGenBuffers(1, &headset_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, headset_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (headset_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(headset_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &headset_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, headset_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (headset_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(headset_normal_data[0]), GL_STATIC_DRAW);
-		
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		treesObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Trees_cone_NUM_TRIANGLES,
+			&(Trees_Cone_vertex_data[0]),
+			&(Trees_Cone_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+
+		rocksObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Rocks_plane002_NUM_TRIANGLES,
+			&(Rocks_Plane002_vertex_data[0]),
+			&(Rocks_Plane002_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+
+		headsetObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			headset_NUM_TRIANGLES,
+			&(headset_vertex_data[0]),
+			&(headset_normal_data[0]),
+			GL_DYNAMIC_DRAW
+		);
 
 		// Construct a basic perspective projection
 		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );

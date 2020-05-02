@@ -14,8 +14,10 @@ public:
     pose_prediction(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
+        , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
 		, _m_imu{sb->subscribe_latest<imu_type>("imu0")}
 		, _m_fast_pose{sb->publish<pose_type>("fast_pose")}
+        , _m_fast_true_pose{sb->publish<pose_type>("fast_true_pose")}
 	{
 
 		auto nullable_pose = _m_slow_pose->get_latest_ro();
@@ -42,8 +44,9 @@ public:
 
         // If the SB has a new slow pose value from SLAM
         auto pose_sample = _m_slow_pose->get_latest_ro();
+        auto groundtruth_sample = _m_true_pose->get_latest_ro();
         if (pose_sample != NULL && pose_sample->time > _previous_slow_pose.time) {
-            _update_slow_pose(*pose_sample);
+            _update_slow_pose(*pose_sample, *groundtruth_sample);
 
             // If this is the first time receiving a slow pose, init the filter biases and initial state.
             if (!_slam_received) {
@@ -70,8 +73,10 @@ private:
 
     // Switchboard plugs for writing / reading data.
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
+    std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
     std::unique_ptr<reader_latest<imu_type>> _m_imu;
     std::unique_ptr<writer<pose_type>> _m_fast_pose;
+    std::unique_ptr<writer<pose_type>> _m_fast_true_pose; // Swapped output, but from ground truth (for debugging SLAM)
 
     time_type start_time;
 
@@ -82,7 +87,7 @@ private:
     bool _slam_received;
 
     // Helper that will push to the SB if a newer pose is pulled from the SB/SLAM
-    void _update_slow_pose(const pose_type fresh_pose) {
+    void _update_slow_pose(const pose_type fresh_pose, const pose_type fresh_ground_truth) {
         float time_difference = static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>
 												   (fresh_pose.time - _previous_slow_pose.time).count()) / 1000000000.0f;
 
@@ -149,11 +154,23 @@ private:
         swapped_pose->orientation.y() = fresh_pose.orientation.x();
         swapped_pose->orientation.z() = -fresh_pose.orientation.z();
 
+        pose_type* swapped_groundtruth = new pose_type(fresh_ground_truth);
+        
+        swapped_groundtruth->position.x() = fresh_ground_truth.position.y();
+        swapped_groundtruth->position.y() = fresh_ground_truth.position.x();
+        swapped_groundtruth->position.z() = -fresh_ground_truth.position.z();
+
+        swapped_groundtruth->orientation.w() = fresh_ground_truth.orientation.w();
+        swapped_groundtruth->orientation.x() = fresh_ground_truth.orientation.y();
+        swapped_groundtruth->orientation.y() = fresh_ground_truth.orientation.x();
+        swapped_groundtruth->orientation.z() = -fresh_ground_truth.orientation.z();
+
         _previous_slow_pose = *temp_pose;
         _current_fast_pose = *temp_pose;
         _filter->update_estimates(temp_pose->orientation);
 
         _m_fast_pose->put(swapped_pose);
+        _m_fast_true_pose->put(swapped_groundtruth);
     }
 
     // Helper that updates the pose with new IMU readings and pushed to the SB

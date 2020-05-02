@@ -32,6 +32,8 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 // If this is defined, gldemo will use Monado-style eyebuffers
 #define USE_ALT_EYE_FORMAT
 
+
+
 class gldemo : public plugin {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
@@ -50,51 +52,61 @@ public:
 #endif
 	{ }
 
+
+	// Struct for drawable debug objects (scenery, headset visualization, etc)
+	struct DebugDrawable {
+		DebugDrawable() {}
+		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
+
+		GLuint num_triangles;
+		GLuint positionVBO;
+		GLuint positionAttribute;
+		GLuint normalVBO;
+		GLuint normalAttribute;
+		GLuint colorUniform;
+		std::vector<GLfloat> color;
+
+		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
+					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
+
+			this->positionAttribute = positionAttribute;
+			this->normalAttribute = normalAttribute;
+			this->colorUniform = colorUniform;
+			this->num_triangles = num_triangles;
+
+			glGenBuffers(1, &positionVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
+			
+			glGenBuffers(1, &normalVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
+
+		}
+
+		void drawMe() {
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(positionAttribute);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(normalAttribute);
+			glUniform4fv(colorUniform, 1, color.data());
+			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+		}
+	};
+
 	void draw_scene() {
 
 		// OBJ exporter is having winding order issues currently.
 		// Please excuse the strange GL_CW and GL_CCW mode switches.
 
 		glFrontFace(GL_CW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(ground_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Ground_plane_NUM_TRIANGLES * 3);
-
+		groundObject.drawMe();
 		glFrontFace(GL_CCW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(water_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Water_plane001_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(tree_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Trees_cone_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(rock_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Rocks_plane002_NUM_TRIANGLES * 3);
-
+		waterObject.drawMe();
+		treesObject.drawMe();
+		rocksObject.drawMe();
 		glFrontFace(GL_CCW);
 	}
 
@@ -307,32 +319,13 @@ private:
 	GLuint modelViewAttr;
 	GLuint projectionAttr;
 
-	GLuint ground_vbo;
-	GLuint ground_normal_vbo;
-	GLuint water_vbo;
-	GLuint water_normal_vbo;
-	GLuint trees_vbo;
-	GLuint trees_normal_vbo;
-	GLuint rocks_vbo;
-	GLuint rocks_normal_vbo;
-
 	GLuint colorUniform;
+	
+	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
+	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
+	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
+	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
-	GLfloat water_color[4] = {
-		0.0, 0.3, 0.5, 1.0
-	};
-
-	GLfloat ground_color[4] = {
-		0.1, 0.2, 0.1, 1.0
-	};
-
-	GLfloat tree_color[4] = {
-		0.0, 0.3, 0.0, 1.0
-	};
-
-	GLfloat rock_color[4] = {
-		0.3, 0.3, 0.3, 1.0
-	};
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
 
@@ -455,41 +448,43 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		// Config mesh position vbo
-		glGenBuffers(1, &ground_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_vertex_data[0]), GL_STATIC_DRAW);
-
-		glGenBuffers(1, &ground_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_normal_data[0]), GL_STATIC_DRAW);
 		
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		groundObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Ground_plane_NUM_TRIANGLES,
+			&(Ground_Plane_vertex_data[0]),
+			&(Ground_Plane_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
-		// Config mesh indices vbo
-		//glGenBuffers(1, &idx_vbo);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, (BLOCKI_NUM_POLYS * 3) * sizeof(GLuint), logo3d_poly_data, GL_STATIC_DRAW);
+		waterObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Water_plane001_NUM_TRIANGLES,
+			&(Water_Plane001_vertex_data[0]),
+			&(Water_Plane001_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
+		treesObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Trees_cone_NUM_TRIANGLES,
+			&(Trees_Cone_vertex_data[0]),
+			&(Trees_Cone_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+
+		rocksObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Rocks_plane002_NUM_TRIANGLES,
+			&(Rocks_Plane002_vertex_data[0]),
+			&(Rocks_Plane002_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+		
 		// Construct a basic perspective projection
 		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
