@@ -36,13 +36,15 @@ protected:
 		return _m_terminate.load();
 	}
 
-	template< class Rep, class Period >
-	void reliable_sleep(const std::chrono::duration<Rep, Period>& sleep_duration) {
+	void reliable_sleep(std::chrono::time_point<std::chrono::system_clock> stop) {
 		auto start = std::chrono::high_resolution_clock::now();
+		auto sleep_duration = stop - start;
+
 		auto sleep_quantum = std::min<std::common_type_t<decltype(sleep_duration), decltype(MAX_TIMEOUT)>>(
 			sleep_duration / SLEEP_SAFETY_FACTOR,
 			MAX_TIMEOUT
 		);
+
 		// sleep_quantum is at most MAX_TIMEOUT so that we will wake up, and check if should_terminate
 		// Thus, every plugin will respond to termination within MAX_TIMOUT (assuming no long compute-bound thing)
 		while (!should_terminate() && std::chrono::high_resolution_clock::now() - start < sleep_duration) {
