@@ -19,19 +19,19 @@ public:
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	{
 		_m_imu0->put(new imu_type{std::chrono::system_clock::now(), Eigen::Vector3f{0, 0, 0}, Eigen::Vector3f{0, 0, 0}});
-		first_time = _m_sensor_data_it->first;
+		dataset_first_time = _m_sensor_data_it->first;
 		// last_time = _m_sensor_data_it->first;
 		
-		begin_time = std::chrono::system_clock::now();
+		real_first_time = std::chrono::system_clock::now();
 	}
 
 protected:
 	virtual void _p_one_iteration() override {
-		ullong target_ts = _m_sensor_data_it->first;
-		reliable_sleep(std::chrono::nanoseconds{target_ts - first_time} + begin_time);
-		time_type ts = begin_time + std::chrono::nanoseconds{target_ts - first_time};
+		ullong dataset_now = _m_sensor_data_it->first;
+		reliable_sleep(std::chrono::nanoseconds{dataset_now - dataset_first_time} + real_first_time);
+		time_type ts = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 
-		//std::cerr << "Now time: " << ts.time_since_epoch().count() << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{target_ts}).time_since_epoch().count() << std::endl;
+		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
 
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		if (sensor_datum.imu0) {
@@ -50,7 +50,7 @@ protected:
 			});
 		}
 
-		// last_time = target_ts;
+		// last_time = dataset_now;
 		++_m_sensor_data_it;
 	}
 
@@ -61,8 +61,8 @@ private:
 	std::unique_ptr<writer<imu_type>> _m_imu0;
 	std::unique_ptr<writer<cam_type>> _m_cams;
 	// ullong last_time;
-	ullong first_time;
-	time_type begin_time;
+	ullong dataset_first_time;
+	time_type real_first_time;
 };
 
 PLUGIN_MAIN(offline_imu_cam)

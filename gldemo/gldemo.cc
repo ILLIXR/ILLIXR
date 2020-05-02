@@ -125,7 +125,6 @@ public:
 
 			ksAlgebra::ksMatrix4x4f offsetRotation;
 
-			
 
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.

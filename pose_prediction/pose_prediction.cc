@@ -100,7 +100,8 @@ private:
 
         Eigen::Vector3f new_slow_orientation = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         Eigen::Vector3f latest_fast_orientation = _current_fast_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-
+        
+        /*
         std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
 
         std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
@@ -111,6 +112,7 @@ private:
         std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0] 
                 << ", " << new_slow_orientation[1] - latest_fast_orientation[1]
                 << ", " << new_slow_orientation[2] - latest_fast_orientation[2] << std::endl;
+        */
 
 
         float time = (fresh_pose.time - start_time).count();
