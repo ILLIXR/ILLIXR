@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <memory>
+#include <boost/optional.hpp>
 
 #include <opencv2/core/mat.hpp>
 #include <eigen3/Eigen/Dense>
@@ -14,6 +15,7 @@
 #define USE_ALT_EYE_FORMAT
 
 namespace ILLIXR {
+
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
 
 	typedef struct {
@@ -27,6 +29,14 @@ namespace ILLIXR {
 		std::unique_ptr<cv::Mat> img0;
 		std::unique_ptr<cv::Mat> img1;
 	} cam_type;
+
+	typedef struct {
+		time_type time;
+		Eigen::Vector3f angular_v;
+		Eigen::Vector3f linear_a;
+		std::optional<std::unique_ptr<cv::Mat>> img0;
+		std::optional<std::unique_ptr<cv::Mat>> img1;
+	} imu_cam_type;
 
 	typedef struct {
 		time_type time; 
