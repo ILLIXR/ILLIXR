@@ -35,7 +35,7 @@ make -j`(nproc)`
 cd ../../..
 
 cd offline_imu_cam
-#"${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
+"${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
 cd ..
 
 cd ground_truth_slam
@@ -43,25 +43,25 @@ cd ground_truth_slam
 cd ..
 
 cd runtime
-#"${CXX}" -g main.cc -std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -pthread -lboost_thread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -o main.exe
+"${CXX}" -g main.cc -std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -pthread -lboost_thread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -o main.exe
 cd ..
 
 cd timewarp_gl
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} timewarp_gl
-#"${CXX}" -g utils/*.cpp timewarp_gl.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp  -shared  -o libtimewarp_gl.so -fpic
+"${CXX}" -g utils/*.cpp timewarp_gl.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp  -shared  -o libtimewarp_gl.so -fpic
 cd ..
 
 cd gldemo
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} gldemo
-#"${CXX}" -g utils/*.cpp gldemo.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libgldemo.so -fpic
+"${CXX}" -g utils/*.cpp gldemo.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libgldemo.so -fpic
 cd ..
 
 cd pose_prediction
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} pose_prediction
-#"${CXX}" -g pose_prediction.cc kalman.cc --std=c++2a -I/usr/include/eigen3 -shared -o libpose_prediction.so -fpic
+"${CXX}" -g pose_prediction.cc kalman.cc --std=c++2a -I/usr/include/eigen3 -shared -o libpose_prediction.so -fpic
 cd ..
 
 cd debugview
