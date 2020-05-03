@@ -11,7 +11,7 @@
 
 using namespace ILLIXR;
 
-const std::string data_path = "data/";
+const std::string data_path = "data1/";
 
 class ground_truth_slam : public threadloop {
 public:

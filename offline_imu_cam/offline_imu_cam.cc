@@ -6,7 +6,7 @@
 
 using namespace ILLIXR;
 
-const std::string data_path = "data/";
+const std::string data_path = "data1/";
 
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
@@ -16,13 +16,6 @@ public:
 		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	{
-		_m_imu_cam->put(new imu_cam_type{
-			std::chrono::system_clock::now(),
-			Eigen::Vector3f{0, 0, 0},
-			Eigen::Vector3f{0, 0, 0},
-			std::nullopt,
-			std::nullopt,
-		});
 		dataset_first_time = _m_sensor_data_it->first;
 		// last_time = _m_sensor_data_it->first;
 		
@@ -49,6 +42,7 @@ protected:
 				sensor_datum.cam1
 					? std::make_optional<std::unique_ptr<cv::Mat>>(sensor_datum.cam1.value().load())
 					: std::nullopt,
+				(double(dataset_now) / 1000000000.0),
 			});
 		}
 
