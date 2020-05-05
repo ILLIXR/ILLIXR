@@ -2,6 +2,7 @@
 #include <future>
 #include <iostream>
 #include <thread>
+#include <functional>
 
 // IMGUI Immediate-mode GUI library
 #include "imgui/imgui.h"
@@ -19,9 +20,13 @@
 #include "demo_model.hh"
 #include "headset_model.hh"
 #include "shaders/blocki_shader.hh"
+#include <opencv2/opencv.hpp>
 #include <cmath>
 
 using namespace ILLIXR;
+
+constexpr size_t TEST_PATTERN_WIDTH = 256;
+constexpr size_t TEST_PATTERN_HEIGHT = 256;
 
 // Loosely inspired by
 // http://spointeau.blogspot.com/2013/12/hello-i-am-looking-at-opengl-3.html
@@ -56,7 +61,14 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_true_pose{sb->subscribe_latest<pose_type>("fast_true_pose")}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-	{ }
+	{
+
+		// The "imu_cam" topic is not really a topic, in the current implementation.
+		// It serves more as an event stream. Camera frames are only available on this topic
+		// the very split second they are made available. Subsequently published packets to this
+		// topic do not contain the camera frames.
+		sb->schedule<imu_cam_type>("imu_cam", std::bind(&debugview::imu_cam_handler, this, std::placeholders::_1));
+	}
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
 	struct DebugDrawable {
@@ -100,6 +112,16 @@ public:
 			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
 		}
 	};
+
+	void imu_cam_handler(const imu_cam_type *datum) {
+		if(datum == NULL){ return; }
+		if(datum->img0.has_value()){
+			camera_data[0].emplace(*datum->img0.value());
+		}
+		if(datum->img1.has_value()){
+			camera_data[1].emplace(*datum->img1.value());
+		}
+	}
 
 	void draw_GUI() {
 		// Start the Dear ImGui frame
@@ -165,9 +187,25 @@ public:
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
 		}
 
+		ImGui::Text("Debug view eulers:");
+		ImGui::Text("	(%f, %f)", view_euler.x(), view_euler.y());
 
 		ImGui::End();
-		ImGui::ShowDemoWindow();
+
+		ImGui::Begin("Camera + IMU");
+		ImGui::Text("Camera view buffers: ");
+		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
+		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
+
+		ImGui::End();
+
+		ImGui::Begin("Onboard camera views");
+		auto windowSize = ImGui::GetWindowSize();
+		auto verticalOffset = ImGui::GetCursorPos().y;
+		ImGui::Image((void*)(intptr_t)camera_textures[0], ImVec2(windowSize.x/2,windowSize.y - verticalOffset * 2));
+		ImGui::SameLine();
+		ImGui::Image((void*)(intptr_t)camera_textures[1], ImVec2(windowSize.x/2,windowSize.y - verticalOffset * 2));
+		ImGui::End();
 
 		ImGui::Render();
 	}
@@ -186,8 +224,42 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
-	void draw_headset(){
+	bool load_camera_images(){
 
+		if(camera_data[0].has_value()){
+			std::cerr << "img0 has value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, camera_data[0].value().cols, camera_data[0].value().rows, 0, GL_RED, GL_UNSIGNED_BYTE, camera_data[0].value().ptr());
+			camera_texture_sizes[0] = Eigen::Vector2i(camera_data[0].value().rows, camera_data[0].value().cols);
+			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		} else {
+			std::cerr << "img0 has no value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
+			glFlush();
+			camera_texture_sizes[0] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
+		}
+		
+		if(camera_data[1].has_value()){
+			std::cerr << "img1 has value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, camera_data[1].value().cols, camera_data[1].value().rows, 0, GL_RED, GL_UNSIGNED_BYTE, camera_data[1].value().ptr());
+			camera_texture_sizes[1] = Eigen::Vector2i(camera_data[1].value().rows, camera_data[1].value().cols);
+			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		} else {
+			std::cerr << "img1 has no value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
+			glFlush();
+			camera_texture_sizes[1] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
+		}
+
+		return true;
+	}
+
+	void draw_headset(){
 		headsetObject.drawMe();
 	}
 
@@ -238,10 +310,9 @@ public:
 
 			mouse_velocity = mouse_velocity * 0.95;
 
+			load_camera_images();
 
 			glUseProgram(demoShaderProgram);
-
-
 
 			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
 
@@ -335,14 +406,17 @@ private:
 	std::unique_ptr<reader_latest<pose_type>> _m_fast_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
 	GLFWwindow* gui_window;
+
+	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
 	uint counter = 0;
 	Eigen::Quaternionf offsetQuat;
 
-	Eigen::Vector3d view_euler;
-	Eigen::Vector2d last_mouse_pos;
-	Eigen::Vector2d mouse_velocity;
+	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
+	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
+	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
 	bool beingDragged = false;
 
 	float view_dist = 6.0;
@@ -353,6 +427,11 @@ private:
 	// This is just to make it look nicer with the included SLAM dataset.
 	// Therefore, the debug view also applies this pose offset.
 	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{5.0f, 2.0f, -3.0f};
+
+	std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
+	GLuint camera_textures[2];
+	bool initializedCameraTextures = false;
+	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
 	GLuint demo_vao;
 	GLuint demoShaderProgram;
@@ -500,6 +579,20 @@ public:
 			&(headset_normal_data[0]),
 			GL_DYNAMIC_DRAW
 		);
+
+		for(int x = 0; x < TEST_PATTERN_WIDTH; x++){
+			for(int y = 0; y < TEST_PATTERN_HEIGHT; y++){
+				test_pattern[x][y] = ((x+y) % 6 == 0) ? 255 : 0;
+			}
+		}
+
+		glGenTextures(2, &(camera_textures[0]));
+		glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		// Construct a basic perspective projection
 		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );

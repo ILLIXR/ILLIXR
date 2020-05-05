@@ -45,7 +45,7 @@ public:
         // If the SB has a new slow pose value from SLAM
         auto pose_sample = _m_slow_pose->get_latest_ro();
         auto groundtruth_sample = _m_true_pose->get_latest_ro();
-        if (pose_sample != NULL && pose_sample->time > _previous_slow_pose.time) {
+        if (pose_sample != NULL && groundtruth_sample != NULL && pose_sample->time > _previous_slow_pose.time) {
             _update_slow_pose(*pose_sample, *groundtruth_sample);
 
             // If this is the first time receiving a slow pose, init the filter biases and initial state.
@@ -55,8 +55,8 @@ public:
             }
         }
 
-        const imu_type* fresh_imu_measurement = _m_imu->get_latest_ro();
-		assert(fresh_imu_measurement != NULL);
+        // const imu_type* fresh_imu_measurement = _m_imu->get_latest_ro();
+		// assert(fresh_imu_measurement != NULL);
 
         // If queried IMU is fresher than the pose mesaurement and the local IMU copy we have, update it and the pose
         // if (fresh_imu_measurement->time > _current_fast_pose.time) {
@@ -93,9 +93,9 @@ private:
 
         // Ground truth values do not start from 0, 0, 0. They start from the offset specified by these variables
         pose_type *temp_pose = new pose_type(fresh_pose);
-        temp_pose->position[0] += 0.878612;
-        temp_pose->position[1] += 2.14247;
-        temp_pose->position[2] += 0.947262;
+        // temp_pose->position[0] += 0.878612;
+        // temp_pose->position[1] += 2.14247;
+        // temp_pose->position[2] += 0.947262;
 
         // Update the velocity with the pose position difference over time. This is done because
         // Accelerometer readings have lots of noise and will lead to bad dead reckoning
