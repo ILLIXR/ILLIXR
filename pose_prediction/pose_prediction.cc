@@ -144,26 +144,32 @@ private:
 
 
         pose_type* swapped_pose = new pose_type(fresh_pose);
-        
-        swapped_pose->position.x() = fresh_pose.position.y();
-        swapped_pose->position.y() = fresh_pose.position.x();
-        swapped_pose->position.z() = -fresh_pose.position.z();
 
+        // This uses the OpenVINS standard output coordinate system.
+        // This is a mapping between the OV coordinate system and the OpenGL system.
+        swapped_pose->position.x() = -fresh_pose.position.y();
+        swapped_pose->position.y() = fresh_pose.position.z();
+        swapped_pose->position.z() = -fresh_pose.position.x();
+
+        // There is a slight issue with the orientations: basically,
+        // the output orientation acts as though the "top of the head" is the
+        // forward direction, and the "eye direction" is the up direction.
+        // Can be offset with an initial "calibration quaternion."
         swapped_pose->orientation.w() = fresh_pose.orientation.w();
-        swapped_pose->orientation.x() = fresh_pose.orientation.y();
-        swapped_pose->orientation.y() = fresh_pose.orientation.x();
-        swapped_pose->orientation.z() = -fresh_pose.orientation.z();
+        swapped_pose->orientation.x() = -fresh_pose.orientation.y();
+        swapped_pose->orientation.y() = fresh_pose.orientation.z();
+        swapped_pose->orientation.z() = -fresh_pose.orientation.x();
 
         pose_type* swapped_groundtruth = new pose_type(fresh_ground_truth);
         
-        swapped_groundtruth->position.x() = fresh_ground_truth.position.y();
-        swapped_groundtruth->position.y() = fresh_ground_truth.position.x();
-        swapped_groundtruth->position.z() = -fresh_ground_truth.position.z();
+        swapped_groundtruth->position.x() = -fresh_ground_truth.position.y();
+        swapped_groundtruth->position.y() = fresh_ground_truth.position.z();
+        swapped_groundtruth->position.z() = -fresh_ground_truth.position.x();
 
         swapped_groundtruth->orientation.w() = fresh_ground_truth.orientation.w();
-        swapped_groundtruth->orientation.x() = fresh_ground_truth.orientation.y();
-        swapped_groundtruth->orientation.y() = fresh_ground_truth.orientation.x();
-        swapped_groundtruth->orientation.z() = -fresh_ground_truth.orientation.z();
+        swapped_groundtruth->orientation.x() = -fresh_ground_truth.orientation.y();
+        swapped_groundtruth->orientation.y() = fresh_ground_truth.orientation.z();
+        swapped_groundtruth->orientation.z() = -fresh_ground_truth.orientation.x();
 
         _previous_slow_pose = *temp_pose;
         _current_fast_pose = *temp_pose;

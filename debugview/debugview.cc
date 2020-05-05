@@ -115,12 +115,8 @@ public:
 
 	void imu_cam_handler(const imu_cam_type *datum) {
 		if(datum == NULL){ return; }
-		if(datum->img0.has_value()){
-			camera_data[0].emplace(*datum->img0.value());
-		}
-		if(datum->img1.has_value()){
-			camera_data[1].emplace(*datum->img1.value());
-		}
+		if(datum->img0.has_value() && datum->img1.has_value())
+			last_datum_with_images = datum;
 	}
 
 	void draw_GUI() {
@@ -196,7 +192,11 @@ public:
 		ImGui::Text("Camera view buffers: ");
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
-
+		if(ImGui::Button("Calculate new orientation offset")){
+			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
+			if(pose_ptr != NULL)
+				offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
+		}
 		ImGui::End();
 
 		ImGui::Begin("Onboard camera views");
@@ -225,12 +225,14 @@ public:
 	}
 
 	bool load_camera_images(){
-
-		if(camera_data[0].has_value()){
+		if(last_datum_with_images == NULL){
+			return false;
+		}
+		if(last_datum_with_images->img0.has_value()){
 			std::cerr << "img0 has value!" << std::endl;
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, camera_data[0].value().cols, camera_data[0].value().rows, 0, GL_RED, GL_UNSIGNED_BYTE, camera_data[0].value().ptr());
-			camera_texture_sizes[0] = Eigen::Vector2i(camera_data[0].value().rows, camera_data[0].value().cols);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img0.value()).ptr());
+			camera_texture_sizes[0] = Eigen::Vector2i((*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -241,11 +243,11 @@ public:
 			camera_texture_sizes[0] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
 		}
 		
-		if(camera_data[1].has_value()){
+		if(last_datum_with_images->img1.has_value()){
 			std::cerr << "img1 has value!" << std::endl;
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, camera_data[1].value().cols, camera_data[1].value().rows, 0, GL_RED, GL_UNSIGNED_BYTE, camera_data[1].value().ptr());
-			camera_texture_sizes[1] = Eigen::Vector2i(camera_data[1].value().rows, camera_data[1].value().cols);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img1.value()).ptr());
+			camera_texture_sizes[1] = Eigen::Vector2i((*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -324,13 +326,13 @@ public:
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.
 
-				if(counter == 50){
+				if(counter == 100){
 					std::cerr << "First pose received: quat(wxyz) is " << pose_ptr->orientation.w() << ", " << pose_ptr->orientation.x() << ", " << pose_ptr->orientation.y() << ", " << pose_ptr->orientation.z() << std::endl;
 					offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
 				}
 				counter++;
 
-				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
+				Eigen::Quaternionf combinedQuat = pose_ptr->orientation * offsetQuat.inverse();
 				headsetPose = generateHeadsetTransform(pose_ptr->position, combinedQuat, tracking_position_offset);
 			}
 
@@ -412,7 +414,7 @@ private:
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
 	uint counter = 0;
-	Eigen::Quaternionf offsetQuat;
+	Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
 
 	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
 	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
@@ -428,9 +430,10 @@ private:
 	// Therefore, the debug view also applies this pose offset.
 	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{5.0f, 2.0f, -3.0f};
 
-	std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
+
+	const imu_cam_type* last_datum_with_images = NULL;
+	// std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
 	GLuint camera_textures[2];
-	bool initializedCameraTextures = false;
 	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
 	GLuint demo_vao;
@@ -580,6 +583,7 @@ public:
 			GL_DYNAMIC_DRAW
 		);
 
+		// Generate fun test pattern for missing camera images.
 		for(int x = 0; x < TEST_PATTERN_WIDTH; x++){
 			for(int y = 0; y < TEST_PATTERN_HEIGHT; y++){
 				test_pattern[x][y] = ((x+y) % 6 == 0) ? 255 : 0;
