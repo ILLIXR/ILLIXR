@@ -93,11 +93,12 @@ cd ..
 ./runtime/main.exe \
 	slam2/open_vins/build/ov_msckf/libslam2.so \
 	offline_imu_cam/liboffline_imu_cam.so \
-	# pose_prediction/libpose_prediction.so \
-	# timewarp_gl/libtimewarp_gl.so \
-	# gldemo/libgldemo.so \
-
-	# debugview/libdebugview.so \
+	pose_prediction/libpose_prediction.so \
+	timewarp_gl/libtimewarp_gl.so \
+	gldemo/libgldemo.so \
+	debugview/libdebugview.so \
+	ground_truth_slam/libground_truth_slam.so \
+	
 	# debugview/libdebugview.so \
 	# cam1/bazel-bin/libcam1.so \
 	# imu1/bazel-bin/libimu1.so \

@@ -42,7 +42,7 @@ protected:
 				sensor_datum.cam1
 					? std::make_optional<std::unique_ptr<cv::Mat>>(sensor_datum.cam1.value().load())
 					: std::nullopt,
-				(double(dataset_now) / 1000000000.0),
+				dataset_now,
 			});
 		}
 

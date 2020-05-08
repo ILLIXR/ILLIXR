@@ -17,6 +17,7 @@
 namespace ILLIXR {
 
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
+	typedef unsigned long long ullong;
 
 	typedef struct {
 		time_type time;
@@ -36,7 +37,7 @@ namespace ILLIXR {
 		Eigen::Vector3f linear_a;
 		std::optional<std::unique_ptr<cv::Mat>> img0;
 		std::optional<std::unique_ptr<cv::Mat>> img1;
-		double temp_time;
+		ullong temp_time;
 	} imu_cam_type;
 
 	typedef struct {
