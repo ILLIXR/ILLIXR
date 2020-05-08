@@ -21,23 +21,24 @@ public:
 
 	virtual void start() override {
    sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
-        std::cout << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
+        // std::cout << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
         this->feed_ground_truth(datum);
     });
 	}
 
 
 	void feed_ground_truth(const imu_cam_type *datum) {
-		_m_sensor_data_it = _m_sensor_data.find(datum->temp_time);
+		ullong rounded_time = floor(datum->temp_time / 10000);
+		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
-			std::cout << "True pose not found at timestamp: " << datum->temp_time << std::endl;
+			std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
 			return;
 		}
 
 		pose_type *true_pose = new pose_type{_m_sensor_data_it->second};
 		true_pose->time = datum->time;
-		std::cout << "The pose was found at " << true_pose->position[0] << std::endl;
+		// std::cout << "The pose was found at " << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2] << std::endl; 
 
 		_m_true_pose->put(true_pose);
 	}
