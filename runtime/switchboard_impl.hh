@@ -164,6 +164,7 @@ namespace ILLIXR {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
 					for (std::function<void(const void*)> callback : _m_registry.at(t.first).callbacks()) {
+						std::cout << "Callback: " << t.first << ", " << t.second << std::endl;
 						callback(t.second);
 					}
 				}

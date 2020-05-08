@@ -17,17 +17,20 @@ public:
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_sensor_data{load_data(data_path)}
-	{
-		std::cout << "Called ground truth" << std::endl;
-		sb->schedule<imu_cam_type>("imu_cam", std::bind(&ground_truth_slam::feed_ground_truth, this, std::placeholders::_1));
-		std::cout << "asdasdasd" << std::endl;
+	{}
+
+	virtual void start() override {
+   sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
+        std::cout << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
+        this->feed_ground_truth(datum);
+    });
 	}
+
 
 	void feed_ground_truth(const imu_cam_type *datum) {
 		_m_sensor_data_it = _m_sensor_data.find(datum->temp_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
-			_m_true_pose->put(NULL);
 			std::cout << "True pose not found at timestamp: " << datum->temp_time << std::endl;
 			return;
 		}

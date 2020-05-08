@@ -61,14 +61,7 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_true_pose{sb->subscribe_latest<pose_type>("fast_true_pose")}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-	{
-
-		// The "imu_cam" topic is not really a topic, in the current implementation.
-		// It serves more as an event stream. Camera frames are only available on this topic
-		// the very split second they are made available. Subsequently published packets to this
-		// topic do not contain the camera frames.
-		sb->schedule<imu_cam_type>("imu_cam", std::bind(&debugview::imu_cam_handler, this, std::placeholders::_1));
-	}
+	{}
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
 	struct DebugDrawable {
@@ -488,6 +481,14 @@ public:
 
 	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
 	virtual void start() override {
+		// The "imu_cam" topic is not really a topic, in the current implementation.
+		// It serves more as an event stream. Camera frames are only available on this topic
+		// the very split second they are made available. Subsequently published packets to this
+		// topic do not contain the camera frames.
+   		sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
+        	std::cout << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
+        	this->imu_cam_handler(datum);
+    	});
 
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		const char* glsl_version = "#version 430 core";
