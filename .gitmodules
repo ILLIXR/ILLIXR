@@ -1,15 +1,6 @@
-[submodule "benchmark/ElasticFusion"]
-	path = benchmark/ElasticFusion
-	url = https://github.com/ILLIXR/ElasticFusion.git
-[submodule "benchmark/open_vins"]
-	path = benchmark/open_vins
-	url = https://github.com/ILLIXR/open_vins.git
-[submodule "benchmark/HOTlab"]
-	path = benchmark/HOTlab
-	url = https://github.com/ILLIXR/HOTlab.git
-[submodule "benchmark/audio_pipeline"]
-	path = benchmark/audio_pipeline
-	url = https://github.com/ILLIXR/audio_pipeline.git
-[submodule "benchmark/visual_postprocessing"]
-	path = benchmark/visual_postprocessing
-	url = https://github.com/ILLIXR/visual_postprocessing.git
+[submodule "slam1/okvis"]
+	path = slam1/okvis
+	url = https://github.com/ILLIXR/okvis.git
+[submodule "slam2/open_vins"]
+	path = slam2/open_vins
+	url = git@github.com:ILLIXR/open_vins.git
