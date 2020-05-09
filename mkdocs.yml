@@ -1,4 +1,5 @@
 site_name: ILLIXR Docs
+theme: ivory
 nav:
     - Home: 'index.md'
     - 'Core':
