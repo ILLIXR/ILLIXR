@@ -4,8 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <functional>
-
-#include "phonebook.hh"
+#include "phonebook.hpp"
 
 namespace ILLIXR {
 

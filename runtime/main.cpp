@@ -1,11 +1,11 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hh"
-#include "common/data_format.hh"
-#include "dynamic_lib.hh"
-#include "phonebook_impl.hh"
-#include "switchboard_impl.hh"
+#include "common/plugin.hpp"
+#include "common/data_format.hpp"
+#include "dynamic_lib.hpp"
+#include "phonebook_impl.hpp"
+#include "switchboard_impl.hpp"
 
 using namespace ILLIXR;
 

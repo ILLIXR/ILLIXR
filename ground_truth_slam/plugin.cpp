@@ -1,11 +1,11 @@
-#include "common/plugin.hh"
-#include "common/switchboard.hh"
-#include "common/data_format.hh"
-#include "common/threadloop.hh"
-#include "data_loading.hh"
 #include <chrono>
 #include <iomanip>
 #include <thread>
+#include "common/plugin.hpp"
+#include "common/switchboard.hpp"
+#include "common/data_format.hpp"
+#include "common/threadloop.hpp"
+#include "data_loading.hpp"
 
 using namespace ILLIXR;
 

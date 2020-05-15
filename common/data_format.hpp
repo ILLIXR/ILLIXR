@@ -10,7 +10,7 @@
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h> // TODO: Look into making this more modular/generalized.
-#include "phonebook.hh"
+#include "switchboard.hpp"
 
 #define USE_ALT_EYE_FORMAT
 

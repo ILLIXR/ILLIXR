@@ -1,5 +1,5 @@
 #include <cmath>
-#include "hmd.hh"
+#include "hmd.hpp"
 
 
 float HMD::MaxFloat( const float x, const float y ) { return ( x > y ) ? x : y; }

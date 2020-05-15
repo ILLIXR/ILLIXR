@@ -1,6 +1,6 @@
 #include <math.h>
 #include <Eigen/Dense>
-#include "kalman.hh"
+#include "kalman.hpp"
 
 kalman_filter::kalman_filter() {
     // Uncertainty in the predicted values

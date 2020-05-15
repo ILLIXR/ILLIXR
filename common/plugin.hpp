@@ -1,7 +1,7 @@
 #ifndef PLUGIN_HH
 #define PLUGIN_HH
 
-#include "phonebook.hh"
+#include "phonebook.hpp"
 
 namespace ILLIXR {
 

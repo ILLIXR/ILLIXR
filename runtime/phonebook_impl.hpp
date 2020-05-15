@@ -5,7 +5,7 @@
 #include <memory>
 #include <stdexcept>
 #include <cassert>
-#include "common/phonebook.hh"
+#include "common/phonebook.hpp"
 
 namespace ILLIXR {
 

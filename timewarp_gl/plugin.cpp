@@ -4,15 +4,15 @@
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hh"
-#include "common/switchboard.hh"
-#include "common/data_format.hh"
-#include "common/shader_util.hh"
-#include "utils/algebra.hh"
-#include "utils/hmd.hh"
-#include "shaders/basic_shader.hh"
-#include "shaders/timewarp_shader.hh"
-#include "common/linalg.h"
+#include "common/plugin.hpp"
+#include "common/switchboard.hpp"
+#include "common/data_format.hpp"
+#include "common/shader_util.hpp"
+#include "utils/algebra.hpp"
+#include "utils/hmd.hpp"
+#include "shaders/basic_shader.hpp"
+#include "shaders/timewarp_shader.hpp"
+#include "common/linalg.hpp"
 
 using namespace ILLIXR;
 using namespace linalg::aliases;

@@ -11,15 +11,15 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hh"
-#include "common/switchboard.hh"
-#include "common/data_format.hh"
-#include "common/shader_util.hh"
-#include "utils/algebra.hh"
-#include "block_i.hh"
-#include "demo_model.hh"
-#include "headset_model.hh"
-#include "shaders/blocki_shader.hh"
+#include "common/plugin.hpp"
+#include "common/switchboard.hpp"
+#include "common/data_format.hpp"
+#include "common/shader_util.hpp"
+#include "utils/algebra.hpp"
+#include "block_i.hpp"
+#include "demo_model.hpp"
+#include "headset_model.hpp"
+#include "shaders/blocki_shader.hpp"
 #include <opencv2/opencv.hpp>
 #include <cmath>
 
@@ -625,5 +625,3 @@ public:
 };
 
 PLUGIN_MAIN(debugview);
-
-

@@ -1,11 +1,11 @@
 #include <vector>
 #include <chrono>
 #include <math.h>
-#include "kalman.hh"
-#include "common/switchboard.hh"
-#include "common/phonebook.hh"
-#include "common/threadloop.hh"
-#include "common/data_format.hh"
+#include "kalman.hpp"
+#include "common/switchboard.hpp"
+#include "common/phonebook.hpp"
+#include "common/threadloop.hpp"
+#include "common/data_format.hpp"
 
 using namespace ILLIXR;
 
