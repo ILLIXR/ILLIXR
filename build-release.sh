@@ -7,6 +7,7 @@ set -o noclobber -o errexit -o nounset -o xtrace
 cd "$(dirname "${0}")"
 
 CXX=${CXX-clang++}
+CXXFLAGS=-O3
 clean=true
 extra_flags=
 
@@ -20,22 +21,22 @@ extra_flags=
 # cd ../../../../..
 
 cd offline_imu_cam
-#"${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
+"${CXX}" -g offline_imu_cam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o liboffline_imu_cam.so -fpic
 cd ..
 
 cd ground_truth_slam
-"${CXX}" -g ground_truth_slam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o libground_truth_slam.so -fpic
+"${CXX}" "${CXXFLAGS}" -g ground_truth_slam.cc -std=c++2a -pthread -lboost_thread `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -shared -o libground_truth_slam.so -fpic
 cd ..
 
 cd runtime
-"${CXX}" -g main.cc -std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -pthread -lboost_thread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -o main.exe
-"${CXX}" -g main.cc -std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -pthread -lboost_thread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -fPIC -shared -o illixrrt.so
+"${CXX}" "${CXXFLAGS}" -g main.cc -std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -pthread -lboost_thread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -o main.exe
+"${CXX}" "${CXXFLAGS}" -g main.cc -std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -pthread -lboost_thread -ldl `pkg-config --cflags --libs opencv4` `pkg-config opencv --cflags --libs` -fPIC -shared -o illixrrt.so
 cd ..
 
 cd timewarp_gl
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} timewarp_gl
-"${CXX}" -g utils/*.cpp timewarp_gl.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp  -shared  -o libtimewarp_gl.so -fpic
+"${CXX}" "${CXXFLAGS}" -g utils/*.cpp timewarp_gl.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp  -shared  -o libtimewarp_gl.so -fpic
 cd ..
 
 cd hologram
@@ -51,13 +52,13 @@ cd ..
 cd pose_prediction
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} pose_prediction
-"${CXX}" -g pose_prediction.cc kalman.cc --std=c++2a -I/usr/include/eigen3 -shared -o libpose_prediction.so -fpic
+"${CXX}" "${CXXFLAGS}" -g pose_prediction.cc kalman.cc --std=c++2a -I/usr/include/eigen3 -shared -o libpose_prediction.so -fpic
 cd ..
 
 cd debugview
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} debugview
-"${CXX}" -g utils/*.cpp imgui/*.cpp debugview.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libdebugview.so -fpic
+#"${CXX}" -g utils/*.cpp imgui/*.cpp debugview.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libdebugview.so -fpic
 cd ..
 
 if [ ! -e "data" ]
@@ -83,6 +84,7 @@ fi
 # 	pose_prediction/libpose_prediction.so \
 # 	timewarp_gl/libtimewarp_gl.so \
 # 	gldemo/libgldemo.so \
+
 
 	# debugview/libdebugview.so \
 	# cam1/bazel-bin/libcam1.so \
