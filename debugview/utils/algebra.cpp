@@ -1,4 +1,4 @@
-#include "algebra.hh"
+#include "algebra.hpp"
 
 
 float ksAlgebra::RcpSqrt( const float x )
