@@ -1,7 +1,7 @@
 # Using ?= makes these variables overridable
 # Simply define them before including common.mk
 LIBOPENCV ?= $(pkg-config --cflags --libs opencv4) $(pkg-config opencv --cflags --libs)
-STDCXX ?= c++2a
+STDCXX ?= c++17
 DBG_FLAGS ?= -Og -g
 OPT_FLAGS ?= -O3 -DNDEBUG
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp')
