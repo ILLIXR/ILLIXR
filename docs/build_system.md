@@ -55,6 +55,10 @@ Each component can have a completely independent build system, as long as:
 
 - It should be easy to build in parallel.
 
+- Always rebuild every time, so the binary is always "fresh". This is
+  a great convenience when experimenting. However, this implies that
+  rebuilding must be fast when not much has changed.
+
 - Make is the de facto standard for building C/C++ programs. GNU Make,
   reucrsive make, and the makefile language begets no shortage of
   problems [[1][1],[2][2],[3][3],[4][4],[5][5]], but I chose Make for
