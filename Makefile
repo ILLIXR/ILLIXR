@@ -8,9 +8,11 @@ components = open_vins/ timewarp_gl/ gldemo/ ground_truth_slam/ pose_prediction/
 %/main.dbg.exe: %
 	$(MAKE) -C $< main.dbg.exe
 
+.PHONY: run.dbg
 run.dbg: runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
 	$^
 
+.PHONY: run.opt
 run.opt: runtime/main.opt.exe $(components:/=/plugin.opt.so)
 	$^
 
