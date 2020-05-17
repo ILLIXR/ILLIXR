@@ -10,7 +10,7 @@ HPP_FILES ?= $(shell find . -name '*.hpp')
 # In the future, if compilation is slow, we can enable partial compilation of object files with
 #  $(OBJ_FILES:.o=.dbg.o) and  $(OBJ_FILES:.o=.opt.o)
 plugin.dbg.so: plugin.cpp $(CPP_FILES) $(HPP_FILES) Makefile
-	$(CXX) -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(dbg_flags) -shared -fpic -o $@ plugin.cpp $(CPP_FILES) $(LDFLAGS)
+	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(dbg_flags) -shared -fpic -o $@ plugin.cpp $(CPP_FILES) $(LDFLAGS)
 
 plugin.opt.so: plugin.cpp $(CPP_FILES) $(HPP_FILES) Makefile
 	$(CXX) -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(opt_flags)  -shared -fpic -o $@ plugin.cpp $(CPP_FILES) $(LDFLAGS)
