@@ -56,7 +56,7 @@ public:
 };
 
 /* This class is pure virtual so that I can hide its implementation from its users. It will be
-   referenced in components, but implemented in the runtime.
+   referenced in plugins, but implemented in the runtime.
 
    However, virtual methods cannot be templated, so these templated methods refer to a virtual
    method whose type has been erased (coerced to/from void*). This is an instance of the Non-Virtual

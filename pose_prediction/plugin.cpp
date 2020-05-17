@@ -39,7 +39,8 @@ public:
         start_time = std::chrono::system_clock::now();
     }
 
-    // Overridden method from the component interface. This specifies one interation of the main loop 
+    // Overridden method from threadloop.
+	// This specifies one interation of the main loop 
     virtual void _p_one_iteration() override {
 
         // If the SB has a new slow pose value from SLAM

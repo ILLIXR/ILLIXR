@@ -86,7 +86,7 @@ namespace ILLIXR {
 	place. */
 	struct accel { };
 
-	// High-level HMD specification, timewarp component
+	// High-level HMD specification, timewarp plugin
 	// may/will calculate additional HMD info based on these specifications
 	struct hmd_physical_info {
 		float   ipd;

@@ -1,4 +1,4 @@
-# Getting started
+# Getting Started
 
 1. Clone the repository.
 
@@ -20,4 +20,11 @@
 
         make run.dbg
 
-That's it! For more information on developing your own component see `components.md`.
+This runs ILLIXR with the default set of included plugins. The source code is divided into the following directories:
+- `runtime`: create a runnable binary that loads every plugin
+- `common`: resources one might use in each plugin. Most plugins symlink this directory into theirs.
+- a directory for each plugin. Almost all of the XR functionality is implemented in plugins. See
+  `default_components.md` for more details.
+
+Try browsing the source of plugins.  If you edit any of the source files, this make commend will
+detect and rebuild the respective binary. If you want to add your own, see `writing_your_plugin.md`

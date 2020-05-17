@@ -51,10 +51,10 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
 class debugview : public plugin {
 public:
 
-	// Public constructor, create_component passes Switchboard handles ("plugs")
-	// to this constructor. In turn, the constructor fills in the private
-	// references to the switchboard plugs, so the component can read the
-	// data whenever it needs to.
+	// Public constructor, Spindle passes the phonebook to this
+	// constructor. In turn, the constructor fills in the private
+	// references to the switchboard plugs, so the plugin can read
+	// the data whenever it needs to.
 	debugview(phonebook *pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_fast_pose{sb->subscribe_latest<pose_type>("fast_pose")}
@@ -486,7 +486,6 @@ public:
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
    		sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
-        	std::cerr << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
         	this->imu_cam_handler(datum);
     	});
 

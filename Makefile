@@ -1,4 +1,4 @@
-components = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ timewarp_gl/ gldemo/ debugview/
+plugins = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ timewarp_gl/ gldemo/ debugview/
 
 .PHONY: %/plugin.dbg.so
 %/plugin.dbg.so: %
@@ -9,16 +9,16 @@ components = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ tim
 	$(MAKE) -C $< main.dbg.exe
 
 .PHONY: run.dbg
-run.dbg: runtime/main.dbg.exe $(components:/=/plugin.dbg.so) data1
-	     runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
+run.dbg: runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) data1
+	     runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so)
 
 .PHONY: run.opt
-run.opt: runtime/main.opt.exe $(components:/=/plugin.opt.so) data1
-	     runtime/main.opt.exe $(components:/=/plugin.opt.so)
+run.opt: runtime/main.opt.exe $(plugins:/=/plugin.opt.so) data1
+	     runtime/main.opt.exe $(plugins:/=/plugin.opt.so)
 
 .PHONY: %/plugin.dbg.so
-gdb:              runtime/main.dbg.exe $(components:/=/plugin.dbg.so) data1
-	gdb -q --args runtime/main.dbg.exe $(components:/=/plugin.dbg.so) -ex 'set stop-on-solib-events 1'
+gdb:              runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) data1
+	gdb -q --args runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) -ex 'set stop-on-solib-events 1'
 
 data1:
 	curl -o data.zip \
@@ -32,7 +32,7 @@ deepclean: clean
 	touch data1 && rm -rf data1
 
 .PHONY: clean
-clean: clean_runtime $(patsubst %,clean_%,$(components))
+clean: clean_runtime $(patsubst %,clean_%,$(plugins))
 
 .PHONY: clean_%
 clean_%:

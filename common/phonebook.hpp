@@ -26,10 +26,42 @@ namespace ILLIXR {
 	 * implementation of `B_service` when it is loaded, and `A_plugin` can lookup that
 	 * implementation without knowing it.
 	 *
+	 * \code{B_service.cpp}
+	 * class B_service {
+	 * public:
+	 *     virtual void frobnicate(foo data) = 0;
+	 * };
+	 * \endcode
+	 *
+	 * \code{B_plugin.cpp}
+	 * class B_impl : public B_service {
+	 * public:
+	 *     virtual void frobnicate(foo data) {
+	 *         // ...
+	 *     }
+	 * };
+	 * void blah_blah(phonebook* pb) {
+	 *     // Expose `this` as the "official" implementation of `B_service` for this run.
+	 *     pb->register_impl<B_service>(new B_impl);
+	 * }
+	 * \endcode
+	 * 
+	 * \code{A_plugin.cpp}
+	 * void blah_blah(phonebook* pb) {
+	 *     B_service* b = pb->lookup_impl<B_service>();
+	 *     b->frobnicate(data);
+	 * }
+	 * \endcode
+	 *
+	 * If the implementation of `B_service` is not known to `A_plugin` (the usual case), `B_service
+	 * should be an [abstract class][2]. In either case `B_service` should be in `common`, so both
+	 * plugins can refer to it.
+	 *
 	 * One could even selectively return a different implementation of `B_service` depending on the
 	 * caller (through the parameters), but we have not encountered the need for that yet.
 	 * 
 	 * [1]: https://en.wikipedia.org/wiki/Service_locator_pattern
+	 * [2]: https://en.wikibooks.org/wiki/C%2B%2B_Programming/Classes/Abstract_Classes
 	 */
 	class phonebook {
 	public:
