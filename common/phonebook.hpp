@@ -3,6 +3,7 @@
 
 #include <typeindex>
 #include <stdexcept>
+#include <cassert>
 
 namespace ILLIXR {
 	/**
