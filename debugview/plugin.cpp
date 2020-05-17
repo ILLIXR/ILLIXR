@@ -57,9 +57,11 @@ public:
 	// the data whenever it needs to.
 	debugview(phonebook *pb)
 		: sb{pb->lookup_impl<switchboard>()}
-		, _m_fast_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+
+		// Fast and slow pose are temporarily the same as there is no timewarp componenet atm
+		, _m_fast_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
-		, _m_true_pose{sb->subscribe_latest<pose_type>("fast_true_pose")}
+		, _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
@@ -222,7 +224,6 @@ public:
 			return false;
 		}
 		if(last_datum_with_images->img0.has_value()){
-			std::cerr << "img0 has value!" << std::endl;
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img0.value()).ptr());
 			camera_texture_sizes[0] = Eigen::Vector2i((*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows);
@@ -237,14 +238,12 @@ public:
 		}
 		
 		if(last_datum_with_images->img1.has_value()){
-			std::cerr << "img1 has value!" << std::endl;
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img1.value()).ptr());
 			camera_texture_sizes[1] = Eigen::Vector2i((*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
-			std::cerr << "img1 has no value!" << std::endl;
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
 			glFlush();
