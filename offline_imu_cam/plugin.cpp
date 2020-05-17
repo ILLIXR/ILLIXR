@@ -24,30 +24,33 @@ public:
 
 protected:
 	virtual void _p_one_iteration() override {
-		ullong dataset_now = _m_sensor_data_it->first;
-		reliable_sleep(std::chrono::nanoseconds{dataset_now - dataset_first_time} + real_first_time);
-		time_type ts = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
+		if (_m_sensor_data_it != _m_sensor_data.end()) {
 
-		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
+			ullong dataset_now = _m_sensor_data_it->first;
+			reliable_sleep(std::chrono::nanoseconds{dataset_now - dataset_first_time} + real_first_time);
+			time_type ts = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 
-		const sensor_types& sensor_datum = _m_sensor_data_it->second;
-		if (sensor_datum.imu0) {
-			_m_imu_cam->put(new imu_cam_type{
-				ts,
-				(sensor_datum.imu0.value().angular_v).cast<float>(),
-				(sensor_datum.imu0.value().linear_a).cast<float>(),
-				sensor_datum.cam0
-					? std::make_optional<std::unique_ptr<cv::Mat>>(sensor_datum.cam0.value().load())
-					: std::nullopt,
-				sensor_datum.cam1
-					? std::make_optional<std::unique_ptr<cv::Mat>>(sensor_datum.cam1.value().load())
-					: std::nullopt,
-				dataset_now,
-			});
+			//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
+
+			const sensor_types& sensor_datum = _m_sensor_data_it->second;
+			if (sensor_datum.imu0) {
+				_m_imu_cam->put(new imu_cam_type{
+					ts,
+					(sensor_datum.imu0.value().angular_v).cast<float>(),
+					(sensor_datum.imu0.value().linear_a).cast<float>(),
+					sensor_datum.cam0
+						? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
+						: std::nullopt,
+					sensor_datum.cam1
+						? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
+						: std::nullopt,
+					dataset_now,
+				});
+			}
+
+			// last_time = dataset_now;
+			++_m_sensor_data_it;
 		}
-
-		// last_time = dataset_now;
-		++_m_sensor_data_it;
 	}
 
 private:
