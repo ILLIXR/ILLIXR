@@ -1,13 +1,9 @@
 # Building ILLIXR
 
-_It may not be perfect, but it is the product of our blood, sweat, tears, and dreams._
-
 ## Basic usage
 
-- From the project root, `make run.dbg -j$(nproc)` will build the ILLIXR runtime, the ILLIXR
-  plugins, and run it for you.
-
-- `make run.opt -j$(nproc)`, is the same but with optimizations on and debug off.
+- From the project root, `make run.dbg -j$(nproc)` will build the ILLIXR runtime standalone, the
+  ILLIXR plugins, and run it for you. `make run.opt -j$(nproc)`, is the same but with optimizations on and debug off.
 
 ## Adding in a new plugin (the common case)
 

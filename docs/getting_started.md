@@ -1,5 +1,10 @@
 # Getting Started
 
+## ILLIXR standalone
+
+The ILLIXR runtime can be built "standalone", to run without Monado. This mode does not support
+OpenXR, but it is faster for development.
+
 1. Clone the repository.
 
         git clone --recursive https://github.com/charmoniumQ/illixr-prototype
