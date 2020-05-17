@@ -17,19 +17,20 @@
 namespace ILLIXR {
 
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
+
 	typedef unsigned long long ullong;
 
-	typedef struct {
-		time_type time;
-		Eigen::Vector3f angular_v;
-		Eigen::Vector3f linear_a;
-	} imu_type;
+	// typedef struct {
+	// 	time_type time;
+	// 	Eigen::Vector3f angular_v;
+	// 	Eigen::Vector3f linear_a;
+	// } imu_type;
 
-	typedef struct {
-		time_type time;
-		std::unique_ptr<cv::Mat> img0;
-		std::unique_ptr<cv::Mat> img1;
-	} cam_type;
+	// typedef struct {
+	// 	time_type time;
+	// 	std::unique_ptr<cv::Mat> img0;
+	// 	std::unique_ptr<cv::Mat> img1;
+	// } cam_type;
 
 	typedef struct {
 		time_type time;

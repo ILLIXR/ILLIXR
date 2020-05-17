@@ -176,7 +176,9 @@ namespace ILLIXR {
 
 		virtual void _p_schedule(const std::string& name, std::function<void(const void*)> callback, std::size_t ty) {
 			_m_registry.try_emplace(name, ty, name, _m_queue);
-			_m_registry.at(name).schedule(callback);
+			topic& topic = _m_registry.at(name);
+			assert(topic.ty() == ty);
+			topic.schedule(callback);
 		}
 
 		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& name, std::size_t ty) {
