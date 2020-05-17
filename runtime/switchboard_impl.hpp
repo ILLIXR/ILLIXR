@@ -1,11 +1,11 @@
-#include "common/switchboard.hh"
-#include "common/data_format.hh"
+#include "common/switchboard.hpp"
+#include "common/data_format.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
 #include <cassert>
 
-#include "concurrentqueue.h"
+#include "concurrentqueue.hpp"
 template <typename T>
 using queue = moodycamel::ConcurrentQueue<T>;
 

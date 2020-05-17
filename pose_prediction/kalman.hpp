@@ -2,7 +2,7 @@
 #define KALMAN_HH__
 
 #include <chrono>
-#include "common/data_format.hh"
+#include "common/data_format.hpp"
 #include <Eigen/Dense>
 
 using namespace ILLIXR;

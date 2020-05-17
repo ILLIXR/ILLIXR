@@ -12,7 +12,8 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 #undef Complex // For 'Complex' conflict
-#include "phonebook.hh"
+#include "phonebook.hpp"
+#include "switchboard.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT

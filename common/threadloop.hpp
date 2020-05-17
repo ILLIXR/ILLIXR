@@ -4,7 +4,7 @@
 #include <atomic>
 #include <future>
 #include <algorithm>
-#include "plugin.hh"
+#include "plugin.hpp"
 
 namespace ILLIXR {
 

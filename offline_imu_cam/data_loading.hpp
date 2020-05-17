@@ -8,7 +8,7 @@
 #include <opencv2/imgproc.hpp>
 #include <eigen3/Eigen/Dense>
 
-#include "csv_iterator.hh"
+#include "csv_iterator.hpp"
 
 typedef unsigned long long ullong;
 

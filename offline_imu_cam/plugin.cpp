@@ -1,8 +1,8 @@
-#include "common/switchboard.hh"
-#include "common/data_format.hh"
-#include "data_loading.hh"
-#include "common/data_format.hh"
-#include "common/threadloop.hh"
+#include "common/switchboard.hpp"
+#include "common/data_format.hpp"
+#include "data_loading.hpp"
+#include "common/data_format.hpp"
+#include "common/threadloop.hpp"
 
 using namespace ILLIXR;
 
