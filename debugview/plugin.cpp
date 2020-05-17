@@ -57,9 +57,11 @@ public:
 	// data whenever it needs to.
 	debugview(phonebook *pb)
 		: sb{pb->lookup_impl<switchboard>()}
-		, _m_fast_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+
+		// Fast and slow pose are temporarily the same as there is no timewarp componenet atm
+		, _m_fast_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
-		, _m_true_pose{sb->subscribe_latest<pose_type>("fast_true_pose")}
+		, _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
@@ -486,7 +488,6 @@ public:
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
    		sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
-        	std::cerr << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
         	this->imu_cam_handler(datum);
     	});
 

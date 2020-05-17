@@ -44,7 +44,7 @@ public:
 	gldemo(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-		, _m_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
