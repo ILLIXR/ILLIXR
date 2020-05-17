@@ -2,6 +2,7 @@
 #include <future>
 #include <iostream>
 #include <thread>
+#include <functional>
 
 // IMGUI Immediate-mode GUI library
 #include "imgui/imgui.h"
@@ -10,7 +11,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/component.hh"
+#include "common/plugin.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
 #include "common/shader_util.hh"
@@ -19,9 +20,13 @@
 #include "demo_model.hh"
 #include "headset_model.hh"
 #include "shaders/blocki_shader.hh"
+#include <opencv2/opencv.hpp>
 #include <cmath>
 
 using namespace ILLIXR;
+
+constexpr size_t TEST_PATTERN_WIDTH = 256;
+constexpr size_t TEST_PATTERN_HEIGHT = 256;
 
 // Loosely inspired by
 // http://spointeau.blogspot.com/2013/12/hello-i-am-looking-at-opengl-3.html
@@ -43,28 +48,76 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
 
 }
 
-class debugview : public component {
+class debugview : public plugin {
 public:
 
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
-	debugview(std::unique_ptr<reader_latest<pose_type>>&& fast_pose_plug,
-		  std::unique_ptr<reader_latest<pose_type>>&& slow_pose_plug,
-		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
-		: _m_fast_pose{std::move(fast_pose_plug)}
-		, _m_slow_pose{std::move(slow_pose_plug)}
-		, _m_config{std::move(config_plug)}
-	{ }
+	debugview(phonebook *pb)
+		: sb{pb->lookup_impl<switchboard>()}
+		, _m_fast_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
+		, _m_true_pose{sb->subscribe_latest<pose_type>("fast_true_pose")}
+		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+	{}
+
+	// Struct for drawable debug objects (scenery, headset visualization, etc)
+	struct DebugDrawable {
+		DebugDrawable() {}
+		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
+
+		GLuint num_triangles;
+		GLuint positionVBO;
+		GLuint positionAttribute;
+		GLuint normalVBO;
+		GLuint normalAttribute;
+		GLuint colorUniform;
+		std::vector<GLfloat> color;
+
+		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
+					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
+
+			this->positionAttribute = positionAttribute;
+			this->normalAttribute = normalAttribute;
+			this->colorUniform = colorUniform;
+			this->num_triangles = num_triangles;
+
+			glGenBuffers(1, &positionVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
+			
+			glGenBuffers(1, &normalVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
+
+		}
+
+		void drawMe() {
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(positionAttribute);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(normalAttribute);
+			glUniform4fv(colorUniform, 1, color.data());
+			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+		}
+	};
+
+	void imu_cam_handler(const imu_cam_type *datum) {
+		if(datum == NULL){ return; }
+		if(datum->img0.has_value() && datum->img1.has_value())
+			last_datum_with_images = datum;
+	}
 
 	void draw_GUI() {
 		// Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-		// Create a window called "My First Tool", with a menu bar.
+		ImGui::SetNextWindowSize(ImVec2(200, 900), ImGuiCond_FirstUseEver);
 		ImGui::Begin("ILLIXR Debug View");
 
 		ImGui::Text("Adjust options for the runtime debug view.");
@@ -93,6 +146,7 @@ public:
 		ImGui::Spacing();
 		const pose_type* fast_pose_ptr = _m_fast_pose->get_latest_ro();
 		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
+		const pose_type* true_pose_ptr = _m_true_pose->get_latest_ro();
 		ImGui::Text("Switchboard connection status:");
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
@@ -112,9 +166,39 @@ public:
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid slow pose pointer");
 		}
+		ImGui::Text("GROUND TRUTH pose topic:");
+		ImGui::SameLine();
+		if(true_pose_ptr){
+			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
+			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose_ptr->position.x(), true_pose_ptr->position.y(), true_pose_ptr->position.z());
+			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose_ptr->orientation.x(), true_pose_ptr->orientation.y(), true_pose_ptr->orientation.z(), true_pose_ptr->orientation.w());
+		} else {
+			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
+		}
+
+		ImGui::Text("Debug view eulers:");
+		ImGui::Text("	(%f, %f)", view_euler.x(), view_euler.y());
 
 		ImGui::End();
-		ImGui::ShowDemoWindow();
+
+		ImGui::Begin("Camera + IMU");
+		ImGui::Text("Camera view buffers: ");
+		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
+		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
+		if(ImGui::Button("Calculate new orientation offset")){
+			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
+			if(pose_ptr != NULL)
+				offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
+		}
+		ImGui::End();
+
+		ImGui::Begin("Onboard camera views");
+		auto windowSize = ImGui::GetWindowSize();
+		auto verticalOffset = ImGui::GetCursorPos().y;
+		ImGui::Image((void*)(intptr_t)camera_textures[0], ImVec2(windowSize.x/2,windowSize.y - verticalOffset * 2));
+		ImGui::SameLine();
+		ImGui::Image((void*)(intptr_t)camera_textures[1], ImVec2(windowSize.x/2,windowSize.y - verticalOffset * 2));
+		ImGui::End();
 
 		ImGui::Render();
 	}
@@ -125,57 +209,69 @@ public:
 		// Please excuse the strange GL_CW and GL_CCW mode switches.
 		
 		glFrontFace(GL_CW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(ground_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Ground_plane_NUM_TRIANGLES * 3);
-
+		groundObject.drawMe();
 		glFrontFace(GL_CCW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(water_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Water_plane001_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(tree_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Trees_cone_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(rock_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Rocks_plane002_NUM_TRIANGLES * 3);
-
+		waterObject.drawMe();
+		treesObject.drawMe();
+		rocksObject.drawMe();
 		glFrontFace(GL_CCW);
 	}
 
+	bool load_camera_images(){
+		if(last_datum_with_images == NULL){
+			return false;
+		}
+		if(last_datum_with_images->img0.has_value()){
+			std::cerr << "img0 has value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img0.value()).ptr());
+			camera_texture_sizes[0] = Eigen::Vector2i((*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows);
+			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		} else {
+			std::cerr << "img0 has no value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
+			glFlush();
+			camera_texture_sizes[0] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
+		}
+		
+		if(last_datum_with_images->img1.has_value()){
+			std::cerr << "img1 has value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img1.value()).ptr());
+			camera_texture_sizes[1] = Eigen::Vector2i((*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows);
+			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		} else {
+			std::cerr << "img1 has no value!" << std::endl;
+			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
+			glFlush();
+			camera_texture_sizes[1] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
+		}
+
+		return true;
+	}
+
 	void draw_headset(){
-		glBindBuffer(GL_ARRAY_BUFFER, headset_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, headset_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(rock_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, headset_NUM_TRIANGLES * 3);
+		headsetObject.drawMe();
+	}
+
+	Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation, const Eigen::Vector3f& positionOffset){
+		Eigen::Matrix4f headsetPosition;
+		headsetPosition << 1, 0, 0, position.x() + positionOffset.x(),
+						   0, 1, 0, position.y() + positionOffset.y(),
+						   0, 0, 1, position.z() + positionOffset.z(),
+						   0, 0, 0, 1;
+
+		// We need to convert the headset rotation quaternion to a 4x4 homogenous matrix.
+		// First of all, we convert to 3x3 matrix, then extend to 4x4 by augmenting.
+		Eigen::Matrix3f rotationMatrix = rotation.toRotationMatrix();
+		Eigen::Matrix4f rotationMatrixHomogeneous = Eigen::Matrix4f::Identity();
+		rotationMatrixHomogeneous.block(0,0,3,3) = rotationMatrix;
+		// Then we apply the headset rotation.
+		return headsetPosition * rotationMatrixHomogeneous; 
 	}
 
 	
@@ -209,10 +305,9 @@ public:
 
 			mouse_velocity = mouse_velocity * 0.95;
 
+			load_camera_images();
 
 			glUseProgram(demoShaderProgram);
-
-
 
 			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
 
@@ -224,29 +319,14 @@ public:
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.
 
-				if(counter == 50){
+				if(counter == 100){
 					std::cerr << "First pose received: quat(wxyz) is " << pose_ptr->orientation.w() << ", " << pose_ptr->orientation.x() << ", " << pose_ptr->orientation.y() << ", " << pose_ptr->orientation.z() << std::endl;
 					offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
 				}
 				counter++;
 
-				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
-
-				
-				headsetPosition << 1, 0, 0, pose_ptr->position.x() + tracking_position_offset.x(),
-				               	   0, 1, 0, pose_ptr->position.y() + tracking_position_offset.y(),
-							       0, 0, 1, pose_ptr->position.z() + tracking_position_offset.z(),
-							       0, 0, 0, 1;
-
-				// We need to convert the headset rotation quaternion to a 4x4 homogenous matrix.
-				// First of all, we convert to 3x3 matrix, then extend to 4x4 by augmenting.
-				Eigen::Matrix3f combinedRot = combinedQuat.toRotationMatrix();
-				Eigen::Matrix4f combinedRotHomogeneous = Eigen::Matrix4f::Identity();
-				combinedRotHomogeneous.block(0,0,3,3) = combinedRot;
-
-				// Then we apply the headset rotation.
-				headsetPose = headsetPosition * combinedRotHomogeneous;
-				//headsetPose = headsetPosition;
+				Eigen::Quaternionf combinedQuat = pose_ptr->orientation * offsetQuat.inverse();
+				headsetPose = generateHeadsetTransform(pose_ptr->position, combinedQuat, tracking_position_offset);
 			}
 
 			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
@@ -290,8 +370,18 @@ public:
 
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
+			headsetObject.color = {0.2,0.2,0.2,1};
+			headsetObject.drawMe();
 
-			draw_headset();
+			const pose_type* groundtruth_pose_ptr = _m_true_pose->get_latest_ro();
+			if(groundtruth_pose_ptr){
+				headsetPose = generateHeadsetTransform(groundtruth_pose_ptr->position, groundtruth_pose_ptr->orientation, tracking_position_offset);
+			}
+			modelView = userView * headsetPose;
+			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
+
+			headsetObject.color = {0,0.8,0,1};
+			headsetObject.drawMe();
 
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -305,23 +395,23 @@ private:
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
 
-	// Switchboard plug for pose prediction.
+	GLFWwindow * const glfw_context;
+	switchboard* sb;
+
 	std::unique_ptr<reader_latest<pose_type>> _m_fast_pose;
-
-	// Switchboard plug for slow pose.
 	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
-
-	// Switchboard plug for global config data, including GLFW/GPU context handles.
-	std::unique_ptr<reader_latest<global_config>> _m_config;
-
+	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
 	GLFWwindow* gui_window;
 
-	uint counter = 0;
-	Eigen::Quaternionf offsetQuat;
+	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
-	Eigen::Vector3d view_euler;
-	Eigen::Vector2d last_mouse_pos;
-	Eigen::Vector2d mouse_velocity;
+	uint counter = 0;
+	Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
+
+	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
+	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
+	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
 	bool beingDragged = false;
 
 	float view_dist = 6.0;
@@ -332,6 +422,12 @@ private:
 	// This is just to make it look nicer with the included SLAM dataset.
 	// Therefore, the debug view also applies this pose offset.
 	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{5.0f, 2.0f, -3.0f};
+
+
+	const imu_cam_type* last_datum_with_images = NULL;
+	// std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
+	GLuint camera_textures[2];
+	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
 	GLuint demo_vao;
 	GLuint demoShaderProgram;
@@ -355,24 +451,16 @@ private:
 
 	GLuint colorUniform;
 
-	GLfloat water_color[4] = {
-		0.0, 0.3, 0.5, 1.0
-	};
+	// Scenery
+	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
+	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
+	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
+	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
-	GLfloat ground_color[4] = {
-		0.1, 0.2, 0.1, 1.0
-	};
-
-	GLfloat tree_color[4] = {
-		0.0, 0.3, 0.0, 1.0
-	};
-
-	GLfloat rock_color[4] = {
-		0.3, 0.3, 0.3, 1.0
-	};
+	// Headset debug model
+	DebugDrawable headsetObject = DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
-
 
 	static void GLAPIENTRY
 	MessageCallback( GLenum source,
@@ -392,7 +480,15 @@ public:
 	/* compatibility interface */
 
 	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
-	virtual void _p_start() override {
+	virtual void start() override {
+		// The "imu_cam" topic is not really a topic, in the current implementation.
+		// It serves more as an event stream. Camera frames are only available on this topic
+		// the very split second they are made available. Subsequently published packets to this
+		// topic do not contain the camera frames.
+   		sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
+        	std::cout << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
+        	this->imu_cam_handler(datum);
+    	});
 
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		const char* glsl_version = "#version 430 core";
@@ -401,10 +497,6 @@ public:
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		auto fetched_config = _m_config->get_latest_ro();
-		if(!fetched_config){
-			std::cerr << "Debug view failed to fetch global config." << std::endl;
-		}
 		gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", NULL, NULL);
 		glfwSetWindowSize(gui_window, 1600, 1000);
 
@@ -447,42 +539,65 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		// Config mesh position vbo
-		glGenBuffers(1, &ground_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_vertex_data[0]), GL_STATIC_DRAW);
+		groundObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Ground_plane_NUM_TRIANGLES,
+			&(Ground_Plane_vertex_data[0]),
+			&(Ground_Plane_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
-		glGenBuffers(1, &ground_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_normal_data[0]), GL_STATIC_DRAW);
+		waterObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Water_plane001_NUM_TRIANGLES,
+			&(Water_Plane001_vertex_data[0]),
+			&(Water_Plane001_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
-		glGenBuffers(1, &headset_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, headset_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (headset_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(headset_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &headset_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, headset_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (headset_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(headset_normal_data[0]), GL_STATIC_DRAW);
-		
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		treesObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Trees_cone_NUM_TRIANGLES,
+			&(Trees_Cone_vertex_data[0]),
+			&(Trees_Cone_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+
+		rocksObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Rocks_plane002_NUM_TRIANGLES,
+			&(Rocks_Plane002_vertex_data[0]),
+			&(Rocks_Plane002_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+
+		headsetObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			headset_NUM_TRIANGLES,
+			&(headset_vertex_data[0]),
+			&(headset_normal_data[0]),
+			GL_DYNAMIC_DRAW
+		);
+
+		// Generate fun test pattern for missing camera images.
+		for(int x = 0; x < TEST_PATTERN_WIDTH; x++){
+			for(int y = 0; y < TEST_PATTERN_HEIGHT; y++){
+				test_pattern[x][y] = ((x+y) % 6 == 0) ? 255 : 0;
+			}
+		}
+
+		glGenTextures(2, &(camera_textures[0]));
+		glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		// Construct a basic perspective projection
 		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
@@ -493,12 +608,13 @@ public:
 
 	}
 
-	virtual void _p_stop() override {
+	void stop() {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
 
 	virtual ~debugview() override {
+		stop();
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -508,18 +624,6 @@ public:
 	}
 };
 
-extern "C" component* create_component(switchboard* sb) {
-	/* First, we declare intent to read/write topics. Switchboard
-	   returns handles to those topics. */
+PLUGIN_MAIN(debugview);
 
-	// We sample the up-to-date, predicted pose.
-	auto fast_pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
-
-	// We sample the slow pose.
-	auto slow_pose_ev = sb->subscribe_latest<pose_type>("slow_pose");
-
-	auto config_ev = sb->subscribe_latest<global_config>("global_config");
-
-	return new debugview {std::move(fast_pose_ev), std::move(slow_pose_ev),std::move(config_ev)};
-}
 

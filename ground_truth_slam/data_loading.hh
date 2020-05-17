@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <optional>
+#include <math.h>
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -9,8 +10,6 @@
 #include <eigen3/Eigen/Dense>
 
 #include "csv_iterator.hh"
-
-typedef unsigned long long ullong;
 
 // timestamp
 // p_RS_R_x [m], p_RS_R_y [m], p_RS_R_z [m]
@@ -30,7 +29,7 @@ load_data(const std::string& data_path) {
 
 	std::ifstream imu0_file {data_path + "state_groundtruth_estimate0/data.csv"};
 	for(CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
-		ullong t = std::stoull(row[0]);
+		ullong t = floor(std::stoull(row[0]) / 10000);
 		Eigen::Vector3f av {std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
 		Eigen::Quaternionf la {std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
 		data[t] = {{}, av, la};

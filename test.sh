@@ -60,13 +60,19 @@ cd ..
 cd gldemo
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} gldemo
-"${CXX}" -g utils/*.cpp gldemo.cc ../runtime/extended_window.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libgldemo.so -fpic
+"${CXX}" -g utils/*.cpp gldemo.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libgldemo.so -fpic
 cd ..
 
 cd pose_prediction
 #[ -n "${clean}" ] && bazel clean
 #bazel build ${extra_flags} pose_prediction
 "${CXX}" -g pose_prediction.cc kalman.cc --std=c++2a -I/usr/include/eigen3 -shared -o libpose_prediction.so -fpic
+cd ..
+
+cd debugview
+#[ -n "${clean}" ] && bazel clean
+#bazel build ${extra_flags} debugview
+"${CXX}" -g utils/*.cpp imgui/*.cpp debugview.cc --std=c++2a -lglfw -lrt -lm -ldl -lGLEW -lGLU -lm -lGL -lpthread -pthread -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -shared -o libdebugview.so -fpic
 cd ..
 
 if [ ! -e "data1" ]
