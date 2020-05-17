@@ -35,8 +35,8 @@ namespace ILLIXR {
 		time_type time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
-		std::optional<std::unique_ptr<cv::Mat>> img0;
-		std::optional<std::unique_ptr<cv::Mat>> img1;
+		std::optional<cv::Mat*> img0;
+		std::optional<cv::Mat*> img1;
 		ullong temp_time;
 	} imu_cam_type;
 

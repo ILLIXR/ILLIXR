@@ -9,19 +9,27 @@ components = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ tim
 	$(MAKE) -C $< main.dbg.exe
 
 .PHONY: run.dbg
-run.dbg: runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
-	$^
+run.dbg: runtime/main.dbg.exe $(components:/=/plugin.dbg.so) data1
+	     runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
 
 .PHONY: run.opt
-run.opt: runtime/main.opt.exe $(components:/=/plugin.opt.so)
-	$^
+run.opt: runtime/main.opt.exe $(components:/=/plugin.opt.so) data1
+	     runtime/main.opt.exe $(components:/=/plugin.opt.so)
 
 .PHONY: %/plugin.dbg.so
-gdb: runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
-	@echo "gdb> run $(components:/=/plugin.dbg.so)" && \
-	gdb -q --args $^
+gdb:              runtime/main.dbg.exe $(components:/=/plugin.dbg.so) data1
+	gdb -q --args runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
 
-# gdb.opt does not make sense, since opt does not contain debug symbols
+data1:
+	curl -o data.zip \
+		"http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip" && \
+	unzip data.zip && \
+	rm -rf __MACOSX data1 && \
+	mv mav0 data1
+
+.PHONY: deepclean
+deepclean: clean
+	touch data1 && rm -rf data1
 
 .PHONY: clean
 clean: clean_runtime $(patsubst %,clean_%,$(components))
