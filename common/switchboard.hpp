@@ -40,12 +40,13 @@ public:
 	 */
 	virtual void put(const event* ev) = 0;
 
-	/* @brief Like `new`/`malloc` but more efficient for the specific case.
+	/**
+	 * @brief Like `new`/`malloc` but more efficient for the specific case.
 	 * 
 	 * There is an optimization available which has not yet been implemented: switchboard can memory
 	 * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
 	 * B. B's deallocation through the destructor, and A's allocation through this method completes
-	 * the cycle in a [double-buffer or swap-chain][2].
+	 * the cycle in a [double-buffer (AKA swap-chain)][2].
 	 *
 	 * [1]: https://en.wikipedia.org/wiki/Slab_allocation
 	 * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
@@ -64,9 +65,44 @@ public:
 */
 
 /**
- * @brief A manager for typed, named event-streams (called topics).
+ * @brief A manager for typesafe, threadsafe, named event-streams (called topics).
  *
- * A topic is identified by its string name.
+ * - Writing: One can write to a topic (in any thread) through the `ILLIXR::writer` returned by
+ *   `publish()`.
+ * 
+ * - There are two ways of reading: asynchronous reading and synchronous reading:
+ *
+ *   - Asynchronous reading returns the most-recent event on the topic (idempotently). One can do
+ *     this through (in any thread) the `ILLIXR::reader_latest` handle returned by
+ *     `subscribe_latest()`.
+ *
+ *   - Synchronous reading schedules a callback to be executed on _every_ event which gets
+ *     published. One can schedule computation by `schedule()`, which will run the computation in a
+ *     thread managed by switchboard.
+ *
+ * \code{.cpp}
+ * void do_stuff(switchboard* sb) {
+ *     auto topic1 = sb->subscribe_latest<topic1_type>("topic1");
+ *     auto topic2 = sb->publish<topic2_type>("topic2");
+ * 
+ *     // Read topic 3 synchronously
+ *     sb->schedule<topic3_type>("topic3", [&](const topic3_type *event3) {
+ *         // This is a lambda expression
+ *         // https://en.cppreference.com/w/cpp/language/lambda
+ *         std::cout << "Got a new event on topic3: " << event3 << std::endl;
+ *     });
+ *
+ *     while (true) {
+ *         // Read topic 1
+ *         topic1_type* event1 = topic1.get_latest_ro();
+ *
+ *         // Write to topic 2
+ *         topic2_type* event2 = new topic2_type;
+ *         topic2.put(event2);
+ *     }
+ * }
+ * \endcode
+ *
  */
 class switchboard : public service {
 

@@ -11,7 +11,7 @@ namespace ILLIXR {
 /**
  * @brief A reusable threadloop for plugins.
  *
- * The thread continuously runs `_p_one_iteration` and is terminateable by `terminate`.
+ * The thread continuously runs `_p_one_iteration()` and is stopable by `stop()`.
  *
  * This factors out the common code I noticed in many different plugins.
  */
@@ -62,7 +62,7 @@ protected:
 	/**
 	 * @brief Sleeps until a roughly @p stop.
 	 *
-	 * We attempt to still be somewhat responsive to `terminate()` and to be more accurate than
+	 * We attempt to still be somewhat responsive to `stop()` and to be more accurate than
 	 * stdlib's `sleep`, by sleeping for the deadline in chunks.
 	 */
 	void reliable_sleep(std::chrono::time_point<std::chrono::system_clock> stop) {

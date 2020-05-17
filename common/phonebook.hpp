@@ -14,26 +14,30 @@ namespace ILLIXR {
 	 */
 	class service {
 	public:
+		/**
+		 */
 		virtual ~service() {}
 	};
 
 	/**
 	 * @brief A [service locator][1] for ILLIXR.
 	 *
-	 * Suppose one dynamically-loaded plugin, `A_plugin`, needs a service, `B_service`, provided by
-	 * another, `B_plugin`. `A_plugin` cannot statically construct a `B_service`, because the
-	 * implementation `B_plugin` is dynamically loaded. However, `B_plugin` can register an
-	 * implementation of `B_service` when it is loaded, and `A_plugin` can lookup that
-	 * implementation without knowing it.
+	 * This will be explained through an exmaple: Suppose one dynamically-loaded plugin, `A_plugin`,
+	 * needs a service, `B_service`, provided by another, `B_plugin`. `A_plugin` cannot statically
+	 * construct a `B_service`, because the implementation `B_plugin` is dynamically
+	 * loaded. However, `B_plugin` can register an implementation of `B_service` when it is loaded,
+	 * and `A_plugin` can lookup that implementation without knowing it.
 	 *
-	 * \code{B_service.cpp}
+	 * `B_service.hpp` in `common`:
+	 * \code{.cpp}
 	 * class B_service {
 	 * public:
 	 *     virtual void frobnicate(foo data) = 0;
 	 * };
 	 * \endcode
 	 *
-	 * \code{B_plugin.cpp}
+	 * `B_plugin.hpp`:
+	 * \code{.cpp}
 	 * class B_impl : public B_service {
 	 * public:
 	 *     virtual void frobnicate(foo data) {
@@ -46,7 +50,9 @@ namespace ILLIXR {
 	 * }
 	 * \endcode
 	 * 
-	 * \code{A_plugin.cpp}
+	 * `A_plugin.cpp`:
+	 * \code{.cpp}
+	 * #include "B_service.hpp"
 	 * void blah_blah(phonebook* pb) {
 	 *     B_service* b = pb->lookup_impl<B_service>();
 	 *     b->frobnicate(data);

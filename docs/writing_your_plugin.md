@@ -49,10 +49,11 @@ PLUGIN_MAIN(plugin_name);
 
 
 4. At this point, you should be able to go to the ILLIXR root and `make dbg`. If you edit a source
-   file and then `make dbg`, it should trigger a rebuild of your component.
+   file and then `make dbg`, it should trigger a rebuild of your plugin.
 
-5. This is all that is required to be a component. The reading and writing from switchboard
-   optional, but nearly every component does it. See `default_components.md` for more details.
+5. This is all that is required to be a plugin which can be loaded by Spindle in the ILLIXR
+   runtime. Reading and writing from Phonebook and Switchboard optional, but nearly every plugin
+   does it. See `default_plugins.md` for more details.
 
    First, we can query the `phonebook` to get various services including `switchboard`. Then we
    query `switchboard` for event-streams (topics). We will read `topic1`, write to `topic2`, and
