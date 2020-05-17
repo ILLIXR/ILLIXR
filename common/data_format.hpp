@@ -21,26 +21,27 @@
 namespace ILLIXR {
 
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
+
 	typedef unsigned long long ullong;
 
+	// typedef struct {
+	// 	time_type time;
+	// 	Eigen::Vector3f angular_v;
+	// 	Eigen::Vector3f linear_a;
+	// } imu_type;
+
+	// typedef struct {
+	// 	time_type time;
+	// 	std::unique_ptr<cv::Mat> img0;
+	// 	std::unique_ptr<cv::Mat> img1;
+	// } cam_type;
+
 	typedef struct {
 		time_type time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
-	} imu_type;
-
-	typedef struct {
-		time_type time;
-		std::unique_ptr<cv::Mat> img0;
-		std::unique_ptr<cv::Mat> img1;
-	} cam_type;
-
-	typedef struct {
-		time_type time;
-		Eigen::Vector3f angular_v;
-		Eigen::Vector3f linear_a;
-		std::optional<std::unique_ptr<cv::Mat>> img0;
-		std::optional<std::unique_ptr<cv::Mat>> img1;
+		std::optional<cv::Mat*> img0;
+		std::optional<cv::Mat*> img1;
 		ullong temp_time;
 	} imu_cam_type;
 
@@ -107,7 +108,7 @@ namespace ILLIXR {
 	place. */
 	struct accel { };
 
-	// High-level HMD specification, timewarp component
+	// High-level HMD specification, timewarp plugin
 	// may/will calculate additional HMD info based on these specifications
 	struct hmd_physical_info {
 		float   ipd;

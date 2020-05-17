@@ -1,5 +1,6 @@
 bazel-*
 /data.zip
-/data/
+/data*
 *.exe
 *.so
+docs/build

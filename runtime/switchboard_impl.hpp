@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
+#include <mutex>
 
 #include "concurrentqueue.hpp"
 template <typename T>
@@ -92,6 +93,7 @@ namespace ILLIXR {
 		}
 
 		void schedule(std::function<void(const void*)> callback) {
+			const std::lock_guard<std::mutex> lock{_m_callbacks_mutex};
 			_m_callbacks.push_back(callback);
 		}
 
@@ -111,8 +113,11 @@ namespace ILLIXR {
 			/* TODO: (optimization:free-list) free the elements of free-list. */
 		}
 
-		const std::vector<std::function<void(const void*)>>& callbacks() {
-			return _m_callbacks;
+		void invoke_callbacks(const void* event) {
+			const std::lock_guard<std::mutex> lock{_m_callbacks_mutex};
+			for (std::function<void(const void*)> callback : _m_callbacks) {
+				callback(event);
+			}
 		}
 
 	private:
@@ -120,6 +125,7 @@ namespace ILLIXR {
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::function<void(const void*)>> _m_callbacks;
+		std::mutex _m_callbacks_mutex;
 		const std::string _m_name;
 		queue<std::pair<std::string, const void*>>& _m_queue;
 		/* - const because nobody should write to the _m_latest in
@@ -163,17 +169,16 @@ namespace ILLIXR {
 			while (!_m_terminate.load()) {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
-					for (std::function<void(const void*)> callback : _m_registry.at(t.first).callbacks()) {
-						std::cout << "Callback: " << t.first << ", " << t.second << std::endl;
-						callback(t.second);
-					}
+					_m_registry.at(t.first).invoke_callbacks(t.second);
 				}
 			}
 		}
 
 		virtual void _p_schedule(const std::string& name, std::function<void(const void*)> callback, std::size_t ty) {
 			_m_registry.try_emplace(name, ty, name, _m_queue);
-			_m_registry.at(name).schedule(callback);
+			topic& topic = _m_registry.at(name);
+			assert(topic.ty() == ty);
+			topic.schedule(callback);
 		}
 
 		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& name, std::size_t ty) {

@@ -1,28 +1,31 @@
 # Using ?= makes these variables overridable
 # Simply define them before including common.mk
-LIBOPENCV ?= $(pkg-config --cflags --libs opencv4) $(pkg-config opencv --cflags --libs)
-STDCXX ?= c++2a
+CXX ?= clang++
+STDCXX ?= c++17
 DBG_FLAGS ?= -Og -g
 OPT_FLAGS ?= -O3 -DNDEBUG
-OTHER_DEPS ?= $(shell find . -name '*.cpp') $(shell find . -name '*.hpp')
+CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp')
+HPP_FILES ?= $(shell find . -name '*.hpp')
 
-plugin.dbg.so: plugin.cpp $(OBJFILES:.o=.dbg.o) $(OTHER_DEPS)
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(dbg_flags) -std=$(STDCXX) -shared -fpic -o $@ plugin.cpp $(OBJFILES:.o=.dbg.o)
+# In the future, if compilation is slow, we can enable partial compilation of object files with
+#  $(OBJ_FILES:.o=.dbg.o) and  $(OBJ_FILES:.o=.opt.o)
+plugin.dbg.so: plugin.cpp $(CPP_FILES) $(HPP_FILES) Makefile
+	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(dbg_flags) -shared -fpic -o $@ plugin.cpp $(CPP_FILES) $(LDFLAGS)
 
-plugin.opt.so: plugin.cpp  $(OBJFILES:.o=.opt.o) $(OTHER_DEPS)
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(opt_flags) -std=$(STDCXX) -shared -fpic -o $@ plugin.cpp $(OBJFILES:.o=.opt.o)
+plugin.opt.so: plugin.cpp $(CPP_FILES) $(HPP_FILES) Makefile
+	$(CXX) -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(opt_flags)  -shared -fpic -o $@ plugin.cpp $(CPP_FILES) $(LDFLAGS)
 
-main.dbg.exe: main.cpp $(OBJFILES:.o=.dbg.o) $(OTHER_DEPS)
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(dbg_flags) -std=$(STDCXX) -o $@ main.cpp $(OBJFILES:.o=.dbg.o)
+main.dbg.exe: main.cpp $(CPP_FILES) $(HPP_FILES) Makefile
+	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(dbg_flags) -o $@ main.cpp $(CPP_FILES) $(LDFLAGS)
 
-main.opt.exe: main.cpp  $(OBJFILES:.o=.opt.o) $(OTHER_DEPS)
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(opt_flags) -std=$(STDCXX) -o $@ main.cpp $(OBJFILES:.o=.opt.o)
+main.opt.exe: main.cpp $(CPP_FILES) $(HPP_FILES) Makefile
+	$(CXX) -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(opt_flags) -o $@ main.cpp $(CPP_FILES) $(LDFLAGS)
 
-%.dbg.o: %.cpp $(OTHER_DEPS)
-	$(CXX) $(CFLAGS) $(CPPFLAGS)$(dbg_flags) -std=$(STDCXX) -o $@ $<
+%.dbg.o: %.cpp $(OTHER_DEPS) Makefile
+	$(CXX) -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(dbg_flags) -o $@ $<
 
-%.opt.o: %.cpp $(OTHER_DEPS)
-	$(CXX) $(CFLAGS) $(CPPFLAGS)$(opt_flags) -std=$(STDCXX) -o $@ $<
+%.opt.o: %.cpp $(OTHER_DEPS) Makefile
+	$(CXX) -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(opt_flags) -o $@ $<
 
 .PHONY: clean
 clean:
