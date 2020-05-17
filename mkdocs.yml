@@ -7,3 +7,4 @@ nav:
         - 'Phonebook': 'core/phonebook.md'
     - 'Components':  
         - 'OpenVINS': 'components/open_vins.md'
+        - 'Offline IMU and Camera': 'components/offline_imu_cam.md'
