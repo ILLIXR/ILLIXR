@@ -4,7 +4,7 @@
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/component.hh"
+#include "common/plugin.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
 #include "common/shader_util.hh"
@@ -31,43 +31,27 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 #define USE_ALT_EYE_FORMAT
 
-typedef struct xserverWindow
-{
-	Display                 *dpy;
-	Window                  win;
-	GLXContext              glc;
-	XWindowAttributes       gwa;
-	XEvent                  xev;
-} XWin;
-
-class timewarp_gl : public component {
+class timewarp_gl : public plugin {
 
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
+	timewarp_gl(phonebook* pb)
+		: sb{pb->lookup_impl<switchboard>()}
+		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+		, _m_pose{sb->subscribe_latest<pose_type>("fast_pose")}
 	#ifdef USE_ALT_EYE_FORMAT
-	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame_alt>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
-		  std::unique_ptr<reader_latest<global_config>>&& config_plug,
-		  std::unique_ptr<writer<hologram_input>>&& hologram_plug)
-		: _m_eyebuffer{std::move(frame_plug)}
-		, _m_pose{std::move(pose_plug)}
-		, _m_config{std::move(config_plug)}
-		, _m_hologram{std::move(hologram_plug)}
-	{ }
+		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
 	#else
-	timewarp_gl(std::unique_ptr<reader_latest<rendered_frame>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
-		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
-		: _m_eyebuffer{std::move(frame_plug)}
-		, _m_pose{std::move(pose_plug)}
-		, _m_config{std::move(config_plug)}
-	{ }
+		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
 	#endif
+		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
+	{ }
 
 private:
+	switchboard* sb;
 
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
@@ -78,7 +62,7 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	XWin xwin;
+	xlib_gl_extended_window* xwin;
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
@@ -90,9 +74,6 @@ private:
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;
-
-	// Switchboard plug for global config data, including GLFW/GPU context handles.
-	std::unique_ptr<reader_latest<global_config>> _m_config;
 
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
@@ -170,104 +151,6 @@ private:
 
 	// Hologram call data
 	long long _hologram_seq{0};
-
-	void initWindow(int width, int height, GLXContext ctx){
-		xwin.dpy = XOpenDisplay(NULL);
-		if(xwin.dpy == NULL) {
-		 	printf("\n\tcannot connect to X server\n\n");
-		        exit(0);
-		}
-		Window root = DefaultRootWindow(xwin.dpy);
-		// Get a matching FB config
-		static int visual_attribs[] =
-		{
-			GLX_X_RENDERABLE    , True,
-			GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
-			GLX_RENDER_TYPE     , GLX_RGBA_BIT,
-			GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
-			GLX_RED_SIZE        , 8,
-			GLX_GREEN_SIZE      , 8,
-			GLX_BLUE_SIZE       , 8,
-			GLX_ALPHA_SIZE      , 8,
-			GLX_DEPTH_SIZE      , 24,
-			GLX_STENCIL_SIZE    , 8,
-			GLX_DOUBLEBUFFER    , True,
-			//GLX_SAMPLE_BUFFERS  , 1,
-			//GLX_SAMPLES         , 4,
-			None
-		};
-		// vi = glXChooseVisual(xwin.dpy, 0, att);
-		// if(vi == NULL) {
-		// 	printf("\n\tno appropriate visual found\n\n");
-		//         exit(0);
-		// }
-		// else {
-		// 	printf("\n\tvisual %p selected\n", (void *)vi->visualid); /* %p creates hexadecimal output like in glxinfo */
-		// }
-
-		printf( "Getting matching framebuffer configs\n" );
-		int fbcount;
-		GLXFBConfig* fbc = glXChooseFBConfig(xwin.dpy, DefaultScreen(xwin.dpy), visual_attribs, &fbcount);
-		if (!fbc)
-		{
-		  printf( "Failed to retrieve a framebuffer config\n" );
-		  exit(1);
-		}
-		printf( "Found %d matching FB configs.\n", fbcount );
-		// Pick the FB config/visual with the most samples per pixel
-		printf( "Getting XVisualInfos\n" );
-		int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
-		int i;
-		for (i=0; i<fbcount; ++i)
-		{
-		  XVisualInfo *vi = glXGetVisualFromFBConfig( xwin.dpy, fbc[i] );
-		  if ( vi )
-		  {
-		    int samp_buf, samples;
-		    glXGetFBConfigAttrib( xwin.dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
-		    glXGetFBConfigAttrib( xwin.dpy, fbc[i], GLX_SAMPLES       , &samples  );
-
-		    printf( "  Matching fbconfig %d, visual ID 0x%2x: SAMPLE_BUFFERS = %d,"
-		            " SAMPLES = %d\n",
-		            i, vi -> visualid, samp_buf, samples );
-		    if ( best_fbc < 0 || samp_buf && samples > best_num_samp )
-		      best_fbc = i, best_num_samp = samples;
-		    if ( worst_fbc < 0 || !samp_buf || samples < worst_num_samp )
-		      worst_fbc = i, worst_num_samp = samples;
-		  }
-		  XFree( vi );
-		}
-		GLXFBConfig bestFbc = fbc[ best_fbc ];
-		// Be sure to free the FBConfig list allocated by glXChooseFBConfig()
-		XFree( fbc );
-		// Get a visual
-		XVisualInfo *vi = glXGetVisualFromFBConfig( xwin.dpy, bestFbc );
-		printf( "Chosen visual ID = 0x%x\n", vi->visualid );
-
-		Colormap cmap = XCreateColormap(xwin.dpy, root, vi->visual, AllocNone);
-		XSetWindowAttributes swa;
-		swa.colormap = cmap;
-		swa.event_mask = ExposureMask | KeyPressMask;
-		xwin.win = XCreateWindow(xwin.dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
-		XMapWindow(xwin.dpy, xwin.win);
-		XStoreName(xwin.dpy, xwin.win, "ILLIXR Extended Window");
-
-		//xwin.glc = glXCreateContext(xwin.dpy, vi, *ctx, true);
-		// calling glXGetProcAddressARB
-		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
-		glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)
-        	glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
-        int context_attribs[] =
-			{
-				GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
-				GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-				//GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-				None
-			};
-		printf( "Creating context\n" );
-		xwin.glc = glXCreateContextAttribsARB( xwin.dpy, bestFbc, ctx,
-											   True, context_attribs );
-	}
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -434,12 +317,7 @@ public:
 	// ATW/Compositor overrides _p_start to control its own lifecycle/scheduling.
 	// This may be changed later, but for precision of vsync/etc we're going to
 	// use component-driven loop scheduling for now.
-	virtual void _p_start() override {
-
-		auto fetched_config = _m_config->get_latest_ro();
-		if(!fetched_config){
-			std::cerr << "Timewarp failed to fetch global config." << std::endl;
-		}
+	virtual void start() override {
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -454,13 +332,12 @@ public:
     	BuildTimewarp(&hmd_info);
 
 		// includes setting swap interval
-		initWindow(SCREEN_WIDTH, SCREEN_HEIGHT, (GLXContext)fetched_config->glctx);
-		glXMakeCurrent(xwin.dpy, xwin.win, xwin.glc);
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
 		// set swap interval for 1
 		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
 		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");
-		glXSwapIntervalEXT(xwin.dpy, xwin.win, 1);
+		glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
 
 		// Init and verify GLEW
 		glewExperimental = GL_TRUE;
@@ -533,7 +410,7 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
 
-		glXMakeCurrent(xwin.dpy, None, NULL);
+		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		_m_thread = std::thread{&timewarp_gl::main_loop, this};
 	}
@@ -551,7 +428,7 @@ public:
 	}
 
 	virtual void warp(float time) {
-		glXMakeCurrent(xwin.dpy, xwin.win, xwin.glc);
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
 		if(!most_recent_frame){
@@ -704,7 +581,7 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
-		glXSwapBuffers(xwin.dpy, xwin.win);
+		glXSwapBuffers(xwin->dpy, xwin->win);
 		lastSwapTime = glfwGetTime();
 		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
 
@@ -718,39 +595,18 @@ public:
 
 	}
 
-	virtual void _p_stop() override {
+	virtual void stop() {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
 
 	virtual ~timewarp_gl() override {
 		// TODO: Need to cleanup resources here!
-		glXMakeCurrent(xwin.dpy, None, NULL);
- 		glXDestroyContext(xwin.dpy, xwin.glc);
- 		XDestroyWindow(xwin.dpy, xwin.win);
- 		XCloseDisplay(xwin.dpy);
+		glXMakeCurrent(xwin->dpy, None, NULL);
+ 		glXDestroyContext(xwin->dpy, xwin->glc);
+ 		XDestroyWindow(xwin->dpy, xwin->win);
+ 		XCloseDisplay(xwin->dpy);
 	}
 };
 
-extern "C" component* create_component(switchboard* sb) {
-	/* First, we declare intent to read/write topics. Switchboard
-	   returns handles to those topics. */
-
-	// We sample the eyebuffer.
-	#ifdef USE_ALT_EYE_FORMAT
-	auto frame_ev = sb->subscribe_latest<rendered_frame_alt>("eyebuffer");
-	#else
-	auto frame_ev = sb->subscribe_latest<rendered_frame>("eyebuffer");
-	#endif
-
-	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
-
-	// We need global config data to create a shared GLFW context.
-	auto config_ev = sb->subscribe_latest<global_config>("global_config");
-
-	// We initiate hologram calls
-	auto hologram_ev = sb->publish<hologram_input>("hologram_in");
-
-	return new timewarp_gl {std::move(frame_ev), std::move(pose_ev), std::move(config_ev), std::move(hologram_ev)};
-}
+PLUGIN_MAIN(timewarp_gl)

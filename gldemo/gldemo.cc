@@ -4,7 +4,7 @@
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/component.hh"
+#include "common/plugin.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
 #include "common/shader_util.hh"
@@ -32,29 +32,69 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 // If this is defined, gldemo will use Monado-style eyebuffers
 #define USE_ALT_EYE_FORMAT
 
-class gldemo : public component {
+
+
+class gldemo : public plugin {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
-	#ifdef USE_ALT_EYE_FORMAT
-	gldemo(std::unique_ptr<writer<rendered_frame_alt>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
-		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
-		: _m_eyebuffer{std::move(frame_plug)}
-		, _m_pose{std::move(pose_plug)}
-		, _m_config{std::move(config_plug)}
+
+	gldemo(phonebook* pb)
+		: sb{pb->lookup_impl<switchboard>()}
+		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+		, _m_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+#ifdef USE_ALT_EYE_FORMAT
+		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
+#else
+		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
+#endif
 	{ }
-	#else
-	gldemo(std::unique_ptr<writer<rendered_frame>>&& frame_plug,
-		  std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
-		  std::unique_ptr<reader_latest<global_config>>&& config_plug)
-		: _m_eyebuffer{std::move(frame_plug)}
-		, _m_pose{std::move(pose_plug)}
-		, _m_config{std::move(config_plug)}
-	{ }
-	#endif
+
+
+	// Struct for drawable debug objects (scenery, headset visualization, etc)
+	struct DebugDrawable {
+		DebugDrawable() {}
+		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
+
+		GLuint num_triangles;
+		GLuint positionVBO;
+		GLuint positionAttribute;
+		GLuint normalVBO;
+		GLuint normalAttribute;
+		GLuint colorUniform;
+		std::vector<GLfloat> color;
+
+		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
+					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
+
+			this->positionAttribute = positionAttribute;
+			this->normalAttribute = normalAttribute;
+			this->colorUniform = colorUniform;
+			this->num_triangles = num_triangles;
+
+			glGenBuffers(1, &positionVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
+			
+			glGenBuffers(1, &normalVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
+
+		}
+
+		void drawMe() {
+			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(positionAttribute);
+			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glEnableVertexAttribArray(normalAttribute);
+			glUniform4fv(colorUniform, 1, color.data());
+			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+		}
+	};
 
 	void draw_scene() {
 
@@ -62,45 +102,11 @@ public:
 		// Please excuse the strange GL_CW and GL_CCW mode switches.
 
 		glFrontFace(GL_CW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(ground_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Ground_plane_NUM_TRIANGLES * 3);
-
+		groundObject.drawMe();
 		glFrontFace(GL_CCW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(water_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Water_plane001_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(tree_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Trees_cone_NUM_TRIANGLES * 3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexPosAttr);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-		glEnableVertexAttribArray(vertexNormalAttr);
-		glUniform4fv(colorUniform, 1, &(rock_color[0]));
-		glDrawArrays(GL_TRIANGLES, 0, Rocks_plane002_NUM_TRIANGLES * 3);
-
+		waterObject.drawMe();
+		treesObject.drawMe();
+		rocksObject.drawMe();
 		glFrontFace(GL_CCW);
 	}
 
@@ -270,7 +276,10 @@ public:
 		}
 		
 	}
+
 private:
+	GLFWwindow * const glfw_context;
+	switchboard* sb;
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
 	
@@ -286,9 +295,6 @@ private:
 
 	// Switchboard plug for pose prediction.
 	std::unique_ptr<reader_latest<pose_type>> _m_pose;
-
-	// Switchboard plug for global config data, including GLFW/GPU context handles.
-	std::unique_ptr<reader_latest<global_config>> _m_config;
 
 	GLFWwindow* hidden_window;
 
@@ -313,32 +319,13 @@ private:
 	GLuint modelViewAttr;
 	GLuint projectionAttr;
 
-	GLuint ground_vbo;
-	GLuint ground_normal_vbo;
-	GLuint water_vbo;
-	GLuint water_normal_vbo;
-	GLuint trees_vbo;
-	GLuint trees_normal_vbo;
-	GLuint rocks_vbo;
-	GLuint rocks_normal_vbo;
-
 	GLuint colorUniform;
+	
+	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
+	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
+	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
+	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
-	GLfloat water_color[4] = {
-		0.0, 0.3, 0.5, 1.0
-	};
-
-	GLfloat ground_color[4] = {
-		0.1, 0.2, 0.1, 1.0
-	};
-
-	GLfloat tree_color[4] = {
-		0.0, 0.3, 0.0, 1.0
-	};
-
-	GLfloat rock_color[4] = {
-		0.3, 0.3, 0.3, 1.0
-	};
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
 
@@ -416,15 +403,11 @@ public:
 	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
 	// This may be changed later, but it really doesn't matter for this purpose because
 	// it will be replaced by a real, Monado-interfaced application.
-	virtual void _p_start() override {
+	virtual void start() override {
 		// Create a hidden window, as we're drawing the demo "offscreen"
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
-		auto fetched_config = _m_config->get_latest_ro();
-		if(!fetched_config){
-			std::cerr << "Dummy GLDEMO app failed to fetch global config." << std::endl;
-		}
-		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, fetched_config->glfw_context);
+		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, glfw_context);
 
 		if(hidden_window == NULL){
 			printf("Whoa, what?");
@@ -465,41 +448,43 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		// Config mesh position vbo
-		glGenBuffers(1, &ground_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_vertex_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_vertex_data[0]), GL_STATIC_DRAW);
-
-		glGenBuffers(1, &ground_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, ground_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Ground_plane_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Ground_Plane_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &water_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, water_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Water_plane001_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Water_Plane001_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &trees_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, trees_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Trees_cone_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Trees_Cone_normal_data[0]), GL_STATIC_DRAW);
-		glGenBuffers(1, &rocks_normal_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, rocks_normal_vbo);
-		glBufferData(GL_ARRAY_BUFFER, (Rocks_plane002_NUM_TRIANGLES * 3 * 3) * sizeof(GLfloat), &(Rocks_Plane002_normal_data[0]), GL_STATIC_DRAW);
 		
-		glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glVertexAttribPointer(vertexNormalAttr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		groundObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Ground_plane_NUM_TRIANGLES,
+			&(Ground_Plane_vertex_data[0]),
+			&(Ground_Plane_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
-		// Config mesh indices vbo
-		//glGenBuffers(1, &idx_vbo);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, (BLOCKI_NUM_POLYS * 3) * sizeof(GLuint), logo3d_poly_data, GL_STATIC_DRAW);
+		waterObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Water_plane001_NUM_TRIANGLES,
+			&(Water_Plane001_vertex_data[0]),
+			&(Water_Plane001_normal_data[0]),
+			GL_STATIC_DRAW
+		);
 
+		treesObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Trees_cone_NUM_TRIANGLES,
+			&(Trees_Cone_vertex_data[0]),
+			&(Trees_Cone_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+
+		rocksObject.init(vertexPosAttr,
+			vertexNormalAttr,
+			colorUniform,
+			Rocks_plane002_NUM_TRIANGLES,
+			&(Rocks_Plane002_vertex_data[0]),
+			&(Rocks_Plane002_normal_data[0]),
+			GL_STATIC_DRAW
+		);
+		
 		// Construct a basic perspective projection
 		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
@@ -509,33 +494,14 @@ public:
 
 	}
 
-	virtual void _p_stop() override {
+	void stop() {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
 
 	virtual ~gldemo() override {
-		// TODO: need to cleanup here!
+		stop();
 	}
 };
 
-extern "C" component* create_component(switchboard* sb) {
-	/* First, we declare intent to read/write topics. Switchboard
-	   returns handles to those topics. */
-	
-	// We publish application frames to Switchboard.
-	#ifdef USE_ALT_EYE_FORMAT
-	auto frame_ev = sb->publish<rendered_frame_alt>("eyebuffer");
-	#else
-	auto frame_ev = sb->publish<rendered_frame>("eyebuffer");
-	#endif
-
-	// We sample the up-to-date, predicted pose.
-	auto pose_ev = sb->subscribe_latest<pose_type>("fast_pose");
-
-	// We need global config data to create a shared GLFW context.
-	auto config_ev = sb->subscribe_latest<global_config>("global_config");
-
-	return new gldemo {std::move(frame_ev), std::move(pose_ev), std::move(config_ev)};
-}
-
+PLUGIN_MAIN(gldemo)

@@ -2,29 +2,30 @@
 #include <chrono>
 #include <math.h>
 #include "kalman.hh"
-#include "common/component.hh"
 #include "common/switchboard.hh"
+#include "common/phonebook.hh"
+#include "common/threadloop.hh"
 #include "common/data_format.hh"
 
 using namespace ILLIXR;
 
-class pose_prediction : public component {
+class pose_prediction : public threadloop {
 public:
-    // Public constructor, create_component passes Switchboard handles ("plugs")
-    // to this constructor. In turn, the constructor fills in the private
-    // references to the switchboard plugs, so the component can read the
-    // data whenever it needs to.
-    pose_prediction(std::unique_ptr<reader_latest<pose_type>>&& pose_plug,
-	  std::unique_ptr<reader_latest<imu_type>>&& imu_plug,
-      std::unique_ptr<writer<pose_type>>&& predicted_pose_plug)
-	: _m_slow_pose{std::move(pose_plug)}
-	, _m_imu{std::move(imu_plug)}
-    , _m_fast_pose{std::move(predicted_pose_plug)} {
+    pose_prediction(phonebook* pb)
+		: sb{pb->lookup_impl<switchboard>()}
+		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
+		, _m_imu{sb->subscribe_latest<imu_type>("imu0")}
+		, _m_fast_pose{sb->publish<pose_type>("fast_pose")}
+	{
+
+		auto nullable_pose = _m_slow_pose->get_latest_ro();
+		assert(nullable_pose != NULL);
+		_m_fast_pose->put(nullable_pose);
 
         std::chrono::time_point<std::chrono::system_clock> current_time = std::chrono::system_clock::now();
         pose_type init_pose = pose_type{
-            current_time,
-            Eigen::Vector3f{0.878612, 2.14247, 0.947262},
+            current_time, 
+            Eigen::Vector3f{0.878612, 2.14247, 0.947262}, 
             Eigen::Quaternionf{0.060514, -0.828459, -0.058956, -0.553641}
         };
 
@@ -33,11 +34,11 @@ public:
         _current_fast_pose = init_pose;
         _fast_linear_vel = Eigen::Vector3f(0, 0, 0);
         _slam_received = false;
-        start = std::chrono::system_clock::now();
+        start_time = std::chrono::system_clock::now();
     }
 
-    // Overridden method from the component interface. This specifies one interation of the main loop
-    virtual void _p_compute_one_iteration() override {
+    // Overridden method from the component interface. This specifies one interation of the main loop 
+    virtual void _p_one_iteration() override {
 
         // If the SB has a new slow pose value from SLAM
         auto pose_sample = _m_slow_pose->get_latest_ro();
@@ -64,19 +65,15 @@ public:
         // }
     }
 
-    /*
-    This developer is responsible for killing their processes
-    and deallocating their resources here.
-    */
-    virtual ~pose_prediction() override {}
-
 private:
+	switchboard* sb;
+
     // Switchboard plugs for writing / reading data.
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
     std::unique_ptr<reader_latest<imu_type>> _m_imu;
     std::unique_ptr<writer<pose_type>> _m_fast_pose;
 
-    time_type start;
+    time_type start_time;
 
     kalman_filter* _filter;
     pose_type _previous_slow_pose;
@@ -103,22 +100,20 @@ private:
 
         Eigen::Vector3f new_slow_orientation = temp_pose->orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         Eigen::Vector3f latest_fast_orientation = _current_fast_pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-        
-        /*
+
         std::cerr << "Orientation xyz: " << new_slow_orientation.x() << ", " << new_slow_orientation.y() << ", " << new_slow_orientation.z() << std::endl;
 
         std::cout << "New pose recieved from SLAM! " << time_difference << std::endl;
-        std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0]
+        std::cout << "Diff Between New Slow and Latest Fast - Pos: " << temp_pose->position[0] - _current_fast_pose.position[0] 
                 << ", " << temp_pose->position[1] - _current_fast_pose.position[1]
                 << ", " << temp_pose->position[2] - _current_fast_pose.position[2] << std::endl;
 
-        std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0]
+        std::cout << "Diff Between New Slow and Latest Fast - Rot: " << new_slow_orientation[0] - latest_fast_orientation[0] 
                 << ", " << new_slow_orientation[1] - latest_fast_orientation[1]
                 << ", " << new_slow_orientation[2] - latest_fast_orientation[2] << std::endl;
-        */
 
 
-        float time = (fresh_pose.time - start).count();
+        float time = (fresh_pose.time - start_time).count();
 
         float aroundZ = 0.0f;
 		float aroundY = 0.0f;
@@ -142,7 +137,7 @@ private:
 
 
         pose_type* swapped_pose = new pose_type(fresh_pose);
-
+        
         swapped_pose->position.x() = fresh_pose.position.y();
         swapped_pose->position.y() = fresh_pose.position.x();
         swapped_pose->position.z() = -fresh_pose.position.z();
@@ -193,22 +188,9 @@ private:
         assert(isfinite(_current_fast_pose.position[0]));
         assert(isfinite(_current_fast_pose.position[1]));
         assert(isfinite(_current_fast_pose.position[2]));
-
+		
 		_m_fast_pose->put(new pose_type(_current_fast_pose));
     }
 };
 
-extern "C" component* create_component(switchboard* sb) {
-	/* First, we declare intent to read/write topics. Switchboard
-	   returns handles to those topics. */
-    auto slow_pose_plug = sb->subscribe_latest<pose_type>("slow_pose");
-	auto imu_plug = sb->subscribe_latest<imu_type>("imu0");
-	auto fast_pose_plug = sb->publish<pose_type>("fast_pose");
-
-	/* This ensures pose is available at startup. */
-	auto nullable_pose = slow_pose_plug->get_latest_ro();
-	assert(nullable_pose != NULL);
-	fast_pose_plug->put(nullable_pose);
-
-	return new pose_prediction{std::move(slow_pose_plug), std::move(imu_plug), std::move(fast_pose_plug)};
-}
+PLUGIN_MAIN(pose_prediction)

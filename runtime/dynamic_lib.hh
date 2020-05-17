@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <functional>
 
 using void_ptr = std::unique_ptr<void, std::function<void(void*)>>;
 /*

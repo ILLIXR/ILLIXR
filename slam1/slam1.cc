@@ -2,25 +2,28 @@
 #include <thread>
 #include <cmath>
 #include <ctime>
-#include "common/component.hh"
+#include "common/plugin.hh"
 #include "common/switchboard.hh"
 #include "common/data_format.hh"
+#include "common/threadloop.hh"
 
 using namespace ILLIXR;
 
-class slam1 : public component {
+class slam1 : public threadloop {
 public:
 	/* Provide handles to slam1 */
-	slam1(std::unique_ptr<reader_latest<camera_frame>>&& camera,
-		  std::unique_ptr<writer<pose_type>>&& pose)
-		: _m_camera{std::move(camera)}
-		, _m_pose{std::move(pose)}
+	slam1(phonebook* pb)
+		: sb{pb->lookup_impl<switchboard>()}
+		, _m_camera{sb->subscribe_latest<camera_frame>("camera")}
+		, _m_pose{sb->publish<pose_type>("slow_pose")}
 		, state{0}
 	{
 		start_time = std::chrono::system_clock::now();
+		pose_type* new_pose = new pose_type;
+		_m_pose->put(new_pose);
 	}
 
-	virtual void _p_compute_one_iteration() override {
+	virtual void _p_one_iteration() override {
 		using namespace std::chrono_literals;
 
 		// Until we have pose prediction, we'll run our magical
@@ -62,6 +65,7 @@ public:
 	}
 
 private:
+	switchboard* const sb;
 	std::unique_ptr<reader_latest<camera_frame>> _m_camera;
 	std::unique_ptr<writer<pose_type>> _m_pose;
 
@@ -95,15 +99,4 @@ private:
 	}
 };
 
-extern "C" component* create_component(switchboard* sb) {
-	/* First, we declare intent to read/write topics. Switchboard
-	   returns handles to those topics. */
-	auto camera_ev = sb->subscribe_latest<camera_frame>("camera");
-	auto pose_ev = sb->publish<pose_type>("slow_pose");
-
-	/* This is the default pose, which will be published on the topic before SLAM does anythnig. */
-	pose_type* new_pose = new pose_type;
-	pose_ev->put(new_pose);
-	auto this_slam1 = new slam1{std::move(camera_ev), std::move(pose_ev)};
-	return this_slam1;
-}
+PLUGIN_MAIN(slam1);
