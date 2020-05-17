@@ -59,7 +59,6 @@ PLUGIN_MAIN(plugin_name);
    schedule computation on `topic 3`. See the API documentation for `phonebook` and `switchboard`
    for more details.
 
-
 ```cpp
 #include "common/phonebook.hpp"
 #include "common/plugin.hpp"
