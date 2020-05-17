@@ -3,3 +3,4 @@ bazel-*
 /data1/
 *.exe
 *.so
+docs/build
