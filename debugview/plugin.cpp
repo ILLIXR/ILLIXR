@@ -486,6 +486,7 @@ public:
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
    		sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
+        	std::cerr << "I'm here, even if the 'this' isn't. I'm in pose_predict component" << std::endl;
         	this->imu_cam_handler(datum);
     	});
 
