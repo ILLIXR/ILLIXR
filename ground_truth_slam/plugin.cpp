@@ -5,6 +5,7 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include "common/pose_correction.hpp"
 #include "data_loading.hpp"
 
 using namespace ILLIXR;
@@ -15,7 +16,7 @@ class ground_truth_slam : public plugin {
 public:
 	ground_truth_slam(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
-		: pc{pb->lookup_impl<pose_correction>()}
+		, pc{pb->lookup_impl<pose_correction>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_sensor_data{load_data(data_path)}
 	{}

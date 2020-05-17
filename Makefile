@@ -1,4 +1,4 @@
-components = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ timewarp_gl/ gldemo/ debugview/
+components = ground_truth_slam/ offline_imu_cam/ open_vins/ timewarp_gl/ gldemo/ debugview/
 
 .PHONY: %/plugin.dbg.so
 %/plugin.dbg.so: %
@@ -18,7 +18,7 @@ run.opt: runtime/main.opt.exe $(components:/=/plugin.opt.so) data1
 
 .PHONY: %/plugin.dbg.so
 gdb:              runtime/main.dbg.exe $(components:/=/plugin.dbg.so) data1
-	gdb -q --args runtime/main.dbg.exe $(components:/=/plugin.dbg.so)
+	gdb -q --args runtime/main.dbg.exe $(components:/=/plugin.dbg.so) -ex 'set stop-on-solib-events 1'
 
 data1:
 	curl -o data.zip \

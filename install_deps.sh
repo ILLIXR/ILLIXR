@@ -12,12 +12,12 @@ then
 		 libeigen3-dev libboost-dev libboost-thread-dev libboost-system-dev libatlas-base-dev libsuitesparse-dev libblas-dev
 
 	old_pwd="${PWD}"
-	mkdir -p /tmp/opencv
-	cd /tmp/opencv
+	mkdir -p opencv
+	cd opencv
 	git clone --branch 3.4.6 https://github.com/opencv/opencv/
 	git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/
 	cmake -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules opencv
-	make -j8
+	make -j `getconf _NPROCESSORS_ONLN`
 	sudo make install
 	cd "${old_pwd}"
 else
