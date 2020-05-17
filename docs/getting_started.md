@@ -2,7 +2,7 @@
 
 1. Clone the repository.
 
-        git clone https://github.com/charmoniumQ/illixr-prototype
+        git clone --recursive https://github.com/charmoniumQ/illixr-prototype
 
     TODO: update this link when we move repositories
 
