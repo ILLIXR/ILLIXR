@@ -1,4 +1,4 @@
-plugins    = ground_truth_slam/ offline_imu_cam/ open_vins/ timewarp_gl/ gldemo/ debugview/ audio_pipeline/ hologram/
+plugins    = ground_truth_slam/ offline_imu_cam/ open_vins/ timewarp_gl/ gldemo/ debugview/ audio_pipeline/
 
 .PHONY: %/plugin.dbg.so
 %/plugin.dbg.so: %
