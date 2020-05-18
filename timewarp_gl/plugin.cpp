@@ -13,6 +13,7 @@
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "common/linalg.hpp"
+#include "../pose_prediction/pose_prediction.hpp"
 
 using namespace ILLIXR;
 using namespace linalg::aliases;
@@ -41,8 +42,8 @@ public:
 	// data whenever it needs to.
 	timewarp_gl(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
+		, pp{pb->lookup_impl<pose_prediction>()}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 	#ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
 	#else
@@ -53,6 +54,7 @@ public:
 private:
 	GLFWwindow * const glfw_context;
 	switchboard* sb;
+	pose_prediction* pp;
 
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
@@ -72,10 +74,6 @@ private:
 	#else
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
 	#endif
-
-	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose_type>> _m_pose;
-
 
 	GLuint timewarpShaderProgram;
 	GLuint basicShaderProgram;
@@ -467,7 +465,7 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		auto latest_pose = _m_pose->get_latest_ro();
+		auto latest_pose = pp->get_fast_pose();
 		GetViewMatrixFromPose(&viewMatrixBegin, *latest_pose);
 
 		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;

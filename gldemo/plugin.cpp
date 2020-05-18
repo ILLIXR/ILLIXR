@@ -43,8 +43,8 @@ public:
 
 	gldemo(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
+		, pp{pb->lookup_impl<pose_prediction>()}
 		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
@@ -125,7 +125,7 @@ public:
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
 
-			const pose_type* pose_ptr = _m_pose->get_latest_ro();
+			const pose_type* pose_ptr = pp->get_fast_pose();
 
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
@@ -257,7 +257,7 @@ public:
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
-			auto pose = _m_pose->get_latest_ro();
+			auto pose = pp->get_fast_pose();
 			frame->render_pose = *pose;
 			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
@@ -265,7 +265,7 @@ public:
 			auto frame = new rendered_frame;
 			frame->texture_handle = eyeTextures[buffer_to_use];
 			
-			auto pose = _m_pose->get_latest_ro();
+			auto pose = pp->get_fast_pose();
 			frame->render_pose = *pose;
 			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
@@ -280,6 +280,7 @@ public:
 private:
 	GLFWwindow * const glfw_context;
 	switchboard* sb;
+	pose_prediction* pp;
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
 	
@@ -292,9 +293,6 @@ private:
 	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
-
-	// Switchboard plug for pose prediction.
-	std::unique_ptr<reader_latest<pose_type>> _m_pose;
 
 	GLFWwindow* hidden_window;
 

@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 #include "common/plugin.hpp"
 #include "common/data_format.hpp"
-#include "common/pose_correction.hpp"
 #include "dynamic_lib.hpp"
 #include "phonebook_impl.hpp"
 #include "switchboard_impl.hpp"
@@ -80,12 +79,10 @@ int main(int argc, char** argv) {
 	// Now that we have our shared GLFW context, publish a pointer to our context using Switchboard!
 
 	auto pb = create_phonebook();
-
 	auto sb = create_switchboard().release();
+	
 	pb->register_impl<switchboard>(sb);
-
-	pb->register_impl<pose_correction>(new pose_correction);
-	pb->register_impl<global_config>(new global_config {headless_window});
+	pb->register_impl<global_config>(new global_config{headless_window});
 
 	// I have to keep the dynamic libs in scope until the program is dead
 	// so I will add them to a vector
