@@ -76,6 +76,8 @@ namespace ILLIXR {
 		 *
 		 * This overwwrites any existing implementation of @p baseclass.
 		 *
+		 * Safe to be called from any thread.
+		 *
 		 * The implementation will be owned by phonebook (phonebook calls `delete`).
 		 */
 		template <typename baseclass>
@@ -85,6 +87,8 @@ namespace ILLIXR {
 
 		/**
 		 * @brief Look up an implementation of @p baseclass, which should be registered first.
+		 *
+		 * Safe to be called from any thread.
 		 *
 		 * Do not call `delete` on the returned object; it is still managed by phonebook.
 		 *

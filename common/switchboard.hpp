@@ -127,6 +127,8 @@ public:
 	 * multiple instances of `fn` will be running concurrently if the
 	 * event's repetition period is less than the runtime of `fn`.
 	 *
+	 * This is safe to be called from any thread.
+	 *
 	 * @throws if topic already exists, and its type does not match the `event`.
 	 */
 	template <typename event>
@@ -136,6 +138,8 @@ public:
 
 	/**
 	 * @brief Gets a handle to publish to the topic `name`.
+	 *
+	 * This is safe to be called from any thread.
 	 *
 	 * @throws If topic already exists, and its type does not match the `event`.
 	 */
@@ -147,6 +151,8 @@ public:
 
 	/**
 	 * @brief Gets a handle to read to the latest value from the topic `name`.
+	 *
+	 * This is safe to be called from any thread.
 	 *
 	 * @throws If topic already exists, and its type does not match the `event`.
 	 */

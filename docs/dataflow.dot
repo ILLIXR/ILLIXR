@@ -10,7 +10,7 @@ strict digraph {
 
 	imu_cam [label="imu_cam", shape="cylinder"];
 	slow_pose [label="slow_pose", shape="cylinder"];
-	// fast_pose [label="fast_pose", shape="cylinder"];
+	fast_pose [label="fast_pose", shape="cylinder"];
 	tru_pose [label="true_pose", shape="cylinder"];
 	eyebuffer [label="eyebuffer", shape="cylinder"];
 
@@ -18,7 +18,9 @@ strict digraph {
 	imu_cam -> {ope_vins, ground_truth_slam, debugview} [style="solid"];
 	ground_truth_slam -> tru_pose [style="solid"];
 	ope_vins -> slow_pose [style="solid"];
-	slow_pose -> {debugview, gldemo, timewarp_gl} [style="dashed"];
+	ope_vins -> fast_pose [style="solid"];
+	slow_pose -> debugview [style="dashed"];
+	fast_pose -> {debugview, gldemo, timewarp_gl} [style="dashed"];
 	gldemo -> eyebuffer [style="solid"];
 	eyebuffer -> timewarp_gl [style="dashed"];
 	tru_pose -> debugview [style="dashed"];
