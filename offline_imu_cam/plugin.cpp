@@ -16,9 +16,7 @@ public:
 		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	{
-		dataset_first_time = _m_sensor_data_it->first;
-		// last_time = _m_sensor_data_it->first;
-		
+		dataset_first_time = _m_sensor_data_it->first;		
 		real_first_time = std::chrono::system_clock::now();
 	}
 
@@ -58,7 +56,7 @@ private:
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	switchboard * const _m_sb;
 	std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
-	// ullong last_time;
+
 	ullong dataset_first_time;
 	time_type real_first_time;
 };
