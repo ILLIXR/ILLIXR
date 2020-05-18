@@ -13,7 +13,7 @@
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "common/linalg.hpp"
-#include "../pose_prediction/pose_prediction.hpp"
+#include "common/pose_prediction.hpp"
 
 using namespace ILLIXR;
 using namespace linalg::aliases;
