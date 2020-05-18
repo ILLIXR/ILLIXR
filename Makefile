@@ -16,9 +16,9 @@ run.dbg: runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) data1
 run.opt: runtime/main.opt.exe $(plugins:/=/plugin.opt.so) data1
 	     runtime/main.opt.exe $(plugins:/=/plugin.opt.so)
 
-all.dbg.so: runtime/main.dbg.so $(plugins:/=/plugin.dbg.so) data1
+all.dbg.so: runtime/plugin.dbg.so $(plugins:/=/plugin.dbg.so) data1
 
-all.opt.so: runtime/main.opt.so $(plugins:/=/plugin.opt.so) data1
+all.opt.so: runtime/plugin.opt.so $(plugins:/=/plugin.opt.so) data1
 
 .PHONY: %/plugin.dbg.so
 gdb:              runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) data1
