@@ -21,8 +21,8 @@ all.dbg.so: runtime/main.dbg.so $(plugins:/=/plugin.dbg.so) data1
 all.opt.so: runtime/main.opt.so $(plugins:/=/plugin.opt.so) data1
 
 .PHONY: %/plugin.dbg.so
-gdb:              runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) data1
-	gdb -q --args runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) -ex 'set stop-on-solib-events 1'
+gdb: runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so) data1
+	gdb -q --args runtime/main.dbg.exe $(plugins:/=/plugin.dbg.so)
 
 data1:
 	curl -o data.zip \
