@@ -1,2 +1,2 @@
-LDFLAGS = -ggdb -lglfw -ldl -pthread -lGLEW -lGL -lX11
+LDFLAGS = $(shell pkg-config glfw3 glew --libs)
 include common/common.mk
