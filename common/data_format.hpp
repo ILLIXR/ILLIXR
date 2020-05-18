@@ -13,32 +13,23 @@
 #include "switchboard.hpp"
 
 #define USE_ALT_EYE_FORMAT
+#define NANO_SEC 1000000000.0
 
 namespace ILLIXR {
 
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
-
 	typedef unsigned long long ullong;
 
-	// typedef struct {
-	// 	time_type time;
-	// 	Eigen::Vector3f angular_v;
-	// 	Eigen::Vector3f linear_a;
-	// } imu_type;
-
-	// typedef struct {
-	// 	time_type time;
-	// 	std::unique_ptr<cv::Mat> img0;
-	// 	std::unique_ptr<cv::Mat> img1;
-	// } cam_type;
-
+	// Data type that combines the IMU and camera data at a certain timestamp.
+	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
+	// time is the current UNIX time where dataset_time is the time read from the csv
 	typedef struct {
 		time_type time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat*> img0;
 		std::optional<cv::Mat*> img1;
-		ullong temp_time;
+		ullong dataset_time;
 	} imu_cam_type;
 
 	typedef struct {
@@ -56,12 +47,6 @@ namespace ILLIXR {
 		global_config(GLFWwindow* _glfw_context) : glfw_context(_glfw_context) { }
 		GLFWwindow* glfw_context;
 	};
-
-	// A particular pose, sampled at a particular point in time.
-	// struct pose_sample {
-	// 	pose_type pose;
-	// 	std::chrono::time_point<std::chrono::system_clock> sample_time; 
-	// };
 
 	// Single-texture format; arrayed by left/right eye
 	// Single-texture format; arrayed by left/right eye
@@ -81,11 +66,6 @@ namespace ILLIXR {
 		std::chrono::time_point<std::chrono::system_clock> sample_time; 
 	};
 
-	/* I use "accel" instead of "3-vector" as a datatype, because
-	this checks that you meant to use an acceleration in a certain
-	place. */
-	struct accel { };
-
 	// High-level HMD specification, timewarp plugin
 	// may/will calculate additional HMD info based on these specifications
 	struct hmd_physical_info {
@@ -101,8 +81,6 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
-	
-
 }
 
 #endif
