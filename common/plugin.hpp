@@ -8,7 +8,7 @@ namespace ILLIXR {
 	/**
 	 * @brief A dynamically-loadable plugin for Spindle.
 	 */
-	class plugin : service {
+	class plugin : public service {
 	public:
 		/**
 		 * @brief A method which Spindle calls when it starts the component.

@@ -15,6 +15,7 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/shader_util.hpp"
+#include "common/pose_prediction.hpp"
 #include "utils/algebra.hpp"
 #include "block_i.hpp"
 #include "demo_model.hpp"
@@ -57,11 +58,9 @@ public:
 	// the data whenever it needs to.
 	debugview(phonebook *pb)
 		: sb{pb->lookup_impl<switchboard>()}
+		, pp{pb->lookup_impl<pose_prediction>()}
 
-		// Fast and slow pose are temporarily the same as there is no timewarp componenet atm
-		, _m_fast_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
-		, _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
@@ -146,9 +145,9 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 		}
 		ImGui::Spacing();
-		const pose_type* fast_pose_ptr = _m_fast_pose->get_latest_ro();
+		const pose_type* fast_pose_ptr = pp->get_fast_pose();
 		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
-		const pose_type* true_pose_ptr = _m_true_pose->get_latest_ro();
+		const pose_type* true_pose_ptr = pp->get_fast_true_pose();
 		ImGui::Text("Switchboard connection status:");
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
@@ -188,7 +187,7 @@ public:
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
 		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
+			const pose_type* pose_ptr = pp->get_fast_pose();
 			if(pose_ptr != NULL)
 				offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
 		}
@@ -308,7 +307,7 @@ public:
 
 			glUseProgram(demoShaderProgram);
 
-			const pose_type* pose_ptr = _m_fast_pose->get_latest_ro();
+			const pose_type* pose_ptr = pp->get_fast_pose();
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 			Eigen::Matrix4f headsetPosition = Eigen::Matrix4f::Identity();
@@ -372,7 +371,7 @@ public:
 			headsetObject.color = {0.2,0.2,0.2,1};
 			headsetObject.drawMe();
 
-			const pose_type* groundtruth_pose_ptr = _m_true_pose->get_latest_ro();
+			const pose_type* groundtruth_pose_ptr = pp->get_fast_true_pose();
 			if(groundtruth_pose_ptr){
 				headsetPose = generateHeadsetTransform(groundtruth_pose_ptr->position, groundtruth_pose_ptr->orientation, tracking_position_offset);
 			}
@@ -396,10 +395,9 @@ private:
 
 	//GLFWwindow * const glfw_context;
 	switchboard* sb;
+	pose_prediction* pp;
 
-	std::unique_ptr<reader_latest<pose_type>> _m_fast_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
-	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
 	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
 	GLFWwindow* gui_window;
 

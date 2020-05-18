@@ -5,7 +5,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
-#include "common/pose_correction.hpp"
 #include "data_loading.hpp"
 
 using namespace ILLIXR;
@@ -16,7 +15,6 @@ class ground_truth_slam : public plugin {
 public:
 	ground_truth_slam(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
-		, pc{pb->lookup_impl<pose_correction>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_sensor_data{load_data(data_path)}
 	{}
@@ -41,14 +39,13 @@ public:
 		true_pose->time = datum->time;
 		// std::cout << "The pose was found at " << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2] << std::endl; 
 
-		_m_true_pose->put(pc->correct_pose(true_pose));
+		_m_true_pose->put(true_pose);
 	}
 
 	virtual ~ground_truth_slam() override {}
 
 private:
 	switchboard* const sb;
-	pose_correction* const pc;
 	std::unique_ptr<writer<pose_type>> _m_true_pose;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;

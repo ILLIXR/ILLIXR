@@ -9,7 +9,6 @@
 #include "common/plugin.hpp"
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
-#include "common/pose_correction.hpp"
 #include "dynamic_lib.hpp"
 #include "phonebook_impl.hpp"
 #include "switchboard_impl.hpp"
@@ -35,9 +34,9 @@ extern "C" int illixrrt_init(void* appGLCtx) {
 
 	pb = create_phonebook();
 	auto sb = create_switchboard().release();
+	
 	pb->register_impl<switchboard>(sb);
 	pb->register_impl<xlib_gl_extended_window>(new xlib_gl_extended_window {448*2, 320*2, (GLXContext)appGLCtx});
-	pb->register_impl<pose_correction>(new pose_correction);
 	// pb->register_impl<global_config>(new global_config {headless_window});
 	return 0;
 }
