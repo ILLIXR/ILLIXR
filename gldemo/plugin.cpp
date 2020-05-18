@@ -8,6 +8,7 @@
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
 #include "utils/algebra.hpp"
 #include "block_i.hpp"
@@ -30,9 +31,7 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 // them is for double buffering the Switchboard connection.
 
 // If this is defined, gldemo will use Monado-style eyebuffers
-#define USE_ALT_EYE_FORMAT
-
-
+//#define USE_ALT_EYE_FORMAT
 
 class gldemo : public plugin {
 public:
@@ -43,14 +42,18 @@ public:
 
 	gldemo(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
-		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
 #endif
-	{ }
+	{ 
+		// Well, the gldemo somehow needs a separate window/ctx
+		xlib_gl_extended_window* parent = pb->lookup_impl<xlib_gl_extended_window>();
+		xwin = new xlib_gl_extended_window {1, 1, parent->glc};
+	}
 
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
@@ -112,7 +115,7 @@ public:
 
 	void main_loop() {
 		double lastTime = glfwGetTime();
-		glfwMakeContextCurrent(hidden_window);
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);		
 		while (!_m_terminate.load()) {
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
@@ -189,9 +192,9 @@ public:
 			#ifdef USE_ALT_EYE_FORMAT
 
 			// Draw things to left eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[0]);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0, buffer_to_use);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glBindTexture(GL_TEXTURE_2D, eyeTextures[0]);
+			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
@@ -203,9 +206,9 @@ public:
 			
 			
 			// Draw things to right eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[1]);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0, buffer_to_use);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+			glBindTexture(GL_TEXTURE_2D, eyeTextures[1]);
+			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -278,7 +281,7 @@ public:
 	}
 
 private:
-	GLFWwindow * const glfw_context;
+	xlib_gl_extended_window * xwin;
 	switchboard* sb;
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
@@ -346,6 +349,24 @@ private:
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 
+		#ifdef USE_ALT_EYE_FORMAT
+
+		// Create the shared eye texture handle.
+		glGenTextures(1, texture_handle);
+		glBindTexture(GL_TEXTURE_2D, *texture_handle);
+
+		// Set the texture parameters for the texture that the FBO will be
+		// mapped into.
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
+
+		#else
 		// Create the shared eye texture handle.
 		glGenTextures(1, texture_handle);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, *texture_handle);
@@ -360,6 +381,8 @@ private:
 		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0); // unbind texture, will rebind later
+
+		#endif
 
 		if(glGetError()){
 			return 0;
@@ -382,10 +405,16 @@ private:
 
 		// Bind eyebuffer texture
 		printf("About to bind eyebuffer texture, texture handle: %d\n", *texture_handle);
+
+		#ifdef USE_ALT_EYE_FORMAT
+		glBindTexture(GL_TEXTURE_2D, *texture_handle);
+		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
+    	glBindTexture(GL_TEXTURE_2D, 0);
+    	#else
 		glBindTexture(GL_TEXTURE_2D_ARRAY, *texture_handle);
 		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0, 0);
     	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-
+    	#endif
 		// attach a renderbuffer to depth attachment point
     	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
 
@@ -404,25 +433,20 @@ public:
 	// This may be changed later, but it really doesn't matter for this purpose because
 	// it will be replaced by a real, Monado-interfaced application.
 	virtual void start() override {
-		// Create a hidden window, as we're drawing the demo "offscreen"
-		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
-		hidden_window = glfwCreateWindow(1024, 1024, "GL Demo App", 0, glfw_context);
-
-		if(hidden_window == NULL){
-			printf("Whoa, what?");
+		// Initialize the GLFW library, still need it to get time
+		if(!glfwInit()){
+			printf("Failed to initialize glfw\n");
 		}
-
-		glfwMakeContextCurrent(hidden_window);
-
-		glEnable              ( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( MessageCallback, 0 );
-		
 		// Init and verify GLEW
 		if(glewInit()){
 			printf("Failed to init GLEW\n");
-			glfwDestroyWindow(hidden_window);
+			exit(0);
 		}
+
+		glEnable              ( GL_DEBUG_OUTPUT );
+		glDebugMessageCallback( MessageCallback, 0 );
 
 		// Create two shared eye textures.
 		// Note; each "eye texture" actually contains two eyes.
@@ -488,7 +512,7 @@ public:
 		// Construct a basic perspective projection
 		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
-		glfwMakeContextCurrent(NULL);
+		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		_m_thread = std::thread{&gldemo::main_loop, this};
 

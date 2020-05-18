@@ -10,8 +10,8 @@
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
-#include <GL/glx.h>
-#undef Complex // For 'Complex' conflict
+#include <GLFW/glfw3.h>
+//#undef Complex // For 'Complex' conflict
 #include "phonebook.hpp"
 #include "switchboard.hpp"
 
@@ -55,20 +55,10 @@ namespace ILLIXR {
 		int pixel[1];
 	} camera_frame;
 
-/*	class global_config : public service {
+	class global_config : public service {
 	public:
 		global_config(GLFWwindow* _glfw_context) : glfw_context(_glfw_context) { }
 		GLFWwindow* glfw_context;
-	};*/
-
-	class xlib_gl_extended_window : public service {
-	public:
-		xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context);
-		int 					width;
-		int 					height;
-		Display                 *dpy;
-		Window                  win;
-		GLXContext              glc;
 	};
 
 	// A particular pose, sampled at a particular point in time.
@@ -123,8 +113,6 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
-	
-
 }
 
 #endif

@@ -1,5 +1,5 @@
 #include <chrono>
-#include "phonebook.hh"
+#include "phonebook.hpp"
 #include <string>
 #include <fstream>
 
@@ -19,7 +19,10 @@ namespace ILLIXR{
 	public:
 		start_end_logger(std::string component_name){
 			log_file.open("log/" + component_name);
-			log_state = start_end_state::ended;
+			if (log_file)
+				log_state = start_end_state::ended;
+			else
+				log_state = start_end_state::bad;
 			init_time = std::chrono::high_resolution_clock::now();
 		}
 		~start_end_logger(){

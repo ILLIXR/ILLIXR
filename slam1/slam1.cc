@@ -2,10 +2,10 @@
 #include <thread>
 #include <cmath>
 #include <ctime>
-#include "common/plugin.hh"
-#include "common/switchboard.hh"
-#include "common/data_format.hh"
-#include "common/threadloop.hh"
+#include "common/plugin.hpp"
+#include "common/switchboard.hpp"
+#include "common/data_format.hpp"
+#include "common/threadloop.hpp"
 
 using namespace ILLIXR;
 
@@ -15,7 +15,7 @@ public:
 	slam1(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_camera{sb->subscribe_latest<camera_frame>("camera")}
-		, _m_pose{sb->publish<pose_type>("slow_pose")}
+		, _m_pose{sb->publish<pose_type>("fast_pose")}
 		, state{0}
 	{
 		start_time = std::chrono::system_clock::now();

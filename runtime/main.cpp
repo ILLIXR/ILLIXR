@@ -8,6 +8,7 @@
 #include <thread>
 #include "common/plugin.hpp"
 #include "common/data_format.hpp"
+#include "common/extended_window.hpp"
 #include "common/pose_correction.hpp"
 #include "dynamic_lib.hpp"
 #include "phonebook_impl.hpp"

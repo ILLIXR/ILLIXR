@@ -62,7 +62,7 @@ public:
 		, _m_fast_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		, _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
-		, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
@@ -394,7 +394,7 @@ private:
 	std::thread _m_thread;
 	std::atomic<bool> _m_terminate {false};
 
-	GLFWwindow * const glfw_context;
+	//GLFWwindow * const glfw_context;
 	switchboard* sb;
 
 	std::unique_ptr<reader_latest<pose_type>> _m_fast_pose;

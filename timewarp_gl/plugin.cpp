@@ -7,6 +7,7 @@
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
 #include "utils/algebra.hpp"
 #include "utils/hmd.hpp"
@@ -14,22 +15,13 @@
 #include "shaders/timewarp_shader.hpp"
 #include "common/linalg.hpp"
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-#include <GL/glu.h>
-
 using namespace ILLIXR;
 using namespace linalg::aliases;
 
-//GLX context magics
-#define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
-#define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
-typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
 // If this is defined, gldemo will use Monado-style eyebuffers
-#define USE_ALT_EYE_FORMAT
+//#define USE_ALT_EYE_FORMAT
 
 class timewarp_gl : public plugin {
 
@@ -41,7 +33,7 @@ public:
 	timewarp_gl(phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-		, _m_pose{sb->subscribe_latest<pose_type>("fast_pose")}
+		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 	#ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
 	#else
@@ -344,6 +336,7 @@ public:
 		if(glewInit() != GLEW_OK){
 			printf("Failed to init GLEW\n");
 			// clean up ?
+			exit(0);
 		}
 
 		glEnable              ( GL_DEBUG_OUTPUT );
@@ -355,10 +348,12 @@ public:
 		glGenVertexArrays(1, &tw_vao);
     	glBindVertexArray(tw_vao);
 
+    	#ifdef USE_ALT_EYE_FORMAT
+    	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
+    	#else
 		timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
+		#endif
 		// Acquire attribute and uniform locations from the compiled and linked shader program
-
-
 
     	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
     	distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
