@@ -6,13 +6,16 @@ using namespace ILLIXR;
 
 class pose_prediction_impl : public pose_prediction {
 public:
-    pose_prediction_impl(phonebook* pb)
-    	: sb{pb->lookup_impl<switchboard>()}
+    pose_prediction_impl(phonebook* pb_)
+    	: pb{pb_}
+		, sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
-    {
-        pb->register_impl<pose_prediction>(this);
-    }
+    { }
+
+	virtual void start() override {
+		pb->register_impl<pose_prediction>(this);
+	}
 
 
     // In the future this service will be pose predict which will predict a pose some t in the future
@@ -27,6 +30,7 @@ public:
     }
 
 private:
+    phonebook* const pb;
     switchboard* const sb;
     std::unique_ptr<reader_latest<pose_type>> _m_pose;
     std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
