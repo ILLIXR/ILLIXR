@@ -26,6 +26,9 @@ public:
 
     virtual pose_type* get_fast_true_pose() override {
         auto true_pose = _m_true_pose->get_latest_ro();
+        if (true_pose == NULL) {
+            return NULL;
+        }
         return correct_pose(true_pose);
     }
 
