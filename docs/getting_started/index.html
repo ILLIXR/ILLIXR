@@ -70,76 +70,72 @@
                 <div id="content"><h1 id="getting-started">Getting Started</h1>
 <h2 id="illixr-standalone">ILLIXR standalone</h2>
 <p>The ILLIXR runtime can be built "standalone", to run without Monado. This mode does not support
-OpenXR, but it is faster for development. This isntructions have been tested with Ubuntu 18.10.</p>
+OpenXR, but it is faster for development. These instructions have been tested with Ubuntu 18.10.</p>
 <ol>
-<li>Clone the repository.</li>
-</ol>
-<pre><code class="sh">git clone --recursive https://github.com/charmoniumQ/illixr-prototype
+<li>
+<p>Clone the repository.</p>
+<pre><code>git clone --recursive https://github.com/charmoniumQ/illixr-prototype
 # TODO: update this link when we move repositories
 </code></pre>
-
-<ol>
-<li>Update the submodules. Submodules are git repositories inside a git repository that need to be
-   pulled down separately.</li>
-</ol>
-<pre><code class="sh">git submodule update --init --recursive
+</li>
+<li>
+<p>Update the submodules. Submodules are git repositories inside a git repository that need to be
+   pulled down separately.</p>
+<pre><code>git submodule update --init --recursive
 </code></pre>
-
-<ol>
-<li>Install dependencies. This script installs some Ubuntu/Debian packages and builds a specific
-   version of OpenCV from source.</li>
-</ol>
-<pre><code class="sh">./install_deps.sh
+</li>
+<li>
+<p>Install dependencies. This script installs some Ubuntu/Debian packages and builds a specific
+   version of OpenCV from source.</p>
+<pre><code>./install_deps.sh
 </code></pre>
-
-<ol>
-<li>Build and run ILLIXR standalone.</li>
-</ol>
-<pre><code class="sh">make run.dbg
+</li>
+<li>
+<p>Build and run ILLIXR standalone.</p>
+<pre><code>make run.dbg
 </code></pre>
-
+</li>
+</ol>
 <h2 id="illixr-with-monado-supports-openxr">ILLIXR with Monado (supports OpenXR)</h2>
 <p>Monado only supports Ubuntu 18.10, because of a low-level driver issue.</p>
 <ol>
-<li>Clone and build ILLIXR (same steps as standalone, except the make target is <code>all.dbg.so</code>).</li>
-</ol>
+<li>
+<p>Clone and build ILLIXR (same steps as standalone, except the make target is <code>all.dbg.so</code>).</p>
 <pre><code>git clone --recursive https://github.com/charmoniumQ/illixr-prototype
 git submodule update --init --recursive
 ./install_deps.sh
 make all.dbg.so
 </code></pre>
-
-<ol>
-<li>Clone and build Monado.</li>
-</ol>
-<pre><code class="sh">git clone https://github.com/ILLIXR/monado_integration.git
+</li>
+<li>
+<p>Clone and build Monado.</p>
+<pre><code>git clone https://github.com/ILLIXR/monado_integration.git
 cd monado_integration
 mkdir build &amp;&amp; cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../../ILLIXR -G &quot;Unix Makefiles&quot;
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../../ILLIXR -G "Unix Makefiles"
 # replace ../ILLIXR with the path to ILLIXR
 make -j$(nproc)
 </code></pre>
-
-<ol>
-<li>Clone and build our application example.</li>
-</ol>
-<pre><code class="sh">git clone https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
+</li>
+<li>
+<p>Clone and build our application example.</p>
+<pre><code>git clone https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
 cd openxr-simple-example
 mkdir build &amp;&amp; cd build
 cmake ..
 make -j$(nproc)
 </code></pre>
-
-<ol>
-<li>Set environment variables and run.</li>
-</ol>
-<pre><code class="sh">export XR_RUNTIME_JSON=../monado_integration/build/openxr_monado-dev.json
+</li>
+<li>
+<p>Set environment variables and run.</p>
+<pre><code>export XR_RUNTIME_JSON=../monado_integration/build/openxr_monado-dev.json
 # replace ../monado_integration with the path to the previous repo
 export ILLIXR_PATH=../ILLIXR/runtime/plugin.dbg.so
 export ILLIXR_COMP=../ILLIXR/ground_truth_slam/plugin.dbg.so:../ILLIXR/offline_imu_cam/plugin.dbg.so:../ILLIXR/open_vins/plugin.dbg.so:../ILLIXR/pose_prediction/plugin.dbg.so:../ILLIXR/timewarp_gl/plugin.dbg.so:../ILLIXR/debugview/plugin.dbg.so:../ILLIXR/audio_pipeline/
 # replace ../ILLIXR with the path to ILLIXR
 </code></pre>
-
+</li>
+</ol>
 <h2 id="next-steps">Next steps</h2>
 <p>The source code is divided into the following directories:
 - <code>runtime</code>: create a runnable binary that loads every plugin.
