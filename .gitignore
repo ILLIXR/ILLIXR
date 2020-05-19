@@ -1,0 +1,7 @@
+bazel-*
+/data.zip
+/data*
+*.exe
+*.so
+docs/build
+site/

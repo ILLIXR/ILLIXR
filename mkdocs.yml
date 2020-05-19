@@ -1,0 +1,14 @@
+site_name: ILLIXR Docs
+theme: ivory
+site_dir: site/docs
+site_url: https://illixr.github.io/ILLIXR/docs/
+nav:
+    - 'ILLIXR': index.md
+    - 'Getting Started': getting_started.md
+    - 'Default Plugins': default_plugins.md
+    - 'Writing Your Plugin': writing_your_plugin.md
+    - 'Building ILLIXR': building_ILLIXR.md
+    - 'Monado Integration Overview': monado_illixr_runtime_overview.md
+    - 'Monado Integration Dataflow': monado_integration_dataflow.md
+    - 'Visualizer & Logger': visualizer_logger.md
+    - 'API documentation': https://illixr.github.io/ILLIXR/api/html/annotated.html
