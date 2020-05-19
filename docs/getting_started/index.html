@@ -70,7 +70,7 @@
                 <div id="content"><h1 id="getting-started">Getting Started</h1>
 <h2 id="illixr-standalone">ILLIXR standalone</h2>
 <p>The ILLIXR runtime can be built "standalone", to run without Monado. This mode does not support
-OpenXR, but it is faster for development.</p>
+OpenXR, but it is faster for development. This isntructions have been tested with Ubuntu 18.10.</p>
 <ol>
 <li>Clone the repository.</li>
 </ol>
@@ -99,6 +99,7 @@ OpenXR, but it is faster for development.</p>
 </code></pre>
 
 <h2 id="illixr-with-monado-supports-openxr">ILLIXR with Monado (supports OpenXR)</h2>
+<p>Monado only supports Ubuntu 18.10, because of a low-level driver issue.</p>
 <ol>
 <li>Clone and build ILLIXR (same steps as standalone, except the make target is <code>all.dbg.so</code>).</li>
 </ol>
@@ -114,7 +115,7 @@ make all.dbg.so
 <pre><code class="sh">git clone https://github.com/ILLIXR/monado_integration.git
 cd monado_integration
 mkdir build &amp;&amp; cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../ILLIXR -G &quot;Unix Makefiles&quot;
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../../ILLIXR -G &quot;Unix Makefiles&quot;
 # replace ../ILLIXR with the path to ILLIXR
 make -j$(nproc)
 </code></pre>

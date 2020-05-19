@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../img/favicon.ico">
+    <title>Visualizer logger &mdash; ILLIXR Docs</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:400,700">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/tonsky/FiraCode@1.206/distr/fira_code.css">
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script> 
+</head>
+
+<body ontouchstart="">
+    <div id="container">
+        <aside>
+            <div class="home">
+                <div class="title">
+                    <button class="hamburger"></button>
+                    <a href=".." class="site-name"> ILLIXR Docs</a>
+                </div>
+                <div class="search">
+                    <div role="search">
+    <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+        <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    </form>
+</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="root">
+                    <li class="toctree-l1"><a class="nav-item" href="../getting_started/">Getting Started</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../default_plugins/">Default Plugins</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../writing_your_plugin/">Writing your plugin</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../building_ILLIXR/">Building ILLIXR</a></li>
+                    <li class="toctree-l1">
+<a class="nav-item" href="https://illixr.github.io/ILLIXR/api/html/annotated.html">API documentation</a></li>
+                </ul>
+            </nav>
+            <div class="repo">
+</div>
+        </aside>
+        <div id="spacer"><button class="arrow"></button></div>
+        <main>
+            <div class="home-top">
+                <button class="hamburger"></button>
+                <a href=".." class="site-name"> ILLIXR Docs</a>
+            </div>
+            <div id="main">
+                <nav class="breadcrumbs">
+<ul>
+    
+</ul>
+</nav>
+                <div id="content"><h2 id="visualizer-logger">Visualizer &amp; Logger</h2>
+<p>There is a utility header file <code>common/logger.hpp</code>, which is a logger for recording process starting and ending time, with respect to the component initialization time. Currently, only <code>audio_pipeline</code> and <code>hologram</code>use this logger. Please create a <code>log</code> directory in your running binary directory to let those log files correctly appear.</p>
+<p><code>log/visualizer.py</code>is a script to create visual timeline according to the log files in the same directory. It is not convenient to use or precisely correct right now.</p></div>
+                <footer>
+    <div class="footer-note">
+        <p>
+            Built with <a href="http://www.mkdocs.org">MkDocs</a> using
+            <a href="https://github.com/daizutabi/mkdocs-ivory">Ivory theme</a>.
+        </p>
+    </div>
+</footer>
+            </div>
+        </main>
+    </div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+    <script src="../search/main.js"></script>
+</body>
+
+</html>
