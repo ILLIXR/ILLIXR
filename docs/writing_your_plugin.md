@@ -3,7 +3,7 @@
 With this, you can extend ILLIXR for your own purposes. You can also replace any existing
 functionality this way.
 
-1. We suggest making a subdirectory in the ILLIXR repo, but one could make it anywhere.
+1.  We suggest making a subdirectory in the ILLIXR repo, but one could make it anywhere.
 
   - Add this directory to `plugins` in ILLIXR's root `Makefile`. The order in this list determines
    the order of initialization in the program. [`phonebook`][2], for example, is order-sensitive.
@@ -15,17 +15,17 @@ functionality this way.
 
         include common.mk
 
-2. You must decide if your plugin should inherit the standardized [`threadloop`][3] or
-   [`plugin`][4].
+2.  You must decide if your plugin should inherit the standardized [`threadloop`][3] or
+    [`plugin`][4].
 
-    - If your plugin just needs to run one computation repeatedly, then your plugin class should
-      extend [`threadloop`][3].
+  - If your plugin just needs to run one computation repeatedly, then your plugin class should
+    extend [`threadloop`][3].
 
-    - If you need custom concurrency (more complicated than a loop), triggered concurrency (by
-      events fired in other plugins), or no concurrency then your plugin class should extend
-      [`plugin`][4].
+  - If you need custom concurrency (more complicated than a loop), triggered concurrency (by
+    events fired in other plugins), or no concurrency then your plugin class should extend
+    [`plugin`][4].
 
-3. Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
+3.  Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
 
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
@@ -45,17 +45,17 @@ functionality this way.
         PLUGIN_MAIN(plugin_name);
 
 
-4. At this point, you should be able to go to the ILLIXR root and `make dbg`. If you edit a source
-   file and then `make dbg`, it should trigger a rebuild of your plugin.
+4.  At this point, you should be able to go to the ILLIXR root and `make dbg`. If you edit a source
+    file and then `make dbg`, it should trigger a rebuild of your plugin.
 
-5. This is all that is required to be a plugin which can be loaded by Spindle in the ILLIXR
-   runtime. Reading and writing from Phonebook and Switchboard optional, but nearly every plugin
-   does it. See `default_plugins.md` for more details.
+5.  This is all that is required to be a plugin which can be loaded by Spindle in the ILLIXR
+    runtime. Reading and writing from Phonebook and Switchboard optional, but nearly every plugin
+    does it. See `default_plugins.md` for more details.
 
-   First, we can query the [`phonebook`][2] to get various services including [`switchboard`][5]. Then we
-   query [`switchboard`][5] for event-streams (topics). We will read `topic1`, write to `topic2`, and
-   schedule computation on `topic 3`. See the API documentation for `phonebook` and `switchboard`
-   for more details.
+    First, we can query the [`phonebook`][2] to get various services including [`switchboard`][5]. Then we
+    query [`switchboard`][5] for event-streams (topics). We will read `topic1`, write to `topic2`, and
+    schedule computation on `topic 3`. See the API documentation for `phonebook` and `switchboard`
+    for more details.
 
 
         #include "common/phonebook.hpp"
