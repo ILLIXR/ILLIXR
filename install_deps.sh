@@ -32,7 +32,7 @@ then
 	   mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
 	   cmake -DCMAKE_INSTALL_PREFIX=install ..
 		sudo make -j$(nproc) install
-	   ncd ../..
+	   cd ../..
 	fi
 
 	if [ ! -d Vulkan-Loader ]; then
