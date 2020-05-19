@@ -13,3 +13,6 @@
 [submodule "benchmark/visual_postprocessing"]
 	path = benchmark/visual_postprocessing
 	url = https://github.com/ILLIXR/visual_postprocessing.git
+[submodule "benchmark/eye-tracking"]
+	path = benchmark/eye-tracking
+	url =  https://github.com/ILLIXR/RITnet.git
