@@ -2,7 +2,7 @@
 
 <a href="https://www.youtube.com/watch?v=5GXsUP9_34U"><img alt="ILLIXR Simple Demo" src="https://img.youtube.com/vi/5GXsUP9_34U/0.jpg" style="width: 480px"></a>
 
-Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is the first open-source full-system Extended Reality (XR) testbed. It contains several core state-of-the-art components of a generic XR pipeline (components that are required in most, if not all, XR applications), as well as a runtime integration framework that allows us to integrate these components together. ILLIXR's runtime integration framework is modular, extensible, and [OpenXR](https://www.khronos.org/openxr)-compatible.
+Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is the first open-source full-system Extended Reality (XR) testbed. It contains standalone state-of-the-art components representative of a generic XR workflow, as well as a runtime framework that integrates these components into an XR system. ILLIXR's runtime integration framework is modular, extensible, and [OpenXR](https://www.khronos.org/openxr)-compatible.
 
 We use the term _components_ and not _kernels_ or _computations_ because each component of ILLIXR is an entire application in itself, and consists of many kernels and computations. At the moment, ILLIXR contains the following state-of-the-art components, all of which can be found packaged together in the [v1-latest release](https://github.com/ILLIXR/ILLIXR/releases/tag/v1-latest) of ILLIXR.
 
@@ -65,4 +65,4 @@ ILLIXR is available as open-source software under the [University of Illinois/NC
 
 ## Get In Touch
 
-Whether you are a computer architect, a systems person, an XR application developer, or just anyone interested in XR, we would love to hear your feedback on ILLIXR! ILLIXR is a living benchmark suite and we would like to both refine existing components and add new ones. We believe ILLIXR has the opportunity to drive future computer architecture and systems research for XR, and can benefit from contributions from other researchers and organizations. If you would like to be a part of this effort, please contact us at _illixr at cs dot illinois dot edu_ or just send us a pull request!
+Whether you are a computer architect, a systems person, an XR application developer, or just anyone interested in XR, we would love to hear your feedback on ILLIXR! ILLIXR is a living testbed and we would like to both refine existing components and add new ones. We believe ILLIXR has the opportunity to drive future computer architecture and systems research for XR, and can benefit from contributions from other researchers and organizations. If you would like to be a part of this effort, please contact us at _illixr at cs dot illinois dot edu_ or visit us on [Gitter](https://gitter.im/ILLIXR/community) or just send us a pull request!
