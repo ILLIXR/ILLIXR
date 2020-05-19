@@ -4,3 +4,4 @@ bazel-*
 *.exe
 *.so
 docs/build
+site/

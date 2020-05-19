@@ -1,0 +1,10 @@
+site_name: ILLIXR Docs
+theme: ivory
+site_dir: site/docs
+site_url: https://illixr.github.io/ILLIXR/docs/
+nav:
+    - 'Getting Started': getting_started.md
+    - 'Default Plugins': default_plugins.md
+    - 'Writing Your Plugin': writing_your_plugin.md
+    - 'Building ILLIXR': building_ILLIXR.md
+    - 'API documentation': https://illixr.github.io/ILLIXR/api/annotated.html
