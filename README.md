@@ -10,6 +10,7 @@ ILLIXR (pronounced like elixir) is an open-source Extended Reality (XR) benchmar
 6. [Chromatic aberration correction](https://github.com/ILLIXR/visual_postprocessing)
 7. [Time warp](https://github.com/ILLIXR/visual_postprocessing)
 8. [Computational holography for adaptive multi-focal displays](https://github.com/ILLIXR/HOTlab)
+9. [Eye-tracking](https://github.com/ILLIXR/RITnet)
 
 We plan on adding more components to ILLIXR (e.g., graphics and multiple versions for individual components), including a runtime to integrate all of the components into a full XR system. Our goal is not to create a commercial quality XR product for current hardware. Instead, the goal for ILLIXR is to advance computer architecture, systems, and hardware-software co-design research for XR by making available key state-of-the-art components of both modern and future XR applications. 
 
@@ -51,6 +52,7 @@ ILLIXR is available as open-source software under the [University of Illinois/NC
 - [ElasticFusion](https://github.com/mp3guy/ElasticFusion) - [ElasticFusion license](https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt)
 - [libspatialaudio](https://github.com/videolabs/libspatialaudio) - [GNU Lesser General Public License v2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
 - [HOTlab](https://github.com/MartinPersson/HOTlab) - [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html)
+- [RITnet](https://github.com/ILLIXR/RITnet) - [MIT License](https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md)
 
 
 # Get In Touch
