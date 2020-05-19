@@ -142,12 +142,14 @@ export ILLIXR_COMP=../ILLIXR/ground_truth_slam/plugin.dbg.so:../ILLIXR/offline_i
 <h2 id="next-steps">Next steps</h2>
 <p>The source code is divided into the following directories:
 - <code>runtime</code>: create a runnable binary that loads every plugin.
-  - This contains Spindle, which is responsible for loading plugins.</p>
+    * This contains Spindle, which is responsible for loading plugins.</p>
 <ul>
-<li><code>common</code>: resources one might use in each plugin. Most plugins symlink this directory into theirs.</li>
-<li>Contains the interface for Switchboard, which maintains event-streams (implementation is in <code>runtime</code>).</li>
 <li>
-<p>Contains the interface for Phonebook, which is a service-directory (implementation is in <code>runtime</code>).</p>
+<p><code>common</code>: resources one might use in each plugin. Most plugins symlink this directory into theirs.</p>
+<ul>
+<li>Contains the interface for Switchboard, which maintains event-streams (implementation is in <code>runtime</code>).</li>
+<li>Contains the interface for Phonebook, which is a service-directory (implementation is in <code>runtime</code>).</li>
+</ul>
 </li>
 <li>
 <p>a directory for each plugin. Almost all of the XR functionality is implemented in plugins. See
