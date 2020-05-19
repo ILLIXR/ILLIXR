@@ -9,7 +9,8 @@ then
 	sudo apt-get update
 	sudo apt-get install -y \
 		 git clang cmake libc++-dev libc++abi-dev \
-		 libeigen3-dev libboost-dev libboost-thread-dev libboost-system-dev libatlas-base-dev libsuitesparse-dev libblas-dev libglfw3-dev
+		 libeigen3-dev libboost-dev libboost-thread-dev libboost-system-dev libatlas-base-dev libsuitesparse-dev libblas-dev libglfw3-dev \
+		 glslang-tools libsdl2-dev
 
 	old_pwd="${PWD}"
 	mkdir -p opencv
