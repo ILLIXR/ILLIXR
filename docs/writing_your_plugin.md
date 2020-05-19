@@ -6,25 +6,25 @@ functionality this way.
 1. We suggest making a subdirectory in the ILLIXR repo, but one could make it anywhere.
 
   - Add this directory to `plugins` in ILLIXR's root `Makefile`. The order in this list determines
-   the order of initialization in the program. `phonebook`, for example, is order-sensitive.
+   the order of initialization in the program. [`phonebook`][2], for example, is order-sensitive.
 
   - In your plugin directory, we suggest symlinking common (`ln -s ../common common`).
 
-  - Create a `Makefile` with the following contents. See `building_ILLIXR.md` for more details and alternative setups.
+  - Create a `Makefile` with the following contents. See [Building ILLIXR][1] for more details and alternative setups.
 
 ```make
 include common.mk
 ```
 
-2. You must decide if your plugin should inherit the standardized `threadloop` or
-   not.
+2. You must decide if your plugin should inherit the standardized [`threadloop`][3] or
+   [`plugin`][4].
 
     - If your plugin just needs to run one computation repeatedly, then your plugin class should
-      extend `threadloop`.
+      extend [`threadloop`][3].
 
     - If you need custom concurrency (more complicated than a loop), triggered concurrency (by
       events fired in other plugins), or no concurrency then your plugin class should extend
-      `plugin`.
+      [`plugin`][4].
 
 3. Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
 
@@ -55,8 +55,8 @@ PLUGIN_MAIN(plugin_name);
    runtime. Reading and writing from Phonebook and Switchboard optional, but nearly every plugin
    does it. See `default_plugins.md` for more details.
 
-   First, we can query the `phonebook` to get various services including `switchboard`. Then we
-   query `switchboard` for event-streams (topics). We will read `topic1`, write to `topic2`, and
+   First, we can query the [`phonebook`][2] to get various services including [`switchboard`][5]. Then we
+   query [`switchboard`][5] for event-streams (topics). We will read `topic1`, write to `topic2`, and
    schedule computation on `topic 3`. See the API documentation for `phonebook` and `switchboard`
    for more details.
 
@@ -112,3 +112,9 @@ private:
     std::unique_ptr<writer<topic2>> topic2;
 };
 ```
+
+[1]: building_ILLIXR.md
+[2]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html
+[3]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html
+[4]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html
+[5]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html
