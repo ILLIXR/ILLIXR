@@ -41,7 +41,7 @@ Monado only supports Ubuntu 18.10, because of a low-level driver issue.
         git clone https://github.com/ILLIXR/monado_integration.git
         cd monado_integration
         mkdir build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../../ILLIXR -G "Unix Makefiles"
+        cmake .. -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_LIBUVC=0 -DBUILD_WITH_LIBUSB=0 -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_NS=0 -DBUILD_WITH_PSMV=0 -DBUILD_WITH_PSVR=0 -DBUILD_WITH_OPENHMD=0 -DBUILD_WITH_VIVE=0  -DILLIXR_PATH=../../ILLIXR -G "Unix Makefiles"
         # replace ../ILLIXR with the path to ILLIXR
         make -j$(nproc)
 
