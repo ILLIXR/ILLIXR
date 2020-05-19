@@ -71,32 +71,32 @@
                 <div id="content"><h1 id="default-plugins">Default Plugins</h1>
 <ul>
 <li>
-<p><code>offline_imu_cam</code>: Reads IMU data and images from files on disk, emulating a real sensor on the
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu_cam"><code>offline_imu_cam</code></a>: Reads IMU data and images from files on disk, emulating a real sensor on the
   headset (feeds input measurements with timing similar to an actual IMU).</p>
 </li>
 <li>
-<p><code>ground_truth_slam</code>: Reads the ground-truth from the same dataset to compare our output against
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/ground_truth_slam"><code>ground_truth_slam</code></a>: Reads the ground-truth from the same dataset to compare our output against
   (uses timing from <code>offline_imu_cam</code>).</p>
 </li>
 <li>
-<p><code>open_vins</code>: Runs <a href="https://docs.openvins.com/">OpenVINS</a> on the input, and outputs a the headset's pose. In practice, this
+<p><a href="https://github.com/ILLIXR/open_vins/tree/new-build-system"><code>open_vins</code></a>: Runs OpenVINS (<a href="https://docs.openvins.com/">upstream</a>) on the input, and outputs a the headset's pose. In practice, this
   publishes a fairly slow pose, so pose prediction is required to infer a fast pose. We do not yet
   have pose prediction, so we say <code>open_vins</code> also publishes a fast pose.</p>
 </li>
 <li>
-<p><code>gldemo</code>: Renders a static scene (into left and right eyebuffers) given the pose from <code>open_vins</code>.</p>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/gldemo"><code>gldemo</code></a>: Renders a static scene (into left and right eyebuffers) given the pose from <code>open_vins</code>.</p>
 </li>
 <li>
-<p><code>timewarp_gl</code>: <a href="https://en.wikipedia.org/wiki/Asynchronous_reprojection">Asynchronous reprojection</a> of the eyebuffers.</p>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/timewarp_gl"><code>timewarp_gl</code></a>: <a href="https://en.wikipedia.org/wiki/Asynchronous_reprojection">Asynchronous reprojection</a> of the eyebuffers.</p>
 </li>
 <li>
-<p><code>debugview</code>: Renders a frame for debug information.</p>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/debugview"><code>debugview</code></a>: Renders a frame for debug information.</p>
 </li>
 <li>
-<p><code>audio</code>: TODO: this. By default this is disabled, since it requires an NVIDIA GPU.</p>
+<p><a href="https://github.com/ILLIXR/audio_pipeline/tree/illixr-integration"><code>audio</code></a>: TODO: this. By default this is disabled, since it requires an NVIDIA GPU.</p>
 </li>
 <li>
-<p><code>hologram</code>: TODO: this. By default this is disabled, since it requires an NVIDIA GPU.</p>
+<p><a href="https://github.com/ILLIXR/HOTlab/tree/illixr-integration"><code>hologram</code></a>: TODO: this. By default this is disabled, since it requires an NVIDIA GPU.</p>
 </li>
 </ul>
 <p>Below this point, we will use Switchboard terminology. Read the <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html">API documentation on <code>switchboard</code></a> for definitions.</p>
