@@ -15,5 +15,4 @@
 	url = https://github.com/ILLIXR/visual_postprocessing.git
 [submodule "benchmark/eye-tracking"]
 	path = benchmark/eye-tracking
-	url = https://github.com/ILLIXR/eye-tracking.git
-	
+	url =  https://github.com/ILLIXR/RITnet.git
