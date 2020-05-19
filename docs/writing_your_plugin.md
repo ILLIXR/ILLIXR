@@ -72,8 +72,8 @@ functionality this way.
         public:
             /*
                 After the constructor, C++ permits a list of member-constructors.
-                I use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
-                I put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
+                We use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
+                We put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
 
                 [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
                 [2]: https://en.wikipedia.org/wiki/Most_vexing_parse

@@ -7,7 +7,7 @@ OpenXR, but it is faster for development. These instructions have been tested wi
 
 1. Clone the repository.
 
-        git clone --recursive https://github.com/charmoniumQ/illixr-prototype
+        git clone --recursive https://github.com/ILLIXR/ILLIXR
         # TODO: update this link when we move repositories
 
 

@@ -5,6 +5,8 @@
 - From the project root, `make run.dbg -j$(nproc)` will build the ILLIXR runtime standalone, the
   ILLIXR plugins, and run it for you. `make run.opt -j$(nproc)`, is the same but with optimizations on and debug off.
 
+- To build the runtime for Monado, `make all.dbg.so`.
+
 ## Adding a new plugin (common case)
 
 In the common case, one need only define a `Makefile` with the line `include common/common.mk` and
@@ -52,12 +54,12 @@ Each plugin can have a completely independent build system, as long as:
   experimenting. However, this implies that rebuilding must be fast when not much has changed.
 
 - Make is the de facto standard for building C/C++ programs. GNU Make, reucrsive make, and the
-  makefile language begets no shortage of problems [[1][1],[2][2],[3][3],[4][4],[5][5]], but I chose
+  makefile language begets no shortage of problems [[1][1],[2][2],[3][3],[4][4],[5][5]], but we choose
   Make for its tradeoff of between simplicity and functionality. What it lacks in functionality
   (compared to CMake, Ninja, scons, Bazel, Meson) it makes up for in simplicity. It's still the
   build system in which it is the easiest to invoke arbitrary commands in shell and the easiest to
   have a `common.mk` included in each plugin. This decision to use Make should be revisited, when
-  this project outgrows its ability, but for now, Make remains, in my judgement, _the best tool for
+  this project outgrows its ability, but for now, Make remains, in our judgement, _the best tool for
   the job_.
 
 [1]: https://www.conifersystems.com/whitepapers/gnu-make/
