@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../img/favicon.ico">
+    <title>Building ILLIXR &mdash; ILLIXR Docs</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:400,700">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/tonsky/FiraCode@1.206/distr/fira_code.css">
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script> 
+</head>
+
+<body ontouchstart="">
+    <div id="container">
+        <aside>
+            <div class="home">
+                <div class="title">
+                    <button class="hamburger"></button>
+                    <a href=".." class="site-name"> ILLIXR Docs</a>
+                </div>
+                <div class="search">
+                    <div role="search">
+    <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+        <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    </form>
+</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="root">
+                    <li class="toctree-l1"><a class="nav-item" href="../getting_started/">Getting Started</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../default_plugins/">Default Plugins</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../writing_your_plugin/">Writing your plugin</a></li>
+                    <li class="toctree-l1 current"><a class="nav-item current" href="./">Building ILLIXR</a>
+<ul class="subnav">
+<li class="toctree-l2"><a class="nav-item toc" href="#basic-usage">Basic usage</a></li>
+<li class="toctree-l2"><a class="nav-item toc" href="#adding-in-a-new-plugin-the-common-case">Adding in a new plugin (the common case)</a></li>
+<li class="toctree-l2"><a class="nav-item toc" href="#adding-in-a-new-plugin-the-general-case">Adding in a new plugin (the general case)</a></li>
+<li class="toctree-l2"><a class="nav-item toc" href="#philosophy">Philosophy</a></li>
+</ul></li>
+                    <li class="toctree-l1">
+<a class="nav-item" href="//illixr.github.io/ILLIXR/api/annotated.html">API documentation</a></li>
+                </ul>
+            </nav>
+            <div class="repo">
+    <div class="previous"><a href="../writing_your_plugin/">&laquo; Previous</a></div>
+</div>
+        </aside>
+        <div id="spacer"><button class="arrow"></button></div>
+        <main>
+            <div class="home-top">
+                <button class="hamburger"></button>
+                <a href=".." class="site-name"> ILLIXR Docs</a>
+            </div>
+            <div id="main">
+                <nav class="breadcrumbs">
+<ul>
+    
+</ul>
+</nav>
+                <div id="content"><h1 id="building-illixr">Building ILLIXR</h1>
+<h2 id="basic-usage">Basic usage</h2>
+<ul>
+<li>From the project root, <code>make run.dbg -j$(nproc)</code> will build the ILLIXR runtime standalone, the
+  ILLIXR plugins, and run it for you. <code>make run.opt -j$(nproc)</code>, is the same but with optimizations on and debug off.</li>
+</ul>
+<h2 id="adding-in-a-new-plugin-the-common-case">Adding in a new plugin (the common case)</h2>
+<p>In the common case, one need only define a <code>Makefile</code> with the line <code>include common/common.mk</code> and
+symlink common (<code>ln -s ../common common</code>). This provides the necessary targets and uses the compiler
+<code>$(CXX)</code>, which is defined in Make based on the OS and environment variables.</p>
+<ul>
+<li>
+<p>It compiles <code>plugin.cpp</code> and any other <code>*.cpp</code> files into the plugin.</p>
+</li>
+<li>
+<p>It will invoke a recompile the target any time any <code>*.hpp</code> or <code>*.cpp</code> file changes.</p>
+</li>
+<li>
+<p>It compiles with C++17. You can change this in your plugin by defining <code>STDCXX = ...</code> before the
+  <code>include</code>. This change will not affect other plugins; just yours.</p>
+</li>
+<li>
+<p>Libraries can be added by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>, for example</p>
+<pre><code>LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
+CFLAGS := $(CFLAGS) $(shell pkg-config --cflags eigen3)
+</code></pre>
+</li>
+<li>
+<p>See the source for the exact flags.</p>
+</li>
+</ul>
+<h2 id="adding-in-a-new-plugin-the-general-case">Adding in a new plugin (the general case)</h2>
+<p>Each plugin can have a completely independent build system, as long as:
+- It defines a <code>Makefile</code> with targets for <code>plugin.dbg.so</code>, <code>plugin.opt.so</code>, and <code>clean</code>. Inside
+  this <code>Makefile</code>, one can defer to another build system.</p>
+<ul>
+<li>
+<p>It's compiler maintains <em>ABI compatibility</em> with the compilers used in every other plugin. Using
+  the same version of Clang or GCC on the same architecture is sufficient for this.</p>
+</li>
+<li>
+<p>It's name is inserted in the root <code>Makefile</code>, in the <code>plugins</code> list.</p>
+</li>
+</ul>
+<h2 id="philosophy">Philosophy</h2>
+<ul>
+<li>
+<p>Each plugin should not have to know or care how the others are compiled. In the future, they may
+  even be distributed separately, just as SOs. Therefore, each plugin needs its own build system.</p>
+</li>
+<li>
+<p>Despite this per-plugin flexibility, building the 'default' set of ILLIXR plugins should be
+  extremely easy.</p>
+</li>
+<li>
+<p>It should be easy to build in parallel.</p>
+</li>
+<li>
+<p>Always rebuild every time, so the binary is always "fresh". This is a great convenience when
+  experimenting. However, this implies that rebuilding must be fast when not much has changed.</p>
+</li>
+<li>
+<p>Make is the de facto standard for building C/C++ programs. GNU Make, reucrsive make, and the
+  makefile language begets no shortage of problems [<a href="https://www.conifersystems.com/whitepapers/gnu-make/">1</a>,<a href="https://www.gnu.org/software/cons/stable/cons.html#why%20cons%20why%20not%20make">2</a>,<a href="https://interrupt.memfault.com/blog/gnu-make-guidelines#when-to-choose-make">3</a>,<a href="https://grosskurth.ca/bib/1997/miller.pdf" title="Recursive Make Considered Harmful (AUUGN Journal of AUUG Inc. 1998)">4</a>,<a href="https://doi.org/10.1145/3241625.2976011" title="Non-recursive make considered harmful: build systems at scale (SIGPLAN 2016)">5</a>], but I chose
+  Make for its tradeoff of between simplicity and functionality. What it lacks in functionality
+  (compared to CMake, Ninja, scons, Bazel, Meson) it makes up for in simplicity. It's still the
+  build system in which it is the easiest to invoke arbitrary commands in shell and the easiest to
+  have a <code>common.mk</code> included in each plugin. This decision to use Make should be revisited, when
+  this project outgrows its ability, but for now, Make remains, in my judgement, <em>the best tool for
+  the job</em>.</p>
+</li>
+</ul></div>
+                <footer>
+    <div class="footer-buttons">
+        <div class="previous"><a href="../writing_your_plugin/" title="Writing Your Plugin"><span>Previous</span></a></div>
+    </div>
+    <div class="footer-note">
+        <p>
+            Built with <a href="http://www.mkdocs.org">MkDocs</a> using
+            <a href="https://github.com/daizutabi/mkdocs-ivory">Ivory theme</a>.
+        </p>
+    </div>
+</footer>
+            </div>
+        </main>
+    </div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+    <script src="../search/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+<map id="ILLIXR::service" name="ILLIXR::service">
+<area shape="rect" id="node1" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="87,5,201,32"/>
+<area shape="rect" id="node2" href="$classILLIXR_1_1plugin.html" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="18,80,123,107"/>
+<area shape="rect" id="node4" href="$classILLIXR_1_1switchboard.html" title="A manager for typesafe, threadsafe, named event&#45;streams (called topics)." alt="" coords="147,80,288,107"/>
+<area shape="rect" id="node3" href="$classILLIXR_1_1threadloop.html" title="A reusable threadloop for plugins." alt="" coords="5,155,136,181"/>
+</map>

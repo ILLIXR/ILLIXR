@@ -1,0 +1,4 @@
+<map id="ILLIXR::plugin" name="ILLIXR::plugin">
+<area shape="rect" id="node1" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="9,80,115,107"/>
+<area shape="rect" id="node2" href="$classILLIXR_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="5,5,119,32"/>
+</map>
