@@ -81,12 +81,9 @@ functionality this way.</p>
 </li>
 <li>
 <p>Create a <code>Makefile</code> with the following contents. See <a href="../building_ILLIXR/">Building ILLIXR</a> for more details and alternative setups.</p>
-</li>
-</ol>
-<pre><code class="make">include common.mk
+<pre><code>include common.mk
 </code></pre>
-
-<ol>
+</li>
 <li>
 <p>You must decide if your plugin should inherit the standardized <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a> or
    <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
@@ -104,11 +101,9 @@ functionality this way.</p>
 </li>
 <li>
 <p>Write a file called <code>plugin.cpp</code> with this body, replacing every instance of <code>plugin_name</code>:</p>
-</li>
-</ol>
-<pre><code class="C++">#include &quot;common/phonebook.hpp&quot;
-#include &quot;common/plugin.hpp&quot;
-#include &quot;common/threadloop.hpp&quot;
+<pre><code>#include "common/phonebook.hpp"
+#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 
 using ILLIXR;
 
@@ -123,8 +118,7 @@ public:
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(plugin_name);
 </code></pre>
-
-<ol>
+</li>
 <li>
 <p>At this point, you should be able to go to the ILLIXR root and <code>make dbg</code>. If you edit a source
    file and then <code>make dbg</code>, it should trigger a rebuild of your plugin.</p>
@@ -139,56 +133,56 @@ PLUGIN_MAIN(plugin_name);
    query <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics). We will read <code>topic1</code>, write to <code>topic2</code>, and
    schedule computation on <code>topic 3</code>. See the API documentation for <code>phonebook</code> and <code>switchboard</code>
    for more details.</p>
-<pre><code class="cpp">#include &quot;common/phonebook.hpp&quot;
-#include &quot;common/plugin.hpp&quot;
-#include &quot;common/threadloop.hpp&quot;
+<pre><code>    #include "common/phonebook.hpp"
+    #include "common/plugin.hpp"
+    #include "common/threadloop.hpp"
 
-/* When datatypes have to be common across plugins
-  (e.g. a phonebook service or switchboard topic),
-   they are defined in this header,
-   which is accessible to all plugins. */
-#include &quot;common/data_formath.hpp&quot;
+    /* When datatypes have to be common across plugins
+      (e.g. a phonebook service or switchboard topic),
+       they are defined in this header,
+       which is accessible to all plugins. */
+    #include "common/data_formath.hpp"
 
-class plugin_name : public threadloop {
-public:
-    /*
-        After the constructor, C++ permits a list of member-constructors.
-        I use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
-        I put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
+    class plugin_name : public threadloop {
+    public:
+        /*
+            After the constructor, C++ permits a list of member-constructors.
+            I use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
+            I put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
 
-        [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
-        [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
-    */
-    plugin_name(phonebook* pb)
-          // find the switchboard in phonebook
-        : sb{pb-&gt;lookup_impl&lt;switchboard&gt;()}
-          // create a handle to a topic in switchboard for subscribing
-        , topic1{sb-&gt;subscribe_latest&lt;topic1_type&gt;(&quot;topic1&quot;)}
-          // create a handle to a topic in switchboard for publishing
-        , topic2{sb-&gt;publish&lt;topic2_type&gt;(&quot;topic2&quot;)}
-    {
-        // Read topic 1
-        topic1_type* event1 = topic1.get_latest_ro();
+            [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
+            [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
+        */
+        plugin_name(phonebook* pb)
+              // find the switchboard in phonebook
+            : sb{pb-&gt;lookup_impl&lt;switchboard&gt;()}
+              // create a handle to a topic in switchboard for subscribing
+            , topic1{sb-&gt;subscribe_latest&lt;topic1_type&gt;("topic1")}
+              // create a handle to a topic in switchboard for publishing
+            , topic2{sb-&gt;publish&lt;topic2_type&gt;("topic2")}
+        {
+            // Read topic 1
+            topic1_type* event1 = topic1.get_latest_ro();
 
-        // Write to topic 2
-        topic2_type* event2 = new topic2_type;
-        topic2.put(event2);
+            // Write to topic 2
+            topic2_type* event2 = new topic2_type;
+            topic2.put(event2);
 
-        // Read topic 3 synchronously
-        sb-&gt;schedule&lt;topic3_type&gt;(&quot;topic3&quot;, [&amp;](const topic3_type *event3) {
-            /*
-            This is a [lambda expression][1]
-            [1]: https://en.cppreference.com/w/cpp/language/lambda
-            */
-            std::cout &lt;&lt; &quot;Got a new event on topic3: &quot; &lt;&lt; event3 &lt;&lt; std::endl;
-        });
-    }
+            // Read topic 3 synchronously
+            sb-&gt;schedule&lt;topic3_type&gt;("topic3", [&amp;](const topic3_type *event3) {
+                /*
+                This is a [lambda expression][1]
+                [1]: https://en.cppreference.com/w/cpp/language/lambda
+                */
+                std::cout &lt;&lt; "Got a new event on topic3: " &lt;&lt; event3 &lt;&lt; std::endl;
+            });
+        }
 
-private:
-    switchboard* pb
-    std::unique_ptr&lt;reader_latest&lt;topic1_type&gt;&gt; topic1;
-    std::unique_ptr&lt;writer&lt;topic2&gt;&gt; topic2;
-};
+    private:
+        switchboard* pb
+        std::unique_ptr&lt;reader_latest&lt;topic1_type&gt;&gt; topic1;
+        std::unique_ptr&lt;writer&lt;topic2&gt;&gt; topic2;
+    };
 </code></pre></div>
                 <footer>
     <div class="footer-buttons">
