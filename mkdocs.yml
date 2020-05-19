@@ -1,5 +1,5 @@
 site_name: ILLIXR Docs
-theme: ivory
+theme: readthedocs
 site_dir: site/docs
 site_url: https://illixr.github.io/ILLIXR/docs/
 nav:
