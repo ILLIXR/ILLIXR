@@ -1,7 +1,0 @@
-# Design
-
-## Spindle
-
-## Switchboard
-
-## Threadsafety

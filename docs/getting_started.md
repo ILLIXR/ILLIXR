@@ -7,7 +7,7 @@ OpenXR, but it is faster for development. These instructions have been tested wi
 
 1. Clone the repository.
 
-        git clone --recursive https://github.com/charmoniumQ/illixr-prototype
+        git clone --recursive https://github.com/ILLIXR/ILLIXR
         # TODO: update this link when we move repositories
 
 
@@ -31,7 +31,7 @@ Monado only supports Ubuntu 18.10, because of a low-level driver issue.
 
 1. Clone and build ILLIXR (same steps as standalone, except the make target is `all.dbg.so`).
 
-        git clone --recursive https://github.com/charmoniumQ/illixr-prototype
+        git clone --recursive https://github.com/ILLIXR/ILLIXR
         git submodule update --init --recursive
         ./install_deps.sh
         make all.dbg.so

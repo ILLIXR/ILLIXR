@@ -4,6 +4,10 @@
 #include <fstream>
 
 namespace ILLIXR{
+
+	/**
+	 * @brief a utility for logging to start and end times to a file
+	 */
 	class start_end_logger
 	{
 	private:
@@ -17,6 +21,9 @@ namespace ILLIXR{
 		start_end_state log_state;
 		std::chrono::time_point<std::chrono::system_clock> init_time;
 	public:
+		/**
+		 * Log apperas in `log/$component_name`.
+		 */
 		start_end_logger(std::string component_name){
 			log_file.open("log/" + component_name);
 			if (log_file)
