@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../img/favicon.ico">
+    <title>Getting Started &mdash; ILLIXR Docs</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:400,700">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/tonsky/FiraCode@1.206/distr/fira_code.css">
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script> 
+</head>
+
+<body ontouchstart="">
+    <div id="container">
+        <aside>
+            <div class="home">
+                <div class="title">
+                    <button class="hamburger"></button>
+                    <a href=".." class="site-name"> ILLIXR Docs</a>
+                </div>
+                <div class="search">
+                    <div role="search">
+    <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+        <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    </form>
+</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="root">
+                    <li class="toctree-l1 current"><a class="nav-item current" href="./">Getting Started</a>
+<ul class="subnav">
+<li class="toctree-l2"><a class="nav-item toc" href="#illixr-standalone">ILLIXR standalone</a></li>
+<li class="toctree-l2"><a class="nav-item toc" href="#illixr-with-monado-supports-openxr">ILLIXR with Monado (supports OpenXR)</a></li>
+<li class="toctree-l2"><a class="nav-item toc" href="#next-steps">Next steps</a></li>
+</ul></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../default_plugins/">Default Plugins</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../writing_your_plugin/">Writing your plugin</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../building_ILLIXR/">Building ILLIXR</a></li>
+                    <li class="toctree-l1">
+<a class="nav-item" href="https://illixr.github.io/ILLIXR/api/annotated.html">API documentation</a></li>
+                </ul>
+            </nav>
+            <div class="repo">
+    <div class="next"><a href="../default_plugins/">Next &raquo;</a></div>
+</div>
+        </aside>
+        <div id="spacer"><button class="arrow"></button></div>
+        <main>
+            <div class="home-top">
+                <button class="hamburger"></button>
+                <a href=".." class="site-name"> ILLIXR Docs</a>
+            </div>
+            <div id="main">
+                <nav class="breadcrumbs">
+<ul>
+    
+</ul>
+</nav>
+                <div id="content"><h1 id="getting-started">Getting Started</h1>
+<h2 id="illixr-standalone">ILLIXR standalone</h2>
+<p>The ILLIXR runtime can be built "standalone", to run without Monado. This mode does not support
+OpenXR, but it is faster for development.</p>
+<ol>
+<li>Clone the repository.</li>
+</ol>
+<pre><code class="sh">git clone --recursive https://github.com/charmoniumQ/illixr-prototype
+# TODO: update this link when we move repositories
+</code></pre>
+
+<ol>
+<li>Update the submodules. Submodules are git repositories inside a git repository that need to be
+   pulled down separately.</li>
+</ol>
+<pre><code class="sh">git submodule update --init --recursive
+</code></pre>
+
+<ol>
+<li>Install dependencies. This script installs some Ubuntu/Debian packages and builds a specific
+   version of OpenCV from source.</li>
+</ol>
+<pre><code class="sh">./install_deps.sh
+</code></pre>
+
+<ol>
+<li>Build and run ILLIXR standalone.</li>
+</ol>
+<pre><code class="sh">make run.dbg
+</code></pre>
+
+<h2 id="illixr-with-monado-supports-openxr">ILLIXR with Monado (supports OpenXR)</h2>
+<ol>
+<li>Clone and build ILLIXR (same steps as standalone, except the make target is <code>all.dbg.so</code>).</li>
+</ol>
+<pre><code>git clone --recursive https://github.com/charmoniumQ/illixr-prototype
+git submodule update --init --recursive
+./install_deps.sh
+make all.dbg.so
+</code></pre>
+
+<ol>
+<li>Clone and build Monado.</li>
+</ol>
+<pre><code class="sh">git clone https://github.com/ILLIXR/monado_integration.git
+cd monado_integration
+mkdir build &amp;&amp; cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../ILLIXR -G &quot;Unix Makefiles&quot;
+# replace ../ILLIXR with the path to ILLIXR
+make -j$(nproc)
+</code></pre>
+
+<ol>
+<li>Clone and build our application example.</li>
+</ol>
+<pre><code class="sh">git clone https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
+cd Monado_OpenXR_Simple_Example
+mkdir build &amp;&amp; cd build
+cmake ..
+make -j$(nproc)
+</code></pre>
+
+<ol>
+<li>Set environment variables and run.</li>
+</ol>
+<pre><code class="sh">export XR_RUNTIME_JSON=../monado_integration/build/openxr_monado-dev.json
+# replace ../monado_integration with the path to the previous repo
+export ILLIXR_PATH=../ILLIXR/runtime/plugin.dbg.so
+export ILLIXR_COMP=../ILLIXR/ground_truth_slam/plugin.dbg.so:../ILLIXR/offline_imu_cam/plugin.dbg.so:../ILLIXR/open_vins/plugin.dbg.so:../ILLIXR/pose_prediction/plugin.dbg.so:../ILLIXR/timewarp_gl/plugin.dbg.so:../ILLIXR/debugview/plugin.dbg.so:../ILLIXR/audio_pipeline/
+# replace ../ILLIXR with the path to ILLIXR
+</code></pre>
+
+<h2 id="next-steps">Next steps</h2>
+<p>The source code is divided into the following directories:
+- <code>runtime</code>: create a runnable binary that loads every plugin.
+  - This contains Spindle, which is responsible for loading plugins.</p>
+<ul>
+<li><code>common</code>: resources one might use in each plugin. Most plugins symlink this directory into theirs.</li>
+<li>Contains the interface for Switchboard, which maintains event-streams (implementation is in <code>runtime</code>).</li>
+<li>
+<p>Contains the interface for Phonebook, which is a service-directory (implementation is in <code>runtime</code>).</p>
+</li>
+<li>
+<p>a directory for each plugin. Almost all of the XR functionality is implemented in plugins. See
+  <code>default_components.md</code> for more details.</p>
+</li>
+</ul>
+<p>Try browsing the source of plugins.  If you edit any of the source files, this make commend will
+detect and rebuild the respective binary. If you want to add your own, see <code>writing_your_plugin.md</code></p></div>
+                <footer>
+    <div class="footer-buttons">
+        <div class="next"><a href="../default_plugins/" title="Default Plugins"><span>Next</span></a></div>
+    </div>
+    <div class="footer-note">
+        <p>
+            Built with <a href="http://www.mkdocs.org">MkDocs</a> using
+            <a href="https://github.com/daizutabi/mkdocs-ivory">Ivory theme</a>.
+        </p>
+    </div>
+</footer>
+            </div>
+        </main>
+    </div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+    <script src="../search/main.js"></script>
+</body>
+
+</html>
