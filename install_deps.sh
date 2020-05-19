@@ -6,6 +6,7 @@ set -x -e
 
 if [ "${ID_LIKE}" = debian -o "${ID}" = debian ]
 then
+	sudo add-apt-repository ppa:graphics-drivers/ppa
 	sudo apt-get update
 	sudo apt-get install -y \
 		 git clang cmake libc++-dev libc++abi-dev \
