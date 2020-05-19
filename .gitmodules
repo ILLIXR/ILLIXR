@@ -16,3 +16,6 @@
 [submodule "benchmark/eye-tracking"]
 	path = benchmark/eye-tracking
 	url =  https://github.com/ILLIXR/RITnet.git
+[submodule "benchmark/RITnet"]
+	path = benchmark/RITnet
+	url = https://github.com/ILLIXR/RITnet
