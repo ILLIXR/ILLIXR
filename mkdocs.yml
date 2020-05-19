@@ -3,6 +3,7 @@ theme: ivory
 site_dir: site/docs
 site_url: https://illixr.github.io/ILLIXR/docs/
 nav:
+    - 'ILLIXR': index.md
     - 'Getting Started': getting_started.md
     - 'Default Plugins': default_plugins.md
     - 'Writing Your Plugin': writing_your_plugin.md
