@@ -48,12 +48,16 @@
 <li class="toctree-l2"><a class="nav-item toc" href="#adding-a-plugin-general-case">Adding a plugin (general case)</a></li>
 <li class="toctree-l2"><a class="nav-item toc" href="#philosophy">Philosophy</a></li>
 </ul></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../monado_illixr_runtime_overview/">Monado Integration Overview</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../monado_integration_dataflow/">Monado Integration Dataflow</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../visualizer_logger/">Visualizer &amp; Logger</a></li>
                     <li class="toctree-l1">
 <a class="nav-item" href="https://illixr.github.io/ILLIXR/api/html/annotated.html">API documentation</a></li>
                 </ul>
             </nav>
             <div class="repo">
     <div class="previous"><a href="../writing_your_plugin/">&laquo; Previous</a></div>
+    <div class="next"><a href="../monado_illixr_runtime_overview/">Next &raquo;</a></div>
 </div>
         </aside>
         <div id="spacer"><button class="arrow"></button></div>
@@ -71,8 +75,13 @@
                 <div id="content"><h1 id="building-illixr">Building ILLIXR</h1>
 <h2 id="basic-usage">Basic usage</h2>
 <ul>
-<li>From the project root, <code>make run.dbg -j$(nproc)</code> will build the ILLIXR runtime standalone, the
-  ILLIXR plugins, and run it for you. <code>make run.opt -j$(nproc)</code>, is the same but with optimizations on and debug off.</li>
+<li>
+<p>From the project root, <code>make run.dbg -j$(nproc)</code> will build the ILLIXR runtime standalone, the
+  ILLIXR plugins, and run it for you. <code>make run.opt -j$(nproc)</code>, is the same but with optimizations on and debug off.</p>
+</li>
+<li>
+<p>To build the runtime for Monado, <code>make all.dbg.so</code>.</p>
+</li>
 </ul>
 <h2 id="adding-a-new-plugin-common-case">Adding a new plugin (common case)</h2>
 <p>In the common case, one need only define a <code>Makefile</code> with the line <code>include common/common.mk</code> and
@@ -134,18 +143,19 @@ CFLAGS := $(CFLAGS) $(shell pkg-config --cflags eigen3)
 </li>
 <li>
 <p>Make is the de facto standard for building C/C++ programs. GNU Make, reucrsive make, and the
-  makefile language begets no shortage of problems [<a href="https://www.conifersystems.com/whitepapers/gnu-make/">1</a>,<a href="https://www.gnu.org/software/cons/stable/cons.html#why%20cons%20why%20not%20make">2</a>,<a href="https://interrupt.memfault.com/blog/gnu-make-guidelines#when-to-choose-make">3</a>,<a href="https://grosskurth.ca/bib/1997/miller.pdf" title="Recursive Make Considered Harmful (AUUGN Journal of AUUG Inc. 1998)">4</a>,<a href="https://doi.org/10.1145/3241625.2976011" title="Non-recursive make considered harmful: build systems at scale (SIGPLAN 2016)">5</a>], but I chose
+  makefile language begets no shortage of problems [<a href="https://www.conifersystems.com/whitepapers/gnu-make/">1</a>,<a href="https://www.gnu.org/software/cons/stable/cons.html#why%20cons%20why%20not%20make">2</a>,<a href="https://interrupt.memfault.com/blog/gnu-make-guidelines#when-to-choose-make">3</a>,<a href="https://grosskurth.ca/bib/1997/miller.pdf" title="Recursive Make Considered Harmful (AUUGN Journal of AUUG Inc. 1998)">4</a>,<a href="https://doi.org/10.1145/3241625.2976011" title="Non-recursive make considered harmful: build systems at scale (SIGPLAN 2016)">5</a>], but we choose
   Make for its tradeoff of between simplicity and functionality. What it lacks in functionality
   (compared to CMake, Ninja, scons, Bazel, Meson) it makes up for in simplicity. It's still the
   build system in which it is the easiest to invoke arbitrary commands in shell and the easiest to
   have a <code>common.mk</code> included in each plugin. This decision to use Make should be revisited, when
-  this project outgrows its ability, but for now, Make remains, in my judgement, <em>the best tool for
+  this project outgrows its ability, but for now, Make remains, in our judgement, <em>the best tool for
   the job</em>.</p>
 </li>
 </ul></div>
                 <footer>
     <div class="footer-buttons">
         <div class="previous"><a href="../writing_your_plugin/" title="Writing Your Plugin"><span>Previous</span></a></div>
+        <div class="next"><a href="../monado_illixr_runtime_overview/" title="Monado Integration Overview"><span>Next</span></a></div>
     </div>
     <div class="footer-note">
         <p>

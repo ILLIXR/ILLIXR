@@ -44,6 +44,9 @@
 <ul class="subnav">
 </ul></li>
                     <li class="toctree-l1"><a class="nav-item" href="../building_ILLIXR/">Building ILLIXR</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../monado_illixr_runtime_overview/">Monado Integration Overview</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../monado_integration_dataflow/">Monado Integration Dataflow</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../visualizer_logger/">Visualizer &amp; Logger</a></li>
                     <li class="toctree-l1">
 <a class="nav-item" href="https://illixr.github.io/ILLIXR/api/html/annotated.html">API documentation</a></li>
                 </ul>
@@ -143,8 +146,8 @@ class plugin_name : public threadloop {
 public:
     /*
         After the constructor, C++ permits a list of member-constructors.
-        I use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
-        I put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
+        We use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
+        We put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
 
         [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
         [2]: https://en.wikipedia.org/wiki/Most_vexing_parse

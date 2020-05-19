@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../img/favicon.ico">
-    <title>Monado integration dataflow &mdash; ILLIXR Docs</title>
+    <title>Monado Integration Dataflow &mdash; ILLIXR Docs</title>
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:400,700">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/tonsky/FiraCode@1.206/distr/fira_code.css">
     <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.8.1/css/all.css">
@@ -42,11 +42,18 @@
                     <li class="toctree-l1"><a class="nav-item" href="../default_plugins/">Default Plugins</a></li>
                     <li class="toctree-l1"><a class="nav-item" href="../writing_your_plugin/">Writing your plugin</a></li>
                     <li class="toctree-l1"><a class="nav-item" href="../building_ILLIXR/">Building ILLIXR</a></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../monado_illixr_runtime_overview/">Monado Integration Overview</a></li>
+                    <li class="toctree-l1 current"><a class="nav-item current" href="./">Monado Integration Dataflow</a>
+<ul class="subnav">
+</ul></li>
+                    <li class="toctree-l1"><a class="nav-item" href="../visualizer_logger/">Visualizer &amp; Logger</a></li>
                     <li class="toctree-l1">
 <a class="nav-item" href="https://illixr.github.io/ILLIXR/api/html/annotated.html">API documentation</a></li>
                 </ul>
             </nav>
             <div class="repo">
+    <div class="previous"><a href="../monado_illixr_runtime_overview/">&laquo; Previous</a></div>
+    <div class="next"><a href="../visualizer_logger/">Next &raquo;</a></div>
 </div>
         </aside>
         <div id="spacer"><button class="arrow"></button></div>
@@ -61,20 +68,56 @@
     
 </ul>
 </nav>
-                <div id="content"><h2 id="monado-integration-dataflow">Monado integration dataflow</h2>
-<p>The integration for monado in terms of dataflow can be divided into two parts, getting pose from illixr, and sending user rendered frame to illixr. </p>
-<p>In monado, illixr looks like an HMD for monado, while in illixr, monado looks like a user application as <code>gldemo</code>. After illixr is initialized from monado, and monado is registered as a plugin for illixr, most recent pose information is easy to get from switchboard.</p>
-<p>The compositor side of monado integration with illixr is done in more subtle way. Original monado compositor mostly does distortion correction and aberration correction in a vulkan back-end compositor. It also has two client compositor, one for opengl app, the other for vulkan app, which pass frame data to the back-end compositor. Illixr integration intercepts the frame at gl client compositor and sends it to switchboard of illixr, which is then used by <code>timewarp_gl</code> component.</p>
-<p>In order to get a opengl frame and use it without copying pixels, illixr needs to get the user application gl context. It is done at OpenXR session creation time, where illixr is initialized. Note that logically illixr is initialized during OpenXR instance creation, or running at the background all the time. But, since illixr only supports single session at this time, and requires a user application gl context upon initialization, illixr is initialized at session creation time.</p>
-<p>Current illixr integration for monado is a temporary solution and has some downsides because of the progress from both monado and illixr.
-1. It does not use the pose that user application declares to use at rendering (OpenXR specification) because of monado internal interfaces. The pose difference used by timewarp comes from the last pose query call.
-2. It cannot submit frame with depth buffer.
-3. The pose from illixr does not vary according to the OpenXR space. It is a raw pose data from slam algorithms.
-4. No controller action support at all.
-5. It only supports gl user applications.
-6. User application cannot acquire more than one swapchain image (for each eye) in one frame.
-7. Illixr is initialized during session creation time.</p></div>
+                <div id="content"><h2 id="monado-integration-dataflow">Monado Integration Dataflow</h2>
+<p>The integration for monado in terms of dataflow can be divided into two parts, getting pose from
+illixr, and sending user rendered frame to illixr.</p>
+<p>In monado, illixr looks like an HMD for monado, while in illixr, monado looks like a user
+application as <code>gldemo</code>. After illixr is initialized from monado, and monado is registered as a
+plugin for illixr, most recent pose information is easy to get from switchboard.</p>
+<p>The compositor side of monado integration with illixr is done in more subtle way. Original monado
+compositor mostly does distortion correction and aberration correction in a vulkan back-end
+compositor. It also has two client compositor, one for opengl app, the other for vulkan app, which
+pass frame data to the back-end compositor. Illixr integration intercepts the frame at gl client
+compositor and sends it to switchboard of illixr, which is then used by <code>timewarp_gl</code> component.</p>
+<p>In order to get a opengl frame and use it without copying pixels, illixr needs to get the user
+application gl context. It is done at OpenXR session creation time, where illixr is
+initialized. Note that logically illixr is initialized during OpenXR instance creation, or running
+at the background all the time. But, since illixr only supports single session at this time, and
+requires a user application gl context upon initialization, illixr is initialized at session
+creation time.</p>
+<p>Current illixr integration for monado is a temporary solution and has some downsides because of the
+progress from both monado and illixr.</p>
+<ol>
+<li>
+<p>It does not use the pose that user application declares to use at rendering (OpenXR
+   specification) because of monado internal interfaces. The pose difference used by timewarp comes
+   from the last pose query call.</p>
+</li>
+<li>
+<p>It cannot submit frame with depth buffer.</p>
+</li>
+<li>
+<p>The pose from illixr does not vary according to the OpenXR space. It is a raw pose data from slam
+   algorithms.</p>
+</li>
+<li>
+<p>No controller action support at all.</p>
+</li>
+<li>
+<p>It only supports gl user applications.</p>
+</li>
+<li>
+<p>User application cannot acquire more than one swapchain image (for each eye) in one frame.</p>
+</li>
+<li>
+<p>Illixr is initialized during session creation time.</p>
+</li>
+</ol></div>
                 <footer>
+    <div class="footer-buttons">
+        <div class="previous"><a href="../monado_illixr_runtime_overview/" title="Monado Integration Overview"><span>Previous</span></a></div>
+        <div class="next"><a href="../visualizer_logger/" title="Visualizer & Logger"><span>Next</span></a></div>
+    </div>
     <div class="footer-note">
         <p>
             Built with <a href="http://www.mkdocs.org">MkDocs</a> using
