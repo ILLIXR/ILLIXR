@@ -74,13 +74,13 @@ functionality this way.</p>
 </li>
 <li>
 <p>Add this directory to <code>plugins</code> in ILLIXR's root <code>Makefile</code>. The order in this list determines
-   the order of initialization in the program. <code>phonebook</code>, for example, is order-sensitive.</p>
+   the order of initialization in the program. <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a>, for example, is order-sensitive.</p>
 </li>
 <li>
 <p>In your plugin directory, we suggest symlinking common (<code>ln -s ../common common</code>).</p>
 </li>
 <li>
-<p>Create a <code>Makefile</code> with the following contents. See <code>building_ILLIXR.md</code> for more details and alternative setups.</p>
+<p>Create a <code>Makefile</code> with the following contents. See <a href="../building_ILLIXR/">Building ILLIXR</a> for more details and alternative setups.</p>
 </li>
 </ol>
 <pre><code class="make">include common.mk
@@ -88,17 +88,17 @@ functionality this way.</p>
 
 <ol>
 <li>
-<p>You must decide if your plugin should inherit the standardized <code>threadloop</code> or
-   not.</p>
+<p>You must decide if your plugin should inherit the standardized <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a> or
+   <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
 <ul>
 <li>
 <p>If your plugin just needs to run one computation repeatedly, then your plugin class should
-  extend <code>threadloop</code>.</p>
+  extend <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>.</p>
 </li>
 <li>
 <p>If you need custom concurrency (more complicated than a loop), triggered concurrency (by
   events fired in other plugins), or no concurrency then your plugin class should extend
-  <code>plugin</code>.</p>
+  <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
 </li>
 </ul>
 </li>
@@ -135,8 +135,8 @@ PLUGIN_MAIN(plugin_name);
    does it. See <code>default_plugins.md</code> for more details.</p>
 </li>
 </ol>
-<p>First, we can query the <code>phonebook</code> to get various services including <code>switchboard</code>. Then we
-   query <code>switchboard</code> for event-streams (topics). We will read <code>topic1</code>, write to <code>topic2</code>, and
+<p>First, we can query the <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a> to get various services including <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a>. Then we
+   query <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics). We will read <code>topic1</code>, write to <code>topic2</code>, and
    schedule computation on <code>topic 3</code>. See the API documentation for <code>phonebook</code> and <code>switchboard</code>
    for more details.</p>
 <pre><code class="cpp">#include &quot;common/phonebook.hpp&quot;
