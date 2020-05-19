@@ -12,9 +12,8 @@ functionality this way.
 
   - Create a `Makefile` with the following contents. See [Building ILLIXR][1] for more details and alternative setups.
 
-```make
-include common.mk
-```
+
+        include common.mk
 
 2. You must decide if your plugin should inherit the standardized [`threadloop`][3] or
    [`plugin`][4].
@@ -28,24 +27,22 @@ include common.mk
 
 3. Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
 
-```C++
-#include "common/phonebook.hpp"
-#include "common/plugin.hpp"
-#include "common/threadloop.hpp"
+        #include "common/phonebook.hpp"
+        #include "common/plugin.hpp"
+        #include "common/threadloop.hpp"
 
-using ILLIXR;
+        using ILLIXR;
 
-// Inherit from `plugin` if you don't need the threadloop
-class plugin_name : public threadloop {
-public:
-    plugin_name(phonebook* pb) { }
-    virtual void start() override { }
-    virtual ~plugin_name() override { }
-};
+        // Inherit from `plugin` if you don't need the threadloop
+        class plugin_name : public threadloop {
+        public:
+            plugin_name(phonebook* pb) { }
+            virtual void start() override { }
+            virtual ~plugin_name() override { }
+        };
 
-// This line makes the plugin importable by Spindle
-PLUGIN_MAIN(plugin_name);
-```
+        // This line makes the plugin importable by Spindle
+        PLUGIN_MAIN(plugin_name);
 
 
 4. At this point, you should be able to go to the ILLIXR root and `make dbg`. If you edit a source
@@ -60,58 +57,57 @@ PLUGIN_MAIN(plugin_name);
    schedule computation on `topic 3`. See the API documentation for `phonebook` and `switchboard`
    for more details.
 
-```cpp
-#include "common/phonebook.hpp"
-#include "common/plugin.hpp"
-#include "common/threadloop.hpp"
 
-/* When datatypes have to be common across plugins
-  (e.g. a phonebook service or switchboard topic),
-   they are defined in this header,
-   which is accessible to all plugins. */
-#include "common/data_formath.hpp"
+        #include "common/phonebook.hpp"
+        #include "common/plugin.hpp"
+        #include "common/threadloop.hpp"
 
-class plugin_name : public threadloop {
-public:
-    /*
-        After the constructor, C++ permits a list of member-constructors.
-        I use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
-        I put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
+        /* When datatypes have to be common across plugins
+          (e.g. a phonebook service or switchboard topic),
+           they are defined in this header,
+           which is accessible to all plugins. */
+        #include "common/data_formath.hpp"
 
-        [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
-        [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
-    */
-    plugin_name(phonebook* pb)
-          // find the switchboard in phonebook
-        : sb{pb->lookup_impl<switchboard>()}
-          // create a handle to a topic in switchboard for subscribing
-        , topic1{sb->subscribe_latest<topic1_type>("topic1")}
-          // create a handle to a topic in switchboard for publishing
-        , topic2{sb->publish<topic2_type>("topic2")}
-    {
-        // Read topic 1
-        topic1_type* event1 = topic1.get_latest_ro();
-
-        // Write to topic 2
-        topic2_type* event2 = new topic2_type;
-        topic2.put(event2);
-
-        // Read topic 3 synchronously
-        sb->schedule<topic3_type>("topic3", [&](const topic3_type *event3) {
+        class plugin_name : public threadloop {
+        public:
             /*
-            This is a [lambda expression][1]
-            [1]: https://en.cppreference.com/w/cpp/language/lambda
-            */
-            std::cout << "Got a new event on topic3: " << event3 << std::endl;
-        });
-    }
+                After the constructor, C++ permits a list of member-constructors.
+                I use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
+                I put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
 
-private:
-    switchboard* pb
-    std::unique_ptr<reader_latest<topic1_type>> topic1;
-    std::unique_ptr<writer<topic2>> topic2;
-};
-```
+                [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
+                [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
+            */
+            plugin_name(phonebook* pb)
+                  // find the switchboard in phonebook
+                : sb{pb->lookup_impl<switchboard>()}
+                  // create a handle to a topic in switchboard for subscribing
+                , topic1{sb->subscribe_latest<topic1_type>("topic1")}
+                  // create a handle to a topic in switchboard for publishing
+                , topic2{sb->publish<topic2_type>("topic2")}
+            {
+                // Read topic 1
+                topic1_type* event1 = topic1.get_latest_ro();
+
+                // Write to topic 2
+                topic2_type* event2 = new topic2_type;
+                topic2.put(event2);
+
+                // Read topic 3 synchronously
+                sb->schedule<topic3_type>("topic3", [&](const topic3_type *event3) {
+                    /*
+                    This is a [lambda expression][1]
+                    [1]: https://en.cppreference.com/w/cpp/language/lambda
+                    */
+                    std::cout << "Got a new event on topic3: " << event3 << std::endl;
+                });
+            }
+
+        private:
+            switchboard* pb
+            std::unique_ptr<reader_latest<topic1_type>> topic1;
+            std::unique_ptr<writer<topic2>> topic2;
+        };
 
 [1]: building_ILLIXR.md
 [2]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html
