@@ -36,11 +36,11 @@ We request that you cite our following paper (new version coming soon) when you 
 }
 ```
 
-# Getting Started and Documentation
+## Getting Started and Documentation
 
 For more information, see our [getting started page](https://illixr.github.io/ILLIXR/docs/getting_started/).
 
-# Acknowledgements
+## Acknowledgements
 
 Muhammad Huzaifa led the development of ILLIXR in [Sarita Adve’s research group](http://rsim.cs.illinois.edu/) at the University of Illinois at Urbana-Champaign. Other major contributors include Rishi Desai, Samuel Grayson, Xutao Jiang, Ying Jing, Jae Lee, Fang Lu, Joseph Ravichandran, Finn Sinclair, Henghzhi Yuan, Jeffrey Zhang.
 
@@ -52,7 +52,7 @@ The development of ILLIXR was supported by the Applications Driving Architecture
 
 Wesley Darvin came up with the name for ILLIXR.
 
-# Licensing Structure
+## Licensing Structure
 
 ILLIXR is available as open-source software under the [University of Illinois/NCSA Open Source License](https://github.com/ILLIXR/illixr.github.io/blob/master/LICENSE). As mentioned above, ILLIXR largely consists of components developed by domain experts and modified for the purposes of inclusion in ILLIXR. However, ILLIXR does contain software developed solely by us. **The NCSA license is limited to only this software**. The external libraries and softwares included in ILLIXR each have their own licenses and must be used according to those licenses:
 
