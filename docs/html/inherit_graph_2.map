@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classILLIXR_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="5,31,119,57"/>
+<area shape="rect" id="node2" href="$classILLIXR_1_1plugin.html" title="A dynamically&#45;loadable plugin for Spindle." alt="" coords="185,5,290,32"/>
+<area shape="rect" id="node4" href="$classILLIXR_1_1switchboard.html" title="A manager for typesafe, threadsafe, named event&#45;streams (called topics)." alt="" coords="167,56,308,83"/>
+<area shape="rect" id="node3" href="$classILLIXR_1_1threadloop.html" title="A reusable threadloop for plugins." alt="" coords="356,5,487,32"/>
+</map>
