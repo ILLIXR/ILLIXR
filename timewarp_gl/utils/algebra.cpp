@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include "algebra.hh"
+=======
+#include "algebra.hpp"
+>>>>>>> upstream/master
 
 
 float ksAlgebra::RcpSqrt( const float x )
@@ -711,4 +715,8 @@ bool ksAlgebra::ksMatrix4x4f_CullBounds( const ksMatrix4x4f * mvp, const ksVecto
     }
 
     return false;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> upstream/master

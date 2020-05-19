@@ -1,5 +1,13 @@
 bazel-*
 /data.zip
+<<<<<<< HEAD
 /data/
 *.exe
 *.so
+=======
+/data*
+*.exe
+*.so
+docs/build
+site/
+>>>>>>> upstream/master
