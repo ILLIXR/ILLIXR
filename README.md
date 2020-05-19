@@ -1,10 +1,10 @@
-[![ILLIXR Simple Demo](https://img.youtube.com/vi/5GXsUP9_34U/0.jpg)](https://www.youtube.com/watch?v=5GXsUP9_34U)
-
 # ILLIXR
 
-Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is the first open-source full-system Extended Reality (XR) testbed. It contains several core state-of-the-art components of a generic XR pipeline (components that are required in most, if not all, XR applications), as well as a runtime integration framework that allows us to integrate these components together. ILLIXR's runtime integration framework is modular, extensible, and [OpenXR](https://www.khronos.org/openxr)-compatible.
+<a href="https://www.youtube.com/watch?v=5GXsUP9_34U"><img alt="ILLIXR Simple Demo" src="https://img.youtube.com/vi/5GXsUP9_34U/0.jpg" style="width: 480px"></a>
 
-We use the term _components_ and not _kernels_ or _computations_ because each component of ILLIXR is an entire application in itself, and consists of many kernels and computations. At the moment, ILLIXR contains the following state-of-the-art components, all of which can be found packaged together in [v1.2.0 of ILLIXR](https://github.com/ILLIXR/ILLIXR/releases/tag/v1.2.0).
+Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is the first open-source full-system Extended Reality (XR) testbed. It contains standalone state-of-the-art components representative of a generic XR workflow, as well as a runtime framework that integrates these components into an XR system. ILLIXR's runtime integration framework is modular, extensible, and [OpenXR](https://www.khronos.org/openxr)-compatible.
+
+We use the term _components_ and not _kernels_ or _computations_ because each component of ILLIXR is an entire application in itself, and consists of many kernels and computations. At the moment, ILLIXR contains the following state-of-the-art components, all of which can be found packaged together in the [v1-latest release](https://github.com/ILLIXR/ILLIXR/releases/tag/v1-latest) of ILLIXR.
 
 1. [Simultaneous Localization and Mapping](https://github.com/ILLIXR/open_vins)
 2. [Scene reconstruction](https://github.com/ILLIXR/ElasticFusion)
@@ -36,11 +36,11 @@ We request that you cite our following paper (new version coming soon) when you 
 }
 ```
 
-# Getting Started and Documentation
+## Getting Started and Documentation
 
 For more information, see our [getting started page](https://illixr.github.io/ILLIXR/docs/getting_started/).
 
-# Acknowledgements
+## Acknowledgements
 
 Muhammad Huzaifa led the development of ILLIXR in [Sarita Adve’s research group](http://rsim.cs.illinois.edu/) at the University of Illinois at Urbana-Champaign. Other major contributors include Rishi Desai, Samuel Grayson, Xutao Jiang, Ying Jing, Jae Lee, Fang Lu, Joseph Ravichandran, Finn Sinclair, Henghzhi Yuan, Jeffrey Zhang.
 
@@ -52,7 +52,7 @@ The development of ILLIXR was supported by the Applications Driving Architecture
 
 Wesley Darvin came up with the name for ILLIXR.
 
-# Licensing Structure
+## Licensing Structure
 
 ILLIXR is available as open-source software under the [University of Illinois/NCSA Open Source License](https://github.com/ILLIXR/illixr.github.io/blob/master/LICENSE). As mentioned above, ILLIXR largely consists of components developed by domain experts and modified for the purposes of inclusion in ILLIXR. However, ILLIXR does contain software developed solely by us. **The NCSA license is limited to only this software**. The external libraries and softwares included in ILLIXR each have their own licenses and must be used according to those licenses:
 
@@ -65,4 +65,4 @@ ILLIXR is available as open-source software under the [University of Illinois/NC
 
 ## Get In Touch
 
-Whether you are a computer architect, a systems person, an XR application developer, or just anyone interested in XR, we would love to hear your feedback on ILLIXR! ILLIXR is a living benchmark suite and we would like to both refine existing components and add new ones. We believe ILLIXR has the opportunity to drive future computer architecture and systems research for XR, and can benefit from contributions from other researchers and organizations. If you would like to be a part of this effort, please contact us at _illixr at cs dot illinois dot edu_ or just send us a pull request!
+Whether you are a computer architect, a systems person, an XR application developer, or just anyone interested in XR, we would love to hear your feedback on ILLIXR! ILLIXR is a living testbed and we would like to both refine existing components and add new ones. We believe ILLIXR has the opportunity to drive future computer architecture and systems research for XR, and can benefit from contributions from other researchers and organizations. If you would like to be a part of this effort, please contact us at _illixr at cs dot illinois dot edu_ or visit us on [Gitter](https://gitter.im/ILLIXR/community) or just send us a pull request!

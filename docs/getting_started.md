@@ -1,14 +1,12 @@
 # Getting Started
 
-## ILLIXR standalone
+## ILLIXR Runtime
 
-The ILLIXR runtime can be built "standalone", to run without Monado. This mode does not support
-OpenXR, but it is faster for development. These instructions have been tested with Ubuntu 18.10.
+These instructions have been tested with Ubuntu 18.10.
 
 1. Clone the repository.
 
-        git clone --recursive https://github.com/ILLIXR/ILLIXR
-        # TODO: update this link when we move repositories
+        git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
 
 
 2. Update the submodules. Submodules are git repositories inside a git repository that need to be
@@ -25,13 +23,14 @@ OpenXR, but it is faster for development. These instructions have been tested wi
 
         make run.dbg
 
-## ILLIXR with Monado (supports OpenXR)
+## ILLIXR Runtime with Monado (supports OpenXR)
 
-Monado only supports Ubuntu 18.10, because of a low-level driver issue.
+ILLIXR leverages [Monado][3], an open-source implementation of [OpenXR][4], to support a wide range
+of applications.  Monado only supports Ubuntu 18.10, because of a low-level driver issue.
 
 1. Clone and build ILLIXR (same steps as standalone, except the make target is `all.dbg.so`).
 
-        git clone --recursive https://github.com/ILLIXR/ILLIXR
+        git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
         git submodule update --init --recursive
         ./install_deps.sh
         make all.dbg.so
@@ -61,6 +60,22 @@ Monado only supports Ubuntu 18.10, because of a low-level driver issue.
         export ILLIXR_COMP=../ILLIXR/ground_truth_slam/plugin.dbg.so:../ILLIXR/offline_imu_cam/plugin.dbg.so:../ILLIXR/open_vins/plugin.dbg.so:../ILLIXR/pose_prediction/plugin.dbg.so:../ILLIXR/timewarp_gl/plugin.dbg.so:../ILLIXR/debugview/plugin.dbg.so:../ILLIXR/audio_pipeline/plugin.dbg.so
         # replace ../ILLIXR with the path to ILLIXR
 
+## ILLIXR Standalone
+
+ILLIXR can also benchmark each component in isolation.
+
+1. Clone the repository.
+
+        git clone --recursive --branch v1-latest https://github.com/ILLIXR/ILLIXR
+
+
+2. Update the submodules. Submodules are git repositories inside a git repository that need to be
+   pulled down separately.
+
+        git submodule update --init --recursive
+
+3. Each component is a directory in `benchmark`. See those components for their documentation.
+
 ## Next steps
 
  The source code is divided into the following directories:
@@ -79,3 +94,5 @@ detect and rebuild the respective binary. If you want to add your own, see [Writ
 
 [1]: default_plugins.md
 [2]: writing_your_plugin.md
+[3]: https://monado.dev/
+[4]: https://www.khronos.org/openxr/
