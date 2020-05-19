@@ -5,7 +5,7 @@
 - From the project root, `make run.dbg -j$(nproc)` will build the ILLIXR runtime standalone, the
   ILLIXR plugins, and run it for you. `make run.opt -j$(nproc)`, is the same but with optimizations on and debug off.
 
-## Adding in a new plugin (the common case)
+## Adding a new plugin (common case)
 
 In the common case, one need only define a `Makefile` with the line `include common/common.mk` and
 symlink common (`ln -s ../common common`). This provides the necessary targets and uses the compiler
@@ -25,7 +25,9 @@ symlink common (`ln -s ../common common`). This provides the necessary targets a
 
 - See the source for the exact flags.
 
-## Adding in a new plugin (the general case)
+- Inserted the name of your directory into the `component`-list in the root `Makefile`.
+
+## Adding a plugin (general case)
 
 Each plugin can have a completely independent build system, as long as:
 - It defines a `Makefile` with targets for `plugin.dbg.so`, `plugin.opt.so`, and `clean`. Inside

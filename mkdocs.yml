@@ -7,4 +7,4 @@ nav:
     - 'Default Plugins': default_plugins.md
     - 'Writing Your Plugin': writing_your_plugin.md
     - 'Building ILLIXR': building_ILLIXR.md
-    - 'API documentation': https://illixr.github.io/ILLIXR/api/annotated.html
+    - 'API documentation': https://illixr.github.io/ILLIXR/api/html/annotated.html

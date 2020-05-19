@@ -48,7 +48,7 @@ ax.autoscale()
 ax.set_yticks(range(1, comp_tag, 1))
 ax.set_yticklabels(components.keys())
 
-for ddl in np.arange(0, 3*1000.0, 1024.0/48000.0*1000.0):
-  ax.axvline(ddl, color='grey')
+# for ddl in np.arange(0, 3*1000.0, 1024.0/48000.0*1000.0):
+#   ax.axvline(ddl, color='grey')
 
 plt.show()

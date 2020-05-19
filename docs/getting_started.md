@@ -3,7 +3,7 @@
 ## ILLIXR standalone
 
 The ILLIXR runtime can be built "standalone", to run without Monado. This mode does not support
-OpenXR, but it is faster for development.
+OpenXR, but it is faster for development. This isntructions have been tested with Ubuntu 18.10.
 
 1. Clone the repository.
 
@@ -34,6 +34,8 @@ make run.dbg
 
 ## ILLIXR with Monado (supports OpenXR)
 
+Monado only supports Ubuntu 18.10, because of a low-level driver issue.
+
 1. Clone and build ILLIXR (same steps as standalone, except the make target is `all.dbg.so`).
 
 ```
@@ -49,7 +51,7 @@ make all.dbg.so
 git clone https://github.com/ILLIXR/monado_integration.git
 cd monado_integration
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../ILLIXR -G "Unix Makefiles"
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DILLIXR_PATH=../../ILLIXR -G "Unix Makefiles"
 # replace ../ILLIXR with the path to ILLIXR
 make -j$(nproc)
 ```
@@ -85,7 +87,10 @@ export ILLIXR_COMP=../ILLIXR/ground_truth_slam/plugin.dbg.so:../ILLIXR/offline_i
     * Contains the interface for Phonebook, which is a service-directory (implementation is in `runtime`).
 
 - a directory for each plugin. Almost all of the XR functionality is implemented in plugins. See
-  `default_components.md` for more details.
+  [Default Components][1] for more details.
 
 Try browsing the source of plugins.  If you edit any of the source files, this make commend will
-detect and rebuild the respective binary. If you want to add your own, see `writing_your_plugin.md`
+detect and rebuild the respective binary. If you want to add your own, see [Writing Your Plugin][2].
+
+[1]: default_plugins.md
+[2]: writing_your_plugin.md
