@@ -31,7 +31,7 @@ functionality this way.
         #include "common/plugin.hpp"
         #include "common/threadloop.hpp"
 
-        using ILLIXR;
+        using namespace ILLIXR;
 
         // Inherit from `plugin` if you don't need the threadloop
         class plugin_name : public threadloop {
@@ -103,11 +103,21 @@ functionality this way.
                 });
             }
 
+            virtual void _p_one_iteration override() {
+                std::cout << "Running" << std::endl;
+                auto target = std::chrono::high_resolution_clock::now() +  std::chrono::milliseconds{10};
+                reliable_sleep(target);
+            }
+
         private:
             switchboard* pb
             std::unique_ptr<reader_latest<topic1_type>> topic1;
             std::unique_ptr<writer<topic2>> topic2;
         };
+
+        // This line makes the plugin importable by Spindle
+        PLUGIN_MAIN(plugin_name);
+
 
 [1]: building_ILLIXR.md
 [2]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html
