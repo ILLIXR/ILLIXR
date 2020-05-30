@@ -4,20 +4,11 @@
 #include <typeindex>
 #include <stdexcept>
 #include <cassert>
+#include <mutex>
+#include <memory>
+#include <unordered_map>
 
 namespace ILLIXR {
-	/**
-	 * @brief A 'service' that can be registered in the phonebook.
-	 * 
-	 * These must be 'destructible', have a virtual destructor that phonebook can call in its
-	 * destructor.
-	 */
-	class service {
-	public:
-		/**
-		 */
-		virtual ~service() {}
-	};
 
 	/**
 	 * @brief A [service locator][1] for ILLIXR.
@@ -70,7 +61,31 @@ namespace ILLIXR {
 	 * [2]: https://en.wikibooks.org/wiki/C%2B%2B_Programming/Classes/Abstract_Classes
 	 */
 	class phonebook {
+		/*
+		  Proof of thread-safety:
+		  - Since all instance members are private, acquiring a lock in each method implies the class is datarace-free.
+		  - Since there is only one lock and this does not call any code containing locks, this is deadlock-free.
+		  - Both of these methods are only used during initialization, so the locks are not contended in steady-state.
+
+		  However, to write a correct program, one must also check the thread-safety of the elements
+		  inserted into this class by the caller.
+		*/
+
 	public:
+
+		/**
+		 * @brief A 'service' that can be registered in the phonebook.
+		 * 
+		 * These must be 'destructible', have a virtual destructor that phonebook can call in its
+		 * destructor.
+		 */
+		class service {
+		public:
+			/**
+			 */
+			virtual ~service() {}
+		};
+
 		/**
 		 * @brief Registers an implementation of @p baseclass for future calls to lookup.
 		 *
@@ -80,13 +95,16 @@ namespace ILLIXR {
 		 *
 		 * The implementation will be owned by phonebook (phonebook calls `delete`).
 		 */
-		template <typename baseclass>
-		void register_impl(baseclass* impl) {
-			_p_register_impl(std::type_index(typeid(baseclass)), static_cast<service*>(impl));
+		template <typename specific_service>
+		void register_impl(std::unique_ptr<specific_service>&& impl) {
+			const std::lock_guard<std::mutex> lock{_m_mutex};
+			const std::type_index type_index = std::type_index(typeid(specific_service));
+			_m_registry.erase(type_index);
+			_m_registry.try_emplace(type_index, std::move(impl));
 		}
 
 		/**
-		 * @brief Look up an implementation of @p baseclass, which should be registered first.
+		 * @brief Look up an implementation of @p specific_service, which should be registered first.
 		 *
 		 * Safe to be called from any thread.
 		 *
@@ -94,18 +112,32 @@ namespace ILLIXR {
 		 *
 		 * @throws if an implementation is not already registered.
 		 */
-		template <typename baseclass>
-		baseclass* lookup_impl() {
-			baseclass* ret = dynamic_cast<baseclass*>(_p_lookup_impl(std::type_index(typeid(baseclass))));
-			assert(ret);
-			return ret;
+		template <typename specific_service>
+		specific_service* lookup_impl() {
+			const std::lock_guard<std::mutex> lock{_m_mutex};
+
+			// TODO: this function should use C++20 "std::exempt_ptr"
+			// It's a borrow of a std::unique_ptr
+			// I guarantee that phonebook will outlive this reference
+
+			const std::type_index type_index = std::type_index(typeid(specific_service));
+
+			// if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
+			if (_m_registry.count(type_index) != 1) {
+				throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
+			}
+			service* this_service = _m_registry.at(type_index).get();
+			assert(this_service);
+			specific_service* this_specific_service = dynamic_cast<specific_service*>(this_service);
+			assert(this_specific_service);
+			return this_specific_service;
 		}
 
 		virtual ~phonebook() { }
 
 	private:
-		virtual service* _p_lookup_impl(const std::type_index& info) = 0;
-		virtual void _p_register_impl(const std::type_index& info, service* impl) = 0;
+		std::unordered_map<std::type_index, std::unique_ptr<service>> _m_registry;
+		std::mutex _m_mutex;
 	};
 }
 
