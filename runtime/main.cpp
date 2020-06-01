@@ -21,7 +21,7 @@ std::vector<std::unique_ptr<plugin>> plugins;
 
 extern "C" int illixrrt_init(void* appGLCtx) {
 	pb.register_impl<switchboard>(create_switchboard());
-	pb.register_impl<xlib_gl_extended_window>(std::make_unique<xlib_gl_extended_window>(448*2, 320*2, (GLXContext)appGLCtx));
+	pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, (GLXContext)appGLCtx));
 	// pb->register_impl<global_config>(new global_config {headless_window});
 	return 0;
 }

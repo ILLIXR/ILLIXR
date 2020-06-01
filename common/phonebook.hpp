@@ -83,7 +83,7 @@ namespace ILLIXR {
 		public:
 			/**
 			 */
-			virtual ~service() {}
+			virtual ~service() { }
 		};
 
 		/**
@@ -96,11 +96,12 @@ namespace ILLIXR {
 		 * The implementation will be owned by phonebook (phonebook calls `delete`).
 		 */
 		template <typename specific_service>
-		void register_impl(std::unique_ptr<specific_service>&& impl) {
+		void register_impl(std::shared_ptr<specific_service> impl) {
 			const std::lock_guard<std::mutex> lock{_m_mutex};
+
 			const std::type_index type_index = std::type_index(typeid(specific_service));
 			_m_registry.erase(type_index);
-			_m_registry.try_emplace(type_index, std::move(impl));
+			_m_registry.try_emplace(type_index, impl);
 		}
 
 		/**
@@ -113,12 +114,8 @@ namespace ILLIXR {
 		 * @throws if an implementation is not already registered.
 		 */
 		template <typename specific_service>
-		specific_service* lookup_impl() {
+		std::shared_ptr<specific_service> lookup_impl() const {
 			const std::lock_guard<std::mutex> lock{_m_mutex};
-
-			// TODO: this function should use C++20 "std::exempt_ptr"
-			// It's a borrow of a std::unique_ptr
-			// I guarantee that phonebook will outlive this reference
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
 
@@ -126,18 +123,19 @@ namespace ILLIXR {
 			if (_m_registry.count(type_index) != 1) {
 				throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
 			}
-			service* this_service = _m_registry.at(type_index).get();
+
+			std::shared_ptr<service> this_service = _m_registry.at(type_index);
 			assert(this_service);
-			specific_service* this_specific_service = dynamic_cast<specific_service*>(this_service);
+
+			std::shared_ptr<specific_service> this_specific_service = std::dynamic_pointer_cast<specific_service>(this_service);
 			assert(this_specific_service);
+
 			return this_specific_service;
 		}
 
-		virtual ~phonebook() { }
-
 	private:
-		std::unordered_map<std::type_index, std::unique_ptr<service>> _m_registry;
-		std::mutex _m_mutex;
+		std::unordered_map<std::type_index, const std::shared_ptr<service>> _m_registry;
+		mutable std::mutex _m_mutex;
 	};
 }
 
