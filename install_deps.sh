@@ -12,7 +12,8 @@ then
 		 git clang cmake libc++-dev libc++abi-dev \
 		 libeigen3-dev libboost-dev libboost-thread-dev libboost-system-dev libatlas-base-dev libsuitesparse-dev libblas-dev libglfw3-dev \
 		 glslang-tools libsdl2-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev glslang-tools libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev libglew-dev glew-utils libglfw3-dev \
-		 git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev
+		 git build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
+		 libgtest-dev
 
 	old_pwd="${PWD}"
 	mkdir -p /tmp/ILLIXR_deps
