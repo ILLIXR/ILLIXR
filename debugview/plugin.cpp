@@ -146,15 +146,15 @@ public:
 		ImGui::Spacing();
 		const pose_type fast_pose = pp->get_fast_pose();
 		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
-		const pose_type true_pose_ptr = pp->get_fast_true_pose();
+		const pose_type true_pose = pp->get_fast_true_pose();
 		ImGui::Text("Switchboard connection status:");
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		if(true /*fast_pose_ptr is valid*/) {
+		if(true /*fast_pose is valid*/) {
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
-			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose_ptr.position.x(), fast_pose_ptr.position.y(), fast_pose_ptr.position.z());
-			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose_ptr.orientation.x(), fast_pose_ptr.orientation.y(), fast_pose_ptr.orientation.z(), fast_pose_ptr.orientation.w());
+			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose.position.x(), fast_pose.position.y(), fast_pose.position.z());
+			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose.orientation.x(), fast_pose.orientation.y(), fast_pose.orientation.z(), fast_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid fast pose pointer");
 		}
@@ -173,10 +173,10 @@ public:
 		ImGui::Text("GROUND TRUTH pose topic:");
 		ImGui::SameLine();
 
-		if (true /*true_pose_ptr is valid*/) {
+		if (true /*true_pose is valid*/) {
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
-			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose_ptr.position.x(), true_pose_ptr.position.y(), true_pose_ptr.position.z());
-			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose_ptr.orientation.x(), true_pose_ptr.orientation.y(), true_pose_ptr.orientation.z(), true_pose_ptr.orientation.w());
+			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose.position.x(), true_pose.position.y(), true_pose.position.z());
+			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose.orientation.x(), true_pose.orientation.y(), true_pose.orientation.z(), true_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
 		}
@@ -192,7 +192,7 @@ public:
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
 		if(ImGui::Button("Calculate new orientation offset")){
 			const pose_type pose = pp->get_fast_pose();
-			offsetQuat = Eigen::Quaternionf(pose_ptr.orientation);
+			offsetQuat = Eigen::Quaternionf(pose.orientation);
 		}
 		ImGui::End();
 
@@ -317,23 +317,23 @@ public:
 
 			
 
-			if(true /*pose_ptr is valid*/) {
+			if(true /*pose is valid*/) {
 				// We have a valid pose from our Switchboard plug.
 
 				if(counter == 100){
-					std::cerr << "First pose received: quat(wxyz) is " << pose_ptr.orientation.w() << ", " << pose_ptr.orientation.x() << ", " << pose_ptr.orientation.y() << ", " << pose_ptr.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose_ptr.orientation);
+					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
+					offsetQuat = Eigen::Quaternionf(pose.orientation);
 				}
 				counter++;
 
-				Eigen::Quaternionf combinedQuat = pose_ptr.orientation * offsetQuat.inverse();
-				headsetPose = generateHeadsetTransform(pose_ptr.position, combinedQuat, tracking_position_offset);
+				Eigen::Quaternionf combinedQuat = pose.orientation * offsetQuat.inverse();
+				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
 
 			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
 			// If we are following the headset, and have a valid pose, apply the optional offset.
-			Eigen::Vector3f optionalOffset = (follow_headset) ? (pose_ptr.position + tracking_position_offset) : Eigen::Vector3f{0.0f,0.0f,0.0f};
+			Eigen::Vector3f optionalOffset = (follow_headset) ? (pose.position + tracking_position_offset) : Eigen::Vector3f{0.0f,0.0f,0.0f};
 
 			Eigen::Matrix4f userView = lookAt(Eigen::Vector3f{(float)(view_dist * cos(view_euler.y())),
 															  (float)(view_dist * sin(view_euler.x())), 
@@ -375,8 +375,8 @@ public:
 			headsetObject.drawMe();
 
 			const pose_type groundtruth_pose = pp->get_fast_true_pose();
-			if(true /*groundtruth_pose_ptr is valid */) {
-				headsetPose = generateHeadsetTransform(groundtruth_pose_ptr.position, groundtruth_pose_ptr.orientation, tracking_position_offset);
+			if(true /*groundtruth_pose is valid */) {
+				headsetPose = generateHeadsetTransform(groundtruth_pose.position, groundtruth_pose.orientation, tracking_position_offset);
 			}
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
