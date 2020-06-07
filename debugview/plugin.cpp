@@ -144,7 +144,7 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 		}
 		ImGui::Spacing();
-		const pose_type fast_pose_ptr = pp->get_fast_pose();
+		const pose_type fast_pose = pp->get_fast_pose();
 		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
 		const pose_type true_pose_ptr = pp->get_fast_true_pose();
 		ImGui::Text("Switchboard connection status:");
@@ -191,7 +191,7 @@ public:
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
 		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type pose_ptr = pp->get_fast_pose();
+			const pose_type pose = pp->get_fast_pose();
 			offsetQuat = Eigen::Quaternionf(pose_ptr.orientation);
 		}
 		ImGui::End();
@@ -310,7 +310,7 @@ public:
 
 			glUseProgram(demoShaderProgram);
 
-			const pose_type pose_ptr = pp->get_fast_pose();
+			const pose_type pose = pp->get_fast_pose();
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 			Eigen::Matrix4f headsetPosition = Eigen::Matrix4f::Identity();
@@ -374,7 +374,7 @@ public:
 			headsetObject.color = {0.2,0.2,0.2,1};
 			headsetObject.drawMe();
 
-			const pose_type groundtruth_pose_ptr = pp->get_fast_true_pose();
+			const pose_type groundtruth_pose = pp->get_fast_true_pose();
 			if(true /*groundtruth_pose_ptr is valid */) {
 				headsetPose = generateHeadsetTransform(groundtruth_pose_ptr.position, groundtruth_pose_ptr.orientation, tracking_position_offset);
 			}
