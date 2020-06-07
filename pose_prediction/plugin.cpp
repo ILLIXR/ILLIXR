@@ -7,9 +7,8 @@ using namespace ILLIXR;
 
 class pose_prediction_impl : public pose_prediction {
 public:
-    pose_prediction_impl(/* non-const */ phonebook* pb_)
-    	: pb{pb_}
-		, sb{pb->lookup_impl<switchboard>()}
+    pose_prediction_impl(/* non-const */ phonebook* pb)
+		: sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
     { }
@@ -29,7 +28,6 @@ public:
     }
 
 private:
-    const phonebook* const pb;
 	const std::shared_ptr<switchboard> sb;
     std::unique_ptr<reader_latest<pose_type>> _m_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
