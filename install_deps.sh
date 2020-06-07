@@ -25,7 +25,6 @@ then
         git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/
         mkdir -p opencv/build && cd opencv/build
         cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
-        make -j `getconf _NPROCESSORS_ONLN`
         sudo make -j$(nproc) install
        cd ../..
     fi
