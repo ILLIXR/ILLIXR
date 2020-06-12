@@ -143,6 +143,16 @@ public:
 			}
 			ImGui::SameLine();
 			ImGui::Text("Resets to zero'd out tracking universe");
+
+			if(ImGui::Button("Zero orientation")){
+				const pose_type* fast_pose_ptr = pp->get_fast_pose();
+				if (fast_pose_ptr) {
+					// Can only zero if fast_pose is valid
+					pp->set_zero(fast_pose_ptr->orientation);
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text("Resets to zero'd out tracking universe");
 		}
 		ImGui::Spacing();
 		const pose_type* fast_pose_ptr = pp->get_fast_pose();

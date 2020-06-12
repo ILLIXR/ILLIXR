@@ -1,3 +1,4 @@
+#include <mutex>
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/data_format.hpp"
@@ -11,7 +12,10 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
-    { }
+    {
+		std::lock_guard<std::mutex> lock {zero_mutex};
+		zero = Eigen::Quaternionf::Identity();
+	}
 
 	virtual void start() override {
 		pb->register_impl<pose_prediction>(this);
@@ -32,11 +36,18 @@ public:
         return correct_pose(true_pose);
     }
 
+	virtual void set_zero(const Eigen::Quaternionf& orientation) override {
+		std::lock_guard<std::mutex> lock {zero_mutex};
+		zero = (orientation * zero.inverse()).inverse();
+	}
+
 private:
     phonebook* const pb;
     switchboard* const sb;
     std::unique_ptr<reader_latest<pose_type>> _m_pose;
     std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+	Eigen::Quaternionf zero;
+	std::mutex zero_mutex;
     
     pose_type* correct_pose(pose_type const* pose) {
         pose_type* swapped_pose = new pose_type(*pose);
@@ -55,6 +66,9 @@ private:
         swapped_pose->orientation.x() = -pose->orientation.y();
         swapped_pose->orientation.y() = pose->orientation.z();
         swapped_pose->orientation.z() = -pose->orientation.x();
+
+		std::lock_guard<std::mutex> lock {zero_mutex};
+		swapped_pose->orientation = swapped_pose->orientation * zero;
 
         return swapped_pose;
     }
