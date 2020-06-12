@@ -144,14 +144,12 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 		}
 		ImGui::Spacing();
-		const pose_type fast_pose = pp->get_fast_pose();
-		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
-		const pose_type true_pose = pp->get_fast_true_pose();
 		ImGui::Text("Switchboard connection status:");
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		if(true /*fast_pose is valid*/) {
+		if(pp->fast_pose_reliable()) {
+			const pose_type fast_pose = pp->get_fast_pose();
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
 			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose.position.x(), fast_pose.position.y(), fast_pose.position.z());
 			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose.orientation.x(), fast_pose.orientation.y(), fast_pose.orientation.z(), fast_pose.orientation.w());
@@ -162,6 +160,7 @@ public:
 		ImGui::Text("Slow pose topic:");
 		ImGui::SameLine();
 
+		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
 		if(slow_pose_ptr){
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
 			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", slow_pose_ptr->position.x(), slow_pose_ptr->position.y(), slow_pose_ptr->position.z());
@@ -173,7 +172,8 @@ public:
 		ImGui::Text("GROUND TRUTH pose topic:");
 		ImGui::SameLine();
 
-		if (true /*true_pose is valid*/) {
+		if (pp->true_pose_reliable()) {
+			const pose_type true_pose = pp->get_true_pose();
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
 			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose.position.x(), true_pose.position.y(), true_pose.position.z());
 			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose.orientation.x(), true_pose.orientation.y(), true_pose.orientation.z(), true_pose.orientation.w());
@@ -310,15 +310,14 @@ public:
 
 			glUseProgram(demoShaderProgram);
 
-			const pose_type pose = pp->get_fast_pose();
-
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 			Eigen::Matrix4f headsetPosition = Eigen::Matrix4f::Identity();
 
 			
 
-			if(true /*pose is valid*/) {
-				// We have a valid pose from our Switchboard plug.
+			const pose_type pose = pp->get_fast_pose();
+
+			if(pp->fast_pose_reliable()) {
 
 				if(counter == 100){
 					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
@@ -374,8 +373,8 @@ public:
 			headsetObject.color = {0.2,0.2,0.2,1};
 			headsetObject.drawMe();
 
-			const pose_type groundtruth_pose = pp->get_fast_true_pose();
-			if(true /*groundtruth_pose is valid */) {
+			if(pp->true_pose_reliable()) {
+				const pose_type groundtruth_pose = pp->get_true_pose();
 				headsetPose = generateHeadsetTransform(groundtruth_pose.position, groundtruth_pose.orientation, tracking_position_offset);
 			}
 			modelView = userView * headsetPose;
