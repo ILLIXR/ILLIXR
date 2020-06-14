@@ -73,10 +73,10 @@ namespace ILLIXR{
                     int samp_buf, samples;
                     glXGetFBConfigAttrib( dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
                     glXGetFBConfigAttrib( dpy, fbc[i], GLX_SAMPLES       , &samples  );
-                    printf( "  Matching fbconfig %d, visual ID 0x%2x: SAMPLE_BUFFERS = %d,"
+                    printf( "  Matching fbconfig %d, visual ID 0x%2lx: SAMPLE_BUFFERS = %d,"
                             " SAMPLES = %d\n",
                             i, vi -> visualid, samp_buf, samples );
-                    if ( best_fbc < 0 || samp_buf && samples > best_num_samp )
+                    if ( best_fbc < 0 || (samp_buf && samples > best_num_samp) )
                       best_fbc = i, best_num_samp = samples;
                     if ( worst_fbc < 0 || !samp_buf || samples < worst_num_samp )
                       worst_fbc = i, worst_num_samp = samples;
@@ -88,7 +88,7 @@ namespace ILLIXR{
             XFree( fbc );
             // Get a visual
             XVisualInfo *vi = glXGetVisualFromFBConfig( dpy, bestFbc );
-            printf( "Chosen visual ID = 0x%x\n", vi->visualid );
+            printf( "Chosen visual ID = 0x%lx\n", vi->visualid );
 
             Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
             XSetWindowAttributes swa;

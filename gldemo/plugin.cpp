@@ -42,19 +42,16 @@ public:
 	// data whenever it needs to.
 
 	gldemo(phonebook* pb)
-		: sb{pb->lookup_impl<switchboard>()}
-		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+		: xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
+		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
 #endif
-	{ 
-		// Well, the gldemo somehow needs a separate window/ctx
-		xlib_gl_extended_window* parent = pb->lookup_impl<xlib_gl_extended_window>();
-		xwin = new xlib_gl_extended_window {1, 1, parent->glc};
-	}
+		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+	{ }
 
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
@@ -138,9 +135,6 @@ public:
 			// Model matrix is just a spinny fun animation
 			ksAlgebra::ksMatrix4x4f modelMatrix;
 			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
-
-			ksAlgebra::ksMatrix4x4f offsetRotation;
-
 
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.
@@ -282,7 +276,7 @@ public:
 	}
 
 private:
-	xlib_gl_extended_window * xwin;
+	std::unique_ptr<xlib_gl_extended_window> xwin;
 	switchboard* sb;
 	pose_prediction* pp;
 	std::thread _m_thread;
@@ -297,8 +291,6 @@ private:
 	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
-
-	GLFWwindow* hidden_window;
 
 	uint counter = 0;
 	Eigen::Quaternionf offsetQuat;
@@ -330,21 +322,6 @@ private:
 
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
-
-
-	static void GLAPIENTRY
-	MessageCallback( GLenum source,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const GLchar* message,
-					const void* userParam )
-	{
-	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-				type, severity, message );
-	}
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 

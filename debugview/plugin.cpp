@@ -275,7 +275,6 @@ public:
 	
 
 	void main_loop() {
-		double lastTime = glfwGetTime();
 		glfwMakeContextCurrent(gui_window);
 		
 		while (!_m_terminate.load()) {
@@ -310,9 +309,6 @@ public:
 			const pose_type* pose_ptr = pp->get_fast_pose();
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
-			Eigen::Matrix4f headsetPosition = Eigen::Matrix4f::Identity();
-
-			
 
 			if(pose_ptr){
 				// We have a valid pose from our Switchboard plug.
@@ -434,18 +430,6 @@ private:
 	GLuint modelViewAttr;
 	GLuint projectionAttr;
 
-	GLuint ground_vbo;
-	GLuint ground_normal_vbo;
-	GLuint water_vbo;
-	GLuint water_normal_vbo;
-	GLuint trees_vbo;
-	GLuint trees_normal_vbo;
-	GLuint rocks_vbo;
-	GLuint rocks_normal_vbo;
-
-	GLuint headset_vbo;
-	GLuint headset_normal_vbo;
-
 	GLuint colorUniform;
 
 	// Scenery
@@ -458,20 +442,6 @@ private:
 	DebugDrawable headsetObject = DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
-
-	static void GLAPIENTRY
-	MessageCallback( GLenum source,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const GLchar* message,
-					const void* userParam )
-	{
-	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-				type, severity, message );
-	}
 
 public:
 	/* compatibility interface */
@@ -581,8 +551,8 @@ public:
 		);
 
 		// Generate fun test pattern for missing camera images.
-		for(int x = 0; x < TEST_PATTERN_WIDTH; x++){
-			for(int y = 0; y < TEST_PATTERN_HEIGHT; y++){
+		for(unsigned x = 0; x < TEST_PATTERN_WIDTH; x++){
+			for(unsigned y = 0; y < TEST_PATTERN_HEIGHT; y++){
 				test_pattern[x][y] = ((x+y) % 6 == 0) ? 255 : 0;
 			}
 		}

@@ -15,8 +15,8 @@
 
 using namespace ILLIXR;
 
-static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
-static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
+// static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
+// static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
 
 // Temporary OpenGL-specific code for creating shared OpenGL context.
