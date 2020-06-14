@@ -315,9 +315,8 @@ public:
 
 			
 
-			const pose_type pose = pp->get_fast_pose();
-
 			if(pp->fast_pose_reliable()) {
+				const pose_type pose = pp->get_fast_pose();
 
 				if(counter == 100){
 					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
@@ -332,7 +331,10 @@ public:
 			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
 			// If we are following the headset, and have a valid pose, apply the optional offset.
-			Eigen::Vector3f optionalOffset = (follow_headset) ? (pose.position + tracking_position_offset) : Eigen::Vector3f{0.0f,0.0f,0.0f};
+			Eigen::Vector3f optionalOffset = (follow_headset && pp->fast_pose_reliable())
+				? (pp->get_fast_pose().position + tracking_position_offset)
+				: Eigen::Vector3f{0.0f,0.0f,0.0f}
+			;
 
 			Eigen::Matrix4f userView = lookAt(Eigen::Vector3f{(float)(view_dist * cos(view_euler.y())),
 															  (float)(view_dist * sin(view_euler.x())), 
