@@ -274,7 +274,12 @@ public:
 
 	
 
+	bool first_time = true;
 	void _p_one_iteration() override {
+		if (first_time) {
+			glfwMakeContextCurrent(gui_window);
+			first_time = false;
+		}
 		{
 			glfwPollEvents();
 
@@ -595,7 +600,6 @@ public:
 		glfwMakeContextCurrent(NULL);
 
 		lastTime = glfwGetTime();
-		glfwMakeContextCurrent(gui_window);
 
 		threadloop::start();
 	}

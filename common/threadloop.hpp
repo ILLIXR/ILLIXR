@@ -31,7 +31,7 @@ public:
 				{   TIME_THIS_BLOCK(duration);
 					_p_one_iteration();
 				}
-				//std::cout << "cpu_timer," << get_name() << "," << duration.count() << std::endl;
+				std::cout << "cpu_timer," << get_name() << "," << duration.count() << std::endl;
 			}
 		});
 	}

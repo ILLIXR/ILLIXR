@@ -115,7 +115,13 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
+	bool first_time = true;
 	void _p_one_iteration() override {
+		if (first_time) {
+			glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+			first_time = false;
+		}
+
 		{
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
@@ -510,7 +516,6 @@ public:
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		lastTime = glfwGetTime();
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
 		threadloop::start();
 	}
