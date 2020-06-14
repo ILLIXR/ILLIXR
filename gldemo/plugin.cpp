@@ -134,9 +134,6 @@ public:
 			ksAlgebra::ksMatrix4x4f modelMatrix;
 			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
 
-			ksAlgebra::ksMatrix4x4f offsetRotation;
-
-
 			if (pp->fast_pose_reliable()) {
 				// We have a valid pose from our Switchboard plug.
 
