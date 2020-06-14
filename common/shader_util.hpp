@@ -10,13 +10,13 @@ using namespace ILLIXR;
 
 
 static void GLAPIENTRY
-	MessageCallback( GLenum source,
+	MessageCallback([[maybe_unused]] GLenum source,
 					GLenum type,
-					GLuint id,
+					[[maybe_unused]] GLuint id,
 					GLenum severity,
-					GLsizei length,
+					[[maybe_unused]] GLsizei length,
 					const GLchar* message,
-					const void* userParam )
+					[[maybe_unused]] const void* userParam )
 	{
 	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
 			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
@@ -83,8 +83,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     }
     if ( result == GL_FALSE )
     {
-        GLchar msg[4096];
-        GLsizei length;
+        GLsizei length = 0;
 
 	    std::vector<GLchar> infoLog(length);
 	    glGetProgramInfoLog(shader_program, length, &length, &infoLog[0]);
