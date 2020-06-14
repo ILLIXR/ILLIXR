@@ -78,7 +78,7 @@ functionality this way.
                 [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
                 [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
             */
-            plugin_name(phonebook* pb)
+            plugin_name(const phonebook* pb)
                   // find the switchboard in phonebook
                 : sb{pb->lookup_impl<switchboard>()}
                   // create a handle to a topic in switchboard for subscribing
@@ -110,7 +110,7 @@ functionality this way.
             }
 
         private:
-            switchboard* pb
+            const std::shared_ptr<switchboard> pb;
             std::unique_ptr<reader_latest<topic1_type>> topic1;
             std::unique_ptr<writer<topic2>> topic2;
         };

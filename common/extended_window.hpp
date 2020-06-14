@@ -8,7 +8,7 @@
 typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
    
 namespace ILLIXR{
-    class xlib_gl_extended_window : public service {
+    class xlib_gl_extended_window : public phonebook::service {
     public:
         int                     width;
         int                     height;

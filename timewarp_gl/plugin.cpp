@@ -31,7 +31,7 @@ public:
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
-	timewarp_gl(phonebook* pb)
+	timewarp_gl(const phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
@@ -44,8 +44,8 @@ public:
 	{ }
 
 private:
-	switchboard* sb;
-	pose_prediction* pp;
+	const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<const pose_prediction> pp;
 
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
@@ -56,7 +56,7 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	xlib_gl_extended_window* xwin;
+	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
@@ -442,8 +442,8 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		auto latest_pose = pp->get_fast_pose();
-		GetViewMatrixFromPose(&viewMatrixBegin, *latest_pose);
+		const pose_type latest_pose = pp->get_fast_pose();
+		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose);
 
 		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
 

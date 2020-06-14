@@ -305,7 +305,7 @@ namespace ILLIXR {
 
 	};
 
-	std::unique_ptr<switchboard> create_switchboard() {
-		return std::unique_ptr<switchboard>{new switchboard_impl};
+	std::shared_ptr<switchboard> create_switchboard() {
+		return std::dynamic_pointer_cast<switchboard>(std::make_shared<switchboard_impl>());
 	}
 }
