@@ -97,7 +97,7 @@ functionality this way.
                 topic2.put(event2);
 
                 // Read topic 3 synchronously
-                sb->schedule<topic3_type>("topic3", [&](const topic3_type *event3) {
+                sb->schedule<topic3_type>(get_name(), "topic3", [&](const topic3_type *event3) {
                     /*
                     This is a [lambda expression][1]
                     [1]: https://en.cppreference.com/w/cpp/language/lambda

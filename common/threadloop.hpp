@@ -27,11 +27,9 @@ public:
 	void start() override {
 		_m_thread = std::thread([this]() {
 			while (!should_terminate()) {
-				std::chrono::nanoseconds duration;
-				{   TIME_THIS_BLOCK(duration);
+				{   PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
 					_p_one_iteration();
 				}
-				std::cout << "cpu_timer," << get_name() << "," << duration.count() << std::endl;
 			}
 		});
 	}

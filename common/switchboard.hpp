@@ -5,6 +5,7 @@
 #include <memory>
 #include <functional>
 #include "phonebook.hpp"
+#include "cpu_timer.hpp"
 
 namespace ILLIXR {
 
@@ -132,8 +133,12 @@ public:
 	 * @throws if topic already exists, and its type does not match the `event`.
 	 */
 	template <typename event>
-	void schedule(std::string name, std::function<void(const event*)> fn) {
-		_p_schedule(name, [=](const void* ptr){ fn(reinterpret_cast<const event*>(ptr)); }, typeid(event).hash_code());
+	void schedule(const std::string& account_name, const std::string& name, std::function<void(const event*)> fn) {
+		_p_schedule(name, [=](const void* ptr) {
+			{   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
+				fn(reinterpret_cast<const event*>(ptr));
+			}
+		}, typeid(event).hash_code());
 	}
 
 	/**

@@ -1,6 +1,5 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
-#include "common/cpu_timer.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
