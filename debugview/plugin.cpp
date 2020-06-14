@@ -148,7 +148,7 @@ public:
 				const pose_type* fast_pose_ptr = pp->get_fast_pose();
 				if (fast_pose_ptr) {
 					// Can only zero if fast_pose is valid
-					pp->set_zero(fast_pose_ptr->orientation);
+					pp->set_offset(fast_pose_ptr->orientation);
 				}
 			}
 			ImGui::SameLine();

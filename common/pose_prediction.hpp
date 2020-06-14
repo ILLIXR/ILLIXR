@@ -7,5 +7,5 @@ class pose_prediction : public plugin {
 public:
     virtual pose_type* get_fast_pose() = 0;
     virtual pose_type* get_fast_true_pose() = 0;
-	virtual void set_zero(const Eigen::Quaternionf& orientation) = 0;
+	virtual void set_offset(const Eigen::Quaternionf& orientation) = 0;
 };

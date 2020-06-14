@@ -12,10 +12,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
-    {
-		std::lock_guard<std::mutex> lock {zero_mutex};
-		zero = Eigen::Quaternionf::Identity();
-	}
+    { }
 
 	virtual void start() override {
 		pb->register_impl<pose_prediction>(this);
@@ -36,9 +33,24 @@ public:
         return correct_pose(true_pose);
     }
 
-	virtual void set_zero(const Eigen::Quaternionf& orientation) override {
-		std::lock_guard<std::mutex> lock {zero_mutex};
-		zero = (orientation * zero.inverse()).inverse();
+	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+		std::lock_guard<std::mutex> lock {offset_mutex};
+		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
+		offset = raw_o.inverse();
+		/*
+		  Now, `raw_o` is maps to the identity quaternion.
+
+		  Proof:
+		  apply_offset(raw_o)
+		      = raw_o * offset
+		      = raw_o * raw_o.inverse()
+		      = Identity.
+		 */
+	}
+
+	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) {
+		std::lock_guard<std::mutex> lock {offset_mutex};
+		return orientation * offset;
 	}
 
 private:
@@ -46,8 +58,8 @@ private:
     switchboard* const sb;
     std::unique_ptr<reader_latest<pose_type>> _m_pose;
     std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
-	Eigen::Quaternionf zero;
-	std::mutex zero_mutex;
+	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
+	std::mutex offset_mutex;
     
     pose_type* correct_pose(pose_type const* pose) {
         pose_type* swapped_pose = new pose_type(*pose);
@@ -62,13 +74,9 @@ private:
         // the output orientation acts as though the "top of the head" is the
         // forward direction, and the "eye direction" is the up direction.
         // Can be offset with an initial "calibration quaternion."
-        swapped_pose->orientation.w() = pose->orientation.w();
-        swapped_pose->orientation.x() = -pose->orientation.y();
-        swapped_pose->orientation.y() = pose->orientation.z();
-        swapped_pose->orientation.z() = -pose->orientation.x();
+		Eigen::Quaternionf raw_o (pose->orientation.w(), -pose->orientation.y(), pose->orientation.z(), -pose->orientation.x());
 
-		std::lock_guard<std::mutex> lock {zero_mutex};
-		swapped_pose->orientation = swapped_pose->orientation * zero;
+		swapped_pose->orientation = apply_offset(raw_o);
 
         return swapped_pose;
     }
