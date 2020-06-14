@@ -13,7 +13,7 @@ const std::string data_path = "data1/";
 
 class ground_truth_slam : public plugin {
 public:
-	ground_truth_slam(phonebook* pb)
+	ground_truth_slam(const phonebook* pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_sensor_data{load_data(data_path)}
@@ -45,7 +45,7 @@ public:
 	virtual ~ground_truth_slam() override {}
 
 private:
-	switchboard* const sb;
+	const std::shared_ptr<switchboard> sb;
 	std::unique_ptr<writer<pose_type>> _m_true_pose;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;
