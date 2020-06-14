@@ -10,8 +10,9 @@ const std::string data_path = "data1/";
 
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
-	offline_imu_cam(phonebook* pb)
-		: _m_sensor_data{load_data(data_path)}
+	offline_imu_cam(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, _m_sensor_data{load_data(data_path)}
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}

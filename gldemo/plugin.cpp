@@ -5,7 +5,7 @@
 #include <cmath>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
@@ -34,15 +34,16 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
-class gldemo : public plugin {
+class gldemo : public threadloop {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 
-	gldemo(phonebook* pb)
-		: sb{pb->lookup_impl<switchboard>()}
+	gldemo(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 #ifdef USE_ALT_EYE_FORMAT
@@ -114,10 +115,8 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
-	void main_loop() {
-		double lastTime = glfwGetTime();
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);		
-		while (!_m_terminate.load()) {
+	void _p_one_iteration() override {
+		{
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
 			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
@@ -276,17 +275,13 @@ public:
 			#endif
 
 			_m_eyebuffer->put(frame);
-			
 		}
-		
 	}
 
 private:
 	xlib_gl_extended_window * xwin;
 	switchboard* sb;
 	pose_prediction* pp;
-	std::thread _m_thread;
-	std::atomic<bool> _m_terminate {false};
 	
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
@@ -331,6 +326,7 @@ private:
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
 
+	double lastTime;
 
 	static void GLAPIENTRY
 	MessageCallback( GLenum source,
@@ -513,17 +509,10 @@ public:
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
-		_m_thread = std::thread{&gldemo::main_loop, this};
+		lastTime = glfwGetTime();
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
-	}
-
-	void stop() {
-		_m_terminate.store(true);
-		_m_thread.join();
-	}
-
-	virtual ~gldemo() override {
-		stop();
+		threadloop::start();
 	}
 };
 

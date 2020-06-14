@@ -1,5 +1,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/cpu_timer.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
@@ -238,13 +239,14 @@ namespace ILLIXR {
 			while (!_m_terminate.load()) {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
+					std::chrono::nanoseconds duration;
 					const std::lock_guard lock{_m_registry_lock};
 					_m_registry.at(t.first).invoke_callbacks(t.second);
 				}
 			}
 		}
 
-		virtual void _p_schedule(const std::string& name, std::function<void(const void*)> callback, std::size_t ty) {
+		virtual void _p_schedule(const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) {
 			/*
 			  Proof of thread-safety:
 			  - Reads _m_registry after acquiring its lock (it can't change)
@@ -253,8 +255,8 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			_m_registry.try_emplace(name, ty, name, _m_queue);
-			topic& topic = _m_registry.at(name);
+			_m_registry.try_emplace(topic_name, ty, topic_name, _m_queue);
+			topic& topic = _m_registry.at(topic_name);
 			assert(topic.ty() == ty);
 			topic.schedule(callback);
 		}

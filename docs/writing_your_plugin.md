@@ -36,7 +36,9 @@ functionality this way.
         // Inherit from `plugin` if you don't need the threadloop
         class plugin_name : public threadloop {
         public:
-            plugin_name(phonebook* pb) { }
+            plugin_name(std::string name_, phonebook* pb_)
+                : threadloop{name_, pb_}
+                { }
             virtual void start() override { }
             virtual ~plugin_name() override { }
         };
@@ -66,7 +68,7 @@ functionality this way.
           (e.g. a phonebook service or switchboard topic),
            they are defined in this header,
            which is accessible to all plugins. */
-        #include "common/data_formath.hpp"
+        #include "common/data_format.hpp"
 
         class plugin_name : public threadloop {
         public:
@@ -78,9 +80,10 @@ functionality this way.
                 [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
                 [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
             */
-            plugin_name(phonebook* pb)
+            plugin_name(std::string name_, phonebook* pb_)
+                : threadloop{name_, pb_}
                   // find the switchboard in phonebook
-                : sb{pb->lookup_impl<switchboard>()}
+                , sb{pb->lookup_impl<switchboard>()}
                   // create a handle to a topic in switchboard for subscribing
                 , topic1{sb->subscribe_latest<topic1_type>("topic1")}
                   // create a handle to a topic in switchboard for publishing

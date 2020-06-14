@@ -11,7 +11,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/shader_util.hpp"
@@ -49,17 +49,17 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
 
 }
 
-class debugview : public plugin {
+class debugview : public threadloop {
 public:
 
 	// Public constructor, Spindle passes the phonebook to this
 	// constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the plugin can read
 	// the data whenever it needs to.
-	debugview(phonebook *pb)
-		: sb{pb->lookup_impl<switchboard>()}
+	debugview(std::string name_, phonebook *pb_)
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
-
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
@@ -274,12 +274,8 @@ public:
 
 	
 
-	void main_loop() {
-		double lastTime = glfwGetTime();
-		glfwMakeContextCurrent(gui_window);
-		
-		while (!_m_terminate.load()) {
-
+	void _p_one_iteration() override {
+		{
 			glfwPollEvents();
 
 			if (glfwGetMouseButton(gui_window, GLFW_MOUSE_BUTTON_LEFT)) 
@@ -385,13 +381,9 @@ public:
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			glfwSwapBuffers(gui_window);
-			
 		}
-		
 	}
 private:
-	std::thread _m_thread;
-	std::atomic<bool> _m_terminate {false};
 
 	//GLFWwindow * const glfw_context;
 	switchboard* sb;
@@ -414,6 +406,8 @@ private:
 	float view_dist = 6.0;
 
 	bool follow_headset = false;
+
+	double lastTime;
 
 	// Currently, the GL demo app applies this offset to the camera view.
 	// This is just to make it look nicer with the included SLAM dataset.
@@ -600,17 +594,13 @@ public:
 
 		glfwMakeContextCurrent(NULL);
 
-		_m_thread = std::thread{&debugview::main_loop, this};
+		lastTime = glfwGetTime();
+		glfwMakeContextCurrent(gui_window);
 
-	}
-
-	void stop() {
-		_m_terminate.store(true);
-		_m_thread.join();
+		threadloop::start();
 	}
 
 	virtual ~debugview() override {
-		stop();
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
