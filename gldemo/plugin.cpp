@@ -112,11 +112,13 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
-	bool first_time = true;
+	bool first_iteration = true;
 	void _p_one_iteration() override {
-		if (first_time) {
+		if (first_iteration) {
+			// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
+			// Therefore, I use this first_iteration variable, which I unset immediately after.
 			glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
-			first_time = false;
+			first_iteration = false;
 		}
 
 		{
