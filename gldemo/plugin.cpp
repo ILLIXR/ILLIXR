@@ -42,7 +42,8 @@ public:
 	// data whenever it needs to.
 
 	gldemo(const phonebook* pb)
-		: sb{pb->lookup_impl<switchboard>()}
+		: xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
+		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 #ifdef USE_ALT_EYE_FORMAT
@@ -50,8 +51,6 @@ public:
 #else
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
 #endif
-		, parent{pb->lookup_impl<xlib_gl_extended_window>()}
-		, xwin{new xlib_gl_extended_window {1, 1, parent->glc}} // Well, the gldemo somehow needs a separate window/ctx
 	{ }
 
 
@@ -134,9 +133,6 @@ public:
 			// Model matrix is just a spinny fun animation
 			ksAlgebra::ksMatrix4x4f modelMatrix;
 			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
-
-			ksAlgebra::ksMatrix4x4f offsetRotation;
-
 
 			if (pp->fast_pose_reliable()) {
 				// We have a valid pose from our Switchboard plug.
@@ -275,8 +271,7 @@ public:
 	}
 
 private:
-	const std::shared_ptr<xlib_gl_extended_window> parent;
-	const std::unique_ptr<xlib_gl_extended_window> xwin;
+	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<const pose_prediction> pp;
 	std::thread _m_thread;
@@ -291,8 +286,6 @@ private:
 	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
-
-	GLFWwindow* hidden_window;
 
 	uint counter = 0;
 	Eigen::Quaternionf offsetQuat;
@@ -324,21 +317,6 @@ private:
 
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
-
-
-	static void GLAPIENTRY
-	MessageCallback( GLenum source,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const GLchar* message,
-					const void* userParam )
-	{
-	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-				type, severity, message );
-	}
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 
