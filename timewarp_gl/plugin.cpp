@@ -34,8 +34,8 @@ public:
 	timewarp_gl(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
+		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 	#ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
 	#else
@@ -45,8 +45,8 @@ public:
 	{ }
 
 private:
-	switchboard* sb;
-	pose_prediction* pp;
+	const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<const pose_prediction> pp;
 
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
@@ -57,7 +57,7 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	xlib_gl_extended_window* xwin;
+	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
@@ -71,7 +71,6 @@ private:
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
 
 	GLuint timewarpShaderProgram;
-	GLuint basicShaderProgram;
 
 	double lastSwapTime;
 	double lastFrameTime;
@@ -79,25 +78,6 @@ private:
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
-
-	GLuint basic_pos_attr;
-	GLuint basic_uv_attr;
-
-	GLuint basic_vao;
-	GLuint basic_pos_vbo;
-	GLuint basic_uv_vbo;
-	GLuint basic_indices_vbo;
-
-	GLfloat plane_vertices[8] = {  // Coordinates for the vertices of a plane.
-         -1, 1,   1, 1,
-          -1, -1,   1, -1 };
-
-	GLfloat plane_uvs[8] = {  // UVs for plane
-			0, 1,   1, 1,
-			0, 0,   1, 0 };
-
-	GLuint plane_indices[6] = {  // Plane indices
-			0,2,3, 1,0,3 };
 
 	// Eye sampler array
 	GLuint eye_sampler_0;
@@ -293,8 +273,9 @@ public:
 			// Scheduling granularity can't be assumed to be super accurate here,
 			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
 			// MTP here. More you wait, closer to the display sync you sample the pose.
-			// TODO use more precise sleep.
-			double sleep_start = glfwGetTime();
+
+			// TODO: use more precise sleep.
+
 			// TODO: poll GLX window events
 			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
 			warp(glfwGetTime());
@@ -420,7 +401,7 @@ public:
 		ksAlgebra::ksMatrix4x4f_CreateFromQuaternion( viewMatrix, &latest_quat);
 	}
 
-	virtual void warp(float time) {
+	virtual void warp([[maybe_unused]] float time) {
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
@@ -461,8 +442,8 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		auto latest_pose = pp->get_fast_pose();
-		GetViewMatrixFromPose(&viewMatrixBegin, *latest_pose);
+		const pose_type latest_pose = pp->get_fast_pose();
+		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose);
 
 		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
 

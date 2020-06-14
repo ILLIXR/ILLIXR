@@ -1,13 +1,12 @@
-#include "plugin.hpp"
+#include "phonebook.hpp"
 #include "data_format.hpp"
 
 using namespace ILLIXR;
 
-class pose_prediction : public plugin {
+class pose_prediction : public phonebook::service {
 public:
-	pose_prediction(std::string name_, phonebook* pb_)
-		: plugin{name_, pb_} { }
-
-    virtual pose_type* get_fast_pose() = 0;
-    virtual pose_type* get_fast_true_pose() = 0;
+    virtual pose_type get_fast_pose() const = 0;
+    virtual pose_type get_true_pose() const = 0;
+	virtual bool fast_pose_reliable() const = 0;
+	virtual bool true_pose_reliable() const = 0;
 };

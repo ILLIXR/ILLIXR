@@ -43,6 +43,7 @@ public:
 
 	gldemo(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
+		, xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
@@ -51,11 +52,7 @@ public:
 #else
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
 #endif
-	{ 
-		// Well, the gldemo somehow needs a separate window/ctx
-		xlib_gl_extended_window* parent = pb->lookup_impl<xlib_gl_extended_window>();
-		xwin = new xlib_gl_extended_window {1, 1, parent->glc};
-	}
+	{ }
 
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
@@ -134,8 +131,6 @@ public:
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
 
-			const pose_type* pose_ptr = pp->get_fast_pose();
-
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
 			ksAlgebra::ksMatrix4x4f modelViewMatrix;
@@ -144,20 +139,18 @@ public:
 			ksAlgebra::ksMatrix4x4f modelMatrix;
 			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
 
-			ksAlgebra::ksMatrix4x4f offsetRotation;
-
-
-			if(pose_ptr){
+			if (pp->fast_pose_reliable()) {
 				// We have a valid pose from our Switchboard plug.
 
+				const pose_type pose = pp->get_fast_pose();
 				if(counter == 50){
-					std::cerr << "First pose received: quat(wxyz) is " << pose_ptr->orientation.w() << ", " << pose_ptr->orientation.x() << ", " << pose_ptr->orientation.y() << ", " << pose_ptr->orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose_ptr->orientation);
+					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
+					offsetQuat = Eigen::Quaternionf(pose.orientation);
 				}
 
 				counter++;
 
-				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose_ptr->orientation;
+				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose.orientation;
 
 				auto latest_quat = ksAlgebra::ksQuatf {
 					.x = combinedQuat.x(),
@@ -167,9 +160,9 @@ public:
 				};
 
 				auto latest_position = ksAlgebra::ksVector3f {
-					.x = pose_ptr->position[0] + 5.0f,
-					.y = pose_ptr->position[1] + 2.0f,
-					.z = pose_ptr->position[2] + -3.0f
+					.x = pose.position[0] + 5.0f,
+					.y = pose.position[1] + 2.0f,
+					.z = pose.position[2] + -3.0f
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};
 				ksAlgebra::ksMatrix4x4f head_matrix;
@@ -266,16 +259,12 @@ public:
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
-			auto pose = pp->get_fast_pose();
-			frame->render_pose = *pose;
-			assert(pose);
+			frame->render_pose = pp->get_fast_pose();
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#else
 			auto frame = new rendered_frame;
 			frame->texture_handle = eyeTextures[buffer_to_use];
-			
-			auto pose = pp->get_fast_pose();
-			frame->render_pose = *pose;
+			frame->render_pose = pp->get_fast_pose();
 			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#endif
@@ -285,9 +274,9 @@ public:
 	}
 
 private:
-	xlib_gl_extended_window * xwin;
-	switchboard* sb;
-	pose_prediction* pp;
+	const std::unique_ptr<const xlib_gl_extended_window> xwin;
+	const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<const pose_prediction> pp;
 	
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
@@ -298,8 +287,6 @@ private:
 	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
-
-	GLFWwindow* hidden_window;
 
 	uint counter = 0;
 	Eigen::Quaternionf offsetQuat;
@@ -333,20 +320,6 @@ private:
 	ksAlgebra::ksMatrix4x4f basicProjection;
 
 	double lastTime;
-
-	static void GLAPIENTRY
-	MessageCallback( GLenum source,
-					GLenum type,
-					GLuint id,
-					GLenum severity,
-					GLsizei length,
-					const GLchar* message,
-					const void* userParam )
-	{
-	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-				type, severity, message );
-	}
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 

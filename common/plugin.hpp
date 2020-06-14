@@ -8,7 +8,7 @@ namespace ILLIXR {
 	/**
 	 * @brief A dynamically-loadable plugin for Spindle.
 	 */
-	class plugin : public service {
+	class plugin {
 	public:
 		/**
 		 * @brief A method which Spindle calls when it starts the component.
@@ -19,11 +19,13 @@ namespace ILLIXR {
 		 *
 		 * There is no `stop()` because destructor should be considered analagous.
 		 */
-		virtual void start() {};
+		virtual void start() { };
 
 		std::string get_name() { return name; }
 
 		plugin(std::string name_, phonebook* pb_) { name = name_; pb = pb_;}
+
+		virtual ~plugin() { }
 
 	protected:
 		phonebook* pb;

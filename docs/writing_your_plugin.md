@@ -113,7 +113,7 @@ functionality this way.
             }
 
         private:
-            switchboard* pb
+            const std::shared_ptr<switchboard> pb;
             std::unique_ptr<reader_latest<topic1_type>> topic1;
             std::unique_ptr<writer<topic2>> topic2;
         };

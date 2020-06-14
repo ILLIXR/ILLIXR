@@ -18,7 +18,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_sensor_data{load_data(data_path)}
-	{}
+	{ }
 
 	virtual void start() override {
 		sb->schedule<imu_cam_type>(get_name(), "imu_cam", [&](const imu_cam_type *datum) {
@@ -46,7 +46,7 @@ public:
 	virtual ~ground_truth_slam() override {}
 
 private:
-	switchboard* const sb;
+	const std::shared_ptr<switchboard> sb;
 	std::unique_ptr<writer<pose_type>> _m_true_pose;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;

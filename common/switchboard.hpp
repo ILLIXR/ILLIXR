@@ -105,7 +105,7 @@ public:
  * \endcode
  *
  */
-class switchboard : public service {
+class switchboard : public phonebook::service {
 
 private:
 	virtual

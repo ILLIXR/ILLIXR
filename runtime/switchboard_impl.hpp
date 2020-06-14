@@ -238,7 +238,6 @@ namespace ILLIXR {
 			while (!_m_terminate.load()) {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
-					std::chrono::nanoseconds duration;
 					const std::lock_guard lock{_m_registry_lock};
 					_m_registry.at(t.first).invoke_callbacks(t.second);
 				}
@@ -306,7 +305,7 @@ namespace ILLIXR {
 
 	};
 
-	std::unique_ptr<switchboard> create_switchboard() {
-		return std::unique_ptr<switchboard>{new switchboard_impl};
+	std::shared_ptr<switchboard> create_switchboard() {
+		return std::dynamic_pointer_cast<switchboard>(std::make_shared<switchboard_impl>());
 	}
 }
