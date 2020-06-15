@@ -16,7 +16,7 @@
  * [1]: https://linux.die.net/man/3/clock_gettime
  * 
  */
-static std::chrono::nanoseconds
+static inline std::chrono::nanoseconds
 cpp_clock_gettime(clockid_t clock_id) {
 	struct timespec ts;
 	if (clock_gettime(clock_id, &ts)) {
@@ -28,7 +28,7 @@ cpp_clock_gettime(clockid_t clock_id) {
 /**
  * @brief Gets the CPU time for the calling thread.
  */
-static std::chrono::nanoseconds
+static inline std::chrono::nanoseconds
 thread_cpu_time() {
 	return cpp_clock_gettime(CLOCK_THREAD_CPUTIME_ID);
 }
@@ -99,12 +99,12 @@ private:
 		{ }
 		~print_in_destructor() {
 			std::ostringstream os;
-			// In C++20, don't need .count(). Then this becomes more general.
+			// If we did have C++20, we could remove count(), and this would become more general.
 			os << "cpu_timer," << _p_account_name << "," << _p_duration.count() <<  "\n";
 			std::cout << os.str() << std::flush;
 		}
 	private:
-		const std::string& _p_account_name;
+		const std::string _p_account_name;
 		const time_point& _p_duration;
 	};
 
@@ -130,13 +130,11 @@ public:
  */
 template< class Function, class... Args > 
 std::thread timed_thread(const std::string& account_name, Function&& f, Args&&... args) {
+	// Unfortunately we make copies of f and args.
+	// According to StackOverflow, this is unavoidable.
+	// See Sam Varshavchik's comment on https://stackoverflow.com/a/62380971/1078199
 	return std::thread([=] {
-		// Regarding capturing perfectly-forwarded variables in lambda, see:
-		// https://stackoverflow.com/questions/26831382/capturing-perfectly-forwarded-variable-in-lambda
 		{   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
-
-			// Regarding std::invoke(_decay_copy(...), ...), see (3) of:
-			// https://en.cppreference.com/w/cpp/thread/thread/thread
 			std::invoke(f, args...);
 		}
 	});

@@ -8,6 +8,14 @@ $(plugins:/=/plugin.dbg.so):
 $(plugins:/=/plugin.opt.so):
 	$(MAKE) -C $(dir $@) plugin.opt.so
 
+.PHONY: runtime/plugin.dbg.so
+runtime/plugin.dbg.so:
+	$(MAKE) -C $(dir $@) plugin.dbg.so
+
+.PHONY: runtime/plugin.opt.so
+runtime/plugin.opt.so:
+	$(MAKE) -C $(dir $@) plugin.opt.so
+
 .PHONY: runtime/main.dbg.exe
 runtime/main.dbg.exe: runtime
 	$(MAKE) -C runtime main.dbg.exe
