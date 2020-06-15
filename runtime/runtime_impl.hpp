@@ -14,40 +14,24 @@ public:
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
 	}
 
-	virtual void load_so(std::string_view so) {
+	virtual void load_so(std::string_view so) override {
 		auto lib = dynamic_lib::create(so);
 		plugin_factory this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
 		load_plugin_factory(this_plugin_factory);
 		libs.push_back(std::move(lib));
 	}
 
-	void load_so_list(int argc, const char * argv[]) {
+	virtual void load_so_list(int argc, const char * argv[]) override {
 		for (int i = 1; i < argc; ++i) {
 			load_so(argv[i]);
 		}
 	}
 
-	virtual void load_so_list(const std::string& so_list) {
-		size_t pos = 0;
-		size_t prev_pos = 0;
-		do {
-			pos = so_list.find(':', prev_pos);
-			std::string so = so_list.substr(prev_pos, pos);
-			if (!so.empty()) {
-				load_so(so);
-			}
-			if (pos == std::string::npos) {
-				break;
-			}
-			prev_pos = pos + 1;
-		} while (true);
-	}
-
-	virtual void load_plugin_factory(plugin_factory plugin_main) {
+	virtual void load_plugin_factory(plugin_factory plugin_main) override {
 		plugins.emplace_back(plugin_main(&pb));
 	}
 
-	virtual void wait() {
+	virtual void wait() override {
 		while (true) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{10});
 		}
