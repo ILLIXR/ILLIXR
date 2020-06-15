@@ -1,13 +1,14 @@
+#pragma once
+
 #include <vector>
 #include <memory>
 #include <GL/glx.h>
 #include "plugin.hpp"
+#include "extended_window.hpp"
 
 namespace ILLIXR {
 
 typedef plugin* (*plugin_factory) (phonebook*);
-
-typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
 class runtime {
 public:

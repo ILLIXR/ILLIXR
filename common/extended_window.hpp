@@ -2,7 +2,8 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include <GL/glu.h>
-#include "runtime.hpp"
+
+typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
 //GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
