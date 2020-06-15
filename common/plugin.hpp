@@ -34,11 +34,11 @@ namespace ILLIXR {
 		std::string name;
 	};
 
-#define PLUGIN_MAIN(plugin_class)                                    \
-    extern "C" plugin* plugin_main(phonebook* pb) {                  \
-        plugin_class* obj = new plugin_class {#plugin_class, pb};    \
-        obj->start();                                                \
-        return obj;                                                  \
+#define PLUGIN_MAIN(plugin_class)                                   \
+    extern "C" plugin* this_plugin_factory(phonebook* pb) {         \
+        plugin_class* obj = new plugin_class {#plugin_class, pb};   \
+        obj->start();                                               \
+        return obj;                                                 \
     }
 }
 

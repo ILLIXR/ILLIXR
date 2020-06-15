@@ -46,12 +46,6 @@ namespace ILLIXR {
 		int pixel[1];
 	} camera_frame;
 
-	class global_config : public phonebook::service {
-	public:
-		global_config(GLFWwindow* _glfw_context) : glfw_context(_glfw_context) { }
-		GLFWwindow* glfw_context;
-	};
-
 	// Single-texture format; arrayed by left/right eye
 	// Single-texture format; arrayed by left/right eye
 	struct rendered_frame {
