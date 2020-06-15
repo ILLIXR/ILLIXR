@@ -5,3 +5,6 @@ bazel-*
 *.so
 docs/build
 site/
+log/
+imgui.ini
+.gdb_history
