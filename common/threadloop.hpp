@@ -2,9 +2,11 @@
 #define THREADLOOP_HH
 
 #include <atomic>
+#include <iostream>
 #include <future>
 #include <algorithm>
 #include "plugin.hpp"
+#include "cpu_timer.hpp"
 
 namespace ILLIXR {
 
@@ -17,13 +19,17 @@ namespace ILLIXR {
  */
 class threadloop : public plugin {
 public:
+	threadloop(std::string name_, phonebook* pb_) : plugin(name_, pb_) { }
+
 	/**
 	 * @brief Starts the thread.
 	 */
 	void start() override {
 		_m_thread = std::thread([this]() {
-		while (!should_terminate()) {
-				_p_one_iteration();
+			while (!should_terminate()) {
+				{   PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
+					_p_one_iteration();
+				}
 			}
 		});
 	}

@@ -4,7 +4,7 @@
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
@@ -24,15 +24,16 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
-class timewarp_gl : public plugin {
+class timewarp_gl : public threadloop {
 
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
-	timewarp_gl(const phonebook* pb)
-		: sb{pb->lookup_impl<switchboard>()}
+	timewarp_gl(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 	#ifdef USE_ALT_EYE_FORMAT
@@ -70,8 +71,6 @@ private:
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
 
 	GLuint timewarpShaderProgram;
-	std::thread _m_thread;
-	std::atomic<bool> _m_terminate {false};
 
 	double lastSwapTime;
 	double lastFrameTime;
@@ -267,9 +266,8 @@ private:
 
 public:
 
-	void main_loop() {
-		lastSwapTime = glfwGetTime();
-		while (!_m_terminate.load()) {
+	void _p_one_iteration() override {
+		{
 			using namespace std::chrono_literals;
 			// Sleep for approximately 90% of the time until the next vsync.
 			// Scheduling granularity can't be assumed to be super accurate here,
@@ -386,7 +384,9 @@ public:
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
-		_m_thread = std::thread{&timewarp_gl::main_loop, this};
+		lastSwapTime = glfwGetTime();
+
+		threadloop::start();
 	}
 
 
@@ -567,11 +567,6 @@ public:
 		}
 		lastFrameTime = glfwGetTime();
 
-	}
-
-	virtual void stop() {
-		_m_terminate.store(true);
-		_m_thread.join();
 	}
 
 	virtual ~timewarp_gl() override {

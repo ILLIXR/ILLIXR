@@ -5,7 +5,7 @@
 #include <cmath>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
@@ -34,15 +34,16 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
-class gldemo : public plugin {
+class gldemo : public threadloop {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
 	// to this constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 
-	gldemo(const phonebook* pb)
-		: xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
+	gldemo(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
@@ -111,10 +112,16 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
-	void main_loop() {
-		double lastTime = glfwGetTime();
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);		
-		while (!_m_terminate.load()) {
+	bool first_iteration = true;
+	void _p_one_iteration() override {
+		if (first_iteration) {
+			// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
+			// Therefore, I use this first_iteration variable, which I unset immediately after.
+			glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+			first_iteration = false;
+		}
+
+		{
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
 			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
@@ -265,17 +272,13 @@ public:
 			#endif
 
 			_m_eyebuffer->put(frame);
-			
 		}
-		
 	}
 
 private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<const pose_prediction> pp;
-	std::thread _m_thread;
-	std::atomic<bool> _m_terminate {false};
 	
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
@@ -317,6 +320,8 @@ private:
 
 
 	ksAlgebra::ksMatrix4x4f basicProjection;
+
+	double lastTime;
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 
@@ -485,17 +490,9 @@ public:
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
-		_m_thread = std::thread{&gldemo::main_loop, this};
+		lastTime = glfwGetTime();
 
-	}
-
-	void stop() {
-		_m_terminate.store(true);
-		_m_thread.join();
-	}
-
-	virtual ~gldemo() override {
-		stop();
+		threadloop::start();
 	}
 };
 

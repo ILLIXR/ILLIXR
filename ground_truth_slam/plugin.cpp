@@ -13,16 +13,17 @@ const std::string data_path = "data1/";
 
 class ground_truth_slam : public plugin {
 public:
-	ground_truth_slam(const phonebook* pb)
-		: sb{pb->lookup_impl<switchboard>()}
+	ground_truth_slam(std::string name_, phonebook* pb_)
+		: plugin{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_sensor_data{load_data(data_path)}
-	{}
+	{ }
 
 	virtual void start() override {
-   sb->schedule<imu_cam_type>("imu_cam", [&](const imu_cam_type *datum) {
-        this->feed_ground_truth(datum);
-    });
+		sb->schedule<imu_cam_type>(get_name(), "imu_cam", [&](const imu_cam_type *datum) {
+			this->feed_ground_truth(datum);
+		});
 	}
 
 

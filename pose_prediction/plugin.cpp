@@ -7,7 +7,7 @@ using namespace ILLIXR;
 
 class pose_prediction_impl : public pose_prediction {
 public:
-    pose_prediction_impl(/* non-const */ phonebook* pb)
+    pose_prediction_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
@@ -84,8 +84,8 @@ private:
 
 class pose_prediction_plugin : public plugin {
 public:
-    pose_prediction_plugin(phonebook* pb_)
-    	: pb{pb_}
+    pose_prediction_plugin(const std::string& name, phonebook* pb)
+    	: plugin{name, pb}
 	{
 		pb->register_impl<pose_prediction>(
 			std::static_pointer_cast<pose_prediction>(
@@ -93,10 +93,6 @@ public:
 			)
 		);
 	}
-
-private:
-    phonebook* const pb;
-	const std::shared_ptr<switchboard> sb;
 };
 
 PLUGIN_MAIN(pose_prediction_plugin);
