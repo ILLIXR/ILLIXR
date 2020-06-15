@@ -3,11 +3,12 @@
 #include <string>
 #include <sstream>
 #include <chrono>
-#include <ratio>
 #include <cerrno>
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <functional>
+#include <thread>
 
 /**
  * @brief A C++ translation of [clock_gettime][1]
@@ -15,7 +16,7 @@
  * [1]: https://linux.die.net/man/3/clock_gettime
  * 
  */
-std::chrono::nanoseconds
+static std::chrono::nanoseconds
 cpp_clock_gettime(clockid_t clock_id) {
 	struct timespec ts;
 	if (clock_gettime(clock_id, &ts)) {
@@ -27,7 +28,7 @@ cpp_clock_gettime(clockid_t clock_id) {
 /**
  * @brief Gets the CPU time for the calling thread.
  */
-std::chrono::nanoseconds
+static std::chrono::nanoseconds
 thread_cpu_time() {
 	return cpp_clock_gettime(CLOCK_THREAD_CPUTIME_ID);
 }
@@ -36,18 +37,22 @@ thread_cpu_time() {
 /**
  * @brief a timer that times until the end of the code block ([RAII]).
  * 
- * See [[2][2]] for how code-blocks are defined in C++. `now` can
- * be any type that takes no arguments and returns a subtractable type.
+ * See [[2][2]] for how code-blocks are defined in C++.
+ * 
+ * `now` can be any type that takes no arguments and returns a
+ * subtractable type.
  * 
  * Example usage:
  * 
  * \code{.cpp}
  * {
  *     // stuff that won't get timed.
- *     timer<decltype((thread_cpu_time))> timer_obj {thread_cpu_time};
+ *     std::chrono::nanoseconds ns;
+ *     timer<decltype((thread_cpu_time))> timer_obj {thread_cpu_time, ns};
  *     // stuff that gets timed.
  * }
  * // stuff that won't get timed.
+ * std::cout << ns.count() << std::endl;
  * \endcode
  * 
  * [1]: https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization
@@ -119,3 +124,20 @@ public:
 
 #define PRINT_CPU_TIME_FOR_THIS_BLOCK(name)									\
 	print_timer<decltype((thread_cpu_time))> print_timer__ {name, thread_cpu_time};
+
+/**
+ * @brief Use this in place of std::thread(...) to print times.
+ */
+template< class Function, class... Args > 
+std::thread timed_thread(const std::string& account_name, Function&& f, Args&&... args) {
+	return std::thread([=] {
+		// Regarding capturing perfectly-forwarded variables in lambda, see:
+		// https://stackoverflow.com/questions/26831382/capturing-perfectly-forwarded-variable-in-lambda
+		{   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
+
+			// Regarding std::invoke(_decay_copy(...), ...), see (3) of:
+			// https://en.cppreference.com/w/cpp/thread/thread/thread
+			std::invoke(f, args...);
+		}
+	});
+}
