@@ -1,6 +1,7 @@
 #include <chrono>
 #include <future>
 #include <iostream>
+#include <ratio>
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,6 +19,7 @@
 
 using namespace ILLIXR;
 using namespace linalg::aliases;
+typedef std::chrono::duration<double, std::ratio<1>> microseconds_double;
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
@@ -53,7 +55,7 @@ private:
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 0.7;
+	static constexpr double DELAY_FRACTION = 1.0;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
@@ -120,6 +122,9 @@ private:
 
 	// Hologram call data
 	long long _hologram_seq{0};
+
+	double glfw_base_time;
+	std::chrono::system_clock::time_point real_base_time;
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -266,27 +271,20 @@ private:
 
 public:
 
-	void _p_one_iteration() override {
-		{
-			using namespace std::chrono_literals;
-			// Sleep for approximately 90% of the time until the next vsync.
-			// Scheduling granularity can't be assumed to be super accurate here,
-			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
-			// MTP here. More you wait, closer to the display sync you sample the pose.
+	virtual void _p_one_iteration() override {
+		// Sleep for approximately 90% of the time until the next vsync.
+		// Scheduling granularity can't be assumed to be super accurate here,
+		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
+		// MTP here. More you wait, closer to the display sync you sample the pose.
 
-			// TODO: use more precise sleep.
+		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
+		lastSwapTime = glfwGetTime();
 
-			// TODO: poll GLX window events
-			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-			warp(glfwGetTime());
-		}
+		// TODO: poll GLX window events
+		warp(glfwGetTime());
 	}
-	/* compatibility interface */
 
-	// ATW/Compositor overrides _p_start to control its own lifecycle/scheduling.
-	// This may be changed later, but for precision of vsync/etc we're going to
-	// use component-driven loop scheduling for now.
-	virtual void start() override {
+	virtual void _p_thread_setup() override {
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -385,8 +383,8 @@ public:
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		lastSwapTime = glfwGetTime();
-
-		threadloop::start();
+		glfw_base_time = glfwGetTime();
+		real_base_time = std::chrono::system_clock::now();
 	}
 
 
@@ -407,6 +405,7 @@ public:
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
 		if(!most_recent_frame){
 			//std::cerr << "ATW failed to grab most recent frame from Switchboard" << std::endl;
+			printf("cpu_timer,timewarp_gl_gpu_bailed,0\n");
 			return;
 		}
 
@@ -420,7 +419,6 @@ public:
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
 
-		double warpStart = glfwGetTime();
 		//double cursor_x, cursor_y;
 		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
@@ -502,11 +500,16 @@ public:
 
 		glBindVertexArray(tw_vao);
 
+		GLuint query;
+		GLuint64 elapsed_time;
+		int done = 0;
+		glGenQueries(1, &query);
+		glBeginQuery(GL_TIME_ELAPSED,query);
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
 
 			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
-			glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
+			// glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
 			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
@@ -516,30 +519,30 @@ public:
 			// eye's distortion mesh size, rendering the correct eye mesh
 			// to that region of the screen. This prevents re-uploading
 			// GPU data for each eye.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
-			glEnableVertexAttribArray(distortion_pos_attr);
+			// glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+			// glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+			// glEnableVertexAttribArray(distortion_pos_attr);
 
 			// We do the exact same thing for the UV GPU memory.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv0_attr);
+			// glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
+			// glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			// glEnableVertexAttribArray(distortion_uv0_attr);
 
 			// We do the exact same thing for the UV GPU memory.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv1_attr);
+			// glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
+			// glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			// glEnableVertexAttribArray(distortion_uv1_attr);
 
 			// We do the exact same thing for the UV GPU memory.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv2_attr);
+			// glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
+			// glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			// glEnableVertexAttribArray(distortion_uv2_attr);
 
 
 			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
 			// Specify which layer of the eye texture we're going to be using.
 			// Each eye has its own layer.
-			glUniform1i(tw_eye_index_unif, eye);
+			// glUniform1i(tw_eye_index_unif, eye);
 			#endif
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
@@ -548,6 +551,19 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
+		GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
+
+		glEndQuery(GL_TIME_ELAPSED);
+		// retrieving the recorded elapsed time
+		// wait until the query result is available
+		while (!done) {
+    	glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		}
+		// get the query result
+		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+		printf("cpu_timer,timewarp_gl_gpu,%lu\n", elapsed_time);
+
 		// Call Hologram
 		auto hologram_params = new hologram_input;
 		hologram_params->seq = ++_hologram_seq;
@@ -555,16 +571,20 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
-		glXSwapBuffers(xwin->dpy, xwin->win);
-		lastSwapTime = glfwGetTime();
+		// glXSwapBuffers(xwin->dpy, xwin->win);
+		// lastSwapTime = glfwGetTime();
 		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
 
-		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
+		//#ifdef DNDEBUG
 
-
+		microseconds_double m2p = microseconds_double{(lastSwapTime - glfw_base_time) * 1000.0} + std::chrono::duration_cast<microseconds_double>(real_base_time - latest_pose.time);
+		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n",
+		       m2p.count(), averageFramerate);
 		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
 			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
 		}
+		//#endif
+
 		lastFrameTime = glfwGetTime();
 
 	}
