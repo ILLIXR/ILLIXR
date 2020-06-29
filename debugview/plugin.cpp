@@ -464,7 +464,7 @@ public:
 	/* compatibility interface */
 
 	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
-	virtual void _p_thread_setup() override {
+	virtual void start() override {
 		// The "imu_cam" topic is not really a topic, in the current implementation.
 		// It serves more as an event stream. Camera frames are only available on this topic
 		// the very split second they are made available. Subsequently published packets to this
@@ -588,6 +588,8 @@ public:
 		glfwMakeContextCurrent(NULL);
 
 		lastTime = glfwGetTime();
+
+		threadloop::start();
 	}
 
 	virtual ~debugview() override {

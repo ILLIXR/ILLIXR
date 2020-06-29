@@ -26,7 +26,6 @@ public:
 	 */
 	void start() override {
 		_m_thread = std::thread([this]() {
-			_p_thread_setup();
 			while (!should_terminate()) {
 				{   PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
 					_p_one_iteration();
@@ -34,11 +33,6 @@ public:
 			}
 		});
 	}
-
-	/**
-	 * @brief Called from the new thread after initialization
-	 */
-	virtual void _p_thread_setup() { }
 
 	/**
 	 * @brief Stops the thread.
