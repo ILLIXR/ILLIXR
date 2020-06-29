@@ -27,6 +27,28 @@ public:
 		);
     }
 
+	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+		std::lock_guard<std::mutex> lock {offset_mutex};
+		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
+		std::cout << "pose_prediction: set_offset" << std::endl;
+		offset = raw_o.inverse();
+		/*
+		  Now, `raw_o` is maps to the identity quaternion.
+
+		  Proof:
+		  apply_offset(raw_o)
+		      = raw_o * offset
+		      = raw_o * raw_o.inverse()
+		      = Identity.
+		 */
+	}
+
+	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+		std::lock_guard<std::mutex> lock {offset_mutex};
+		return orientation * offset;
+	}
+
+
 	virtual bool fast_pose_reliable() const override {
 		//return _m_slow_pose.valid();
 		/*
@@ -58,9 +80,11 @@ private:
 	const std::shared_ptr<switchboard> sb;
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
+	mutable std::mutex offset_mutex;
     
     pose_type correct_pose(const pose_type pose) const {
-        pose_type swapped_pose {pose};
+        pose_type swapped_pose;
 
         // This uses the OpenVINS standard output coordinate system.
         // This is a mapping between the OV coordinate system and the OpenGL system.
@@ -72,11 +96,9 @@ private:
         // There is a slight issue with the orientations: basically,
         // the output orientation acts as though the "top of the head" is the
         // forward direction, and the "eye direction" is the up direction.
-        // Can be offset with an initial "calibration quaternion."
-        swapped_pose.orientation.w() = pose.orientation.w();
-        swapped_pose.orientation.x() = -pose.orientation.y();
-        swapped_pose.orientation.y() = pose.orientation.z();
-        swapped_pose.orientation.z() = -pose.orientation.x();
+		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
+
+		swapped_pose.orientation = apply_offset(raw_o);
 
         return swapped_pose;
     }
