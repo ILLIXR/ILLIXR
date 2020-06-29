@@ -21,17 +21,20 @@ namespace ILLIXR {
 		 */
 		virtual void start() { };
 
-		std::string get_name() { return name; }
+		const std::string& get_name() { return name; }
 
-		plugin(std::string name_, phonebook* pb_) { name = name_; pb = pb_;}
+		plugin(const std::string& name_, phonebook* pb_)
+			: pb{pb_}
+			, name{name_}
+		{ }
 
 		virtual ~plugin() { }
 
 	protected:
-		phonebook* pb;
+		const phonebook* pb;
 
 	private:
-		std::string name;
+		const std::string name;
 	};
 
 #define PLUGIN_MAIN(plugin_class)                                    \
