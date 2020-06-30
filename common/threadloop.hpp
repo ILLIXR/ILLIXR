@@ -24,7 +24,7 @@ public:
 	 * @brief Starts the thread.
 	 */
 	void start() override {
-		_m_thread = std::thread(std::bind(threadloop::thread_main, this));
+		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
 	/**
