@@ -24,33 +24,7 @@ public:
 	 * @brief Starts the thread.
 	 */
 	void start() override {
-		_m_thread = std::thread([this] {
-			_p_thread_setup();
-			while (!should_terminate()) {
-				skip_option s;
-				{
-					PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name() + "_should_skip");
-					s = _p_should_skip();
-				}
-				switch (s) {
-				// Curly braces after each block for safety :)
-				case skip_option::run: {
-					PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
-					_p_one_iteration();
-					break;
-				}
-				case skip_option::skip_and_yield: {
-					std::this_thread::yield();
-					break;
-				}
-				case skip_option::skip_and_spin: {
-					break;
-				}
-				// default:
-				//	Should get a compile-time warning with -Wall if this switch is not exhaustive
-				}
-			}
-		});
+		_m_thread = std::thread(std::bind(threadloop::thread_main, this));
 	}
 
 	/**
@@ -66,6 +40,15 @@ public:
 			stop();
 		}
 	}
+
+private:
+	void thread_main() {
+			_p_thread_setup();
+			while (!should_terminate()) {
+				PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
+				_p_one_iteration();
+			}
+		}
 
 protected:
 
