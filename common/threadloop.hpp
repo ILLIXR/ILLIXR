@@ -24,7 +24,8 @@ public:
 	 * @brief Starts the thread.
 	 */
 	void start() override {
-		_m_thread = std::thread([this]() {
+		_m_thread = std::thread([this] {
+			_p_thread_setup();
 			while (!should_terminate()) {
 				skip_option s;
 				{
@@ -84,6 +85,11 @@ protected:
 	 * @brief Gets called in a tight loop, to gate the invocation of `_p_one_iteration()`
 	 */
 	virtual skip_option _p_should_skip() { return skip_option::run; }
+
+	/**
+	 * @brief Gets called at setup time, from the new thread.
+	 */	
+	virtual void _p_thread_setup() { }
 
 	/**
 	 * @brief Override with the computation the thread does every loop.
