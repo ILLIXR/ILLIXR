@@ -55,13 +55,10 @@ public:
     depth_image_ocv = slMat2cvMat(depth_image_zed);
   }
 
-  // for SLAM
-  std::atomic<cv::Mat*> img0;
-  std::atomic<cv::Mat*> img1;
-
-  // for reconstruction
-  std::atomic<cv::Mat*> rgb;
-  std::atomic<cv::Mat*> depth2;
+  std::atomic<unsigned> which {0};
+  std::array<unsigned, 2> count;
+  std::array<cv::Mat, 2> grayL;
+  std::array<cv::Mat, 2> grayR;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -73,17 +70,16 @@ protected:
 	}
 
   virtual void _p_one_iteration() override {
-      // Retrieve images
-      assert(imageL_zed);
-      assert(imageR_zed);
+      unsigned _which = !which.load();
 
+      // Retrieve images
       zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
       zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
       zedm->retrieveMeasure(depth_image_zed, MEASURE::DEPTH, MEM::CPU, image_size);
 
       // Convert to Grayscale
-      cv::cvtColor(imageL_ocv, grayL, CV_BGR2GRAY);
-      cv::cvtColor(imageR_ocv, grayR, CV_BGR2GRAY);
+      cv::cvtColor(imageL_ocv, grayL[_which], CV_BGR2GRAY);
+      cv::cvtColor(imageR_ocv, grayR[_which], CV_BGR2GRAY);
       cv::cvtColor(image_rgb, image_rgb, CV_BGR2RGB);
 
       cv::Size cvSize(image_size.width, image_size.height);
@@ -91,12 +87,8 @@ protected:
       depth_image_ocv *= 1000.0f;
       depth_image_ocv.convertTo(depth, CV_16UC1); // in mm, rounded
 
-      img0 = &grayL;
-      img1 = &grayR;
-      rgb = &image_rgb;
-      depth2 = &depth;
-
-      assert(img0.load() && img1.load() && rgb.load() && depth2.load());
+      count[_which] = 1 + count[!_which];
+      which.store(_which);
   }
 
 private:
@@ -111,8 +103,6 @@ private:
 
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
-  cv::Mat grayL;
-  cv::Mat grayR;
   cv::Mat image_rgb;
   cv::Mat depth_image_ocv;
 };
@@ -160,11 +150,10 @@ protected:
       la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
       av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
 
-      cv::Mat* img0 = camera_thread_.img0.exchange(nullptr);
-      cv::Mat* img1 = camera_thread_.img1.exchange(nullptr);
 
+      unsigned _which = camera_thread_.which.load();
       // Passed to SLAM
-      if (img0 && img1) {
+      if (count != camera_thread_.count[_which]) {
         _m_imu_cam->put(new imu_cam_type{
           t,
           av,
@@ -183,20 +172,19 @@ protected:
           imu_time,
         });
       }
+      count = camera_thread_.count.load();
 
 
-      cv::Mat* r = camera_thread_.rgb.exchange(nullptr);
-      cv::Mat* d = camera_thread_.depth2.exchange(nullptr);
-      int64_t s_cam_time = static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE));
+      // int64_t s_cam_time = static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE));
 
-      // Passed to scene reconstruction
-      if (r && d) {
-        _m_rgb_depth->put(new rgb_depth_type{
-        s_cam_time,
-        r->data,
-        d->data,
-        });
-      }
+      // // Passed to scene reconstruction
+      // if (r && d) {
+      //   _m_rgb_depth->put(new rgb_depth_type{
+      //   s_cam_time,
+      //   r->data,
+      //   d->data,
+      //   });
+      // }
 
       last_imu_ts = sensors_data.imu.timestamp;
     }
@@ -208,6 +196,7 @@ private:
     const std::shared_ptr<switchboard> sb;
     std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
     std::unique_ptr<writer<rgb_depth_type>> _m_rgb_depth;
+    std::array<unsigned, 2> count;
 
     // IMU
     SensorsData sensors_data;
