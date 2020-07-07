@@ -30,7 +30,7 @@ public:
 	/**
 	 * @brief Stops the thread.
 	 */
-	void stop() {
+	void stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
