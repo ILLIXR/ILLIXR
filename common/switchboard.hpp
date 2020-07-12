@@ -133,11 +133,9 @@ public:
 	 * @throws if topic already exists, and its type does not match the `event`.
 	 */
 	template <typename event>
-	void schedule(const std::string& account_name, const std::string& name, std::function<void(const event*)> fn) {
+	void schedule([[maybe_unused]] std::string account_name, std::string name, std::function<void(const event*)> fn) {
 		_p_schedule(name, [=](const void* ptr) {
-			{   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
-				fn(reinterpret_cast<const event*>(ptr));
-			}
+			fn(reinterpret_cast<const event*>(ptr));
 		}, typeid(event).hash_code());
 	}
 

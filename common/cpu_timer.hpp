@@ -18,6 +18,11 @@
  */
 static inline std::chrono::nanoseconds
 cpp_clock_gettime(clockid_t clock_id) {
+	/* This ensures the compiler won't reorder this function call; Pretend like it has memory side-effects. */
+	asm volatile (""
+				  : /* OutputOperands */
+				  : /* InputOperands */
+				  : "memory" /* Clobbers */);
     struct timespec ts;
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};

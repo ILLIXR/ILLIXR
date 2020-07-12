@@ -18,7 +18,7 @@ namespace ILLIXR {
 		 * consturctors.
 		 */
 		virtual void start() {
-			logger->log(component_start_record{name, id});
+			logger->log(component_start_record{id, name});
 		}
 
 		/**
@@ -46,8 +46,8 @@ namespace ILLIXR {
 	protected:
 		const std::string& name;
 		const phonebook* pb;
-		const std::shared_ptr<c_logger> logger;
-		const std::shared_ptr<c_gen_guid> gen_guid;
+		const std::shared_ptr<logger> logger;
+		const std::shared_ptr<gen_guid> gen_guid;
 		const std::size_t id;
 	};
 
