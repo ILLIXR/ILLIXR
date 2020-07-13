@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdlib>
 #include <string>
 #include <sstream>
 #include <chrono>
@@ -124,6 +125,9 @@ private:
         ~print_in_destructor() {
             std::ostringstream os;
             os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
+			if (rand() % 100 == 0) {
+				os << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
+			}
             std::cout << os.str() << std::flush;
         }
     private:
