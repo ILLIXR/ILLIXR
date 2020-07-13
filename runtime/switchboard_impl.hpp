@@ -237,7 +237,7 @@ namespace ILLIXR {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
 					const std::lock_guard lock{_m_registry_lock};
-					std::cout << "cpu_timer,switchboard_check_queues," << (thread_cpu_time() - thread_start).count() << std::endl;
+					//std::cout << "cpu_timer,switchboard_check_queues," << (thread_cpu_time() - thread_start).count() << std::endl;
 					_m_registry.at(t.first).invoke_callbacks(t.second);
 					thread_start = thread_cpu_time();
 				}

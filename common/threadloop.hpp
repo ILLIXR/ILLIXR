@@ -53,9 +53,9 @@ private:
 
 		while (!should_terminate()) {
 
-			start_skip.log(start_skip_iteration_record{id, it, skip_it});
+			start_skip.log(std::make_unique<const start_skip_iteration_record>(id, it, skip_it));
 			skip_option s = _p_should_skip();
-			stop_skip.log(stop_skip_iteration_record{id, it, skip_it});
+			stop_skip.log(std::make_unique<const stop_skip_iteration_record>(id, it, skip_it));
 
 			switch (s) {
 			case skip_option::skip_and_yield:
@@ -66,9 +66,9 @@ private:
 				++skip_it;
 				break;
 			case skip_option::run:
-				start_it.log(start_iteration_record{id, it, skip_it});
+				start_it.log(std::make_unique<const start_iteration_record>(id, it, skip_it));
 				_p_one_iteration();
-				stop_it.log(stop_iteration_record{id, it, skip_it});
+				stop_it.log(std::make_unique<const stop_iteration_record>(id, it, skip_it));
 				++it;
 				skip_it = 0;
 				break;

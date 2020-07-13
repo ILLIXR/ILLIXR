@@ -18,7 +18,7 @@ namespace ILLIXR {
 		 * consturctors.
 		 */
 		virtual void start() {
-			logger->log(component_start_record{id, name});
+			logger->log(std::make_unique<const component_start_record>(id, name));
 		}
 
 		/**
@@ -28,7 +28,7 @@ namespace ILLIXR {
 		 * would prepend instead of replace actions.
 		 */
 		virtual void stop() {
-			logger->log(component_stop_record{id});
+			logger->log(std::make_unique<const component_stop_record>(id));
 		}
 
 		plugin(const std::string& name_, phonebook* pb_)
@@ -41,13 +41,13 @@ namespace ILLIXR {
 
 		virtual ~plugin() { stop(); }
 
-		const std::string& get_name() { return name; }
+		std::string get_name() { return name; }
 
 	protected:
-		const std::string& name;
+		std::string name;
 		const phonebook* pb;
-		const std::shared_ptr<logger> logger;
-		const std::shared_ptr<gen_guid> gen_guid;
+		const std::shared_ptr<c_logger> logger;
+		const std::shared_ptr<c_gen_guid> gen_guid;
 		const std::size_t id;
 	};
 

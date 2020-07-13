@@ -3,6 +3,7 @@
 
 #include <typeindex>
 #include <stdexcept>
+#include <iostream>
 #include <cassert>
 #include <mutex>
 #include <memory>
@@ -100,6 +101,7 @@ namespace ILLIXR {
 			const std::lock_guard<std::mutex> lock{_m_mutex};
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
+			std::cout << "Register " << type_index.name() << "\n";
 			_m_registry.erase(type_index);
 			_m_registry.try_emplace(type_index, impl);
 		}

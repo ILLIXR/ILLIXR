@@ -19,7 +19,7 @@ namespace ILLIXR {
 	 * spliced messages (no stdout race-conditions), and is used
 	 * uniformly by ILLIXR components.
 	 */
-	class logger : public phonebook::service {
+	class c_logger : public phonebook::service {
 	public:
 		/**
 		 * @brief Writes one log record.
@@ -27,8 +27,8 @@ namespace ILLIXR {
 		 * Record must be in record_types.hpp
 		 */
 		template <typename Record>
-		void log([[maybe_unused]] Record r) {
-			log(Record::id, reinterpret_cast<const char*>(static_cast<const void*>(&r)));
+		void log(std::unique_ptr<const Record>&& r) {
+			log2(&Record::type_descr, std::unique_ptr<const record>(std::move(r)));
 		}
 
 		/**
@@ -39,16 +39,23 @@ namespace ILLIXR {
 		 * Record must be in record_types.hpp
 		 */
 		template <typename Record>
-		void log_many([[maybe_unused]] std::unique_ptr<std::vector<Record>> rs) {
-			log_many(Record::id, rs->size(), reinterpret_cast<const char*>(reinterpret_cast<const void*>(&*rs->cbegin())));
+		void log_many(std::vector<std::unique_ptr<const Record>>&& rs) {
+			std::vector<std::unique_ptr<const record>> rs2;
+			for (std::unique_ptr<const Record>& r : rs) {
+				rs2.emplace_back(std::move(r));
+			}
+			// I think (hope) the compiler will optimize this copy-and-cast away.
+			// Unfortunately, there is no way to cast every element of a vector all at once according to
+			// https://stackoverflow.com/a/20310090/1078199
+			log_many2(&Record::type_descr, std::move(rs2));
 		}
 
 	protected:
-		virtual void log(record_type_id ty, const char* r) = 0;
-		virtual void log_many(record_type_id ty, std::size_t sz, const char* rbegin) = 0;
+		virtual void log2(const struct_type* ty, std::unique_ptr<const record>&& r) = 0;
+		virtual void log_many2(const struct_type* ty, std::vector<std::unique_ptr<const record>>&& r) = 0;
 	};
 
-	class gen_guid : public phonebook::service {
+	class c_gen_guid : public phonebook::service {
 	public:
 		std::size_t get(std::size_t namespace_ = 0, std::size_t subnamespace = 0, std::size_t subsubnamespace = 0) {
 			return ++guid_starts[namespace_][subnamespace][subsubnamespace];
@@ -60,26 +67,22 @@ namespace ILLIXR {
 
 	static std::chrono::milliseconds LOG_BUFFER_DELAY {1000};
 
-	typedef logger c_logger;
-	typedef gen_guid c_gen_guid;
-
 	template <typename Record>
 	class log_coalescer {
 	private:
-		std::shared_ptr<logger> logger;
+		std::shared_ptr<c_logger> logger;
 		std::chrono::time_point<std::chrono::high_resolution_clock> last_log;
-		std::unique_ptr<std::vector<Record>> buffer;
+		std::vector<std::unique_ptr<const Record>> buffer;
 	public:
 		log_coalescer(std::shared_ptr<c_logger> logger_)
 			: logger{logger_}
 			, last_log{std::chrono::high_resolution_clock::now()}
-			, buffer{std::make_unique<std::vector<Record>>()}
 		{ }
 		~log_coalescer() {
 			flush();
 		}
-		void log(Record r) {
-			buffer->push_back(r);
+		void log(std::unique_ptr<const Record>&& r) {
+			buffer.push_back(std::move(r));
 			maybe_flush();
 		}
 		void maybe_flush() {
@@ -88,7 +91,7 @@ namespace ILLIXR {
 			}
 		}
 		void flush() {
-			std::unique_ptr<std::vector<Record>> buffer2 {std::make_unique<std::vector<Record>>()};
+			std::vector<std::unique_ptr<const Record>> buffer2;
 			buffer.swap(buffer2);
 			logger->log_many(std::move(buffer2));
 			last_log = std::chrono::high_resolution_clock::now();
