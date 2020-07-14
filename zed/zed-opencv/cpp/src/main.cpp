@@ -166,16 +166,16 @@ protected:
 
 	  std::optional<cv::Mat*> img0 = std::nullopt;
 	  std::optional<cv::Mat*> img1 = std::nullopt;
-	  std::optional<cv::Mat*> rgb = std::nullopt;
-	  std::optional<cv::Mat*> depth = std::nullopt;
+	  cv::Mat* rgb = nullptr;
+	  cv::Mat* depth = nullptr;
 
 	  const cam_type* c = _m_cam_type->get_latest_ro();
 	  if (c && c->serial_no != last_serial_no) {
 		  last_serial_no = c->serial_no;
 		  *img0 = c->img0;
 		  *img1 = c->img1;
-		  *rgb = c->rgb;
-		  *depth = c->depth;
+		  rgb = c->rgb;
+		  depth = c->depth;
 	  }
 
       _m_imu_cam->put(new imu_cam_type{
@@ -191,8 +191,8 @@ protected:
       if (rgb && depth) {
         _m_rgb_depth->put(new rgb_depth_type{
           static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE)),
-          rgb->data,
-          depth->data,
+			  rgb->data,
+			  depth->data,
         });
       }
 
