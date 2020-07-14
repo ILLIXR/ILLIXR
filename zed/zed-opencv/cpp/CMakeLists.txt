@@ -34,7 +34,7 @@ link_directories(${ZED_LIBRARY_DIR})
 link_directories(${OpenCV_LIBRARY_DIRS})
 link_directories(${CUDA_LIBRARY_DIRS})
 
-FILE(GLOB_RECURSE SRC_FILES src/*.cpp)
+FILE(GLOB_RECURSE SRC_FILES src/main.cpp)
 FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
 
 ADD_EXECUTABLE(${execName} ${HDR_FILES} ${SRC_FILES})
