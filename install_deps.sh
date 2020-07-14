@@ -37,13 +37,13 @@ then
        cd ../..
     fi
 
-    if [ ! -d Vulkan-Loader ]; then
-        git clone https://github.com/KhronosGroup/Vulkan-Loader.git
-        mkdir -p Vulkan-Loader/build && cd Vulkan-Loader/build
-        cmake ..
-        sudo make -j$(nproc) install
-        cd ../..
-    fi
+    #if [ ! -d Vulkan-Loader ]; then
+        #git clone https://github.com/KhronosGroup/Vulkan-Loader.git
+        #mkdir -p Vulkan-Loader/build && cd Vulkan-Loader/build
+        #cmake ..
+        #sudo make -j$(nproc) install
+        #cd ../..
+    #fi
 
     if [ ! -d OpenXR-SDK ]; then
         git clone https://github.com/KhronosGroup/OpenXR-SDK.git

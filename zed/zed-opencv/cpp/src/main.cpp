@@ -95,11 +95,10 @@ protected:
       zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
       zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
 
-
       cv::Mat* grayL_ocv_out = new cv::Mat{};
-	  cv::Mat* grayR_ocv_out = new cv::Mat{};
-	  cv::Mat* image_rgb_ocv_out = new cv::Mat{};
-	  cv::Mat* depth_ocv_out = new cv::Mat{cv::Size{image_size.width, image_size.height}, CV_16UC1};
+	    cv::Mat* grayR_ocv_out = new cv::Mat{};
+	    cv::Mat* image_rgb_ocv_out = new cv::Mat{};
+	    cv::Mat* depth_ocv_out = new cv::Mat(cv::Size(image_size.width, image_size.height), CV_16UC1);
 
       // Convert to Grayscale
       cv::cvtColor(imageL_ocv, *grayL_ocv_out, CV_BGR2GRAY);
@@ -164,21 +163,21 @@ protected:
       la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
       av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
 
-	  std::optional<cv::Mat*> img0 = std::nullopt;
-	  std::optional<cv::Mat*> img1 = std::nullopt;
-	  cv::Mat* rgb = nullptr;
-	  cv::Mat* depth = nullptr;
+	    std::optional<cv::Mat*> img0 = std::nullopt;
+	    std::optional<cv::Mat*> img1 = std::nullopt;
+	    cv::Mat* rgb = nullptr;
+	    cv::Mat* depth = nullptr;
 
-	  const cam_type* c = _m_cam_type->get_latest_ro();
-	  if (c && c->serial_no != last_serial_no) {
-		  last_serial_no = c->serial_no;
-		  *img0 = c->img0;
-		  *img1 = c->img1;
-		  rgb = c->rgb;
-		  depth = c->depth;
-	  }
+	    const cam_type* c = _m_cam_type->get_latest_ro();
+	    if (c && c->serial_no != last_serial_no) {
+		      last_serial_no = c->serial_no;
+		      *img0 = c->img0;
+		      *img1 = c->img1;
+		      rgb = c->rgb;
+		      depth = c->depth;
+	    }
 
-      _m_imu_cam->put(new imu_cam_type{
+      _m_imu_cam->put(new imu_cam_type {
           t,
           av,
           la,
@@ -190,7 +189,7 @@ protected:
       // Passed to scene reconstruction
       if (rgb && depth) {
         _m_rgb_depth->put(new rgb_depth_type{
-          static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE)),
+        static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE)),
 			  rgb->data,
 			  depth->data,
         });
@@ -218,7 +217,7 @@ private:
     time_type t;
     ullong imu_time;
 
-	std::size_t last_serial_no {0};
+	  std::size_t last_serial_no {0};
 };
 
 // This line makes the plugin importable by Spindle
