@@ -170,7 +170,7 @@ protected:
 	  std::optional<cv::Mat*> depth = std::nullopt;
 
 	  const cam_type* c = _m_cam_type->get_latest_ro();
-	  if (c->serial_no != last_serial_no) {
+	  if (c && c->serial_no != last_serial_no) {
 		  last_serial_no = c->serial_no;
 		  *img0 = c->img0;
 		  *img1 = c->img1;
