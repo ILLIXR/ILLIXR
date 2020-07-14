@@ -43,8 +43,6 @@ public:
 		_m_true_pose->put(true_pose);
 	}
 
-	virtual ~ground_truth_slam() override {}
-
 private:
 	const std::shared_ptr<switchboard> sb;
 	std::unique_ptr<writer<pose_type>> _m_true_pose;

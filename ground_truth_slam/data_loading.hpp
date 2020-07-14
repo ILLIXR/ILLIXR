@@ -28,6 +28,7 @@ load_data(const std::string& data_path) {
 	std::map<ullong, sensor_types> data;
 
 	std::ifstream imu0_file {data_path + "state_groundtruth_estimate0/data.csv"};
+	assert(imu0_file.good());
 	for(CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = floor(std::stoull(row[0]) / 10000);
 		Eigen::Vector3f av {std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
