@@ -103,10 +103,10 @@ record_types = [
     ]),
 ]
 
-def to_cpp_name(string):
+def to_cpp_name(string: str) -> str:
     return string.replace(":", "_")
 
-def record_type_class(record_type):
+def record_type_class(record_type: RecordType, type_id: int) -> str:
     arg_list = ", ".join(
         f"{field.type} {field.name}_ "
         for field in record_type.fields if field.default is None
@@ -129,19 +129,20 @@ def record_type_class(record_type):
  * record_type_class({record_type!r})
  * \endcode
  */
-class {record_type.name} : public record {{
-public:
+struct {record_type.name} : public record {{
 	{record_type.name}({arg_list})
 		: {init_list}
 	{{ }}
 	static const struct_type type_descr;
-private:
 	{member_list}
 }};
+
+static_assert(std::is_standard_layout<{record_type.name}>::value);
 
 const struct_type {record_type.name}::type_descr = struct_type{{
 	sizeof({record_type.name}),
 	\"{record_type.name}\",
+	{type_id},
 	{base_type_vector},
 }};
 
@@ -160,6 +161,7 @@ if __name__ == '__main__':
 
 #include <chrono>
 #include <vector>
+#include <type_traits>
 
 namespace ILLIXR {{
 
@@ -175,7 +177,7 @@ namespace ILLIXR {{
             std::size_t size;
             std::string name;
             std::size_t type_id;
-            type(std::size_t size_, std::string name_, std::size_t type_id_ = 0)
+            type(std::size_t size_, std::string name_, std::size_t type_id_)
                     : size{{size_}}
                     , name{{name_}}
                     , type_id{{type_id_}}
@@ -199,8 +201,8 @@ namespace ILLIXR {{
     class struct_type : public type {{
     public:
             std::vector<std::pair<std::string, const type*>> fields;
-            struct_type(std::size_t size_, std::string name_, std::vector<std::pair<std::string, const type*>> fields_)
-                    : type{{size_, name_}}
+            struct_type(std::size_t size_, std::string name_, std::size_t type_id_, std::vector<std::pair<std::string, const type*>> fields_)
+                    : type{{size_, name_, type_id_}}
                     , fields{{fields_}}
             {{ }}
     }};
@@ -208,26 +210,21 @@ namespace ILLIXR {{
     /**
      * @brief Superclass of all records.
      *
-     * If this did not have a virtual destructor, only trivially-destructible types could be
-     * contained in a record. This gives us the freedom to have any type.
-     *
      * New record types do not have to be defined here, but they must:
      *   1. inherit from this `record` class;
      *   2. have a correct `static const struct_type type_descr` (types must be in the same order in the new record type class as they are in the type_descr vector);
      *   3. use base-types that the logging-backend supports;
+     *   4. have a unique, non-zero type_id. I recommend a random number. The compiler prefers this type_id to be a statically known constant.
      *
      * This involves a significant amount of repetition, so consider importing `record_types.py` and calling `record_type_class`.
      *
      * New base types do not have to be defined here, but they must:
      *   1. be supported by the logging-backend 
-     *   2. have a unique, non-zero type_id. The compiler prefers this type_id to be a statically known constant.
+     *   2. have a unique, non-zero type_id. I recommend a random number. The compiler prefers this type_id to be a statically known constant.
      *
      * See the below for examples.
      */
-    class record {{
-    public:
-            virtual ~record() {{ }}
-    }};
+    struct record {{ }};
 
     namespace types {{
 
@@ -246,7 +243,7 @@ These are some predefined base types.
 */
 """)
         for i, base_type in enumerate(base_types):
-            f.write(f"static const type {to_cpp_name(base_type)} {{sizeof({base_type}), std::string{{\"{base_type}\", {i+1}}}}};\n")
+            f.write(f"static const type {to_cpp_name(base_type)} {{sizeof({base_type}), std::string{{\"{base_type}\"}}, {i+1}}};\n")
 
         f.write("""
     } /* namespace types */
@@ -260,8 +257,8 @@ These are some predefined base types.
 These are some predefined record types.
 */
 """)
-        for record_type in record_types:
-            f.write(record_type_class(record_type))
+        for type_id, record_type in enumerate(record_types):
+            f.write(record_type_class(record_type, type_id + len(base_types) + 1))
 
         f.write("""
 #pragma GCC diagnostic pop

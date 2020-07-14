@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <vector>
+#include <type_traits>
 
 namespace ILLIXR {
 
@@ -22,7 +23,7 @@ namespace ILLIXR {
             std::size_t size;
             std::string name;
             std::size_t type_id;
-            type(std::size_t size_, std::string name_, std::size_t type_id_ = 0)
+            type(std::size_t size_, std::string name_, std::size_t type_id_)
                     : size{size_}
                     , name{name_}
                     , type_id{type_id_}
@@ -46,8 +47,8 @@ namespace ILLIXR {
     class struct_type : public type {
     public:
             std::vector<std::pair<std::string, const type*>> fields;
-            struct_type(std::size_t size_, std::string name_, std::vector<std::pair<std::string, const type*>> fields_)
-                    : type{size_, name_}
+            struct_type(std::size_t size_, std::string name_, std::size_t type_id_, std::vector<std::pair<std::string, const type*>> fields_)
+                    : type{size_, name_, type_id_}
                     , fields{fields_}
             { }
     };
@@ -55,35 +56,30 @@ namespace ILLIXR {
     /**
      * @brief Superclass of all records.
      *
-     * If this did not have a virtual destructor, only trivially-destructible types could be
-     * contained in a record. This gives us the freedom to have any type.
-     *
      * New record types do not have to be defined here, but they must:
      *   1. inherit from this `record` class;
      *   2. have a correct `static const struct_type type_descr` (types must be in the same order in the new record type class as they are in the type_descr vector);
      *   3. use base-types that the logging-backend supports;
+     *   4. have a unique, non-zero type_id. I recommend a random number. The compiler prefers this type_id to be a statically known constant.
      *
      * This involves a significant amount of repetition, so consider importing `record_types.py` and calling `record_type_class`.
      *
      * New base types do not have to be defined here, but they must:
      *   1. be supported by the logging-backend 
-     *   2. have a unique, non-zero type_id. The compiler prefers this type_id to be a statically known constant.
+     *   2. have a unique, non-zero type_id. I recommend a random number. The compiler prefers this type_id to be a statically known constant.
      *
      * See the below for examples.
      */
-    class record {
-    public:
-            virtual ~record() { }
-    };
+    struct record { };
 
     namespace types {
 
 /*
 These are some predefined base types.
 */
-static const type std__chrono__nanoseconds {sizeof(std::chrono::nanoseconds), std::string{"std::chrono::nanoseconds", 1}};
-static const type std__size_t {sizeof(std::size_t), std::string{"std::size_t", 2}};
-static const type std__string {sizeof(std::string), std::string{"std::string", 3}};
+static const type std__chrono__nanoseconds {sizeof(std::chrono::nanoseconds), std::string{"std::chrono::nanoseconds"}, 1};
+static const type std__size_t {sizeof(std::size_t), std::string{"std::size_t"}, 2};
+static const type std__string {sizeof(std::string), std::string{"std::string"}, 3};
 
     } /* namespace types */
 
@@ -102,21 +98,22 @@ These are some predefined record types.
  * record_type_class(RecordType(name='misc_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::string', name='notes', default=None)]))
  * \endcode
  */
-class misc_record : public record {
-public:
+struct misc_record : public record {
 	misc_record(std::size_t component_id_ , std::string notes_ )
 		: component_id{component_id_},
 		notes{notes_}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::string notes;
 };
 
+static_assert(std::is_standard_layout<misc_record>::value);
+
 const struct_type misc_record::type_descr = struct_type{
 	sizeof(misc_record),
 	"misc_record",
+	4,
 	{
 		{"component_id", &types::std__size_t},
 		{"notes", &types::std__string}
@@ -133,21 +130,22 @@ const struct_type misc_record::type_descr = struct_type{
  * record_type_class(RecordType(name='component_start_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::string', name='name', default=None)]))
  * \endcode
  */
-class component_start_record : public record {
-public:
+struct component_start_record : public record {
 	component_start_record(std::size_t component_id_ , std::string name_ )
 		: component_id{component_id_},
 		name{name_}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::string name;
 };
 
+static_assert(std::is_standard_layout<component_start_record>::value);
+
 const struct_type component_start_record::type_descr = struct_type{
 	sizeof(component_start_record),
 	"component_start_record",
+	5,
 	{
 		{"component_id", &types::std__size_t},
 		{"name", &types::std__string}
@@ -164,19 +162,20 @@ const struct_type component_start_record::type_descr = struct_type{
  * record_type_class(RecordType(name='component_stop_record', fields=[Field(type='std::size_t', name='component_id', default=None)]))
  * \endcode
  */
-class component_stop_record : public record {
-public:
+struct component_stop_record : public record {
 	component_stop_record(std::size_t component_id_ )
 		: component_id{component_id_}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 };
+
+static_assert(std::is_standard_layout<component_stop_record>::value);
 
 const struct_type component_stop_record::type_descr = struct_type{
 	sizeof(component_stop_record),
 	"component_stop_record",
+	6,
 	{
 		{"component_id", &types::std__size_t}
 	},
@@ -192,8 +191,7 @@ const struct_type component_stop_record::type_descr = struct_type{
  * record_type_class(RecordType(name='start_skip_iteration_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='iteration', default=None), Field(type='std::size_t', name='skip_iteration', default=None), Field(type='std::chrono::nanoseconds', name='cpu_time', default='thread_cpu_time()')]))
  * \endcode
  */
-class start_skip_iteration_record : public record {
-public:
+struct start_skip_iteration_record : public record {
 	start_skip_iteration_record(std::size_t component_id_ , std::size_t iteration_ , std::size_t skip_iteration_ )
 		: component_id{component_id_},
 		iteration{iteration_},
@@ -201,16 +199,18 @@ public:
 		cpu_time{thread_cpu_time()}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t iteration;
 	std::size_t skip_iteration;
 	std::chrono::nanoseconds cpu_time;
 };
 
+static_assert(std::is_standard_layout<start_skip_iteration_record>::value);
+
 const struct_type start_skip_iteration_record::type_descr = struct_type{
 	sizeof(start_skip_iteration_record),
 	"start_skip_iteration_record",
+	7,
 	{
 		{"component_id", &types::std__size_t},
 		{"iteration", &types::std__size_t},
@@ -229,8 +229,7 @@ const struct_type start_skip_iteration_record::type_descr = struct_type{
  * record_type_class(RecordType(name='stop_skip_iteration_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='iteration', default=None), Field(type='std::size_t', name='skip_iteration', default=None), Field(type='std::chrono::nanoseconds', name='cpu_time', default='thread_cpu_time()')]))
  * \endcode
  */
-class stop_skip_iteration_record : public record {
-public:
+struct stop_skip_iteration_record : public record {
 	stop_skip_iteration_record(std::size_t component_id_ , std::size_t iteration_ , std::size_t skip_iteration_ )
 		: component_id{component_id_},
 		iteration{iteration_},
@@ -238,16 +237,18 @@ public:
 		cpu_time{thread_cpu_time()}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t iteration;
 	std::size_t skip_iteration;
 	std::chrono::nanoseconds cpu_time;
 };
 
+static_assert(std::is_standard_layout<stop_skip_iteration_record>::value);
+
 const struct_type stop_skip_iteration_record::type_descr = struct_type{
 	sizeof(stop_skip_iteration_record),
 	"stop_skip_iteration_record",
+	8,
 	{
 		{"component_id", &types::std__size_t},
 		{"iteration", &types::std__size_t},
@@ -266,8 +267,7 @@ const struct_type stop_skip_iteration_record::type_descr = struct_type{
  * record_type_class(RecordType(name='start_iteration_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='iteration', default=None), Field(type='std::size_t', name='skip_iteration', default=None), Field(type='std::chrono::nanoseconds', name='cpu_time', default='thread_cpu_time()')]))
  * \endcode
  */
-class start_iteration_record : public record {
-public:
+struct start_iteration_record : public record {
 	start_iteration_record(std::size_t component_id_ , std::size_t iteration_ , std::size_t skip_iteration_ )
 		: component_id{component_id_},
 		iteration{iteration_},
@@ -275,16 +275,18 @@ public:
 		cpu_time{thread_cpu_time()}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t iteration;
 	std::size_t skip_iteration;
 	std::chrono::nanoseconds cpu_time;
 };
 
+static_assert(std::is_standard_layout<start_iteration_record>::value);
+
 const struct_type start_iteration_record::type_descr = struct_type{
 	sizeof(start_iteration_record),
 	"start_iteration_record",
+	9,
 	{
 		{"component_id", &types::std__size_t},
 		{"iteration", &types::std__size_t},
@@ -303,8 +305,7 @@ const struct_type start_iteration_record::type_descr = struct_type{
  * record_type_class(RecordType(name='stop_iteration_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='iteration', default=None), Field(type='std::size_t', name='skip_iteration', default=None), Field(type='std::chrono::nanoseconds', name='cpu_time', default='thread_cpu_time()')]))
  * \endcode
  */
-class stop_iteration_record : public record {
-public:
+struct stop_iteration_record : public record {
 	stop_iteration_record(std::size_t component_id_ , std::size_t iteration_ , std::size_t skip_iteration_ )
 		: component_id{component_id_},
 		iteration{iteration_},
@@ -312,16 +313,18 @@ public:
 		cpu_time{thread_cpu_time()}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t iteration;
 	std::size_t skip_iteration;
 	std::chrono::nanoseconds cpu_time;
 };
 
+static_assert(std::is_standard_layout<stop_iteration_record>::value);
+
 const struct_type stop_iteration_record::type_descr = struct_type{
 	sizeof(stop_iteration_record),
 	"stop_iteration_record",
+	10,
 	{
 		{"component_id", &types::std__size_t},
 		{"iteration", &types::std__size_t},
@@ -340,8 +343,7 @@ const struct_type stop_iteration_record::type_descr = struct_type{
  * record_type_class(RecordType(name='start_callback_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='topic_id', default=None), Field(type='std::size_t', name='serial_no', default=None), Field(type='std::chrono::nanoseconds', name='cpu_time', default='thread_cpu_time()')]))
  * \endcode
  */
-class start_callback_record : public record {
-public:
+struct start_callback_record : public record {
 	start_callback_record(std::size_t component_id_ , std::size_t topic_id_ , std::size_t serial_no_ )
 		: component_id{component_id_},
 		topic_id{topic_id_},
@@ -349,16 +351,18 @@ public:
 		cpu_time{thread_cpu_time()}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t topic_id;
 	std::size_t serial_no;
 	std::chrono::nanoseconds cpu_time;
 };
 
+static_assert(std::is_standard_layout<start_callback_record>::value);
+
 const struct_type start_callback_record::type_descr = struct_type{
 	sizeof(start_callback_record),
 	"start_callback_record",
+	11,
 	{
 		{"component_id", &types::std__size_t},
 		{"topic_id", &types::std__size_t},
@@ -377,8 +381,7 @@ const struct_type start_callback_record::type_descr = struct_type{
  * record_type_class(RecordType(name='stop_callback_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='topic_id', default=None), Field(type='std::size_t', name='serial_no', default=None), Field(type='std::chrono::nanoseconds', name='cpu_time', default='thread_cpu_time()')]))
  * \endcode
  */
-class stop_callback_record : public record {
-public:
+struct stop_callback_record : public record {
 	stop_callback_record(std::size_t component_id_ , std::size_t topic_id_ , std::size_t serial_no_ )
 		: component_id{component_id_},
 		topic_id{topic_id_},
@@ -386,16 +389,18 @@ public:
 		cpu_time{thread_cpu_time()}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t topic_id;
 	std::size_t serial_no;
 	std::chrono::nanoseconds cpu_time;
 };
 
+static_assert(std::is_standard_layout<stop_callback_record>::value);
+
 const struct_type stop_callback_record::type_descr = struct_type{
 	sizeof(stop_callback_record),
 	"stop_callback_record",
+	12,
 	{
 		{"component_id", &types::std__size_t},
 		{"topic_id", &types::std__size_t},
@@ -414,8 +419,7 @@ const struct_type stop_callback_record::type_descr = struct_type{
  * record_type_class(RecordType(name='switchboard_topic_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='topic_id', default=None), Field(type='std::string', name='type_name', default=None), Field(type='std::string', name='name', default=None), Field(type='std::size_t', name='bytes', default=None)]))
  * \endcode
  */
-class switchboard_topic_record : public record {
-public:
+struct switchboard_topic_record : public record {
 	switchboard_topic_record(std::size_t component_id_ , std::size_t topic_id_ , std::string type_name_ , std::string name_ , std::size_t bytes_ )
 		: component_id{component_id_},
 		topic_id{topic_id_},
@@ -424,7 +428,6 @@ public:
 		bytes{bytes_}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t topic_id;
 	std::string type_name;
@@ -432,9 +435,12 @@ private:
 	std::size_t bytes;
 };
 
+static_assert(std::is_standard_layout<switchboard_topic_record>::value);
+
 const struct_type switchboard_topic_record::type_descr = struct_type{
 	sizeof(switchboard_topic_record),
 	"switchboard_topic_record",
+	13,
 	{
 		{"component_id", &types::std__size_t},
 		{"topic_id", &types::std__size_t},
@@ -454,23 +460,24 @@ const struct_type switchboard_topic_record::type_descr = struct_type{
  * record_type_class(RecordType(name='switchboard_write_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='topic_id', default=None), Field(type='std::size_t', name='serial_no', default=None)]))
  * \endcode
  */
-class switchboard_write_record : public record {
-public:
+struct switchboard_write_record : public record {
 	switchboard_write_record(std::size_t component_id_ , std::size_t topic_id_ , std::size_t serial_no_ )
 		: component_id{component_id_},
 		topic_id{topic_id_},
 		serial_no{serial_no_}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t topic_id;
 	std::size_t serial_no;
 };
 
+static_assert(std::is_standard_layout<switchboard_write_record>::value);
+
 const struct_type switchboard_write_record::type_descr = struct_type{
 	sizeof(switchboard_write_record),
 	"switchboard_write_record",
+	14,
 	{
 		{"component_id", &types::std__size_t},
 		{"topic_id", &types::std__size_t},
@@ -488,23 +495,24 @@ const struct_type switchboard_write_record::type_descr = struct_type{
  * record_type_class(RecordType(name='switchboard_read_record', fields=[Field(type='std::size_t', name='component_id', default=None), Field(type='std::size_t', name='topic_id', default=None), Field(type='std::size_t', name='serial_no', default=None)]))
  * \endcode
  */
-class switchboard_read_record : public record {
-public:
+struct switchboard_read_record : public record {
 	switchboard_read_record(std::size_t component_id_ , std::size_t topic_id_ , std::size_t serial_no_ )
 		: component_id{component_id_},
 		topic_id{topic_id_},
 		serial_no{serial_no_}
 	{ }
 	static const struct_type type_descr;
-private:
 	std::size_t component_id;
 	std::size_t topic_id;
 	std::size_t serial_no;
 };
 
+static_assert(std::is_standard_layout<switchboard_read_record>::value);
+
 const struct_type switchboard_read_record::type_descr = struct_type{
 	sizeof(switchboard_read_record),
 	"switchboard_read_record",
+	15,
 	{
 		{"component_id", &types::std__size_t},
 		{"topic_id", &types::std__size_t},

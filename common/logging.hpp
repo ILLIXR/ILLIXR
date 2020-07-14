@@ -76,6 +76,9 @@ namespace ILLIXR {
 		 * @brief Generate a number, unique from other calls to the same namespace/subnamespace/subsubnamepsace.
 		 */
 		std::size_t get(std::size_t namespace_ = 0, std::size_t subnamespace = 0, std::size_t subsubnamespace = 0) {
+			if (guid_starts[namespace_][subnamespace].count(subsubnamespace) == 0) {
+				guid_starts[namespace_][subnamespace][subsubnamespace].store(1);
+			}
 			return ++guid_starts[namespace_][subnamespace][subsubnamespace];
 		}
 	private:
