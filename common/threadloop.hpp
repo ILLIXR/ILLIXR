@@ -63,7 +63,6 @@ private:
 		}
 	}
 
-
 protected:
 
 	enum class skip_option {

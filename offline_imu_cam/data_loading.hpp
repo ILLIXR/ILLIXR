@@ -56,12 +56,14 @@ load_data(const std::string& data_path) {
 	}
 
 	std::ifstream cam0_file {data_path + "cam0/data.csv"};
+	assert(cam0_file.good());
 	for(CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		data[t].cam0 = {data_path + "cam0/data/" + row[1]};
 	}
 
 	std::ifstream cam1_file{data_path + "cam1/data.csv"};
+	assert(cam1_file.good());
 	for(CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		std::string fname = row[1];
