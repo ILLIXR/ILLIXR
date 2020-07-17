@@ -128,7 +128,6 @@ private:
 			if (rand() % 100 == 0) {
 				os << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
 			}
-            std::cout << os.str() << std::flush;
         }
     private:
         const std::string _p_account_name;
