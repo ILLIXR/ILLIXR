@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdlib>
 #include <string>
 #include <sstream>
 #include <chrono>
@@ -18,6 +19,11 @@
  */
 static inline std::chrono::nanoseconds
 cpp_clock_gettime(clockid_t clock_id) {
+	/* This ensures the compiler won't reorder this function call; Pretend like it has memory side-effects. */
+	asm volatile (""
+				  : /* OutputOperands */
+				  : /* InputOperands */
+				  : "memory" /* Clobbers */);
     struct timespec ts;
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};
@@ -119,6 +125,9 @@ private:
         ~print_in_destructor() {
             std::ostringstream os;
             os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
+			if (rand() % 100 == 0) {
+				os << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
+			}
             std::cout << os.str() << std::flush;
         }
     private:

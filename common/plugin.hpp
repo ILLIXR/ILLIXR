@@ -1,6 +1,7 @@
 #pragma once
 
 #include "phonebook.hpp"
+#include "logging.hpp"
 
 namespace ILLIXR {
 
@@ -15,25 +16,39 @@ namespace ILLIXR {
 		 * This is necessary for actions which have to be started after constructions, such as
 		 * threads. These cannot be started in the constructor because virtual methods don't work in
 		 * consturctors.
-		 *
-		 * There is no `stop()` because destructor should be considered analagous.
 		 */
-		virtual void start() { };
+		virtual void start() {
+			logger->log(std::make_unique<const component_start_record>(id, name));
+		}
 
-		const std::string& get_name() { return name; }
+		/**
+		 * @brief A method which Spindle calls when it starts the component.
+		 * 
+		 * This is necessary for stop-actions which have to replaced by the subclass. Destructors
+		 * would prepend instead of replace actions.
+		 */
+		virtual void stop() {
+			logger->log(std::make_unique<const component_stop_record>(id));
+		}
 
 		plugin(const std::string& name_, phonebook* pb_)
-			: pb{pb_}
-			, name{name_}
+			: name{name_}
+			, pb{pb_}
+			, logger{pb->lookup_impl<c_logger>()}
+			, gen_guid{pb->lookup_impl<c_gen_guid>()}
+			, id{gen_guid->get()}
 		{ }
 
-		virtual ~plugin() { }
+		virtual ~plugin() { stop(); }
+
+		std::string get_name() { return name; }
 
 	protected:
+		std::string name;
 		const phonebook* pb;
-
-	private:
-		const std::string name;
+		const std::shared_ptr<c_logger> logger;
+		const std::shared_ptr<c_gen_guid> gen_guid;
+		const std::size_t id;
 	};
 
 #define PLUGIN_MAIN(plugin_class)                                   \

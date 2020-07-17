@@ -30,7 +30,7 @@ public:
 	/**
 	 * @brief Stops the thread.
 	 */
-	void stop() {
+	void stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
@@ -43,12 +43,38 @@ public:
 
 private:
 	void thread_main() {
-			_p_thread_setup();
-			while (!should_terminate()) {
-				PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
+		log_coalescer<start_iteration_record> start_it {logger};
+		log_coalescer<stop_iteration_record> stop_it {logger};
+		log_coalescer<start_skip_iteration_record> start_skip {logger};
+		log_coalescer<stop_skip_iteration_record> stop_skip {logger};
+
+		std::size_t it = 0;
+		std::size_t skip_it = 0;
+
+		while (!should_terminate()) {
+
+			start_skip.log(std::make_unique<const start_skip_iteration_record>(id, it, skip_it));
+			skip_option s = _p_should_skip();
+			stop_skip.log(std::make_unique<const stop_skip_iteration_record>(id, it, skip_it));
+
+			switch (s) {
+			case skip_option::skip_and_yield:
+				std::this_thread::yield();
+				++skip_it;
+				break;
+			case skip_option::skip_and_spin:
+				++skip_it;
+				break;
+			case skip_option::run:
+				start_it.log(std::make_unique<const start_iteration_record>(id, it, skip_it));
 				_p_one_iteration();
+				stop_it.log(std::make_unique<const stop_iteration_record>(id, it, skip_it));
+				++it;
+				skip_it = 0;
+				break;
 			}
 		}
+	}
 
 protected:
 
