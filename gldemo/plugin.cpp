@@ -112,15 +112,12 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
-	bool first_iteration = true;
-	void _p_one_iteration() override {
-		if (first_iteration) {
-			// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
-			// Therefore, I use this first_iteration variable, which I unset immediately after.
-			glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
-			first_iteration = false;
-		}
+	void _p_thread_setup() override {
+		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+	}
 
+	void _p_one_iteration() override {
 		{
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!

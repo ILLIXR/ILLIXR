@@ -43,12 +43,26 @@ public:
 
 private:
 	void thread_main() {
-			_p_thread_setup();
-			while (!should_terminate()) {
-				PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
+		_p_thread_setup();
+
+		while (!should_terminate()) {
+			skip_option s = _p_should_skip();
+			switch (s) {
+			case skip_option::skip_and_yield:
+				std::this_thread::yield();
+				break;
+			case skip_option::skip_and_spin:
+				break;
+			case skip_option::run:
 				_p_one_iteration();
+				break;
+			case skip_option::stop:
+				stop();
+				break;
 			}
 		}
+	}
+
 
 protected:
 
@@ -62,6 +76,9 @@ protected:
 		/// Yielding gives up a scheduling quantum, which is determined by the OS, but usually on
 		/// the order of 1-10ms. This is nicer to the other threads in the system.
 		skip_and_yield,
+
+		/// Calls stop.
+		stop,
 	};
 
 	/**
