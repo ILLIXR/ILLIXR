@@ -10,7 +10,7 @@
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
 #include "switchboard_impl.hpp"
-#include "dynamic_lib.hpp"
+#include "common/dynamic_lib.hpp"
 
 using namespace ILLIXR;
 
@@ -28,7 +28,7 @@ extern "C" int illixrrt_init(void* appGLCtx) {
 
 extern "C" void illixrrt_load_plugin(const char *path) {
 	auto lib = dynamic_lib::create(std::string_view{path});
-	plugin* p = lib.get<plugin* (*) (phonebook*)>("plugin_main")(&pb);
+	plugin* p = lib.get<plugin* (*) (phonebook*)>("plugin_factory")(&pb);
 	plugins.emplace_back(p);
 	libs.push_back(std::move(lib));
 }

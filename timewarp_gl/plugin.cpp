@@ -267,7 +267,6 @@ private:
 public:
 
 	void _p_one_iteration() override {
-		{
 			using namespace std::chrono_literals;
 			// Sleep for approximately 90% of the time until the next vsync.
 			// Scheduling granularity can't be assumed to be super accurate here,
@@ -279,14 +278,9 @@ public:
 			// TODO: poll GLX window events
 			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
 			warp(glfwGetTime());
-		}
 	}
-	/* compatibility interface */
 
-	// ATW/Compositor overrides _p_start to control its own lifecycle/scheduling.
-	// This may be changed later, but for precision of vsync/etc we're going to
-	// use component-driven loop scheduling for now.
-	virtual void start() override {
+	virtual void _p_thread_setup() override {
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -385,8 +379,6 @@ public:
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		lastSwapTime = glfwGetTime();
-
-		threadloop::start();
 	}
 
 

@@ -1,11 +1,12 @@
-#ifndef DYNAMICLIB_HH__
-#define DYNAMICLIB_HH__
+#pragma once
 
 #include <dlfcn.h>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <functional>
+
+namespace ILLIXR {
 
 using void_ptr = std::unique_ptr<void, std::function<void(void*)>>;
 /*
@@ -60,4 +61,4 @@ private:
 	void_ptr _m_handle;
 };
 
-#endif
+}
