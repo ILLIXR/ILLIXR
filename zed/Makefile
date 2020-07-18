@@ -1,25 +1,25 @@
 .PHONY: plugin.dbg.so
 plugin.dbg.so:
-	mkdir -p zed-opencv/cpp/build/ && \
-	cd zed-opencv/cpp/build/ && \
+	mkdir -p build/ && \
+	cd build/ && \
 	cmake .. && \
 	make "-j$(nproc)" && \
-	cd ../../.. && \
+	cd ../ && \
 	rm -f plugin.dbg.so && \
-	ln -s zed-opencv/cpp/build/libplugin.so plugin.dbg.so && \
+	ln -s build/libplugin.so plugin.dbg.so && \
 	true
 
 .PHONY: plugin.opt.so
 plugin.opt.so:
-	mkdir -p zed-opencv/cpp/build/ && \
-	cd zed-opencv/cpp/build/ && \
+	mkdir -p build/ && \
+	cd build/ && \
 	cmake .. -DDNDEBUG=1 -DCMAKE_BUILD_TYPE=Release .. && \
 	make "-j$(nproc)" && \
-	cd ../../.. && \
+	cd ../ && \
 	rm -f plugin.opt.so && \
-	ln -s zed-opencv/cpp/build/libplugin.so plugin.opt.so && \
+	ln -s build/libplugin.so plugin.opt.so && \
 	true
 
 .PHONY: clean
 clean:
-	touch zed-opencv/cpp/build && rm -rf zed-opencv/cpp/build *.so
+	touch build && rm -rf build *.so
