@@ -79,6 +79,9 @@ private:
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
   cv::Mat depth_ocv;
+  cv::Mat grayL_ocv_out;
+  cv::Mat grayR_ocv_out;
+  cv::Mat image_rgb_ocv_out;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -95,24 +98,20 @@ protected:
       zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
       zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
 
-      cv::Mat* grayL_ocv_out = new cv::Mat{};
-	    cv::Mat* grayR_ocv_out = new cv::Mat{};
-	    cv::Mat* image_rgb_ocv_out = new cv::Mat{};
-	    cv::Mat* depth_ocv_out = new cv::Mat(cv::Size(image_size.width, image_size.height), CV_16UC1);
+      // Conversion
+      cv::cvtColor(imageL_ocv, grayL_ocv_out, CV_BGR2GRAY);
+      cv::cvtColor(imageR_ocv, grayR_ocv_out, CV_BGR2GRAY);
+      cv::cvtColor(imageL_ocv, image_rgb_ocv_out, CV_BGR2RGB);
 
-      // Convert to Grayscale
-      cv::cvtColor(imageL_ocv, *grayL_ocv_out, CV_BGR2GRAY);
-      cv::cvtColor(imageR_ocv, *grayR_ocv_out, CV_BGR2GRAY);
-      cv::cvtColor(imageL_ocv, *image_rgb_ocv_out, CV_BGR2RGB);
-
+      cv::Mat depth_ocv_out(cv::Size(image_size.width, image_size.height), CV_16UC1);
       depth_ocv *= 1000.0f;
-      depth_ocv.convertTo(*depth_ocv_out, CV_16UC1); // in mm, rounded
+      depth_ocv.convertTo(depth_ocv_out, CV_16UC1); // in mm, rounded
 
 	  _m_cam_type->put(new cam_type{
-			  grayL_ocv_out,
-			  grayR_ocv_out,
-			  image_rgb_ocv_out,
-			  depth_ocv_out,
+			  &grayL_ocv_out,
+			  &grayR_ocv_out,
+			  &image_rgb_ocv_out,
+			  &depth_ocv_out,
 			  ++serial_no,
 	  });
 	  ++serial_no;
@@ -171,8 +170,8 @@ protected:
 	    const cam_type* c = _m_cam_type->get_latest_ro();
 	    if (c && c->serial_no != last_serial_no) {
 		      last_serial_no = c->serial_no;
-		      *img0 = c->img0;
-		      *img1 = c->img1;
+		      img0 = c->img0;
+		      img1 = c->img1;
 		      rgb = c->rgb;
 		      depth = c->depth;
 	    }
@@ -191,7 +190,7 @@ protected:
         _m_rgb_depth->put(new rgb_depth_type{
         static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE)),
 			  rgb->data,
-			  depth->data,
+			  (const unsigned short*) depth->data,
         });
       }
 

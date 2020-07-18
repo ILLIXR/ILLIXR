@@ -38,7 +38,7 @@ namespace ILLIXR {
 	typedef struct {
 	  int64_t time;
 	  const unsigned char* rgb;
-	  const unsigned char* depth;
+	  const unsigned short* depth;
 	} rgb_depth_type;
 
 	typedef struct {
