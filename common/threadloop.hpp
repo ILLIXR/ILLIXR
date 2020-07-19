@@ -43,10 +43,10 @@ public:
 
 private:
 	void thread_main() {
-		log_coalescer<start_iteration_record> start_it {logger};
-		log_coalescer<stop_iteration_record> stop_it {logger};
-		log_coalescer<start_skip_iteration_record> start_skip {logger};
-		log_coalescer<stop_skip_iteration_record> stop_skip {logger};
+		metric_coalescer<start_iteration_record> start_it {metric_logger};
+		metric_coalescer<stop_iteration_record> stop_it {metric_logger};
+		metric_coalescer<start_skip_iteration_record> start_skip {metric_logger};
+		metric_coalescer<stop_skip_iteration_record> stop_skip {metric_logger};
 
 		std::size_t it = 0;
 		std::size_t skip_it = 0;
