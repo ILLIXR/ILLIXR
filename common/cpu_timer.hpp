@@ -123,12 +123,11 @@ private:
             , _p_duration{_duration}
         { }
         ~print_in_destructor() {
-            std::ostringstream os;
-            os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
+            // std::ostringstream os;
+            // os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
 			if (rand() % 100 == 0) {
-				os << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
+				std::cout << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
 			}
-            std::cout << os.str() << std::flush;
         }
     private:
         const std::string _p_account_name;

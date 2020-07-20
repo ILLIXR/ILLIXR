@@ -20,7 +20,7 @@ phonebook pb;
 std::vector<dynamic_lib> libs;
 std::vector<std::unique_ptr<plugin>> plugins;
 
-class stdout_logger : public c_logger {
+class stdout_metric_logger : public c_metric_logger {
 protected:
 	virtual void log2(const struct_type* ty, std::unique_ptr<const record>&& r_) override {
 		const char* r = reinterpret_cast<const char*>(r_.get());
@@ -39,10 +39,9 @@ protected:
 			} else {
 				std::cout << "type(" << type_->name << "),";
 			}
-			std::cout.flush();
 			r += type_->size;
 		}
-		std::cout << std::endl;
+		std::cout << "\n";
 	}
 	virtual void log_many2(const struct_type* ty, std::vector<std::unique_ptr<const record>>&& rs) override {
 		for (std::unique_ptr<const record>& r : rs) {
@@ -52,7 +51,7 @@ protected:
 };
 
 extern "C" int illixrrt_init(void* appGLCtx) {
-	pb.register_impl<c_logger>(std::make_shared<stdout_logger>());
+	pb.register_impl<c_metric_logger>(std::make_shared<stdout_metric_logger>());
 	pb.register_impl<switchboard>(create_switchboard());
 	pb.register_impl<c_gen_guid>(std::make_shared<c_gen_guid>());
 	pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, (GLXContext)appGLCtx));

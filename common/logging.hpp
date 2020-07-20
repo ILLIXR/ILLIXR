@@ -19,7 +19,7 @@ namespace ILLIXR {
 	 * spliced messages (no stdout race-conditions), and is used
 	 * uniformly by ILLIXR components.
 	 */
-	class c_logger : public phonebook::service {
+	class c_metric_logger : public phonebook::service {
 	public:
 		/**
 		 * @brief Writes one log record.
@@ -113,19 +113,19 @@ namespace ILLIXR {
 	 *
 	 */
 	template <typename Record>
-	class log_coalescer {
+	class metric_coalescer {
 	private:
-		std::shared_ptr<c_logger> logger;
+		std::shared_ptr<c_metric_logger> logger;
 		std::chrono::time_point<std::chrono::high_resolution_clock> last_log;
 		std::vector<std::unique_ptr<const Record>> buffer;
-	public:
 
-		log_coalescer(std::shared_ptr<c_logger> logger_)
+	public:
+		metric_coalescer(std::shared_ptr<c_metric_logger> logger_)
 			: logger{logger_}
 			, last_log{std::chrono::high_resolution_clock::now()}
 		{ }
 
-		~log_coalescer() {
+		~metric_coalescer() {
 			flush();
 		}
 
