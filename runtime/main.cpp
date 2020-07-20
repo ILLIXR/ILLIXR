@@ -23,6 +23,12 @@ std::vector<std::unique_ptr<plugin>> plugins;
 class stdout_metric_logger : public c_metric_logger {
 protected:
 	virtual void log2(const struct_type* ty, std::unique_ptr<const record>&& r_) override {
+		if (ty->type_id == start_skip_iteration_record::type_descr.type_id) {
+			return;
+		}
+		if (ty->type_id == stop_skip_iteration_record::type_descr.type_id) {
+			return;
+		}
 		const char* r = reinterpret_cast<const char*>(r_.get());
 		std::cout << "record:" << ty->name << ",";
 		for (const auto& pair : ty->fields) {

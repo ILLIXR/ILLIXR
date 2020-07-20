@@ -23,14 +23,15 @@ public:
 	/**
 	 * @brief Starts the thread.
 	 */
-	void start() override {
+	virtual void start() override {
+		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
 	/**
 	 * @brief Stops the thread.
 	 */
-	void stop() override {
+	virtual void stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
@@ -97,7 +98,7 @@ protected:
 
 	/**
 	 * @brief Gets called at setup time, from the new thread.
-	 */	
+	 */
 	virtual void _p_thread_setup() { }
 
 	/**

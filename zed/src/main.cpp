@@ -143,7 +143,7 @@ protected:
     if (sensors_data.imu.timestamp > last_imu_ts) {
 			return skip_option::run;
 		} else {
-			return skip_option::skip_and_yield;
+			return skip_option::skip_and_spin;
 		}
 	}
 
