@@ -24,7 +24,7 @@ then
         git clone --branch 3.4.6 https://github.com/opencv/opencv/
         git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/
         mkdir -p opencv/build && cd opencv/build
-        cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
+        cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_JAVA=OFF -DWITH_OPENGL=ON -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ..
         sudo make -j$(nproc) install
        cd ../..
     fi
@@ -35,14 +35,6 @@ then
        cmake -DCMAKE_INSTALL_PREFIX=install ..
         sudo make -j$(nproc) install
        cd ../..
-    fi
-
-    if [ ! -d Vulkan-Loader ]; then
-        git clone https://github.com/KhronosGroup/Vulkan-Loader.git
-        mkdir -p Vulkan-Loader/build && cd Vulkan-Loader/build
-        cmake ..
-        sudo make -j$(nproc) install
-        cd ../..
     fi
 
     if [ ! -d OpenXR-SDK ]; then
