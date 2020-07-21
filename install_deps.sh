@@ -7,6 +7,8 @@ set -x -e
 if [ "${ID_LIKE}" = debian -o "${ID}" = debian ]
 then
     sudo add-apt-repository ppa:graphics-drivers/ppa
+    wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
+    sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
     sudo apt-get update
     sudo apt-get install -y \
          git clang cmake libc++-dev libc++abi-dev \
