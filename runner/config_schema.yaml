@@ -1,0 +1,41 @@
+$schema: http://json-schema.org/schema#
+$id: http://illixr.github.io/schemas/config.json
+type: object
+required:
+  - plugins
+  - loader
+  - profile
+properties:
+  plugins:
+    type: array
+    items:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Path to the directory containing the SO.
+        config:
+          description: These keys will be passed as variables to the plugin's build system.
+          type: object
+          additionalProperties:
+            type: string
+        required:
+          - path
+  loader:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        description: "Currently supports: 'native', 'openxr', or 'gdb'"
+      config:
+        type: object
+        additionalProperties:
+          description: These keys will be interpreted by the loader.
+          type: string
+  config:
+    type: object
+    profile:
+      type: string
+      description: "Currently supports 'dbg' and 'opt'"

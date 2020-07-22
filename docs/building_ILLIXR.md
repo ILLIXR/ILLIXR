@@ -2,10 +2,30 @@
 
 ## Basic usage
 
-- From the project root, `make run.dbg -j$(nproc)` will build the ILLIXR runtime standalone, the
-  ILLIXR plugins, and run it for you. `make run.opt -j$(nproc)`, is the same but with optimizations on and debug off.
+- Edit `config.yaml`. See `runner/config_schema.yaml` for the schema definition.
 
-- To build the runtime for Monado, `make all.dbg.so`.
+  * This config file defines the list of plugins to use and the XR application to run.
+
+- Run `runner.py config.yaml`.
+
+  * This compiles whatever plugins and runtime code is necessary and runs the result.
+
+  * The requirements for this script are found in `requirements.txt` and should be installed in `install_deps.sh`.
+
+## Rationale
+
+- Previously, we would have to specify which plugins to build and which to run separately, violating
+  [DRY principle][7].
+
+- Previously, configuration had to be hard-coded into the component source code, or passed as
+  parsed/unparsed as strings in env-vars on a per-component basis. This gives us a consistent way to
+  deal with all configurations.
+
+- Currently, plugins are specificed by a path to the directory containing their source code and
+  build system. In the future, the same config file could support a git repo, HTTP URL, Nix package
+  hash.
+
+[7]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 
 ## Adding a new plugin (common case)
 
