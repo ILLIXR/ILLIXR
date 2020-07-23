@@ -21,6 +21,19 @@ properties:
             type: string
         required:
           - path
+  runtime:
+    type: object
+    properties:
+      path:
+        type: string
+        description: Path to https://github.com/ILLIXR/ILLIXR
+      config:
+        description: These keys will be passed as variables to the build system
+        type: object
+        additionalProperties:
+          type: string
+    required:
+      - path
   loader:
     type: object
     required:
@@ -33,9 +46,6 @@ properties:
         type: object
         additionalProperties:
           description: These keys will be interpreted by the loader.
-          type: string
-  config:
-    type: object
-    profile:
-      type: string
-      description: "Currently supports 'dbg' and 'opt'"
+  profile:
+    type: string
+    description: "Currently supports 'dbg' and 'opt'"
