@@ -111,9 +111,9 @@ class print_timer {
 private:
 	class print_in_destructor {
 	public:
-		print_in_destructor(const std::string& account_name, const time_point& duration)
+		print_in_destructor(const std::string& account_name, const time_point& durationf)
 			: _p_account_name{account_name}
-			, _p_duration{duration}
+			, _p_duration{durationf}
 		{ }
 		~print_in_destructor() {
 			std::ostringstream os;
