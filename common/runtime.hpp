@@ -13,7 +13,6 @@ typedef plugin* (*plugin_factory) (phonebook*);
 class runtime {
 public:
 	virtual void load_so(std::string_view so) = 0;
-	virtual void load_so_list(int argc, const char * argv[]) = 0;
 	virtual void load_plugin_factory(plugin_factory plugin) = 0;
 	virtual void wait() = 0;
 };

@@ -2,7 +2,9 @@
 
 int main(int argc, const char * argv[]) {
 	ILLIXR::runtime* r = ILLIXR::runtime_factory(nullptr);
-	r->load_so_list(argc, argv);
+	for (int i = 1; i < argc; ++i) {
+		r->load_so(argv[i]);
+	}
 	r->wait();
 	return 0;
 }

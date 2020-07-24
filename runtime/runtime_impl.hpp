@@ -21,12 +21,6 @@ public:
 		libs.push_back(std::move(lib));
 	}
 
-	virtual void load_so_list(int argc, const char * argv[]) override {
-		for (int i = 1; i < argc; ++i) {
-			load_so(argv[i]);
-		}
-	}
-
 	virtual void load_plugin_factory(plugin_factory plugin_main) override {
 		plugins.emplace_back(plugin_main(&pb));
 	}
