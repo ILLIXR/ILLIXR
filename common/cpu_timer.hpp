@@ -108,23 +108,23 @@ template <
     typename duration = decltype(std::declval<time_point>() - std::declval<time_point>())
     >
 class print_timer {
+public:
 private:
-	class print_in_destructor {
-	public:
-		print_in_destructor(const std::string& account_name, const time_point& durationf)
-			: _p_account_name{account_name}
-			, _p_duration{durationf}
-		{ }
-		~print_in_destructor() {
-			std::ostringstream os;
-			// If we did have C++20, we could remove count(), and this would become more general.
-			os << "cpu_timer," << _p_account_name << "," << _p_duration.count() <<  "\n";
-			std::cout << os.str() << std::flush;
-		}
-	private:
-		const std::string _p_account_name;
-		const time_point& _p_duration;
-	};
+    class print_in_destructor {
+    public:
+        print_in_destructor(const std::string& account_name, const duration& _duration)
+            : _p_account_name{account_name}
+            , _p_duration{_duration}
+        { }
+        ~print_in_destructor() {
+            std::ostringstream os;
+            os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
+            std::cout << os.str() << std::flush;
+        }
+    private:
+        const std::string _p_account_name;
+        const duration& _p_duration;
+    };
 
     // NOTE that the destructors get called in reverse order!
     // This is important, because _p_timer's destructor records the timing information
@@ -151,12 +151,12 @@ public:
  */
 template< class Function, class... Args >
 std::thread timed_thread(const std::string& account_name, Function&& f, Args&&... args) {
-	// Unfortunately we make copies of f and args.
-	// According to StackOverflow, this is unavoidable.
-	// See Sam Varshavchik's comment on https://stackoverflow.com/a/62380971/1078199
-	return std::thread([=] {
-		{   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
-			std::invoke(f, args...);
-		}
-	});
+    // Unfortunately we make copies of f and args.
+    // According to StackOverflow, this is unavoidable.
+    // See Sam Varshavchik's comment on https://stackoverflow.com/a/62380971/1078199
+    return std::thread([=] {
+        {   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
+            std::invoke(f, args...);
+        }
+    });
 }
