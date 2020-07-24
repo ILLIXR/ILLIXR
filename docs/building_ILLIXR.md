@@ -6,11 +6,15 @@
 
   * This config file defines the list of plugins to use and the XR application to run.
 
+  * Anywhere a path is required, a Git URL can be used in this format: `git+https://github.com/username/repo@rev?path=optional/path/within/repo` where rev is a tag, commit hash, or branch.
+
+  * Likweise, a zip "URL" can be used in this format: `zip+http://path/to/archive.zip?path=optional/path/within/zip`. Replace `http` with `file` for local archives.
+
 - Run `runner.py config.yaml`.
 
   * This compiles whatever plugins and runtime code is necessary and runs the result.
 
-  * The requirements for this script are found in `requirements.txt` and should be installed in `install_deps.sh`.
+  * This also sets the environment variables properly.
 
 ## Rationale
 

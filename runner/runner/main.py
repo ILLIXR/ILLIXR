@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import asyncio
 import multiprocessing
+import os
 import subprocess
 from pathlib import Path
+import shlex
 from typing import Any, Dict, List, Optional, cast, Union
+import urllib.parse
 
 import click
 import jsonschema  # type: ignore
@@ -15,10 +18,47 @@ from yamlinclude import YamlIncludeConstructor  # type: ignore
 # mypy --strict main.py
 
 
-root_dir = Path(__file__).resolve().parent.parent.parent
+def relative_to(path: Path, root: Path):
+    while True:
+        try:
+            return path.relative_to(root)
+        except ValueError:
+            return ".." / relative_to(path, (root / "..").resolve())
 
-with (root_dir / "runner/config_schema.yaml").open() as f:
-    config_schema = yaml.safe_load(f)
+root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
+
+
+def fill_defaults(thing: Any, thing_schema: Dict[str, Any]) -> None:
+    if thing_schema["type"] == "object":
+        for key in thing_schema.get("properties", []):
+            if key not in thing:
+                if "default" in thing_schema["properties"][key]:
+                    thing[key] = thing_schema["properties"][key]["default"]
+            # even if key is present, it may be incomplete
+            fill_defaults(thing[key], thing_schema["properties"][key])
+    elif thing_schema["type"] == "array":
+        for item in thing:
+            fill_defaults(item, thing_schema["items"])
+
+
+def pathify(path: Union[Path, str], base: Union[Path, str], should_exist=True):
+    """If path is relative, resolve it relative to base. Also expands git/zip paths."""
+
+    # TODO(git urls):If path2 looks like a git url
+    # Git URLs could be used the config file, handled here, and the rest of this script doesn't care.
+    # I suggest: 
+    # If it exists in ~/.cache/illixr/github.com/username/repo/rev, 
+    #   If it hasn't been pulled in a while, do a git pull (to update)
+    #   This is important because it is persistent.
+    #    Subsequent uses of the same repo will not have to get re-cloned and likely not re-pulled.
+    # Otherwise a git clone to that dir.
+    # Return a path within that repo.
+    path2 = path if isinstance(path, Path) else Path(path)
+    bas2 = base if isinstance(base, Path) else Path(base)
+    ret = path2 if path2.is_absolute() else base / path2
+    if should_exist and not ret.exists():
+        raise ValueError(f"{ret} does not exist")
+    return ret
 
 
 async def subprocess_run(
@@ -35,53 +75,44 @@ async def subprocess_run(
 
     """
 
-    proc = await asyncio.create_subprocess_exec(args[0], *args[1:], env=env, cwd=str(cwd))
+    cwd = Path(".") if cwd is None else cwd
+    proc = await asyncio.create_subprocess_exec(
+        args[0], *args[1:], env=env, cwd=str(cwd)
+    )
 
     return_code = await proc.wait()
     if check and return_code != 0:
-        raise subprocess.CalledProcessError(return_code, cmd=args)
+        raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
 
     return proc
 
 
-def parse_validate_config(config_file: Path) -> Dict[str, Any]:
-    """Parse a YAML config file, returning the validated ILLIXR system config."""
-    YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader, base_dir=config_file.parent,
-    )
-
-    with config_file.open() as file_:
-        config = yaml.full_load(file_)
-
-    return config
-
-
-async def make(path: Path, target: str, vars: Optional[Dict[str, str]] = None) -> None:
+async def make(path: Path, target: str, var_dict: Optional[Dict[str, str]] = None) -> None:
     parallelism = max(1, multiprocessing.cpu_count() // 2)
-    vars_args = [f"{key}={val}" for key, val in (vars if vars else {}).items()]
+    var_dict_args = [f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
     await subprocess_run(
-        ["make", "-j", str(parallelism), "-C", str(path), target, *vars_args], check=True,
+        ["make", "-j", str(parallelism), "-C", str(path), target, *var_dict_args],
+        check=True,
     )
 
 
 async def build_one_plugin(
     config: Dict[str, Any], plugin_config: Dict[str, Any]
 ) -> Path:
-    profile = config.get("profile", "dbg")
-    path: Optional[Path] = plugin_config.get("path", None)
-    if not path:
-        raise ValueError("Path not given for plugin")
-    vars = plugin_config.get("config", {})
+    profile = config["profile"]
+    path: Path = pathify(plugin_config["path"], root_dir)
+    var_dict = plugin_config["config"]
     so_name = f"plugin.{profile}.so"
-    await make(path, so_name, vars)
+    await make(path, so_name, var_dict)
     return path / so_name
 
 
 async def build_runtime(config: Dict[str, Any], suffix: str) -> Path:
-    profile = config.get("profile", "dbg")
-    runtime_name = f"main.{profile}.{suffix}"
-    runtime_config = config.get("runtime", {}).get("config", {})
-    runtime_path: Path = config.get("runtime", {}).get("path", root_dir)
+    profile = config["profile"]
+    name = "main" if suffix == "exe" else "plugin"
+    runtime_name = f"{name}.{profile}.{suffix}"
+    runtime_config = config["runtime"]["config"]
+    runtime_path: Path = pathify(config["runtime"]["path"], root_dir)
     if not runtime_path.exists():
         raise RuntimeError(
             f"Please change loader.runtime.path ({runtime_path}) to point to a clone of https://github.com/ILLIXR/ILLIXR"
@@ -96,12 +127,17 @@ async def load_native(config: Dict[str, Any]) -> None:
         asyncio.gather(
             *(
                 build_one_plugin(config, plugin_config)
-                for plugin_config in config.get("plugin", [])
+                for plugin_config in config["plugins"]
             )
         ),
     )
     await subprocess_run(
-        [str(runtime_exe_path), *map(str, plugin_paths)], check=True,
+        [str(runtime_exe_path), *map(str, plugin_paths)],
+        check=True,
+        env=dict(
+            ILLIXR_DATA=config["data"],
+            **os.environ,
+        ),
     )
 
 
@@ -111,20 +147,25 @@ async def load_gdb(config: Dict[str, Any]) -> None:
         asyncio.gather(
             *(
                 build_one_plugin(config, plugin_config)
-                for plugin_config in config.get("plugin", [])
+                for plugin_config in config["plugins"]
             )
         ),
     )
     await subprocess_run(
-        ["gdb", "-q", "--args", str(runtime_exe_path), *map(str, plugin_paths),], check=True,
+        ["gdb", "-q", "--args", str(runtime_exe_path), *map(str, plugin_paths),],
+        check=True,
+        env=dict(
+            ILLIXR_DATA=config["data"],
+            **os.environ,
+        ),
     )
 
 
 async def cmake(
-    path: Path, build_path: Path, vars: Optional[Dict[str, str]] = None
+    path: Path, build_path: Path, var_dict: Optional[Dict[str, str]] = None
 ) -> None:
     parallelism = max(1, multiprocessing.cpu_count() // 2)
-    arg_vars = [f"-D{key}={val}" for key, val in (vars if vars else {}).items()]
+    var_args = [f"-D{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
     build_path.mkdir(exist_ok=True)
     await subprocess_run(
         [
@@ -135,7 +176,7 @@ async def cmake(
             str(build_path),
             "-G",
             "Unix Makefiles",
-            *arg_vars,
+            *var_args,
         ],
         check=True,
     )
@@ -143,32 +184,16 @@ async def cmake(
 
 
 async def load_monado(config: Dict[str, Any]) -> None:
-    profile = config.get("profile", "dbg")
+    profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "Release"
 
-    runtime_path: Path = config["loader"].get("runtime", {}).get("path", root_dir)
+    runtime_path: Path = pathify(config["runtime"]["path"], root_dir)
 
-    monado_config = config["loader"].get("monado", {}).get("config", {})
-    monado_path = (
-        config["loader"]
-        .get("monado", {})
-        .get("path", root_dir / "../monado_integration")
-    )
-    if not monado_path.exists():
-        raise RuntimeError(
-            f"Please change loader.monado.path ({monado_path}) to point to a clone of https://github.com/ILLIXR/monado_integration"
-        )
+    monado_config = config["loader"]["monado"]["config"]
+    monado_path = pathify(config["loader"]["monado"]["path"], root_dir)
 
-    openxr_app_config = config["loader"].get("openxr_app", {}).get("config", {})
-    openxr_app_path = (
-        config["loader"]
-        .get("openxr_app", {})
-        .get("path", root_dir / "../Monado_OpenXR_Simple_Example")
-    )
-    if not openxr_app_path.exists():
-        raise RuntimeError(
-            f"Please change loader.openxr.app_path ({openxr_app_path}) to point to an OpenXR app such as https://github.com/ILLIXR/Monado_OpenXR_Simple_Example/"
-        )
+    openxr_app_config = config["loader"]["openxr_app"]["config"]
+    openxr_app_path = pathify(config["loader"]["openxr_app"]["path"], root_dir)
 
     _, _, _, plugin_paths = await asyncio.gather(
         cmake(
@@ -185,7 +210,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
         asyncio.gather(
             *(
                 build_one_plugin(config, plugin_config)
-                for plugin_config in config.get("plugin", [])
+                for plugin_config in config.get("plugins", [])
             )
         ),
     )
@@ -196,6 +221,8 @@ async def load_monado(config: Dict[str, Any]) -> None:
             XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
             ILLIXR_PATH=str(runtime_path),
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
+            ILLIXR_DATA=config["data"],
+            **os.environ,
         ),
     )
 
@@ -207,17 +234,32 @@ loaders = {
 }
 
 
-async def run_config(config: Dict[str, Any]) -> None:
-    """Compile and run a given ILLIXR system config."""
-    loader = config.get("loader", {}).get("name", "native")
+async def run_config(config_file: Path) -> None:
+    """Parse a YAML config file, returning the validated ILLIXR system config."""
+    YamlIncludeConstructor.add_to_loader_class(
+        loader_class=yaml.FullLoader, base_dir=config_file.parent,
+    )
+
+    with config_file.open() as f:
+        config = yaml.full_load(f)
+
+    with (root_dir / "runner/config_schema.yaml").open() as f:
+        config_schema = yaml.safe_load(f)
+
+    jsonschema.validate(instance=config, schema=config_schema)
+    fill_defaults(config, config_schema)
+
+    loader = config["loader"]["name"]
     if loader not in loaders:
         raise RuntimeError(f"No such loader: {loader}")
     await loaders[loader](config)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     @click.command()
     @click.argument("config", type=click.Path(exists=True))
     def main(config: Path) -> None:
-        asyncio.run(run_config(parse_validate_config(Path(config))))
+        asyncio.run(run_config(Path(config)))
+
     main()
