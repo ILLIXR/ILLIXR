@@ -1,5 +1,4 @@
-#ifndef PLUGIN_HH
-#define PLUGIN_HH
+#pragma once
 
 #include "phonebook.hpp"
 
@@ -44,5 +43,3 @@ namespace ILLIXR {
         return obj;                                                 \
     }
 }
-
-#endif

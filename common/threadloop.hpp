@@ -1,5 +1,4 @@
-#ifndef THREADLOOP_HH
-#define THREADLOOP_HH
+#pragma once
 
 #include <atomic>
 #include <iostream>
@@ -25,13 +24,7 @@ public:
 	 * @brief Starts the thread.
 	 */
 	void start() override {
-		_m_thread = std::thread([this]() {
-			while (!should_terminate()) {
-				{   PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
-					_p_one_iteration();
-				}
-			}
-		});
+		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
 	/**
@@ -48,7 +41,39 @@ public:
 		}
 	}
 
+private:
+	void thread_main() {
+			_p_thread_setup();
+			while (!should_terminate()) {
+				PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
+				_p_one_iteration();
+			}
+		}
+
 protected:
+
+	enum class skip_option {
+		/// Run iteration NOW. Only then does CPU timer begin counting.
+		run,
+
+		/// AKA "busy wait". Skip but try again very quickly.
+		skip_and_spin,
+
+		/// Yielding gives up a scheduling quantum, which is determined by the OS, but usually on
+		/// the order of 1-10ms. This is nicer to the other threads in the system.
+		skip_and_yield,
+	};
+
+	/**
+	 * @brief Gets called in a tight loop, to gate the invocation of `_p_one_iteration()`
+	 */
+	virtual skip_option _p_should_skip() { return skip_option::run; }
+
+	/**
+	 * @brief Gets called at setup time, from the new thread.
+	 */	
+	virtual void _p_thread_setup() { }
+
 	/**
 	 * @brief Override with the computation the thread does every loop.
 	 *
@@ -71,7 +96,7 @@ protected:
 	 * We attempt to still be somewhat responsive to `stop()` and to be more accurate than
 	 * stdlib's `sleep`, by sleeping for the deadline in chunks.
 	 */
-	void reliable_sleep(std::chrono::time_point<std::chrono::system_clock> stop) {
+	void reliable_sleep(std::chrono::high_resolution_clock::time_point stop) {
 		auto start = std::chrono::high_resolution_clock::now();
 		auto sleep_duration = stop - start;
 
@@ -100,5 +125,3 @@ private:
 };
 
 }
-
-#endif

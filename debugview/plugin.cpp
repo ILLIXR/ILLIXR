@@ -143,6 +143,16 @@ public:
 			}
 			ImGui::SameLine();
 			ImGui::Text("Resets to zero'd out tracking universe");
+
+			if(ImGui::Button("Zero orientation")){
+				const pose_type fast_pose = pp->get_fast_pose();
+				if (pp->fast_pose_reliable()) {
+					// Can only zero if fast_pose is valid
+					pp->set_offset(fast_pose.orientation);
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text("Resets to zero'd out tracking universe");
 		}
 		ImGui::Spacing();
 		ImGui::Text("Switchboard connection status:");
@@ -396,7 +406,7 @@ private:
 
 	//GLFWwindow * const glfw_context;
 	const std::shared_ptr<switchboard> sb;
-	const std::shared_ptr<const pose_prediction> pp;
+	const std::shared_ptr<pose_prediction> pp;
 
 	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
 	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
