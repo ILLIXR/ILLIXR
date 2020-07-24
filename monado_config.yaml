@@ -1,0 +1,22 @@
+plugins:
+  - path: ground_truth_slam/
+  - path: offline_imu_cam/
+  - path: open_vins/
+  - path: pose_prediction/
+  - path: gldemo/
+  - path: timewarp_gl/
+  - path: debugview/
+  - path: audio_pipeline/
+  # - path: holgoram/
+  # - path: zed/
+#data: zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip?path=mav0
+data: ../data1/
+loader:
+  name: monado
+  monado:
+    path: ../monado_integration
+    config: {}
+  openxr_app:
+    path: ../Monado_OpenXR_Simple_Example
+    config: {}
+profile: dbg
