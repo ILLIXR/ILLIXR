@@ -31,13 +31,22 @@ then
        cd ../..
     fi
 
-    if [ ! -d Vulkan-Headers ]; then
-       git clone https://github.com/KhronosGroup/Vulkan-Headers.git
-       mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
-       cmake -DCMAKE_INSTALL_PREFIX=install ..
-        sudo make -j$(nproc) install
-       cd ../..
-    fi
+    # if [ ! -d Vulkan-Headers ]; then
+    #    git clone https://github.com/KhronosGroup/Vulkan-Headers.git
+    #    mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
+    #    cmake -DCMAKE_INSTALL_PREFIX=install ..
+    #    sudo make -j$(nproc) install
+    #    cd ../..
+    # fi
+
+    # if [ ! -d Vulkan-Loader ]; then
+    #    git clone https://github.com/KhronosGroup/Vulkan-Loader.git
+    #    mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
+	#    ../scripts/update_deps.py
+	#    cmake -C helper.cmake ..
+	#    cmake --build .
+    #    cd ../..
+    # fi
 
     if [ ! -d OpenXR-SDK ]; then
         git clone https://github.com/KhronosGroup/OpenXR-SDK.git
