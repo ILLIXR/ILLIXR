@@ -23,14 +23,14 @@ public:
 	/**
 	 * @brief Starts the thread.
 	 */
-	void start() override {
+	virtual void start() override {
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
 	/**
 	 * @brief Stops the thread.
 	 */
-	void stop() override {
+	virtual void stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}

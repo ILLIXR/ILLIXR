@@ -113,7 +113,7 @@ public:
 	}
 
 	bool first_iteration = true;
-	void _p_one_iteration() override {
+	virtual void _p_one_iteration() override {
 		if (first_iteration) {
 			// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 			// Therefore, I use this first_iteration variable, which I unset immediately after.
