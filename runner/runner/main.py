@@ -189,17 +189,28 @@ async def load_monado(config: Dict[str, Any]) -> None:
 
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir)
 
-    monado_config = config["loader"]["monado"]["config"]
+    monado_config = config["loader"]["monado"].get("config", {})
     monado_path = pathify(config["loader"]["monado"]["path"], root_dir)
 
-    openxr_app_config = config["loader"]["openxr_app"]["config"]
+    openxr_app_config = config["loader"]["openxr_app"].get("config", {})
     openxr_app_path = pathify(config["loader"]["openxr_app"]["path"], root_dir)
 
     _, _, _, plugin_paths = await asyncio.gather(
         cmake(
             monado_path,
             monado_path / "build",
-            dict(CMAKE_BUILD_TYPE=cmake_profile, **monado_config),
+            dict(
+                CMAKE_BUILD_TYPE=cmake_profile,
+                BUILD_WITH_LIBUDEV=0,
+                BUILD_WITH_LIBUVC=0,
+                BUILD_WITH_LIBUSB=0,
+                BUILD_WITH_NS=0,
+                BUILD_WITH_PSMV=0,
+                BUILD_WITH_PSVR=0,
+                BUILD_WITH_OPENHMD=0,
+                BUILD_WITH_VIVE=0,
+                **monado_config,
+            ),
         ),
         cmake(
             openxr_app_path,
