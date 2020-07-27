@@ -4,6 +4,7 @@
 #include "common/extended_window.hpp"
 #include "common/dynamic_lib.hpp"
 #include "switchboard_impl.hpp"
+#include "stdout_logger.hpp"
 
 using namespace ILLIXR;
 
@@ -12,6 +13,8 @@ public:
 	runtime_impl(GLXContext appGLCtx) {
 		pb.register_impl<switchboard>(create_switchboard());
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
+		pb.register_impl<c_metric_logger>(std::make_shared<stdout_metric_logger>());
+		pb.register_impl<c_gen_guid>(std::make_shared<c_gen_guid>());
 	}
 
 	virtual void load_so(std::string_view so) override {

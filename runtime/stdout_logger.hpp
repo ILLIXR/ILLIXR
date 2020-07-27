@@ -3,6 +3,9 @@
 #include "common/logging.hpp"
 #include "common/record_types.hpp"
 
+namespace ILLIXR {
+
+
 class stdout_metric_logger : public c_metric_logger {
 protected:
 	virtual void log2(const struct_type* ty, std::unique_ptr<const record>&& r_) override {
@@ -38,3 +41,4 @@ protected:
 		}
 	}
 };
+}
