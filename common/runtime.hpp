@@ -7,7 +7,7 @@
 #include "extended_window.hpp"
 
 namespace ILLIXR {
-
+class plugin;
 typedef plugin* (*plugin_factory) (phonebook*);
 
 class runtime {
