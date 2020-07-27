@@ -51,6 +51,8 @@ private:
 		std::size_t it = 0;
 		std::size_t skip_it = 0;
 
+		_p_thread_setup();
+
 		while (!should_terminate()) {
 
 			start_skip.log(std::make_unique<const start_skip_iteration_record>(id, it, skip_it));
@@ -72,6 +74,9 @@ private:
 				++it;
 				skip_it = 0;
 				break;
+			case skip_option::stop:
+				stop();
+				break;
 			}
 		}
 	}
@@ -88,6 +93,9 @@ protected:
 		/// Yielding gives up a scheduling quantum, which is determined by the OS, but usually on
 		/// the order of 1-10ms. This is nicer to the other threads in the system.
 		skip_and_yield,
+
+		/// Calls stop.
+		stop,
 	};
 
 	/**

@@ -286,16 +286,12 @@ public:
 		return headsetPosition * rotationMatrixHomogeneous; 
 	}
 
-	
+	void _p_thread_setup() override {
+		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
+		glfwMakeContextCurrent(gui_window);
+	}
 
-	bool first_iteration = true;
 	void _p_one_iteration() override {
-		if (first_iteration) {
-			// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
-			// Therefore, I use this first_iteration variable, which I unset immediately after.
-			glfwMakeContextCurrent(gui_window);
-			first_iteration = false;
-		}
 		{
 			glfwPollEvents();
 
