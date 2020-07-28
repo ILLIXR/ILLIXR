@@ -4,12 +4,13 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include <GL/glu.h>
+#include "phonebook.hpp"
 
 //GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
 #define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
 typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
-   
+
 namespace ILLIXR{
     class xlib_gl_extended_window : public phonebook::service {
     public:
@@ -21,7 +22,7 @@ namespace ILLIXR{
         xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context){
             width = _width;
             height = _height;
-        
+
             dpy = XOpenDisplay(NULL);
             if(dpy == NULL) {
                 printf("\n\tcannot connect to X server\n\n");
