@@ -76,13 +76,16 @@ namespace ILLIXR {
 		 * @brief Generate a number, unique from other calls to the same namespace/subnamespace/subsubnamepsace.
 		 */
 		std::size_t get(std::size_t namespace_ = 0, std::size_t subnamespace = 0, std::size_t subsubnamespace = 0) {
-			if (guid_starts[namespace_][subnamespace].count(subsubnamespace) == 0) {
-				guid_starts[namespace_][subnamespace][subsubnamespace].store(1);
+			if (first_unused[namespace_][subnamespace].count(subsubnamespace) == 0) {
+				// "0" denotes the default namespace.
+				// (if no namespace is specified, we use namespace=0)
+				// so the first namespace that we want to generate is 1.
+				first_unused[namespace_][subnamespace][subsubnamespace].store(1);
 			}
-			return ++guid_starts[namespace_][subnamespace][subsubnamespace];
+			return first_unused[namespace_][subnamespace][subsubnamespace]++;
 		}
 	private:
-		std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::atomic<std::size_t>>>> guid_starts;
+		std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::atomic<std::size_t>>>> first_unused;
 	};
 
 
