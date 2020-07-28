@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include <GL/glx.h>
-#include "plugin.hpp"
 #include "extended_window.hpp"
 
 namespace ILLIXR {
