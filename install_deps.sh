@@ -48,6 +48,7 @@ then
 			mkdir -p opencv/build && cd opencv/build
 			cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_JAVA=OFF -DWITH_OPENGL=ON -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
 			sudo make -j$(nproc) install
+			sudo ldconfig -v
 			cd ../..
 		fi
 	fi
