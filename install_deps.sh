@@ -28,19 +28,19 @@ then
 	echo "Next: apt-get install necessary packages"
 	if y_or_n; then
 		sudo apt-get install -y \
-			 git clang cmake libc++-dev libc++abi-dev \
-			 libeigen3-dev libboost-all-dev libatlas-base-dev libsuitesparse-dev libblas-dev \
-			 glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
-			 libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
-			 build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
-			 libgtest-dev pkg-config libgtk2.0-dev
+			git clang cmake libc++-dev libc++abi-dev \
+			libeigen3-dev libboost-all-dev libatlas-base-dev libsuitesparse-dev libblas-dev \
+			glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
+			libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
+			build-essential libx11-xcb-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
+			libgtest-dev pkg-config libgtk2.0-dev
 	fi
 
-    old_pwd="${PWD}"
-    mkdir -p /tmp/ILLIXR_deps
-    cd /tmp/ILLIXR_deps
+	old_pwd="${PWD}"
+	mkdir -p /tmp/ILLIXR_deps
+	cd /tmp/ILLIXR_deps
 
-    if [ ! -d opencv ]; then
+	if [ ! -d opencv ]; then
 		echo "Next: Install OpenCV from source"
 		if y_or_n; then
 			git clone --branch 3.4.6 https://github.com/opencv/opencv/
@@ -50,9 +50,9 @@ then
 			sudo make -j$(nproc) install
 			cd ../..
 		fi
-    fi
+	fi
 
-    if [ ! -d Vulkan-Headers ]; then
+	if [ ! -d Vulkan-Headers ]; then
 		echo "Next: Install Vulkan Headers from source"
 		if y_or_n; then
 			git clone https://github.com/KhronosGroup/Vulkan-Headers.git
@@ -61,18 +61,21 @@ then
 			sudo make -j$(nproc) install
 			cd ../..
 		fi
-    fi
+	fi
 
-    # if [ ! -d Vulkan-Loader ]; then
-    #    git clone https://github.com/KhronosGroup/Vulkan-Loader.git
-    #    mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
-	#    ../scripts/update_deps.py
-	#    cmake -C helper.cmake ..
-	#    cmake --build .
-    #    cd ../..
-    # fi
+	# if [ ! -d Vulkan-Loader ]; then
+	# 	echo "Next: Install Vulkan Loader from source"
+	# 	if y_or_n; then
+	# 		git clone https://github.com/KhronosGroup/Vulkan-Loader.git
+	# 		mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
+	# 		../scripts/update_deps.py
+	# 		cmake -C helper.cmake ..
+	# 		cmake --build .
+	# 		cd ../..
+	# 	fi
+	# fi
 
-    if [ ! -d OpenXR-SDK ]; then
+	if [ ! -d OpenXR-SDK ]; then
 		echo "Next: Install OpenXR SDK from souce"
 		if y_or_n; then
 			git clone https://github.com/KhronosGroup/OpenXR-SDK.git
@@ -81,10 +84,10 @@ then
 			sudo make -j$(nproc) install
 			cd ../..
 		fi
-    fi
+	fi
 
-    cd "${old_pwd}"
+	cd "${old_pwd}"
 else
-    echo "${0} does not support ${ID_LIKE} yet."
-    exit 1
+	echo "${0} does not support ${ID_LIKE} yet."
+	exit 1
 fi
