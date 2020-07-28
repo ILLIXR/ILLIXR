@@ -218,6 +218,7 @@ namespace ILLIXR {
 		}
 
 		virtual ~switchboard_impl() {
+			stop();
 		}
 
 	private:
@@ -253,13 +254,12 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			_m_registry.try_emplace(topic_name, ty, topic_name, _m_queue);
-			topic& topic = _m_registry.at(topic_name);
+			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			topic.schedule(callback);
 		}
 
-		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& name, std::size_t ty) {
+		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& topic_name, std::size_t ty) {
 			/*
 			  Proof of thread-safety:
 			  - All accesses _m_registry occur after acquiring its lock
@@ -269,8 +269,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			_m_registry.try_emplace(name, ty, name, _m_queue);
-			topic& topic = _m_registry.at(name);
+			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			return std::unique_ptr<writer<void>>(topic.get_writer().release());
 			/* TODO: (code beautify) why can't I write
@@ -278,7 +277,7 @@ namespace ILLIXR {
 			*/
 		}
 
-		virtual std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& name, std::size_t ty) {
+		virtual std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& topic_name, std::size_t ty) {
 			/*
 			  Proof of thread-safety:
 			  - All accesses _m_registry occur after acquiring its lock
@@ -288,8 +287,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			_m_registry.try_emplace(name, ty, name, _m_queue);
-			topic& topic = _m_registry.at(name);
+			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			return std::unique_ptr<reader_latest<void>>(topic.get_reader_latest().release());
 			/* TODO: (code beautify) why can't I write

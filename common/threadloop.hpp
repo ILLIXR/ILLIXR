@@ -24,6 +24,7 @@ public:
 	 * @brief Starts the thread.
 	 */
 	virtual void start() override {
+		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
@@ -31,6 +32,7 @@ public:
 	 * @brief Stops the thread.
 	 */
 	virtual void stop() override {
+		plugin::stop();
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
