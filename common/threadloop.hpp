@@ -32,6 +32,7 @@ public:
 	 * @brief Stops the thread.
 	 */
 	virtual void stop() override {
+		plugin::stop();
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
