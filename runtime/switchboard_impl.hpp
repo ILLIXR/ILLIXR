@@ -236,14 +236,11 @@ namespace ILLIXR {
 			  - Calls invoke_callback, which acquires _m_callbacks_lock, (see its proof of thread-safety).
 			  Therefore this method is thread-safe.
 			 */
-			std::chrono::nanoseconds thread_start = thread_cpu_time();
 			while (!_m_terminate.load()) {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
 					const std::lock_guard lock{_m_registry_lock};
-					//std::cout << "cpu_timer,switchboard_check_queues," << (thread_cpu_time() - thread_start).count() << std::endl;
 					_m_registry.at(t.first).invoke_callbacks(t.second);
-					thread_start = thread_cpu_time();
 				}
 			}
 		}

@@ -30,16 +30,22 @@ public:
 	}
 
 	virtual void wait() override {
-		while (true) {
+		while (!terminate.load()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{10});
 		}
 		// TODO: catch keyboard interrupt
 	}
+
+	virtual void stop() override {
+		terminate.store(true);
+	}
+
 private:
 	phonebook pb;
 	// I have to keep the dynamic libs in scope until the program is dead
 	std::vector<dynamic_lib> libs;
 	std::vector<std::unique_ptr<plugin>> plugins;
+	std::atomic<bool> terminate {false};
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx) {

@@ -18,6 +18,7 @@ namespace ILLIXR {
 		 * consturctors.
 		 */
 		virtual void start() {
+			std::cerr << "component_start: " << id << " " << name << std::endl;
 			metric_logger->log(std::make_unique<const component_start_record>(id, name));
 		}
 
