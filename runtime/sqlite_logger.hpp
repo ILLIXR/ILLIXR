@@ -161,6 +161,7 @@ protected:
 
 	virtual void log2(const struct_type* ty, std::unique_ptr<const record>&& r) override {
 		assert(ty);
+
 		// Speculatively check if table is already registered
 		if (registered_tables.count(ty->type_id) == 0) {
 			const std::lock_guard lock{_m_registry_lock};

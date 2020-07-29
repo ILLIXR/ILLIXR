@@ -79,7 +79,7 @@ namespace ILLIXR {
 			if (guid_starts[namespace_][subnamespace].count(subsubnamespace) == 0) {
 				guid_starts[namespace_][subnamespace][subsubnamespace].store(1);
 			}
-			return ++guid_starts[namespace_][subnamespace][subsubnamespace];
+			return guid_starts[namespace_][subnamespace][subsubnamespace]++;
 		}
 	private:
 		std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::unordered_map<std::size_t, std::atomic<std::size_t>>>> guid_starts;
@@ -152,7 +152,7 @@ namespace ILLIXR {
 		void flush() {
 			std::vector<std::unique_ptr<const Record>> buffer2;
 			buffer.swap(buffer2);
-			logger->log_many(std::move(buffer2));
+			logger->log_many<Record>(std::move(buffer2));
 			last_log = std::chrono::high_resolution_clock::now();
 		}
 	};

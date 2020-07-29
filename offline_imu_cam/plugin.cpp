@@ -55,11 +55,10 @@ protected:
 	}
 
 public:
-	virtual void start() override {
+	virtual void _p_thread_setup() override {
 		// this is not done in the constructor, because I want it to
 		// be done at thread-launch time, not load-time.
 		real_first_time = std::chrono::system_clock::now();
-		threadloop::start();
 	}
 
 private:
