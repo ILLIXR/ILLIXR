@@ -150,17 +150,32 @@ class sqlite_metric_logger : public c_metric_logger {
 protected:
 	virtual void log_many2(const struct_type* ty, std::vector<std::unique_ptr<const record>>&& r) override {
 		assert(ty);
-		registered_tables.try_emplace(ty->type_id, *ty).first->second.put_queue(std::move(r));
+		if (registered_tables.count(ty->type_id) == 0) {
+			const std::lock_guard lock{_m_registry_lock};
+			if (registered_tables.count(ty->type_id) == 0) {
+				registered_tables.try_emplace(ty->type_id, *ty);
+			}
+		}
+		registered_tables.at(ty->type_id).put_queue(std::move(r));
 	}
 
 	virtual void log2(const struct_type* ty, std::unique_ptr<const record>&& r) override {
 		assert(ty);
-		registered_tables.try_emplace(ty->type_id, *ty).first->second.put_queue(std::move(r));
+		// Speculatively check if table is already registered
+		if (registered_tables.count(ty->type_id) == 0) {
+			const std::lock_guard lock{_m_registry_lock};
+			// We still have to double-check if table is already registered
+			// To be sure, because the previous check did not hold a lock.
+			if (registered_tables.count(ty->type_id) == 0) {
+				registered_tables.try_emplace(ty->type_id, *ty);
+			}
+		}
+		registered_tables.at(ty->type_id).put_queue(std::move(r));
 	}
 
 private:
 	std::unordered_map<std::size_t, sqlite_thread> registered_tables;
-
+	std::mutex _m_registry_lock;
 };
 
 }

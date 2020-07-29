@@ -6,6 +6,8 @@
 #include <functional>
 #include "phonebook.hpp"
 #include "cpu_timer.hpp"
+#include "logging.hpp"
+#include "record_types.hpp"
 
 namespace ILLIXR {
 
@@ -119,7 +121,15 @@ private:
 
 	/* TODO: (usability) add a method which queries if a topic has a writer. Readers might assert this. */
 
+	const phonebook * const pb;
+	const std::shared_ptr<c_metric_logger> metric_logger;
+
 public:
+
+	switchboard(phonebook const* pb_)
+		: pb{pb_}
+		, metric_logger{pb->lookup_impl<c_metric_logger>()}
+	{ }
 
 	/**
 	 * @brief Schedules the callback @p fn every time an event is published to @p name.
@@ -133,9 +143,16 @@ public:
 	 * @throws if topic already exists, and its type does not match the `event`.
 	 */
 	template <typename event>
-	void schedule([[maybe_unused]] std::string account_name, std::string name, std::function<void(const event*)> fn) {
+	void schedule(std::size_t component_id, const std::string& name, std::function<void(const event*)> fn) {
 		_p_schedule(name, [=](const void* ptr) {
-			fn(reinterpret_cast<const event*>(ptr));
+			{
+				// TODO(performance): Make this use coalescer
+				// TODO(logging): Use a real serial no here.
+				const std::size_t serial_no = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+				metric_logger->log<start_callback_record>(std::make_unique<start_callback_record>(component_id, 0, serial_no));
+				fn(reinterpret_cast<const event*>(ptr));
+				metric_logger->log<stop_callback_record>(std::make_unique<stop_callback_record>(component_id, 0, serial_no));
+			}
 		}, typeid(event).hash_code());
 	}
 
