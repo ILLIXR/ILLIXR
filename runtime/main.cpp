@@ -53,8 +53,8 @@ protected:
 
 extern "C" int illixrrt_init(void* appGLCtx) {
 	pb.register_impl<c_metric_logger>(std::make_shared<sqlite_metric_logger>());
-	pb.register_impl<switchboard>(create_switchboard());
 	pb.register_impl<c_gen_guid>(std::make_shared<c_gen_guid>());
+	pb.register_impl<switchboard>(create_switchboard(&pb));
 	pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, (GLXContext)appGLCtx));
 	// pb->register_impl<global_config>(new global_config {headless_window});
 	return 0;

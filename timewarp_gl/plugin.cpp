@@ -266,7 +266,7 @@ private:
 
 public:
 
-	skip_option _p_should_skip() override {
+	virtual skip_option _p_should_skip() override {
 		using namespace std::chrono_literals;
 		// Sleep for approximately 90% of the time until the next vsync.
 		// Scheduling granularity can't be assumed to be super accurate here,
@@ -284,7 +284,7 @@ public:
 		}
 	}
 
-	void _p_one_iteration() override {
+	virtual void _p_one_iteration() override {
 		warp(glfwGetTime());
 	}
 

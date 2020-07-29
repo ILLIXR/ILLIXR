@@ -21,7 +21,8 @@ public:
 	{ }
 
 	virtual void start() override {
-		sb->schedule<imu_cam_type>(get_name(), "imu_cam", [&](const imu_cam_type *datum) {
+		plugin::start();
+		sb->schedule<imu_cam_type>(id, "imu_cam", [&](const imu_cam_type *datum) {
 			this->feed_ground_truth(datum);
 		});
 	}

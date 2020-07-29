@@ -1,5 +1,7 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/logging.hpp"
+#include "common/record_types.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
@@ -201,7 +203,8 @@ namespace ILLIXR {
 
 	public:
 
-		switchboard_impl()
+		switchboard_impl(phonebook const* pb)
+			: switchboard{pb}
 		{
 			for (size_t i = 0; i < MAX_THREADS; ++i) {
 				_m_threads.push_back(std::thread{[this]() {
@@ -303,7 +306,7 @@ namespace ILLIXR {
 
 	};
 
-	std::shared_ptr<switchboard> create_switchboard() {
-		return std::dynamic_pointer_cast<switchboard>(std::make_shared<switchboard_impl>());
+	std::shared_ptr<switchboard> create_switchboard(phonebook const* pb) {
+		return std::dynamic_pointer_cast<switchboard>(std::make_shared<switchboard_impl>(pb));
 	}
 }
