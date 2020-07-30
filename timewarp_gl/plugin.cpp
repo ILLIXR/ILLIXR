@@ -53,7 +53,7 @@ private:
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 0.7;
+	static constexpr double DELAY_FRACTION = 1.0;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
@@ -266,18 +266,26 @@ private:
 
 public:
 
+	skip_option _p_should_skip() override {
+		using namespace std::chrono_literals;
+		// Sleep for approximately 90% of the time until the next vsync.
+		// Scheduling granularity can't be assumed to be super accurate here,
+		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
+		// MTP here. More you wait, closer to the display sync you sample the pose.
+
+		// TODO: poll GLX window events
+		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
+		if(_m_eyebuffer->get_latest_ro()) {
+			return skip_option::run;
+		} else {
+			// Null means system is nothing has been pushed yet
+			// because not all components are initialized yet
+			return skip_option::skip_and_yield;
+		}
+	}
+
 	void _p_one_iteration() override {
-			using namespace std::chrono_literals;
-			// Sleep for approximately 90% of the time until the next vsync.
-			// Scheduling granularity can't be assumed to be super accurate here,
-			// so don't push your luck (i.e. don't wait too long....) Tradeoff with
-			// MTP here. More you wait, closer to the display sync you sample the pose.
-
-			// TODO: use more precise sleep.
-
-			// TODO: poll GLX window events
-			std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-			warp(glfwGetTime());
+		warp(glfwGetTime());
 	}
 
 	virtual void _p_thread_setup() override {
@@ -396,18 +404,15 @@ public:
 	virtual void warp([[maybe_unused]] float time) {
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
-		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
-		if(!most_recent_frame){
-			//std::cerr << "ATW failed to grab most recent frame from Switchboard" << std::endl;
-			return;
-		}
-
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glClearColor(0, 0, 0, 0);
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glDepthFunc(GL_LEQUAL);
 
+		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
+		// This should be null-checked in _p_should_skip
+		assert(most_recent_frame);
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
@@ -494,6 +499,12 @@ public:
 
 		glBindVertexArray(tw_vao);
 
+		GLuint query;
+		GLuint64 elapsed_time;
+		int done = 0;
+		glGenQueries(1, &query);
+		glBeginQuery(GL_TIME_ELAPSED,query);
+
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
 
@@ -540,6 +551,19 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
+		GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
+		glEndQuery(GL_TIME_ELAPSED);
+		// retrieving the recorded elapsed time
+		// wait until the query result is available
+		while (!done) {
+			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		}
+		// get the query result
+		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+		// TODO (implement-logging): When we have logging infra, log this.
+		//printf("cpu_timer,timewarp_gl_gpu,%lu\n", elapsed_time);
+
 		// Call Hologram
 		auto hologram_params = new hologram_input;
 		hologram_params->seq = ++_hologram_seq;
@@ -551,9 +575,12 @@ public:
 		lastSwapTime = glfwGetTime();
 		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
 
+		// TODO (implement-logging): When we have logging infra, delete this code.
+		// This only looks at warp time, so doesn't take into account IMU frequency.
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
 
 
+		// TODO (implement-glog): When we have glog, use glog.
 		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
 			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
 		}
