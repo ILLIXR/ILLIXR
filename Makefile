@@ -1,4 +1,4 @@
-plugins    = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ gldemo/ timewarp_gl/ debugview/ audio_pipeline/
+plugins    = ground_truth_slam/ offline_imu_cam/ open_vins/ pose_prediction/ gldemo/ timewarp_gl/ debugview/ audio_pipeline/ hologram/
 
 .PHONY: $(plugins:/=/plugin.dbg.so)
 $(plugins:/=/plugin.dbg.so):
@@ -6,14 +6,6 @@ $(plugins:/=/plugin.dbg.so):
 
 .PHONY: $(plugins:/=/plugin.opt.so)
 $(plugins:/=/plugin.opt.so):
-	$(MAKE) -C $(dir $@) plugin.opt.so
-
-.PHONY: runtime/plugin.dbg.so
-runtime/plugin.dbg.so:
-	$(MAKE) -C $(dir $@) plugin.dbg.so
-
-.PHONY: runtime/plugin.opt.so
-runtime/plugin.opt.so:
 	$(MAKE) -C $(dir $@) plugin.opt.so
 
 .PHONY: runtime/plugin.dbg.so
