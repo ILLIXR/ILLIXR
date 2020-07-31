@@ -1,0 +1,55 @@
+$schema: http://json-schema.org/schema#
+$id: http://illixr.github.io/schemas/config.json
+type: object
+definitions:
+  key_vals: &key_vals
+    default: {}
+    type: object
+    additionalProperties:
+      type: string    
+properties:
+  plugins:
+    type: array
+    default: []
+    items:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Path to the directory containing the SO.
+        config:
+          <<: *key_vals
+          description: Vars that get passed to the build system
+      required:
+        - path
+  runtime:
+    default: {}
+    type: object
+    properties:
+      path:
+        default: .
+        type: string
+        description: Path to https://github.com/ILLIXR/ILLIXR
+      config:
+          <<: *key_vals
+          description: Vars that get passed to the build system
+  loader:
+    type: object
+    default: {}
+    required:
+      - name
+    properties:
+      name:
+        default: native
+        type: string
+        description: "Currently supports: 'native', 'openxr', or 'gdb'"
+      config:
+          <<: *key_vals
+          description: Interpretation of these vars is loader-dependent
+  data:
+    type: string
+    description: URL to offline IMU/cam data. Omit if not applicable.
+  profile:
+    default: dbg
+    type: string
+    description: "Currently supports 'dbg' and 'opt'"

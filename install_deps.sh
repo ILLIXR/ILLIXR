@@ -88,6 +88,21 @@ then
 	fi
 
 	cd "${old_pwd}"
+
+	if ! poetry; then
+		echo "Next: Install Poetry"
+		if y_or_n; then
+			curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+		fi
+	else
+		echo "Poetry already installed"
+	fi
+
+	# I won't ask the user first, because this is not a global installation.
+	# All of this stuff goes into a project-specific venv.
+	cd runner
+	poetry install
+	cd ..
 else
 	echo "${0} does not support ${ID_LIKE} yet."
 	exit 1
