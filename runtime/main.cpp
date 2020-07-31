@@ -18,5 +18,8 @@ int main(int argc, const char * argv[]) {
 		r->load_so(argv[i]);
 	}
 	r->wait();
+	// std::this_thread::sleep_for(std::chrono::seconds(10));
+	r->stop();
+	delete r;
 	return 0;
 }

@@ -129,7 +129,6 @@ public:
 	~sqlite_thread() {
 		thread.join();
 	}
-
 private:
 	static const std::experimental::filesystem::path dir;
 	const struct_type& record_type;

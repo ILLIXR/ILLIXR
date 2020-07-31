@@ -1,5 +1,7 @@
 .header on
 .mode column
+.mode csv
+.output.csv
 
 ATTACH "metrics/component_start_record5.sqlite" AS p0;
 ATTACH "metrics/start_iteration_record9.sqlite" AS p1;

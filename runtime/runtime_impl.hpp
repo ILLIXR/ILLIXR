@@ -6,6 +6,7 @@
 #include "switchboard_impl.hpp"
 #include "sqlite_logger.hpp"
 #include "common/plugin.hpp"
+#include "stdout_logger.hpp"
 
 using namespace ILLIXR;
 

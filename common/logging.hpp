@@ -21,6 +21,7 @@ namespace ILLIXR {
 	 */
 	class c_metric_logger : public phonebook::service {
 	public:
+		virtual ~c_metric_logger() {}
 		/**
 		 * @brief Writes one log record.
 		 *
@@ -86,7 +87,7 @@ namespace ILLIXR {
 	};
 
 
-	static std::chrono::milliseconds LOG_BUFFER_DELAY {1000};
+	static std::chrono::milliseconds LOG_BUFFER_DELAY {20000};
 
 	/**
 	 * @brief Coalesces logs of the same type to be written back as a single-transaction.

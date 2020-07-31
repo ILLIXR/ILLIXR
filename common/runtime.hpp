@@ -15,6 +15,7 @@ public:
 	virtual void load_plugin_factory(plugin_factory plugin) = 0;
 	virtual void wait() = 0;
 	virtual void stop() = 0;
+	virtual ~runtime() {}
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx);

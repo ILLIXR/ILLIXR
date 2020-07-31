@@ -37,11 +37,13 @@ public:
 		_m_thread.join();
 	}
 
-	virtual ~threadloop() override {
-		if (!should_terminate()) {
-			stop();
-		}
-	}
+	// virtual ~threadloop() override {
+	// 	std::cout << "~~~~~~~~~" << std::endl;
+	// 	if (!should_terminate()) {
+	// 		stop();
+	// 	}
+	// 	std::cout << "88888" << std::endl;
+	// }
 
 private:
 	void thread_main() {
