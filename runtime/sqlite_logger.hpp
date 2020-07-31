@@ -5,7 +5,7 @@
 #include <chrono>
 #include <atomic>
 #include <thread>
-#include <filesystem>
+#include <experimental/filesystem>
 #include "blockingconcurrentqueue.hpp"
 #include "sqlite3pp.hpp"
 #include "common/logging.hpp"
@@ -22,8 +22,8 @@ namespace ILLIXR {
 class sqlite_thread {
 public:
 	sqlite3pp::database prep_db() {
-		if (!std::filesystem::exists(dir)) {
-			std::filesystem::create_directory(dir);
+		if (!std::experimental::filesystem::exists(dir)) {
+			std::experimental::filesystem::create_directory(dir);
 		}
 
 		std::string path = dir / (table_name + std::string{".sqlite"});
@@ -134,7 +134,7 @@ public:
 	}
 
 private:
-	static const std::filesystem::path dir;
+	static const std::experimental::filesystem::path dir;
 	const struct_type& record_type;
 	std::string table_name;
 	sqlite3pp::database db;
@@ -144,7 +144,7 @@ private:
 	std::atomic<bool> terminate {false};
 };
 
-const std::filesystem::path sqlite_thread::dir {"metrics"};
+const std::experimental::filesystem::path sqlite_thread::dir {"metrics"};
 
 class sqlite_metric_logger : public c_metric_logger {
 protected:
