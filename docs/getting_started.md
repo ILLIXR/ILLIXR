@@ -4,61 +4,64 @@
 
 These instructions have been tested with Ubuntu 18.10.
 
-1. Clone the repository.
+1. Clone the repository:
 
         git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
 
 
 2. Update the submodules. Submodules are git repositories inside a git repository that need to be
-   pulled down separately.
+   pulled down separately:
 
         git submodule update --init --recursive
 
 3. Install dependencies. This script installs some Ubuntu/Debian packages and builds a specific
-   version of OpenCV from source.
+   version of OpenCV from source:
 
         ./install_deps.sh
 
-4. Build and run ILLIXR standalone.
+4. Inspect `config.yaml`. The schema definition (with documentation inline) is in `runner/config_schema.yaml`.
 
-        make run.dbg
+5. Build and run ILLIXR standalone:
+
+        ./runner.sh config.yaml
 
 ## ILLIXR Runtime with Monado (supports OpenXR)
 
 ILLIXR leverages [Monado][3], an open-source implementation of [OpenXR][4], to support a wide range
 of applications.  Monado only supports Ubuntu 18.10, because of a low-level driver issue.
 
-1. Clone and build ILLIXR (same steps as standalone, except the make target is `all.dbg.so`).
+1. Clone Monado:
+
+        git clone https://github.com/ILLIXR/monado_integration.git
+
+2. Clone our application example:
+
+        git clone https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
+
+3. Clone ILLIXR:
 
         git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
         git submodule update --init --recursive
+
+4. Install dependencies:
+
+        cd ILLIXR
         ./install_deps.sh
-        make all.dbg.so
 
-2. Clone and build Monado.
+5. Edit the `conig.yaml`, using this for the loader:
 
-        git clone https://github.com/ILLIXR/monado_integration.git
-        cd monado_integration
-        mkdir build && cd build
-        cmake .. -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_LIBUVC=0 -DBUILD_WITH_LIBUSB=0 -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_NS=0 -DBUILD_WITH_PSMV=0 -DBUILD_WITH_PSVR=0 -DBUILD_WITH_OPENHMD=0 -DBUILD_WITH_VIVE=0  -DILLIXR_PATH=../../ILLIXR -G "Unix Makefiles"
-        # replace ../ILLIXR with the path to ILLIXR
-        make -j$(nproc)
+```yaml
+loader:
+  name: monado
+  monado:
+    path: ../monado_integration
+  openxr_app:
+    path: ../Monado_OpenXR_Simple_Example
+```
 
-3. Clone and build our application example.
+5. Compile and run:
 
-        git clone https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
-        cd openxr-simple-example
-        mkdir build && cd build
-        cmake ..
-        make -j$(nproc)
-
-4. Set environment variables and run.
-
-        export XR_RUNTIME_JSON=../monado_integration/build/openxr_monado-dev.json
-        # replace ../monado_integration with the path to the previous repo
-        export ILLIXR_PATH=../ILLIXR/runtime/plugin.dbg.so
-        export ILLIXR_COMP=../ILLIXR/ground_truth_slam/plugin.dbg.so:../ILLIXR/offline_imu_cam/plugin.dbg.so:../ILLIXR/open_vins/plugin.dbg.so:../ILLIXR/pose_prediction/plugin.dbg.so:../ILLIXR/timewarp_gl/plugin.dbg.so:../ILLIXR/debugview/plugin.dbg.so:../ILLIXR/audio_pipeline/plugin.dbg.so
-        # replace ../ILLIXR with the path to ILLIXR
+        ./runner.sh config.yaml
 
 ## ILLIXR Standalone
 

@@ -2,10 +2,44 @@
 
 ## Basic usage
 
-- From the project root, `make run.dbg -j$(nproc)` will build the ILLIXR runtime standalone, the
-  ILLIXR plugins, and run it for you. `make run.opt -j$(nproc)`, is the same but with optimizations on and debug off.
+- Edit `config.yaml`. See `runner/config_schema.yaml` for the schema definition.
 
-- To build the runtime for Monado, `make all.dbg.so`.
+  * Make sure you have defined all of the plugins you want with paths that exist.
+
+  * Currently we support the following loaders: `native` (which runs ILLIXR in standalone mode),
+    `gdb` (which runs standalone mode in GDB for debugging purposes), and `monado` (which runs an
+    OpenXR application in Monado using ILLIXR as a backend)
+
+    * If you want to run with Monado, make sure you define Monado and an OpenXR application in the
+      loader (see `runner/config_schema.yaml` for specifics).
+
+  * Paths are resolved relative to the project root.
+
+  * You can `!include` other YAML files ([documentation][8]). Consider separating the site-specific
+    configuration options into its own file.
+
+- Run `./runner.sh config.yaml`.
+
+  * This compiles whatever plugins and runtime code is necessary and runs the result.
+
+  * This also sets the environment variables properly.
+
+## Rationale
+
+- Previously, we would have to specify which plugins to build and which to run separately, violating
+  [DRY principle][7].
+
+- Previously, configuration had to be hard-coded into the component source code, or passed as
+  parsed/unparsed as strings in env-vars on a per-component basis. This gives us a consistent way to
+  deal with all configurations.
+
+- Currently, plugins are specificed by a path to the directory containing their source code and
+  build system. In the future, the same config file could support HTTP URLs Git URLs
+  (`git+https://github.com/username/repo@rev?path=optional/path/within/repo`), or Zip URLs
+  (`zip+http://path/to/archive.zip?path=optional/path/within/zip`), or even Nix URLs (TBD).
+
+[7]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+[8]: https://pypi.org/project/pyyaml-include/
 
 ## Adding a new plugin (common case)
 
@@ -27,7 +61,7 @@ symlink common (`ln -s ../common common`). This provides the necessary targets a
 
 - See the source for the exact flags.
 
-- Inserted the name of your directory into the `component`-list in the root `Makefile`.
+- Inserted the path of your directory into the `plugin`-list in `config.yaml`.
 
 ## Adding a plugin (general case)
 
@@ -38,7 +72,7 @@ Each plugin can have a completely independent build system, as long as:
 - It's compiler maintains _ABI compatibility_ with the compilers used in every other plugin. Using
   the same version of Clang or GCC on the same architecture is sufficient for this.
 
-- It's name is inserted in the root `Makefile`, in the `plugins` list.
+- It's path is inserted in the root `config.yaml`, in the `plugins` list.
 
 ## Philosophy
 
@@ -53,7 +87,7 @@ Each plugin can have a completely independent build system, as long as:
 - Always rebuild every time, so the binary is always "fresh". This is a great convenience when
   experimenting. However, this implies that rebuilding must be fast when not much has changed.
 
-- Make is the de facto standard for building C/C++ programs. GNU Make, reucrsive make, and the
+- Make is the de facto standard for building C/C++ programs. GNU Make, and the
   makefile language begets no shortage of problems [[1][1],[2][2],[3][3],[4][4],[5][5]], but we choose
   Make for its tradeoff of between simplicity and functionality. What it lacks in functionality
   (compared to CMake, Ninja, scons, Bazel, Meson) it makes up for in simplicity. It's still the

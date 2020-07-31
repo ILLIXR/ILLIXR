@@ -1,3 +1,0 @@
-# this takes a long time on "sending context to Docker daemon"
-# so instead, I will just send the .zip, and test.sh will unpack it
-data/
