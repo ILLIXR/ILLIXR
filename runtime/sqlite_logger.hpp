@@ -73,7 +73,6 @@ public:
 	{ }
 
 	void pull_queue() {
-		while (!terminate.load()) {
 			std::size_t chunk_size = 1024;
 			std::vector<std::unique_ptr<const record>> buffer {chunk_size};
 			std::size_t dequeued_count = queue.wait_dequeue_bulk_timed(buffer.begin(), chunk_size, std::chrono::milliseconds(50));
@@ -117,7 +116,6 @@ public:
 				}
 				// xct.commit();
 			}
-		}
 	}
 
 	void put_queue(std::vector<std::unique_ptr<const record>>&& buffer_in) {
@@ -129,7 +127,6 @@ public:
 	}
 
 	~sqlite_thread() {
-		terminate.store(true);
 		thread.join();
 	}
 
@@ -141,7 +138,6 @@ private:
 	sqlite3pp::command cmd;
 	std::thread thread;
 	moodycamel::BlockingConcurrentQueue<std::unique_ptr<const record>> queue;
-	std::atomic<bool> terminate {false};
 };
 
 const std::filesystem::path sqlite_thread::dir {"metrics"};
