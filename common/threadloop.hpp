@@ -23,14 +23,14 @@ public:
 	/**
 	 * @brief Starts the thread.
 	 */
-	void start() override {
+	virtual void start() override {
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
 	/**
 	 * @brief Stops the thread.
 	 */
-	void stop() {
+	virtual void stop() override {
 		_m_terminate.store(true);
 		_m_thread.join();
 	}
@@ -43,12 +43,43 @@ public:
 
 private:
 	void thread_main() {
-			_p_thread_setup();
-			while (!should_terminate()) {
-				PRINT_CPU_TIME_FOR_THIS_BLOCK(get_name());
+		metric_coalescer<start_iteration_record> start_it {metric_logger};
+		metric_coalescer<stop_iteration_record> stop_it {metric_logger};
+		metric_coalescer<start_skip_iteration_record> start_skip {metric_logger};
+		metric_coalescer<stop_skip_iteration_record> stop_skip {metric_logger};
+
+		std::size_t it = 0;
+		std::size_t skip_it = 0;
+
+		_p_thread_setup();
+
+		while (!should_terminate()) {
+
+			start_skip.log(std::make_unique<const start_skip_iteration_record>(id, it, skip_it));
+			skip_option s = _p_should_skip();
+			stop_skip.log(std::make_unique<const stop_skip_iteration_record>(id, it, skip_it));
+
+			switch (s) {
+			case skip_option::skip_and_yield:
+				std::this_thread::yield();
+				++skip_it;
+				break;
+			case skip_option::skip_and_spin:
+				++skip_it;
+				break;
+			case skip_option::run:
+				start_it.log(std::make_unique<const start_iteration_record>(id, it, skip_it));
 				_p_one_iteration();
+				stop_it.log(std::make_unique<const stop_iteration_record>(id, it, skip_it));
+				++it;
+				skip_it = 0;
+				break;
+			case skip_option::stop:
+				stop();
+				break;
 			}
 		}
+	}
 
 protected:
 
@@ -62,6 +93,9 @@ protected:
 		/// Yielding gives up a scheduling quantum, which is determined by the OS, but usually on
 		/// the order of 1-10ms. This is nicer to the other threads in the system.
 		skip_and_yield,
+
+		/// Calls stop.
+		stop,
 	};
 
 	/**
