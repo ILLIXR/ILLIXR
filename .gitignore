@@ -13,3 +13,4 @@ output.*
 metrics/
 test.csv
 hologram_stats.txt
+*.egg-info/

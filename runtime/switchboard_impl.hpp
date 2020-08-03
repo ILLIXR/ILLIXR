@@ -47,6 +47,7 @@ namespace ILLIXR {
 				throw std::runtime_error{"this doesn't work yet"};
 				/* TODO: (optimization) avoid this copy if we are the only subscriber. The reader
 				   can read and modify the event in place. */
+				return nullptr;
 			}
 			topic_reader_latest(const topic* topic) : _m_topic{topic} {
 				/* No thread-safety required in constructor. This is only called by one thread. */
@@ -213,14 +214,16 @@ namespace ILLIXR {
 			}
 		}
 
-		virtual void stop() {
-			_m_terminate.store(true);
-			for (std::thread& thread : _m_threads) {
-				thread.join();
+		virtual void stop() override {
+			if (!_m_terminate.load()) {
+				_m_terminate.store(true);
+				for (std::thread& thread : _m_threads) {
+					thread.join();
+				}
 			}
 		}
 
-		virtual ~switchboard_impl() {
+		virtual ~switchboard_impl() override {
 			stop();
 		}
 
@@ -236,6 +239,7 @@ namespace ILLIXR {
 			  - Calls invoke_callback, which acquires _m_callbacks_lock, (see its proof of thread-safety).
 			  Therefore this method is thread-safe.
 			 */
+			// TODO(performance): use timed deque
 			while (!_m_terminate.load()) {
 				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
@@ -245,7 +249,7 @@ namespace ILLIXR {
 			}
 		}
 
-		virtual void _p_schedule(const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) {
+		virtual void _p_schedule(const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
 			  - Reads _m_registry after acquiring its lock (it can't change)
@@ -259,7 +263,7 @@ namespace ILLIXR {
 			topic.schedule(callback);
 		}
 
-		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& topic_name, std::size_t ty) {
+		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& topic_name, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
 			  - All accesses _m_registry occur after acquiring its lock
@@ -277,7 +281,7 @@ namespace ILLIXR {
 			*/
 		}
 
-		virtual std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& topic_name, std::size_t ty) {
+		virtual std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& topic_name, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
 			  - All accesses _m_registry occur after acquiring its lock

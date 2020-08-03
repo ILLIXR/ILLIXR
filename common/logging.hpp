@@ -87,7 +87,7 @@ namespace ILLIXR {
 	};
 
 
-	static std::chrono::milliseconds LOG_BUFFER_DELAY {20000};
+	static std::chrono::milliseconds LOG_BUFFER_DELAY {1000};
 
 	/**
 	 * @brief Coalesces logs of the same type to be written back as a single-transaction.

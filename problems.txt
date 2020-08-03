@@ -1,0 +1,8 @@
+- Calling `stop()` twice.
+- Not calling delete on runtime.
+- ~threadloop joins the thread, but derived gets destroyed first.
+- Stopping switchboard after destroying components
+- Destroying shared libraries before destroying components (destructor ordering)
+- Nonvirtual destructor in polymorphic class (pose_prediction, swichboard, )
+- Not looping in sqlite_thread.
+- Not catching ctrl+C

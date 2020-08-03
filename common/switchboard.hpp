@@ -183,6 +183,8 @@ public:
 	}
 
 	virtual ~switchboard() { }
+
+	virtual void stop() = 0;
 };
 
 /* TODO: (usability) Do these HAVE to be smart pointers? If the

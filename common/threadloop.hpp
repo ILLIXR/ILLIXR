@@ -32,18 +32,21 @@ public:
 	 * @brief Stops the thread.
 	 */
 	virtual void stop() override {
-		plugin::stop();
-		_m_terminate.store(true);
-		_m_thread.join();
+		if (! _m_terminate.load()) {
+			_m_terminate.store(true);
+			_m_thread.join();
+			plugin::stop();
+		} else {
+			std::cerr << "You called stop() on this component twice." << std::endl;
+		}
 	}
 
-	// virtual ~threadloop() override {
-	// 	std::cout << "~~~~~~~~~" << std::endl;
-	// 	if (!should_terminate()) {
-	// 		stop();
-	// 	}
-	// 	std::cout << "88888" << std::endl;
-	// }
+	virtual ~threadloop() override {
+		if (!_m_terminate.load()) {
+			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
+			abort();
+		}
+	}
 
 private:
 	void thread_main() {

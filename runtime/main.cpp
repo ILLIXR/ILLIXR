@@ -17,9 +17,8 @@ int main(int argc, const char * argv[]) {
 	for (int i = 1; i < argc; ++i) {
 		r->load_so(argv[i]);
 	}
-	r->wait();
-	// std::this_thread::sleep_for(std::chrono::seconds(10));
-	r->stop();
+	// r->wait();
+	std::this_thread::sleep_for(std::chrono::seconds(60));
 	delete r;
 	return 0;
 }

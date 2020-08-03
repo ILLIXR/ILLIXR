@@ -73,13 +73,17 @@ public:
 	{ }
 
 	void pull_queue() {
-			std::size_t chunk_size = 1024;
-			std::vector<std::unique_ptr<const record>> buffer {chunk_size};
-			std::size_t dequeued_count = queue.wait_dequeue_bulk_timed(buffer.begin(), chunk_size, std::chrono::milliseconds(50));
-			if (dequeued_count != 0) {
+		std::unique_ptr<const record> record;
+		// std::size_t dequeued_count = queue.wait_dequeue_bulk_timed(buffer.begin(), chunk_size, std::chrono::milliseconds(50));
+		// if (dequeued_count != 0)
+		// TODO(performance): use timed bulk dequeue and SQL transactions
+		while (!terminate.load()) {
+			if (queue.try_dequeue(record))
+			{
 				// sqlite3pp::transaction xct {db};
 				{
-					for (std::size_t i = 0; i < dequeued_count; ++i) {
+					// for (std::size_t i = 0; i < dequeued_count; ++i)
+					{
 
 						std::string insert_string = std::string{"INSERT INTO "} + table_name + std::string{" VALUES ("};
 						{
@@ -95,7 +99,7 @@ public:
 
 
 						std::size_t j = 1;
-						const char* r = reinterpret_cast<const char*>(buffer[i].get());
+						const char* r = reinterpret_cast<const char*>(record.get());
 						for (const std::pair<std::string, const type*>& ty : record_type.fields) {
 							if (false) {
 							} else if (ty.second->type_id == types::std__chrono__nanoseconds.type_id) {
@@ -116,6 +120,7 @@ public:
 				}
 				// xct.commit();
 			}
+		}
 	}
 
 	void put_queue(std::vector<std::unique_ptr<const record>>&& buffer_in) {
@@ -127,6 +132,7 @@ public:
 	}
 
 	~sqlite_thread() {
+		terminate.store(true);
 		thread.join();
 	}
 private:
@@ -135,8 +141,9 @@ private:
 	std::string table_name;
 	sqlite3pp::database db;
 	sqlite3pp::command cmd;
-	std::thread thread;
 	moodycamel::BlockingConcurrentQueue<std::unique_ptr<const record>> queue;
+	std::atomic<bool> terminate;
+	std::thread thread;
 };
 
 const std::experimental::filesystem::path sqlite_thread::dir {"metrics"};
