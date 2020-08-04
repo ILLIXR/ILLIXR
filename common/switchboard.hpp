@@ -7,9 +7,29 @@
 #include "phonebook.hpp"
 #include "cpu_timer.hpp"
 #include "logging.hpp"
-#include "record_types.hpp"
 
 namespace ILLIXR {
+
+
+
+	const record_header __switchboard_callback_start_header {
+		"switchboard_callback_start",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"serial_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+	const record_header __switchboard_callback_stop_header {
+		"switchboard_callback_stop",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"serial_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
 
 /**
  * @brief A handle which can read the latest event on a topic.
@@ -149,9 +169,19 @@ public:
 				// TODO(performance): Make this use coalescer
 				// TODO(logging): Use a real serial no here.
 				const std::size_t serial_no = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-				metric_logger->log<start_callback_record>(std::make_unique<start_callback_record>(component_id, 0, serial_no));
+				metric_logger->log(record{&__switchboard_callback_start_header, {
+					{component_id},
+					{serial_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}});
 				fn(reinterpret_cast<const event*>(ptr));
-				metric_logger->log<stop_callback_record>(std::make_unique<stop_callback_record>(component_id, 0, serial_no));
+				metric_logger->log(record{&__switchboard_callback_stop_header, {
+					{component_id},
+					{serial_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}});
 			}
 		}, typeid(event).hash_code());
 	}

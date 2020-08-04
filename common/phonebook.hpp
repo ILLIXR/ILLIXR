@@ -90,8 +90,6 @@ namespace ILLIXR {
 		/**
 		 * @brief Registers an implementation of @p baseclass for future calls to lookup.
 		 *
-		 * This overwwrites any existing implementation of @p baseclass.
-		 *
 		 * Safe to be called from any thread.
 		 *
 		 * The implementation will be owned by phonebook (phonebook calls `delete`).
@@ -101,8 +99,8 @@ namespace ILLIXR {
 			const std::lock_guard<std::mutex> lock{_m_mutex};
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
-			//std::cout << "Register " << type_index.name() << "\n";
-			_m_registry.erase(type_index);
+			// std::cerr << "Register " << type_index.name() << std::endl;
+			assert(_m_registry.count(type_index) == 0);
 			_m_registry.try_emplace(type_index, impl);
 		}
 
@@ -121,10 +119,12 @@ namespace ILLIXR {
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
 
+#ifndef DNDEBUG
 			// if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
 			if (_m_registry.count(type_index) != 1) {
 				throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
 			}
+#endif
 
 			std::shared_ptr<service> this_service = _m_registry.at(type_index);
 			assert(this_service);

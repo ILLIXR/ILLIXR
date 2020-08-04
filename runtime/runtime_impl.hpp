@@ -4,9 +4,9 @@
 #include "common/extended_window.hpp"
 #include "common/dynamic_lib.hpp"
 #include "switchboard_impl.hpp"
-#include "sqlite_logger.hpp"
 #include "common/plugin.hpp"
-#include "stdout_logger.hpp"
+#include "sqlite_logger.hpp"
+// #include "stdout_logger.hpp"
 
 using namespace ILLIXR;
 

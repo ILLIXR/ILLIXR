@@ -1,7 +1,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/logging.hpp"
-#include "common/record_types.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>

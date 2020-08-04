@@ -5,6 +5,24 @@
 
 namespace ILLIXR {
 
+	const record_header __plugin_start_header {
+		"plugin_start",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"plugin_name", typeid(std::string)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+	const record_header __plugin_stop_header {
+		"plugin_stop",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+
 	/**
 	 * @brief A dynamically-loadable plugin for Spindle.
 	 */
@@ -18,7 +36,12 @@ namespace ILLIXR {
 		 * consturctors.
 		 */
 		virtual void start() {
-			metric_logger->log(std::make_unique<const component_start_record>(id, name));
+			metric_logger->log(record{&__plugin_start_header, {
+				{id},
+				{name},
+				{thread_cpu_time()},
+				{std::chrono::high_resolution_clock::now()},
+			}});
 		}
 
 		/**
@@ -32,7 +55,11 @@ namespace ILLIXR {
 		 * freed memory. Instead, we call plugin->stop manually before destrying anything.
 		 */
 		virtual void stop() {
-			metric_logger->log(std::make_unique<const component_stop_record>(id));
+			metric_logger->log(record{&__plugin_stop_header, {
+				{id},
+				{thread_cpu_time()},
+				{std::chrono::high_resolution_clock::now()},
+			}});
 		}
 
 		plugin(const std::string& name_, phonebook* pb_)

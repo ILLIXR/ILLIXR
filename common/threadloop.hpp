@@ -9,6 +9,45 @@
 
 namespace ILLIXR {
 
+	const record_header __threadloop_iteration_start_header {
+		"threadloop_iteration_start",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+	const record_header __threadloop_iteration_stop_header {
+		"threadloop_iteration_stop",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+	const record_header __threadloop_skip_start_header {
+		"threadloop_skip_start",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
+			{"skip_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+	const record_header __threadloop_skip_stop_header {
+		"threadloop_skip_stop",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
+			{"skip_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+
 /**
  * @brief A reusable threadloop for plugins.
  *
@@ -37,7 +76,7 @@ public:
 			_m_thread.join();
 			plugin::stop();
 		} else {
-			std::cerr << "You called stop() on this component twice." << std::endl;
+			std::cerr << "You called stop() on this plugin twice." << std::endl;
 		}
 	}
 
@@ -50,36 +89,58 @@ public:
 
 private:
 	void thread_main() {
-		metric_coalescer<start_iteration_record> start_it {metric_logger};
-		metric_coalescer<stop_iteration_record> stop_it {metric_logger};
-		metric_coalescer<start_skip_iteration_record> start_skip {metric_logger};
-		metric_coalescer<stop_skip_iteration_record> stop_skip {metric_logger};
+		metric_coalescer it_start {metric_logger};
+		metric_coalescer it_stop {metric_logger};
+		metric_coalescer skip_start {metric_logger};
+		metric_coalescer skip_stop {metric_logger};
 
-		std::size_t it = 0;
-		std::size_t skip_it = 0;
+		std::size_t iteration_no = 0;
+		std::size_t skip_no = 0;
 
 		_p_thread_setup();
 
 		while (!should_terminate()) {
 
-			start_skip.log(std::make_unique<const start_skip_iteration_record>(id, it, skip_it));
+			skip_start.log(record{&__threadloop_skip_start_header, {
+				{id},
+				{iteration_no},
+				{skip_no},
+				{thread_cpu_time()},
+				{std::chrono::high_resolution_clock::now()},
+			}});
 			skip_option s = _p_should_skip();
-			stop_skip.log(std::make_unique<const stop_skip_iteration_record>(id, it, skip_it));
+			skip_stop.log(record{&__threadloop_skip_stop_header , {
+				{id},
+				{iteration_no},
+				{skip_no},
+				{thread_cpu_time()},
+				{std::chrono::high_resolution_clock::now()},
+			}});
 
 			switch (s) {
 			case skip_option::skip_and_yield:
 				std::this_thread::yield();
-				++skip_it;
+				++skip_no;
 				break;
 			case skip_option::skip_and_spin:
-				++skip_it;
+				++skip_no;
 				break;
 			case skip_option::run:
-				start_it.log(std::make_unique<const start_iteration_record>(id, it, skip_it));
+				it_start.log(record{&__threadloop_iteration_start_header, {
+					{id},
+					{iteration_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}});
 				_p_one_iteration();
-				stop_it.log(std::make_unique<const stop_iteration_record>(id, it, skip_it));
-				++it;
-				skip_it = 0;
+				it_stop .log(record{&__threadloop_iteration_stop_header, {
+					{id},
+					{iteration_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}});
+				++iteration_no;
+				skip_no = 0;
 				break;
 			case skip_option::stop:
 				stop();
