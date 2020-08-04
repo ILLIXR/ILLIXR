@@ -289,6 +289,7 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
+		lastSwapTime = glfwGetTime();
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -385,8 +386,6 @@ public:
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
-
-		lastSwapTime = glfwGetTime();
 	}
 
 
@@ -572,7 +571,6 @@ public:
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
 		glXSwapBuffers(xwin->dpy, xwin->win);
-		lastSwapTime = glfwGetTime();
 		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
 
 		// TODO (implement-logging): When we have logging infra, delete this code.
