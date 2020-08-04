@@ -29,7 +29,7 @@ public:
 		return sqlite3pp::database{path.c_str()};
 	}
 
-	sqlite3pp::command prep_cmd() {
+	std::string prep_insert_str() {
 		std::string drop_table_string = std::string{"DROP TABLE IF EXISTS "} + table_name + std::string{";"};
 		db.execute(drop_table_string.c_str());
 
@@ -60,62 +60,67 @@ public:
 		}
 		insert_string.erase(insert_string.size() - 2);
 		insert_string += std::string{");"};
-		return sqlite3pp::command{db, insert_string.c_str()};
+		return insert_string;
 	}
 
 	sqlite_thread(const record_header& rh_)
 		: rh{rh_}
 		, table_name{rh.get_name()}
 		, db{prep_db()}
-		, cmd{prep_cmd()}
+		, insert_str{prep_insert_str()}
+		, insert_cmd{db, insert_str.c_str()}
 		, thread{std::bind(&sqlite_thread::pull_queue, this)}
 	{ }
 
 	void pull_queue() {
-		record r;
+		const std::size_t max_record_batch_size = 1024;
+		const std::chrono::milliseconds max_record_match_wait_time {1000};
+		std::vector<record> record_batch {max_record_batch_size};
+		std::size_t actual_batch_size;
+
 		while (!terminate.load()) {
-			// TODO(performance): use timed bulk dequeue and SQL transactions
-			if (queue.try_dequeue(r)) {
-				process(r);
-			}
+			actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time);
+			process(record_batch, actual_batch_size);
 		}
-		while (queue.try_dequeue(r)) {
-			process(r);
+
+		// We got the terminate commnad,
+		// So drain whatever is left in the queue.
+		// But don't wait around once it is empty.
+		while ((actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time))) {
+			process(record_batch, actual_batch_size);
 		}
 	}
 
-	void process(const record& r) {
-		std::string insert_string = std::string{"INSERT INTO "} + table_name + std::string{" VALUES ("};
-		for (unsigned i = 0; i < rh.get_columns(); ++i) {
-			insert_string += std::string{"?"} + std::to_string(i+1) + std::string{", "};
-		}
-		insert_string.erase(insert_string.size() - 2);
-		insert_string += std::string{");"};
-		sqlite3pp::command cmd{db, insert_string.c_str()};
-
-		for (unsigned i = 0; i < rh.get_columns(); ++i) {
-			/*
-			  If you get a `std::bad_any_cast` here, make sure the user didn't lie about record.get_record_header().
-			  The types there should be the same as those in record.get_values().
-			*/
-			if (false) {
-			} else if (rh.get_column_type(i) == typeid(std::size_t)) {
-				cmd.bind(i+1, static_cast<long long>(r.get_value<std::size_t>(i)));
-			} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
-				cmd.bind(i+1, static_cast<long long>(r.get_value<std::chrono::nanoseconds>(i).count()));
-			} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
-				auto val = r.get_value<std::chrono::high_resolution_clock::time_point>(i).time_since_epoch();
-				cmd.bind(i+1, static_cast<long long>(std::chrono::duration_cast<std::chrono::nanoseconds>(val).count()));
-			} else if (rh.get_column_type(i) == typeid(std::string)) {
-				// r.get_value<std::string>(i) returns a std::string temporary
-				// c_str() returns a pointer into that std::string temporary
-				// Therefore, need to copy.
-				cmd.bind(i+1, r.get_value<std::string>(i).c_str(), sqlite3pp::copy);
-			} else {
-				throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(i).name()} + std::string{" not implemented"}};
+	void process(const std::vector<record>& record_batch, std::size_t batch_size) {
+		sqlite3pp::transaction xct{db};
+		for (std::size_t i = 0; i < batch_size; ++i) {
+			sqlite3pp::command cmd{db, insert_str.c_str()};
+			const record& r = record_batch[i];
+			for (unsigned i = 0; i < rh.get_columns(); ++i) {
+				/*
+				  If you get a `std::bad_any_cast` here, make sure the user didn't lie about record.get_record_header().
+				  The types there should be the same as those in record.get_values().
+				*/
+				if (false) {
+				} else if (rh.get_column_type(i) == typeid(std::size_t)) {
+					cmd.bind(i+1, static_cast<long long>(r.get_value<std::size_t>(i)));
+				} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
+					cmd.bind(i+1, static_cast<long long>(r.get_value<std::chrono::nanoseconds>(i).count()));
+				} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
+					auto val = r.get_value<std::chrono::high_resolution_clock::time_point>(i).time_since_epoch();
+					cmd.bind(i+1, static_cast<long long>(std::chrono::duration_cast<std::chrono::nanoseconds>(val).count()));
+				} else if (rh.get_column_type(i) == typeid(std::string)) {
+					// r.get_value<std::string>(i) returns a std::string temporary
+					// c_str() returns a pointer into that std::string temporary
+					// Therefore, need to copy.
+					cmd.bind(i+1, r.get_value<std::string>(i).c_str(), sqlite3pp::copy);
+				} else {
+					throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(i).name()} + std::string{" not implemented"}};
+				}
 			}
+			cmd.execute();
 		}
-		cmd.execute();
+		xct.commit();
 	}
 
 	void put_queue(const std::vector<record>& buffer_in) {
@@ -136,7 +141,8 @@ private:
 	const record_header& rh;
 	std::string table_name;
 	sqlite3pp::database db;
-	sqlite3pp::command cmd;
+	std::string insert_str;
+	sqlite3pp::command insert_cmd;
 	moodycamel::BlockingConcurrentQueue<record> queue;
 	std::atomic<bool> terminate {false};
 	std::thread thread;

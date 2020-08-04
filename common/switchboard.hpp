@@ -9,28 +9,6 @@
 #include "logging.hpp"
 
 namespace ILLIXR {
-
-
-
-	const record_header __switchboard_callback_start_header {
-		"switchboard_callback_start",
-		{
-			{"plugin_id", typeid(std::size_t)},
-			{"serial_no", typeid(std::size_t)},
-			{"cpu_time", typeid(std::chrono::nanoseconds)},
-			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-		},
-	};
-	const record_header __switchboard_callback_stop_header {
-		"switchboard_callback_stop",
-		{
-			{"plugin_id", typeid(std::size_t)},
-			{"serial_no", typeid(std::size_t)},
-			{"cpu_time", typeid(std::chrono::nanoseconds)},
-			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-		},
-	};
-
 /**
  * @brief A handle which can read the latest event on a topic.
  */
@@ -137,19 +115,11 @@ private:
 	std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& name, std::size_t ty) = 0;
 
 	virtual
-	void _p_schedule(const std::string& name, std::function<void(const void*)> fn, std::size_t ty) = 0;
+	void _p_schedule(std::size_t component_id, const std::string& name, std::function<void(const void*)> fn, std::size_t ty) = 0;
 
 	/* TODO: (usability) add a method which queries if a topic has a writer. Readers might assert this. */
 
-	const phonebook * const pb;
-	const std::shared_ptr<c_metric_logger> metric_logger;
-
 public:
-
-	switchboard(phonebook const* pb_)
-		: pb{pb_}
-		, metric_logger{pb->lookup_impl<c_metric_logger>()}
-	{ }
 
 	/**
 	 * @brief Schedules the callback @p fn every time an event is published to @p name.
@@ -164,25 +134,8 @@ public:
 	 */
 	template <typename event>
 	void schedule(std::size_t component_id, const std::string& name, std::function<void(const event*)> fn) {
-		_p_schedule(name, [=](const void* ptr) {
-			{
-				// TODO(performance): Make this use coalescer
-				// TODO(logging): Use a real serial no here.
-				const std::size_t serial_no = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-				metric_logger->log(record{&__switchboard_callback_start_header, {
-					{component_id},
-					{serial_no},
-					{thread_cpu_time()},
-					{std::chrono::high_resolution_clock::now()},
-				}});
-				fn(reinterpret_cast<const event*>(ptr));
-				metric_logger->log(record{&__switchboard_callback_stop_header, {
-					{component_id},
-					{serial_no},
-					{thread_cpu_time()},
-					{std::chrono::high_resolution_clock::now()},
-				}});
-			}
+		_p_schedule(component_id, name, [=](const void* ptr) {
+			fn(reinterpret_cast<const event*>(ptr));
 		}, typeid(event).hash_code());
 	}
 

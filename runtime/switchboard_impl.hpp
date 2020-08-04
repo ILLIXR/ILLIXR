@@ -24,6 +24,33 @@ Caveat:
 */
 
 namespace ILLIXR {
+	const record_header __switchboard_callback_start_header {
+		"switchboard_callback_start",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"serial_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+	const record_header __switchboard_callback_stop_header {
+		"switchboard_callback_stop",
+		{
+			{"plugin_id", typeid(std::size_t)},
+			{"serial_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+
+
+	const record_header __switchboard_topic_stop_header {
+		"switchboard_topic_stop",
+		{
+			{"topic_name", typeid(std::string)},
+			{"size", typeid(std::size_t)},
+		},
+	};
 
 	class topic {
 	public:
@@ -131,9 +158,9 @@ namespace ILLIXR {
 			return std::make_unique<topic_reader_latest>(this);
 		}
 
-		void schedule(std::function<void(const void*)> callback) {
+		void schedule(std::size_t component_id, std::function<void(const void*)> callback) {
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
-			_m_callbacks.push_back(callback);
+			_m_callbacks.push_back({component_id, callback});
 		}
 
 		std::size_t ty() {
@@ -141,8 +168,9 @@ namespace ILLIXR {
 			return _m_ty;
 		}
 
-		topic(std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
-			: _m_ty{ty}
+		topic(const std::shared_ptr<c_metric_logger> metric_logger, std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
+			: _m_metric_logger{metric_logger}
+			, _m_ty{ty}
 			, _m_name{name}
 			, _m_queue{queue}
 		{
@@ -174,16 +202,32 @@ namespace ILLIXR {
 			 * - callback should not attempt to create a new subscription, publish, or schedule (that would try to acquire _m_registry_lock)
 			 */
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
-			for (std::function<void(const void*)> callback : _m_callbacks) {
-				callback(event);
+			const std::size_t serial_no = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+			for (const auto& pair : _m_callbacks) {
+				// TODO(performance): Make this use coalescer
+				// TODO(logging): Use a real serial no here.
+				_m_metric_logger->log(record{&__switchboard_callback_start_header, {
+					{pair.first},
+					{serial_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}});
+				pair.second(event);
+				_m_metric_logger->log(record{&__switchboard_callback_stop_header, {
+					{pair.first},
+					{serial_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}});
 			}
 		}
 
 	private:
 
+		const std::shared_ptr<c_metric_logger> _m_metric_logger;
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
-		std::vector<std::function<void(const void*)>> _m_callbacks;
+		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
 		std::mutex _m_callbacks_lock;
 		const std::string _m_name;
 		queue<std::pair<std::string, const void*>>& _m_queue;
@@ -203,8 +247,9 @@ namespace ILLIXR {
 
 	public:
 
-		switchboard_impl(phonebook const* pb)
-			: switchboard{pb}
+		switchboard_impl(phonebook const* pb_)
+			: pb{pb_}
+			, metric_logger{pb->lookup_impl<c_metric_logger>()}
 		{
 			for (size_t i = 0; i < MAX_THREADS; ++i) {
 				_m_threads.push_back(std::thread{[this]() {
@@ -228,6 +273,9 @@ namespace ILLIXR {
 
 	private:
 
+		const phonebook * const pb;
+		const std::shared_ptr<c_metric_logger> metric_logger;
+
 		void check_queues() {
 			/*
 			  Proof of thread-safety:
@@ -239,16 +287,29 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			// TODO(performance): use timed deque
+			std::pair<std::string, const void*> t;
 			while (!_m_terminate.load()) {
-				std::pair<std::string, const void*> t;
 				if (_m_queue.try_dequeue(t)) {
 					const std::lock_guard lock{_m_registry_lock};
 					_m_registry.at(t.first).invoke_callbacks(t.second);
 				}
 			}
+			std::unordered_map<std::string, std::size_t> leftover;
+			while (_m_queue.try_dequeue(t)) {
+				leftover[t.first]++;
+			}
+			for (const auto& pair : leftover) {
+				metric_logger->log(record{
+					&__switchboard_topic_stop_header,
+					{
+						{pair.first},
+						{pair.second},
+					}
+				});
+			}
 		}
 
-		virtual void _p_schedule(const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
+		virtual void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
 			  - Reads _m_registry after acquiring its lock (it can't change)
@@ -257,9 +318,9 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
+			topic& topic = _m_registry.try_emplace(topic_name, metric_logger, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
-			topic.schedule(callback);
+			topic.schedule(component_id, callback);
 		}
 
 		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& topic_name, std::size_t ty) override {
@@ -272,7 +333,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
+			topic& topic = _m_registry.try_emplace(topic_name, metric_logger, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			return std::unique_ptr<writer<void>>(topic.get_writer().release());
 			/* TODO: (code beautify) why can't I write
@@ -290,7 +351,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
+			topic& topic = _m_registry.try_emplace(topic_name, metric_logger, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			return std::unique_ptr<reader_latest<void>>(topic.get_reader_latest().release());
 			/* TODO: (code beautify) why can't I write

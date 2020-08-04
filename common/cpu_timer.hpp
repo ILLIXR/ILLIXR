@@ -28,6 +28,10 @@ cpp_clock_gettime(clockid_t clock_id) {
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};
     }
+	asm volatile (""
+				  : /* OutputOperands */
+				  : /* InputOperands */
+				  : "memory" /* Clobbers */);
     return std::chrono::seconds{ts.tv_sec} + std::chrono::nanoseconds{ts.tv_nsec};
 }
 

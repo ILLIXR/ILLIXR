@@ -1,8 +1,15 @@
-- Calling `stop()` twice.
-- Not calling delete on runtime.
-- ~threadloop joins the thread, but derived gets destroyed first.
-- Stopping switchboard after destroying components
-- Destroying shared libraries before destroying components (destructor ordering)
-- Nonvirtual destructor in polymorphic class (pose_prediction, swichboard, )
-- Not looping in sqlite_thread.
-- Not catching ctrl+C
+- Not catching ctrl+C. This causes a crash before the destructors are run.
+- Calling `stop()` twice. This causes a crash before the destructors run.
+- Not calling delete on runtime. This prevents the destructors from being called.
+- `~threadloop` joins the thread, but derived gets destroyed first. This causes a crash while the destructors are being run.
+- Stopping switchboard after destroying components. This prevents the destructors from being run.
+- Destroying shared libraries before destroying components (destructor ordering). This causes a crash while the destructors are being run.
+- Nonvirtual destructor in polymorphic class (pose_prediction, swichboard, record). This causes undefined behavior and prevents the destructors from being run.
+- (feature) Rewrote with std::vector<std::any> instead of reflection. This allows:
+  - Removing Python-generated code.
+  - Removing the pointer-arithmetic and void-casts.
+  - Virtual destructor in record.
+    - (feature) Assert usage taint in destructors.
+- Not looping in sqlite_thread. This prevented data from being logged.
+- `audio_pipeline/Makefile` was incorrectly not rebuilding when `common/` changes. This causes crashes for unrelated reasons.
+- Log when a topic has unprocessed data. This helps us identify when a callback is not running at max frequency, rather than not being logged properly.

@@ -19,6 +19,9 @@ int main(int argc, const char * argv[]) {
 	}
 	// r->wait();
 	std::this_thread::sleep_for(std::chrono::seconds(60));
+	auto start = thread_cpu_time();
 	delete r;
+	auto stop = thread_cpu_time();
+	std::cout << "deleting = " << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "ns" << std::endl;
 	return 0;
 }
