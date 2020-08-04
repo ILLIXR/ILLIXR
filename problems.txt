@@ -13,3 +13,4 @@
 - Not looping in sqlite_thread. This prevented data from being logged.
 - `audio_pipeline/Makefile` was incorrectly not rebuilding when `common/` changes. This causes crashes for unrelated reasons.
 - Log when a topic has unprocessed data. This helps us identify when a callback is not running at max frequency, rather than not being logged properly.
+- `audio_pipeline` was running with the incorrect frequency.
