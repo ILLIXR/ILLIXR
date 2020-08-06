@@ -165,7 +165,9 @@ public:
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};
 				ksAlgebra::ksMatrix4x4f head_matrix;
+#ifndef DNDEBUG
 				std::cout<< "App using position: " << latest_position.z << std::endl;
+#endif
 				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
 				ksAlgebra::ksMatrix4x4f viewMatrix;
 				// View matrix is the inverse of the camera's position/rotation/etc.
@@ -436,7 +438,9 @@ public:
     	glBindVertexArray(demo_vao);
 
 		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+#ifndef DNDEBUG
 		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+#endif
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
