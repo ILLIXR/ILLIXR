@@ -10,7 +10,6 @@
 #include <ctime>
 #include <memory>
 #include "phonebook.hpp"
-#include "cpu_timer.hpp"
 
 namespace ILLIXR {
 	static inline std::chrono::system_clock::time_point __high_res_to_sys_tp(const std::chrono::high_resolution_clock::time_point& input) {

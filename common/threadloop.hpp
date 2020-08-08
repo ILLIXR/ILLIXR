@@ -87,15 +87,16 @@ public:
 		}
 	}
 
+protected:
+	std::size_t iteration_no = 0;
+	std::size_t skip_no = 0;
+
 private:
 	void thread_main() {
 		metric_coalescer it_start {metric_logger};
 		metric_coalescer it_stop {metric_logger};
 		metric_coalescer skip_start {metric_logger};
 		metric_coalescer skip_stop {metric_logger};
-
-		std::size_t iteration_no = 0;
-		std::size_t skip_no = 0;
 
 		_p_thread_setup();
 

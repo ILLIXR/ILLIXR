@@ -24,6 +24,33 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
+const record_header timewarp_fence_start_record {
+	"timewarp_fence_start",
+	{
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time", typeid(std::chrono::nanoseconds)},
+		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+	},
+};
+
+const record_header timewarp_fence_stop_record {
+	"timewarp_fence_stop",
+	{
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time", typeid(std::chrono::nanoseconds)},
+		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+	},
+};
+
+const record_header timewarp_gpu_record {
+	"timewarp_gpu",
+	{
+		{"iteration_no", typeid(std::size_t)},
+		{"gpu_duration", typeid(std::size_t)},
+		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+	},
+};
+
 class timewarp_gl : public threadloop {
 
 public:
@@ -553,15 +580,31 @@ public:
 		GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
 		glEndQuery(GL_TIME_ELAPSED);
+
+		metric_logger->log(record{&timewarp_fence_start_record, {
+			{iteration_no},
+			{thread_cpu_time()},
+			{std::chrono::high_resolution_clock::now()},
+		}});
 		// retrieving the recorded elapsed time
 		// wait until the query result is available
 		while (!done) {
 			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
 		}
+		metric_logger->log(record{&timewarp_fence_stop_record, {
+			{iteration_no},
+			{thread_cpu_time()},
+			{std::chrono::high_resolution_clock::now()},
+		}});
+
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 		// TODO (implement-logging): When we have logging infra, log this.
-		//printf("cpu_timer,timewarp_gl_gpu,%lu\n", elapsed_time);
+		metric_logger->log(record{&timewarp_gpu_record, {
+			{iteration_no},
+			{std::size_t(elapsed_time)},
+			{std::chrono::high_resolution_clock::now()},
+		}});
 
 		// Call Hologram
 		auto hologram_params = new hologram_input;

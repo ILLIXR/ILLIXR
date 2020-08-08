@@ -43,12 +43,29 @@ namespace ILLIXR {
 		},
 	};
 
-
 	const record_header __switchboard_topic_stop_header {
 		"switchboard_topic_stop",
 		{
 			{"topic_name", typeid(std::string)},
 			{"size", typeid(std::size_t)},
+		},
+	};
+
+	const record_header __switchboard_check_queues_start_header {
+		"switchboard_check_queues_start",
+		{
+			{"serial_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		},
+	};
+
+	const record_header __switchboard_check_queues_stop_header {
+		"switchboard_check_queues_stop",
+		{
+			{"serial_no", typeid(std::size_t)},
+			{"cpu_time", typeid(std::chrono::nanoseconds)},
+			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 		},
 	};
 
@@ -287,18 +304,53 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			// TODO(performance): use timed deque
+			std::size_t serial_no = 0;
+			metric_logger->log(record{
+				&__switchboard_check_queues_start_header,
+				{
+					{serial_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}
+			});
 			std::pair<std::string, const void*> t;
 			while (!_m_terminate.load()) {
 				if (_m_queue.try_dequeue(t)) {
 					const std::lock_guard lock{_m_registry_lock};
+					metric_logger->log(record{
+						&__switchboard_check_queues_stop_header,
+						{
+							{serial_no},
+							{thread_cpu_time()},
+							{std::chrono::high_resolution_clock::now()},
+						}
+					});
+					serial_no++;
 					_m_registry.at(t.first).invoke_callbacks(t.second);
+					metric_logger->log(record{
+						&__switchboard_check_queues_start_header,
+						{
+							{serial_no},
+							{thread_cpu_time()},
+							{std::chrono::high_resolution_clock::now()},
+						}
+					});
 				}
 			}
+			metric_logger->log(record{
+				&__switchboard_check_queues_stop_header,
+				{
+					{serial_no},
+					{thread_cpu_time()},
+					{std::chrono::high_resolution_clock::now()},
+				}
+			});
+
 			std::unordered_map<std::string, std::size_t> leftover;
 			while (_m_queue.try_dequeue(t)) {
 				leftover[t.first]++;
 			}
-			for (const auto& pair : leftover) {
+			for (const std::pair<const std::string, std::size_t>& pair : leftover) {
 				metric_logger->log(record{
 					&__switchboard_topic_stop_header,
 					{

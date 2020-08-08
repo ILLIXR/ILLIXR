@@ -2,6 +2,7 @@
 
 #include "phonebook.hpp"
 #include "logging.hpp"
+#include "cpu_timer.hpp"
 
 namespace ILLIXR {
 

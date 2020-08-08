@@ -248,8 +248,10 @@ public:
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
 			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
 			*/
-			
+
+#ifndef DNDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+#endif
 			lastTime = glfwGetTime();
 			glFlush();
 

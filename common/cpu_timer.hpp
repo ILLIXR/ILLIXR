@@ -118,7 +118,6 @@ template <
     typename duration = decltype(std::declval<time_point>() - std::declval<time_point>())
     >
 class print_timer {
-public:
 private:
     class print_in_destructor {
     public:
@@ -150,6 +149,31 @@ public:
         : _p_print_in_destructor{name, _p_duration}
         , _p_timer{now, _p_duration}
     { }
+};
+
+static std::size_t gen_serial_no() {
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+}
+
+class print_timer2 {
+public:
+	void print() {
+		auto cpu_time = thread_cpu_time().count();
+		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		std::cout << "cpu_timer," << name << "," << cpu_time << "," << wall_time << "\n";
+	}
+    print_timer2(std::string name_)
+		: name{name_}
+		, serial_no{gen_serial_no()}
+	{
+		print();
+	}
+	~print_timer2() {
+		print();
+	}
+private:
+	const std::string name;
+	const std::size_t serial_no;
 };
 
 #define PRINT_CPU_TIME_FOR_THIS_BLOCK(name)                                 \
