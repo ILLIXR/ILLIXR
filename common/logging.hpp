@@ -133,7 +133,7 @@ namespace ILLIXR {
 		}
 
 		~record() {
-			assert(rh == nullptr || data_taint.is_used());
+			// assert(rh == nullptr || data_taint.is_used());
 		}
 
 		template<typename T>
@@ -294,7 +294,7 @@ namespace ILLIXR {
 		 */
 		void log(record r) {
 			buffer.push_back(r);
-			// Log coalescer should only be used with 
+			// Log coalescer should only be used with
 			// In the common case, they will be the same pointer, quickly check the pointers.
 			// In the less common case, we check for object-structural equality.
 #ifndef DNDEBUG

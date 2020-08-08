@@ -285,6 +285,7 @@ namespace ILLIXR {
 		}
 
 		virtual ~switchboard_impl() override {
+			std::cerr << "TEST **" << std::endl;
 			stop();
 		}
 
