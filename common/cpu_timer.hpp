@@ -160,7 +160,7 @@ public:
 	void print() {
 		auto cpu_time = thread_cpu_time().count();
 		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		std::cout << "cpu_timer," << name << "," << cpu_time << "," << wall_time << "\n";
+		std::cout << "cpu_timer," << name << "," << serial_no << "," << cpu_time << "," << wall_time << "\n";
 	}
     print_timer2(std::string name_)
 		: name{name_}

@@ -528,7 +528,6 @@ public:
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
-		int done = 0;
 		glGenQueries(1, &query);
 		glBeginQuery(GL_TIME_ELAPSED, query);
 
@@ -578,19 +577,7 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
-		GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
 		glEndQuery(GL_TIME_ELAPSED);
-
-		// get the query result
-		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		total_gpu_time += elapsed_time;
-		metric_logger->log(record{&timewarp_gpu_stop_record, {
-			{iteration_no},
-			{std::size_t(total_gpu_time)},
-			{thread_cpu_time()},
-			{std::chrono::high_resolution_clock::now()},
-		}});
 
 		// Call Hologram
 		auto hologram_params = new hologram_input;
@@ -604,11 +591,22 @@ public:
 
 		// retrieving the recorded elapsed time
 		// wait until the query result is available
+		int done = 0;
 		glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
 		while (!done) {
 			std::this_thread::yield();
 			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
 		}
+
+		// get the query result
+		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+		total_gpu_time += elapsed_time;
+		metric_logger->log(record{&timewarp_gpu_stop_record, {
+			{iteration_no},
+			{std::size_t(total_gpu_time)},
+			{thread_cpu_time()},
+			{std::chrono::high_resolution_clock::now()},
+		}});
 
 		// TODO (implement-logging): When we have logging infra, delete this code.
 		// This only looks at warp time, so doesn't take into account IMU frequency.
