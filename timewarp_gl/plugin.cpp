@@ -582,9 +582,9 @@ public:
 		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
 		glEndQuery(GL_TIME_ELAPSED);
 
-		total_gpu_time += elapsed_time;
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+		total_gpu_time += elapsed_time;
 		metric_logger->log(record{&timewarp_gpu_stop_record, {
 			{iteration_no},
 			{std::size_t(total_gpu_time)},
