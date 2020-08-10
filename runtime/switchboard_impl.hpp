@@ -28,7 +28,7 @@ namespace ILLIXR {
 		"switchboard_callback_start",
 		{
 			{"plugin_id", typeid(std::size_t)},
-			{"serial_no", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
 			{"cpu_time", typeid(std::chrono::nanoseconds)},
 			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 		},
@@ -37,7 +37,7 @@ namespace ILLIXR {
 		"switchboard_callback_stop",
 		{
 			{"plugin_id", typeid(std::size_t)},
-			{"serial_no", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
 			{"cpu_time", typeid(std::chrono::nanoseconds)},
 			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 		},
@@ -54,7 +54,7 @@ namespace ILLIXR {
 	const record_header __switchboard_check_queues_start_header {
 		"switchboard_check_queues_start",
 		{
-			{"serial_no", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
 			{"cpu_time", typeid(std::chrono::nanoseconds)},
 			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 		},
@@ -63,7 +63,7 @@ namespace ILLIXR {
 	const record_header __switchboard_check_queues_stop_header {
 		"switchboard_check_queues_stop",
 		{
-			{"serial_no", typeid(std::size_t)},
+			{"iteration_no", typeid(std::size_t)},
 			{"cpu_time", typeid(std::chrono::nanoseconds)},
 			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 		},
@@ -187,6 +187,8 @@ namespace ILLIXR {
 
 		topic(const std::shared_ptr<c_metric_logger> metric_logger, std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
 			: _m_metric_logger{metric_logger}
+			, _m_cb_start {_m_metric_logger}
+			, _m_cb_stop  {_m_metric_logger}
 			, _m_ty{ty}
 			, _m_name{name}
 			, _m_queue{queue}
@@ -219,34 +221,36 @@ namespace ILLIXR {
 			 * - callback should not attempt to create a new subscription, publish, or schedule (that would try to acquire _m_registry_lock)
 			 */
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
-			const std::size_t serial_no = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 			for (const auto& pair : _m_callbacks) {
 				// TODO(performance): Make this use coalescer
-				// TODO(logging): Use a real serial no here.
-				_m_metric_logger->log(record{&__switchboard_callback_start_header, {
+				_m_cb_start.log(record{&__switchboard_callback_start_header, {
 					{pair.first},
-					{serial_no},
+					{_m_iteration_no},
 					{thread_cpu_time()},
 					{std::chrono::high_resolution_clock::now()},
 				}});
 				pair.second(event);
-				_m_metric_logger->log(record{&__switchboard_callback_stop_header, {
+				_m_cb_stop.log(record{&__switchboard_callback_stop_header, {
 					{pair.first},
-					{serial_no},
+					{_m_iteration_no},
 					{thread_cpu_time()},
 					{std::chrono::high_resolution_clock::now()},
 				}});
 			}
+			_m_iteration_no++;
 		}
 
 	private:
 
 		const std::shared_ptr<c_metric_logger> _m_metric_logger;
+		metric_coalescer _m_cb_start;
+		metric_coalescer _m_cb_stop;
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
 		std::mutex _m_callbacks_lock;
 		const std::string _m_name;
+		std::size_t _m_iteration_no = 0;
 		queue<std::pair<std::string, const void*>>& _m_queue;
 		/* - const because nobody should write to the _m_latest in
 		   place. This is not thread-safe.
@@ -285,7 +289,6 @@ namespace ILLIXR {
 		}
 
 		virtual ~switchboard_impl() override {
-			std::cerr << "TEST **" << std::endl;
 			stop();
 		}
 
@@ -305,11 +308,15 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			// TODO(performance): use timed deque
-			std::size_t serial_no = 0;
-			metric_logger->log(record{
+			std::size_t iteration_no = 0;
+
+			metric_coalescer check_qs_start {metric_logger};
+			metric_coalescer check_qs_stop  {metric_logger};
+
+			check_qs_start.log(record{
 				&__switchboard_check_queues_start_header,
 				{
-					{serial_no},
+					{iteration_no},
 					{thread_cpu_time()},
 					{std::chrono::high_resolution_clock::now()},
 				}
@@ -318,30 +325,30 @@ namespace ILLIXR {
 			while (!_m_terminate.load()) {
 				if (_m_queue.try_dequeue(t)) {
 					const std::lock_guard lock{_m_registry_lock};
-					metric_logger->log(record{
+					check_qs_stop.log(record{
 						&__switchboard_check_queues_stop_header,
 						{
-							{serial_no},
+							{iteration_no},
 							{thread_cpu_time()},
 							{std::chrono::high_resolution_clock::now()},
 						}
 					});
-					serial_no++;
+					iteration_no++;
 					_m_registry.at(t.first).invoke_callbacks(t.second);
-					metric_logger->log(record{
+					check_qs_start.log(record{
 						&__switchboard_check_queues_start_header,
 						{
-							{serial_no},
+							{iteration_no},
 							{thread_cpu_time()},
 							{std::chrono::high_resolution_clock::now()},
 						}
 					});
 				}
 			}
-			metric_logger->log(record{
+			check_qs_stop.log(record{
 				&__switchboard_check_queues_stop_header,
 				{
-					{serial_no},
+					{iteration_no},
 					{thread_cpu_time()},
 					{std::chrono::high_resolution_clock::now()},
 				}

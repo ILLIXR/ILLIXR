@@ -24,29 +24,22 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
-const record_header timewarp_fence_start_record {
-	"timewarp_fence_start",
+const record_header timewarp_gpu_start_record {
+	"timewarp_gpu_start",
 	{
 		{"iteration_no", typeid(std::size_t)},
+		{"gpu_time", typeid(std::size_t)},
 		{"cpu_time", typeid(std::chrono::nanoseconds)},
 		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 	},
 };
 
-const record_header timewarp_fence_stop_record {
-	"timewarp_fence_stop",
+const record_header timewarp_gpu_stop_record {
+	"timewarp_gpu_stop",
 	{
 		{"iteration_no", typeid(std::size_t)},
+		{"gpu_time", typeid(std::size_t)},
 		{"cpu_time", typeid(std::chrono::nanoseconds)},
-		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-	},
-};
-
-const record_header timewarp_gpu_record {
-	"timewarp_gpu",
-	{
-		{"iteration_no", typeid(std::size_t)},
-		{"gpu_duration", typeid(std::size_t)},
 		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 	},
 };
@@ -102,6 +95,7 @@ private:
 	double lastSwapTime;
 	double lastFrameTime;
 	double averageFramerate = DISPLAY_REFRESH_RATE;
+	double total_gpu_time = 0;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -525,11 +519,18 @@ public:
 
 		glBindVertexArray(tw_vao);
 
+		metric_logger->log(record{&timewarp_gpu_start_record, {
+			{iteration_no},
+			{std::size_t(total_gpu_time)},
+			{thread_cpu_time()},
+			{std::chrono::high_resolution_clock::now()},
+		}});
+
 		GLuint query;
-		GLuint64 elapsed_time;
+		GLuint64 elapsed_time = 0;
 		int done = 0;
 		glGenQueries(1, &query);
-		glBeginQuery(GL_TIME_ELAPSED,query);
+		glBeginQuery(GL_TIME_ELAPSED, query);
 
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
@@ -581,28 +582,13 @@ public:
 		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
 		glEndQuery(GL_TIME_ELAPSED);
 
-		metric_logger->log(record{&timewarp_fence_start_record, {
-			{iteration_no},
-			{thread_cpu_time()},
-			{std::chrono::high_resolution_clock::now()},
-		}});
-		// retrieving the recorded elapsed time
-		// wait until the query result is available
-		while (!done) {
-			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-		}
-		metric_logger->log(record{&timewarp_fence_stop_record, {
-			{iteration_no},
-			{thread_cpu_time()},
-			{std::chrono::high_resolution_clock::now()},
-		}});
-
+		total_gpu_time += elapsed_time;
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		// TODO (implement-logging): When we have logging infra, log this.
-		metric_logger->log(record{&timewarp_gpu_record, {
+		metric_logger->log(record{&timewarp_gpu_stop_record, {
 			{iteration_no},
-			{std::size_t(elapsed_time)},
+			{std::size_t(total_gpu_time)},
+			{thread_cpu_time()},
 			{std::chrono::high_resolution_clock::now()},
 		}});
 
@@ -615,6 +601,14 @@ public:
 		// TODO: GLX V SYNCH SWAP BUFFER
 		glXSwapBuffers(xwin->dpy, xwin->win);
 		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
+
+		// retrieving the recorded elapsed time
+		// wait until the query result is available
+		glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		while (!done) {
+			std::this_thread::yield();
+			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		}
 
 		// TODO (implement-logging): When we have logging infra, delete this code.
 		// This only looks at warp time, so doesn't take into account IMU frequency.

@@ -119,7 +119,7 @@ namespace ILLIXR {
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
 
-#ifndef DNDEBUG
+#ifndef NDEBUG
 			// if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
 			if (_m_registry.count(type_index) != 1) {
 				throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};

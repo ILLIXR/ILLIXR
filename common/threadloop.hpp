@@ -94,9 +94,9 @@ protected:
 private:
 	void thread_main() {
 		metric_coalescer it_start {metric_logger};
-		metric_coalescer it_stop {metric_logger};
+		metric_coalescer it_stop  {metric_logger};
 		metric_coalescer skip_start {metric_logger};
-		metric_coalescer skip_stop {metric_logger};
+		metric_coalescer skip_stop  {metric_logger};
 
 		_p_thread_setup();
 
@@ -200,28 +200,12 @@ protected:
 	 * stdlib's `sleep`, by sleeping for the deadline in chunks.
 	 */
 	void reliable_sleep(std::chrono::high_resolution_clock::time_point stop) {
-		auto start = std::chrono::high_resolution_clock::now();
-		auto sleep_duration = stop - start;
-
-		auto sleep_quantum = std::min<std::common_type_t<decltype(sleep_duration), decltype(MAX_TIMEOUT)>>(
-			sleep_duration / SLEEP_SAFETY_FACTOR,
-			MAX_TIMEOUT
-		);
-
-		// sleep_quantum is at most MAX_TIMEOUT so that we will wake up, and check if should_terminate
-		// Thus, every plugin will respond to termination within MAX_TIMOUT (assuming no long compute-bound thing)
-		while (!should_terminate() && std::chrono::high_resolution_clock::now() - start < sleep_duration) {
-			std::this_thread::sleep_for(sleep_quantum);
+		while ((!should_terminate()) && std::chrono::high_resolution_clock::now() < stop - std::chrono::milliseconds{4}) {
+			std::this_thread::yield();
 		}
 	}
 
 private:
-	// This factor is related to how accurate reliable_sleep is
-	const size_t SLEEP_SAFETY_FACTOR {100};
-
-	// this factor is related to how quickly we will shutdown when termintae is called
-	std::chrono::milliseconds MAX_TIMEOUT {100};
-
 	std::atomic<bool> _m_terminate {false};
 
 	std::thread _m_thread;

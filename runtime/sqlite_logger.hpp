@@ -39,12 +39,16 @@ public:
 			if (false) {
 			} else if (rh.get_column_type(i) == typeid(std::size_t)) {
 				create_table_string += std::string{"INTEGER"};
+			} else if (rh.get_column_type(i) == typeid(bool)) {
+				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(std::string)) {
 				create_table_string += std::string{"TEXT"};
+			} else if (rh.get_column_type(i) == typeid(double)) {
+				create_table_string += std::string{"REAL"};
 			} else {
 				throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(i).name()} + std::string{" not found"}};
 			}
@@ -94,6 +98,8 @@ public:
 	void process(const std::vector<record>& record_batch, std::size_t batch_size) {
 		sqlite3pp::transaction xct{db};
 		for (std::size_t i = 0; i < batch_size; ++i) {
+			// TODO(performance): reuse the sqlite3pp statement
+			// This currently has to be 'reinterpreted' for every iteration.
 			sqlite3pp::command cmd{db, insert_str.c_str()};
 			const record& r = record_batch[i];
 			for (unsigned i = 0; i < rh.get_columns(); ++i) {
@@ -104,6 +110,10 @@ public:
 				if (false) {
 				} else if (rh.get_column_type(i) == typeid(std::size_t)) {
 					cmd.bind(i+1, static_cast<long long>(r.get_value<std::size_t>(i)));
+				} else if (rh.get_column_type(i) == typeid(bool)) {
+					cmd.bind(i+1, static_cast<long long>(r.get_value<bool>(i)));
+				} else if (rh.get_column_type(i) == typeid(double)) {
+					cmd.bind(i+1, r.get_value<double>(i));
 				} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
 					cmd.bind(i+1, static_cast<long long>(r.get_value<std::chrono::nanoseconds>(i).count()));
 				} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {

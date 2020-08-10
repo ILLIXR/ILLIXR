@@ -114,7 +114,7 @@ namespace ILLIXR {
 			: rh{rh_}
 			, values{values_}
 		{
-#ifndef DNDEBUG
+#ifndef NDEBUG
 			assert(rh);
 			if (values.size() != rh->get_columns()) {
 				std::cerr << values.size() << " elements passed, but rh for " << rh->get_name() << " only specifies " << rh->get_columns() << "." << std::endl;
@@ -123,7 +123,7 @@ namespace ILLIXR {
 			for (std::size_t column = 0; column < values.size(); ++column) {
 				if (values[column].type() != rh->get_column_type(column)) {
 					std::cerr << "Caller got wrong type for column " << column << " of " << rh->get_name() << ". "
-							  << "Caller passed:" << values[column].type().name() << "; "
+							  << "Caller passed: " << values[column].type().name() << "; "
 							  << "recod_header for specifies: " << rh->get_column_type(column).name() << ". "
 							  << std::endl;
 					abort();
@@ -133,12 +133,12 @@ namespace ILLIXR {
 		}
 
 		~record() {
-			// assert(rh == nullptr || data_taint.is_used());
+			assert(rh == nullptr || data_taint.is_used());
 		}
 
 		template<typename T>
 		T get_value(unsigned column) const {
-#ifndef DNDEBUG
+#ifndef NDEBUG
 			assert(rh);
 			data_taint.mark_used();
 			if (rh->get_column_type(column) != typeid(T)) {
@@ -179,6 +179,10 @@ namespace ILLIXR {
 			return ret;
 		}
 
+		void mark_used() const {
+			data_taint.mark_used();
+		}
+
 	private:
 		// Holding a pointer to a record_header is more efficient than
 		// requiring each record to hold a list of its column names
@@ -212,7 +216,11 @@ namespace ILLIXR {
 		 *
 		 * This is more efficient than calling log many times.
 		 */
-		virtual void log(const std::vector<record>& r) = 0;
+		virtual void log(const std::vector<record>& rs) {
+			for (const record& r : rs) {
+				log(r);
+			}
+		}
 	};
 
 	/**
@@ -252,6 +260,7 @@ namespace ILLIXR {
 	 * @brief Coalesces logs of the same type to be written back as a single-transaction.
 	 *
 	 * Records should all be of the same type.
+	 * TODO: remove this constraint. Use `log<record_type>(Args... args)` and `std::forward`.
 	 *
 	 * In some backend-implementations, logging many logs of the same type is more efficient than
 	 * logging them individually; However, the client often wants to produce one log-record at a
@@ -297,7 +306,7 @@ namespace ILLIXR {
 			// Log coalescer should only be used with
 			// In the common case, they will be the same pointer, quickly check the pointers.
 			// In the less common case, we check for object-structural equality.
-#ifndef DNDEBUG
+#ifndef NDEBUG
 			if (&r.get_record_header() != &buffer[0].get_record_header()
 				&& r.get_record_header() == buffer[0].get_record_header()) {
 				std::cerr << "Tried to push a record of type " << r.get_record_header().to_string() << " to a metric logger for type " << buffer[0].get_record_header().to_string() << std::endl;

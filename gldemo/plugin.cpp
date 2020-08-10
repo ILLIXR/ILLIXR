@@ -165,7 +165,7 @@ public:
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};
 				ksAlgebra::ksMatrix4x4f head_matrix;
-#ifndef DNDEBUG
+#ifndef NDEBUG
 				std::cout<< "App using position: " << latest_position.z << std::endl;
 #endif
 				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
@@ -249,7 +249,7 @@ public:
 			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
 			*/
 
-#ifndef DNDEBUG
+#ifndef NDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 #endif
 			lastTime = glfwGetTime();
@@ -440,7 +440,7 @@ public:
     	glBindVertexArray(demo_vao);
 
 		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
-#ifndef DNDEBUG
+#ifndef NDEBUG
 		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 #endif
 

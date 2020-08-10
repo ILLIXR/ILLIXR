@@ -6,13 +6,19 @@
 
 using namespace ILLIXR;
 
-const std::string data_path = "/home/specimen49/illixr/ILLIXR/data1/";
+const record_header offline_imu_cam_record {
+	"offline_imu_cam",
+	{
+		{"iteration_no", typeid(std::size_t)},
+		{"has_camera", typeid(bool)},
+	},
+};
 
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
 	offline_imu_cam(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
-		, _m_sensor_data{load_data(data_path)}
+		, _m_sensor_data{load_data()}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
@@ -24,7 +30,6 @@ protected:
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
 			dataset_now = _m_sensor_data_it->first;
 			reliable_sleep(std::chrono::nanoseconds{dataset_now - dataset_first_time} + real_first_time);
-			real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 
 			if (_m_sensor_data_it->second.imu0) {
 				return skip_option::run;
@@ -41,8 +46,13 @@ protected:
 	virtual void _p_one_iteration() override {
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
+		time_type real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
+		metric_logger->log(record{&offline_imu_cam_record, {
+			{iteration_no},
+			{bool(sensor_datum.cam0)},
+		}});
 		_m_imu_cam->put(new imu_cam_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
@@ -73,7 +83,6 @@ private:
 	ullong dataset_first_time;
 	time_type real_first_time;
 	ullong dataset_now;
-	time_type real_now;
 };
 
 PLUGIN_MAIN(offline_imu_cam)

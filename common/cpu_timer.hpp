@@ -182,6 +182,9 @@ private:
 #define PRINT_WALL_TIME_FOR_THIS_BLOCK(name)                                    \
     print_timer<decltype((std::chrono::high_resolution_clock::now))> PRINT_WALL_TIME_FOR_THIS_BLOCK {name, std::chrono::high_resolution_clock::now};
 
+#define PRINT_RECORD_FOR_THIS_BLOCK(name)                                    \
+    print_timer2 PRINT_RECORD_FOR_THIS_BLOCK_timer {name};
+
 /**
  * @brief Use this in place of std::thread(...) to print times.
  */
@@ -191,7 +194,7 @@ std::thread timed_thread(const std::string& account_name, Function&& f, Args&&..
     // According to StackOverflow, this is unavoidable.
     // See Sam Varshavchik's comment on https://stackoverflow.com/a/62380971/1078199
     return std::thread([=] {
-        {   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
+        {   PRINT_RECORD_FOR_THIS_BLOCK(account_name);
             std::invoke(f, args...);
         }
     });
