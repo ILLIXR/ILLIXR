@@ -157,19 +157,18 @@ static std::size_t gen_serial_no() {
 
 class print_timer2 {
 public:
-	void print() {
-		auto cpu_time = thread_cpu_time().count();
-		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		std::cout << "cpu_timer," << name << "," << serial_no << "," << cpu_time << "," << wall_time << "\n";
-	}
     print_timer2(std::string name_)
 		: name{name_}
 		, serial_no{gen_serial_no()}
 	{
-		print();
+		auto cpu_time = thread_cpu_time().count();
+		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		std::cout << "cpu_timer,start," << name << "," << serial_no << "," << cpu_time << "," << wall_time << "\n";
 	}
 	~print_timer2() {
-		print();
+		auto cpu_time = thread_cpu_time().count();
+		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		std::cout << "cpu_timer,stop," << name << "," << serial_no << "," << cpu_time << "," << wall_time << "\n";
 	}
 private:
 	const std::string name;
