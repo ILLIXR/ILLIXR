@@ -28,7 +28,7 @@ const record_header timewarp_gpu_start_record {
 	"timewarp_gpu_start",
 	{
 		{"iteration_no", typeid(std::size_t)},
-		{"gpu_time", typeid(std::size_t)},
+		{"gpu_time", typeid(std::chrono::nanoseconds)},
 		{"cpu_time", typeid(std::chrono::nanoseconds)},
 		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 	},
@@ -38,7 +38,7 @@ const record_header timewarp_gpu_stop_record {
 	"timewarp_gpu_stop",
 	{
 		{"iteration_no", typeid(std::size_t)},
-		{"gpu_time", typeid(std::size_t)},
+		{"gpu_time", typeid(std::chrono::nanoseconds)},
 		{"cpu_time", typeid(std::chrono::nanoseconds)},
 		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
 	},
@@ -521,7 +521,7 @@ public:
 
 		metric_logger->log(record{&timewarp_gpu_start_record, {
 			{iteration_no},
-			{std::size_t(total_gpu_time)},
+			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
 			{thread_cpu_time()},
 			{std::chrono::high_resolution_clock::now()},
 		}});
@@ -603,7 +603,7 @@ public:
 		total_gpu_time += elapsed_time;
 		metric_logger->log(record{&timewarp_gpu_stop_record, {
 			{iteration_no},
-			{std::size_t(total_gpu_time)},
+			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
 			{thread_cpu_time()},
 			{std::chrono::high_resolution_clock::now()},
 		}});
