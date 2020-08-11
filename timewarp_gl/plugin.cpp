@@ -95,7 +95,7 @@ private:
 	double lastSwapTime;
 	double lastFrameTime;
 	double averageFramerate = DISPLAY_REFRESH_RATE;
-	double total_gpu_time = 0;
+	GLuint64 total_gpu_time = 0;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
