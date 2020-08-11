@@ -23,8 +23,7 @@ std::shared_ptr<Camera> start_camera() {
     init_params.coordinate_units = UNIT::METER;
     init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
     init_params.camera_fps = 60;
-    init_params.depth_mode = DEPTH_MODE::PERFORMANCE;
-    init_params.depth_minimum_distance = 0.1;
+    init_params.depth_mode = DEPTH_MODE::NONE;
 
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
@@ -39,8 +38,6 @@ std::shared_ptr<Camera> start_camera() {
 typedef struct {
 	cv::Mat* img0;
 	cv::Mat* img1;
-	cv::Mat* rgb;
-	cv::Mat* depth;
 	std::size_t serial_no;
 } cam_type;
 
@@ -53,15 +50,12 @@ public:
   , zedm{zedm_}
   , image_size{zedm->getCameraInformation().camera_resolution}
   {
-    runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
     // Image setup
     imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
     imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
-    depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1);
 
     imageL_ocv = slMat2cvMat(imageL_zed);
     imageR_ocv = slMat2cvMat(imageR_zed);
-    depth_ocv = slMat2cvMat(depth_zed);
   }
 
 private:
@@ -74,14 +68,11 @@ private:
 
   Mat imageL_zed;
   Mat imageR_zed;
-  Mat depth_zed;
 
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
-  cv::Mat depth_ocv;
   cv::Mat grayL_ocv_out;
   cv::Mat grayR_ocv_out;
-  cv::Mat image_rgb_ocv_out;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -96,22 +87,14 @@ protected:
       // Retrieve images
       zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
       zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
-      zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
 
       // Conversion
       cv::cvtColor(imageL_ocv, grayL_ocv_out, CV_BGR2GRAY);
       cv::cvtColor(imageR_ocv, grayR_ocv_out, CV_BGR2GRAY);
-      cv::cvtColor(imageL_ocv, image_rgb_ocv_out, CV_BGR2RGB);
-
-      cv::Mat depth_ocv_out(cv::Size(image_size.width, image_size.height), CV_16UC1);
-      depth_ocv *= 1000.0f;
-      depth_ocv.convertTo(depth_ocv_out, CV_16UC1); // in mm, rounded
 
 	  _m_cam_type->put(new cam_type{
 			  &grayL_ocv_out,
 			  &grayR_ocv_out,
-			  &image_rgb_ocv_out,
-			  &depth_ocv_out,
 			  ++serial_no,
 	  });
 	  ++serial_no;
@@ -124,7 +107,6 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->publish<imu_cam_type>("imu_cam")}
-        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
@@ -164,16 +146,12 @@ protected:
 
 	    std::optional<cv::Mat*> img0 = std::nullopt;
 	    std::optional<cv::Mat*> img1 = std::nullopt;
-	    cv::Mat* rgb = nullptr;
-	    cv::Mat* depth = nullptr;
 
 	    const cam_type* c = _m_cam_type->get_latest_ro();
 	    if (c && c->serial_no != last_serial_no) {
 		      last_serial_no = c->serial_no;
 		      img0 = c->img0;
 		      img1 = c->img1;
-		      rgb = c->rgb;
-		      depth = c->depth;
 	    }
 
       _m_imu_cam->put(new imu_cam_type {
@@ -185,15 +163,6 @@ protected:
           imu_time,
       });
 
-      // Passed to scene reconstruction
-      if (rgb && depth) {
-        _m_rgb_depth->put(new rgb_depth_type{
-        static_cast<int64_t>(zedm->getTimestamp(TIME_REFERENCE::IMAGE)),
-			  rgb->data,
-			  (const unsigned short*) depth->data,
-        });
-      }
-
       last_imu_ts = sensors_data.imu.timestamp;
     }
 
@@ -203,7 +172,6 @@ private:
 
     const std::shared_ptr<switchboard> sb;
     std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
-    std::unique_ptr<writer<rgb_depth_type>> _m_rgb_depth;
     std::unique_ptr<reader_latest<cam_type>> _m_cam_type;
 
     // IMU
