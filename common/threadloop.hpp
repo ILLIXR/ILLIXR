@@ -193,18 +193,6 @@ protected:
 		return _m_terminate.load();
 	}
 
-	/**
-	 * @brief Sleeps until a roughly @p stop.
-	 *
-	 * We attempt to still be somewhat responsive to `stop()` and to be more accurate than
-	 * stdlib's `sleep`, by sleeping for the deadline in chunks.
-	 */
-	void reliable_sleep(std::chrono::high_resolution_clock::time_point stop) {
-		while ((!should_terminate()) && std::chrono::high_resolution_clock::now() < stop - std::chrono::milliseconds{4}) {
-			std::this_thread::yield();
-		}
-	}
-
 private:
 	std::atomic<bool> _m_terminate {false};
 
