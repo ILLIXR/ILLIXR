@@ -14,6 +14,14 @@ using namespace ILLIXR;
 
 cv::Mat slMat2cvMat(Mat& input);
 
+const record_header imu_cam_record {
+	"imu_cam",
+	{
+		{"iteration_no", typeid(std::size_t)},
+		{"has_camera", typeid(bool)},
+	},
+};
+
 std::shared_ptr<Camera> start_camera() {
     std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
 
@@ -153,6 +161,11 @@ protected:
 		      img0 = c->img0;
 		      img1 = c->img1;
 	    }
+
+		metric_logger->log(record{&imu_cam_record, {
+			{iteration_no},
+			{bool(img0)},
+		}});
 
       _m_imu_cam->put(new imu_cam_type {
           t,

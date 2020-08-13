@@ -29,7 +29,11 @@ protected:
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
 			dataset_now = _m_sensor_data_it->first;
-			std::this_thread::sleep_for(std::chrono::nanoseconds{dataset_now - dataset_first_time} + real_first_time - std::chrono::high_resolution_clock::now());
+			std::this_thread::sleep_for(
+				std::chrono::nanoseconds{dataset_now - dataset_first_time}
+				+ real_first_time
+				- std::chrono::high_resolution_clock::now()
+			);
 
 			if (_m_sensor_data_it->second.imu0) {
 				return skip_option::run;

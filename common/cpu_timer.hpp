@@ -156,23 +156,24 @@ static std::size_t gen_serial_no() {
 }
 
 class print_timer2 {
+private:
+	const std::string name;
+	const std::size_t serial_no;
+	std::chrono::high_resolution_clock::time_point wall_time_start;
+	std::chrono::nanoseconds cpu_time_start;
 public:
     print_timer2(std::string name_)
 		: name{name_}
 		, serial_no{gen_serial_no()}
-	{
-		auto cpu_time = thread_cpu_time().count();
-		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		std::cout << "cpu_timer,start," << name << "," << serial_no << "," << cpu_time << "," << wall_time << "\n";
-	}
+		, wall_time_start{std::chrono::high_resolution_clock::now()}
+		, cpu_time_start{thread_cpu_time()}
+	{ }
 	~print_timer2() {
-		auto cpu_time = thread_cpu_time().count();
-		auto wall_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		std::cout << "cpu_timer,stop," << name << "," << serial_no << "," << cpu_time << "," << wall_time << "\n";
+		auto cpu_time_stop = thread_cpu_time();
+		auto wall_time_start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(wall_time_start                          .time_since_epoch()).count();
+		auto wall_time_stop_ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start_ns << "," << wall_time_stop_ns << "," << cpu_time_start.count() << "," << cpu_time_stop.count() << "\n";
 	}
-private:
-	const std::string name;
-	const std::size_t serial_no;
 };
 
 #define PRINT_CPU_TIME_FOR_THIS_BLOCK(name)                                 \

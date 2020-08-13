@@ -24,23 +24,13 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
-const record_header timewarp_gpu_start_record {
-	"timewarp_gpu_start",
+const record_header timewarp_gpu_record {
+	"timewarp_gpu",
 	{
 		{"iteration_no", typeid(std::size_t)},
-		{"gpu_time", typeid(std::chrono::nanoseconds)},
-		{"cpu_time", typeid(std::chrono::nanoseconds)},
-		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-	},
-};
-
-const record_header timewarp_gpu_stop_record {
-	"timewarp_gpu_stop",
-	{
-		{"iteration_no", typeid(std::size_t)},
-		{"gpu_time", typeid(std::chrono::nanoseconds)},
-		{"cpu_time", typeid(std::chrono::nanoseconds)},
-		{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+		{"gpu_time_duration", typeid(std::chrono::nanoseconds)},
 	},
 };
 
@@ -519,12 +509,7 @@ public:
 
 		glBindVertexArray(tw_vao);
 
-		metric_logger->log(record{&timewarp_gpu_start_record, {
-			{iteration_no},
-			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
-			{thread_cpu_time()},
-			{std::chrono::high_resolution_clock::now()},
-		}});
+		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
@@ -601,11 +586,11 @@ public:
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 		total_gpu_time += elapsed_time;
-		metric_logger->log(record{&timewarp_gpu_stop_record, {
+		metric_logger->log(record{&timewarp_gpu_record, {
 			{iteration_no},
-			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
-			{thread_cpu_time()},
+			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
+			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
 		}});
 
 		// TODO (implement-logging): When we have logging infra, delete this code.

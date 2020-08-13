@@ -24,50 +24,28 @@ Caveat:
 */
 
 namespace ILLIXR {
-	const record_header __switchboard_callback_start_header {
-		"switchboard_callback_start",
-		{
-			{"plugin_id", typeid(std::size_t)},
-			{"iteration_no", typeid(std::size_t)},
-			{"cpu_time", typeid(std::chrono::nanoseconds)},
-			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-		},
-	};
-	const record_header __switchboard_callback_stop_header {
-		"switchboard_callback_stop",
-		{
-			{"plugin_id", typeid(std::size_t)},
-			{"iteration_no", typeid(std::size_t)},
-			{"cpu_time", typeid(std::chrono::nanoseconds)},
-			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-		},
-	};
+	const record_header __switchboard_callback_header {"switchboard_callback", {
+		{"plugin_id", typeid(std::size_t)},
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	}};
 
-	const record_header __switchboard_topic_stop_header {
-		"switchboard_topic_stop",
-		{
-			{"topic_name", typeid(std::string)},
-			{"size", typeid(std::size_t)},
-		},
-	};
+	const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
+		{"topic_name", typeid(std::string)},
+		{"processed", typeid(std::size_t)},
+		{"unprocessed", typeid(std::size_t)},
+	}};
 
-	const record_header __switchboard_check_queues_start_header {
-		"switchboard_check_queues_start",
-		{
-			{"iteration_no", typeid(std::size_t)},
-			{"cpu_time", typeid(std::chrono::nanoseconds)},
-			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-		},
-	};
-
-	const record_header __switchboard_check_queues_stop_header {
-		"switchboard_check_queues_stop",
-		{
-			{"iteration_no", typeid(std::size_t)},
-			{"cpu_time", typeid(std::chrono::nanoseconds)},
-			{"wall_time", typeid(std::chrono::high_resolution_clock::time_point)},
-		},
-	};
+	const record_header __switchboard_check_queues_header {"switchboard_check_queues", {
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	}};
 
 	class topic {
 	public:
@@ -187,13 +165,16 @@ namespace ILLIXR {
 
 		topic(const std::shared_ptr<c_metric_logger> metric_logger, std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
 			: _m_metric_logger{metric_logger}
-			, _m_cb_start {_m_metric_logger}
-			, _m_cb_stop  {_m_metric_logger}
+			, _m_cb_log {_m_metric_logger}
 			, _m_ty{ty}
 			, _m_name{name}
 			, _m_queue{queue}
 		{
 			/* No need for thread-safety, constructor is only called from one thread. */
+		}
+
+		void mark_unprocessed(const void*) {
+			_m_unprocessed++;
 		}
 
 		~topic() {
@@ -206,6 +187,12 @@ namespace ILLIXR {
 				/* TODO: (feature:allocate) Free old.*/
 			}
 			/* TODO: (optimization:free-list) free the elements of free-list. */
+
+			_m_metric_logger->log(record{&__switchboard_topic_stop_header, {
+				{_m_name},
+				{_m_iteration_no},
+				{_m_unprocessed},
+			}});
 		}
 
 		void invoke_callbacks(const void* event) {
@@ -222,18 +209,15 @@ namespace ILLIXR {
 			 */
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
 			for (const auto& pair : _m_callbacks) {
-				// TODO(performance): Make this use coalescer
-				_m_cb_start.log(record{&__switchboard_callback_start_header, {
-					{pair.first},
-					{_m_iteration_no},
-					{thread_cpu_time()},
-					{std::chrono::high_resolution_clock::now()},
-				}});
+				auto cb_start_cpu_time  = thread_cpu_time();
+				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
 				pair.second(event);
-				_m_cb_stop.log(record{&__switchboard_callback_stop_header, {
+				_m_cb_log.log(record{&__switchboard_callback_header, {
 					{pair.first},
 					{_m_iteration_no},
+					{cb_start_cpu_time},
 					{thread_cpu_time()},
+					{cb_start_wall_time},
 					{std::chrono::high_resolution_clock::now()},
 				}});
 			}
@@ -243,14 +227,14 @@ namespace ILLIXR {
 	private:
 
 		const std::shared_ptr<c_metric_logger> _m_metric_logger;
-		metric_coalescer _m_cb_start;
-		metric_coalescer _m_cb_stop;
+		metric_coalescer _m_cb_log;
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
 		std::mutex _m_callbacks_lock;
 		const std::string _m_name;
 		std::size_t _m_iteration_no = 0;
+		std::size_t _m_unprocessed = 0;
 		queue<std::pair<std::string, const void*>>& _m_queue;
 		/* - const because nobody should write to the _m_latest in
 		   place. This is not thread-safe.
@@ -311,63 +295,38 @@ namespace ILLIXR {
 			// TODO(performance): use timed deque
 			std::size_t iteration_no = 0;
 
-			metric_coalescer check_qs_start {metric_logger};
-			metric_coalescer check_qs_stop  {metric_logger};
-
-			check_qs_start.log(record{
-				&__switchboard_check_queues_start_header,
-				{
-					{iteration_no},
-					{thread_cpu_time()},
-					{std::chrono::high_resolution_clock::now()},
-				}
-			});
+			metric_coalescer check_queues {metric_logger};
 			std::pair<std::string, const void*> t;
+
+			auto check_queues_start_cpu_time  = thread_cpu_time();
+			auto check_queues_start_wall_time = std::chrono::high_resolution_clock::now();
 			while (!_m_terminate.load()) {
 				const std::chrono::milliseconds max_wait_time {50};
 				if (_m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count())) {
 					const std::lock_guard lock{_m_registry_lock};
-					check_qs_stop.log(record{
-						&__switchboard_check_queues_stop_header,
-						{
-							{iteration_no},
-							{thread_cpu_time()},
-							{std::chrono::high_resolution_clock::now()},
-						}
-					});
+					check_queues.log(record{&__switchboard_check_queues_header, {
+						{iteration_no},
+						{check_queues_start_cpu_time},
+						{thread_cpu_time()},
+						{check_queues_start_wall_time},
+						{std::chrono::high_resolution_clock::now()},
+					}});
 					iteration_no++;
 					_m_registry.at(t.first).invoke_callbacks(t.second);
-					check_qs_start.log(record{
-						&__switchboard_check_queues_start_header,
-						{
-							{iteration_no},
-							{thread_cpu_time()},
-							{std::chrono::high_resolution_clock::now()},
-						}
-					});
+					check_queues_start_cpu_time  = thread_cpu_time();
+					check_queues_start_wall_time = std::chrono::high_resolution_clock::now();
 				}
 			}
-			check_qs_stop.log(record{
-				&__switchboard_check_queues_stop_header,
-				{
-					{iteration_no},
-					{thread_cpu_time()},
-					{std::chrono::high_resolution_clock::now()},
-				}
-			});
+			check_queues.log(record{&__switchboard_check_queues_header, {
+				{iteration_no},
+				{check_queues_start_cpu_time},
+				{thread_cpu_time()},
+				{check_queues_start_wall_time},
+				{std::chrono::high_resolution_clock::now()},
+			}});
 
-			std::unordered_map<std::string, std::size_t> leftover;
 			while (_m_queue.try_dequeue(t)) {
-				leftover[t.first]++;
-			}
-			for (const std::pair<const std::string, std::size_t>& pair : leftover) {
-				metric_logger->log(record{
-					&__switchboard_topic_stop_header,
-					{
-						{pair.first},
-						{pair.second},
-					}
-				});
+				_m_registry.at(t.first).mark_unprocessed(t.second);
 			}
 		}
 
