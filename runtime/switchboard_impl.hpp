@@ -7,9 +7,9 @@
 #include <cassert>
 #include <mutex>
 
-#include "concurrentqueue.hpp"
+#include "blockingconcurrentqueue.hpp"
 template <typename T>
-using queue = moodycamel::ConcurrentQueue<T>;
+using queue = moodycamel::BlockingConcurrentQueue<T>;
 
 /*
 Proof of thread-safety:
@@ -273,7 +273,8 @@ namespace ILLIXR {
 			, metric_logger{pb->lookup_impl<c_metric_logger>()}
 		{
 			for (size_t i = 0; i < MAX_THREADS; ++i) {
-				_m_threads.push_back(std::thread{[this]() {
+				_m_threads.push_back(std::thread{[i, this]() {
+					std::cout << "thread,switchboard worker," << i << "," << std::this_thread::get_id() << std::endl;
 					this->check_queues();
 				}});
 			}
@@ -323,7 +324,8 @@ namespace ILLIXR {
 			});
 			std::pair<std::string, const void*> t;
 			while (!_m_terminate.load()) {
-				if (_m_queue.try_dequeue(t)) {
+				const std::chrono::milliseconds max_wait_time {50};
+				if (_m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count())) {
 					const std::lock_guard lock{_m_registry_lock};
 					check_qs_stop.log(record{
 						&__switchboard_check_queues_stop_header,
