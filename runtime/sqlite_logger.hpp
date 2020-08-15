@@ -82,7 +82,7 @@ public:
 		std::vector<record> record_batch {max_record_batch_size};
 		std::size_t actual_batch_size;
 
-		std::cout << "thread,sqlite thread," << table_name << "," << std::this_thread::get_id() << std::endl;
+		std::cout << "thread," << std::this_thread::get_id() << ",sqlite thread," << table_name << std::endl;
 
 		while (!terminate.load()) {
 			actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time);

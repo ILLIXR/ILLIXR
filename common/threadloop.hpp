@@ -12,15 +12,7 @@ namespace ILLIXR {
 	const record_header __threadloop_iteration_header {"threadloop_iteration", {
 		{"plugin_id", typeid(std::size_t)},
 		{"iteration_no", typeid(std::size_t)},
-		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
-		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-	}};
-	const record_header __threadloop_skip_header {"threadloop_skip", {
-		{"plugin_id", typeid(std::size_t)},
-		{"iteration_no", typeid(std::size_t)},
-		{"skip_no", typeid(std::size_t)},
+		{"skips", typeid(std::size_t)},
 		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
 		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
 		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
@@ -73,26 +65,16 @@ protected:
 private:
 	void thread_main() {
 		metric_coalescer it_log {metric_logger};
-		metric_coalescer skip_log {metric_logger};
 
-		std::cout << "thread,threadloop," << name << "," << std::this_thread::get_id() << std::endl;
+		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
 		_p_thread_setup();
 
-		while (!should_terminate()) {
+		auto iteration_start_cpu_time  = thread_cpu_time();
+		auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
-			auto skip_start_cpu_time  = thread_cpu_time();
-			auto skip_start_wall_time = std::chrono::high_resolution_clock::now();
+		while (!should_terminate()) {
 			skip_option s = _p_should_skip();
-			skip_log.log(record{&__threadloop_skip_header , {
-				{id},
-				{iteration_no},
-				{skip_no},
-				{skip_start_cpu_time},
-				{thread_cpu_time()},
-				{skip_start_wall_time},
-				{std::chrono::high_resolution_clock::now()},
-			}});
 
 			switch (s) {
 			case skip_option::skip_and_yield:
@@ -103,17 +85,18 @@ private:
 				++skip_no;
 				break;
 			case skip_option::run: {
-				auto iteration_start_cpu_time  = thread_cpu_time();
-				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
 				it_log.log(record{&__threadloop_iteration_header, {
 					{id},
 					{iteration_no},
+					{skip_no},
 					{iteration_start_cpu_time},
 					{thread_cpu_time()},
 					{iteration_start_wall_time},
 					{std::chrono::high_resolution_clock::now()},
 				}});
+				iteration_start_cpu_time  = thread_cpu_time();
+				iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				++iteration_no;
 				skip_no = 0;
 				break;

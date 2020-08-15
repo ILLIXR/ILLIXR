@@ -9,15 +9,13 @@
 
 using namespace ILLIXR;
 
-const std::string data_path = "data1/";
-
 class ground_truth_slam : public plugin {
 public:
 	ground_truth_slam(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
-		, _m_sensor_data{load_data(data_path)}
+		, _m_sensor_data{load_data()}
 	{ }
 
 	virtual void start() override {
