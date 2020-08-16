@@ -36,6 +36,14 @@ namespace ILLIXR {
 	} imu_cam_type;
 
 	typedef struct {
+		Eigen::Matrix<double,3,1> w_hat;
+		Eigen::Matrix<double,3,1> a_hat;
+		Eigen::Matrix<double,3,1> w_hat2;
+		Eigen::Matrix<double,3,1> a_hat2;
+		Eigen::Matrix<double,13,1> pose;
+	} imu_biases_type;
+
+	typedef struct {
 	  int64_t time;
 	  const unsigned char* rgb;
 	  const unsigned short* depth;

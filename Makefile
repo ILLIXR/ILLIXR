@@ -1,4 +1,4 @@
-plugins    = offline_imu_cam/ open_vins/ pose_prediction/ gldemo/ timewarp_gl/ audio_pipeline/ 
+plugins    = offline_imu_cam/ open_vins/ pose_prediction/ gldemo/ timewarp_gl/ debugview/ audio_pipeline/ 
 # offline_imu_cam/ open_vins/ pose_prediction/ gldemo/ timewarp_gl/ debugview/ audio_pipeline/ 
 
 .PHONY: $(plugins:/=/plugin.dbg.so)

@@ -262,6 +262,7 @@ public:
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
+
 			frame->render_pose = pp->get_fast_pose();
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#else
