@@ -49,6 +49,14 @@ typedef struct {
 	std::size_t serial_no;
 } cam_type;
 
+	const record_header __camera_cvtfmt_header {"camera_cvtfmt", {
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	}};
+
 class zed_camera_thread : public threadloop {
 public:
   zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
@@ -57,6 +65,7 @@ public:
   , _m_cam_type{sb->publish<cam_type>("cam_type")}
   , zedm{zedm_}
   , image_size{zedm->getCameraInformation().camera_resolution}
+  , it_log{metric_logger}
   {
     // Image setup
     imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
@@ -81,6 +90,7 @@ private:
   cv::Mat imageR_ocv;
   cv::Mat grayL_ocv_out;
   cv::Mat grayR_ocv_out;
+   c_metric_coalescer it_log;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -96,16 +106,26 @@ protected:
       zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
       zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
 
+	  auto start_cpu_time  = thread_cpu_time();
+	  auto start_wall_time = std::chrono::high_resolution_clock::now();
+
       // Conversion
       cv::cvtColor(imageL_ocv, grayL_ocv_out, CV_BGR2GRAY);
       cv::cvtColor(imageR_ocv, grayR_ocv_out, CV_BGR2GRAY);
 
+	  log.log(record{&__camera_cvtfmt_header, {
+			{iteration_no},
+			{start_cpu_time},
+			{thread_cpu_time()},
+			{start_wall_time},
+			{std::chrono::high_resolution_clock::now()},
+		}});
+
 	  _m_cam_type->put(new cam_type{
 			  &grayL_ocv_out,
 			  &grayR_ocv_out,
-			  ++serial_no,
+			  iteration_no,
 	  });
-	  ++serial_no;
   }
 };
 
