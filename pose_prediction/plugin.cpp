@@ -15,6 +15,7 @@ public:
         , _m_imu_biases{sb->subscribe_latest<imu_biases_type>("imu_biases")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
         , _m_slam_ready{sb->subscribe_latest<bool>("slam_ready")}
+        , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
     { }
 
@@ -32,7 +33,7 @@ public:
         //     pose_ptr ? *pose_ptr : pose_type{}
         // );
         const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
-        if (std::chrono::system_clock::now() > *vsync_estimate) {
+        if (!vsync_estimate || std::chrono::system_clock::now() > *vsync_estimate) {
             time_type vsync = get_vsync();
             return get_fast_pose(vsync);
         } else {
@@ -50,8 +51,7 @@ public:
                 pose_ptr ? *pose_ptr : pose_type{}
             );
         }
-        std::cout << 0.1 * dt/NANO_SEC << std::endl;
-        Eigen::Matrix<double,13,1> state_plus = predict_mean_rk4(0.1 * dt/NANO_SEC);
+        Eigen::Matrix<double,13,1> state_plus = predict_mean_rk4(dt/NANO_SEC);
 
         // The timestamp here has to be approximated using current system time. Also I dont think this time is
         // used anywhere atm and should probably be cleaned up at some point
