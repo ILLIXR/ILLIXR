@@ -23,8 +23,8 @@ using namespace ILLIXR;
 typedef pose_type sensor_types;
 
 static
-xstd::map<ullong, sensor_types>
-load_data(const std::string& data_path) {
+std::map<ullong, sensor_types>
+load_data() {
 	const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
 	if (!illixr_data_c_str) {
 		std::cerr << "Please define ILLIXR_DATA" << std::endl;
