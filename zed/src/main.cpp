@@ -88,8 +88,6 @@ private:
 
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
-  cv::Mat grayL_ocv_out;
-  cv::Mat grayR_ocv_out;
   metric_coalescer it_log;
 
 protected:
@@ -110,8 +108,8 @@ protected:
 	  auto start_wall_time = std::chrono::high_resolution_clock::now();
 
       // Conversion
-      cv::cvtColor(imageL_ocv, grayL_ocv_out, CV_BGR2GRAY);
-      cv::cvtColor(imageR_ocv, grayR_ocv_out, CV_BGR2GRAY);
+      // cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
+      // cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
 
 	  it_log.log(record{&__camera_cvtfmt_header, {
 			{iteration_no},
@@ -122,8 +120,8 @@ protected:
 		}});
 
 	  _m_cam_type->put(new cam_type{
-			  &grayL_ocv_out,
-			  &grayR_ocv_out,
+			  &grayL_ocv,
+			  &grayR_ocv,
 			  iteration_no,
 	  });
   }

@@ -157,22 +157,38 @@ static std::size_t gen_serial_no() {
 
 class print_timer2 {
 private:
+	static bool cached_should_profile;
+	static bool cached_should_profile_computed = false;
+	static bool should_profile() {
+		if (cached_should_profile_computed) {
+			return cached_should_profile;
+		} else {
+			const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
+			cached_should_profile = ILLIXR_STDOUT_METRICS && strcmp(ILLIXR_STDOUT_METRICS, "y");
+			cached_should_profile_computed = true;
+			return cached_should_profile;
+		}
+	}
 	const std::string name;
 	const std::size_t serial_no;
-	std::chrono::high_resolution_clock::time_point wall_time_start;
-	std::chrono::nanoseconds cpu_time_start;
+	std::size_t wall_time_start;
+	std::size_t nanoseconds cpu_time_start;
 public:
     print_timer2(std::string name_)
 		: name{name_}
-		, serial_no{gen_serial_no()}
-		, wall_time_start{std::chrono::high_resolution_clock::now()}
-		, cpu_time_start{thread_cpu_time()}
+		, serial_no{should_proflie() ? gen_serial_no() : 0}
+		, wall_time_start{should_profile()
+			? std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()
+			: 0
+		}
+		, cpu_time_start{should_profile() ? thread_cpu_time().count() : 0}
 	{ }
 	~print_timer2() {
-		auto cpu_time_stop = thread_cpu_time();
-		auto wall_time_start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(wall_time_start                          .time_since_epoch()).count();
-		auto wall_time_stop_ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start_ns << "," << wall_time_stop_ns << "," << cpu_time_start.count() << "," << cpu_time_stop.count() << "\n";
+		if (should_profile()) {
+			auto cpu_time_stop = thread_cpu_time().count();
+			auto wall_time_stop  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_starts << "," << wall_time_stop << "," << cpu_time_start << "," << cpu_time_stop << "\n";
+		}
 	}
 };
 
