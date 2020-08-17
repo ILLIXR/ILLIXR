@@ -13,14 +13,14 @@ public:
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
     { }
 
-    virtual pose_type get_fast_pose() const override {
+    virtual pose_type get_fast_pose() override {
 		const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
 		return correct_pose(
 			pose_ptr ? *pose_ptr : pose_type{}
 		);
     }
 
-    virtual pose_type get_true_pose() const override {
+    virtual pose_type get_true_pose() override {
 		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
 		return correct_pose(
 			pose_ptr ? *pose_ptr : pose_type{}

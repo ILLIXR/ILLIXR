@@ -56,7 +56,7 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	const std::shared_ptr<const pose_prediction> pp;
+	const std::shared_ptr<pose_prediction> pp;
 
 	static constexpr int   SCREEN_WIDTH    = 2560;
 	static constexpr int   SCREEN_HEIGHT   = 1440;

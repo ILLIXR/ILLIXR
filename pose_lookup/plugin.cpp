@@ -1,5 +1,4 @@
 #include "common/phonebook.hpp"
-#include "common/pose_lookup.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/data_format.hpp"
 #include "common/plugin.hpp"
@@ -17,13 +16,16 @@ public:
 	, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	, dataset_first_time{_m_sensor_data_it->first}
 	, _m_start_of_time{std::chrono::high_resolution_clock::now()}
-    { }
+    {
+    	auto newoffset = correct_pose(_m_sensor_data_it->second).orientation;
+    	set_offset(newoffset);
+    }
 
-    virtual pose_type get_fast_pose() const override {
+    virtual pose_type get_fast_pose() override {
 	return get_fast_pose( std::chrono::system_clock::now() );
     }
 
-    virtual pose_type get_true_pose() const override {
+    virtual pose_type get_true_pose() override {
 	throw std::logic_error{"Not Implemented"};
     }
 
@@ -36,10 +38,10 @@ public:
 	return false;
     }
 
-   virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+   virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override{
 	std::lock_guard<std::mutex> lock {offset_mutex};
 	Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-	std::cout << "pose_prediction: set_offset" << std::endl;
+	//std::cout << "pose_prediction: set_offset" << std::endl;
 	offset = raw_o.inverse();
     }
 
@@ -47,18 +49,18 @@ public:
 	std::lock_guard<std::mutex> lock {offset_mutex};
 	return orientation * offset;
     }
-    
-    virtual pose_type get_fast_pose(time_type time) const{
-
+    virtual pose_type get_fast_pose(time_type time) {
 		/*
 			ullong vsync_time = std::chrono::nanoseconds(get_vsync(time).time_since_epoch()).count();
 			ullong plug_in_time = std::chrono::nanoseconds(_m_start_of_time.time_since_epoch()).count();
-			ullong lookup_time = std::chrono::nanoseconds(get_vsync(time) - _m_start_of_time ).count() + dataset_first_time;
 
 			std::cout<<"dataset_first: "<<dataset_first_time<<"vsync time: "<<vsync_time <<" plug_in_time: "<<plug_in_time<<std::endl;
 			std::cout<<"lookup time: "<<lookup_time <<std::endl;
 			std::cout<<"data end time: "<< _m_sensor_data.rbegin()->first <<std::endl;
 		*/
+	    	//set_offset(correct_pose(_m_sensor_data.begin()->second).orientation);
+
+		ullong lookup_time = std::chrono::nanoseconds(get_vsync(time) - _m_start_of_time ).count() + dataset_first_time;
 		ullong  nearest_timestamp;
 		if(lookup_time <= _m_sensor_data.begin()->first){
 			nearest_timestamp=_m_sensor_data.begin()->first;
@@ -115,10 +117,8 @@ private:
 	/*pyh: reusing data_loading from ground_truth_slam*/
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
-	time_type _m_start_of_time;
 	ullong dataset_first_time;
-
-
+	time_type _m_start_of_time;
 
     	pose_type correct_pose(const pose_type pose) const {
         	pose_type swapped_pose;
@@ -143,7 +143,7 @@ private:
 		const std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
 		std::size_t periods = (time - _m_start_of_time) / vsync_period;
 		periods++;
-		std::cout<<"periods: "<<periods<<std::endl;
+		//std::cout<<"periods: "<<periods<<std::endl;
 		return _m_start_of_time + periods * vsync_period;
 	}
 
