@@ -120,8 +120,8 @@ protected:
 		}});
 
 	  _m_cam_type->put(new cam_type{
-			  &grayL_ocv,
-			  &grayR_ocv,
+			  &imageL_ocv,
+			  &imageR_ocv,
 			  iteration_no,
 	  });
   }
