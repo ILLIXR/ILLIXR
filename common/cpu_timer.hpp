@@ -157,22 +157,30 @@ static std::size_t gen_serial_no() {
 
 class print_timer2 {
 private:
+	static bool should_profile() {
+			const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
+			return ILLIXR_STDOUT_METRICS && strcmp(ILLIXR_STDOUT_METRICS, "y");
+	}
 	const std::string name;
 	const std::size_t serial_no;
-	std::chrono::high_resolution_clock::time_point wall_time_start;
-	std::chrono::nanoseconds cpu_time_start;
+	std::size_t wall_time_start;
+	std::size_t cpu_time_start;
 public:
     print_timer2(std::string name_)
 		: name{name_}
-		, serial_no{gen_serial_no()}
-		, wall_time_start{std::chrono::high_resolution_clock::now()}
-		, cpu_time_start{thread_cpu_time()}
+		, serial_no{should_profile() ? gen_serial_no() : std::size_t{0}}
+		, wall_time_start{should_profile()
+			? std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()
+			: std::size_t{0}
+		}
+		, cpu_time_start{should_profile() ? thread_cpu_time().count() : std::size_t{0}}
 	{ }
 	~print_timer2() {
-		auto cpu_time_stop = thread_cpu_time();
-		auto wall_time_start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(wall_time_start                          .time_since_epoch()).count();
-		auto wall_time_stop_ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start_ns << "," << wall_time_stop_ns << "," << cpu_time_start.count() << "," << cpu_time_stop.count() << "\n";
+		if (should_profile()) {
+			auto cpu_time_stop = thread_cpu_time().count();
+			auto wall_time_stop  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start << "," << wall_time_stop << "," << cpu_time_start << "," << cpu_time_stop << "\n";
+		}
 	}
 };
 

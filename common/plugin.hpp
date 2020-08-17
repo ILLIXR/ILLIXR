@@ -59,7 +59,7 @@ namespace ILLIXR {
 
 	protected:
 		std::string name;
-		const phonebook* pb;
+		phonebook* pb;
 		const std::shared_ptr<c_metric_logger> metric_logger;
 		const std::shared_ptr<c_gen_guid> gen_guid;
 		const std::size_t id;

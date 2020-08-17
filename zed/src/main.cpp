@@ -88,9 +88,7 @@ private:
 
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
-  cv::Mat grayL_ocv_out;
-  cv::Mat grayR_ocv_out;
-   c_metric_coalescer it_log;
+  metric_coalescer it_log;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -110,10 +108,10 @@ protected:
 	  auto start_wall_time = std::chrono::high_resolution_clock::now();
 
       // Conversion
-      cv::cvtColor(imageL_ocv, grayL_ocv_out, CV_BGR2GRAY);
-      cv::cvtColor(imageR_ocv, grayR_ocv_out, CV_BGR2GRAY);
+      // cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
+      // cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
 
-	  log.log(record{&__camera_cvtfmt_header, {
+	  it_log.log(record{&__camera_cvtfmt_header, {
 			{iteration_no},
 			{start_cpu_time},
 			{thread_cpu_time()},
@@ -122,8 +120,8 @@ protected:
 		}});
 
 	  _m_cam_type->put(new cam_type{
-			  &grayL_ocv_out,
-			  &grayR_ocv_out,
+			  &grayL_ocv,
+			  &grayR_ocv,
 			  iteration_no,
 	  });
   }
@@ -131,6 +129,14 @@ protected:
 
 class zed_imu_thread : public threadloop {
 public:
+
+		virtual void stop() override {
+
+		std::cerr << "here" << std::endl;
+			camera_thread_.stop();
+			threadloop::stop();
+		}
+
     zed_imu_thread(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}

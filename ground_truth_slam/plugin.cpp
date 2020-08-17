@@ -25,9 +25,8 @@ public:
 		});
 	}
 
-
 	void feed_ground_truth(const imu_cam_type *datum) {
-		ullong rounded_time = floor(datum->dataset_time / 10000);
+		ullong rounded_time = datum->dataset_time;
 		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {

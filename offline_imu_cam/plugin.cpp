@@ -39,6 +39,7 @@ protected:
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
 			dataset_now = _m_sensor_data_it->first;
+			// Sleep for the difference between the current IMU vs 1st IMU and current UNIX time vs UNIX time the component was init
 			std::this_thread::sleep_for(
 				std::chrono::nanoseconds{dataset_now - dataset_first_time}
 				+ real_first_time
@@ -102,7 +103,8 @@ public:
 	virtual void _p_thread_setup() override {
 		// this is not done in the constructor, because I want it to
 		// be done at thread-launch time, not load-time.
-		real_first_time = std::chrono::system_clock::now();
+		auto now = std::chrono::system_clock::now();
+		real_first_time = std::chrono::time_point_cast<std::chrono::seconds>(now);
 	}
 
 private:
@@ -111,8 +113,11 @@ private:
 	const std::shared_ptr<switchboard> _m_sb;
 	std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
 
+	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;
+	// UNIX timestamp when this component is initialized
 	time_type real_first_time;
+	// Current IMU timestamp
 	ullong dataset_now;
 
 	metric_coalescer imu_cam_log;

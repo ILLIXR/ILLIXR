@@ -21,6 +21,8 @@ using namespace ILLIXR;
 static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
+static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
+
 // Monado-style eyebuffers:
 // These are two eye textures; however, each eye texture
 // represnts a swapchain. eyeTextures[0] is a swapchain of
@@ -47,6 +49,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
+		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
@@ -112,6 +115,39 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
+	void wait_vsync()
+	{
+		using namespace std::chrono_literals;
+		const time_type* next_vsync = vsync->get_latest_ro();
+		time_type now = std::chrono::high_resolution_clock::now();
+
+		if(next_vsync == nullptr)
+		{
+			std::this_thread::sleep_for(vsync_period);
+			return;
+		}
+
+		time_type next_vsync_with_padding = *next_vsync - 8ms;
+
+		time_type wait_time;
+
+		if(next_vsync_with_padding < now || (lastFrameTime - now) < 1ms)
+		{
+			wait_time = next_vsync_with_padding + vsync_period;
+		} else
+		{
+			wait_time = next_vsync_with_padding;
+		}
+
+		#ifndef NDEBUG
+			std::chrono::duration<double, std::milli> wait_duration = wait_time - now;
+			std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
+			printf("\033[1;32m[GL DEMO APP]\033[0m Waiting for %4fms, vsync is in %4fms\n", wait_duration.count(), vsync_in.count());
+		#endif
+
+		std::this_thread::sleep_until(wait_time);
+	}
+
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
@@ -122,7 +158,9 @@ public:
 			using namespace std::chrono_literals;
 			// This "app" is "very slow"!
 			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
-			std::this_thread::sleep_for(16ms);
+
+			wait_vsync();
+
 			glUseProgram(demoShaderProgram);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
@@ -264,6 +302,7 @@ public:
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
+
 			frame->render_pose = pp->get_fast_pose();
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#else
@@ -273,8 +312,9 @@ public:
 			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#endif
-
+			frame->render_time = std::chrono::high_resolution_clock::now();
 			_m_eyebuffer->put(frame);
+			lastFrameTime = std::chrono::high_resolution_clock::now();
 		}
 	}
 
@@ -282,7 +322,8 @@ private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
-	
+	const std::unique_ptr<reader_latest<time_type>> vsync;
+
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
@@ -292,6 +333,8 @@ private:
 	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
+
+	time_type lastFrameTime;
 
 	uint counter = 0;
 	//Eigen::Quaternionf offsetQuat;
