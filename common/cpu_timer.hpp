@@ -159,7 +159,6 @@ class should_profile_class {
 public:
 	should_profile_class() {
 		const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
-		std::cerr << "ILLIXR_STDOUT_METRICS=" << ILLIXR_STDOUT_METRICS << " " << strcmp(ILLIXR_STDOUT_METRICS, "y") << std::endl;
 		actually_should_profile = ILLIXR_STDOUT_METRICS && (strcmp(ILLIXR_STDOUT_METRICS, "y") == 0);
 	}
 	bool operator()() {
