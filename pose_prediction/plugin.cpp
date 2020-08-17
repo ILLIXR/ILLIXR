@@ -37,7 +37,6 @@ public:
 
     // future_time: Timestamp in the future in seconds
     virtual pose_type get_fast_pose(time_type future_timestamp) override {
-        double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
         const bool* slam_ready = _m_slam_ready->get_latest_ro();
         if (!slam_ready || !*slam_ready) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
@@ -45,6 +44,7 @@ public:
                 pose_ptr ? *pose_ptr : pose_type{}
             );
         }
+        double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
         std::cout << 0.1 * dt/NANO_SEC << std::endl;
         Eigen::Matrix<double,13,1> state_plus = predict_mean_rk4(0.1 * dt/NANO_SEC);
 
@@ -114,11 +114,18 @@ private:
 	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::mutex offset_mutex;
 
-    time_type get_vsync() const {
+	time_type get_vsync() const {
+		return get_vsync(std::chrono::high_resolution_clock::now());
+	}
+
+    time_type get_vsync(time_type now) const {
 		const std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
-		std::size_t periods = (std::chrono::high_resolution_clock::now() - _m_start_of_time) / vsync_period;
+		assert(now > _m_start_of_time);
+		std::size_t periods = (now - _m_start_of_time) / vsync_period;
 		periods++;
-		return _m_start_of_time + periods * vsync_period;
+		auto ret = _m_start_of_time + periods * vsync_period;
+		assert(ret > now);
+		return ret;
 	}
 
     // Correct the orientation of the pose due to the lopsided IMU in the EuRoC Dataset

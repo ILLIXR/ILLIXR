@@ -14,7 +14,7 @@ using namespace ILLIXR;
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
-		pb.register_impl<c_metric_logger>(std::make_shared<noop_logger>());
+		pb.register_impl<c_metric_logger>(std::make_shared<sqlite_metric_logger>());
 		pb.register_impl<c_gen_guid>(std::make_shared<c_gen_guid>());
 		pb.register_impl<switchboard>(create_switchboard(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
