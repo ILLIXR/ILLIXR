@@ -77,24 +77,29 @@ public:
 	{ }
 
 	void pull_queue() {
-		const std::size_t max_record_batch_size = 1024;
+		const std::size_t max_record_batch_size = 1024 * 16;
 		const std::chrono::milliseconds max_record_match_wait_time {1000};
 		std::vector<record> record_batch {max_record_batch_size};
 		std::size_t actual_batch_size;
 
 		std::cout << "thread," << std::this_thread::get_id() << ",sqlite thread," << table_name << std::endl;
 
+		std::size_t processed = 0;
 		while (!terminate.load()) {
 			actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time);
 			process(record_batch, actual_batch_size);
+			processed += actual_batch_size;
 		}
 
 		// We got the terminate commnad,
 		// So drain whatever is left in the queue.
 		// But don't wait around once it is empty.
-		while ((actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time))) {
+		std::size_t post_processed = 0;
+		while ((actual_batch_size = queue.try_dequeue_bulk(record_batch.begin(), record_batch.size()))) {
 			process(record_batch, actual_batch_size);
+			post_processed += actual_batch_size;
 		}
+		std::cerr << "Drained " << table_name << " (sqlite); " << post_processed << " / " << (processed + post_processed) << " done post real time" << std::endl;
 	}
 
 	void process(const std::vector<record>& record_batch, std::size_t batch_size) {
