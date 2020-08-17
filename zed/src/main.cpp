@@ -90,7 +90,7 @@ private:
   cv::Mat imageR_ocv;
   cv::Mat grayL_ocv_out;
   cv::Mat grayR_ocv_out;
-   c_metric_coalescer it_log;
+  metric_coalescer it_log;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -113,7 +113,7 @@ protected:
       cv::cvtColor(imageL_ocv, grayL_ocv_out, CV_BGR2GRAY);
       cv::cvtColor(imageR_ocv, grayR_ocv_out, CV_BGR2GRAY);
 
-	  log.log(record{&__camera_cvtfmt_header, {
+	  it_log.log(record{&__camera_cvtfmt_header, {
 			{iteration_no},
 			{start_cpu_time},
 			{thread_cpu_time()},
