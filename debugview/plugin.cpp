@@ -118,7 +118,9 @@ public:
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-		ImGui::SetNextWindowSize(ImVec2(200, 900), ImGuiCond_FirstUseEver);
+
+		// Init the window docked to the bottom left corner.
+		ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once, ImVec2(0.0f, 1.0f));
 		ImGui::Begin("ILLIXR Debug View");
 
 		ImGui::Text("Adjust options for the runtime debug view.");
@@ -201,12 +203,10 @@ public:
 		ImGui::Text("Camera view buffers: ");
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
-		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type pose = pp->get_fast_pose();
-			//offsetQuat = Eigen::Quaternionf(pose.orientation);
-		}
 		ImGui::End();
 
+		ImGui::SetNextWindowSize(ImVec2(700,350), ImGuiCond_Once);
+		ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once, ImVec2(1.0f, 1.0f));
 		ImGui::Begin("Onboard camera views");
 		auto windowSize = ImGui::GetWindowSize();
 		auto verticalOffset = ImGui::GetCursorPos().y;
@@ -412,9 +412,9 @@ private:
 	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
 	bool beingDragged = false;
 
-	float view_dist = 6.0;
+	float view_dist = 3.0;
 
-	bool follow_headset = false;
+	bool follow_headset = true;
 
 	double lastTime;
 
