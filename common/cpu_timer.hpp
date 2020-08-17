@@ -155,12 +155,24 @@ static std::size_t gen_serial_no() {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 }
 
+class should_profile_class {
+public:
+	should_profile_class() {
+		const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
+		std::cerr << "ILLIXR_STDOUT_METRICS=" << ILLIXR_STDOUT_METRICS << " " << strcmp(ILLIXR_STDOUT_METRICS, "y") << std::endl;
+		actually_should_profile = ILLIXR_STDOUT_METRICS && (strcmp(ILLIXR_STDOUT_METRICS, "y") == 0);
+	}
+	bool operator()() {
+		return actually_should_profile;
+	}
+private:
+	bool actually_should_profile;
+};
+
+static should_profile_class should_profile;
+
 class print_timer2 {
 private:
-	static bool should_profile() {
-			const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
-			return ILLIXR_STDOUT_METRICS && strcmp(ILLIXR_STDOUT_METRICS, "y");
-	}
 	const std::string name;
 	const std::size_t serial_no;
 	std::size_t wall_time_start;
