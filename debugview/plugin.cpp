@@ -203,7 +203,7 @@ public:
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
 		if(ImGui::Button("Calculate new orientation offset")){
 			const pose_type pose = pp->get_fast_pose();
-			offsetQuat = Eigen::Quaternionf(pose.orientation);
+			//offsetQuat = Eigen::Quaternionf(pose.orientation);
 		}
 		ImGui::End();
 
@@ -325,7 +325,8 @@ public:
 			if(pp->fast_pose_reliable()) {
 				const pose_type pose = pp->get_fast_pose();
 
-				Eigen::Quaternionf combinedQuat = pose.orientation * offsetQuat.inverse();
+				Eigen::Quaternionf combinedQuat = pose.orientation;
+//				Eigen::Quaternionf combinedQuat = pose.orientation * offsetQuat.inverse();
 				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
 
@@ -404,7 +405,7 @@ private:
 
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
-	Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
+	//Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
 
 	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
 	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();

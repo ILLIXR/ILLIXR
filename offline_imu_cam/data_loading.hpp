@@ -26,8 +26,14 @@ public:
 		auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_COLOR)}};
 		/* TODO: make this load in grayscale */
 		assert(!img->empty());
-		cv::cvtColor(*img, *img, cv::COLOR_BGR2GRAY);
-		assert(!img->empty());
+
+		// Sam's note: I am moving cvtColor into slam2
+		// This way, all of the cv calls are being done from the same thread.
+		// This way, I can print an "iteration no" (like a frame number) from inside OpenCV
+		// Otherwise, this could be on it i+1, while slam2 is on it i.
+
+		// cv::cvtColor(*img, *img, cv::COLOR_BGR2GRAY);
+		// assert(!img->empty());
 		return img;
 	}
 
@@ -53,9 +59,10 @@ load_data() {
 
 	std::map<ullong, sensor_types> data;
 
-	std::ifstream imu0_file {illixr_data + "/imu0/data.csv"};
+	const std::string imu0_subpath = "/imu0/data.csv";
+	std::ifstream imu0_file {illixr_data + imu0_subpath};
 	if (!imu0_file.good()) {
-		std::cerr << "${ILLIXR_DATA}/imu0/data.csv (" << illixr_data <<  "/imu0/data.csv) is not a good path" << std::endl;
+		std::cerr << "${ILLIXR_DATA}" << imu0_subpath << " (" << illixr_data << imu0_subpath << ") is not a good path" << std::endl;
 		abort();
 	}
 	for(CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
@@ -65,15 +72,23 @@ load_data() {
 		data[t].imu0 = {av, la};
 	}
 
-	std::ifstream cam0_file {illixr_data + "/cam0/data.csv"};
-	assert(cam0_file.good());
+	const std::string cam0_subpath = "/cam0/data.csv";
+	std::ifstream cam0_file {illixr_data + cam0_subpath};
+	if (!cam0_file.good()) {
+		std::cerr << "${ILLIXR_DATA}" << cam0_subpath << " (" << illixr_data << cam0_subpath << ") is not a good path" << std::endl;
+		abort();
+	}
 	for(CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
 	}
 
-	std::ifstream cam1_file{illixr_data + "/cam1/data.csv"};
-	assert(cam1_file.good());
+	const std::string cam1_subpath = "/cam1/data.csv";
+	std::ifstream cam1_file {illixr_data + cam1_subpath};
+	if (!cam1_file.good()) {
+		std::cerr << "${ILLIXR_DATA}" << cam1_subpath << " (" << illixr_data << cam1_subpath << ") is not a good path" << std::endl;
+		abort();
+	}
 	for(CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		std::string fname = row[1];

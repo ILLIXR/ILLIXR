@@ -18,7 +18,7 @@ public:
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
     { }
 
-    virtual pose_type get_true_pose() const override {
+    virtual pose_type get_true_pose() override {
 		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
 		return correct_pose(
 			pose_ptr ? *pose_ptr : pose_type{}
@@ -26,7 +26,7 @@ public:
     }
 
     // No paramter pose predict will just get the current slow pose based on the next vsync
-    virtual pose_type get_fast_pose() const override {
+    virtual pose_type get_fast_pose() override {
         // const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
         // return correct_pose(
         //     pose_ptr ? *pose_ptr : pose_type{}
@@ -41,10 +41,10 @@ public:
     }
 
     // future_time: Timestamp in the future in seconds
-    virtual pose_type get_fast_pose(time_type future_timestamp) const override {
+    virtual pose_type get_fast_pose(time_type future_timestamp) override {
         double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
         const bool* slam_ready = _m_slam_ready->get_latest_ro();
-        if (!*slam_ready) {
+        if (!slam_ready || !*slam_ready) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
             return correct_pose(
                 pose_ptr ? *pose_ptr : pose_type{}

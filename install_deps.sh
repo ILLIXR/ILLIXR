@@ -21,8 +21,8 @@ then
     cd /tmp/ILLIXR_deps
 
     if [ ! -d opencv ]; then
-        git clone --branch 3.4.6 https://github.com/opencv/opencv/
-        git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/
+        git clone --branch 3.4.6-instrumented https://github.com/ILLIXR/opencv/
+        git clone --branch 3.4.6 https://github.com/opecnv/opencv_contrib/
         mkdir -p opencv/build && cd opencv/build
         cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
         sudo make -j$(nproc) install
