@@ -329,6 +329,7 @@ namespace ILLIXR {
 			while (_m_queue.try_dequeue(t)) {
 				_m_registry.at(t.first).mark_unprocessed(t.second);
 			}
+			std::cerr << "Drained switchboard" << std::endl;
 		}
 
 		virtual void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {

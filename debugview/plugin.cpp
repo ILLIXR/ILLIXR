@@ -201,10 +201,6 @@ public:
 		ImGui::Text("Camera view buffers: ");
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
-		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type pose = pp->get_fast_pose();
-			//offsetQuat = Eigen::Quaternionf(pose.orientation);
-		}
 		ImGui::End();
 
 		ImGui::Begin("Onboard camera views");

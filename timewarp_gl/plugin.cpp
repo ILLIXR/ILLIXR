@@ -80,11 +80,11 @@ private:
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
 	#endif
 
-	// Switchboard plug for publishing 
-	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
-
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
+
+	// Switchboard plug for publishing 
+	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
 
 	GLuint timewarpShaderProgram;
 
@@ -431,7 +431,9 @@ public:
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
 
-		double warpStart = glfwGetTime();
+#ifndef NDEBUG
+		// double warpStart = glfwGetTime();
+#endif
 		//double cursor_x, cursor_y;
 		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
@@ -610,15 +612,16 @@ public:
 			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
 		}});
 
-		// TODO (implement-logging): When we have logging infra, delete this code.
-		// This only looks at warp time, so doesn't take into account IMU frequency.
-		//printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
-
 		lastSwapTime = std::chrono::high_resolution_clock::now();
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
 #ifndef NDEBUG
+
+		// TODO (implement-logging): When we have logging infra, delete this code.
+		// This only looks at warp time, so doesn't take into account IMU frequency.
+		// printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
+
 		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
 #endif
 	}

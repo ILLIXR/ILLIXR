@@ -14,7 +14,6 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_imu_biases{sb->subscribe_latest<imu_biases_type>("imu_biases")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
-        , _m_slam_ready{sb->subscribe_latest<bool>("slam_ready")}
         , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
     { }
@@ -43,8 +42,7 @@ public:
 
     // future_time: Timestamp in the future in seconds
     virtual pose_type get_fast_pose(time_type future_timestamp) override {
-        const bool* slam_ready = _m_slam_ready->get_latest_ro();
-        if (!slam_ready || !*slam_ready) {
+        if (!_m_imu_biases->get_latest_ro()) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
             return correct_pose(
                 pose_ptr ? *pose_ptr : pose_type{}
@@ -67,7 +65,6 @@ public:
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
 		std::lock_guard<std::mutex> lock {offset_mutex};
 		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-		std::cout << "pose_prediction: set_offset" << std::endl;
 		offset = raw_o.inverse();
 		/*
 		  Now, `raw_o` is maps to the identity quaternion.
@@ -114,7 +111,6 @@ private:
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
     std::unique_ptr<reader_latest<imu_biases_type>> _m_imu_biases;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
-    std::unique_ptr<reader_latest<bool>> _m_slam_ready;
     std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
     time_type _m_start_of_time;
 	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
