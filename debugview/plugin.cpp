@@ -327,7 +327,8 @@ public:
 
 				if(counter == 100){
 					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose.orientation);
+					//offsetQuat = Eigen::Quaternionf(pose.orientation);
+					offsetQuat = Eigen::Quaternionf(1, 0, 0, 0);
 				}
 				counter++;
 
