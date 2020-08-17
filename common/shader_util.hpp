@@ -18,9 +18,15 @@ static void GLAPIENTRY
 					const GLchar* message,
 					[[maybe_unused]] const void* userParam )
 	{
-	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-				type, severity, message );
+        // Don't log low-severity GL issues.
+        if(severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+        {
+            return;
+        }
+
+        fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+                ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+                    type, severity, message );
 	}
 
 static GLuint init_and_link (const char* vertex_shader, const char* fragment_shader){

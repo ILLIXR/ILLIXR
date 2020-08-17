@@ -52,6 +52,7 @@ public:
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
 	#endif
 		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
+		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
 	{ }
 
 private:
@@ -63,9 +64,11 @@ private:
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 1.0;
+	static constexpr double DELAY_FRACTION = 0.8;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
+
+	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
 
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	rendered_frame frame;
@@ -77,14 +80,15 @@ private:
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
 	#endif
 
+	// Switchboard plug for publishing 
+	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
+
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
 
 	GLuint timewarpShaderProgram;
 
-	double lastSwapTime;
-	double lastFrameTime;
-	double averageFramerate = DISPLAY_REFRESH_RATE;
+	time_type lastSwapTime;
 	GLuint64 total_gpu_time = 0;
 
 	HMD::hmd_info_t hmd_info;
@@ -264,14 +268,14 @@ private:
 
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
-	double GetNextSwapTimeEstimate(){
-		return lastSwapTime + (1.0/DISPLAY_REFRESH_RATE);
+	time_type GetNextSwapTimeEstimate(){
+		return lastSwapTime + vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
 	// given a specified percentage of the total Vsync period to delay.
-	double EstimateTimeToSleep(double framePercentage){
-		return (GetNextSwapTimeEstimate() - glfwGetTime()) * framePercentage;
+	std::chrono::duration<double, std::nano> EstimateTimeToSleep(double framePercentage){
+		return (GetNextSwapTimeEstimate() - std::chrono::high_resolution_clock::now()) * framePercentage;
 	}
 
 
@@ -300,7 +304,7 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
-		lastSwapTime = glfwGetTime();
+		lastSwapTime = std::chrono::high_resolution_clock::now();
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -564,6 +568,14 @@ public:
 
 		glEndQuery(GL_TIME_ELAPSED);
 
+#ifndef NDEBUG
+		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
+		printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+		if(delta > vsync_period)
+		{
+			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
+		}
+#endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;
 		hologram_params->seq = ++_hologram_seq;
@@ -571,8 +583,13 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
+		auto beforeSwap = glfwGetTime();
 		glXSwapBuffers(xwin->dpy, xwin->win);
-		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
+		auto afterSwap = glfwGetTime();
+
+#ifndef NDEBUG
+		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
+#endif
 
 		// retrieving the recorded elapsed time
 		// wait until the query result is available
@@ -597,13 +614,13 @@ public:
 		// This only looks at warp time, so doesn't take into account IMU frequency.
 		//printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
 
+		lastSwapTime = std::chrono::high_resolution_clock::now();
 
-		// TODO (implement-glog): When we have glog, use glog.
-		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
-			//printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
-		}
-		lastFrameTime = glfwGetTime();
-
+		// Now that we have the most recent swap time, we can publish the new estimate.
+		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+#ifndef NDEBUG
+		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+#endif
 	}
 
 	virtual ~timewarp_gl() override {

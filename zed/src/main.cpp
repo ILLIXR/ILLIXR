@@ -129,6 +129,14 @@ protected:
 
 class zed_imu_thread : public threadloop {
 public:
+
+		virtual void stop() override {
+
+		std::cerr << "here" << std::endl;
+			camera_thread_.stop();
+			threadloop::stop();
+		}
+
     zed_imu_thread(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}

@@ -75,6 +75,7 @@ namespace ILLIXR {
 		GLuint swap_indices[2]; // Which element of the swapchain
 		pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time;
+		std::chrono::time_point<std::chrono::system_clock> render_time;
 	};
 
 	typedef struct {
