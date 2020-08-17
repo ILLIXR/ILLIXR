@@ -31,8 +31,13 @@ public:
         // return correct_pose(
         //     pose_ptr ? *pose_ptr : pose_type{}
         // );
-        time_type vsync = get_vsync();
-        return get_fast_pose(vsync);
+        const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
+        if (std::chrono::system_clock::now() > *vsync_estimate) {
+            time_type vsync = get_vsync();
+            return get_fast_pose(vsync);
+        } else {
+            return get_fast_pose(*vsync_estimate);
+        }
     }
 
     // future_time: Timestamp in the future in seconds
@@ -110,6 +115,7 @@ private:
     std::unique_ptr<reader_latest<imu_biases_type>> _m_imu_biases;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
     std::unique_ptr<reader_latest<bool>> _m_slam_ready;
+    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
     time_type _m_start_of_time;
 	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::mutex offset_mutex;
