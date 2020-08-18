@@ -42,6 +42,24 @@ public:
 
     // future_time: Timestamp in the future in seconds
     virtual pose_type get_fast_pose(time_type future_timestamp) override {
+
+        // Generates a dummy yaw-back-and-forth pose.
+        
+        // double time = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - _m_start_of_time).count();
+        // time /= 1000000000.0f;
+        // float yaw = std::cos(time);
+
+        // Eigen::Quaternionf testQ = Eigen::AngleAxisf(0, Eigen::Vector3f::UnitX())
+        //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitY())
+        //     * Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitZ());
+        
+        // pose_type* test_pose = new pose_type {
+        //     future_timestamp,
+        //     Eigen::Vector3f{static_cast<float>(0), static_cast<float>(std::cos(time)), static_cast<float>(0)}, 
+        //     testQ
+        // };
+        // return correct_pose(*test_pose);
+
         if (!_m_imu_biases->get_latest_ro()) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
             return correct_pose(

@@ -577,6 +577,7 @@ public:
 		{
 			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
 		}
+		printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
 #endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;
