@@ -77,8 +77,8 @@ public:
 	{ }
 
 	void pull_queue() {
-		const std::size_t max_record_batch_size = 1024 * 16;
-		const std::chrono::milliseconds max_record_match_wait_time {1000};
+		const std::size_t max_record_batch_size = 1024 * 256;
+		const std::chrono::seconds max_record_match_wait_time {10};
 		std::vector<record> record_batch {max_record_batch_size};
 		std::size_t actual_batch_size;
 
@@ -86,9 +86,10 @@ public:
 
 		std::size_t processed = 0;
 		while (!terminate.load()) {
-			actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time);
-			process(record_batch, actual_batch_size);
-			processed += actual_batch_size;
+			std::this_thread::sleep_for(std::chrono::seconds{1});
+		// 	actual_batch_size = queue.wait_dequeue_bulk_timed(record_batch.begin(), record_batch.size(), max_record_match_wait_time);
+		// 	process(record_batch, actual_batch_size);
+		// 	processed += actual_batch_size;
 		}
 
 		// We got the terminate commnad,
