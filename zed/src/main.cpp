@@ -32,6 +32,9 @@ std::shared_ptr<Camera> start_camera() {
     init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
     init_params.camera_fps = 60;
     init_params.depth_mode = DEPTH_MODE::NONE;
+		// experimental
+		// init_params.camera_disable_self_calib = false;
+		// init_params.enable_image_enhancement = false;
 
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
@@ -73,6 +76,9 @@ public:
 
     imageL_ocv = slMat2cvMat(imageL_zed);
     imageR_ocv = slMat2cvMat(imageR_zed);
+
+		// experimental
+		runtime_parameters.enable_depth = false;
   }
 
 private:
@@ -131,8 +137,6 @@ class zed_imu_thread : public threadloop {
 public:
 
 		virtual void stop() override {
-
-		std::cerr << "here" << std::endl;
 			camera_thread_.stop();
 			threadloop::stop();
 		}
@@ -157,13 +161,15 @@ protected:
 	virtual skip_option _p_should_skip() override {
     zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
     if (sensors_data.imu.timestamp > last_imu_ts) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{2});
 			return skip_option::run;
 		} else {
-			return skip_option::skip_and_spin;
+			return skip_option::skip_and_yield;
 		}
 	}
 
     virtual void _p_one_iteration() override {
+			// std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
       // Time as ullong (nanoseconds)
       imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
