@@ -49,7 +49,7 @@ public:
 	std::lock_guard<std::mutex> lock {offset_mutex};
 	return orientation * offset;
     }
-    virtual pose_type get_fast_pose(time_type time) {
+    virtual pose_type get_fast_pose(time_type time) override {
 		/*
 			ullong vsync_time = std::chrono::nanoseconds(get_vsync(time).time_since_epoch()).count();
 			ullong plug_in_time = std::chrono::nanoseconds(_m_start_of_time.time_since_epoch()).count();
