@@ -16,12 +16,13 @@ public:
 	, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	, dataset_first_time{_m_sensor_data_it->first}
 	, _m_start_of_time{std::chrono::high_resolution_clock::now()}
+	, _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     {
     	auto newoffset = correct_pose(_m_sensor_data_it->second).orientation;
     	set_offset(newoffset);
     }
 
-    virtual pose_type get_fast_pose() override {
+    virtual fast_pose_type get_fast_pose() override {
 	return get_fast_pose( std::chrono::system_clock::now() );
     }
 
@@ -49,7 +50,7 @@ public:
 	std::lock_guard<std::mutex> lock {offset_mutex};
 	return orientation * offset;
     }
-    virtual pose_type get_fast_pose(time_type time) override {
+    virtual fast_pose_type get_fast_pose(time_type time) override {
 		/*
 			ullong vsync_time = std::chrono::nanoseconds(get_vsync(time).time_since_epoch()).count();
 			ullong plug_in_time = std::chrono::nanoseconds(_m_start_of_time.time_since_epoch()).count();
@@ -60,7 +61,15 @@ public:
 		*/
 	    	//set_offset(correct_pose(_m_sensor_data.begin()->second).orientation);
 
-		ullong lookup_time = std::chrono::nanoseconds(get_vsync(time) - _m_start_of_time ).count() + dataset_first_time;
+		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
+		time_type vsync;
+		if(estimated_vsync == nullptr) {
+			vsync = std::chrono::system_clock::now();
+		} else {
+			vsync = *estimated_vsync;
+		}
+
+		ullong lookup_time = std::chrono::nanoseconds(vsync - _m_start_of_time ).count() + dataset_first_time;
 		ullong  nearest_timestamp;
 		if(lookup_time <= _m_sensor_data.begin()->first){
 			nearest_timestamp=_m_sensor_data.begin()->first;
@@ -103,9 +112,14 @@ public:
 		auto temp = _m_sensor_data.find(nearest_timestamp)->second;
 		std::cout<<temp.position.x()<<", "<<temp.position.y()<<", "<<temp.position.z()<<", "<<temp.orientation.w()<<", "<< temp.orientation.x()<<", "<<temp.orientation.y()<<", "<<temp.orientation.z()<<std::endl;
 		*/
-		return correct_pose(_m_sensor_data.find(nearest_timestamp)->second);
+		return fast_pose_type{
+			.pose = correct_pose(_m_sensor_data.find(nearest_timestamp)->second),
+			.imu_time = _m_start_of_time + std::chrono::nanoseconds{nearest_timestamp - dataset_first_time},
+			.predict_computed_time = std::chrono::system_clock::now(),
+			.predict_target_time = vsync
+		};
 
-    	}
+	}
 
 
 private:
@@ -119,32 +133,25 @@ private:
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	ullong dataset_first_time;
 	time_type _m_start_of_time;
+	std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
 
-    	pose_type correct_pose(const pose_type pose) const {
-        	pose_type swapped_pose;
+	pose_type correct_pose(const pose_type pose) const {
+		pose_type swapped_pose;
 
-       		// This uses the OpenVINS standard output coordinate system.
-        	// This is a mapping between the OV coordinate system and the OpenGL system.
-        	swapped_pose.position.x() = -pose.position.y();
-        	swapped_pose.position.y() = pose.position.z();
-        	swapped_pose.position.z() = -pose.position.x();
+		// This uses the OpenVINS standard output coordinate system.
+		// This is a mapping between the OV coordinate system and the OpenGL system.
+		swapped_pose.position.x() = -pose.position.y();
+		swapped_pose.position.y() = pose.position.z();
+		swapped_pose.position.z() = -pose.position.x();
 
-        	// There is a slight issue with the orientations: basically,
-        	// the output orientation acts as though the "top of the head" is the
-        	// forward direction, and the "eye direction" is the up direction.
-		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
+		// There is a slight issue with the orientations: basically,
+		// the output orientation acts as though the "top of the head" is the
+		// forward direction, and the "eye direction" is the up direction.
+	Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
 
-		swapped_pose.orientation = apply_offset(raw_o);
+	swapped_pose.orientation = apply_offset(raw_o);
 
-        	return swapped_pose;
-    	}
-	//pyh: modified from sam+jeffery code
-	time_type get_vsync(time_type time) const {
-		const std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
-		std::size_t periods = (time - _m_start_of_time) / vsync_period;
-		periods++;
-		//std::cout<<"periods: "<<periods<<std::endl;
-		return _m_start_of_time + periods * vsync_period;
+		return swapped_pose;
 	}
 
 };

@@ -26,22 +26,30 @@ public:
     }
 
     // No paramter pose predict will just get the current slow pose based on the next vsync
-    virtual pose_type get_fast_pose() override {
+    virtual fast_pose_type get_fast_pose() override {
         // const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
         // return correct_pose(
         //     pose_ptr ? *pose_ptr : pose_type{}
         // );
         const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
-        if (!vsync_estimate || std::chrono::system_clock::now() > *vsync_estimate) {
-            time_type vsync = get_vsync();
-            return get_fast_pose(vsync);
+
+        if(vsync_estimate == nullptr) {
+            return get_fast_pose(std::chrono::high_resolution_clock::now());
         } else {
             return get_fast_pose(*vsync_estimate);
         }
+        
+
+        // if (!vsync_estimate || std::chrono::system_clock::now() > *vsync_estimate) {
+        //     time_type vsync = get_vsync();
+        //     return get_fast_pose(vsync);
+        // } else {
+        //     return get_fast_pose(*vsync_estimate);
+        // }
     }
 
     // future_time: Timestamp in the future in seconds
-    virtual pose_type get_fast_pose(time_type future_timestamp) override {
+    virtual fast_pose_type get_fast_pose(time_type future_timestamp) override {
 
         // Generates a dummy yaw-back-and-forth pose.
         
@@ -62,22 +70,33 @@ public:
 
         if (!_m_imu_biases->get_latest_ro()) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
-            return correct_pose(
-                pose_ptr ? *pose_ptr : pose_type{}
-            );
+            
+            return fast_pose_type{
+                .pose = correct_pose(pose_ptr ? *pose_ptr : pose_type{})
+            };
         }
         double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
-        Eigen::Matrix<double,13,1> state_plus = predict_mean_rk4(dt/NANO_SEC);
+        std::pair<Eigen::Matrix<double,13,1>, time_type> predictor_result = predict_mean_rk4(dt/NANO_SEC);
 
-        // The timestamp here has to be approximated using current system time. Also I dont think this time is
-        // used anywhere atm and should probably be cleaned up at some point
+        auto state_plus = predictor_result.first;
+        auto predictor_imu_time = predictor_result.second;
+        
         pose_type* pose_ptr = new pose_type {
-            future_timestamp,
-            Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)), static_cast<float>(state_plus(6))}, 
-            Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}
+            .sensor_time = predictor_imu_time,
+            .position = Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)), static_cast<float>(state_plus(6))}, 
+            .orientation = Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}
         };
 
-        return correct_pose(*pose_ptr);
+        // Several timestamps are logged:
+        //       - the imu time (time when imu data was originally ingested for this prediction)
+        //       - the prediction compute time (time when this prediction was computed, i.e., now)
+        //       - the prediction target (the time that was requested for this pose.)
+        return fast_pose_type {
+            .pose = correct_pose(*pose_ptr),
+            .imu_time = predictor_imu_time,
+            .predict_computed_time = std::chrono::high_resolution_clock::now(),
+            .predict_target_time = future_timestamp
+        };
     }
 
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
@@ -134,20 +153,6 @@ private:
 	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::mutex offset_mutex;
 
-	time_type get_vsync() const {
-		return get_vsync(std::chrono::high_resolution_clock::now());
-	}
-
-    time_type get_vsync(time_type now) const {
-		const std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
-		assert(now > _m_start_of_time);
-		std::size_t periods = (now - _m_start_of_time) / vsync_period;
-		periods++;
-		auto ret = _m_start_of_time + periods * vsync_period;
-		assert(ret > now);
-		return ret;
-	}
-
     // Correct the orientation of the pose due to the lopsided IMU in the EuRoC Dataset
     pose_type correct_pose(const pose_type pose) const {
         pose_type swapped_pose;
@@ -165,12 +170,15 @@ private:
 		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
 
 		swapped_pose.orientation = apply_offset(raw_o);
+        swapped_pose.sensor_time = pose.sensor_time;
 
         return swapped_pose;
     }
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
-    Eigen::Matrix<double,13,1> predict_mean_rk4(double dt) const {
+    // Returns a pair of the predictor state_plus and the time associated with the
+    // most recent imu reading used to perform this prediction.
+    std::pair<Eigen::Matrix<double,13,1>,time_type> predict_mean_rk4(double dt) const {
 
         // Pre-compute things
         const imu_biases_type *imu_biases = _m_imu_biases->get_latest_ro();
@@ -251,7 +259,7 @@ private:
         state_plus.block(4,0,3,1) = p_0+(1.0/6.0)*k1_p+(1.0/3.0)*k2_p+(1.0/3.0)*k3_p+(1.0/6.0)*k4_p;
         state_plus.block(7,0,3,1) = v_0+(1.0/6.0)*k1_v+(1.0/3.0)*k2_v+(1.0/3.0)*k3_v+(1.0/6.0)*k4_v;
 
-        return state_plus;
+        return {state_plus, imu_biases->imu_time};
     }
 
     /**

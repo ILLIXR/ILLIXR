@@ -41,6 +41,7 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
 		Eigen::Matrix<double,13,1> pose;
+		time_type imu_time;
 	} imu_biases_type;
 
 	typedef struct {
@@ -50,10 +51,17 @@ namespace ILLIXR {
 	} rgb_depth_type;
 
 	typedef struct {
-		time_type time;
+		time_type sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
 	} pose_type;
+
+	typedef struct {
+		pose_type pose;
+		time_type imu_time; // Recorded time of last imu data ingestion to create this prediction
+		time_type predict_computed_time; // Time at which the prediction was computed
+		time_type predict_target_time; // Time that prediction targeted.
+	} fast_pose_type;
 
 	typedef struct {
 		int pixel[1];
@@ -73,7 +81,7 @@ namespace ILLIXR {
 	struct rendered_frame_alt {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
-		pose_type render_pose; // The pose used when rendering this frame.
+		fast_pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time;
 		std::chrono::time_point<std::chrono::system_clock> render_time;
 	};

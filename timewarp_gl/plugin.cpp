@@ -53,6 +53,8 @@ public:
 	#endif
 		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
+		, _m_mtp{sb->publish<std::chrono::duration<double, std::nano>>("mtp")}
+		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
 	{ }
 
 private:
@@ -83,8 +85,14 @@ private:
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
 
-	// Switchboard plug for publishing 
+	// Switchboard plug for publishing vsync estimates
 	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
+
+	// Switchboard plug for publishing MTP metrics
+	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_mtp;
+
+	// Switchboard plug for publishing frame stale-ness metrics
+	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_frame_age;
 
 	GLuint timewarpShaderProgram;
 
@@ -440,7 +448,7 @@ public:
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
 		ksAlgebra::ksMatrix4x4f viewMatrix;
-		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose);
+		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -455,8 +463,8 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		const pose_type latest_pose = pp->get_fast_pose();
-		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose);
+		const fast_pose_type latest_pose = pp->get_fast_pose(GetNextSwapTimeEstimate());
+		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose.pose);
 
 		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
 
@@ -617,11 +625,19 @@ public:
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
-#ifndef NDEBUG
 
 		// TODO (implement-logging): When we have logging infra, delete this code.
-		// This only looks at warp time, so doesn't take into account IMU frequency.
-		// printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
+		// Compute time difference between current post-vsync time and the time of the most recent
+		// imu sample that was used to generate the predicted pose. This is the MTP, assuming good prediction
+		// was used to compute the most recent fast pose.
+		std::chrono::duration<double,std::nano> mtp = (lastSwapTime - latest_pose.imu_time);
+		std::chrono::duration<double,std::nano> predict_to_display = (lastSwapTime - latest_pose.predict_computed_time);
+
+#ifndef NDEBUG
+
+		
+		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", (float)(mtp.count() / 1000000.0));
+		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", (float)(predict_to_display.count() / 1000000.0));
 
 		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
 #endif
