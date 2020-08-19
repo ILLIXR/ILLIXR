@@ -15,10 +15,10 @@ using namespace ILLIXR;
 
 #define AUDIO_EPOCH (1024.0/48000.0)
 
-class audio_component : public threadloop
+class audio_decoding : public threadloop
 {
 public:
-	audio_component(std::string name_, phonebook *pb_)
+	audio_decoding(std::string name_, phonebook *pb_)
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->subscribe_latest<pose_type>("slow_pose")}
@@ -49,4 +49,4 @@ private:
 	std::chrono::high_resolution_clock::time_point last_iteration;
 };
 
-PLUGIN_MAIN(audio_component)
+PLUGIN_MAIN(audio_decoding)
