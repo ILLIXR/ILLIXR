@@ -57,16 +57,21 @@ public:
         // time /= 1000000000.0f;
         // float yaw = std::cos(time);
 
-        // Eigen::Quaternionf testQ = Eigen::AngleAxisf(0, Eigen::Vector3f::UnitX())
+        // Eigen::Quaternionf testQ = Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitX())
         //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitY())
-        //     * Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitZ());
+        //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitZ());
         
         // pose_type* test_pose = new pose_type {
         //     future_timestamp,
         //     Eigen::Vector3f{static_cast<float>(0), static_cast<float>(std::cos(time)), static_cast<float>(0)}, 
         //     testQ
         // };
-        // return correct_pose(*test_pose);
+        // return fast_pose_type {
+        //     .pose = correct_pose(*test_pose),
+        //     .imu_time = std::chrono::high_resolution_clock::now(),
+        //     .predict_computed_time = std::chrono::high_resolution_clock::now(),
+        //     .predict_target_time = future_timestamp
+        // };
 
         if (!_m_imu_biases->get_latest_ro()) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
