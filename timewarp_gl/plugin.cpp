@@ -616,7 +616,7 @@ public:
 			{iteration_no},
 			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
-			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(elapsed_time))},
+			{std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_time)},
 		}});
 
 		lastSwapTime = std::chrono::high_resolution_clock::now();
