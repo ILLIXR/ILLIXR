@@ -616,7 +616,7 @@ public:
 			{iteration_no},
 			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
-			{std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_time)},
+			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 
 		lastSwapTime = std::chrono::high_resolution_clock::now();
@@ -633,7 +633,7 @@ public:
 
 #ifndef NDEBUG
 
-		
+
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", (float)(mtp.count() / 1000000.0));
 		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", (float)(predict_to_display.count() / 1000000.0));
 
