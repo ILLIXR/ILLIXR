@@ -97,7 +97,6 @@ private:
 	GLuint timewarpShaderProgram;
 
 	time_type lastSwapTime;
-	GLuint64 total_gpu_time = 0;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -613,12 +612,11 @@ public:
 
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		total_gpu_time += elapsed_time;
 		metric_logger->log(record{&timewarp_gpu_record, {
 			{iteration_no},
 			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
-			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(total_gpu_time))},
+			{std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(elapsed_time))},
 		}});
 
 		lastSwapTime = std::chrono::high_resolution_clock::now();
