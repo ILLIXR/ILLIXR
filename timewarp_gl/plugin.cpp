@@ -24,15 +24,18 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
-const record_header timewarp_gpu_record {
-	"timewarp_gpu",
-	{
-		{"iteration_no", typeid(std::size_t)},
-		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-		{"gpu_time_duration", typeid(std::chrono::nanoseconds)},
-	},
-};
+const record_header timewarp_gpu_record {"timewarp_gpu", {
+	{"iteration_no", typeid(std::size_t)},
+	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	{"gpu_time_duration", typeid(std::chrono::nanoseconds)},
+}};
+
+const record_header m2p_record {"m2p_record", {
+	{"iteration_no", typeid(std::size_t)},
+	{"vsync", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"imu_time", typeid(std::chrono::high_resolution_clock::time_point)},
+}};
 
 class timewarp_gl : public threadloop {
 
@@ -55,6 +58,8 @@ public:
 		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
 		, _m_mtp{sb->publish<std::chrono::duration<double, std::nano>>("mtp")}
 		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
+		, timewarp_gpu_logger{metric_logger}
+		, m2p_logger{metric_logger}
 	{ }
 
 private:
@@ -93,6 +98,9 @@ private:
 
 	// Switchboard plug for publishing frame stale-ness metrics
 	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_frame_age;
+
+	metric_coalescer timewarp_gpu_logger;
+	metric_coalescer m2p_logger;
 
 	GLuint timewarpShaderProgram;
 
@@ -612,7 +620,7 @@ public:
 
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		metric_logger->log(record{&timewarp_gpu_record, {
+		timewarp_gpu_logger.log(record{&timewarp_gpu_record, {
 			{iteration_no},
 			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
@@ -620,6 +628,12 @@ public:
 		}});
 
 		lastSwapTime = std::chrono::high_resolution_clock::now();
+
+		m2p_logger.log(record{&m2p_record, {
+			{iteration_no},
+			{std::chrono::high_resolution_clock::now()},
+			{latest_pose.imu_time},
+		}});
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
@@ -631,9 +645,8 @@ public:
 		std::chrono::duration<double,std::nano> mtp = (lastSwapTime - latest_pose.imu_time);
 		std::chrono::duration<double,std::nano> predict_to_display = (lastSwapTime - latest_pose.predict_computed_time);
 
+
 #ifndef NDEBUG
-
-
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", (float)(mtp.count() / 1000000.0));
 		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", (float)(predict_to_display.count() / 1000000.0));
 
