@@ -150,6 +150,7 @@ async def load_native(config: Dict[str, Any]) -> None:
 async def load_tests(config: Dict[str, Any]) -> None:
     runtime_exe_path, plugin_paths = await asyncio.gather(
         build_runtime(config, "exe", test=True),
+        make(Path("common", ["tests/run"])),
         asyncio.gather(
             *(
                 build_one_plugin(config, plugin_config, test=True)
