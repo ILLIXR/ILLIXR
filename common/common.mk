@@ -5,7 +5,7 @@ STDCXX ?= c++17
 DBG_FLAGS ?= -Og -g -Wall -Wextra
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
-CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp')
+CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)
 HPP_FILES ?= $(shell find -L . -name '*.hpp')
 # I need -L to follow symlinks in common/
 LDFLAGS := -ggdb $(LDFLAGS)
@@ -36,7 +36,7 @@ main.opt.exe: main.cpp $(CPP_FILES) $(HPP_FILES) Makefile
 	$(CXX)        -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(OPT_FLAGS) \
 	-o $@ $<
 
-.PHONY: test/run test/gdb
+.PHONY: tests/run tests/gdb
 ifeq ($(CPP_TEST_FILES),)
 tests/run:
 tests/gdb:
