@@ -1,67 +1,97 @@
 #!/bin/bash
 
-set -x -e
+### Extra instructions for docker ###
+# export DEBIAN_FRONTEND=noninteractive TZ=America/Chicago
+# apt update && apt install -y sudo
+
+### Normalize environment ###
+
+set -e
+cd "$(dirname "${0}")"
+
+### Parse args ###
+
+assume_yes=
+while [[ "$#" -gt 0 ]]; do
+    case "${1}" in
+        -y|--yes) assume_yes=true ;;
+        *) echo "Unknown parameter passed: ${1}"; exit 1 ;;
+    esac
+    shift
+done
+
+### Get OS ###
 
 . /etc/os-release
 
+### Helper functions ###
+
 function y_or_n() {
-	while true; do
-		read -p "Yes or no?" yn
-		case $yn in
-			[Yy]* ) break;;
-			[Nn]* ) return 1;;
-			* ) echo "Please answer yes or no.";;
-		esac
-	done
+	if [ -n "${assume_yes}" ]; then
+		return 0
+	else
+		while true; do
+			echo "${1}"
+			read -rp "Yes or no? " yn
+			case "${yn}" in
+				[Yy]* ) return 0 ;;
+				[Nn]* ) echo "Declined."; return 1 ;;
+				* ) echo "Please answer yes or no." ;;
+			esac
+		done
+	fi
 }
 
-if [ "${ID_LIKE}" = debian -o "${ID}" = debian ]
+### Main ###
+
+if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]
 then
-	echo "Next: Add apt-get sources list and keys"
-	if y_or_n; then
-		sudo add-apt-repository ppa:graphics-drivers/ppa
-		wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
-		sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-		sudo apt-get update
+	if y_or_n "Next: Add apt-get sources list and keys"; then
+		sudo apt install -y software-properties-common curl
+		curl https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
+		sudo apt-add-repository -u -y "deb https://apt.kitware.com/ubuntu/ ${UBUNTU_CODENAME} main"
+		sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
+		sudo add-apt-repository -u -y ppa:deadsnakes/ppa
 	fi
 
-	echo "Next: apt-get install necessary packages"
-	if y_or_n; then
+	if y_or_n "Next: apt-get install necessary packages"; then
 		sudo apt-get install -y \
-			git clang cmake libc++-dev libc++abi-dev \
+			git clang make cmake libc++-dev libc++abi-dev python3.8 python3-venv \
 			libeigen3-dev libboost-all-dev libatlas-base-dev libsuitesparse-dev libblas-dev \
 			glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
 			libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
 			build-essential libx11-xcb-dev libxcb-glx0-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
-			libgtest-dev pkg-config libgtk2.0-dev curl
+			libgtest-dev pkg-config libgtk2.0-dev
 	fi
 
-	old_pwd="${PWD}"
-	mkdir -p /tmp/ILLIXR_deps
-	cd /tmp/ILLIXR_deps
+	temp_dir=/tmp/ILLIXR_deps
+	mkdir -p "${temp_dir}"
 
-	if [ ! -d opencv ]; then
-		echo "Next: Install OpenCV from source"
-		if y_or_n; then
-			git clone --branch 3.4.6 https://github.com/opencv/opencv/
-			git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/
-			mkdir -p opencv/build && cd opencv/build
-			cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_JAVA=OFF -DWITH_OPENGL=ON -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
-			sudo make -j$(nproc) install
-			sudo ldconfig -v
-			cd ../..
-		fi
+	if [ ! -d opencv ] && y_or_n "Next: Install OpenCV from source"; then
+		git clone --branch 3.4.6 https://github.com/opencv/opencv/ "${temp_dir}/opencv"
+		git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/  "${temp_dir}/opencv_contrib"
+		cmake \
+			-S "${temp_dir}/opencv" \
+			-B "${temp_dir}/opencv/build" \
+			-D CMAKE_BUILD_TYPE=Release \
+			-D CMAKE_INSTALL_PREFIX=/usr/local \
+			-D BUILD_TESTS=OFF \
+			-D BUILD_PERF_TESTS=OFF \
+			-D BUILD_EXAMPLES=OFF \
+			-D BUILD_JAVA=OFF \
+			-D WITH_OPENGL=ON \
+			-D OPENCV_EXTRA_MODULES_PATH="${temp_dir}/opencv_contrib/modules"
+		sudo make -C "${temp_dir}/opencv/build" "-j$(nproc)" install
+		sudo ldconfig -v
 	fi
 
-	if [ ! -d Vulkan-Headers ]; then
-		echo "Next: Install Vulkan Headers from source"
-		if y_or_n; then
-			git clone https://github.com/KhronosGroup/Vulkan-Headers.git
-			mkdir -p Vulkan-Headers/build && cd Vulkan-Headers/build
-			cmake -DCMAKE_INSTALL_PREFIX=install ..
-			sudo make -j$(nproc) install
-			cd ../..
-		fi
+	if [ ! -d Vulkan-Headers ] && y_or_n "Next: Install OpenCV from source"; then
+		git clone https://github.com/KhronosGroup/Vulkan-Headers.git "${temp_dir}/Vulkan-Headers"
+		cmake \
+			-S "${temp_dir}/Vulkan-Headers" \
+			-B "${temp_dir}/Vulkan-Headers/build" \
+			-D CMAKE_INSTALL_PREFIX=install
+		sudo make -C "${temp_dir}/Vulkan-Headers/build" "-j$(nproc)" install
 	fi
 
 	# if [ ! -d Vulkan-Loader ]; then
@@ -76,26 +106,17 @@ then
 	# 	fi
 	# fi
 
-	if [ ! -d OpenXR-SDK ]; then
-		echo "Next: Install OpenXR SDK from souce"
-		if y_or_n; then
-			git clone https://github.com/KhronosGroup/OpenXR-SDK.git
-			mkdir -p OpenXR-SDK/build && cd OpenXR-SDK/build;
-			cmake ..
-			sudo make -j$(nproc) install
-			cd ../..
-		fi
+	if [ ! -d OpenXR-SDK ] && y_or_n "Next: Install OpenXR SDK from souce"; then
+		git clone https://github.com/KhronosGroup/OpenXR-SDK.git "${temp_dir}/OpenXR-SDK"
+		cmake -S "${temp_dir}/OpenXR-SDK" -B "${temp_dir}/OpenXR-SDK/build"
+		sudo make -C "${temp_dir}/OpenXR-SDK/build" "-j$(nproc)" install
 	fi
 
-	cd "${old_pwd}"
-
 	if ! poetry; then
-		echo "Next: Install Poetry"
-		if y_or_n; then
-			curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+		if y_or_n "Next: Install Poetry"; then
+			curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.8
+			. $HOME/.poetry/env
 		fi
-	else
-		echo "Poetry already installed"
 	fi
 
 	# I won't ask the user first, because this is not a global installation.

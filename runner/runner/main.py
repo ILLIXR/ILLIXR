@@ -199,7 +199,7 @@ async def cmake(
         ],
         check=True,
     )
-    await make(build_path, "all", {})
+    await make(build_path, ["all"])
 
 
 async def load_monado(config: Dict[str, Any]) -> None:
