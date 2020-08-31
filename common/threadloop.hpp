@@ -79,7 +79,7 @@ private:
 				break;
 			case skip_option::run: {
 				_p_one_iteration();
-				it_log.log(record{&__threadloop_iteration_header, {
+				it_log.log(record{__threadloop_iteration_header, {
 					{id},
 					{iteration_no},
 					{skip_no},

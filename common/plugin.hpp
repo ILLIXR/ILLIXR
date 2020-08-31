@@ -5,6 +5,9 @@
 
 namespace ILLIXR {
 
+	/*
+	 * This gets included, but it is functionally 'private'. Hence the double-underscores.
+	 */
 	const record_header __plugin_start_header {
 		"plugin_name",
 		{
@@ -26,7 +29,7 @@ namespace ILLIXR {
 		 * consturctors.
 		 */
 		virtual void start() {
-			record_logger_->log(record{&__plugin_start_header, {
+			record_logger_->log(record{__plugin_start_header, {
 				{id},
 				{name},
 			}});

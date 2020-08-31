@@ -23,11 +23,20 @@ namespace ILLIXR {
 			, columns{columns_}
 		{ }
 
+		/**
+		 * @brief Compares two schemata.
+		 */
 		bool operator==(const record_header& other) const {
-			if (id != other.id) {
-				return false;
+			// Check pointer first
+			if (this == &other) {
+				return true;
 			}
-			if (columns.size() != other.columns.size()) {
+
+			if (false
+				|| name != other.name
+				|| columns.size() != other.columns.size()
+				|| id != other.id
+				) {
 				return false;
 			}
 			for (std::size_t i = 0; i < columns.size(); ++i) {
@@ -61,6 +70,11 @@ namespace ILLIXR {
 		const std::vector<std::pair<std::string, const std::type_info&>> columns;
 	};
 
+	/**
+	 * @brief A helper class that lets one dynamically determine if some data gets used.
+	 *
+	 * When a use_taint gets copied, the original is considered used and the new one is considered unused.
+	 */
 	class use_taint {
 	public:
 		use_taint() : used{false} { }
@@ -71,15 +85,6 @@ namespace ILLIXR {
 			if (&other != this) {
 				other.used = true;
 				used = false;
-				/*
-				  class_containing_use_taint a;
-				  a.mark_used();
-				  // at this point, the data a is tracking is used.
-
-				  a = b;
-				  // at this point, the data a is tracking is not yet used.
-				  // Therefore a should be marked as unused
-				  */
 			}
 			return *this;
 		}
@@ -94,30 +99,27 @@ namespace ILLIXR {
 		mutable bool used;
 	};
 
+	/**
+	 * @brief This class represents a tuple of fields which get logged by `record_logger`.
+	 *
+	 * `rh_` is a pointer rather than a reference for historical reasons. It should not be null.
+	 */
     class record {
 	public:
-		// TODO: remove this constructor
-		// Change rh into a reference.
-		record()
-			: rh{nullptr}
-			, values{}
-		{ }
-
-		record(const record_header* rh_, std::vector<std::any> values_)
+		record(const record_header& rh_, std::vector<std::any> values_)
 			: rh{rh_}
 			, values{values_}
 		{
 #ifndef NDEBUG
-			assert(rh);
-			if (values.size() != rh->get_columns()) {
-				std::cerr << values.size() << " elements passed, but rh for " << rh->get_name() << " only specifies " << rh->get_columns() << "." << std::endl;
+			if (values.size() != rh.get_columns()) {
+				std::cerr << values.size() << " elements passed, but rh for " << rh.get_name() << " only specifies " << rh.get_columns() << "." << std::endl;
 				abort();
 			}
 			for (std::size_t column = 0; column < values.size(); ++column) {
-				if (values[column].type() != rh->get_column_type(column)) {
-					std::cerr << "Caller got wrong type for column " << column << " of " << rh->get_name() << ". "
+				if (values[column].type() != rh.get_column_type(column)) {
+					std::cerr << "Caller got wrong type for column " << column << " of " << rh.get_name() << ". "
 							  << "Caller passed: " << values[column].type().name() << "; "
-							  << "recod_header for specifies: " << rh->get_column_type(column).name() << ". "
+							  << "recod_header for specifies: " << rh.get_column_type(column).name() << ". "
 							  << std::endl;
 					abort();
 				}
@@ -127,7 +129,7 @@ namespace ILLIXR {
 
 		~record() {
 #ifndef NDEBUG
-			if (rh != nullptr && !data_taint.is_used()) {
+			if (!data_taint.is_used()) {
 				std::cerr << "Record was deleted without being logged." << std::endl;
 				abort();
 			}
@@ -137,13 +139,12 @@ namespace ILLIXR {
 		template<typename T>
 		T get_value(unsigned column) const {
 #ifndef NDEBUG
-			assert(rh);
 			data_taint.mark_used();
-			if (rh->get_column_type(column) != typeid(T)) {
+			if (rh.get_column_type(column) != typeid(T)) {
 				std::ostringstream ss;
-				ss << "Caller column type for " << column << " of " << rh->get_name() << ". "
+				ss << "Caller column type for " << column << " of " << rh.get_name() << ". "
 				   << "Caller passed: " << typeid(T).name() << "; "
-				   << "record_header specifies: " << rh->get_column_type(column).name() << ". ";
+				   << "record_header specifies: " << rh.get_column_type(column).name() << ". ";
 				throw std::runtime_error{ss.str()};
 			}
 #endif
@@ -151,12 +152,7 @@ namespace ILLIXR {
 		}
 
 		const record_header& get_record_header() const {
-#ifndef NDEBUG
-			if (!rh) {
-				throw std::runtime_error{"Called get_record_header on a default-constructed record."};
-			}
-#endif
-			return *rh;
+			return rh;
 		}
 
 		void mark_used() const {
@@ -169,7 +165,7 @@ namespace ILLIXR {
 		// Holding a pointer to a record_header is more efficient than
 		// requiring each record to hold a list of its column names
 		// and table name. This is just one pointer.
-		const record_header* rh;
+		const record_header& rh;
 		std::vector<std::any> values;
 #ifndef NDEBUG
         use_taint data_taint;
@@ -177,7 +173,7 @@ namespace ILLIXR {
     };
 
 	/**
-	 * @brief The ILLIXR logging service.
+	 * @brief The ILLIXR logging service for structured records.
 	 *
 	 * This has two advantages over printf logging. It has lower
 	 * overhead (because it goes into a database), won't result in
