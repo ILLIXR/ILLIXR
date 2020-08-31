@@ -204,20 +204,25 @@ namespace ILLIXR {
 		switchboard_impl()
 		{
 			for (size_t i = 0; i < MAX_THREADS; ++i) {
-				_m_threads.push_back(std::thread{[this]() {
+				_m_threads.push_back(std::thread{[i, this]() {
+					;
+					std::cout << "thread," << std::this_thread::get_id() << ",switchboard worker," << i << std::endl;
 					this->check_queues();
 				}});
 			}
 		}
 
-		virtual void stop() {
-			_m_terminate.store(true);
-			for (std::thread& thread : _m_threads) {
-				thread.join();
+		virtual void stop() override {
+			if (!_m_terminate.load()) {
+				_m_terminate.store(true);
+				for (std::thread& thread : _m_threads) {
+					thread.join();
+				}
 			}
 		}
 
-		virtual ~switchboard_impl() {
+		virtual ~switchboard_impl() override {
+			stop();
 		}
 
 	private:
