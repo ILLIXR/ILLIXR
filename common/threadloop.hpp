@@ -9,6 +9,16 @@
 
 namespace ILLIXR {
 
+const record_header __threadloop_iteration_header {"threadloop_iteration", {
+	{"plugin_id", typeid(std::size_t)},
+	{"iteration_no", typeid(std::size_t)},
+	{"skips", typeid(std::size_t)},
+	{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+	{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+}};
+
 /**
  * @brief A reusable threadloop for plugins.
  *
@@ -41,39 +51,49 @@ public:
 		}
 	}
 
+protected:
+	std::size_t iteration_no = 0;
+	std::size_t skip_no = 0;
+
 private:
 	void thread_main() {
-		metric_coalescer<start_iteration_record> start_it {metric_logger};
-		metric_coalescer<stop_iteration_record> stop_it {metric_logger};
-		metric_coalescer<start_skip_iteration_record> start_skip {metric_logger};
-		metric_coalescer<stop_skip_iteration_record> stop_skip {metric_logger};
+		record_coalescer it_log {record_logger_};
 
-		std::size_t it = 0;
-		std::size_t skip_it = 0;
+		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
 		_p_thread_setup();
 
-		while (!should_terminate()) {
+		auto iteration_start_cpu_time  = thread_cpu_time();
+		auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
-			start_skip.log(std::make_unique<const start_skip_iteration_record>(id, it, skip_it));
+		while (!should_terminate()) {
 			skip_option s = _p_should_skip();
-			stop_skip.log(std::make_unique<const stop_skip_iteration_record>(id, it, skip_it));
 
 			switch (s) {
 			case skip_option::skip_and_yield:
 				std::this_thread::yield();
-				++skip_it;
+				++skip_no;
 				break;
 			case skip_option::skip_and_spin:
-				++skip_it;
+				++skip_no;
 				break;
-			case skip_option::run:
-				start_it.log(std::make_unique<const start_iteration_record>(id, it, skip_it));
+			case skip_option::run: {
 				_p_one_iteration();
-				stop_it.log(std::make_unique<const stop_iteration_record>(id, it, skip_it));
-				++it;
-				skip_it = 0;
+				it_log.log(record{&__threadloop_iteration_header, {
+					{id},
+					{iteration_no},
+					{skip_no},
+					{iteration_start_cpu_time},
+					{thread_cpu_time()},
+					{iteration_start_wall_time},
+					{std::chrono::high_resolution_clock::now()},
+				}});
+				iteration_start_cpu_time  = thread_cpu_time();
+				iteration_start_wall_time = std::chrono::high_resolution_clock::now();
+				++iteration_no;
+				skip_no = 0;
 				break;
+			}
 			case skip_option::stop:
 				stop();
 				break;
