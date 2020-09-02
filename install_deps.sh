@@ -67,7 +67,7 @@ then
 	temp_dir=/tmp/ILLIXR_deps
 	mkdir -p "${temp_dir}"
 
-	if [ ! -d opencv ] && y_or_n "Next: Install OpenCV from source"; then
+	if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
 		git clone --branch 3.4.6 https://github.com/opencv/opencv/ "${temp_dir}/opencv"
 		git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/  "${temp_dir}/opencv_contrib"
 		cmake \
@@ -85,7 +85,7 @@ then
 		sudo ldconfig -v
 	fi
 
-	if [ ! -d Vulkan-Headers ] && y_or_n "Next: Install Vulkan Headers from source"; then
+	if [ ! -d "${temp_dir}/Vulkan-Headers" ] && y_or_n "Next: Install Vulkan Headers from source"; then
 		git clone https://github.com/KhronosGroup/Vulkan-Headers.git "${temp_dir}/Vulkan-Headers"
 		cmake \
 			-S "${temp_dir}/Vulkan-Headers" \
@@ -106,7 +106,7 @@ then
 	# 	fi
 	# fi
 
-	if [ ! -d OpenXR-SDK ] && y_or_n "Next: Install OpenXR SDK from souce"; then
+	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from souce"; then
 		git clone https://github.com/KhronosGroup/OpenXR-SDK.git "${temp_dir}/OpenXR-SDK"
 		cmake -S "${temp_dir}/OpenXR-SDK" -B "${temp_dir}/OpenXR-SDK/build"
 		sudo make -C "${temp_dir}/OpenXR-SDK/build" "-j$(nproc)" install
