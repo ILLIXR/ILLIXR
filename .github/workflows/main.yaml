@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - nameL Checkout
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Install deps
