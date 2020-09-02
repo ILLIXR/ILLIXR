@@ -9,6 +9,8 @@ CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)
 HPP_FILES ?= $(shell find -L . -name '*.hpp')
 # I need -L to follow symlinks in common/
 LDFLAGS := -ggdb $(LDFLAGS)
+GTEST_LOC := /opt/ILLIXR/googletest
+GTEST_FLAGS := -DGTEST_HAS_PTHREAD=1 -lpthread -DGTEST_HAS_PTHREAD=1 -lpthread -I$(GTEST_LOC)/include -L$(GTEST_LOC)/build/lib -lgtest_main -lpthread -lgtest -lpthread
 
 # In the future, if compilation is slow, we can enable partial compilation of object files with
 #  $(OBJ_FILES:.o=.dbg.o) and  $(OBJ_FILES:.o=.opt.o)
@@ -49,7 +51,7 @@ tests/gdb: tests/test.exe
 
 tests/test.exe: $(CPP_TEST_FILES) $(CPP_FILES) $(HPP_FILES)
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) \
-	$(shell pkg-config --libs --cflags gtest_main) -fsanitize=address,undefined -o ./tests/test.exe \
+	$(GTEST_FLAGS) -fsanitize=address,undefined -o ./tests/test.exe \
 	$(CPP_TEST_FILES) $(CPP_FILES) $(LDFLAGS)
 endif
 

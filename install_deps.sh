@@ -64,8 +64,14 @@ then
 			libgtest-dev pkg-config libgtk2.0-dev wget
 	fi
 
+	# For system-wide installs that are not possible via apt
 	temp_dir=/tmp/ILLIXR_deps
 	mkdir -p "${temp_dir}"
+
+	# For local installs
+	opt_dir=/opt/ILLIXR
+	sudo mkdir -p "${opt_dir}"
+	sudo chown $USER: "${opt_dir}"
 
 	if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
 		git clone --branch 3.4.6 https://github.com/opencv/opencv/ "${temp_dir}/opencv"
@@ -92,6 +98,12 @@ then
 			-B "${temp_dir}/Vulkan-Headers/build" \
 			-D CMAKE_INSTALL_PREFIX=install
 		sudo make -C "${temp_dir}/Vulkan-Headers/build" "-j$(nproc)" install
+	fi
+
+	if [ ! -d "${opt_dir}/googletest" ] && y_or_n "Next: Install gtest"; then
+		git clone https://github.com/google/googletest --branch release-1.10.0 "${opt_dir}/googletest"
+		cmake -S "${opt_dir}/googletest" -B "${opt_dir}/googletest/build"
+		make -C "${opt_dir}/googletest/build" "-j$(nproc)"
 	fi
 
 	# if [ ! -d Vulkan-Loader ]; then
