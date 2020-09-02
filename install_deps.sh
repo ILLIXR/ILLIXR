@@ -56,7 +56,7 @@ then
 
 	if y_or_n "Next: apt-get install necessary packages"; then
 		sudo apt-get install -y \
-			git clang make cmake libc++-dev libc++abi-dev python3.8 python3-venv \
+			git clang make cmake libc++-dev libc++abi-dev \
 			libeigen3-dev libboost-all-dev libatlas-base-dev libsuitesparse-dev libblas-dev \
 			glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
 			libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
