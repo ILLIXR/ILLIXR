@@ -56,18 +56,24 @@ then
 
 	if y_or_n "Next: apt-get install necessary packages"; then
 		sudo apt-get install -y \
-			git clang make cmake libc++-dev libc++abi-dev python3.8 python3-venv \
+			git clang make cmake libc++-dev libc++abi-dev \
 			libeigen3-dev libboost-all-dev libatlas-base-dev libsuitesparse-dev libblas-dev \
 			glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
 			libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
 			build-essential libx11-xcb-dev libxcb-glx0-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
-			libgtest-dev pkg-config libgtk2.0-dev
+			libgtest-dev pkg-config libgtk2.0-dev wget
 	fi
 
+	# For system-wide installs that are not possible via apt
 	temp_dir=/tmp/ILLIXR_deps
 	mkdir -p "${temp_dir}"
 
-	if [ ! -d opencv ] && y_or_n "Next: Install OpenCV from source"; then
+	# For local installs
+	opt_dir=/opt/ILLIXR
+	sudo mkdir -p "${opt_dir}"
+	sudo chown $USER: "${opt_dir}"
+
+	if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
 		git clone --branch 3.4.6 https://github.com/opencv/opencv/ "${temp_dir}/opencv"
 		git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/  "${temp_dir}/opencv_contrib"
 		cmake \
@@ -85,13 +91,19 @@ then
 		sudo ldconfig -v
 	fi
 
-	if [ ! -d Vulkan-Headers ] && y_or_n "Next: Install Vulkan Headers from source"; then
+	if [ ! -d "${temp_dir}/Vulkan-Headers" ] && y_or_n "Next: Install Vulkan Headers from source"; then
 		git clone https://github.com/KhronosGroup/Vulkan-Headers.git "${temp_dir}/Vulkan-Headers"
 		cmake \
 			-S "${temp_dir}/Vulkan-Headers" \
 			-B "${temp_dir}/Vulkan-Headers/build" \
 			-D CMAKE_INSTALL_PREFIX=install
 		sudo make -C "${temp_dir}/Vulkan-Headers/build" "-j$(nproc)" install
+	fi
+
+	if [ ! -d "${opt_dir}/googletest" ] && y_or_n "Next: Install gtest"; then
+		git clone https://github.com/google/googletest --branch release-1.10.0 "${opt_dir}/googletest"
+		cmake -S "${opt_dir}/googletest" -B "${opt_dir}/googletest/build"
+		make -C "${opt_dir}/googletest/build" "-j$(nproc)"
 	fi
 
 	# if [ ! -d Vulkan-Loader ]; then
@@ -106,32 +118,26 @@ then
 	# 	fi
 	# fi
 
-	if [ ! -d OpenXR-SDK ] && y_or_n "Next: Install OpenXR SDK from souce"; then
+	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from souce"; then
 		git clone https://github.com/KhronosGroup/OpenXR-SDK.git "${temp_dir}/OpenXR-SDK"
 		cmake -S "${temp_dir}/OpenXR-SDK" -B "${temp_dir}/OpenXR-SDK/build"
 		sudo make -C "${temp_dir}/OpenXR-SDK/build" "-j$(nproc)" install
 	fi
 
-	if ! which poetry 2> /dev/null; then
-		if y_or_n "Next: Install Poetry"; then
-			python3.8 -m install poetry
-			cat >> ${HOME}/.profile <<EOF
-# if not already in path,
-if echo ${PATH} | grep .local/bin ; then
-    export PATH="${PATH}:${HOME}/.local/bin"
-fi
-EOF
-			cat >> ${HOME} <<EOF
-source ${HOME}/.profile
-EOF
-			source $HOME/.profile
+	if ! which conda 2> /dev/null; then
+		if [ ! -d "$HOME/miniconda3" ]; then
+			if y_or_n "Next: Install Conda"; then
+				wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+				bash miniconda.sh -b -p $HOME/miniconda3
+				rm miniconda.sh
+			fi
 		fi
 	fi
 
 	# I won't ask the user first, because this is not a global installation.
 	# All of this stuff goes into a project-specific venv.
 	cd runner
-	poetry install
+	$HOME/miniconda3/bin/conda env create --force -f environment.yml
 	cd ..
 else
 	echo "${0} does not support ${ID_LIKE} yet."
