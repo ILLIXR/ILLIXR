@@ -61,7 +61,7 @@ then
 			glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
 			libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
 			build-essential libx11-xcb-dev libxcb-glx0-dev libxkbcommon-dev libwayland-dev libxrandr-dev \
-			libgtest-dev pkg-config libgtk2.0-dev
+			libgtest-dev pkg-config libgtk2.0-dev wget
 	fi
 
 	temp_dir=/tmp/ILLIXR_deps
