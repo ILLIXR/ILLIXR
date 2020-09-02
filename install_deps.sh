@@ -112,10 +112,19 @@ then
 		sudo make -C "${temp_dir}/OpenXR-SDK/build" "-j$(nproc)" install
 	fi
 
-	if ! poetry; then
+	if ! which poetry 2> /dev/null; then
 		if y_or_n "Next: Install Poetry"; then
-			curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.8
-			. $HOME/.poetry/env
+			python3.8 -m install poetry
+			cat >> ${HOME}/.profile <<EOF
+# if not already in path,
+if echo ${PATH} | grep .local/bin ; then
+    export PATH="${PATH}:${HOME}/.local/bin"
+fi
+EOF
+			cat >> ${HOME} <<EOF
+source ${HOME}/.profile
+EOF
+			source $HOME/.profile
 		fi
 	fi
 
