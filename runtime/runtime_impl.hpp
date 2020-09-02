@@ -3,6 +3,7 @@
 #include "common/runtime.hpp"
 #include "common/extended_window.hpp"
 #include "common/dynamic_lib.hpp"
+#include "common/plugin.hpp"
 #include "switchboard_impl.hpp"
 #include "stdout_logger.hpp"
 
@@ -29,16 +30,32 @@ public:
 	}
 
 	virtual void wait() override {
-		while (true) {
+		while (!terminate.load()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds{10});
 		}
-		// TODO: catch keyboard interrupt
 	}
+
+	virtual void stop() override {
+		pb.lookup_impl<switchboard>()->stop();
+		for (const std::unique_ptr<plugin>& plugin : plugins) {
+			plugin->stop();
+		}
+		terminate.store(true);
+	}
+
+	virtual ~runtime_impl() override {
+		if (!terminate.load()) {
+			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
+			abort();
+		}
+	}
+
 private:
-	phonebook pb;
 	// I have to keep the dynamic libs in scope until the program is dead
 	std::vector<dynamic_lib> libs;
+	phonebook pb;
 	std::vector<std::unique_ptr<plugin>> plugins;
+	std::atomic<bool> terminate {false};
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
