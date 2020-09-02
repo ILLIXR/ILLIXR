@@ -85,7 +85,7 @@ then
 		sudo ldconfig -v
 	fi
 
-	if [ ! -d Vulkan-Headers ] && y_or_n "Next: Install OpenCV from source"; then
+	if [ ! -d Vulkan-Headers ] && y_or_n "Next: Install Vulkan Headers from source"; then
 		git clone https://github.com/KhronosGroup/Vulkan-Headers.git "${temp_dir}/Vulkan-Headers"
 		cmake \
 			-S "${temp_dir}/Vulkan-Headers" \
