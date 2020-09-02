@@ -1,0 +1,18 @@
+plugins:
+  - path: ground_truth_slam/
+  - path: offline_imu_cam/
+  - path: open_vins/
+  - path: pose_prediction/
+  - path: gldemo/
+  - path: timewarp_gl/
+  - path: debugview/
+  - path: audio_pipeline/
+  # - path: holgoram/
+  # - path: zed/
+
+loader:
+  name: tests
+
+data: /does_not_exist
+
+profile: dbg
