@@ -112,26 +112,18 @@ then
 		sudo make -C "${temp_dir}/OpenXR-SDK/build" "-j$(nproc)" install
 	fi
 
-	if ! which poetry 2> /dev/null; then
-		if y_or_n "Next: Install Poetry"; then
-			python3.8 -m install poetry
-			cat >> ${HOME}/.profile <<EOF
-# if not already in path,
-if echo ${PATH} | grep .local/bin ; then
-    export PATH="${PATH}:${HOME}/.local/bin"
-fi
-EOF
-			cat >> ${HOME} <<EOF
-source ${HOME}/.profile
-EOF
-			source $HOME/.profile
+	if ! which conda 2> /dev/null; then
+		if y_or_n "Next: Install Conda"; then
+			wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+			bash miniconda.sh -b -p $HOME/miniconda3
+			rm miniconda.sh
 		fi
 	fi
 
 	# I won't ask the user first, because this is not a global installation.
 	# All of this stuff goes into a project-specific venv.
 	cd runner
-	poetry install
+	$HOME/miniconda3/bin/conda env create -f environment.yml
 	cd ..
 else
 	echo "${0} does not support ${ID_LIKE} yet."
