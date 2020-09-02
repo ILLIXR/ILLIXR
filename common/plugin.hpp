@@ -23,13 +23,15 @@ namespace ILLIXR {
 
 		/**
 		 * @brief A method which Spindle calls when it starts the component.
-		 * 
-		 * This is necessary for stop-actions which have to replaced by the subclass. Destructors
-		 * would prepend instead of replace actions.
+		 *
+		 * This is necessary because the parent class might define some actions that need to be
+		 * taken prior to destructing the derived class. For example, threadloop must halt and join
+		 * the thread before the derived class can be safely destructed. However, the derived
+		 * class's destructor is called before its parent (threadloop), so threadloop doesn't get a
+		 * chance to join the thread before the derived class is destroyed, and the thread accesses
+		 * freed memory. Instead, we call plugin->stop manually before destrying anything.
 		 */
-		virtual void stop() {
-			metric_logger->log(std::make_unique<const component_stop_record>(id));
-		}
+		virtual void stop() { }
 
 		plugin(const std::string& name_, phonebook* pb_)
 			: name{name_}
@@ -39,7 +41,7 @@ namespace ILLIXR {
 			, id{gen_guid->get()}
 		{ }
 
-		virtual ~plugin() { stop(); }
+		virtual ~plugin() { }
 
 		std::string get_name() { return name; }
 

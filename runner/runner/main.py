@@ -28,17 +28,21 @@ def relative_to(path: Path, root: Path):
 root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
 
 
-def fill_defaults(thing: Any, thing_schema: Dict[str, Any]) -> None:
+def fill_defaults(thing: Any, thing_schema: Dict[str, Any], path: Optional[List[str]] = None) -> None:
+    if path is None:
+        path = []
+
     if thing_schema["type"] == "object":
         for key in thing_schema.get("properties", []):
             if key not in thing:
                 if "default" in thing_schema["properties"][key]:
                     thing[key] = thing_schema["properties"][key]["default"]
+                    # print(f'{".".join(path + [key])} is defaulting to {thing_schema["properties"][key]["default"]}')
             # even if key is present, it may be incomplete
-            fill_defaults(thing[key], thing_schema["properties"][key])
+            fill_defaults(thing[key], thing_schema["properties"][key], path + [key])
     elif thing_schema["type"] == "array":
-        for item in thing:
-            fill_defaults(item, thing_schema["items"])
+        for i, item in enumerate(thing):
+            fill_defaults(item, thing_schema["items"], path + [str(i)])
 
 
 def pathify(path: Union[Path, str], base: Union[Path, str], should_exist=True):
@@ -91,27 +95,28 @@ async def subprocess_run(
         raise
 
 
-async def make(path: Path, target: str, var_dict: Optional[Dict[str, str]] = None) -> None:
+async def make(path: Path, targets: List[str], var_dict: Optional[Dict[str, str]] = None) -> None:
     parallelism = max(1, multiprocessing.cpu_count() // 2)
     var_dict_args = [f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
     await subprocess_run(
-        ["make", "-j", str(parallelism), "-C", str(path), target, *var_dict_args],
+        ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],
         check=True,
     )
 
 
 async def build_one_plugin(
-    config: Dict[str, Any], plugin_config: Dict[str, Any]
+        config: Dict[str, Any], plugin_config: Dict[str, Any], test: bool = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir)
     var_dict = plugin_config["config"]
     so_name = f"plugin.{profile}.so"
-    await make(path, so_name, var_dict)
+    targets = [so_name] + (["tests/run"] if test else [])
+    await make(path, targets, var_dict)
     return path / so_name
 
 
-async def build_runtime(config: Dict[str, Any], suffix: str) -> Path:
+async def build_runtime(config: Dict[str, Any], suffix: str, test: bool = False) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
     runtime_name = f"{name}.{profile}.{suffix}"
@@ -121,7 +126,8 @@ async def build_runtime(config: Dict[str, Any], suffix: str) -> Path:
         raise RuntimeError(
             f"Please change loader.runtime.path ({runtime_path}) to point to a clone of https://github.com/ILLIXR/ILLIXR"
         )
-    await make(runtime_path / "runtime", runtime_name, runtime_config)
+    targets = [runtime_name] + (["tests/run"] if test else [])
+    await make(runtime_path / "runtime", targets, runtime_config)
     return runtime_path / "runtime" / runtime_name
 
 
@@ -141,6 +147,19 @@ async def load_native(config: Dict[str, Any]) -> None:
         env=dict(
             ILLIXR_DATA=config["data"],
             **os.environ,
+        ),
+    )
+
+
+async def load_tests(config: Dict[str, Any]) -> None:
+    runtime_exe_path, _, plugin_paths = await asyncio.gather(
+        build_runtime(config, "exe", test=True),
+        make(Path("../common"), ["tests/run"]),
+        asyncio.gather(
+            *(
+                build_one_plugin(config, plugin_config, test=True)
+                for plugin_config in config["plugins"]
+            )
         ),
     )
 
@@ -184,7 +203,7 @@ async def cmake(
         ],
         check=True,
     )
-    await make(build_path, "all", {})
+    await make(build_path, ["all"])
 
 
 async def load_monado(config: Dict[str, Any]) -> None:
@@ -246,16 +265,17 @@ loaders = {
     "native": load_native,
     "gdb": load_gdb,
     "monado": load_monado,
+    "tests": load_tests,
 }
 
 
-async def run_config(config_file: Path) -> None:
+async def run_config(config_path: Path) -> None:
     """Parse a YAML config file, returning the validated ILLIXR system config."""
     YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader, base_dir=config_file.parent,
+        loader_class=yaml.FullLoader, base_dir=config_path.parent,
     )
 
-    with config_file.open() as f:
+    with config_path.open() as f:
         config = yaml.full_load(f)
 
     with (root_dir / "runner/config_schema.yaml").open() as f:
@@ -265,6 +285,7 @@ async def run_config(config_file: Path) -> None:
     fill_defaults(config, config_schema)
 
     loader = config["loader"]["name"]
+    
     if loader not in loaders:
         raise RuntimeError(f"No such loader: {loader}")
     await loaders[loader](config)
@@ -273,8 +294,8 @@ async def run_config(config_file: Path) -> None:
 if __name__ == "__main__":
 
     @click.command()
-    @click.argument("config", type=click.Path(exists=True))
-    def main(config: Path) -> None:
-        asyncio.run(run_config(Path(config)))
+    @click.argument("config_path", type=click.Path(exists=True))
+    def main(config_path: str) -> None:
+        asyncio.run(run_config(Path(config_path)))
 
     main()

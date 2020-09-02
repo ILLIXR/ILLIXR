@@ -1,0 +1,25 @@
+# name: tests
+
+# on:
+#   push:
+#     branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
+
+# jobs:
+#   tests:
+#     runs-on: ubuntu-20.04
+#     steps:
+
+#       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+#       - uses: actions/checkout@v2
+
+#       - name: Install deps
+#         run: $GITHUB_WORKSPACE/install_deps.sh -y
+#         shell: sh
+#         env:
+#           DEBIAN_FRONTEND: noninteractive
+
+#       - name: Run tests
+#         run: $GITHUB_WORKSPACE/runner.sh $GITHUB_WORKSPACE/configs/ci.yaml
+#         shell: sh
