@@ -32,10 +32,6 @@ std::shared_ptr<Camera> start_camera() {
     init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
     init_params.camera_fps = 60;
     init_params.depth_mode = DEPTH_MODE::NONE;
-		// experimental
-		// init_params.camera_disable_self_calib = false;
-		// init_params.enable_image_enhancement = false;
-
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
     if (err != ERROR_CODE::SUCCESS) {
@@ -76,9 +72,6 @@ public:
 
     imageL_ocv = slMat2cvMat(imageL_zed);
     imageR_ocv = slMat2cvMat(imageR_zed);
-
-    // experimental
-    // runtime_parameters.enable_depth = false;
   }
 
 private:
@@ -94,6 +87,8 @@ private:
 
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
+  cv::Mat grayL_ocv;
+  cv::Mat grayR_ocv;
   metric_coalescer it_log;
 
 protected:
