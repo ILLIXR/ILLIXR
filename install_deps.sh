@@ -56,19 +56,19 @@ then
 	sudo chown $USER: "${opt_dir}"
 
 	if y_or_n "Next: Add apt-get sources list/keys and install necessary packages"; then
-		./scripts/install_apt_deps.sh
+		. ./scripts/install_apt_deps.sh
 	fi
 
 	if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
-		./scripts/install_opencv.sh
+		. ./scripts/install_opencv.sh
 	fi
 
 	if [ ! -d "${temp_dir}/Vulkan-Headers" ] && y_or_n "Next: Install Vulkan Headers from source"; then
-		./scripts/install_vulkan_headers.sh
+		. ./scripts/install_vulkan_headers.sh
 	fi
 
 	if [ ! -d "${opt_dir}/googletest" ] && y_or_n "Next: Install gtest"; then
-		./scripts/install_gtest.sh
+		. ./scripts/install_gtest.sh
 	fi
 
 	# if [ ! -d Vulkan-Loader ]; then
@@ -84,13 +84,13 @@ then
 	# fi
 
 	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from souce"; then
-		./scripts/install_openxr.sh
+		. ./scripts/install_openxr.sh
 	fi
 
 	if ! which conda 2> /dev/null; then
 		if [ ! -d "$HOME/miniconda3" ]; then
 			if y_or_n "Next: Install Conda"; then
-				./scripts/install_conda.sh
+				. ./scripts/install_conda.sh
 			fi
 		fi
 	fi
