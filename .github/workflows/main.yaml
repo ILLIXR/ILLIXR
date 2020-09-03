@@ -1,4 +1,4 @@
-name: tests
+name: illixr-tests
 
 on:
   push:
@@ -7,19 +7,24 @@ on:
     branches: [ master ]
 
 jobs:
-  tests:
-    runs-on: ubuntu-20.04
+  illixr-tests:
+    runs-on: ubuntu-18.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install deps
-        run: $GITHUB_WORKSPACE/install_deps.sh -y
-        shell: sh
-        env:
-          DEBIAN_FRONTEND: noninteractive
+      - name: Get Branch Name
+        run: echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
 
-      - name: Run tests
-        run: $GITHUB_WORKSPACE/runner.sh $GITHUB_WORKSPACE/configs/ci.yaml
-        shell: sh
+      - name: Build Docker Image
+        uses: docker/build-push-action@v1.1.0
+        env:
+          DOCKER_BUILDKIT: 1
+        with:
+          registry: ghcr.io
+          repository: ILLIXR/illixr-tests
+          tag: ${{steps.vars.outputs.branch_name}}
+
+      - name: Run Tests
+        run: docker run ILLIXR/illixr-tests:${{steps.vars.outputs.branch_name}}
