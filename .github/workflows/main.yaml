@@ -23,8 +23,8 @@ jobs:
           DOCKER_BUILDKIT: 1
         with:
           registry: ghcr.io
-          repository: ILLIXR/illixr-tests
+          repository: illixr/illixr-tests
           tag: ${{steps.vars.outputs.branch_name}}
 
       - name: Run Tests
-        run: docker run ILLIXR/illixr-tests:${{steps.vars.outputs.branch_name}}
+        run: docker run ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
