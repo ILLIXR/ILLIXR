@@ -15,19 +15,20 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get Branch Name
-        run: echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
+        run:  echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
 
       - name: Login to ghcr.io
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
 
       - name: Build Docker Image
-        run: docker build . -t ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
+        run: docker build . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
       - name: Push Docker Image
-        run: docker push ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
+        run: docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
       - name: Pull Docker Image
-        run: docker pull ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
+        run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
       - name: Run Tests
-        run: docker run ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
+        run: docker run ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
