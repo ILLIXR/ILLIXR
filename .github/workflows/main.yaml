@@ -24,7 +24,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: illixr/illixr-tests
-		  username: ${{ github.actor }}
+          username: ${{ github.actor }}
           tag: ${{steps.vars.outputs.branch_name}}
 
       - name: Run Tests
