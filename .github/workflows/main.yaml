@@ -22,13 +22,13 @@ jobs:
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
 
       - name: Build Docker Image
-        run: docker build . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        run: docker build . -t ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
 
       - name: Push Docker Image
-        run: docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        run: docker push ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
 
       - name: Pull Docker Image
-        run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        run: docker pull ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
 
       - name: Run Tests
-        run: docker run ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        run: docker run ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
