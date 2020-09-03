@@ -22,7 +22,6 @@ find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 IF(NOT WIN32)
     add_definitions(-Wno-format-extra-args)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    SET(SPECIAL_OS_LIBS "pthread" "X11")
 ENDIF()
 
 include_directories(${CUDA_INCLUDE_DIRS})
