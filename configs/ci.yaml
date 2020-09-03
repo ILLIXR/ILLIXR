@@ -9,8 +9,10 @@ plugins:
   - path: audio_pipeline/
   # - path: holgoram/
   # - path: zed/
-#data: zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip?path=mav0
-data: ../data1/
+
 loader:
-  name: native
+  name: tests
+
+data: /does_not_exist
+
 profile: dbg

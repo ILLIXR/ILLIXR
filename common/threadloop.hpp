@@ -34,6 +34,7 @@ public:
 	 * @brief Starts the thread.
 	 */
 	virtual void start() override {
+		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
@@ -41,13 +42,20 @@ public:
 	 * @brief Stops the thread.
 	 */
 	virtual void stop() override {
-		_m_terminate.store(true);
-		_m_thread.join();
+		if (! _m_terminate.load()) {
+			_m_terminate.store(true);
+			_m_thread.join();
+			std::cerr << "Joined " << name << std::endl;
+			plugin::stop();
+		} else {
+			std::cerr << "You called stop() on this plugin twice." << std::endl;
+		}
 	}
 
 	virtual ~threadloop() override {
-		if (!should_terminate()) {
-			stop();
+		if (!_m_terminate.load()) {
+			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
+			abort();
 		}
 	}
 
