@@ -77,8 +77,8 @@ public:
     imageL_ocv = slMat2cvMat(imageL_zed);
     imageR_ocv = slMat2cvMat(imageR_zed);
 
-		// experimental
-		runtime_parameters.enable_depth = false;
+    // experimental
+    // runtime_parameters.enable_depth = false;
   }
 
 private:
@@ -114,8 +114,8 @@ protected:
 	  auto start_wall_time = std::chrono::high_resolution_clock::now();
 
       // Conversion
-      // cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
-      // cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
+      cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
+      cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
 
 	  it_log.log(record{&__camera_cvtfmt_header, {
 			{iteration_no},
@@ -126,8 +126,8 @@ protected:
 		}});
 
 	  _m_cam_type->put(new cam_type{
-			  &imageL_ocv,
-			  &imageR_ocv,
+			  &grayL_ocv,
+			  &grayR_ocv,
 			  iteration_no,
 	  });
   }
@@ -234,5 +234,3 @@ private:
 
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(zed_imu_thread);
-
-int main(int argc, char **argv) { return 0; }
