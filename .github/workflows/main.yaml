@@ -17,16 +17,17 @@ jobs:
       - name: Get Branch Name
         run: echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
 
+      - name: Login to ghcr.io
+        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
+
       - name: Build Docker Image
-        uses: docker/build-push-action@v1.1.0
-        env:
-          DOCKER_BUILDKIT: 1
-        with:
-          registry: ghcr.io
-          repository: illixr/illixr-tests
-          username: illixr-ci
-          password: ${{ secrets.GHCR_TOKEN }}		  
-          tag: ${{steps.vars.outputs.branch_name}}
+        run: docker build . -t ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
+
+      - name: Push Docker Image
+        run: docker push ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
+
+      - name: Pull Docker Image
+        run: docker pull ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}
 
       - name: Run Tests
         run: docker run ghcr.io/illixr/illixr-tests:${{steps.vars.outputs.branch_name}}

@@ -8,6 +8,12 @@ WORKDIR ILLIXR
 
 RUN apt update && apt install -y sudo apt-transport-https
 
-RUN ./install_deps.sh -y
+RUN ./scripts/install_apt_deps.sh
+RUN ./scripts/install_opencv.sh
+RUN ./scripts/install_vulkan_headers.sh
+RUN ./scripts/install_gtest.sh
+RUN ./scripts/install_openxr.sh
+RUN ./scripts/install_conda.sh && $HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
 
-ENTRYPOINT runner.sh configs/ci.yaml
+
+ENTRYPOINT ./runner.sh configs/ci.yaml
