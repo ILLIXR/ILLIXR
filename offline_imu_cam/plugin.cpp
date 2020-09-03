@@ -84,7 +84,6 @@ private:
 	time_type real_first_time;
 	// Current IMU timestamp
 	ullong dataset_now;
-	time_type real_now;
 };
 
 PLUGIN_MAIN(offline_imu_cam)
