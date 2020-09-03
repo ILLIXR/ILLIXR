@@ -7,7 +7,8 @@
 
 ### Prerequisites
 
-- Windows 10, Ubuntu LTS
-- [ZED SDK](https://www.stereolabs.com/docs/installation/linux/) and its dependencies ([CUDA](https://developer.nvidia.com/cuda-downloads), [OpenCV](https://github.com/opencv/opencv/releases))
+- Ubuntu 18.04
+- [ZED SDK](https://www.stereolabs.com/docs/installation/linux/) 
+- [CUDA 10.2](https://developer.nvidia.com/cuda-toolkit-archive) 
 - OpenCV (we install our modified OpenCV in `install_deps.sh`)
 
