@@ -1,3 +1,2 @@
-LDFLAGS = -ldl -lX11 -pthread $(shell pkg-config glfw3 glew --libs)
-# -lGLEW -lGL -lrt -lm -lGLU -lm -lGL -lm -ldl -lX11-xcb -lxcb-glx -ldrm -lXdamage -lXfixes -lxcb-dri2 -lXxf86vm -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -lboost_thread
+LDFLAGS = -ldl -pthread -lstdc++fs $(shell pkg-config glfw3 glew sqlite3 x11 --libs)
 include common/common.mk

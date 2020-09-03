@@ -25,6 +25,17 @@ private:
 	{ }
 
 public:
+	dynamic_lib(dynamic_lib&& other)
+		: _m_handle{std::move(other._m_handle)}
+	{ }
+
+	dynamic_lib& operator=(dynamic_lib&& other) {
+		if (this != &other) {
+			_m_handle = std::move(other._m_handle);
+		}
+		return *this;
+	}
+
 	static dynamic_lib create(const std::string_view& path) {
 		char* error;
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);

@@ -118,7 +118,9 @@ public:
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-		ImGui::SetNextWindowSize(ImVec2(200, 900), ImGuiCond_FirstUseEver);
+
+		// Init the window docked to the bottom left corner.
+		ImGui::SetNextWindowPos(ImVec2(0.0f, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once, ImVec2(0.0f, 1.0f));
 		ImGui::Begin("ILLIXR Debug View");
 
 		ImGui::Text("Adjust options for the runtime debug view.");
@@ -418,9 +420,9 @@ private:
 	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
 	bool beingDragged = false;
 
-	float view_dist = 6.0;
+	float view_dist = 3.0;
 
-	bool follow_headset = false;
+	bool follow_headset = true;
 
 	double lastTime;
 
