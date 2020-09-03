@@ -26,8 +26,6 @@ jobs:
 
       - name: Build Docker Image
         run: docker build --cache-from ghcr.io/illixr/illixr-tests:${{ github.head_ref }} . -t ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
-        env:
-          DOCKER_BUILDKIT: 1
 
       - name: Push Docker Image
         run: docker push ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
