@@ -7,14 +7,14 @@ CC := clang-10
 plugin.dbg.so: build/Debug/Makefile
 	make -C build/Debug "-j$(nproc)" && \
 	rm -f $@ && \
-	ln -s build/libplugin.so plugin.dbg.so && \
+	ln -s build/Debug/libplugin.so plugin.dbg.so && \
 	true
 
 .PHONY: plugin.opt.so
 plugin.opt.so: build/Release/Makefile
 	make -C build/Release "-j$(nproc)" && \
 	rm -f $@ && \
-	ln -s build/libplugin.so plugin.opt.so && \
+	ln -s build/Release/libplugin.so plugin.opt.so && \
 	true
 
 build/Debug/Makefile:
