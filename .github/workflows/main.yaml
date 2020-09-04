@@ -14,24 +14,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          submodules: true
-
-      - name: Get Branch Name
-        run:  echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
+          submodules: recursive
 
       - name: Login to ghcr.io
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
 
+      # Pulls all versions of this container. This allows the docker build to use the cache for faster builds.
       - name: Pull Docker Cache
         run: docker pull --all-tags ghcr.io/illixr/illixr-tests || true
 
+      # Performs the docker build and pulls the cache from either the branch name tag or from latest.
+      # The latest tag is what is on master so it will use that cache the first time this branch runs
       - name: Build Docker Image
         run: docker build --cache-from ghcr.io/illixr/illixr-tests:${{ github.head_ref }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
 
       - name: Push Docker Image
         run: docker push ghcr.io/illixr/illixr-tests:${{ github.head_ref }}
 
+      # For builds on master we also want to push the image as the latest tag.
       - if: github.head_ref == 'master'
         name: Tag Master Docker Image As Latest
         run: docker tag ghcr.io/illixr/illixr-tests:${{ github.head_ref }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest
