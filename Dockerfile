@@ -1,6 +1,11 @@
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV temp_dir /tmp/ILLIXR_deps
+ENV opt_dir /opt/ILLIXR
+
+RUN mkdir -p ${temp_dir}
+RUN mkdir -p ${opt_dir}
 
 RUN apt update && apt install -y sudo apt-transport-https
 
