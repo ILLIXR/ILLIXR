@@ -20,9 +20,8 @@ find_package(OpenCV REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 IF(NOT WIN32)
-    add_definitions(-Wno-format-extra-args)
+    add_definitions(-Wno-format-extra-args -std=c++17 -g -O3)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    SET(SPECIAL_OS_LIBS "pthread" "X11")
 ENDIF()
 
 include_directories(${CUDA_INCLUDE_DIRS})
@@ -36,6 +35,8 @@ link_directories(${CUDA_LIBRARY_DIRS})
 
 FILE(GLOB_RECURSE SRC_FILES src/main.cpp)
 FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
+
+ADD_EXECUTABLE(${libName} ${HDR_FILES} ${SRC_FILES})
 
 if (LINK_SHARED_ZED)
     SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
