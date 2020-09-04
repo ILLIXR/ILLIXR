@@ -23,7 +23,9 @@ namespace ILLIXR{
             width = _width;
             height = _height;
 
+#ifndef NDEBUG
             printf("Opening display\n");
+#endif
             dpy = XOpenDisplay(NULL);
             if (!dpy) {
                 printf("\n\tcannot connect to X server\n\n");
@@ -49,17 +51,21 @@ namespace ILLIXR{
                 None
             };
 
+#ifndef NDEBUG
             printf("Getting matching framebuffer configs\n");
+#endif
             int fbcount;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
             if (!fbc) {
                 printf("\n\tFailed to retrieve a framebuffer config\n\n");
                 exit(1);
             }
+#ifndef NDEBUG
             printf("Found %d matching FB configs\n", fbcount);
 
             // Pick the FB config/visual with the most samples per pixel
             printf("Getting XVisualInfos\n");
+#endif
             int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
             int i;
             for (i = 0; i < fbcount; ++i) {
@@ -68,9 +74,11 @@ namespace ILLIXR{
                     int samp_buf, samples;
                     glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf);
                     glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLES       , &samples );
+#ifndef NDEBUG
                     printf("  Matching fbconfig %d, visual ID 0x%2lx: SAMPLE_BUFFERS = %d,"
                            " SAMPLES = %d\n",
                            i, vi -> visualid, samp_buf, samples);
+#endif
                     if (best_fbc < 0 || (samp_buf && samples > best_num_samp))
                       best_fbc = i, best_num_samp = samples;
                     if (worst_fbc < 0 || !samp_buf || samples < worst_num_samp)
@@ -86,12 +94,16 @@ namespace ILLIXR{
 
             // Get a visual
             XVisualInfo *vi = glXGetVisualFromFBConfig(dpy, bestFbc);
+#ifndef NDEBUG
             printf("Chose visual ID = 0x%lx\n", vi->visualid);
 
             printf("Creating colormap\n");
+#endif
             Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 
+#ifndef NDEBUG
             printf("Creating window\n");
+#endif
             XSetWindowAttributes attributes;
             attributes.colormap = cmap;
             attributes.background_pixel = 0;
@@ -103,15 +115,15 @@ namespace ILLIXR{
                 printf("\n\tFailed to create window\n\n");
                 exit(1);
             }
+            XStoreName(dpy, win, "ILLIXR Extended Window");
+            XMapWindow(dpy, win);
 
             // Done with visual info
             XFree(vi);
 
-            printf("Mapping window\n");
-            XStoreName(dpy, win, "ILLIXR Extended Window");
-            XMapWindow(dpy, win);
-
+#ifndef NDEBUG
             printf("Creating context\n");
+#endif
             glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
             glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)
                 glXGetProcAddressARB((const GLubyte *) "glXCreateContextAttribsARB");
@@ -126,6 +138,7 @@ namespace ILLIXR{
             XSync(dpy, false);
             glXMakeCurrent(dpy, win, glc);
 
+#ifndef NDEBUG
             int major = 0, minor = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &major);
             glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -133,6 +146,7 @@ namespace ILLIXR{
                 major, minor,
                 glGetString(GL_VENDOR),
                 glGetString(GL_RENDERER));
+#endif
         }
     };
 }
