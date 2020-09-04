@@ -46,47 +46,45 @@ std::shared_ptr<Camera> start_camera() {
 
 class zed_camera_thread : public threadloop {
 public:
-  zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
-  : threadloop{name_, pb_}
-  , sb{pb->lookup_impl<switchboard>()}
-  , _m_cam_type{sb->publish<cam_type>("cam_type")}
-  , zedm{zedm_}
-  , image_size{zedm->getCameraInformation().camera_resolution}
-  , it_log{record_logger}
-  {
-    // Image setup
-    imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
-    imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+    zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
+    : threadloop{name_, pb_}
+    , sb{pb->lookup_impl<switchboard>()}
+    , _m_cam_type{sb->publish<cam_type>("cam_type")}
+    , zedm{zedm_}
+    , image_size{zedm->getCameraInformation().camera_configuration.resolution}
+    {
+        // Image setup
+        imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
 
-    imageL_ocv = slMat2cvMat(imageL_zed);
-    imageR_ocv = slMat2cvMat(imageR_zed);
-  }
+        imageL_ocv = slMat2cvMat(imageL_zed);
+        imageR_ocv = slMat2cvMat(imageR_zed);
+    }
 
 private:
-  const std::shared_ptr<switchboard> sb;
-  std::unique_ptr<writer<cam_type>> _m_cam_type;
-  std::shared_ptr<Camera> zedm;
-  Resolution image_size;
-  RuntimeParameters runtime_parameters;
-  std::size_t serial_no {0};
+    const std::shared_ptr<switchboard> sb;
+    std::unique_ptr<writer<cam_type>> _m_cam_type;
+    std::shared_ptr<Camera> zedm;
+    Resolution image_size;
+    RuntimeParameters runtime_parameters;
+    std::size_t serial_no {0};
 
-  Mat imageL_zed;
-  Mat imageR_zed;
+    Mat imageL_zed;
+    Mat imageR_zed;
 
-  cv::Mat imageL_ocv;
-  cv::Mat imageR_ocv;
-  record_coalescer it_log;
-  cv::Mat grayL_ocv;
-  cv::Mat grayR_ocv;
+    cv::Mat imageL_ocv;
+    cv::Mat imageR_ocv;
+    cv::Mat grayL_ocv;
+    cv::Mat grayR_ocv;
 
 protected:
-	virtual skip_option _p_should_skip() override {
-		if (zedm->grab(runtime_parameters) == ERROR_CODE::SUCCESS) {
-			return skip_option::run;
-		} else {
-			return skip_option::skip_and_spin;
-		}
-	}
+    virtual skip_option _p_should_skip() override {
+        if (zedm->grab(runtime_parameters) == ERROR_CODE::SUCCESS) {
+            return skip_option::run;
+        } else {
+            return skip_option::skip_and_spin;
+        }
+    }
 
     virtual void _p_one_iteration() override {
         // Retrieve images
@@ -111,10 +109,10 @@ protected:
 class zed_imu_thread : public threadloop {
 public:
 
-		virtual void stop() override {
-			camera_thread_.stop();
-			threadloop::stop();
-		}
+    virtual void stop() override {
+        camera_thread_.stop();
+        threadloop::stop();
+    }
 
     zed_imu_thread(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
@@ -125,7 +123,7 @@ public:
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
         , it_log{record_logger_}
     {
-      camera_thread_.start();
+        camera_thread_.start();
     }
 
     // destructor
@@ -134,57 +132,57 @@ public:
     }
 
 protected:
-	virtual skip_option _p_should_skip() override {
-    zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
-    if (sensors_data.imu.timestamp > last_imu_ts) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{2});
-			return skip_option::run;
-		} else {
-			return skip_option::skip_and_yield;
-		}
-	}
+    virtual skip_option _p_should_skip() override {
+        zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
+        if (sensors_data.imu.timestamp > last_imu_ts) {
+            std::this_thread::sleep_for(std::chrono::milliseconds{2});
+            return skip_option::run;
+        } else {
+            return skip_option::skip_and_yield;
+        }
+    }
 
     virtual void _p_one_iteration() override {
-			// std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
+        // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
-      // Time as ullong (nanoseconds)
-      imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
+        // Time as ullong (nanoseconds)
+        imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
 
-      // Time as time_point
-      using time_point = std::chrono::system_clock::time_point;
-      time_point uptime_timepoint{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
-      std::time_t time2 = std::chrono::system_clock::to_time_t(uptime_timepoint);
-      t = std::chrono::system_clock::from_time_t(time2);
+        // Time as time_point
+        using time_point = std::chrono::system_clock::time_point;
+        time_point uptime_timepoint{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
+        std::time_t time2 = std::chrono::system_clock::to_time_t(uptime_timepoint);
+        t = std::chrono::system_clock::from_time_t(time2);
 
-      // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
-      la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
-      av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
+        // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
+        la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
+        av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
 
-	    std::optional<cv::Mat*> img0 = std::nullopt;
-	    std::optional<cv::Mat*> img1 = std::nullopt;
+        std::optional<cv::Mat*> img0 = std::nullopt;
+        std::optional<cv::Mat*> img1 = std::nullopt;
 
-	    const cam_type* c = _m_cam_type->get_latest_ro();
-	    if (c && c->serial_no != last_serial_no) {
-		      last_serial_no = c->serial_no;
-		      img0 = c->img0;
-		      img1 = c->img1;
-	    }
+        const cam_type* c = _m_cam_type->get_latest_ro();
+        if (c && c->serial_no != last_serial_no) {
+            last_serial_no = c->serial_no;
+            img0 = c->img0;
+            img1 = c->img1;
+        }
 
-
-      _m_imu_cam->put(new imu_cam_type {
-          t,
-          av,
-          la,
-          img0,
-          img1,
-          imu_time,
-      });
-
-      last_imu_ts = sensors_data.imu.timestamp;
         it_log.log(record{__imu_cam_record, {
             {iteration_no},
             {bool(img0)},
         }});
+
+        _m_imu_cam->put(new imu_cam_type {
+            t,
+            av,
+            la,
+            img0,
+            img1,
+            imu_time,
+        });
+
+        last_imu_ts = sensors_data.imu.timestamp;
     }
 
 private:
@@ -205,10 +203,10 @@ private:
     time_type t;
     ullong imu_time;
 
-	  std::size_t last_serial_no {0};
+    std::size_t last_serial_no {0};
 
     // Logger
-		record_coalescer it_log;
+    record_coalescer it_log;
 };
 
 // This line makes the plugin importable by Spindle
