@@ -5,22 +5,24 @@
 #include <zed_opencv.hpp>
 
 //ILLIXR includes
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
-#include "common/plugin.hpp"
-#include "common/threadloop.hpp"
 
 using namespace ILLIXR;
 
 cv::Mat slMat2cvMat(Mat& input);
 
-const record_header imu_cam_record {
-	"imu_cam",
-	{
-		{"iteration_no", typeid(std::size_t)},
-		{"has_camera", typeid(bool)},
-	},
-};
+const record_header __imu_cam_record {"imu_cam", {
+    {"iteration_no", typeid(std::size_t)},
+    {"has_camera", typeid(bool)},
+}};
+
+typedef struct {
+    cv::Mat* img0;
+    cv::Mat* img1;
+    std::size_t serial_no;
+} cam_type;
 
 std::shared_ptr<Camera> start_camera() {
     std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
@@ -41,20 +43,6 @@ std::shared_ptr<Camera> start_camera() {
 
     return zedm;
 }
-
-typedef struct {
-	cv::Mat* img0;
-	cv::Mat* img1;
-	std::size_t serial_no;
-} cam_type;
-
-	const record_header __camera_cvtfmt_header {"camera_cvtfmt", {
-		{"iteration_no", typeid(std::size_t)},
-		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
-		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-	}};
 
 class zed_camera_thread : public threadloop {
 public:
@@ -100,32 +88,24 @@ protected:
 		}
 	}
 
-  virtual void _p_one_iteration() override {
-      // Retrieve images
-      zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
-      zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
+    virtual void _p_one_iteration() override {
+        // Retrieve images
+        zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
+        zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
 
-	  auto start_cpu_time  = thread_cpu_time();
-	  auto start_wall_time = std::chrono::high_resolution_clock::now();
+        auto start_cpu_time  = thread_cpu_time();
+        auto start_wall_time = std::chrono::high_resolution_clock::now();
 
-      // Conversion
-      cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
-      cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
+        // Conversion
+        cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
+        cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
 
-	  it_log.log(record{&__camera_cvtfmt_header, {
-			{iteration_no},
-			{start_cpu_time},
-			{thread_cpu_time()},
-			{start_wall_time},
-			{std::chrono::high_resolution_clock::now()},
-		}});
-
-	  _m_cam_type->put(new cam_type{
-			  &grayL_ocv,
-			  &grayR_ocv,
-			  iteration_no,
-	  });
-  }
+        _m_cam_type->put(new cam_type{
+            &grayL_ocv,
+            &grayR_ocv,
+            iteration_no,
+        });
+    }
 };
 
 class zed_imu_thread : public threadloop {
@@ -143,6 +123,7 @@ public:
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
+        , it_log{record_logger_}
     {
       camera_thread_.start();
     }
@@ -189,10 +170,6 @@ protected:
 		      img1 = c->img1;
 	    }
 
-		record_logger->log(record{&imu_cam_record, {
-			{iteration_no},
-			{bool(img0)},
-		}});
 
       _m_imu_cam->put(new imu_cam_type {
           t,
@@ -204,6 +181,10 @@ protected:
       });
 
       last_imu_ts = sensors_data.imu.timestamp;
+        it_log.log(record{__imu_cam_record, {
+            {iteration_no},
+            {bool(img0)},
+        }});
     }
 
 private:
@@ -225,6 +206,9 @@ private:
     ullong imu_time;
 
 	  std::size_t last_serial_no {0};
+
+    // Logger
+		record_coalescer it_log;
 };
 
 // This line makes the plugin importable by Spindle
