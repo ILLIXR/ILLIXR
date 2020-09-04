@@ -28,6 +28,10 @@ cpp_clock_gettime(clockid_t clock_id) {
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};
     }
+	asm volatile (""
+				  : /* OutputOperands */
+				  : /* InputOperands */
+				  : "memory" /* Clobbers */);
     return std::chrono::seconds{ts.tv_sec} + std::chrono::nanoseconds{ts.tv_nsec};
 }
 
@@ -114,7 +118,6 @@ template <
     typename duration = decltype(std::declval<time_point>() - std::declval<time_point>())
     >
 class print_timer {
-public:
 private:
     class print_in_destructor {
     public:
@@ -148,11 +151,58 @@ public:
     { }
 };
 
+static std::size_t gen_serial_no() {
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+}
+
+class should_profile_class {
+public:
+	should_profile_class() {
+		const char* ILLIXR_STDOUT_METRICS = getenv("ILLIXR_STDOUT_METRICS");
+		actually_should_profile = ILLIXR_STDOUT_METRICS && (strcmp(ILLIXR_STDOUT_METRICS, "y") == 0);
+	}
+	bool operator()() {
+		return actually_should_profile;
+	}
+private:
+	bool actually_should_profile;
+};
+
+static should_profile_class should_profile;
+
+class print_timer2 {
+private:
+	const std::string name;
+	const std::size_t serial_no;
+	std::size_t wall_time_start;
+	std::size_t cpu_time_start;
+public:
+    print_timer2(std::string name_)
+		: name{name_}
+		, serial_no{should_profile() ? gen_serial_no() : std::size_t{0}}
+		, wall_time_start{should_profile()
+			? std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()
+			: std::size_t{0}
+		}
+		, cpu_time_start{should_profile() ? thread_cpu_time().count() : std::size_t{0}}
+	{ }
+	~print_timer2() {
+		if (should_profile()) {
+			auto cpu_time_stop = thread_cpu_time().count();
+			auto wall_time_stop  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start << "," << wall_time_stop << "," << cpu_time_start << "," << cpu_time_stop << "\n";
+		}
+	}
+};
+
 #define PRINT_CPU_TIME_FOR_THIS_BLOCK(name)                                 \
     print_timer<decltype((thread_cpu_time))> PRINT_CPU_TIME_FOR_THIS_BLOCK {name, thread_cpu_time};
 
 #define PRINT_WALL_TIME_FOR_THIS_BLOCK(name)                                    \
     print_timer<decltype((std::chrono::high_resolution_clock::now))> PRINT_WALL_TIME_FOR_THIS_BLOCK {name, std::chrono::high_resolution_clock::now};
+
+#define PRINT_RECORD_FOR_THIS_BLOCK(name)                                    \
+    print_timer2 PRINT_RECORD_FOR_THIS_BLOCK_timer {name};
 
 /**
  * @brief Use this in place of std::thread(...) to print times.
@@ -163,7 +213,7 @@ std::thread timed_thread(const std::string& account_name, Function&& f, Args&&..
     // According to StackOverflow, this is unavoidable.
     // See Sam Varshavchik's comment on https://stackoverflow.com/a/62380971/1078199
     return std::thread([=] {
-        {   PRINT_CPU_TIME_FOR_THIS_BLOCK(account_name);
+        {   PRINT_RECORD_FOR_THIS_BLOCK(account_name);
             std::invoke(f, args...);
         }
     });
