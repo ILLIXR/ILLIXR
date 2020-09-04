@@ -68,7 +68,7 @@ public:
   , _m_cam_type{sb->publish<cam_type>("cam_type")}
   , zedm{zedm_}
   , image_size{zedm->getCameraInformation().camera_resolution}
-  , it_log{metric_logger}
+  , it_log{record_logger}
   {
     // Image setup
     imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
@@ -94,7 +94,7 @@ private:
 
   cv::Mat imageL_ocv;
   cv::Mat imageR_ocv;
-  metric_coalescer it_log;
+  record_coalescer it_log;
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -194,7 +194,7 @@ protected:
 		      img1 = c->img1;
 	    }
 
-		metric_logger->log(record{&imu_cam_record, {
+		record_logger->log(record{&imu_cam_record, {
 			{iteration_no},
 			{bool(img0)},
 		}});
