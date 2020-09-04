@@ -1,4 +1,4 @@
-# ZED Plugin
+# ZED Mini
 
 ## Getting started
 
@@ -7,8 +7,8 @@
 
 ### Prerequisites
 
-- Ubuntu 18.04
-- [ZED SDK](https://www.stereolabs.com/docs/installation/linux/) 
-- [CUDA 10.2](https://developer.nvidia.com/cuda-toolkit-archive) 
-- OpenCV (we install our modified OpenCV in `install_deps.sh`)
+- Ubuntu - Tested with 18.04
+- [ZED SDK](https://www.stereolabs.com/docs/installation/linux/) - Tested with 3.2.2
+- [CUDA](https://developer.nvidia.com/cuda-toolkit-archive) - Tested with 10.2, 11.0
+- OpenCV (we install our modified OpenCV 3.4.6 in `install_deps.sh`)
 

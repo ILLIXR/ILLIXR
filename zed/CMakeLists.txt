@@ -20,7 +20,7 @@ find_package(OpenCV REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 IF(NOT WIN32)
-    add_definitions(-Wno-format-extra-args)
+    add_definitions(-Wno-format-extra-args -std=c++17 -g -O3)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 ENDIF()
 
