@@ -2,7 +2,7 @@
 
 ## ILLIXR Runtime
 
-These instructions have been tested with Ubuntu 18.10.
+These instructions have been tested with Ubuntu 18.04.
 
 1. Clone the repository:
 
@@ -25,10 +25,14 @@ These instructions have been tested with Ubuntu 18.10.
 
         ./runner.sh config.yaml
 
+6. If so desired, you can run ILLIXR headlessly using [xvfb][5]:
+
+        xvfb-run ./runner.sh config.yaml
+
 ## ILLIXR Runtime with Monado (supports OpenXR)
 
 ILLIXR leverages [Monado][3], an open-source implementation of [OpenXR][4], to support a wide range
-of applications.  Monado only supports Ubuntu 18.10, because of a low-level driver issue.
+of applications.  Monado only supports Ubuntu 18.04, because of a low-level driver issue.
 
 1. Clone Monado:
 
@@ -99,3 +103,4 @@ detect and rebuild the respective binary. If you want to add your own, see [Writ
 [2]: writing_your_plugin.md
 [3]: https://monado.dev/
 [4]: https://www.khronos.org/openxr/
+[5]: http://manpages.ubuntu.com/manpages/bionic/man1/Xvfb.1.html
