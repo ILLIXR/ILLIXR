@@ -102,30 +102,38 @@ namespace ILLIXR{
 #endif
 
             Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
-            XSetWindowAttributes swa;
-            swa.colormap = cmap;
-            swa.event_mask = ExposureMask | KeyPressMask;
-            win = XCreateWindow(dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
-            XMapWindow(dpy, win);
+
+            printf("Creating window\n");
+            XSetWindowAttributes attributes;
+            attributes.colormap = cmap;
+            attributes.background_pixel = 0;
+            attributes.border_pixel = 0;
+            attributes.event_mask = ExposureMask | KeyPressMask;
+            win = XCreateWindow(dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
+                CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
+            if (!win) {
+                printf("\n\tFailed to create window\n\n");
+                exit(1);
+            }
+
+            // Done with visual info
+            XFree(vi);
+
+            printf("Mapping window\n");
             XStoreName(dpy, win, "ILLIXR Extended Window");
+            XMapWindow(dpy, win);
 
             //glc = glXCreateContext(dpy, vi, *ctx, true);
             // calling glXGetProcAddressARB
             glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
             glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)
-                glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
-            int context_attribs[] =
-                {
-                    GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
-                    GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-                    //GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-                    None
-                };
-#ifndef NDEBUG
-            printf( "Creating context\n" );
-#endif
-            glc = glXCreateContextAttribsARB( dpy, bestFbc, _shared_gl_context,
-                                                   True, context_attribs );
+                glXGetProcAddressARB((const GLubyte *) "glXCreateContextAttribsARB");
+            int context_attribs[] = {
+                GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+                GLX_CONTEXT_MINOR_VERSION_ARB, 3,
+                None
+            };
+            glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
         }
     };
 }
