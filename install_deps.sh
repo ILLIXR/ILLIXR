@@ -74,7 +74,7 @@ then
 	sudo chown $USER: "${opt_dir}"
 
 	if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
-		git clone --branch 3.4.6 https://github.com/opencv/opencv/ "${temp_dir}/opencv"
+		git clone --branch 3.4.6-instrumented https://github.com/ILLIXR/opencv "${temp_dir}/opencv"
 		git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/  "${temp_dir}/opencv_contrib"
 		cmake \
 			-S "${temp_dir}/opencv" \
@@ -89,6 +89,9 @@ then
 			-D OPENCV_EXTRA_MODULES_PATH="${temp_dir}/opencv_contrib/modules"
 		sudo make -C "${temp_dir}/opencv/build" "-j$(nproc)" install
 		sudo ldconfig -v
+
+		# Remove temp cmake files
+		rm -f a.out cmake_hdf5_test.o
 	fi
 
 	if [ ! -d "${temp_dir}/Vulkan-Headers" ] && y_or_n "Next: Install Vulkan Headers from source"; then
