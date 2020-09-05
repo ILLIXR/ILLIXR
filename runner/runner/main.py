@@ -150,6 +150,25 @@ async def load_native(config: Dict[str, Any]) -> None:
         ),
     )
 
+async def load_headless(config: Dict[str, Any]) -> None:
+    runtime_exe_path, plugin_paths = await asyncio.gather(
+        build_runtime(config, "exe"),
+        asyncio.gather(
+            *(
+                build_one_plugin(config, plugin_config)
+                for plugin_config in config["plugins"]
+            )
+        ),
+    )
+    await subprocess_run(
+        ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
+        check=True,
+        env=dict(
+            ILLIXR_DATA=config["data"],
+            **os.environ,
+        ),
+    )
+
 
 async def load_tests(config: Dict[str, Any]) -> None:
     runtime_exe_path, _, plugin_paths = await asyncio.gather(
@@ -263,6 +282,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
 
 loaders = {
     "native": load_native,
+    "headless": load_headless,
     "gdb": load_gdb,
     "monado": load_monado,
     "tests": load_tests,
