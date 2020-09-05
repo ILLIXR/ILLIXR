@@ -19,15 +19,15 @@ These instructions have been tested with Ubuntu 18.04.
 
         ./install_deps.sh
 
-4. Inspect `config.yaml`. The schema definition (with documentation inline) is in `runner/config_schema.yaml`.
+4. Inspect `configs/native.yaml`. The schema definition (with documentation inline) is in `runner/config_schema.yaml`.
 
 5. Build and run ILLIXR standalone:
 
-        ./runner.sh config.yaml
+        ./runner.sh configs/native.yaml
 
 6. If so desired, you can run ILLIXR headlessly using [xvfb][5]:
 
-        xvfb-run ./runner.sh config.yaml
+        ./runner.sh configs/headless.yaml
 
 ## ILLIXR Runtime with Monado (supports OpenXR)
 
@@ -52,20 +52,11 @@ of applications.  Monado only supports Ubuntu 18.04, because of a low-level driv
         cd ILLIXR
         ./install_deps.sh
 
-5. Edit the `conig.yaml`, using this for the loader:
+5. Inspect `configs/monado.yaml`. The schema definition (with documentation inline) is in `runner/config_schema.yaml`.
 
-```yaml
-loader:
-  name: monado
-  monado:
-    path: ../monado_integration
-  openxr_app:
-    path: ../Monado_OpenXR_Simple_Example
-```
+6. Compile and run:
 
-5. Compile and run:
-
-        ./runner.sh config.yaml
+        ./runner.sh configs/monado.yaml
 
 ## ILLIXR Standalone
 
