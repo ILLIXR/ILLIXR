@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Writing your plugin - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Writing your plugin";
+    var mkdocs_page_input_path = "writing_your_plugin.md";
+    var mkdocs_page_url = "/writing_your_plugin/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> ILLIXR Docs</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../building_ILLIXR/">building ILLIXR</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../default_plugins/">Default plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../visualizer_logger/">Visualizer logger</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Writing your plugin</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#writing-your-plugin">Writing your plugin</a></li>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">ILLIXR Docs</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Writing your plugin</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="writing-your-plugin">Writing your plugin</h1>
+<p>With this, you can extend ILLIXR for your own purposes. You can also replace any existing
+functionality this way.</p>
+<ol>
+<li>
+<p>We suggest making a subdirectory in the ILLIXR repo, but one could make it anywhere.</p>
+</li>
+<li>
+<p>Add this directory to <code>plugins</code> in ILLIXR's root <code>Makefile</code>. The order in this list determines
+   the order of initialization in the program. <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a>, for example, is order-sensitive.</p>
+</li>
+<li>
+<p>In your plugin directory, we suggest symlinking common (<code>ln -s ../common common</code>).</p>
+</li>
+<li>
+<p>Create a <code>Makefile</code> with the following contents. See <a href="../building_ILLIXR/">Building ILLIXR</a> for more details and alternative setups.</p>
+<pre><code>include common.mk
+</code></pre>
+</li>
+<li>
+<p>You must decide if your plugin should inherit the standardized <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a> or
+    <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
+</li>
+<li>
+<p>If your plugin just needs to run one computation repeatedly, then your plugin class should
+    extend <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>.</p>
+</li>
+<li>
+<p>If you need custom concurrency (more complicated than a loop), triggered concurrency (by
+    events fired in other plugins), or no concurrency then your plugin class should extend
+    <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
+</li>
+<li>
+<p>Write a file called <code>plugin.cpp</code> with this body, replacing every instance of <code>plugin_name</code>:</p>
+<pre><code>#include "common/phonebook.hpp"
+#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
+
+using namespace ILLIXR;
+
+// Inherit from `plugin` if you don't need the threadloop
+class plugin_name : public threadloop {
+public:
+    plugin_name(std::string name_, phonebook* pb_)
+        : threadloop{name_, pb_}
+        { }
+    virtual void start() override { }
+    virtual ~plugin_name() override { }
+};
+
+// This line makes the plugin importable by Spindle
+PLUGIN_MAIN(plugin_name);
+</code></pre>
+</li>
+<li>
+<p>At this point, you should be able to go to the ILLIXR root and <code>make dbg</code>. If you edit a source
+    file and then <code>make dbg</code>, it should trigger a rebuild of your plugin.</p>
+</li>
+<li>
+<p>This is all that is required to be a plugin which can be loaded by Spindle in the ILLIXR
+    runtime. Reading and writing from Phonebook and Switchboard optional, but nearly every plugin
+    does it. See <code>default_plugins.md</code> for more details.</p>
+<p>First, we can query the <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a> to get various services including <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a>. Then we
+query <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics). We will read <code>topic1</code>, write to <code>topic2</code>, and
+schedule computation on <code>topic 3</code>. See the API documentation for <code>phonebook</code> and <code>switchboard</code>
+for more details.</p>
+<pre><code>#include "common/phonebook.hpp"
+#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
+
+/* When datatypes have to be common across plugins
+  (e.g. a phonebook service or switchboard topic),
+   they are defined in this header,
+   which is accessible to all plugins. */
+#include "common/data_format.hpp"
+
+class plugin_name : public threadloop {
+public:
+    /*
+        After the constructor, C++ permits a list of member-constructors.
+        We use uniform initialization (curly-braces) [1] instead of parens to avoid ambiguity [2].
+        We put the comma at the start of the line, so that lines can be copied around or deleted freely (except for the first).
+
+        [1]: https://en.wikipedia.org/wiki/C%2B%2B11#Uniform_initialization
+        [2]: https://en.wikipedia.org/wiki/Most_vexing_parse
+    */
+    plugin_name(std::string name_, phonebook* pb_)
+        : threadloop{name_, pb_}
+          // find the switchboard in phonebook
+        , sb{pb-&gt;lookup_impl&lt;switchboard&gt;()}
+          // create a handle to a topic in switchboard for subscribing
+        , topic1{sb-&gt;subscribe_latest&lt;topic1_type&gt;("topic1")}
+          // create a handle to a topic in switchboard for publishing
+        , topic2{sb-&gt;publish&lt;topic2_type&gt;("topic2")}
+    {
+        // Read topic 1
+        topic1_type* event1 = topic1.get_latest_ro();
+
+        // Write to topic 2
+        topic2_type* event2 = new topic2_type;
+        topic2.put(event2);
+
+        // Read topic 3 synchronously
+        sb-&gt;schedule&lt;topic3_type&gt;(get_name(), "topic3", [&amp;](const topic3_type *event3) {
+            /*
+            This is a [lambda expression][1]
+            [1]: https://en.cppreference.com/w/cpp/language/lambda
+            */
+            std::cout &lt;&lt; "Got a new event on topic3: " &lt;&lt; event3 &lt;&lt; std::endl;
+        });
+    }
+
+    virtual void _p_one_iteration override() {
+        std::cout &lt;&lt; "Running" &lt;&lt; std::endl;
+        auto target = std::chrono::high_resolution_clock::now() +  std::chrono::milliseconds{10};
+        reliable_sleep(target);
+    }
+
+private:
+    const std::shared_ptr&lt;switchboard&gt; pb;
+    std::unique_ptr&lt;reader_latest&lt;topic1_type&gt;&gt; topic1;
+    std::unique_ptr&lt;writer&lt;topic2&gt;&gt; topic2;
+};
+
+// This line makes the plugin importable by Spindle
+PLUGIN_MAIN(plugin_name);
+</code></pre>
+</li>
+</ol>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../visualizer_logger/" class="btn btn-neutral" title="Visualizer logger"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../visualizer_logger/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>

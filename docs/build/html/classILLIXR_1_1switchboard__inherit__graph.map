@@ -1,4 +1,0 @@
-<map id="ILLIXR::switchboard" name="ILLIXR::switchboard">
-<area shape="rect" id="node1" title="A manager for typesafe, threadsafe, named event&#45;streams (called topics)." alt="" coords="5,80,147,107"/>
-<area shape="rect" id="node2" href="$classILLIXR_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook." alt="" coords="19,5,133,32"/>
-</map>

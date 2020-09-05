@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>building ILLIXR - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "building ILLIXR";
+    var mkdocs_page_input_path = "building_ILLIXR.md";
+    var mkdocs_page_url = "/building_ILLIXR/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> ILLIXR Docs</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">building ILLIXR</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#building-illixr">Building ILLIXR</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#basic-usage">Basic usage</a></li>
+        
+            <li><a class="toctree-l3" href="#rationale">Rationale</a></li>
+        
+            <li><a class="toctree-l3" href="#adding-a-new-plugin-common-case">Adding a new plugin (common case)</a></li>
+        
+            <li><a class="toctree-l3" href="#adding-a-plugin-general-case">Adding a plugin (general case)</a></li>
+        
+            <li><a class="toctree-l3" href="#philosophy">Philosophy</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../default_plugins/">Default plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../visualizer_logger/">Visualizer logger</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../writing_your_plugin/">Writing your plugin</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">ILLIXR Docs</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>building ILLIXR</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="building-illixr">Building ILLIXR</h1>
+<h2 id="basic-usage">Basic usage</h2>
+<ul>
+<li>
+<p>Edit <code>config.yaml</code>. See <code>runner/config_schema.yaml</code> for the schema definition.</p>
+</li>
+<li>
+<p>Make sure you have defined all of the plugins you want with paths that exist.</p>
+</li>
+<li>
+<p>Currently we support the following loaders: <code>native</code> (which runs ILLIXR in standalone mode),
+    <code>gdb</code> (which runs standalone mode in GDB for debugging purposes), and <code>monado</code> (which runs an
+    OpenXR application in Monado using ILLIXR as a backend)</p>
+<ul>
+<li>If you want to run with Monado, make sure you define Monado and an OpenXR application in the
+  loader (see <code>runner/config_schema.yaml</code> for specifics).</li>
+</ul>
+</li>
+<li>
+<p>Paths are resolved relative to the project root.</p>
+</li>
+<li>
+<p>You can <code>!include</code> other YAML files (<a href="https://pypi.org/project/pyyaml-include/">documentation</a>). Consider separating the site-specific
+    configuration options into its own file.</p>
+</li>
+<li>
+<p>Run <code>./runner.sh config.yaml</code>.</p>
+</li>
+<li>
+<p>This compiles whatever plugins and runtime code is necessary and runs the result.</p>
+</li>
+<li>
+<p>This also sets the environment variables properly.</p>
+</li>
+</ul>
+<h2 id="rationale">Rationale</h2>
+<ul>
+<li>
+<p>Previously, we would have to specify which plugins to build and which to run separately, violating
+  <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY principle</a>.</p>
+</li>
+<li>
+<p>Previously, configuration had to be hard-coded into the component source code, or passed as
+  parsed/unparsed as strings in env-vars on a per-component basis. This gives us a consistent way to
+  deal with all configurations.</p>
+</li>
+<li>
+<p>Currently, plugins are specificed by a path to the directory containing their source code and
+  build system. In the future, the same config file could support HTTP URLs Git URLs
+  (<code>git+https://github.com/username/repo@rev?path=optional/path/within/repo</code>), or Zip URLs
+  (<code>zip+http://path/to/archive.zip?path=optional/path/within/zip</code>), or even Nix URLs (TBD).</p>
+</li>
+</ul>
+<h2 id="adding-a-new-plugin-common-case">Adding a new plugin (common case)</h2>
+<p>In the common case, one need only define a <code>Makefile</code> with the line <code>include common/common.mk</code> and
+symlink common (<code>ln -s ../common common</code>). This provides the necessary targets and uses the compiler
+<code>$(CXX)</code>, which is defined in Make based on the OS and environment variables.</p>
+<ul>
+<li>
+<p>It compiles <code>plugin.cpp</code> and any other <code>*.cpp</code> files into the plugin.</p>
+</li>
+<li>
+<p>It will invoke a recompile the target any time any <code>*.hpp</code> or <code>*.cpp</code> file changes.</p>
+</li>
+<li>
+<p>It compiles with C++17. You can change this in your plugin by defining <code>STDCXX = ...</code> before the
+  <code>include</code>. This change will not affect other plugins; just yours.</p>
+</li>
+<li>
+<p>Libraries can be added by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>, for example</p>
+<pre><code>LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
+CFLAGS := $(CFLAGS) $(shell pkg-config --cflags eigen3)
+</code></pre>
+</li>
+<li>
+<p>See the source for the exact flags.</p>
+</li>
+<li>
+<p>Inserted the path of your directory into the <code>plugin</code>-list in <code>config.yaml</code>.</p>
+</li>
+</ul>
+<h2 id="adding-a-plugin-general-case">Adding a plugin (general case)</h2>
+<p>Each plugin can have a completely independent build system, as long as:
+- It defines a <code>Makefile</code> with targets for <code>plugin.dbg.so</code>, <code>plugin.opt.so</code>, and <code>clean</code>. Inside
+  this <code>Makefile</code>, one can defer to another build system.</p>
+<ul>
+<li>
+<p>It's compiler maintains <em>ABI compatibility</em> with the compilers used in every other plugin. Using
+  the same version of Clang or GCC on the same architecture is sufficient for this.</p>
+</li>
+<li>
+<p>It's path is inserted in the root <code>config.yaml</code>, in the <code>plugins</code> list.</p>
+</li>
+</ul>
+<h2 id="philosophy">Philosophy</h2>
+<ul>
+<li>
+<p>Each plugin should not have to know or care how the others are compiled. In the future, they may
+  even be distributed separately, just as SOs. Therefore, each plugin needs its own build system.</p>
+</li>
+<li>
+<p>Despite this per-plugin flexibility, building the 'default' set of ILLIXR plugins should be
+  extremely easy.</p>
+</li>
+<li>
+<p>It should be easy to build in parallel.</p>
+</li>
+<li>
+<p>Always rebuild every time, so the binary is always "fresh". This is a great convenience when
+  experimenting. However, this implies that rebuilding must be fast when not much has changed.</p>
+</li>
+<li>
+<p>Make is the de facto standard for building C/C++ programs. GNU Make, and the
+  makefile language begets no shortage of problems [<a href="https://www.conifersystems.com/whitepapers/gnu-make/">1</a>,<a href="https://www.gnu.org/software/cons/stable/cons.html#why%20cons%20why%20not%20make">2</a>,<a href="https://interrupt.memfault.com/blog/gnu-make-guidelines#when-to-choose-make">3</a>,<a href="https://grosskurth.ca/bib/1997/miller.pdf" title="Recursive Make Considered Harmful (AUUGN Journal of AUUG Inc. 1998)">4</a>,<a href="https://doi.org/10.1145/3241625.2976011" title="Non-recursive make considered harmful: build systems at scale (SIGPLAN 2016)">5</a>], but we choose
+  Make for its tradeoff of between simplicity and functionality. What it lacks in functionality
+  (compared to CMake, Ninja, scons, Bazel, Meson) it makes up for in simplicity. It's still the
+  build system in which it is the easiest to invoke arbitrary commands in shell and the easiest to
+  have a <code>common.mk</code> included in each plugin. This decision to use Make should be revisited, when
+  this project outgrows its ability, but for now, Make remains, in our judgement, <em>the best tool for
+  the job</em>.</p>
+</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../default_plugins/" class="btn btn-neutral float-right" title="Default plugins">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../default_plugins/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>
