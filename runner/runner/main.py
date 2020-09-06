@@ -170,9 +170,9 @@ async def load_tests(config: Dict[str, Any]) -> None:
                 build_one_plugin(config, plugin_config, test=True)
                 for plugin_config in config["plugins"]
             ),
-            sync=True,
+            sync=False,
         ),
-        sync=True,
+        sync=False,
     )
 
 
