@@ -1,6 +1,6 @@
 # Using ?= makes these variables overridable
 # Simply define them before including common.mk
-CXX ?= clang++
+CXX := clang++-10
 STDCXX ?= c++17
 DBG_FLAGS ?= -Og -g -Wall -Wextra
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra
