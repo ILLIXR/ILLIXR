@@ -89,16 +89,20 @@ async def subprocess_run(
 
     """
 
-    cwd = Path(".") if cwd is None else cwd
-    proc = await asyncio.create_subprocess_exec(
-        args[0], *args[1:], env=env, cwd=str(cwd)
-    )
+    try:
+        cwd = cwd if cwd is not None else Path(".")
+        env = env if env is not None else os.environ
+        proc = await asyncio.create_subprocess_exec(
+            args[0], *args[1:], env=env, cwd=str(cwd)
+        )
 
-    return_code = await proc.wait()
-    if check and return_code != 0:
-        raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
-
-    return proc
+        return_code = await proc.wait()
+        if check and return_code != 0:
+            raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
+        return proc
+    except asyncio.CancelledError:
+        proc.terminate()
+        raise
 
 
 async def make(path: Path, targets: List[str], var_dict: Optional[Dict[str, str]] = None) -> None:

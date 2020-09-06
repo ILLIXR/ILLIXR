@@ -15,18 +15,18 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
-		, _m_sensor_data{load_data(std::string{std::getenv("ILLIXR_DATA")})}
+		, _m_sensor_data{load_data()}
 	{ }
 
 	virtual void start() override {
+		plugin::start();
 		sb->schedule<imu_cam_type>(get_name(), "imu_cam", [&](const imu_cam_type *datum) {
 			this->feed_ground_truth(datum);
 		});
 	}
 
-
 	void feed_ground_truth(const imu_cam_type *datum) {
-		ullong rounded_time = floor(datum->dataset_time / 10000);
+		ullong rounded_time = datum->dataset_time;
 		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
@@ -35,7 +35,7 @@ public:
 		}
 
 		pose_type* true_pose = new pose_type{_m_sensor_data_it->second};
-		true_pose->time = datum->time;
+ 		true_pose->time = datum->time;
 		// std::cout << "The pose was found at " << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2] << std::endl; 
 
 		_m_true_pose->put(true_pose);
