@@ -168,7 +168,7 @@ private:
 
 const std::experimental::filesystem::path sqlite_thread::dir {"metrics"};
 
-class sqlite_record_logger : public c_record_logger {
+class sqlite_record_logger : public record_logger {
 private:
 	sqlite_thread& get_sqlite_thread(const record& r) {
 		const record_header& rh = r.get_record_header();
