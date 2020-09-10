@@ -22,7 +22,7 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
-      # Pulls all versions of this container. This allows the docker build to use the cache for faster builds.
+      # Pulls latest and current branch tag of this container. This allows the docker build to use the cache for faster builds.
       - name: Pull Docker Cache
         run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} || docker pull ghcr.io/illixr/illixr-tests:latest|| true
 
