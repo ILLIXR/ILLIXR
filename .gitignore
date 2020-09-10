@@ -8,9 +8,5 @@ site/
 log/
 imgui.ini
 .gdb_history
-.freiburg
 output.*
 metrics/
-test.csv
-hologram_stats.txt
-*.egg-info/
