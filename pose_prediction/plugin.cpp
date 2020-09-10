@@ -15,22 +15,42 @@ public:
 
     virtual pose_type get_fast_pose() const override {
 		const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
+
+		// Make the first valid fast pose be straight ahead.
+		if (first_time && pose_ptr) {
+			std::lock_guard<std::recursive_mutex> lock {offset_mutex};
+			// check again, now that we have mutual exclusion
+			if (first_time) {
+				auto pose = correct_pose(*pose_ptr);
+				const_cast<pose_prediction_impl&>(*this).set_offset(pose.orientation);
+				const_cast<pose_prediction_impl&>(*this).first_time = false;
+				std::cout << "============fff " << pose.orientation.w() << -pose.orientation.y() << pose.orientation.z() << -pose.orientation.x() << std::endl;
+			}
+		}
+
 		return correct_pose(
-			pose_ptr ? *pose_ptr : pose_type{}
+			pose_ptr ? *pose_ptr : pose_type{
+				.time = std::chrono::system_clock::now(),
+				.position = Eigen::Vector3f{0, 0, 0},
+				.orientation = Eigen::Quaternionf{1, 0, 0, 0},
+			}
 		);
     }
 
     virtual pose_type get_true_pose() const override {
 		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
 		return correct_pose(
-			pose_ptr ? *pose_ptr : pose_type{}
+			pose_ptr ? *pose_ptr : pose_type{
+				.time = std::chrono::system_clock::now(),
+				.position = Eigen::Vector3f{0, 0, 0},
+				.orientation = Eigen::Quaternionf{1, 0, 0, 0},
+			}
 		);
     }
 
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
-		std::lock_guard<std::mutex> lock {offset_mutex};
+		std::lock_guard<std::recursive_mutex> lock {offset_mutex};
 		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-		std::cout << "pose_prediction: set_offset" << std::endl;
 		offset = raw_o.inverse();
 		/*
 		  Now, `raw_o` is maps to the identity quaternion.
@@ -44,7 +64,7 @@ public:
 	}
 
 	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-		std::lock_guard<std::mutex> lock {offset_mutex};
+		std::lock_guard<std::recursive_mutex> lock {offset_mutex};
 		return orientation * offset;
 	}
 
@@ -77,11 +97,12 @@ public:
 	}
 
 private:
+	std::atomic<bool> first_time{true};
 	const std::shared_ptr<switchboard> sb;
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
 	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::mutex offset_mutex;
+	mutable std::recursive_mutex offset_mutex;
     
     pose_type correct_pose(const pose_type pose) const {
         pose_type swapped_pose;

@@ -138,43 +138,29 @@ public:
 			ksAlgebra::ksMatrix4x4f modelMatrix;
 			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
 
-			if (pp->fast_pose_reliable()) {
-				// We have a valid pose from our Switchboard plug.
+			const pose_type pose = pp->get_fast_pose();
 
-				const pose_type pose = pp->get_fast_pose();
-				if(counter == 50){
-					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose.orientation);
-				}
+			Eigen::Quaternionf combinedQuat = pose.orientation;
 
-				counter++;
+			auto latest_quat = ksAlgebra::ksQuatf {
+				.x = combinedQuat.x(),
+				.y = combinedQuat.y(),
+				.z = combinedQuat.z(),
+				.w = combinedQuat.w()
+			};
 
-				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose.orientation;
-
-				auto latest_quat = ksAlgebra::ksQuatf {
-					.x = combinedQuat.x(),
-					.y = combinedQuat.y(),
-					.z = combinedQuat.z(),
-					.w = combinedQuat.w()
-				};
-
-				auto latest_position = ksAlgebra::ksVector3f {
-					.x = pose.position[0] + 5.0f,
-					.y = pose.position[1] + 2.0f,
-					.z = pose.position[2] + -3.0f
-				};
-				auto scale = ksAlgebra::ksVector3f{1,1,1};
-				ksAlgebra::ksMatrix4x4f head_matrix;
-				std::cout<< "App using position: " << latest_position.z << std::endl;
-				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
-				ksAlgebra::ksMatrix4x4f viewMatrix;
-				// View matrix is the inverse of the camera's position/rotation/etc.
-				ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
-				ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
-			} else {
-				// We have no pose data from our pose topic :(
-				ksAlgebra::ksMatrix4x4f_CreateIdentity(&modelViewMatrix);
-			}
+			auto latest_position = ksAlgebra::ksVector3f {
+				.x = pose.position[0] + 5.0f,
+				.y = pose.position[1] + 2.0f,
+				.z = pose.position[2] + -3.0f
+			};
+			auto scale = ksAlgebra::ksVector3f{1,1,1};
+			ksAlgebra::ksMatrix4x4f head_matrix;
+			ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
+			ksAlgebra::ksMatrix4x4f viewMatrix;
+			// View matrix is the inverse of the camera's position/rotation/etc.
+			ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
+			ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
 
 			glUseProgram(demoShaderProgram);
 			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
@@ -288,9 +274,6 @@ private:
 	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
-
-	uint counter = 0;
-	Eigen::Quaternionf offsetQuat;
 
 	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;

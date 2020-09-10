@@ -203,10 +203,6 @@ public:
 		ImGui::Text("Camera view buffers: ");
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
-		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type pose = pp->get_fast_pose();
-			offsetQuat = Eigen::Quaternionf(pose.orientation);
-		}
 		ImGui::End();
 
 		ImGui::Begin("Onboard camera views");
@@ -327,13 +323,7 @@ public:
 			if(pp->fast_pose_reliable()) {
 				const pose_type pose = pp->get_fast_pose();
 
-				if(counter == 100){
-					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose.orientation);
-				}
-				counter++;
-
-				Eigen::Quaternionf combinedQuat = pose.orientation * offsetQuat.inverse();
+				Eigen::Quaternionf combinedQuat = pose.orientation;
 				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
 
@@ -411,9 +401,6 @@ private:
 	GLFWwindow* gui_window;
 
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
-
-	uint counter = 0;
-	Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
 
 	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
 	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
