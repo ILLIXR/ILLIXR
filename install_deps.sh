@@ -87,6 +87,10 @@ then
 		. ./scripts/install_openxr.sh
 	fi
 
+	if [ ! -d "data1" ] && y_or_n "Next: Download Vicon Room 1 Medium SLAM dataset"; then
+		. ./scripts/install_euroc.sh
+	fi
+
 	if ! which conda 2> /dev/null; then
 		if [ ! -d "$HOME/miniconda3" ]; then
 			if y_or_n "Next: Install Conda"; then
