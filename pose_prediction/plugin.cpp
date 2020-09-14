@@ -24,7 +24,6 @@ public:
 				auto pose = correct_pose(*pose_ptr);
 				const_cast<pose_prediction_impl&>(*this).set_offset(pose.orientation);
 				const_cast<pose_prediction_impl&>(*this).first_time = false;
-				std::cout << "============fff " << pose.orientation.w() << -pose.orientation.y() << pose.orientation.z() << -pose.orientation.x() << std::endl;
 			}
 		}
 
