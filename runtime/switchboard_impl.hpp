@@ -6,7 +6,7 @@
 #include <cassert>
 #include <mutex>
 
-#include "concurrentqueue.hpp"
+#include "concurrentqueue/concurrentqueue.hpp"
 template <typename T>
 using queue = moodycamel::ConcurrentQueue<T>;
 

@@ -109,15 +109,16 @@ namespace ILLIXR {
 			, values{values_}
 		{
 #ifndef NDEBUG
-			if (values.size() != rh.get_columns()) {
-				std::cerr << values.size() << " elements passed, but rh for " << rh.get_name() << " only specifies " << rh.get_columns() << "." << std::endl;
+			assert(rh);
+			if (values.size() != rh->get().get_columns()) {
+				std::cerr << values.size() << " elements passed, but rh for " << rh->get().get_name() << " only specifies " << rh->get().get_columns() << "." << std::endl;
 				abort();
 			}
 			for (std::size_t column = 0; column < values.size(); ++column) {
-				if (values[column].type() != rh.get_column_type(column)) {
-					std::cerr << "Caller got wrong type for column " << column << " of " << rh.get_name() << ". "
+				if (values[column].type() != rh->get().get_column_type(column)) {
+					std::cerr << "Caller got wrong type for column " << column << " of " << rh->get().get_name() << ". "
 							  << "Caller passed: " << values[column].type().name() << "; "
-							  << "recod_header for specifies: " << rh.get_column_type(column).name() << ". "
+							  << "recod_header for specifies: " << rh->get().get_column_type(column).name() << ". "
 							  << std::endl;
 					abort();
 				}
@@ -125,9 +126,11 @@ namespace ILLIXR {
 #endif
 		}
 
+		record() { }
+
 		~record() {
 #ifndef NDEBUG
-			if (!data_use_indicator_.is_used()) {
+			if (rh && !data_use_indicator_.is_used()) {
 				std::cerr << "Record was deleted without being logged." << std::endl;
 				abort();
 			}
@@ -137,16 +140,13 @@ namespace ILLIXR {
 		template<typename T>
 		T get_value(unsigned column) const {
 #ifndef NDEBUG
-<<<<<<< HEAD
-			data_taint.mark_used();
-=======
+			assert(rh);
 			data_use_indicator_.mark_used();
->>>>>>> c4bbd385257b0c662c757a579dc4a15b4481c050
-			if (rh.get_column_type(column) != typeid(T)) {
+			if (rh->get().get_column_type(column) != typeid(T)) {
 				std::ostringstream ss;
-				ss << "Caller column type for " << column << " of " << rh.get_name() << ". "
+				ss << "Caller column type for " << column << " of " << rh->get().get_name() << ". "
 				   << "Caller passed: " << typeid(T).name() << "; "
-				   << "record_header specifies: " << rh.get_column_type(column).name() << ". ";
+				   << "record_header specifies: " << rh->get().get_column_type(column).name() << ". ";
 				throw std::runtime_error{ss.str()};
 			}
 #endif
@@ -154,11 +154,13 @@ namespace ILLIXR {
 		}
 
 		const record_header& get_record_header() const {
-			return rh;
+			assert(rh);
+			return rh->get();
 		}
 
 		void mark_used() const {
 #ifndef NDEBUG
+			assert(rh);
 			data_use_indicator_.mark_used();
 #endif
 		}
@@ -167,7 +169,7 @@ namespace ILLIXR {
 		// Holding a pointer to a record_header is more efficient than
 		// requiring each record to hold a list of its column names
 		// and table name. This is just one pointer.
-		const record_header& rh;
+		std::optional<std::reference_wrapper<const record_header>> rh;
 		std::vector<std::any> values;
 #ifndef NDEBUG
         data_use_indicator data_use_indicator_;
