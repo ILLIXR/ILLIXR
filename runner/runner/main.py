@@ -65,6 +65,16 @@ def pathify(path: Union[Path, str], base: Union[Path, str], should_exist=True):
     return ret
 
 
+async def gather_aws(*aws, sync: bool = False):
+    if sync:
+        return [
+            await aw
+            for aw in aws
+        ]
+    else:
+        return await asyncio.gather(*aws)
+
+
 async def subprocess_run(
     args: List[str],
     cwd: Optional[Union[Path, str]] = None,
@@ -79,16 +89,20 @@ async def subprocess_run(
 
     """
 
-    cwd = Path(".") if cwd is None else cwd
-    proc = await asyncio.create_subprocess_exec(
-        args[0], *args[1:], env=env, cwd=str(cwd)
-    )
+    try:
+        cwd = cwd if cwd is not None else Path(".")
+        env = env if env is not None else os.environ
+        proc = await asyncio.create_subprocess_exec(
+            args[0], *args[1:], env=env, cwd=str(cwd)
+        )
 
-    return_code = await proc.wait()
-    if check and return_code != 0:
-        raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
-
-    return proc
+        return_code = await proc.wait()
+        if check and return_code != 0:
+            raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
+        return proc
+    except asyncio.CancelledError:
+        proc.terminate()
+        raise
 
 
 async def make(path: Path, targets: List[str], var_dict: Optional[Dict[str, str]] = None) -> None:
@@ -128,9 +142,9 @@ async def build_runtime(config: Dict[str, Any], suffix: str, test: bool = False)
 
 
 async def load_native(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await asyncio.gather(
+    runtime_exe_path, plugin_paths = await gather_aws(
         build_runtime(config, "exe"),
-        asyncio.gather(
+        gather_aws(
             *(
                 build_one_plugin(config, plugin_config)
                 for plugin_config in config["plugins"]
@@ -148,22 +162,24 @@ async def load_native(config: Dict[str, Any]) -> None:
 
 
 async def load_tests(config: Dict[str, Any]) -> None:
-    runtime_exe_path, _, plugin_paths = await asyncio.gather(
+    runtime_exe_path, _, plugin_paths = await gather_aws(
         build_runtime(config, "exe", test=True),
         make(Path("../common"), ["tests/run"]),
-        asyncio.gather(
+        gather_aws(
             *(
                 build_one_plugin(config, plugin_config, test=True)
                 for plugin_config in config["plugins"]
-            )
+            ),
+            sync=False,
         ),
+        sync=False,
     )
 
 
 async def load_gdb(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await asyncio.gather(
+    runtime_exe_path, plugin_paths = await gather_aws(
         build_runtime(config, "exe"),
-        asyncio.gather(
+        gather_aws(
             *(
                 build_one_plugin(config, plugin_config)
                 for plugin_config in config["plugins"]
@@ -214,7 +230,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
     openxr_app_config = config["loader"]["openxr_app"].get("config", {})
     openxr_app_path = pathify(config["loader"]["openxr_app"]["path"], root_dir)
 
-    _, _, _, plugin_paths = await asyncio.gather(
+    _, _, _, plugin_paths = await gather_aws(
         cmake(
             monado_path,
             monado_path / "build",
@@ -237,7 +253,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
             dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
         ),
         build_runtime(config, "so"),
-        asyncio.gather(
+        gather_aws(
             *(
                 build_one_plugin(config, plugin_config)
                 for plugin_config in config.get("plugins", [])
