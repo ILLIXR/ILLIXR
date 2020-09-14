@@ -12,6 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
 
       - name: Login to ghcr.io
@@ -22,9 +23,9 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
-      # Pulls latest and current branch tag of this container. This allows the docker build to use the cache for faster builds.
+      # Pulls all versions of this container. This allows the docker build to use the cache for faster builds.
       - name: Pull Docker Cache
-        run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} || docker pull ghcr.io/illixr/illixr-tests:latest|| true
+        run: docker pull --all-tags ghcr.io/illixr/illixr-tests || true
 
       # Performs the docker build and pulls the cache from either the branch name tag or from latest.
       # The latest tag is what is on master so it will use that cache the first time this branch runs
