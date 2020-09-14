@@ -8,3 +8,5 @@ site/
 log/
 imgui.ini
 .gdb_history
+output.*
+metrics/

@@ -34,6 +34,7 @@ public:
 	 * @brief Starts the thread.
 	 */
 	virtual void start() override {
+		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 
@@ -41,13 +42,20 @@ public:
 	 * @brief Stops the thread.
 	 */
 	virtual void stop() override {
-		_m_terminate.store(true);
-		_m_thread.join();
+		if (! _m_terminate.load()) {
+			_m_terminate.store(true);
+			_m_thread.join();
+			std::cerr << "Joined " << name << std::endl;
+			plugin::stop();
+		} else {
+			std::cerr << "You called stop() on this plugin twice." << std::endl;
+		}
 	}
 
 	virtual ~threadloop() override {
-		if (!should_terminate()) {
-			stop();
+		if (!_m_terminate.load()) {
+			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
+			abort();
 		}
 	}
 
@@ -125,7 +133,7 @@ protected:
 
 	/**
 	 * @brief Gets called at setup time, from the new thread.
-	 */	
+	 */
 	virtual void _p_thread_setup() { }
 
 	/**
@@ -144,35 +152,7 @@ protected:
 		return _m_terminate.load();
 	}
 
-	/**
-	 * @brief Sleeps until a roughly @p stop.
-	 *
-	 * We attempt to still be somewhat responsive to `stop()` and to be more accurate than
-	 * stdlib's `sleep`, by sleeping for the deadline in chunks.
-	 */
-	void reliable_sleep(std::chrono::high_resolution_clock::time_point stop) {
-		auto start = std::chrono::high_resolution_clock::now();
-		auto sleep_duration = stop - start;
-
-		auto sleep_quantum = std::min<std::common_type_t<decltype(sleep_duration), decltype(MAX_TIMEOUT)>>(
-			sleep_duration / SLEEP_SAFETY_FACTOR,
-			MAX_TIMEOUT
-		);
-
-		// sleep_quantum is at most MAX_TIMEOUT so that we will wake up, and check if should_terminate
-		// Thus, every plugin will respond to termination within MAX_TIMOUT (assuming no long compute-bound thing)
-		while (!should_terminate() && std::chrono::high_resolution_clock::now() - start < sleep_duration) {
-			std::this_thread::sleep_for(sleep_quantum);
-		}
-	}
-
 private:
-	// This factor is related to how accurate reliable_sleep is
-	const size_t SLEEP_SAFETY_FACTOR {100};
-
-	// this factor is related to how quickly we will shutdown when termintae is called
-	std::chrono::milliseconds MAX_TIMEOUT {100};
-
 	std::atomic<bool> _m_terminate {false};
 
 	std::thread _m_thread;

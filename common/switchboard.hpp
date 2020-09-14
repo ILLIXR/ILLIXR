@@ -109,63 +109,65 @@ class switchboard : public phonebook::service {
 
 private:
 	virtual
-	std::unique_ptr<writer<void>> _p_publish(const std::string& name, std::size_t ty) = 0;
+	std::unique_ptr<writer<void>> _p_publish(const std::string& topic_name, std::size_t ty) = 0;
 
 	virtual
-	std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& name, std::size_t ty) = 0;
+	std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& topic_name, std::size_t ty) = 0;
 
 	virtual
-	void _p_schedule(const std::string& name, std::function<void(const void*)> fn, std::size_t ty) = 0;
+	void _p_schedule(const std::string& topic_name, std::function<void(const void*)> fn, std::size_t ty) = 0;
 
 	/* TODO: (usability) add a method which queries if a topic has a writer. Readers might assert this. */
 
 public:
 
 	/**
-	 * @brief Schedules the callback @p fn every time an event is published to @p name.
+	 * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
 	 *
-	 * Switchboard maintains a threadpool to call `fn`. It is possible
-	 * multiple instances of `fn` will be running concurrently if the
-	 * event's repetition period is less than the runtime of `fn`.
+	 * Switchboard maintains a threadpool to call @p fn. It is possible
+	 * multiple instances of @p fn will be running concurrently if the
+	 * event's repetition period is less than the runtime of @p fn.
 	 *
 	 * This is safe to be called from any thread.
 	 *
-	 * @throws if topic already exists, and its type does not match the `event`.
+	 * @throws if topic already exists, and its type does not match the @p event.
 	 */
 	template <typename event>
-	void schedule([[maybe_unused]] std::string account_name, std::string name, std::function<void(const event*)> fn) {
-		_p_schedule(name, [=](const void* ptr) {
+	void schedule([[maybe_unused]] std::string account_name, std::string topic_name, std::function<void(const event*)> fn) {
+		_p_schedule(topic_name, [=](const void* ptr) {
 			fn(reinterpret_cast<const event*>(ptr));
 		}, typeid(event).hash_code());
 	}
 
 	/**
-	 * @brief Gets a handle to publish to the topic `name`.
+	 * @brief Gets a handle to publish to the topic @p topic_name.
 	 *
 	 * This is safe to be called from any thread.
 	 *
-	 * @throws If topic already exists, and its type does not match the `event`.
+	 * @throws If topic already exists, and its type does not match the @p event.
 	 */
 	template <typename event>
-	std::unique_ptr<writer<event>> publish(const std::string& name) {
-		auto void_writer = _p_publish(name, typeid(event).hash_code());
+	std::unique_ptr<writer<event>> publish(const std::string& topic_name) {
+		auto void_writer = _p_publish(topic_name, typeid(event).hash_code());
 		return std::move(std::unique_ptr<writer<event>>(reinterpret_cast<writer<event>*>(void_writer.release())));
 	}
 
 	/**
-	 * @brief Gets a handle to read to the latest value from the topic `name`.
+	 * @brief Gets a handle to read to the latest value from the topic @p topic_name.
 	 *
 	 * This is safe to be called from any thread.
 	 *
-	 * @throws If topic already exists, and its type does not match the `event`.
+	 * @throws If topic already exists, and its type does not match the @p event.
 	 */
 	template <typename event>
-	std::unique_ptr<reader_latest<event>> subscribe_latest(const std::string& name) {
-		auto void_writer = _p_subscribe_latest(name, typeid(event).hash_code());
+	std::unique_ptr<reader_latest<event>> subscribe_latest(const std::string& topic_name) {
+		auto void_writer = _p_subscribe_latest(topic_name, typeid(event).hash_code());
 		return std::move(std::unique_ptr<reader_latest<event>>(reinterpret_cast<reader_latest<event>*>(void_writer.release())));
 	}
 
 	virtual ~switchboard() { }
+
+	virtual void stop() = 0;
 };
 
 /* TODO: (usability) Do these HAVE to be smart pointers? If the

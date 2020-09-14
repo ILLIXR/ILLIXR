@@ -32,11 +32,9 @@ namespace ILLIXR {
 				return true;
 			}
 
-			if (false
-				|| name != other.name
+			if (name != other.name
 				|| columns.size() != other.columns.size()
-				|| id != other.id
-				) {
+				|| id != other.id) {
 				return false;
 			}
 			for (std::size_t i = 0; i < columns.size(); ++i) {
@@ -73,15 +71,15 @@ namespace ILLIXR {
 	/**
 	 * @brief A helper class that lets one dynamically determine if some data gets used.
 	 *
-	 * When a use_taint gets copied, the original is considered used and the new one is considered unused.
+	 * When a data_use_indicator gets copied, the original is considered used and the new one is considered unused.
 	 */
-	class use_taint {
+	class data_use_indicator {
 	public:
-		use_taint() : used{false} { }
-		use_taint(const use_taint& other) : used{false} {
+		data_use_indicator() : used{false} { }
+		data_use_indicator(const data_use_indicator& other) : used{false} {
 			other.used = true;
 		}
-		use_taint& operator=(const use_taint& other) {
+		data_use_indicator& operator=(const data_use_indicator& other) {
 			if (&other != this) {
 				other.used = true;
 				used = false;
@@ -129,7 +127,7 @@ namespace ILLIXR {
 
 		~record() {
 #ifndef NDEBUG
-			if (!data_taint.is_used()) {
+			if (!data_use_indicator_.is_used()) {
 				std::cerr << "Record was deleted without being logged." << std::endl;
 				abort();
 			}
@@ -139,7 +137,11 @@ namespace ILLIXR {
 		template<typename T>
 		T get_value(unsigned column) const {
 #ifndef NDEBUG
+<<<<<<< HEAD
 			data_taint.mark_used();
+=======
+			data_use_indicator_.mark_used();
+>>>>>>> c4bbd385257b0c662c757a579dc4a15b4481c050
 			if (rh.get_column_type(column) != typeid(T)) {
 				std::ostringstream ss;
 				ss << "Caller column type for " << column << " of " << rh.get_name() << ". "
@@ -157,7 +159,7 @@ namespace ILLIXR {
 
 		void mark_used() const {
 #ifndef NDEBUG
-			data_taint.mark_used();
+			data_use_indicator_.mark_used();
 #endif
 		}
 
@@ -168,7 +170,7 @@ namespace ILLIXR {
 		const record_header& rh;
 		std::vector<std::any> values;
 #ifndef NDEBUG
-        use_taint data_taint;
+        data_use_indicator data_use_indicator_;
 #endif
     };
 

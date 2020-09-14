@@ -42,7 +42,7 @@ properties:
       name:
         default: native
         type: string
-        description: "Currently supports: 'native', 'openxr', or 'gdb'"
+        description: "Currently supports: 'native', 'openxr', 'gdb', or 'tests'"
       config:
           <<: *key_vals
           description: Interpretation of these vars is loader-dependent
