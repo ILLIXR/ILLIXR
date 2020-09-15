@@ -14,14 +14,6 @@ const record_header imu_cam_record {
 	},
 };
 
-	const record_header __camera_cvtfmt_header {"camera_cvtfmt", {
-		{"iteration_no", typeid(std::size_t)},
-		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
-		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-	}};
-
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
 	offline_imu_cam(std::string name_, phonebook* pb_)
@@ -71,8 +63,6 @@ protected:
 		}});
 
 
-		auto start_cpu_time  = thread_cpu_time();
-		auto start_wall_time = std::chrono::high_resolution_clock::now();
 		std::optional<cv::Mat*> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
 			: std::nullopt
@@ -81,13 +71,6 @@ protected:
 			? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
 			: std::nullopt
 			;
-		camera_cvtfmt_log.log(record{__camera_cvtfmt_header, {
-			{iteration_no},
-			{start_cpu_time},
-			{thread_cpu_time()},
-			{start_wall_time},
-			{std::chrono::high_resolution_clock::now()},
-		}});
 
 		_m_imu_cam->put(new imu_cam_type{
 			real_now,
