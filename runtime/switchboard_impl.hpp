@@ -205,10 +205,7 @@ namespace ILLIXR {
 		{
 			for (size_t i = 0; i < MAX_THREADS; ++i) {
 				_m_threads.push_back(std::thread{[i, this]() {
-					;
-					#ifndef NDEBUG
-						std::cout << "thread," << std::this_thread::get_id() << ",switchboard worker," << i << std::endl;
-					#endif
+					std::cout << "thread," << std::this_thread::get_id() << ",switchboard worker," << i << std::endl;
 					this->check_queues();
 				}});
 			}
