@@ -28,30 +28,8 @@ public:
 		);
     }
 
-    // future_time: Timestamp in the future in seconds
+    // future_time: An absolute timepoint in the future
     virtual fast_pose_type get_fast_pose(time_type future_timestamp) override {
-
-        // Generates a dummy yaw-back-and-forth pose.
-        
-        // double time = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - _m_start_of_time).count();
-        // time /= 1000000000.0f;
-        // float yaw = std::cos(time);
-
-        // Eigen::Quaternionf testQ = Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitX())
-        //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitY())
-        //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitZ());
-        
-        // pose_type* test_pose = new pose_type {
-        //     future_timestamp,
-        //     Eigen::Vector3f{static_cast<float>(0), static_cast<float>(std::cos(time)), static_cast<float>(0)}, 
-        //     testQ
-        // };
-        // return fast_pose_type {
-        //     .pose = correct_pose(*test_pose),
-        //     .imu_time = std::chrono::high_resolution_clock::now(),
-        //     .predict_computed_time = std::chrono::high_resolution_clock::now(),
-        //     .predict_target_time = future_timestamp
-        // };
 
         if (!_m_imu_biases->get_latest_ro()) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
@@ -195,7 +173,6 @@ private:
         a_hat += 0.5*a_jerk*dt;
 
         Eigen::Vector4d dq_1 = quatnorm(dq_0+0.5*k1_q);
-        //Eigen::Vector3d p_1 = p_0+0.5*k1_p;
         Eigen::Vector3d v_1 = v_0+0.5*k1_v;
 
         Eigen::Vector4d q1_dot = 0.5*Omega(w_hat)*dq_1;
