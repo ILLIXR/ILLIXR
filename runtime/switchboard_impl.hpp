@@ -6,9 +6,9 @@
 #include <cassert>
 #include <mutex>
 
-#include "concurrentqueue.hpp"
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
 template <typename T>
-using queue = moodycamel::ConcurrentQueue<T>;
+using queue = moodycamel::BlockingConcurrentQueue<T>;
 
 /*
 Proof of thread-safety:
@@ -23,6 +23,28 @@ Caveat:
 */
 
 namespace ILLIXR {
+	const record_header __switchboard_callback_header {"switchboard_callback", {
+		{"plugin_id", typeid(std::size_t)},
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	}};
+
+	const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
+		{"topic_name", typeid(std::string)},
+		{"processed", typeid(std::size_t)},
+		{"unprocessed", typeid(std::size_t)},
+	}};
+
+	const record_header __switchboard_check_queues_header {"switchboard_check_queues", {
+		{"iteration_no", typeid(std::size_t)},
+		{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+		{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+		{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+		{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	}};
 
 	class topic {
 	public:
@@ -139,12 +161,18 @@ namespace ILLIXR {
 			return _m_ty;
 		}
 
-		topic(std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
-			: _m_ty{ty}
+		topic(std::shared_ptr<record_logger> record_logger_, std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
+			: _m_record_logger{record_logger_}
+			, _m_cb_log {_m_record_logger}
+			, _m_ty{ty}
 			, _m_name{name}
 			, _m_queue{queue}
 		{
 			/* No need for thread-safety, constructor is only called from one thread. */
+		}
+
+		void mark_unprocessed(const void*) {
+			_m_unprocessed++;
 		}
 
 		~topic() {
@@ -157,6 +185,12 @@ namespace ILLIXR {
 				/* TODO: (feature:allocate) Free old.*/
 			}
 			/* TODO: (optimization:free-list) free the elements of free-list. */
+
+			_m_record_logger->log(record{__switchboard_topic_stop_header, {
+				{_m_name},
+				{_m_iteration_no},
+				{_m_unprocessed},
+			}});
 		}
 
 		void invoke_callbacks(const void* event) {
@@ -173,17 +207,32 @@ namespace ILLIXR {
 			 */
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
 			for (const auto& pair : _m_callbacks) {
+				auto cb_start_cpu_time  = thread_cpu_time();
+				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
 				pair.second(event);
+				_m_cb_log.log(record{__switchboard_callback_header, {
+					{pair.first},
+					{_m_iteration_no},
+					{cb_start_cpu_time},
+					{thread_cpu_time()},
+					{cb_start_wall_time},
+					{std::chrono::high_resolution_clock::now()},
+				}});
 			}
+			_m_iteration_no++;
 		}
 
 	private:
 
+		const std::shared_ptr<record_logger> _m_record_logger;
+		record_coalescer _m_cb_log;
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
 		std::mutex _m_callbacks_lock;
 		const std::string _m_name;
+		std::size_t _m_iteration_no = 0;
+		std::size_t _m_unprocessed = 0;
 		queue<std::pair<std::string, const void*>>& _m_queue;
 		/* - const because nobody should write to the _m_latest in
 		   place. This is not thread-safe.
@@ -201,7 +250,8 @@ namespace ILLIXR {
 
 	public:
 
-		switchboard_impl()
+		switchboard_impl(phonebook const* pb)
+			: _m_record_logger{pb->lookup_impl<record_logger>()}
 		{
 			for (size_t i = 0; i < MAX_THREADS; ++i) {
 				_m_threads.push_back(std::thread{[i, this]() {
@@ -226,6 +276,7 @@ namespace ILLIXR {
 		}
 
 	private:
+		const std::shared_ptr<record_logger> _m_record_logger;
 
 		void check_queues() {
 			/*
@@ -237,16 +288,43 @@ namespace ILLIXR {
 			  - Calls invoke_callback, which acquires _m_callbacks_lock, (see its proof of thread-safety).
 			  Therefore this method is thread-safe.
 			 */
-			std::chrono::nanoseconds thread_start = thread_cpu_time();
+			// TODO(performance): use timed deque
+			std::size_t iteration_no = 0;
+
+			record_coalescer check_queues {_m_record_logger};
+			std::pair<std::string, const void*> t;
+
+			auto check_queues_start_cpu_time  = thread_cpu_time();
+			auto check_queues_start_wall_time = std::chrono::high_resolution_clock::now();
 			while (!_m_terminate.load()) {
-				std::pair<std::string, const void*> t;
-				if (_m_queue.try_dequeue(t)) {
+				const std::chrono::milliseconds max_wait_time {50};
+				if (_m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count())) {
 					const std::lock_guard lock{_m_registry_lock};
-					//std::cout << "cpu_timer,switchboard_check_queues," << (thread_cpu_time() - thread_start).count() << std::endl;
+					check_queues.log(record{__switchboard_check_queues_header, {
+						{iteration_no},
+						{check_queues_start_cpu_time},
+						{thread_cpu_time()},
+						{check_queues_start_wall_time},
+						{std::chrono::high_resolution_clock::now()},
+					}});
+					iteration_no++;
 					_m_registry.at(t.first).invoke_callbacks(t.second);
-					thread_start = thread_cpu_time();
+					check_queues_start_cpu_time  = thread_cpu_time();
+					check_queues_start_wall_time = std::chrono::high_resolution_clock::now();
 				}
 			}
+			check_queues.log(record{__switchboard_check_queues_header, {
+				{iteration_no},
+				{check_queues_start_cpu_time},
+				{thread_cpu_time()},
+				{check_queues_start_wall_time},
+				{std::chrono::high_resolution_clock::now()},
+			}});
+
+			while (_m_queue.try_dequeue(t)) {
+				_m_registry.at(t.first).mark_unprocessed(t.second);
+			}
+			std::cerr << "Drained switchboard" << std::endl;
 		}
 
 		virtual void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
@@ -258,7 +336,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
+			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			topic.schedule(component_id, callback);
 		}
@@ -273,7 +351,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
+			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			return std::unique_ptr<writer<void>>(topic.get_writer().release());
 			/* TODO: (code beautify) why can't I write
@@ -291,7 +369,7 @@ namespace ILLIXR {
 			  Therefore this method is thread-safe.
 			 */
 			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
+			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
 			return std::unique_ptr<reader_latest<void>>(topic.get_reader_latest().release());
 			/* TODO: (code beautify) why can't I write
@@ -307,7 +385,7 @@ namespace ILLIXR {
 
 	};
 
-	std::shared_ptr<switchboard> create_switchboard() {
-		return std::dynamic_pointer_cast<switchboard>(std::make_shared<switchboard_impl>());
+	std::shared_ptr<switchboard> create_switchboard(phonebook const* pb) {
+		return std::dynamic_pointer_cast<switchboard>(std::make_shared<switchboard_impl>(pb));
 	}
 }
