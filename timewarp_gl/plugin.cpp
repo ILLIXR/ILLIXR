@@ -576,12 +576,15 @@ public:
 
 		// TODO (implement-logging): When we have logging infra, delete this code.
 		// This only looks at warp time, so doesn't take into account IMU frequency.
-		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
-
+		#ifndef NDEBUG
+			printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
+		#endif
 
 		// TODO (implement-glog): When we have glog, use glog.
 		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
-			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
+			#ifndef NDEBUG
+				printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
+			#endif
 		}
 		lastFrameTime = glfwGetTime();
 	}

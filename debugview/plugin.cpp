@@ -502,7 +502,9 @@ public:
     	glBindVertexArray(demo_vao);
 
 		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
-		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+		#ifndef NDEBUG
+			std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+		#endif
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
