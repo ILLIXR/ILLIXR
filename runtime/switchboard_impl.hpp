@@ -129,9 +129,9 @@ namespace ILLIXR {
 			return std::make_unique<topic_reader_latest>(this);
 		}
 
-		void schedule(std::function<void(const void*)> callback) {
+		void schedule(std::size_t component_id, std::function<void(const void*)> callback) {
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
-			_m_callbacks.push_back(callback);
+			_m_callbacks.push_back({component_id, callback});
 		}
 
 		std::size_t ty() {
@@ -172,8 +172,8 @@ namespace ILLIXR {
 			 * - callback should not attempt to create a new subscription, publish, or schedule (that would try to acquire _m_registry_lock)
 			 */
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
-			for (std::function<void(const void*)> callback : _m_callbacks) {
-				callback(event);
+			for (const auto& pair : _m_callbacks) {
+				pair.second(event);
 			}
 		}
 
@@ -181,7 +181,7 @@ namespace ILLIXR {
 
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
-		std::vector<std::function<void(const void*)>> _m_callbacks;
+		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
 		std::mutex _m_callbacks_lock;
 		const std::string _m_name;
 		queue<std::pair<std::string, const void*>>& _m_queue;
@@ -249,7 +249,7 @@ namespace ILLIXR {
 			}
 		}
 
-		virtual void _p_schedule(const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
+		virtual void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
 			  - Reads _m_registry after acquiring its lock (it can't change)
@@ -260,7 +260,7 @@ namespace ILLIXR {
 			const std::lock_guard lock{_m_registry_lock};
 			topic& topic = _m_registry.try_emplace(topic_name, ty, topic_name, _m_queue).first->second;
 			assert(topic.ty() == ty);
-			topic.schedule(callback);
+			topic.schedule(component_id, callback);
 		}
 
 		virtual std::unique_ptr<writer<void>> _p_publish(const std::string& topic_name, std::size_t ty) override {
