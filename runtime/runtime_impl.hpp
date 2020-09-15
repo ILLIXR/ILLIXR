@@ -13,7 +13,7 @@ using namespace ILLIXR;
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
-		pb.register_impl<record_logger>(std::make_shared<noop_record_logger>());
+		pb.register_impl<record_logger>(std::make_shared<stdout_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(create_switchboard());
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
