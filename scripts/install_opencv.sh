@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone --branch 3.4.6 https://github.com/opencv/opencv/ "${temp_dir}/opencv"
+git clone --branch 3.4.6-instrumented https://github.com/ILLIXR/opencv "${temp_dir}/opencv"
 git clone --branch 3.4.6 https://github.com/opencv/opencv_contrib/  "${temp_dir}/opencv_contrib"
 cmake \
 	-S "${temp_dir}/opencv" \
@@ -14,4 +14,9 @@ cmake \
 	-D WITH_OPENGL=ON \
 	-D OPENCV_EXTRA_MODULES_PATH="${temp_dir}/opencv_contrib/modules"
 sudo make -C "${temp_dir}/opencv/build" "-j$(nproc)" install
+
+# Load new library paths
 sudo ldconfig -v
+
+# Remove temp cmake files
+rm -f a.out cmake_hdf5_test.o
