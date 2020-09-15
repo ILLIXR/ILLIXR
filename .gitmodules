@@ -10,3 +10,6 @@
 [submodule "audio_pipeline"]
 	path = audio_pipeline
 	url = https://github.com/ILLIXR/audio_pipeline.git
+[submodule "audio_decoding/libspatialaudio"]
+	path = audio_decoding/libspatialaudio
+	url = git@github.com:ILLIXR/libspatialaudio.git
