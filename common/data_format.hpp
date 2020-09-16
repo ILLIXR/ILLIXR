@@ -42,7 +42,7 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> a_hat2;
 		Eigen::Matrix<double,13,1> pose;
 		time_type imu_time;
-	} imu_biases_type;
+	} imu_raw_type;
 
 	typedef struct {
 	  int64_t time;
@@ -58,7 +58,6 @@ namespace ILLIXR {
 
 	typedef struct {
 		pose_type pose;
-		time_type imu_time; // Recorded time of last imu data ingestion to create this prediction
 		time_type predict_computed_time; // Time at which the prediction was computed
 		time_type predict_target_time; // Time that prediction targeted.
 	} fast_pose_type;
