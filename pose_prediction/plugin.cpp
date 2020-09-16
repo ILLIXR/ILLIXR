@@ -12,11 +12,13 @@ public:
     pose_prediction_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
-        , _m_imu_biases{sb->subscribe_latest<imu_biases_type>("imu_biases")}
+        , _m_imu_raw{sb->subscribe_latest<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
     { }
 
-    // No paramter pose predict will just get the current slow pose based on the next vsync
+    // No paramter get_fast_pose() should just predict to the next vsync
+	// However, we don't have vsync estimation yet.
+	// So we will predict to `now()`, as a temporary approximation
     virtual fast_pose_type get_fast_pose() override {
 		return get_fast_pose(std::chrono::high_resolution_clock::now());
     }
@@ -28,36 +30,16 @@ public:
 		);
     }
 
-    // future_time: Timestamp in the future in seconds
+    // future_time: An absolute timepoint in the future
     virtual fast_pose_type get_fast_pose(time_type future_timestamp) override {
 
-        // Generates a dummy yaw-back-and-forth pose.
-        
-        // double time = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - _m_start_of_time).count();
-        // time /= 1000000000.0f;
-        // float yaw = std::cos(time);
-
-        // Eigen::Quaternionf testQ = Eigen::AngleAxisf(yaw, Eigen::Vector3f::UnitX())
-        //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitY())
-        //     * Eigen::AngleAxisf(0, Eigen::Vector3f::UnitZ());
-        
-        // pose_type* test_pose = new pose_type {
-        //     future_timestamp,
-        //     Eigen::Vector3f{static_cast<float>(0), static_cast<float>(std::cos(time)), static_cast<float>(0)}, 
-        //     testQ
-        // };
-        // return fast_pose_type {
-        //     .pose = correct_pose(*test_pose),
-        //     .imu_time = std::chrono::high_resolution_clock::now(),
-        //     .predict_computed_time = std::chrono::high_resolution_clock::now(),
-        //     .predict_target_time = future_timestamp
-        // };
-
-        if (!_m_imu_biases->get_latest_ro()) {
+        if (!_m_imu_raw->get_latest_ro()) {
             const pose_type* pose_ptr = _m_slow_pose->get_latest_ro();
             
             return fast_pose_type{
-                .pose = correct_pose(pose_ptr ? *pose_ptr : pose_type{})
+                .pose = correct_pose(pose_ptr ? *pose_ptr : pose_type{}),
+				.predict_computed_time = std::chrono::system_clock::now(),
+				.predict_target_time = future_timestamp,
             };
         }
         double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
@@ -73,12 +55,10 @@ public:
         };
 
         // Several timestamps are logged:
-        //       - the imu time (time when imu data was originally ingested for this prediction)
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
         //       - the prediction target (the time that was requested for this pose.)
         return fast_pose_type {
             .pose = correct_pose(*pose_ptr),
-            .imu_time = predictor_imu_time,
             .predict_computed_time = std::chrono::high_resolution_clock::now(),
             .predict_target_time = future_timestamp
         };
@@ -134,7 +114,7 @@ public:
 private:
 	const std::shared_ptr<switchboard> sb;
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
-    std::unique_ptr<reader_latest<imu_biases_type>> _m_imu_biases;
+    std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
 	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::mutex offset_mutex;
@@ -167,17 +147,17 @@ private:
     std::pair<Eigen::Matrix<double,13,1>,time_type> predict_mean_rk4(double dt) const {
 
         // Pre-compute things
-        const imu_biases_type *imu_biases = _m_imu_biases->get_latest_ro();
+        const imu_raw_type *imu_raw = _m_imu_raw->get_latest_ro();
 
-        Eigen::Vector3d w_hat =imu_biases->w_hat;
-        Eigen::Vector3d a_hat = imu_biases->a_hat;
-        Eigen::Vector3d w_alpha = (imu_biases->w_hat2-imu_biases->w_hat)/dt;
-        Eigen::Vector3d a_jerk = (imu_biases->a_hat2-imu_biases->a_hat)/dt;
+        Eigen::Vector3d w_hat =imu_raw->w_hat;
+        Eigen::Vector3d a_hat = imu_raw->a_hat;
+        Eigen::Vector3d w_alpha = (imu_raw->w_hat2-imu_raw->w_hat)/dt;
+        Eigen::Vector3d a_jerk = (imu_raw->a_hat2-imu_raw->a_hat)/dt;
 
         // y0 ================
-        Eigen::Vector4d q_0 = Eigen::Matrix<double,4,1>{imu_biases->pose(0), imu_biases->pose(1), imu_biases->pose(2), imu_biases->pose(3)};
-        Eigen::Vector3d p_0 = Eigen::Matrix<double,3,1>{imu_biases->pose(4), imu_biases->pose(5), imu_biases->pose(6)};
-        Eigen::Vector3d v_0 = Eigen::Matrix<double,3,1>{imu_biases->pose(7), imu_biases->pose(8), imu_biases->pose(9)};
+        Eigen::Vector4d q_0 = Eigen::Matrix<double,4,1>{imu_raw->state_plus(0), imu_raw->state_plus(1), imu_raw->state_plus(2), imu_raw->state_plus(3)};
+        Eigen::Vector3d p_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(4), imu_raw->state_plus(5), imu_raw->state_plus(6)};
+        Eigen::Vector3d v_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(7), imu_raw->state_plus(8), imu_raw->state_plus(9)};
 
         // k1 ================
         Eigen::Vector4d dq_0 = {0,0,0,1};
@@ -195,7 +175,6 @@ private:
         a_hat += 0.5*a_jerk*dt;
 
         Eigen::Vector4d dq_1 = quatnorm(dq_0+0.5*k1_q);
-        //Eigen::Vector3d p_1 = p_0+0.5*k1_p;
         Eigen::Vector3d v_1 = v_0+0.5*k1_v;
 
         Eigen::Vector4d q1_dot = 0.5*Omega(w_hat)*dq_1;
@@ -245,7 +224,7 @@ private:
         state_plus.block(4,0,3,1) = p_0+(1.0/6.0)*k1_p+(1.0/3.0)*k2_p+(1.0/3.0)*k3_p+(1.0/6.0)*k4_p;
         state_plus.block(7,0,3,1) = v_0+(1.0/6.0)*k1_v+(1.0/3.0)*k2_v+(1.0/3.0)*k3_v+(1.0/6.0)*k4_v;
 
-        return {state_plus, imu_biases->imu_time};
+        return {state_plus, imu_raw->imu_time};
     }
 
     /**

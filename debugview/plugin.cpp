@@ -238,8 +238,10 @@ public:
 		}
 		if(last_datum_with_images->img0.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img0.value()).ptr());
-			camera_texture_sizes[0] = Eigen::Vector2i((*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows);
+			cv::Mat img0;
+			cv::cvtColor(*last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
+			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -252,8 +254,10 @@ public:
 		
 		if(last_datum_with_images->img1.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img1.value()).ptr());
-			camera_texture_sizes[1] = Eigen::Vector2i((*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows);
+			cv::Mat img1;
+			cv::cvtColor(*last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
+			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
