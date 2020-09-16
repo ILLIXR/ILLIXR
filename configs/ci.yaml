@@ -7,7 +7,6 @@ plugins:
   - path: timewarp_gl/
   - path: debugview/
   - path: audio_pipeline/
-  - path: audio_decoding/
   # - path: holgoram/
   # - path: zed/
 
