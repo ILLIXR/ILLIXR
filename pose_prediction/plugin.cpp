@@ -55,7 +55,6 @@ public:
         };
 
         // Several timestamps are logged:
-        //       - the imu time (time when imu data was originally ingested for this prediction)
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
         //       - the prediction target (the time that was requested for this pose.)
         return fast_pose_type {
@@ -156,9 +155,9 @@ private:
         Eigen::Vector3d a_jerk = (imu_raw->a_hat2-imu_raw->a_hat)/dt;
 
         // y0 ================
-        Eigen::Vector4d q_0 = Eigen::Matrix<double,4,1>{imu_raw->pose(0), imu_raw->pose(1), imu_raw->pose(2), imu_raw->pose(3)};
-        Eigen::Vector3d p_0 = Eigen::Matrix<double,3,1>{imu_raw->pose(4), imu_raw->pose(5), imu_raw->pose(6)};
-        Eigen::Vector3d v_0 = Eigen::Matrix<double,3,1>{imu_raw->pose(7), imu_raw->pose(8), imu_raw->pose(9)};
+        Eigen::Vector4d q_0 = Eigen::Matrix<double,4,1>{imu_raw->state_plus(0), imu_raw->state_plus(1), imu_raw->state_plus(2), imu_raw->state_plus(3)};
+        Eigen::Vector3d p_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(4), imu_raw->state_plus(5), imu_raw->state_plus(6)};
+        Eigen::Vector3d v_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(7), imu_raw->state_plus(8), imu_raw->state_plus(9)};
 
         // k1 ================
         Eigen::Vector4d dq_0 = {0,0,0,1};
