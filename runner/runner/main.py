@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import asyncio
+import itertools
 import multiprocessing
 import os
 import subprocess
 from pathlib import Path
 import shlex
-from typing import Any, Dict, List, Optional, cast, Union
+from typing import Any, Dict, List, Optional, cast, Union, Iterable, TypeVar
 import urllib.parse
 
 import click
@@ -161,6 +162,37 @@ async def load_native(config: Dict[str, Any]) -> None:
     )
 
 
+V = TypeVar("V")
+def flatten1(lst: Iterable[Iterable[V]]) -> Iterable[V]:
+    return itertools.chain.from_iterable(lst)
+
+async def load_external_tool(config: Dict[str, Any]) -> None:
+    runtime_exe_path, plugin_paths = await gather_aws(
+        build_runtime(config, "exe"),
+        gather_aws(
+            *(
+                build_one_plugin(config, plugin_config)
+                for plugin_config in config["plugins"]
+            )
+        ),
+    )
+    command = shlex.split(config["loader"]["command"])
+    command = list(flatten1(
+        [str(runtime_exe_path), *map(str, plugin_paths)] if arg == "%a" else
+        [shlex.quote(shlex.join([str(runtime_exe_path), *map(str, plugin_paths)]))] if arg == "%b" else
+        [arg]
+        for arg in command
+    ))
+    await subprocess_run(
+        command,
+        check=True,
+        env=dict(
+            ILLIXR_DATA=config["data"],
+            **os.environ,
+        ),
+    )
+
+
 async def load_tests(config: Dict[str, Any]) -> None:
     runtime_exe_path, _, plugin_paths = await gather_aws(
         build_runtime(config, "exe", test=True),
@@ -173,26 +205,6 @@ async def load_tests(config: Dict[str, Any]) -> None:
             sync=False,
         ),
         sync=False,
-    )
-
-
-async def load_gdb(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await gather_aws(
-        build_runtime(config, "exe"),
-        gather_aws(
-            *(
-                build_one_plugin(config, plugin_config)
-                for plugin_config in config["plugins"]
-            )
-        ),
-    )
-    await subprocess_run(
-        ["gdb", "-q", "--args", str(runtime_exe_path), *map(str, plugin_paths),],
-        check=True,
-        env=dict(
-            ILLIXR_DATA=config["data"],
-            **os.environ,
-        ),
     )
 
 
@@ -275,7 +287,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
 
 loaders = {
     "native": load_native,
-    "gdb": load_gdb,
+    "external_tool": load_external_tool,
     "monado": load_monado,
     "tests": load_tests,
 }

@@ -1,0 +1,16 @@
+plugins:
+  - path: ground_truth_slam/
+  # - path: offline_imu_cam/
+  - path: open_vins/
+  - path: pose_prediction/
+  - path: gldemo/
+  - path: timewarp_gl/
+  # - path: audio_pipeline/
+  # - path: debugview/
+  - path: dummy/
+data: ../data1/
+loader:
+  name: external_tool
+  command: valgrind --leak-check=full -- %a
+  # command: gdb -q --args %a
+profile: dbg
