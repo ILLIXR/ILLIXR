@@ -6,6 +6,14 @@
 
 using namespace ILLIXR;
 
+const record_header imu_cam_record {
+	"imu_cam",
+	{
+		{"iteration_no", typeid(std::size_t)},
+		{"has_camera", typeid(bool)},
+	},
+};
+
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
 	offline_imu_cam(std::string name_, phonebook* pb_)
@@ -15,6 +23,8 @@ public:
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
 		, dataset_first_time{_m_sensor_data_it->first}
+		, imu_cam_log{record_logger_}
+		, camera_cvtfmt_log{record_logger_}
 	{ }
 
 protected:
@@ -46,6 +56,13 @@ protected:
 		time_type real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
+
+		imu_cam_log.log(record{imu_cam_record, {
+			{iteration_no},
+			{bool(sensor_datum.cam0)},
+		}});
+
+
 		std::optional<cv::Mat*> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
 			: std::nullopt
@@ -54,6 +71,7 @@ protected:
 			? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
 			: std::nullopt
 			;
+
 		_m_imu_cam->put(new imu_cam_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
@@ -84,7 +102,9 @@ private:
 	time_type real_first_time;
 	// Current IMU timestamp
 	ullong dataset_now;
-	time_type real_now;
+
+	record_coalescer imu_cam_log;
+	record_coalescer camera_cvtfmt_log;
 };
 
 PLUGIN_MAIN(offline_imu_cam)
