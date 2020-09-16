@@ -138,18 +138,11 @@ public:
 			ksAlgebra::ksMatrix4x4f modelMatrix;
 			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
 
-			if (pp->fast_pose_reliable()) {
-				// We have a valid pose from our Switchboard plug.
+			{
+				const fast_pose_type fast_pose = pp->get_fast_pose();
+				const pose_type pose = fast_pose.pose;
 
-				const pose_type pose = pp->get_fast_pose();
-				if(counter == 50){
-					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose.orientation);
-				}
-
-				counter++;
-
-				Eigen::Quaternionf combinedQuat = offsetQuat.inverse() * pose.orientation;
+				Eigen::Quaternionf combinedQuat = pose.orientation;
 
 				auto latest_quat = ksAlgebra::ksQuatf {
 					.x = combinedQuat.x(),
@@ -165,15 +158,14 @@ public:
 				};
 				auto scale = ksAlgebra::ksVector3f{1,1,1};
 				ksAlgebra::ksMatrix4x4f head_matrix;
+#ifndef NDEBUG
 				std::cout<< "App using position: " << latest_position.z << std::endl;
+#endif
 				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
 				ksAlgebra::ksMatrix4x4f viewMatrix;
 				// View matrix is the inverse of the camera's position/rotation/etc.
 				ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
 				ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
-			} else {
-				// We have no pose data from our pose topic :(
-				ksAlgebra::ksMatrix4x4f_CreateIdentity(&modelViewMatrix);
 			}
 
 			glUseProgram(demoShaderProgram);
@@ -260,7 +252,9 @@ public:
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
-			frame->render_pose = pp->get_fast_pose();
+
+			const fast_pose_type fast_pose = pp->get_fast_pose();
+			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#else
 			auto frame = new rendered_frame;
@@ -269,15 +263,16 @@ public:
 			assert(pose);
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#endif
-
+			frame->render_time = std::chrono::high_resolution_clock::now();
 			_m_eyebuffer->put(frame);
+			lastFrameTime = std::chrono::high_resolution_clock::now();
 		}
 	}
 
 private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
-	const std::shared_ptr<const pose_prediction> pp;
+	const std::shared_ptr<pose_prediction> pp;
 	
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
@@ -289,8 +284,7 @@ private:
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
 	#endif
 
-	uint counter = 0;
-	Eigen::Quaternionf offsetQuat;
+	time_type lastFrameTime;
 
 	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;

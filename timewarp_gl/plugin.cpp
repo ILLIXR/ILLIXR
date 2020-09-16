@@ -46,7 +46,7 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	const std::shared_ptr<const pose_prediction> pp;
+	const std::shared_ptr<pose_prediction> pp;
 
 	static constexpr int   SCREEN_WIDTH    = 448*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
@@ -266,7 +266,7 @@ private:
 
 public:
 
-	skip_option _p_should_skip() override {
+	virtual skip_option _p_should_skip() override {
 		using namespace std::chrono_literals;
 		// Sleep for approximately 90% of the time until the next vsync.
 		// Scheduling granularity can't be assumed to be super accurate here,
@@ -284,12 +284,11 @@ public:
 		}
 	}
 
-	void _p_one_iteration() override {
+	virtual void _p_one_iteration() override {
 		warp(glfwGetTime());
 	}
 
 	virtual void _p_thread_setup() override {
-
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
 		HMD::GetDefaultBodyInfo(&body_info);
@@ -424,7 +423,7 @@ public:
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
 		ksAlgebra::ksMatrix4x4f viewMatrix;
-		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose);
+		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -439,8 +438,8 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		const pose_type latest_pose = pp->get_fast_pose();
-		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose);
+		const fast_pose_type latest_pose = pp->get_fast_pose();
+		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose.pose);
 
 		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
 
@@ -585,7 +584,6 @@ public:
 			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
 		}
 		lastFrameTime = glfwGetTime();
-
 	}
 
 	virtual ~timewarp_gl() override {
