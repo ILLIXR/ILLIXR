@@ -51,19 +51,10 @@ public:
 	return orientation * offset;
     }
     virtual fast_pose_type get_fast_pose(time_type time) override {
-		/*
-			ullong vsync_time = std::chrono::nanoseconds(get_vsync(time).time_since_epoch()).count();
-			ullong plug_in_time = std::chrono::nanoseconds(_m_start_of_time.time_since_epoch()).count();
-
-			std::cout<<"dataset_first: "<<dataset_first_time<<"vsync time: "<<vsync_time <<" plug_in_time: "<<plug_in_time<<std::endl;
-			std::cout<<"lookup time: "<<lookup_time <<std::endl;
-			std::cout<<"data end time: "<< _m_sensor_data.rbegin()->first <<std::endl;
-		*/
-	    	//set_offset(correct_pose(_m_sensor_data.begin()->second).orientation);
-
 		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
 		time_type vsync;
 		if(estimated_vsync == nullptr) {
+			std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
 			vsync = std::chrono::system_clock::now();
 		} else {
 			vsync = *estimated_vsync;
@@ -71,10 +62,13 @@ public:
 
 		ullong lookup_time = std::chrono::nanoseconds(vsync - _m_start_of_time ).count() + dataset_first_time;
 		ullong  nearest_timestamp;
+
 		if(lookup_time <= _m_sensor_data.begin()->first){
+			std::cerr << "Lookup time before first datum" << std::endl;
 			nearest_timestamp=_m_sensor_data.begin()->first;
 		}
 		else if (lookup_time >= _m_sensor_data.rbegin()->first){
+			std::cerr << "Lookup time after last datum" << std::endl;
 			nearest_timestamp=_m_sensor_data.rbegin()->first;
 		}
 		else{
@@ -99,19 +93,7 @@ public:
 				}
 			}
 		}
-		/*
-		std::cout<<"nearest timestamp: "<<nearest_timestamp<<std::endl;
-		if(_m_sensor_data.find(nearest_timestamp)!=_m_sensor_data.end())
-		{
-			std::cout<<"found key"<<std::endl;
-		}
-		else
-		{
-			std::cout<<"key not found"<<std::endl;
-		}
-		auto temp = _m_sensor_data.find(nearest_timestamp)->second;
-		std::cout<<temp.position.x()<<", "<<temp.position.y()<<", "<<temp.position.z()<<", "<<temp.orientation.w()<<", "<< temp.orientation.x()<<", "<<temp.orientation.y()<<", "<<temp.orientation.z()<<std::endl;
-		*/
+
 		return fast_pose_type{
 			.pose = correct_pose(_m_sensor_data.find(nearest_timestamp)->second),
 			.imu_time = _m_start_of_time + std::chrono::nanoseconds{nearest_timestamp - dataset_first_time},
