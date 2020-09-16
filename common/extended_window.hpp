@@ -16,15 +16,15 @@ namespace ILLIXR{
     public:
         int                     width;
         int                     height;
-        Display                 *dpy;
+		Display*                dpy;
         Window                  win;
         GLXContext              glc;
-        xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context){
+        xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context) {
             width = _width;
             height = _height;
 
-            dpy = XOpenDisplay(NULL);
-            if(dpy == NULL) {
+			dpy = XOpenDisplay(nullptr);
+            if(!dpy) {
                 printf("\n\tcannot connect to X server\n\n");
                     exit(0);
             }
@@ -92,6 +92,7 @@ namespace ILLIXR{
                 }
                 XFree( vi );
             }
+			assert(0 <= best_fbc && best_fbc < fbcount);
             GLXFBConfig bestFbc = fbc[ best_fbc ];
             // Be sure to free the FBConfig list allocated by glXChooseFBConfig()
             XFree( fbc );
@@ -108,6 +109,8 @@ namespace ILLIXR{
             win = XCreateWindow(dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
             XMapWindow(dpy, win);
             XStoreName(dpy, win, "ILLIXR Extended Window");
+			XFree(vi);
+			XFreeColormap(dpy, cmap);
 
             //glc = glXCreateContext(dpy, vi, *ctx, true);
             // calling glXGetProcAddressARB
@@ -127,5 +130,13 @@ namespace ILLIXR{
             glc = glXCreateContextAttribsARB( dpy, bestFbc, _shared_gl_context,
                                                    True, context_attribs );
         }
+
+		~xlib_gl_extended_window() {
+			XDestroyWindow(dpy, win);
+            Window root = DefaultRootWindow(dpy);
+			XDestroyWindow(dpy, root);
+			// glXDestroyContext(dpy, glc);
+			// XFree(dpy);
+		}
     };
 }
