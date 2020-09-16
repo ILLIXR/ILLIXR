@@ -115,7 +115,7 @@ private:
 	std::unique_ptr<reader_latest<void>> _p_subscribe_latest(const std::string& topic_name, std::size_t ty) = 0;
 
 	virtual
-	void _p_schedule(const std::string& topic_name, std::function<void(const void*)> fn, std::size_t ty) = 0;
+	void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> fn, std::size_t ty) = 0;
 
 	/* TODO: (usability) add a method which queries if a topic has a writer. Readers might assert this. */
 
@@ -133,8 +133,8 @@ public:
 	 * @throws if topic already exists, and its type does not match the @p event.
 	 */
 	template <typename event>
-	void schedule([[maybe_unused]] std::string account_name, std::string topic_name, std::function<void(const event*)> fn) {
-		_p_schedule(topic_name, [=](const void* ptr) {
+	void schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const event*)> fn) {
+		_p_schedule(component_id, topic_name, [=](const void* ptr) {
 			fn(reinterpret_cast<const event*>(ptr));
 		}, typeid(event).hash_code());
 	}
