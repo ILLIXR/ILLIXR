@@ -59,7 +59,8 @@ namespace ILLIXR{
             printf( "Getting matching framebuffer configs\n" );
 #endif
             int fbcount;
-            GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
+			int screen = DefaultScreen(dpy);
+            GLXFBConfig* fbc = glXChooseFBConfig(dpy, screen, visual_attribs, &fbcount);
             if (!fbc)
             {
                 printf( "Failed to retrieve a framebuffer config\n" );
@@ -135,7 +136,7 @@ namespace ILLIXR{
 			XDestroyWindow(dpy, win);
             Window root = DefaultRootWindow(dpy);
 			XDestroyWindow(dpy, root);
-			// glXDestroyContext(dpy, glc);
+			glXDestroyContext(dpy, glc);
 			// XFree(dpy);
 		}
     };
