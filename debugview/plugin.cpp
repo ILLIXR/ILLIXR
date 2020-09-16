@@ -147,7 +147,7 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 
 			if(ImGui::Button("Zero orientation")){
-				const pose_type fast_pose = pp->get_fast_pose();
+				const pose_type fast_pose = pp->get_fast_pose().pose;
 				if (pp->fast_pose_reliable()) {
 					// Can only zero if fast_pose is valid
 					pp->set_offset(fast_pose.orientation);
@@ -162,7 +162,7 @@ public:
 		ImGui::SameLine();
 
 		if(pp->fast_pose_reliable()) {
-			const pose_type fast_pose = pp->get_fast_pose();
+			const pose_type fast_pose = pp->get_fast_pose().pose;
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
 			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose.position.x(), fast_pose.position.y(), fast_pose.position.z());
 			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose.orientation.x(), fast_pose.orientation.y(), fast_pose.orientation.z(), fast_pose.orientation.w());
@@ -203,12 +203,10 @@ public:
 		ImGui::Text("Camera view buffers: ");
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
-		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type pose = pp->get_fast_pose();
-			offsetQuat = Eigen::Quaternionf(pose.orientation);
-		}
 		ImGui::End();
 
+		ImGui::SetNextWindowSize(ImVec2(700,350), ImGuiCond_Once);
+		ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once, ImVec2(1.0f, 1.0f));
 		ImGui::Begin("Onboard camera views");
 		auto windowSize = ImGui::GetWindowSize();
 		auto verticalOffset = ImGui::GetCursorPos().y;
@@ -240,8 +238,10 @@ public:
 		}
 		if(last_datum_with_images->img0.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img0.value()).ptr());
-			camera_texture_sizes[0] = Eigen::Vector2i((*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows);
+			cv::Mat img0;
+			cv::cvtColor(*last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
+			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -254,8 +254,10 @@ public:
 		
 		if(last_datum_with_images->img1.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img1.value()).ptr());
-			camera_texture_sizes[1] = Eigen::Vector2i((*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows);
+			cv::Mat img1;
+			cv::cvtColor(*last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
+			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -324,16 +326,12 @@ public:
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 
+			const fast_pose_type fast_pose = pp->get_fast_pose();
+
 			if(pp->fast_pose_reliable()) {
-				const pose_type pose = pp->get_fast_pose();
+				const pose_type pose = fast_pose.pose;
 
-				if(counter == 100){
-					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose.orientation);
-				}
-				counter++;
-
-				Eigen::Quaternionf combinedQuat = pose.orientation * offsetQuat.inverse();
+				Eigen::Quaternionf combinedQuat = pose.orientation;
 				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
 
@@ -341,7 +339,7 @@ public:
 
 			// If we are following the headset, and have a valid pose, apply the optional offset.
 			Eigen::Vector3f optionalOffset = (follow_headset && pp->fast_pose_reliable())
-				? (pp->get_fast_pose().position + tracking_position_offset)
+				? (fast_pose.pose.position + tracking_position_offset)
 				: Eigen::Vector3f{0.0f,0.0f,0.0f}
 			;
 
@@ -412,9 +410,6 @@ private:
 
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
-	uint counter = 0;
-	Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
-
 	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
 	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
 	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
@@ -467,7 +462,7 @@ public:
 		// It serves more as an event stream. Camera frames are only available on this topic
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
-   		sb->schedule<imu_cam_type>(get_name(), "imu_cam", [&](const imu_cam_type *datum) {
+   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](const imu_cam_type *datum) {
         	this->imu_cam_handler(datum);
     	});
 
