@@ -1,4 +1,3 @@
-bazel-*
 /data.zip
 /data*
 *.exe
