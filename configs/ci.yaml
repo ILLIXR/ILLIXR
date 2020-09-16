@@ -5,14 +5,12 @@ plugins:
   - path: pose_prediction/
   - path: gldemo/
   - path: timewarp_gl/
-  - path: debugview/
+  # - path: debugview/
   - path: audio_pipeline/
   # - path: holgoram/
   # - path: zed/
 
+data: ../data1/
 loader:
   name: tests
-
-data: /does_not_exist
-
 profile: dbg

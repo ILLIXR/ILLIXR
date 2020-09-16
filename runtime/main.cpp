@@ -1,6 +1,8 @@
 #include <signal.h>
 #include "runtime_impl.hpp"
 
+constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
+
 ILLIXR::runtime* r;
 
 static void signal_handler(int) {
@@ -38,9 +40,15 @@ int main(int argc, const char * argv[]) {
 	signal(SIGINT, signal_handler);
 
 	// And timer
+	std::chrono::seconds run_duration = 
+		getenv("ILLIXR_RUN_DURATION")
+		? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
+		: ILLIXR_RUN_DURATION_DEFAULT
+	;
+
 	cancellable_sleep cs;
 	std::thread th{[&]{
-		cs.sleep(std::chrono::seconds(60));
+		cs.sleep(run_duration);
 		r->stop();
 	}};
 

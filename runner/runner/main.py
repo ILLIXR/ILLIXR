@@ -161,9 +161,9 @@ async def load_native(config: Dict[str, Any]) -> None:
     )
 
 async def load_headless(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await asyncio.gather(
+    runtime_exe_path, plugin_paths = await gather_aws(
         build_runtime(config, "exe"),
-        asyncio.gather(
+        gather_aws(
             *(
                 build_one_plugin(config, plugin_config)
                 for plugin_config in config["plugins"]
@@ -181,7 +181,7 @@ async def load_headless(config: Dict[str, Any]) -> None:
 
 
 async def load_tests(config: Dict[str, Any]) -> None:
-    runtime_exe_path, _, plugin_paths = await gather_aws(
+    runtime_exe_path, _, plugin_paths, _ = await gather_aws(
         build_runtime(config, "exe", test=True),
         make(Path("../common"), ["tests/run"]),
         gather_aws(
@@ -191,7 +191,18 @@ async def load_tests(config: Dict[str, Any]) -> None:
             ),
             sync=False,
         ),
+        # debugview is a special cases, since it has to be disabled in headless
+        build_one_plugin(config, dict(path="debugview", config={}), test=True),
         sync=False,
+    )
+    await subprocess_run(
+        ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
+        check=True,
+        env=dict(
+            ILLIXR_DATA=config["data"],
+            ILLIXR_RUN_DURATION="10",
+            **os.environ,
+        ),
     )
 
 
