@@ -28,6 +28,9 @@ RUN ./scripts/install_openxr.sh
 COPY ./scripts/install_conda.sh $HOME/scripts/install_conda.sh
 RUN ./scripts/install_conda.sh
 
+COPY ./scripts/install_euroc.sh $HOME/scripts/install_euroc.sh
+RUN ./scripts/install_euroc.sh
+
 COPY . $HOME/ILLIXR/
 WORKDIR ILLIXR
 RUN $HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
