@@ -13,4 +13,7 @@ plugins:
 data: ../data1/
 loader:
   name: native
+  # command: valgrind --error-limit=no --leak-check=full --track-origins=yes --log-file=sqlite-leak.txt -- %a
+  # command: gdb -q --args %a
+  # command: "%a"
 profile: opt

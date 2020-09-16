@@ -142,6 +142,10 @@ async def build_runtime(config: Dict[str, Any], suffix: str, test: bool = False)
     return runtime_path / "runtime" / runtime_name
 
 
+V = TypeVar("V")
+def flatten1(lst: Iterable[Iterable[V]]) -> Iterable[V]:
+    return itertools.chain.from_iterable(lst)
+
 async def load_native(config: Dict[str, Any]) -> None:
     runtime_exe_path, plugin_paths = await gather_aws(
         build_runtime(config, "exe"),
@@ -152,39 +156,16 @@ async def load_native(config: Dict[str, Any]) -> None:
             )
         ),
     )
-    await subprocess_run(
-        [str(runtime_exe_path), *map(str, plugin_paths)],
-        check=True,
-        env=dict(
-            ILLIXR_DATA=config["data"],
-            **os.environ,
-        ),
-    )
-
-
-V = TypeVar("V")
-def flatten1(lst: Iterable[Iterable[V]]) -> Iterable[V]:
-    return itertools.chain.from_iterable(lst)
-
-async def load_external_tool(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await gather_aws(
-        build_runtime(config, "exe"),
-        gather_aws(
-            *(
-                build_one_plugin(config, plugin_config)
-                for plugin_config in config["plugins"]
-            )
-        ),
-    )
-    command = shlex.split(config["loader"]["command"])
-    command = list(flatten1(
+    command_str = config["loader"].get("command", "%a")
+    command_lst = shlex.split(command_str)
+    command_lst_sbst = list(flatten1(
         [str(runtime_exe_path), *map(str, plugin_paths)] if arg == "%a" else
         [shlex.quote(shlex.join([str(runtime_exe_path), *map(str, plugin_paths)]))] if arg == "%b" else
         [arg]
-        for arg in command
+        for arg in command_lst
     ))
     await subprocess_run(
-        command,
+        command_lst_sbst,
         check=True,
         env=dict(
             ILLIXR_DATA=config["data"],
@@ -287,7 +268,6 @@ async def load_monado(config: Dict[str, Any]) -> None:
 
 loaders = {
     "native": load_native,
-    "external_tool": load_external_tool,
     "monado": load_monado,
     "tests": load_tests,
 }
