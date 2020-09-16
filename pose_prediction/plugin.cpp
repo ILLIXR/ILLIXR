@@ -24,7 +24,7 @@ public:
 			// check again, now that we have mutual exclusion
 			if (first_time) {
 				first_time = false;
-				offset = pose.orientation;
+				offset = pose.orientation.inverse();
 			}
 		}
 
