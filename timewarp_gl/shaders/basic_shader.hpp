@@ -1,7 +1,5 @@
 #include <GL/gl.h>
 
-#define GLSL_VERSION            "330 core"
-
 static const char* const basicVertexShader =
         "#version " GLSL_VERSION "\n"
         "in vec3 vertexPosition;\n"

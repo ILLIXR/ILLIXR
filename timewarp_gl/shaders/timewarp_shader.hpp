@@ -1,7 +1,5 @@
 #include <GL/gl.h>
 
-#define GLSL_VERSION            "330 core"
-
 const char* const timeWarpChromaticVertexProgramGLSL =
 	"#version " GLSL_VERSION "\n"
 	"uniform highp mat3x4 TimeWarpStartTransform;\n"

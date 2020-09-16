@@ -2,6 +2,7 @@
 # Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
+CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 DBG_FLAGS ?= -Og -g -Wall -Wextra
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
