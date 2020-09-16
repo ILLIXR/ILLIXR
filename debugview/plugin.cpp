@@ -467,7 +467,7 @@ public:
 		// It serves more as an event stream. Camera frames are only available on this topic
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
-   		sb->schedule<imu_cam_type>(get_name(), "imu_cam", [&](const imu_cam_type *datum) {
+   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](const imu_cam_type *datum) {
         	this->imu_cam_handler(datum);
     	});
 
