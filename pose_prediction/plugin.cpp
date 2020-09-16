@@ -1,3 +1,4 @@
+#include <shared_mutex>
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/data_format.hpp"
@@ -18,12 +19,12 @@ public:
 
 		// Make the first valid fast pose be straight ahead.
 		if (first_time && pose_ptr) {
-			std::lock_guard<std::recursive_mutex> lock {offset_mutex};
+			auto pose = correct_pose(*pose_ptr);
+			std::unique_lock lock {offset_mutex};
 			// check again, now that we have mutual exclusion
 			if (first_time) {
-				auto pose = correct_pose(*pose_ptr);
-				const_cast<pose_prediction_impl&>(*this).set_offset(pose.orientation);
-				const_cast<pose_prediction_impl&>(*this).first_time = false;
+				first_time = false;
+				offset = pose.orientation;
 			}
 		}
 
@@ -48,7 +49,7 @@ public:
     }
 
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
-		std::lock_guard<std::recursive_mutex> lock {offset_mutex};
+		std::unique_lock lock {offset_mutex};
 		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
 		offset = raw_o.inverse();
 		/*
@@ -63,7 +64,7 @@ public:
 	}
 
 	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-		std::lock_guard<std::recursive_mutex> lock {offset_mutex};
+		std::shared_lock lock {offset_mutex};
 		return orientation * offset;
 	}
 
@@ -96,12 +97,12 @@ public:
 	}
 
 private:
-	std::atomic<bool> first_time{true};
+	mutable std::atomic<bool> first_time{true};
 	const std::shared_ptr<switchboard> sb;
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
-	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::recursive_mutex offset_mutex;
+	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
+	mutable std::shared_mutex offset_mutex;
     
     pose_type correct_pose(const pose_type pose) const {
         pose_type swapped_pose;
