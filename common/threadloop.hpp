@@ -66,7 +66,6 @@ protected:
 private:
 	void thread_main() {
 		record_coalescer it_log {record_logger_};
-
 		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
 		_p_thread_setup();

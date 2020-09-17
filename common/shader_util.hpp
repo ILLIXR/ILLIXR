@@ -91,8 +91,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
 	    glGetProgramInfoLog(shader_program, length, &length, &infoLog[0]);
 
         std::string error_msg(infoLog.begin(), infoLog.end());
-        std::cout << error_msg;
-
+		std::cout << error_msg;
     }
 
     if(glGetError()){
