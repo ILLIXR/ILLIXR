@@ -330,7 +330,6 @@ public:
 
 			if(pp->fast_pose_reliable()) {
 				const pose_type pose = fast_pose.pose;
-
 				Eigen::Quaternionf combinedQuat = pose.orientation;
 				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
