@@ -4,8 +4,8 @@
 
 const char* const timeWarpChromaticVertexProgramGLSL =
 	"#version " GLSL_VERSION "\n"
-	"uniform highp mat3x4 TimeWarpStartTransform;\n"
-	"uniform highp mat3x4 TimeWarpEndTransform;\n"
+	"uniform highp mat4x4 TimeWarpStartTransform;\n"
+	"uniform highp mat4x4 TimeWarpEndTransform;\n"
 	"in highp vec3 vertexPosition;\n"
 	"in highp vec2 vertexUv0;\n"
 	"in highp vec2 vertexUv1;\n"
@@ -20,13 +20,13 @@ const char* const timeWarpChromaticVertexProgramGLSL =
 	"\n"
 	"	float displayFraction = vertexPosition.x * 0.5 + 0.5;\n"	// landscape left-to-right
 	"\n"
-	"	vec3 startUv0 = vec4( vertexUv0, -1, 1 ) * TimeWarpStartTransform;\n"
-	"	vec3 startUv1 = vec4( vertexUv1, -1, 1 ) * TimeWarpStartTransform;\n"
-	"	vec3 startUv2 = vec4( vertexUv2, -1, 1 ) * TimeWarpStartTransform;\n"
+	"	vec3 startUv0 = (TimeWarpStartTransform * vec4( vertexUv0, -1, 1 )).xyz;\n"
+	"	vec3 startUv1 = (TimeWarpStartTransform * vec4( vertexUv1, -1, 1 )).xyz;\n"
+	"	vec3 startUv2 = (TimeWarpStartTransform * vec4( vertexUv2, -1, 1 )).xyz;\n"
 	"\n"
-	"	vec3 endUv0 = vec4( vertexUv0, -1, 1 ) * TimeWarpEndTransform;\n"
-	"	vec3 endUv1 = vec4( vertexUv1, -1, 1 ) * TimeWarpEndTransform;\n"
-	"	vec3 endUv2 = vec4( vertexUv2, -1, 1 ) * TimeWarpEndTransform;\n"
+	"	vec3 endUv0 = (TimeWarpEndTransform * vec4( vertexUv0, -1, 1 )).xyz;\n"
+	"	vec3 endUv1 = (TimeWarpEndTransform * vec4( vertexUv1, -1, 1 )).xyz;\n"
+	"	vec3 endUv2 = (TimeWarpEndTransform * vec4( vertexUv2, -1, 1 )).xyz;\n"
 	"\n"
 	"	vec3 curUv0 = mix( startUv0, endUv0, displayFraction );\n"
 	"	vec3 curUv1 = mix( startUv1, endUv1, displayFraction );\n"
@@ -35,6 +35,9 @@ const char* const timeWarpChromaticVertexProgramGLSL =
 	"	fragmentUv0 = curUv0.xy * ( 1.0 / max( curUv0.z, 0.00001 ) );\n"
 	"	fragmentUv1 = curUv1.xy * ( 1.0 / max( curUv1.z, 0.00001 ) );\n"
 	"	fragmentUv2 = curUv2.xy * ( 1.0 / max( curUv2.z, 0.00001 ) );\n"
+	// "	fragmentUv0 = curUv0.xy;\n"
+	// "	fragmentUv1 = curUv1.xy;\n"
+	// "	fragmentUv2 = curUv2.xy;\n"
 	"}\n";
 
 const char* const timeWarpChromaticFragmentProgramGLSL =
@@ -50,6 +53,7 @@ const char* const timeWarpChromaticFragmentProgramGLSL =
 	"	outColor.r = texture( Texture, vec3( fragmentUv0, ArrayLayer ) ).r;\n"
 	"	outColor.g = texture( Texture, vec3( fragmentUv1, ArrayLayer ) ).g;\n"
 	"	outColor.b = texture( Texture, vec3( fragmentUv2, ArrayLayer ) ).b;\n"
+	"	outColor.rgb = vec3(fragmentUv0,1);\n"
 	"	outColor.a = 1.0;\n"
 	"}\n";
 

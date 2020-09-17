@@ -10,6 +10,7 @@
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
+#include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
 #include "utils/algebra.hpp"
 #include "block_i.hpp"
@@ -192,40 +193,23 @@ public:
 
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
-			ksAlgebra::ksMatrix4x4f modelViewMatrix;
+			Eigen::Matrix4f modelViewMatrix;
 
-			// Model matrix is just a spinny fun animation
-			ksAlgebra::ksMatrix4x4f modelMatrix;
-			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
+			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
 			{
 				const fast_pose_type fast_pose = pp->get_fast_pose();
 				const pose_type pose = fast_pose.pose;
 
-				Eigen::Quaternionf combinedQuat = pose.orientation;
+				// Build our head matrix from the pose's position + orientation.
+				Eigen::Matrix4f head_matrix = Eigen::Matrix4f::Identity();
+				head_matrix.block<3,1>(0,3) = pose.position;
+				head_matrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
 
-				auto latest_quat = ksAlgebra::ksQuatf {
-					.x = combinedQuat.x(),
-					.y = combinedQuat.y(),
-					.z = combinedQuat.z(),
-					.w = combinedQuat.w()
-				};
+				// View matrix is inverse of head matrix.
+				Eigen::Matrix4f viewMatrix = head_matrix.inverse();
 
-				auto latest_position = ksAlgebra::ksVector3f {
-					.x = pose.position[0] + 5.0f,
-					.y = pose.position[1] + 2.0f,
-					.z = pose.position[2] + -3.0f
-				};
-				auto scale = ksAlgebra::ksVector3f{1,1,1};
-				ksAlgebra::ksMatrix4x4f head_matrix;
-#ifndef NDEBUG
-				std::cout<< "App using position: " << latest_position.z << std::endl;
-#endif
-				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
-				ksAlgebra::ksMatrix4x4f viewMatrix;
-				// View matrix is the inverse of the camera's position/rotation/etc.
-				ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
-				ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
+				modelViewMatrix = modelMatrix * viewMatrix;
 			}
 
 			glUseProgram(demoShaderProgram);
@@ -234,8 +218,8 @@ public:
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1);
 
-			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)&(modelViewMatrix.m[0][0]));
-			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
+			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
+			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 
 			glBindVertexArray(demo_vao);
 
@@ -373,7 +357,7 @@ private:
 	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
 
-	ksAlgebra::ksMatrix4x4f basicProjection;
+	Eigen::Matrix4f basicProjection;
 
 	double lastTime;
 
@@ -542,7 +526,7 @@ public:
 		);
 		
 		// Construct a basic perspective projection
-		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
+		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
