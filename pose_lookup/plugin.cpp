@@ -1,3 +1,4 @@
+#include <shared_mutex>
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/data_format.hpp"
@@ -40,14 +41,14 @@ public:
     }
 
    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override{
-	std::lock_guard<std::mutex> lock {offset_mutex};
+	std::unique_lock lock {offset_mutex};
 	Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
 	//std::cout << "pose_prediction: set_offset" << std::endl;
 	offset = raw_o.inverse();
     }
 
     Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-	std::lock_guard<std::mutex> lock {offset_mutex};
+	std::unique_lock lock {offset_mutex};
 	return orientation * offset;
     }
     virtual fast_pose_type get_fast_pose([[maybe_unused]] time_type time) const override {
@@ -112,7 +113,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::mutex offset_mutex;
+	mutable std::shared_mutex offset_mutex;
 
 	/*pyh: reusing data_loading from ground_truth_slam*/
 	const std::map<ullong, sensor_types> _m_sensor_data;
