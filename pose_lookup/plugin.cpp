@@ -22,20 +22,20 @@ public:
     	set_offset(newoffset);
     }
 
-    virtual fast_pose_type get_fast_pose() override {
+    virtual fast_pose_type get_fast_pose() const override {
 	return get_fast_pose( std::chrono::system_clock::now() );
     }
 
-    virtual pose_type get_true_pose() override {
+    virtual pose_type get_true_pose() const override {
 	throw std::logic_error{"Not Implemented"};
     }
 
 
-    virtual bool fast_pose_reliable() {
+    virtual bool fast_pose_reliable() const override {
 	return true;
     }
 
-    virtual bool true_pose_reliable() {
+    virtual bool true_pose_reliable() const override {
 	return false;
     }
 
@@ -50,7 +50,7 @@ public:
 	std::lock_guard<std::mutex> lock {offset_mutex};
 	return orientation * offset;
     }
-    virtual fast_pose_type get_fast_pose(time_type time) override {
+    virtual fast_pose_type get_fast_pose([[maybe_unused]] time_type time) const override {
 		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
 		time_type vsync;
 		if(estimated_vsync == nullptr) {
@@ -61,7 +61,7 @@ public:
 		}
 
 		ullong lookup_time = std::chrono::nanoseconds(vsync - _m_start_of_time ).count() + dataset_first_time;
-		ullong  nearest_timestamp;
+		ullong  nearest_timestamp = 0;
 
 		if(lookup_time <= _m_sensor_data.begin()->first){
 			std::cerr << "Lookup time before first datum" << std::endl;
@@ -92,11 +92,15 @@ public:
 					}
 				}
 			}
+			// Assert while loop "break"ed out (not normal exit)
+			assert(nearest_timestamp);
 		}
 
+
+		auto looked_up_pose = _m_sensor_data.find(nearest_timestamp)->second;
+		looked_up_pose.sensor_time = _m_start_of_time + std::chrono::nanoseconds{nearest_timestamp - dataset_first_time};
 		return fast_pose_type{
-			.pose = correct_pose(_m_sensor_data.find(nearest_timestamp)->second),
-			.imu_time = _m_start_of_time + std::chrono::nanoseconds{nearest_timestamp - dataset_first_time},
+			.pose = correct_pose(looked_up_pose),
 			.predict_computed_time = std::chrono::system_clock::now(),
 			.predict_target_time = vsync
 		};
@@ -107,7 +111,7 @@ public:
 private:
 	const std::shared_ptr<switchboard> sb;
 
-	Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
+	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::mutex offset_mutex;
 
 	/*pyh: reusing data_loading from ground_truth_slam*/

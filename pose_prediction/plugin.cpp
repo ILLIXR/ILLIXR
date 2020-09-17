@@ -127,7 +127,7 @@ public:
 		 */
 	}
 
-	virtual bool true_pose_reliable() override {
+	virtual bool true_pose_reliable() const override {
 		//return _m_true_pose.valid();
 		/*
 		  We do not have a "ground truth" available in all cases, such
