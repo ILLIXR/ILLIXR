@@ -129,7 +129,9 @@ private:
             // std::ostringstream os;
             // os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
 			if (rand() % 100 == 0) {
-				std::cout << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
+                #ifndef NDEBUG
+				    std::cout << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
+                #endif
 			}
         }
     private:
@@ -190,8 +192,9 @@ public:
 		if (should_profile()) {
 			auto cpu_time_stop = thread_cpu_time().count();
 			auto wall_time_stop  = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			
 			std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start << "," << wall_time_stop << "," << cpu_time_start << "," << cpu_time_stop << "\n";
-		}
+    	}
 	}
 };
 
