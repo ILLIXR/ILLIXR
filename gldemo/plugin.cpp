@@ -334,7 +334,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 	const std::unique_ptr<reader_latest<time_type>> vsync;
-
+	
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the

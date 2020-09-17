@@ -40,9 +40,9 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> a_hat;
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
-		Eigen::Matrix<double,13,1> pose;
+		Eigen::Matrix<double,13,1> state_plus;
 		time_type imu_time;
-	} imu_biases_type;
+	} imu_raw_type;
 
 	typedef struct {
 	  int64_t time;
