@@ -55,7 +55,9 @@ public:
 
 		const imu_raw_type* imu_raw = _m_imu_raw->get_latest_ro();
         if (!imu_raw) {
+#ifndef NDEBUG
             printf("FAST POSE IS SLOW POSE!");
+#endif
 			// No imu_raw, return slow_pose
             return fast_pose_type{
                 .pose = correct_pose(*slow_pose),

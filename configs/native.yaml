@@ -13,4 +13,4 @@ plugins:
 data: ../../ILLIXR/data1/
 loader:
   name: native
-profile: dbg
+profile: opt
