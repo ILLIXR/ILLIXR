@@ -48,7 +48,7 @@ public:
     }
 
     Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-	std::unique_lock lock {offset_mutex};
+	std::shared_lock lock {offset_mutex};
 	return orientation * offset;
     }
     virtual fast_pose_type get_fast_pose([[maybe_unused]] time_type time) const override {
