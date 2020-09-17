@@ -24,6 +24,19 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 // If this is defined, gldemo will use Monado-style eyebuffers
 //#define USE_ALT_EYE_FORMAT
 
+const record_header timewarp_gpu_record {"timewarp_gpu", {
+	{"iteration_no", typeid(std::size_t)},
+	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	{"gpu_time_duration", typeid(std::chrono::nanoseconds)},
+}};
+
+const record_header mtp_record {"mtp_record", {
+	{"iteration_no", typeid(std::size_t)},
+	{"vsync", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"imu_time", typeid(std::chrono::high_resolution_clock::time_point)},
+}};
+
 class timewarp_gl : public threadloop {
 
 public:
@@ -42,6 +55,11 @@ public:
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
 	#endif
 		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
+		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
+		, _m_mtp{sb->publish<std::chrono::duration<double, std::nano>>("mtp")}
+		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
+		, timewarp_gpu_logger{record_logger_}
+		, mtp_logger{record_logger_}
 	{ }
 
 private:
@@ -57,6 +75,8 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
+	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
+
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	rendered_frame frame;
 
@@ -70,11 +90,21 @@ private:
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
 
+	// Switchboard plug for publishing vsync estimates
+	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
+
+	// Switchboard plug for publishing MTP metrics
+	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_mtp;
+
+	// Switchboard plug for publishing frame stale-ness metrics
+	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_frame_age;
+
+	record_coalescer timewarp_gpu_logger;
+	record_coalescer mtp_logger;
+
 	GLuint timewarpShaderProgram;
 
-	double lastSwapTime;
-	double lastFrameTime;
-	double averageFramerate = DISPLAY_REFRESH_RATE;
+	time_type lastSwapTime;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -253,14 +283,14 @@ private:
 
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
-	double GetNextSwapTimeEstimate(){
-		return lastSwapTime + (1.0/DISPLAY_REFRESH_RATE);
+	time_type GetNextSwapTimeEstimate(){
+		return lastSwapTime + vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
 	// given a specified percentage of the total Vsync period to delay.
-	double EstimateTimeToSleep(double framePercentage){
-		return (GetNextSwapTimeEstimate() - glfwGetTime()) * framePercentage;
+	std::chrono::duration<double, std::nano> EstimateTimeToSleep(double framePercentage){
+		return (GetNextSwapTimeEstimate() - std::chrono::high_resolution_clock::now()) * framePercentage;
 	}
 
 
@@ -289,6 +319,8 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
+		lastSwapTime = std::chrono::high_resolution_clock::now();
+
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
 		HMD::GetDefaultBodyInfo(&body_info);
@@ -384,8 +416,6 @@ public:
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
-
-		lastSwapTime = glfwGetTime();
 	}
 
 
@@ -416,7 +446,6 @@ public:
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
 
-		double warpStart = glfwGetTime();
 		//double cursor_x, cursor_y;
 		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
@@ -498,11 +527,12 @@ public:
 
 		glBindVertexArray(tw_vao);
 
+		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
+
 		GLuint query;
-		GLuint64 elapsed_time;
-		int done = 0;
+		GLuint64 elapsed_time = 0;
 		glGenQueries(1, &query);
-		glBeginQuery(GL_TIME_ELAPSED,query);
+		glBeginQuery(GL_TIME_ELAPSED, query);
 
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
@@ -550,19 +580,17 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
-		GLsync fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		glWaitSync(fence, 0, GL_TIMEOUT_IGNORED);
 		glEndQuery(GL_TIME_ELAPSED);
-		// retrieving the recorded elapsed time
-		// wait until the query result is available
-		while (!done) {
-			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-		}
-		// get the query result
-		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		// TODO (implement-logging): When we have logging infra, log this.
-		//printf("cpu_timer,timewarp_gl_gpu,%lu\n", elapsed_time);
 
+#ifndef NDEBUG
+		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
+		printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+		if(delta > vsync_period)
+		{
+			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
+		}
+		printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
+#endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;
 		hologram_params->seq = ++_hologram_seq;
@@ -570,20 +598,58 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
+		[[maybe_unused]] auto beforeSwap = glfwGetTime();
+
 		glXSwapBuffers(xwin->dpy, xwin->win);
-		lastSwapTime = glfwGetTime();
-		averageFramerate = (RUNNING_AVG_ALPHA * (1.0 /(lastSwapTime - lastFrameTime))) + (1.0 - RUNNING_AVG_ALPHA) * averageFramerate;
 
-		// TODO (implement-logging): When we have logging infra, delete this code.
-		// This only looks at warp time, so doesn't take into account IMU frequency.
-		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %.1f ms, Exponential Average FPS: %.3f\n", (float)(lastSwapTime - warpStart) * 1000.0f, (float)(averageFramerate));
+#ifndef NDEBUG
+		auto afterSwap = glfwGetTime();
+		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
+#endif
 
-
-		// TODO (implement-glog): When we have glog, use glog.
-		if(DISPLAY_REFRESH_RATE - averageFramerate > FPS_WARNING_TOLERANCE){
-			printf("\033[1;36m[TIMEWARP]\033[0m \033[1;33m[WARNING]\033[0m Timewarp thread running slow!\n");
+		// retrieving the recorded elapsed time
+		// wait until the query result is available
+		int done = 0;
+		glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		while (!done) {
+			std::this_thread::yield();
+			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
 		}
-		lastFrameTime = glfwGetTime();
+
+		// get the query result
+		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
+			{iteration_no},
+			{gpu_start_wall_time},
+			{std::chrono::high_resolution_clock::now()},
+			{std::chrono::nanoseconds(elapsed_time)},
+		}});
+
+		lastSwapTime = std::chrono::high_resolution_clock::now();
+
+		mtp_logger.log(record{mtp_record, {
+			{iteration_no},
+			{std::chrono::high_resolution_clock::now()},
+			{latest_pose.pose.sensor_time},
+		}});
+
+		// Now that we have the most recent swap time, we can publish the new estimate.
+		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+
+
+#ifndef NDEBUG
+		// TODO (implement-logging): When we have logging infra, delete this code.
+		// Compute time difference between current post-vsync time and the time of the most recent
+		// imu sample that was used to generate the predicted pose. This is the MTP, assuming good prediction
+		// was used to compute the most recent fast pose.
+		std::chrono::duration<double,std::nano> mtp = (lastSwapTime - latest_pose.pose.sensor_time);
+		std::chrono::duration<double,std::nano> predict_to_display = (lastSwapTime - latest_pose.predict_computed_time);
+
+		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", (float)(mtp.count() / 1000000.0));
+		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", (float)(predict_to_display.count() / 1000000.0));
+
+		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+#endif
 	}
 
 	virtual ~timewarp_gl() override {
