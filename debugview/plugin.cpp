@@ -17,7 +17,6 @@
 #include "common/shader_util.hpp"
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
-#include "utils/algebra.hpp"
 #include "block_i.hpp"
 #include "demo_model.hpp"
 #include "headset_model.hpp"
