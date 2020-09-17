@@ -30,6 +30,8 @@ RUN ./scripts/install_conda.sh
 
 COPY ./scripts/install_euroc.sh $HOME/scripts/install_euroc.sh
 RUN ./scripts/install_euroc.sh
+RUN mkdir $HOME/ILLIXR
+COPY ./data1 $HOME/ILLIXR
 
 COPY . $HOME/ILLIXR/
 WORKDIR ILLIXR
