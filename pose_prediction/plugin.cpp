@@ -14,13 +14,20 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_imu_raw{sb->subscribe_latest<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
+        , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     { }
 
     // No paramter get_fast_pose() should just predict to the next vsync
 	// However, we don't have vsync estimation yet.
 	// So we will predict to `now()`, as a temporary approximation
     virtual fast_pose_type get_fast_pose() const override {
-		return get_fast_pose(std::chrono::system_clock::now());
+		const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
+
+        if(vsync_estimate == nullptr) {
+		return get_fast_pose(std::chrono::high_resolution_clock::now());
+        } else {
+            return get_fast_pose(*vsync_estimate);
+        }
 	}
 
     virtual pose_type get_true_pose() const override {
@@ -48,6 +55,9 @@ public:
 
 		const imu_raw_type* imu_raw = _m_imu_raw->get_latest_ro();
         if (!imu_raw) {
+#ifndef NDEBUG
+            printf("FAST POSE IS SLOW POSE!");
+#endif
 			// No imu_raw, return slow_pose
             return fast_pose_type{
                 .pose = correct_pose(*slow_pose),
@@ -62,6 +72,8 @@ public:
         std::pair<Eigen::Matrix<double,13,1>, time_type> predictor_result = predict_mean_rk4(dt/NANO_SEC);
 
         auto state_plus = predictor_result.first;
+
+        // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
         auto predictor_imu_time = predictor_result.second;
         
         pose_type predicted_pose = correct_pose({
@@ -142,6 +154,7 @@ private:
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
     std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
 

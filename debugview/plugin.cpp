@@ -381,16 +381,6 @@ public:
 			headsetObject.color = {0.2,0.2,0.2,1};
 			headsetObject.drawMe();
 
-			if(pp->true_pose_reliable()) {
-				const pose_type groundtruth_pose = pp->get_true_pose();
-				headsetPose = generateHeadsetTransform(groundtruth_pose.position, groundtruth_pose.orientation, tracking_position_offset);
-			}
-			modelView = userView * headsetPose;
-			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-
-			headsetObject.color = {0,0.8,0,1};
-			headsetObject.drawMe();
-
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

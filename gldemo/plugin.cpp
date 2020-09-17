@@ -21,6 +21,10 @@ using namespace ILLIXR;
 static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
+static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
+
+static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
+
 // Monado-style eyebuffers:
 // These are two eye textures; however, each eye texture
 // represnts a swapchain. eyeTextures[0] is a swapchain of
@@ -47,6 +51,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
+		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
@@ -112,6 +117,60 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
+	// Essentially, a crude equivalent of XRWaitFrame.
+	void wait_vsync()
+	{
+		using namespace std::chrono_literals;
+		const time_type* next_vsync = vsync->get_latest_ro();
+		time_type now = std::chrono::high_resolution_clock::now();
+
+		time_type wait_time;
+
+		if(next_vsync == nullptr)
+		{
+			// If no vsync data available, just sleep for roughly a vsync period.
+			// We'll get synced back up later.
+			std::this_thread::sleep_for(vsync_period);
+			return;
+		}
+
+#ifndef NDEBUG
+		std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
+		printf("\033[1;32m[GL DEMO APP]\033[0m First vsync is in %4fms\n", vsync_in.count());
+#endif
+		
+		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
+
+		// If less than one frame interval has passed since we last rendered...
+		if(hasRenderedThisInterval)
+		{
+			// We'll wait until the next vsync, plus a small delay time.
+			// Delay time helps with some inaccuracies in scheduling.
+			wait_time = *next_vsync + VSYNC_DELAY_TIME;
+
+			// If our sleep target is in the past, bump it forward
+			// by a vsync period, so it's always in the future.
+			while(wait_time < now)
+			{
+				wait_time += vsync_period;
+			}
+#ifndef NDEBUG
+			std::chrono::duration<double, std::milli> wait_in = wait_time - now;
+			printf("\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in %4fms\n", wait_in.count());
+#endif
+		} else {
+#ifndef NDEBUG
+			printf("\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately.");
+#endif
+			return;
+		}
+
+		// Perform the sleep.
+		// TODO: Consider using Monado-style sleeping, where we nanosleep for
+		// most of the wait, and then spin-wait for the rest?
+		std::this_thread::sleep_until(wait_time);
+	}
+
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
@@ -120,9 +179,10 @@ public:
 	void _p_one_iteration() override {
 		{
 			using namespace std::chrono_literals;
-			// This "app" is "very slow"!
-			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
-			std::this_thread::sleep_for(16ms);
+
+			// Essentially, XRWaitFrame.
+			wait_vsync();
+
 			glUseProgram(demoShaderProgram);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
@@ -273,7 +333,8 @@ private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
-	
+	const std::unique_ptr<reader_latest<time_type>> vsync;
+
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
