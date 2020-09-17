@@ -28,13 +28,12 @@ RUN ./scripts/install_openxr.sh
 COPY ./scripts/install_conda.sh $HOME/scripts/install_conda.sh
 RUN ./scripts/install_conda.sh
 
-COPY ./scripts/install_euroc.sh $HOME/scripts/install_euroc.sh
-RUN ./scripts/install_euroc.sh
-RUN mkdir $HOME/ILLIXR
-COPY ./data1 $HOME/ILLIXR
-
 COPY . $HOME/ILLIXR/
 WORKDIR ILLIXR
+
+COPY ./scripts/install_euroc.sh $HOME/scripts/install_euroc.sh
+RUN ./scripts/install_euroc.sh
+
 RUN $HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
 
 ENTRYPOINT ./runner.sh configs/ci.yaml
