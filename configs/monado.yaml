@@ -15,7 +15,8 @@ loader:
   name: monado
   monado:
     path: ../monado_integration
-    config: {}
+    config:
+      ILLIXR_PATH: ../../ILLIXR
   openxr_app:
     path: ../Monado_OpenXR_Simple_Example
     config: {}
