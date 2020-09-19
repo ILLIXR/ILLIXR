@@ -17,6 +17,7 @@
 #include "common/shader_util.hpp"
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
+#include "common/gl_util/obj.hpp"
 #include "block_i.hpp"
 #include "demo_model.hpp"
 #include "headset_model.hpp"
@@ -63,49 +64,6 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
-
-	// Struct for drawable debug objects (scenery, headset visualization, etc)
-	struct DebugDrawable {
-		DebugDrawable() {}
-		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
-
-		GLuint num_triangles;
-		GLuint positionVBO;
-		GLuint positionAttribute;
-		GLuint normalVBO;
-		GLuint normalAttribute;
-		GLuint colorUniform;
-		std::vector<GLfloat> color;
-
-		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
-					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
-
-			this->positionAttribute = positionAttribute;
-			this->normalAttribute = normalAttribute;
-			this->colorUniform = colorUniform;
-			this->num_triangles = num_triangles;
-
-			glGenBuffers(1, &positionVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
-			
-			glGenBuffers(1, &normalVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
-
-		}
-
-		void drawMe() {
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(positionAttribute);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(normalAttribute);
-			glUniform4fv(colorUniform, 1, color.data());
-			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
-		}
-	};
 
 	void imu_cam_handler(const imu_cam_type *datum) {
 		if(datum == NULL){ return; }
@@ -218,20 +176,6 @@ public:
 		ImGui::Render();
 	}
 
-	void draw_scene() {
-
-		// OBJ exporter is having winding order issues currently.
-		// Please excuse the strange GL_CW and GL_CCW mode switches.
-		
-		glFrontFace(GL_CW);
-		groundObject.drawMe();
-		glFrontFace(GL_CCW);
-		waterObject.drawMe();
-		treesObject.drawMe();
-		rocksObject.drawMe();
-		glFrontFace(GL_CCW);
-	}
-
 	bool load_camera_images(){
 		if(last_datum_with_images == NULL){
 			return false;
@@ -268,10 +212,6 @@ public:
 		}
 
 		return true;
-	}
-
-	void draw_headset(){
-		headsetObject.drawMe();
 	}
 
 	Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation, const Eigen::Vector3f& positionOffset){
@@ -372,15 +312,17 @@ public:
 			glBindVertexArray(demo_vao);
 			
 			// Draw things
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			draw_scene();
+			demoscene->Draw();
 
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-			headsetObject.color = {0.2,0.2,0.2,1};
-			headsetObject.drawMe();
+			headset->Draw();
+			// glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
+			// headsetObject.color = {0.2,0.2,0.2,1};
+			// headsetObject.drawMe();
 
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -432,14 +374,8 @@ private:
 
 	GLuint colorUniform;
 
-	// Scenery
-	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
-	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
-	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
-	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
-
-	// Headset debug model
-	DebugDrawable headsetObject = DebugDrawable({0.3, 0.3, 0.3, 1.0});
+	ObjScene* demoscene;
+	ObjScene* headset;
 
 	Eigen::Matrix4f basicProjection;
 
@@ -495,7 +431,7 @@ public:
 		glGenVertexArrays(1, &demo_vao);
     	glBindVertexArray(demo_vao);
 
-		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 		#ifndef NDEBUG
 			std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 		#endif
@@ -507,50 +443,9 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		groundObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Ground_plane_NUM_TRIANGLES,
-			&(Ground_Plane_vertex_data[0]),
-			&(Ground_Plane_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		waterObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Water_plane001_NUM_TRIANGLES,
-			&(Water_Plane001_vertex_data[0]),
-			&(Water_Plane001_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		treesObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Trees_cone_NUM_TRIANGLES,
-			&(Trees_Cone_vertex_data[0]),
-			&(Trees_Cone_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		rocksObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Rocks_plane002_NUM_TRIANGLES,
-			&(Rocks_Plane002_vertex_data[0]),
-			&(Rocks_Plane002_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		headsetObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			headset_NUM_TRIANGLES,
-			&(headset_vertex_data[0]),
-			&(headset_normal_data[0]),
-			GL_DYNAMIC_DRAW
-		);
+		// Load/initialize the demo scene.
+		demoscene = new ObjScene("demo2.obj");
+		headset = new ObjScene("headset.obj");
 
 		// Generate fun test pattern for missing camera images.
 		for(unsigned x = 0; x < TEST_PATTERN_WIDTH; x++){
