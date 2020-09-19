@@ -5,6 +5,7 @@
 #include <cmath>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <png.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
@@ -16,14 +17,22 @@
 #include "demo_model.hpp"
 #include "shaders/blocki_shader.hpp"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "lib/tiny_obj_loader.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "lib/stb_image.h"
+
 using namespace ILLIXR;
 
 static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
 static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
-
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
+
+// C++20 allows for string constexprs, TODO upgrade?
+static constexpr char scene_filename[] = "scene.obj";
 
 // Monado-style eyebuffers:
 // These are two eye textures; however, each eye texture
@@ -59,63 +68,187 @@ public:
 #endif
 	{ }
 
+	struct vertex_t {
+		GLfloat position[3];
+		GLfloat uv[2];
+	};
 
 	// Struct for drawable debug objects (scenery, headset visualization, etc)
-	struct DebugDrawable {
-		DebugDrawable() {}
-		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
-
+	struct object_t {
+		GLuint vbo_handle;
 		GLuint num_triangles;
-		GLuint positionVBO;
-		GLuint positionAttribute;
-		GLuint normalVBO;
-		GLuint normalAttribute;
-		GLuint colorUniform;
-		std::vector<GLfloat> color;
 
-		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
-					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
+		void Draw() {
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, position));
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, uv));
 
-			this->positionAttribute = positionAttribute;
-			this->normalAttribute = normalAttribute;
-			this->colorUniform = colorUniform;
-			this->num_triangles = num_triangles;
-
-			glGenBuffers(1, &positionVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
-			
-			glGenBuffers(1, &normalVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
-
-		}
-
-		void drawMe() {
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(positionAttribute);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(normalAttribute);
-			glUniform4fv(colorUniform, 1, color.data());
 			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
 		}
 	};
 
-	void draw_scene() {
+	class ObjScene {
+		public:
+		ObjScene() {}
+		ObjScene(std::string obj_filename, std::string tex_filename) {
 
-		// OBJ exporter is having winding order issues currently.
-		// Please excuse the strange GL_CW and GL_CCW mode switches.
+			// If any of the following procedures fail to correctly load,
+			// we'll set this flag false (for the relevant operation)
+			successfully_loaded_model = true;
+			successfully_loaded_texture = true;
 
-		glFrontFace(GL_CW);
-		groundObject.drawMe();
-		glFrontFace(GL_CCW);
-		waterObject.drawMe();
-		treesObject.drawMe();
-		rocksObject.drawMe();
-		glFrontFace(GL_CCW);
-	}
+			std::string warn, err;
+			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_filename.c_str());
+			if(!warn.empty()){
+				std::cout << "[OBJ WARN] " << warn << std::endl;
+			}
+			if(!err.empty()){
+				std::cout << "[OBJ ERROR] " << err << std::endl;
+				successfully_loaded_model = false;
+			}
+			if(!success){
+				std::cout << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
+				successfully_loaded_model = false;
+			} else {
+
+				// Process mesh data.
+				// Iterate over "shapes" (objects in .obj file)
+				for(size_t shape_idx = 0; shape_idx < shapes.size(); shape_idx++){
+					
+					std::cout << "[OBJ INFO] Num verts in shape: " << shapes[shape_idx].mesh.indices.size() << std::endl;
+					std::cout << "[OBJ INFO] Num tris in shape: " << shapes[shape_idx].mesh.indices.size() / 3 << std::endl;
+
+					// Unified buffer for pos + uv. Interleaving vertex data (good practice!)
+					std::vector<vertex_t> buffer;
+					// Iterate over triangles
+					for(size_t tri_idx = 0; tri_idx < shapes[shape_idx].mesh.indices.size() / 3; tri_idx++){
+						tinyobj::index_t idx0 = shapes[shape_idx].mesh.indices[3 * tri_idx + 0];
+						tinyobj::index_t idx1 = shapes[shape_idx].mesh.indices[3 * tri_idx + 1];
+						tinyobj::index_t idx2 = shapes[shape_idx].mesh.indices[3 * tri_idx + 2];
+
+						// Unfortunately we have to unpack/linearize the polygons
+						// because OpenGL can't use OBJ-style indices :/
+
+						float verts[3][3]; // [vert][xyz]
+						int f0 = idx0.vertex_index;
+						int f1 = idx1.vertex_index;
+						int f2 = idx2.vertex_index;
+						for(int axis = 0; axis < 3; axis++){
+							verts[0][axis] = attrib.vertices[3 * f0 + axis];
+							verts[1][axis] = attrib.vertices[3 * f1 + axis];
+							verts[2][axis] = attrib.vertices[3 * f2 + axis];
+						}
+
+						float tex_coords[3][2] = {{0,0},{0,0},{0,0}}; // [vert][uv] for each vertex.
+						if(attrib.texcoords.size() > 0){
+							if ((idx0.texcoord_index >= 0) || (idx1.texcoord_index >= 0) ||
+								(idx2.texcoord_index >= 0)) {
+
+								// Flip Y coord.
+								tex_coords[0][0] = attrib.texcoords[2 * idx0.texcoord_index];
+								tex_coords[0][1] = 1.0f - attrib.texcoords[2 * idx0.texcoord_index + 1];
+								tex_coords[1][0] = attrib.texcoords[2 * idx1.texcoord_index];
+								tex_coords[1][1] = 1.0f - attrib.texcoords[2 * idx1.texcoord_index + 1];
+								tex_coords[2][0] = attrib.texcoords[2 * idx2.texcoord_index];
+								tex_coords[2][1] = 1.0f - attrib.texcoords[2 * idx2.texcoord_index + 1];
+							}
+						}
+
+						for(int vert = 0; vert < 3; vert++){
+							buffer.push_back( vertex_t {
+								.position = {verts[vert][0], verts[vert][1], verts[vert][2]},
+								.uv = {tex_coords[vert][0], tex_coords[vert][1]}
+							});
+						}
+						
+					}
+
+					std::cout << "[OBJ INFO] Num vertices: " << buffer.size() << std::endl;
+
+					object_t newObject;
+					newObject.vbo_handle = 0;
+					newObject.num_triangles = 0;
+
+					if(buffer.size() > 0){
+
+						// Create/bind/fill vbo.
+						glGenBuffers(1, &newObject.vbo_handle);
+						glBindBuffer(GL_ARRAY_BUFFER, newObject.vbo_handle);
+						glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(vertex_t), &buffer.at(0), GL_STATIC_DRAW);
+						glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+						// Compute the number of triangles for this object.
+						newObject.num_triangles = buffer.size() / 3;
+					}
+
+					objects.push_back(newObject);
+				}
+			}
+
+
+			if(!tex_filename.empty()){
+				int x,y,n;
+				unsigned char* texture_data = stbi_load(tex_filename.c_str(), &x, &y, &n, 0);
+
+				if(texture_data == NULL){
+					std::cout << "[TEXTURE ERROR] Loading of " << tex_filename << "failed." << std::endl;
+					successfully_loaded_texture = false;
+				} else {
+					std::cout << "[TEXTURE INFO] Loaded " << tex_filename <<
+								": Resolution (" << x << ", " << y << ")" << std::endl;
+
+					// Create and bind OpenGL resource.
+					glGenTextures(1, &texture_handle);
+					glBindTexture(GL_TEXTURE_2D, texture_handle);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+					// Configure number of color channels in texture.
+					if(n == 3){
+						// 3-channel -> RGB
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_data);
+					} else if(n == 4) {
+						// 4-channel -> RGBA
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+					}
+					
+					// Unbind.
+					glBindTexture(GL_TEXTURE_2D, 0);
+
+				}
+
+				// Free stbi image regardless of load success
+				stbi_image_free(texture_data);
+			} else {
+				std::cout << "[TEXTURE INFO] No texture specified." << std::endl;
+			}
+
+			
+		}
+
+		~ObjScene() {
+		}
+
+		void Draw(GLuint attrib) {
+			glBindTexture(GL_TEXTURE_2D, texture_handle);
+			for(auto obj : objects){
+				obj.Draw();
+			}
+		}
+
+		bool successfully_loaded_model = false;
+		bool successfully_loaded_texture = false;
+
+		tinyobj::attrib_t attrib;
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+		
+		GLuint texture_handle;
+
+		std::vector<object_t> objects;
+	};
 
 	// Essentially, a crude equivalent of XRWaitFrame.
 	void wait_vsync()
@@ -231,7 +364,7 @@ public:
 			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
-			draw_scene();
+			demoscene->Draw(0);
 
 			
 			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
@@ -245,7 +378,7 @@ public:
 			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			draw_scene();
+			demoscene->Draw(0);
 
 			#else
 			
@@ -349,11 +482,8 @@ private:
 	GLuint projectionAttr;
 
 	GLuint colorUniform;
-	
-	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
-	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
-	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
-	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
+
+	ObjScene* demoscene;
 
 
 	Eigen::Matrix4f basicProjection;
@@ -475,7 +605,7 @@ public:
 		glGenVertexArrays(1, &demo_vao);
     	glBindVertexArray(demo_vao);
 
-		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
 		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 #endif
@@ -487,42 +617,8 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		
-		groundObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Ground_plane_NUM_TRIANGLES,
-			&(Ground_Plane_vertex_data[0]),
-			&(Ground_Plane_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		waterObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Water_plane001_NUM_TRIANGLES,
-			&(Water_Plane001_vertex_data[0]),
-			&(Water_Plane001_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		treesObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Trees_cone_NUM_TRIANGLES,
-			&(Trees_Cone_vertex_data[0]),
-			&(Trees_Cone_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		rocksObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Rocks_plane002_NUM_TRIANGLES,
-			&(Rocks_Plane002_vertex_data[0]),
-			&(Rocks_Plane002_normal_data[0]),
-			GL_STATIC_DRAW
-		);
+		// Load/initialize the demo scene.
+		demoscene = new ObjScene("/home/finn/ILLIXR/gldemo/demo.obj", "/home/finn/ILLIXR/gldemo/demo.png");
 		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
