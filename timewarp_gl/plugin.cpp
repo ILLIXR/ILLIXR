@@ -64,7 +64,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 
-	static constexpr int   SCREEN_WIDTH    = 448*2;
+	static constexpr int   SCREEN_WIDTH    = 550*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;

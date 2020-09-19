@@ -132,62 +132,79 @@ public:
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
 
+			glUseProgram(demoShaderProgram);
+			glBindVertexArray(demo_vao);
+			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glClearDepth(1);
+
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
 			Eigen::Matrix4f modelViewMatrix;
 
 			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
-			{
-				const fast_pose_type fast_pose = pp->get_fast_pose();
-				const pose_type pose = fast_pose.pose;
+			const fast_pose_type fast_pose = pp->get_fast_pose();
+			pose_type pose = fast_pose.pose;
 
-				// Build our head matrix from the pose's position + orientation.
-				Eigen::Matrix4f head_matrix = Eigen::Matrix4f::Identity();
-				head_matrix.block<3,1>(0,3) = pose.position;
-				head_matrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
+			Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
-				// View matrix is inverse of head matrix.
-				Eigen::Matrix4f viewMatrix = head_matrix.inverse();
+			// 64mm IPD, why not
+			// (TODO FIX, pull from centralized config!)
+			// 64mm is also what TW currently uses through HMD::GetDefaultBodyInfo.
+			// Unfortunately HMD:: namespace is currently private to TW. Need to
+			// integrate as a config topic that can share HMD info.
+			float ipd = 0.0640f; 
 
-				modelViewMatrix = modelMatrix * viewMatrix;
+			// Excessive? Maybe.
+			constexpr int LEFT_EYE = 0;
+
+			for(auto eye_idx = 0; eye_idx < 2; eye_idx++) {
+
+				// Offset of eyeball from pose
+				auto eyeball = Eigen::Vector3f((eye_idx == LEFT_EYE ? -ipd/2.0f : ipd/2.0f), 0, 0);
+
+				// Apply head rotation to eyeball offset vector
+				eyeball = head_rotation_matrix * eyeball;
+
+				// Apply head position to eyeball
+				eyeball += pose.position;
+
+				// Build our eye matrix from the pose's position + orientation.
+				Eigen::Matrix4f eye_matrix = Eigen::Matrix4f::Identity();
+				eye_matrix.block<3,1>(0,3) = eyeball; // Set position to eyeball's position
+				eye_matrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
+
+				// Objects' "view matrix" is inverse of eye matrix.
+				auto view_matrix = eye_matrix.inverse();
+
+				Eigen::Matrix4f modelViewMatrix = modelMatrix * view_matrix;
+				glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
+				glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
+
+#ifdef USE_ALT_EYE_FORMAT
+
+				// Draw things to left eye.
+				glBindTexture(GL_TEXTURE_2D, eyeTextures[eye_idx]);
+				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				
+				demoscene->Draw();
+
+#else
+				// Draw things to left eye.
+				glBindTexture(GL_TEXTURE_2D, eyeTextures[eye_idx]);
+				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				
+				demoscene->Draw();
+
 			}
-
-			glUseProgram(demoShaderProgram);
-			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-			glEnable(GL_CULL_FACE);
-			glEnable(GL_DEPTH_TEST);
-			glClearDepth(1);
-
-			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
-			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
-
-			glBindVertexArray(demo_vao);
-
-			#ifdef USE_ALT_EYE_FORMAT
-
-			// Draw things to left eye.
-			glBindTexture(GL_TEXTURE_2D, eyeTextures[0]);
-			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			demoscene->Draw();
-
-			
-			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			
-			
-			// Draw things to right eye.
-			glBindTexture(GL_TEXTURE_2D, eyeTextures[1]);
-			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			demoscene->Draw();
 
 			#else
 			
@@ -199,11 +216,6 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
 			draw_scene();
-
-			
-			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			
 			
 			// Draw things to right eye.
 			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
@@ -215,14 +227,6 @@ public:
 			draw_scene();
 
 			#endif
-
-			/*
-			glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-			glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(vertexPosAttr);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			*/
 
 #ifndef NDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
@@ -238,7 +242,6 @@ public:
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
 
-			const fast_pose_type fast_pose = pp->get_fast_pose();
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			#else
