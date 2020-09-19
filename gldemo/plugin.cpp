@@ -77,6 +77,8 @@ public:
 	struct object_t {
 		GLuint vbo_handle;
 		GLuint num_triangles;
+		GLuint texture;
+		bool has_texture;
 
 		void Draw() {
 			glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
@@ -85,14 +87,21 @@ public:
 			glEnableVertexAttribArray(1);
 			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, uv));
 
+			if(has_texture){
+				glBindTexture(GL_TEXTURE_2D, texture);
+			}
+
 			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+
+			if(has_texture){
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
 		}
 	};
 
 	class ObjScene {
 		public:
-		ObjScene() {}
-		ObjScene(std::string obj_filename, std::string tex_filename) {
+		ObjScene(std::string obj_filename) {
 
 			// If any of the following procedures fail to correctly load,
 			// we'll set this flag false (for the relevant operation)
@@ -100,7 +109,10 @@ public:
 			successfully_loaded_texture = true;
 
 			std::string warn, err;
-			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_filename.c_str());
+
+			std::string obj_file = std::getenv("ILLIXR_OBJ_DATA") + std::string("/") + obj_filename;
+
+			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), std::getenv("ILLIXR_OBJ_DATA"));
 			if(!warn.empty()){
 				std::cout << "[OBJ WARN] " << warn << std::endl;
 			}
@@ -112,11 +124,68 @@ public:
 				std::cout << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
 				successfully_loaded_model = false;
 			} else {
+				
+				// OBJ file successfully loaded.
+
+				for(size_t mat_idx = 0; mat_idx < materials.size(); mat_idx++){
+					tinyobj::material_t* mp = &materials[mat_idx];
+
+					std::cout << "[OBJ INFO] Loading material named: " << materials[mat_idx].name << std::endl;
+					std::cout << "[OBJ INFO] Loading material with texture named: " << materials[mat_idx].diffuse_texname << std::endl;
+
+					if(mp->diffuse_texname.length() > 0){
+						// If we haven't loaded the texture yet...
+						if(textures.find(mp->diffuse_texname) == textures.end()){
+							
+							std::string filename = std::getenv("ILLIXR_OBJ_DATA") + std::string("/") + mp->diffuse_texname;
+
+							int x,y,n;
+							unsigned char* texture_data = stbi_load(filename.c_str(), &x, &y, &n, 0);
+
+							if(texture_data == NULL){
+								std::cout << "[TEXTURE ERROR] Loading of " << filename << "failed." << std::endl;
+								successfully_loaded_texture = false;
+							} else {
+								std::cout << "[TEXTURE INFO] Loaded " << filename <<
+											": Resolution (" << x << ", " << y << ")" << std::endl;
+
+								GLuint texture_handle;
+
+								// Create and bind OpenGL resource.
+								glGenTextures(1, &texture_handle);
+								glBindTexture(GL_TEXTURE_2D, texture_handle);
+								glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+								glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+								// Configure number of color channels in texture.
+								if(n == 3){
+									// 3-channel -> RGB
+									glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_data);
+								} else if(n == 4) {
+									// 4-channel -> RGBA
+									glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+								}
+								
+								// Unbind.
+								glBindTexture(GL_TEXTURE_2D, 0);
+
+								// Insert the texture into our collection of loaded textures.
+								textures.insert(std::make_pair(mp->diffuse_texname, texture_handle));
+
+							}
+
+							// Free stbi image regardless of load success
+							stbi_image_free(texture_data);
+						}
+					}
+
+					
+				}
 
 				// Process mesh data.
 				// Iterate over "shapes" (objects in .obj file)
 				for(size_t shape_idx = 0; shape_idx < shapes.size(); shape_idx++){
-					
+				
 					std::cout << "[OBJ INFO] Num verts in shape: " << shapes[shape_idx].mesh.indices.size() << std::endl;
 					std::cout << "[OBJ INFO] Num tris in shape: " << shapes[shape_idx].mesh.indices.size() / 3 << std::endl;
 
@@ -170,6 +239,17 @@ public:
 					object_t newObject;
 					newObject.vbo_handle = 0;
 					newObject.num_triangles = 0;
+					newObject.has_texture = false;
+
+					if(shapes[shape_idx].mesh.material_ids.size() >= 0) {
+						std::string texname = materials[shapes[shape_idx].mesh.material_ids[0]].diffuse_texname;
+						if(textures.find(texname) != textures.end()){
+
+							// Object has a texture. Tell it what the GL handle is!
+							newObject.has_texture = true;
+							newObject.texture = textures[texname];
+						}
+					}
 
 					if(buffer.size() > 0){
 
@@ -186,45 +266,6 @@ public:
 					objects.push_back(newObject);
 				}
 			}
-
-
-			if(!tex_filename.empty()){
-				int x,y,n;
-				unsigned char* texture_data = stbi_load(tex_filename.c_str(), &x, &y, &n, 0);
-
-				if(texture_data == NULL){
-					std::cout << "[TEXTURE ERROR] Loading of " << tex_filename << "failed." << std::endl;
-					successfully_loaded_texture = false;
-				} else {
-					std::cout << "[TEXTURE INFO] Loaded " << tex_filename <<
-								": Resolution (" << x << ", " << y << ")" << std::endl;
-
-					// Create and bind OpenGL resource.
-					glGenTextures(1, &texture_handle);
-					glBindTexture(GL_TEXTURE_2D, texture_handle);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-					// Configure number of color channels in texture.
-					if(n == 3){
-						// 3-channel -> RGB
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_data);
-					} else if(n == 4) {
-						// 4-channel -> RGBA
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-					}
-					
-					// Unbind.
-					glBindTexture(GL_TEXTURE_2D, 0);
-
-				}
-
-				// Free stbi image regardless of load success
-				stbi_image_free(texture_data);
-			} else {
-				std::cout << "[TEXTURE INFO] No texture specified." << std::endl;
-			}
-
 			
 		}
 
@@ -232,7 +273,6 @@ public:
 		}
 
 		void Draw(GLuint attrib) {
-			glBindTexture(GL_TEXTURE_2D, texture_handle);
 			for(auto obj : objects){
 				obj.Draw();
 			}
@@ -245,7 +285,7 @@ public:
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
 		
-		GLuint texture_handle;
+		std::map<std::string, GLuint> textures;
 
 		std::vector<object_t> objects;
 	};
@@ -361,7 +401,7 @@ public:
 			glBindTexture(GL_TEXTURE_2D, eyeTextures[0]);
 			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
 			demoscene->Draw(0);
@@ -375,7 +415,7 @@ public:
 			glBindTexture(GL_TEXTURE_2D, eyeTextures[1]);
 			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			demoscene->Draw(0);
@@ -618,7 +658,7 @@ public:
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
 		// Load/initialize the demo scene.
-		demoscene = new ObjScene("/home/finn/ILLIXR/gldemo/demo.obj", "/home/finn/ILLIXR/gldemo/demo.png");
+		demoscene = new ObjScene("demo2.obj");
 		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
