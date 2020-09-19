@@ -203,30 +203,9 @@ public:
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
 				demoscene->Draw();
-
+#endif
 			}
-
-			#else
 			
-			// Draw things to left eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 0);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			draw_scene();
-			
-			// Draw things to right eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 1);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			draw_scene();
-
-			#endif
 
 #ifndef NDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
