@@ -347,16 +347,13 @@ private:
 	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
 	bool beingDragged = false;
 
-	float view_dist = 3.0;
+	float view_dist = 2.0;
 
 	bool follow_headset = true;
 
 	double lastTime;
 
-	// Currently, the GL demo app applies this offset to the camera view.
-	// This is just to make it look nicer with the included SLAM dataset.
-	// Therefore, the debug view also applies this pose offset.
-	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{5.0f, 2.0f, -3.0f};
+	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
 
 	const imu_cam_type* last_datum_with_images = NULL;
