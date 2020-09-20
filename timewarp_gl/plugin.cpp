@@ -604,6 +604,12 @@ public:
 
 		glXSwapBuffers(xwin->dpy, xwin->win);
 
+		// The swap time needs to be obtained and published as soon as possible
+		lastSwapTime = std::chrono::high_resolution_clock::now();
+
+		// Now that we have the most recent swap time, we can publish the new estimate.
+		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+
 #ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
@@ -627,17 +633,11 @@ public:
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 
-		lastSwapTime = std::chrono::high_resolution_clock::now();
-
 		mtp_logger.log(record{mtp_record, {
 			{iteration_no},
 			{std::chrono::high_resolution_clock::now()},
 			{latest_pose.pose.sensor_time},
 		}});
-
-		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
-
 
 #ifndef NDEBUG
 		// TODO (implement-logging): When we have logging infra, delete this code.
