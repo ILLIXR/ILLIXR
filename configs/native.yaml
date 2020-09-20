@@ -1,6 +1,7 @@
 plugins:
   - path: ground_truth_slam/
   - path: offline_imu_cam/
+  - path: imu_integrator/
   - path: open_vins/
   - path: pose_prediction/
   - path: gldemo/
