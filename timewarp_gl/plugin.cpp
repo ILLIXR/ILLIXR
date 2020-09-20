@@ -71,7 +71,9 @@ private:
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 1.0;
+
+	// Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
+	static constexpr double DELAY_FRACTION = 0.8;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
