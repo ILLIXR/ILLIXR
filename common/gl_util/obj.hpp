@@ -57,9 +57,19 @@ namespace ILLIXR {
 
 			std::string warn, err;
 
-			std::string obj_file = std::getenv("ILLIXR_OBJ_DATA") + std::string("/") + obj_filename;
+			// Environment variable ILLIXR_OBJ_DATA points to the
+			// directory in which the obj files ought to reside.
+			const char* obj_path = std::getenv("ILLIXR_OBJ_DATA");
+			if(!obj_path) {
+				std::cerr << "Please define ILLIXR_OBJ_DATA" << std::endl;
+				abort();
+			}
 
-			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), std::getenv("ILLIXR_OBJ_DATA"));
+			std::string obj_file = obj_path + std::string("/") + obj_filename;
+
+			// We pass obj_path as the last argument to LoadObj to let us load
+			// any material (.mtl) files associated with the .obj in the same directory.
+			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_path);
 			if(!warn.empty()){
 #ifndef NDEBUG
 				std::cout << "[OBJ WARN] " << warn << std::endl;
@@ -90,7 +100,7 @@ namespace ILLIXR {
 						// If we haven't loaded the texture yet...
 						if(textures.find(mp->diffuse_texname) == textures.end()){
 							
-							std::string filename = std::getenv("ILLIXR_OBJ_DATA") + std::string("/") + mp->diffuse_texname;
+							std::string filename = obj_path + std::string("/") + mp->diffuse_texname;
 
 							int x,y,n;
 							unsigned char* texture_data = stbi_load(filename.c_str(), &x, &y, &n, 0);
