@@ -223,9 +223,6 @@ namespace ILLIXR {
 			
 		}
 
-		~ObjScene() {
-		}
-
 		void Draw() {
 			for(auto obj : objects){
 				obj.Draw();
