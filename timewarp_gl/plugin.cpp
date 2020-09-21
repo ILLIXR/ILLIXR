@@ -234,30 +234,30 @@ private:
 	}
 
 	/* Calculate timewarm transform from projection matrix, view matrix, etc */
-	void CalculateTimeWarpTransform( Eigen::Matrix4f * transform, const Eigen::Matrix4f * renderProjectionMatrix,
-                                        const Eigen::Matrix4f * renderViewMatrix, const Eigen::Matrix4f * newViewMatrix )
+	void CalculateTimeWarpTransform( Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
+                                        const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix )
 	{
 		// Eigen stores matrices internally in column-major order.
 		// However, the (i,j) accessors are row-major (i.e, the first argument
 		// is which row, and the second argument is which column.)
 		Eigen::Matrix4f texCoordProjection;
-		texCoordProjection <<  0.5f * (*renderProjectionMatrix)(0,0),         0.0f,                                          0.5f * (*renderProjectionMatrix)(0,2) - 0.5f,  0.0f ,
-							   0.0f,                                          0.5f * (*renderProjectionMatrix)(1,1),         0.5f * (*renderProjectionMatrix)(1,2) - 0.5f,  0.0f ,
-							   0.0f,                                          0.0f,                                         -1.0f,                                          0.0f ,
-							   0.0f,                                          0.0f,                                          0.0f,                                          1.0f;
+		texCoordProjection <<  0.5f * renderProjectionMatrix(0,0),            0.0f,                                          0.5f * renderProjectionMatrix(0,2) - 0.5f, 0.0f ,
+							   0.0f,                                          0.5f * renderProjectionMatrix(1,1),            0.5f * renderProjectionMatrix(1,2) - 0.5f, 0.0f ,
+							   0.0f,                                          0.0f,                                         -1.0f,                                      0.0f ,
+							   0.0f,                                          0.0f,                                          0.0f,                                      1.0f;
 
 		// Calculate the delta between the view matrix used for rendering and
 		// a more recent or predicted view matrix based on new sensor input.
-		Eigen::Matrix4f inverseRenderViewMatrix = renderViewMatrix->inverse();
+		Eigen::Matrix4f inverseRenderViewMatrix = renderViewMatrix.inverse();
 
-		Eigen::Matrix4f deltaViewMatrix = (inverseRenderViewMatrix) * (*newViewMatrix);
+		Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
 
 		deltaViewMatrix(0,3) = 0.0f;
 		deltaViewMatrix(1,3) = 0.0f;
 		deltaViewMatrix(2,3) = 0.0f;
 
 		// Accumulate the transforms.
-		*transform = (texCoordProjection * deltaViewMatrix);
+		transform = texCoordProjection * deltaViewMatrix;
 	}
 
 	// Get the estimated time of the next swap/next Vsync.
@@ -449,8 +449,8 @@ public:
 		Eigen::Matrix4f timeWarpEndTransform4x4;
 
 		// Calculate timewarp transforms using predictive view transforms
-		CalculateTimeWarpTransform(&timeWarpStartTransform4x4, &basicProjection, &viewMatrix, &viewMatrixBegin);
-		CalculateTimeWarpTransform(&timeWarpEndTransform4x4, &basicProjection, &viewMatrix, &viewMatrixEnd);
+		CalculateTimeWarpTransform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
+		CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
 		glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)(timeWarpStartTransform4x4.data()));
 		glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)(timeWarpEndTransform4x4.data()));
