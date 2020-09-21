@@ -1,14 +1,25 @@
 #pragma once
 
 namespace ILLIXR {
-	class math_util {
-		public:
-
+	namespace math_util {
 
 		// Calculates a projection matrix with given properties. Implementation
 		// borrowed from J.M.P. Van Waveren's ksAlgebra library, as found in
 		// https://github.com/KhronosGroup/Vulkan-Samples-Deprecated/blob/master/samples/apps/atw/atw_opengl.c
-		static void projection_fov(Eigen::Matrix4f* result,
+		void projection_fov(Eigen::Matrix4f* result,
+								   const float fovLeft, const float fovRight,
+								   const float fovUp, const float fovDown,
+								   const float nearZ, const float farZ);
+
+		// Calculates a projection matrix with given properties. Implementation
+		// borrowed from J.M.P. Van Waveren's ksAlgebra library, as found in
+		// https://github.com/KhronosGroup/Vulkan-Samples-Deprecated/blob/master/samples/apps/atw/atw_opengl.c
+		void projection( Eigen::Matrix4f* result,
+								const float tanAngleLeft, const float tanAngleRight,
+                                const float tanAngleUp, float const tanAngleDown,
+								const float nearZ, const float farZ );
+
+		void projection_fov(Eigen::Matrix4f* result,
 								   const float fovLeft, const float fovRight,
 								   const float fovUp, const float fovDown,
 								   const float nearZ, const float farZ) {
@@ -22,10 +33,7 @@ namespace ILLIXR {
 			projection(result, tanLeft, tanRight, tanUp, tanDown, nearZ, farZ );
 		}
 
-		// Calculates a projection matrix with given properties. Implementation
-		// borrowed from J.M.P. Van Waveren's ksAlgebra library, as found in
-		// https://github.com/KhronosGroup/Vulkan-Samples-Deprecated/blob/master/samples/apps/atw/atw_opengl.c
-		static void projection( Eigen::Matrix4f* result,
+		void projection( Eigen::Matrix4f* result,
 								const float tanAngleLeft, const float tanAngleRight,
                                 const float tanAngleUp, float const tanAngleDown,
 								const float nearZ, const float farZ ) {
