@@ -237,6 +237,9 @@ private:
 	void CalculateTimeWarpTransform( Eigen::Matrix4f * transform, const Eigen::Matrix4f * renderProjectionMatrix,
                                         const Eigen::Matrix4f * renderViewMatrix, const Eigen::Matrix4f * newViewMatrix )
 	{
+		// Eigen stores matrices internally in column-major order.
+		// However, the (i,j) accessors are row-major (i.e, the first argument
+		// is which row, and the second argument is which column.)
 		Eigen::Matrix4f texCoordProjection;
 		texCoordProjection <<  0.5f * (*renderProjectionMatrix)(0,0),         0.0f,                                          0.5f * (*renderProjectionMatrix)(0,2) - 0.5f,  0.0f ,
 							   0.0f,                                          0.5f * (*renderProjectionMatrix)(1,1),         0.5f * (*renderProjectionMatrix)(1,2) - 0.5f,  0.0f ,
