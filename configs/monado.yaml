@@ -3,9 +3,9 @@ plugins:
   - path: offline_imu_cam/
   - path: open_vins/
   - path: pose_prediction/
-  - path: gldemo/
+  # - path: gldemo/
   - path: timewarp_gl/
-  - path: debugview/
+  # - path: debugview/
   - path: audio_pipeline/
   # - path: holgoram/
   # - path: zed/
@@ -15,8 +15,9 @@ loader:
   name: monado
   monado:
     path: ../monado_integration
-    config: {}
+    config:
+      ILLIXR_PATH: ../../ILLIXR
   openxr_app:
     path: ../Monado_OpenXR_Simple_Example
     config: {}
-profile: dbg
+profile: opt
