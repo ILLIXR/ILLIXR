@@ -1,7 +1,7 @@
 # ILLIXR
 
-![Tests](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)
-
+[![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE.md)
+[![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/ILLIXR/community)
 
 <a href="https://www.youtube.com/watch?v=5GXsUP9_34U"><img alt="ILLIXR Simple Demo" src="https://img.youtube.com/vi/5GXsUP9_34U/0.jpg" style="width: 480px"></a>
