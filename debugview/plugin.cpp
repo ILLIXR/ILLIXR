@@ -15,8 +15,8 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/shader_util.hpp"
+#include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
-#include "utils/algebra.hpp"
 #include "block_i.hpp"
 #include "demo_model.hpp"
 #include "headset_model.hpp"
@@ -358,15 +358,16 @@ public:
         	glfwGetFramebufferSize(gui_window, &display_w, &display_h);
 			glViewport(0, 0, display_w, display_h);
 			float ratio = (float)display_h / (float)display_w;
-			// Construct a basic perspective projection
-			ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f * ratio, 40.0f * ratio, 0.03f, 20.0f );
 
+			// Construct a basic perspective projection
+			math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f * ratio, 40.0f * ratio, 0.03f, 20.0f );
+			
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1);
 
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
+			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 
 			glBindVertexArray(demo_vao);
 			
@@ -440,7 +441,7 @@ private:
 	// Headset debug model
 	DebugDrawable headsetObject = DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
-	ksAlgebra::ksMatrix4x4f basicProjection;
+	Eigen::Matrix4f basicProjection;
 
 public:
 	/* compatibility interface */
@@ -567,7 +568,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		// Construct a basic perspective projection
-		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
+		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
 		glfwMakeContextCurrent(NULL);
 
