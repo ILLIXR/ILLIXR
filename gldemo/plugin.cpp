@@ -276,7 +276,6 @@ private:
 
 	ObjScene* demoscene;
 
-
 	Eigen::Matrix4f basicProjection;
 
 	double lastTime;

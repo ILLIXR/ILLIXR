@@ -69,7 +69,9 @@ private:
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 0.5;
+
+	// Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
+	static constexpr double DELAY_FRACTION = 0.8;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
@@ -249,9 +251,15 @@ private:
 		// Calculate the delta between the view matrix used for rendering and
 		// a more recent or predicted view matrix based on new sensor input.
 		Eigen::Matrix4f inverseRenderViewMatrix = renderViewMatrix.inverse();
+<<<<<<< HEAD
 
 		Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
 
+=======
+
+		Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
+
+>>>>>>> master
 		deltaViewMatrix(0,3) = 0.0f;
 		deltaViewMatrix(1,3) = 0.0f;
 		deltaViewMatrix(2,3) = 0.0f;
@@ -542,6 +550,12 @@ public:
 
 		glXSwapBuffers(xwin->dpy, xwin->win);
 
+		// The swap time needs to be obtained and published as soon as possible
+		lastSwapTime = std::chrono::high_resolution_clock::now();
+
+		// Now that we have the most recent swap time, we can publish the new estimate.
+		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+
 #ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
@@ -565,17 +579,11 @@ public:
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 
-		lastSwapTime = std::chrono::high_resolution_clock::now();
-
 		mtp_logger.log(record{mtp_record, {
 			{iteration_no},
 			{std::chrono::high_resolution_clock::now()},
 			{latest_pose.pose.sensor_time},
 		}});
-
-		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
-
 
 #ifndef NDEBUG
 		// TODO (implement-logging): When we have logging infra, delete this code.
