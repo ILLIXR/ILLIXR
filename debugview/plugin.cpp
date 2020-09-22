@@ -317,10 +317,7 @@ public:
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
 			headset->Draw();
-			// glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-			// headsetObject.color = {0.2,0.2,0.2,1};
-			// headsetObject.drawMe();
-
+			
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
