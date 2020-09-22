@@ -251,15 +251,9 @@ private:
 		// Calculate the delta between the view matrix used for rendering and
 		// a more recent or predicted view matrix based on new sensor input.
 		Eigen::Matrix4f inverseRenderViewMatrix = renderViewMatrix.inverse();
-<<<<<<< HEAD
 
 		Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
 
-=======
-
-		Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
-
->>>>>>> master
 		deltaViewMatrix(0,3) = 0.0f;
 		deltaViewMatrix(1,3) = 0.0f;
 		deltaViewMatrix(2,3) = 0.0f;
