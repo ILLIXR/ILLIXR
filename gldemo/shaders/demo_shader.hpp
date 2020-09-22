@@ -22,8 +22,5 @@ static const char* const demo_fragment_shader =
     "in mediump vec2 uv;\n"
     "out lowp vec4 outcolor;\n"
     "void main() {\n"
-    // "    float dist = gl_FragCoord.z/gl_FragCoord.w;\n"
-    // "    outcolor = u_color + vec4(1.0, 1.0, 1.0,1.0) * clamp(dist* 0.03, 0., 1.) * 0.7f;"
-    // "    outcolor = outcolor * (0.9 + clamp(dot(norm, vec3(1., 0.7, 0.3)), 0., 1.) * 0.3);"
     "       outcolor = texture(main_tex, uv);\n"
     "}\n";

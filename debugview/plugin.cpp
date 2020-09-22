@@ -18,10 +18,7 @@
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/gl_util/obj.hpp"
-#include "block_i.hpp"
-#include "demo_model.hpp"
-#include "headset_model.hpp"
-#include "shaders/blocki_shader.hpp"
+#include "shaders/demo_shader.hpp"
 #include <opencv2/opencv.hpp>
 #include <cmath>
 
