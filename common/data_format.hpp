@@ -13,8 +13,6 @@
 //#undef Complex // For 'Complex' conflict
 #include "phonebook.hpp"
 #include "switchboard.hpp"
-#include "../open_vins/ov_msckf/src/core/VioManager.h"
-#include "../open_vins/ov_msckf/src/state/State.h"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
@@ -96,13 +94,16 @@ namespace ILLIXR {
 	} hologram_output;
 
 	typedef struct {
-		int seq;
-		time_type time;
-	} imu_integrator_input;
+		int seq;		
+	} imu_integrator_seq;
 
 	typedef struct {
-		ov_msckf::VioManager *open_vins_estimator;
-	} ov_estimator;
+		double t_offset;
+		double last_cam_integration_time;
+		Eigen::VectorXd imu_value;
+		Eigen::VectorXd imu_fej;
+		Eigen::Matrix<double,3,1> gravity;
+	} imu_integrator_input;
 
 	/* I use "accel" instead of "3-vector" as a datatype, because
 	this checks that you meant to use an acceleration in a certain

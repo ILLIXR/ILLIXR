@@ -116,6 +116,7 @@ public:
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
+        , _m_imu_integrator{sb->publish<imu_integrator_seq>("imu_integrator_seq")};
         , it_log{record_logger_}
     {
         camera_thread_.start();
@@ -177,6 +178,11 @@ protected:
             imu_time,
         });
 
+        auto imu_integrator_params = new imu_integrator_seq{
+			.seq = static_cast<int>(++_imu_integrator_seq),
+		};
+		_m_imu_integrator->put(imu_integrator_params);
+
         last_imu_ts = sensors_data.imu.timestamp;
     }
 
@@ -187,6 +193,7 @@ private:
     const std::shared_ptr<switchboard> sb;
     std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
     std::unique_ptr<reader_latest<cam_type>> _m_cam_type;
+    std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
 
     // IMU
     SensorsData sensors_data;
@@ -199,6 +206,7 @@ private:
     ullong imu_time;
 
     std::size_t last_serial_no {0};
+    long long _imu_integrator_seq{0};
 
     // Logger
     record_coalescer it_log;

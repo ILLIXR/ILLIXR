@@ -65,7 +65,7 @@ def pathify(path: Union[Path, str], base: Union[Path, str], should_exist=True):
     return ret
 
 
-async def gather_aws(*aws, sync: bool = False):
+async def gather_aws(*aws, sync: bool = True):
     if sync:
         return [
             await aw
