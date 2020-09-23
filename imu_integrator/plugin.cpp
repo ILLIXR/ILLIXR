@@ -51,8 +51,6 @@ public:
         data.wm = (datum->angular_v).cast<double>();
         data.am = (datum->linear_a).cast<double>();
 		_imu_vec.emplace_back(data);
-		// std::cout << "Difference between current and previous IMU: " << timestamp_in_seconds - last_imu_time << std::endl;
-		// last_imu_time = timestamp_in_seconds;
 
 		clean_imu_vec(timestamp_in_seconds);
         propogate_imu_values(timestamp_in_seconds);
@@ -71,13 +69,12 @@ private:
 	std::vector<ov_msckf::Propagator::IMUDATA> _imu_vec;
 	double last_imu_offset;
 	bool has_last_offset = false;
+	long long _seq_expect, _stat_processed, _stat_missed;
+
 	int counter = 0;
-	double last_cam_time = 0;
 	int cam_count = 0;
 	int total_imu = 0;
-	double last_imu_time = 0;
-
-	long long _seq_expect, _stat_processed, _stat_missed;
+	double last_cam_time = 0;
 
 	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
 	void clean_imu_vec(double timestamp) {
@@ -103,15 +100,16 @@ private:
 			has_last_offset = true;
 		}
 
-		total_imu++;
-		if (input_values->last_cam_integration_time > last_cam_time) {
-			cam_count++;
-			last_cam_time = input_values->last_cam_integration_time;
-			std::cout << "Num IMUs recieved since last cam: " << counter << " Diff between new cam and latest IMU: " 
-					  << timestamp - last_cam_time << " Expected IMUs recieved VS Actual: " << cam_count*10 << ", " << total_imu << std::endl;
-			counter = 0;
-		}
-		counter++;
+		// Uncomment this for some helpful prints
+		// total_imu++;
+		// if (input_values->last_cam_integration_time > last_cam_time) {
+		// 	cam_count++;
+		// 	last_cam_time = input_values->last_cam_integration_time;
+		// 	std::cout << "Num IMUs recieved since last cam: " << counter << " Diff between new cam and latest IMU: " 
+		// 			  << timestamp - last_cam_time << " Expected IMUs recieved VS Actual: " << cam_count*10 << ", " << total_imu << std::endl;
+		// 	counter = 0;
+		// }
+		// counter++;
 
 		// Get what our IMU-camera offset should be (t_imu = t_cam + calib_dt)
 		double t_off_new = input_values->t_offset;
@@ -120,11 +118,7 @@ private:
 		double time0 = input_values->last_cam_integration_time + last_imu_offset;
 		double time1 = timestamp + t_off_new;
 
-		// std::cout << "ASDASDASDD " << time1 - time0 << std::endl;
-
 		vector<ov_msckf::Propagator::IMUDATA> prop_data = select_imu_readings(_imu_vec, time0, time1);
-		// vector<ov_msckf::Propagator::IMUDATA> prop_data = _imu_vec;
-
 		ov_type::IMU *temp_imu = new ov_type::IMU();
 		temp_imu->set_value(input_values->imu_value);
 		temp_imu->set_fej(input_values->imu_fej);
