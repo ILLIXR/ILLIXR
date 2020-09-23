@@ -98,6 +98,7 @@ namespace ILLIXR {
 	} imu_integrator_seq;
 
 	typedef struct {
+		bool slam_ready;
 		double t_offset;
 		double last_cam_integration_time;
 		Eigen::VectorXd imu_value;

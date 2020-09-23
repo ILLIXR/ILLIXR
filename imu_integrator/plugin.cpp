@@ -91,7 +91,7 @@ private:
 	// Timestamp we are propogating the biases to (new IMU reading time)
 	void propogate_imu_values(double timestamp) {
 		const imu_integrator_input *input_values = _m_imu_integrator_input->get_latest_ro();
-		if (input_values == NULL) {
+		if (input_values == NULL || !input_values->slam_ready) {
 			return;
 		}
 
