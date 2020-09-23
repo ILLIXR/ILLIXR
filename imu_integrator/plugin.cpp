@@ -51,6 +51,8 @@ public:
         data.wm = (datum->angular_v).cast<double>();
         data.am = (datum->linear_a).cast<double>();
 		_imu_vec.emplace_back(data);
+		// std::cout << "Difference between current and previous IMU: " << timestamp_in_seconds - last_imu_time << std::endl;
+		// last_imu_time = timestamp_in_seconds;
 
 		clean_imu_vec(timestamp_in_seconds);
         propogate_imu_values(timestamp_in_seconds);
@@ -67,6 +69,13 @@ private:
 	// IMU Biases
 	std::unique_ptr<writer<imu_raw_type>> _m_imu_raw;
 	std::vector<ov_msckf::Propagator::IMUDATA> _imu_vec;
+	double last_imu_offset;
+	bool has_last_offset = false;
+	int counter = 0;
+	double last_cam_time = 0;
+	int cam_count = 0;
+	int total_imu = 0;
+	double last_imu_time = 0;
 
 	long long _seq_expect, _stat_processed, _stat_missed;
 
@@ -89,14 +98,29 @@ private:
 			return;
 		}
 
+		if (!has_last_offset) {
+			last_imu_offset = input_values->t_offset;
+			has_last_offset = true;
+		}
+
+		total_imu++;
+		if (input_values->last_cam_integration_time > last_cam_time) {
+			cam_count++;
+			last_cam_time = input_values->last_cam_integration_time;
+			std::cout << "Num IMUs recieved since last cam: " << counter << " Diff between new cam and latest IMU: " 
+					  << timestamp - last_cam_time << " Expected IMUs recieved VS Actual: " << cam_count*10 << ", " << total_imu << std::endl;
+			counter = 0;
+		}
+		counter++;
+
 		// Get what our IMU-camera offset should be (t_imu = t_cam + calib_dt)
 		double t_off_new = input_values->t_offset;
 
 		// This is the last CAM time
-		double time0 = input_values->last_cam_integration_time + t_off_new;
+		double time0 = input_values->last_cam_integration_time + last_imu_offset;
 		double time1 = timestamp + t_off_new;
 
-		std::cout << "ASDASDASDD " << time1 - time0 << std::endl;
+		// std::cout << "ASDASDASDD " << time1 - time0 << std::endl;
 
 		vector<ov_msckf::Propagator::IMUDATA> prop_data = select_imu_readings(_imu_vec, time0, time1);
 		// vector<ov_msckf::Propagator::IMUDATA> prop_data = _imu_vec;

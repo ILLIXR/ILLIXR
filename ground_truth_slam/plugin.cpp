@@ -30,7 +30,7 @@ public:
 		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
-			std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+			// std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
 			return;
 		}
 

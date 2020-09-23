@@ -73,14 +73,15 @@ protected:
 			: std::nullopt
 			;
 
-		_m_imu_cam->put(new imu_cam_type{
+		auto datum = new imu_cam_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
 			cam0,
 			cam1,
 			dataset_now,
-		});
+		};
+		_m_imu_cam->put(datum);
 
 		auto imu_integrator_params = new imu_integrator_seq{
 			.seq = static_cast<int>(++_imu_integrator_seq),
