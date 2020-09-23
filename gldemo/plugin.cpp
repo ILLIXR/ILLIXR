@@ -10,8 +10,8 @@
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
+#include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
-#include "utils/algebra.hpp"
 #include "block_i.hpp"
 #include "demo_model.hpp"
 #include "shaders/blocki_shader.hpp"
@@ -20,6 +20,10 @@ using namespace ILLIXR;
 
 static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
+
+static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
+
+static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
 // Monado-style eyebuffers:
 // These are two eye textures; however, each eye texture
@@ -47,6 +51,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
+		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
 #ifdef USE_ALT_EYE_FORMAT
 		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
 #else
@@ -112,6 +117,60 @@ public:
 		glFrontFace(GL_CCW);
 	}
 
+	// Essentially, a crude equivalent of XRWaitFrame.
+	void wait_vsync()
+	{
+		using namespace std::chrono_literals;
+		const time_type* next_vsync = vsync->get_latest_ro();
+		time_type now = std::chrono::high_resolution_clock::now();
+
+		time_type wait_time;
+
+		if(next_vsync == nullptr)
+		{
+			// If no vsync data available, just sleep for roughly a vsync period.
+			// We'll get synced back up later.
+			std::this_thread::sleep_for(vsync_period);
+			return;
+		}
+
+#ifndef NDEBUG
+		std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
+		printf("\033[1;32m[GL DEMO APP]\033[0m First vsync is in %4fms\n", vsync_in.count());
+#endif
+		
+		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
+
+		// If less than one frame interval has passed since we last rendered...
+		if(hasRenderedThisInterval)
+		{
+			// We'll wait until the next vsync, plus a small delay time.
+			// Delay time helps with some inaccuracies in scheduling.
+			wait_time = *next_vsync + VSYNC_DELAY_TIME;
+
+			// If our sleep target is in the past, bump it forward
+			// by a vsync period, so it's always in the future.
+			while(wait_time < now)
+			{
+				wait_time += vsync_period;
+			}
+#ifndef NDEBUG
+			std::chrono::duration<double, std::milli> wait_in = wait_time - now;
+			printf("\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in %4fms\n", wait_in.count());
+#endif
+		} else {
+#ifndef NDEBUG
+			printf("\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately.");
+#endif
+			return;
+		}
+
+		// Perform the sleep.
+		// TODO: Consider using Monado-style sleeping, where we nanosleep for
+		// most of the wait, and then spin-wait for the rest?
+		std::this_thread::sleep_until(wait_time);
+	}
+
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
@@ -120,9 +179,10 @@ public:
 	void _p_one_iteration() override {
 		{
 			using namespace std::chrono_literals;
-			// This "app" is "very slow"!
-			//std::this_thread::sleep_for(cosf(glfwGetTime()) * 50ms + 100ms);
-			std::this_thread::sleep_for(16ms);
+
+			// Essentially, XRWaitFrame.
+			wait_vsync();
+
 			glUseProgram(demoShaderProgram);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
@@ -132,40 +192,23 @@ public:
 
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
-			ksAlgebra::ksMatrix4x4f modelViewMatrix;
+			Eigen::Matrix4f modelViewMatrix;
 
-			// Model matrix is just a spinny fun animation
-			ksAlgebra::ksMatrix4x4f modelMatrix;
-			ksAlgebra::ksMatrix4x4f_CreateTranslation(&modelMatrix, 0, 0, 0);
+			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
 			{
 				const fast_pose_type fast_pose = pp->get_fast_pose();
 				const pose_type pose = fast_pose.pose;
 
-				Eigen::Quaternionf combinedQuat = pose.orientation;
+				// Build our head matrix from the pose's position + orientation.
+				Eigen::Matrix4f head_matrix = Eigen::Matrix4f::Identity();
+				head_matrix.block<3,1>(0,3) = pose.position;
+				head_matrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
 
-				auto latest_quat = ksAlgebra::ksQuatf {
-					.x = combinedQuat.x(),
-					.y = combinedQuat.y(),
-					.z = combinedQuat.z(),
-					.w = combinedQuat.w()
-				};
+				// View matrix is inverse of head matrix.
+				Eigen::Matrix4f viewMatrix = head_matrix.inverse();
 
-				auto latest_position = ksAlgebra::ksVector3f {
-					.x = pose.position[0] + 5.0f,
-					.y = pose.position[1] + 2.0f,
-					.z = pose.position[2] + -3.0f
-				};
-				auto scale = ksAlgebra::ksVector3f{1,1,1};
-				ksAlgebra::ksMatrix4x4f head_matrix;
-#ifndef NDEBUG
-				std::cout<< "App using position: " << latest_position.z << std::endl;
-#endif
-				ksAlgebra::ksMatrix4x4f_CreateTranslationRotationScale(&head_matrix, &latest_position, &latest_quat, &scale);
-				ksAlgebra::ksMatrix4x4f viewMatrix;
-				// View matrix is the inverse of the camera's position/rotation/etc.
-				ksAlgebra::ksMatrix4x4f_Invert(&viewMatrix, &head_matrix);
-				ksAlgebra::ksMatrix4x4f_Multiply(&modelViewMatrix, &viewMatrix, &modelMatrix);
+				modelViewMatrix = modelMatrix * viewMatrix;
 			}
 
 			glUseProgram(demoShaderProgram);
@@ -174,8 +217,8 @@ public:
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1);
 
-			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)&(modelViewMatrix.m[0][0]));
-			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
+			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
+			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 
 			glBindVertexArray(demo_vao);
 
@@ -273,7 +316,8 @@ private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
-	
+	const std::unique_ptr<reader_latest<time_type>> vsync;
+
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
@@ -312,7 +356,7 @@ private:
 	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
 
-	ksAlgebra::ksMatrix4x4f basicProjection;
+	Eigen::Matrix4f basicProjection;
 
 	double lastTime;
 
@@ -481,7 +525,7 @@ public:
 		);
 		
 		// Construct a basic perspective projection
-		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
+		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
