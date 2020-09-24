@@ -2,8 +2,7 @@ name: illixr-tests-forked-pr
 
 on:
   pull_request_target:
-    branches: [ master ]
-    paths-ignore: [ '.github/**' ]
+    types: [assigned, opened, edited, synchronize, reopened]
 
 jobs:
   illixr-tests-pr:
