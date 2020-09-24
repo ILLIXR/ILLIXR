@@ -2,7 +2,6 @@ name: illixr-tests-forked-pr
 
 on:
   pull_request_target:
-    types: [opened, edited, synchronize]
     branches:
     - master
     ignore-paths:
