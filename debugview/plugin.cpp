@@ -173,7 +173,7 @@ public:
 		ImGui::Text("Slow pose topic:");
 		ImGui::SameLine();
 
-		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
+		const pose_type *slow_pose_ptr = _m_slow_pose->get_latest_ro();
 		if(slow_pose_ptr){
 			pose_type swapped_pose;
 
@@ -183,12 +183,11 @@ public:
 			swapped_pose.position.y() = slow_pose_ptr->position.z();
 			swapped_pose.position.z() = -slow_pose_ptr->position.x();
 
-			
 			// There is a slight issue with the orientations: basically,
 			// the output orientation acts as though the "top of the head" is the
 			// forward direction, and the "eye direction" is the up direction.
 			Eigen::Quaternionf raw_o (slow_pose_ptr->orientation.w(), -slow_pose_ptr->orientation.y(), slow_pose_ptr->orientation.z(), -slow_pose_ptr->orientation.x());
-			swapped_pose.orientation = raw_o;
+			swapped_pose.orientation = raw_o * pp->get_offset();
 
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
 			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
