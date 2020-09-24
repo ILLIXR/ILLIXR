@@ -16,7 +16,7 @@ jobs:
         with:
           submodules: recursive
 
-      - if: ${{ env.ghcr_token }} != ''
+      - if: ${{ env.ghcr_token }} != ' '
         name: Login to ghcr.io
         run: echo ${{ env.ghcr_token }} | docker login ghcr.io -u illixr-ci --password-stdin
 
