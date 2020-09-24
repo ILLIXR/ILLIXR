@@ -6,6 +6,8 @@ on:
 
 jobs:
   illixr-tests-pr:
+    env:
+      ghcr_token: ${{ secrets.GHCR_TOKEN }}
     runs-on: ubuntu-18.04
     steps:
       - name: Check Secrets Token
@@ -21,7 +23,7 @@ jobs:
 
       # - if: steps.ghcr_token.token != ''
       - name: Login to ghcr.io
-        run: echo ${{ steps.ghcr_token.token }} | docker login ghcr.io -u illixr-ci --password-stdin
+        run: echo ${{ env.ghcr_token }} | docker login ghcr.io -u illixr-ci --password-stdin
 
       - name: Extract Branch Name
         shell: bash
@@ -37,7 +39,7 @@ jobs:
       - name: Build Docker Image
         run: docker build --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
-      - if: steps.ghcr_token.token != ''
+      - if: ${{ env.ghcr_token }} != ''
         name: Push Docker Image
         run: docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
@@ -46,7 +48,7 @@ jobs:
         name: Tag Master Docker Image As Latest
         run: docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest
 
-      - if: steps.ghcr_token.token != ''
+      - if: ${{ env.ghcr_token }} != ''
         name: Pull Docker Image
         run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
