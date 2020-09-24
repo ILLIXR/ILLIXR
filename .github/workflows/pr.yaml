@@ -11,7 +11,7 @@ jobs:
       - if: secrets.GHCR_TOKEN == ''
         name: TESTING STUFF
         shell: bash
-        run: echo "${{ github.repository_owner }}"
+        run: echo "ugh"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
