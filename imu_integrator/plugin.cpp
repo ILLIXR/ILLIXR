@@ -28,7 +28,8 @@ public:
 	virtual skip_option _p_should_skip() override {
 		auto in = _m_in->get_latest_ro();
 		if (!in || in->seq == _seq_expect-1) {
-			// No new data, sleep
+			// No new data, sleep to keep CPU utilization low
+			std::this_thread::sleep_for(std::chrono::milliseconds{1});
 			return skip_option::skip_and_yield;
 		} else {
 			if (in->seq != _seq_expect) {
