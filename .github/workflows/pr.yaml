@@ -8,17 +8,17 @@ jobs:
   illixr-tests-pr:
     runs-on: ubuntu-18.04
     steps:
-      - if: ${{ secrets.GHCR_TOKEN }} == ''
-        name: TESTING STUFF
+      - name: TESTING STUFF
         shell: bash
-        run: echo "ugh"
+        run: echo "##[set-output name=token;]$(echo ${{ secrets.GHCR_TOKEN }})"
+        id: ghcr_token
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
         with:
           submodules: recursive
 
-      - if: github.head_ref == ''
+      - if: steps.ghcr_token.token == ''
         name: Login to ghcr.io
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
 
