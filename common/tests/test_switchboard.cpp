@@ -22,11 +22,11 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 	typedef switchboard::event_wrapper<uint64_t> uint64_wrapper;
 	const uint64_t MAX_ITERATIONS = 100;
 
-	switchboard sb;
+	switchboard sb {nullptr};
 
 	uint64_t last_m6p0 = 0;
 	uint64_t last_m6p3 = 3;
-	sb.schedule<uint64_wrapper>("multiples_of_three", [&](ptr<const uint64_wrapper> datum) {
+	sb.schedule<uint64_wrapper>("multiples_of_three", [&](switchboard::ptr<const uint64_wrapper> datum) {
 		std::cerr << "callbk-0 " << *datum << std::endl;
 		ASSERT_TRUE(*datum % 3 == 0);
 		if (*datum % 6 == 0) {
@@ -74,7 +74,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 
 			 for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
 				 if (reader.valid()) {
-					 ptr<const uint64_wrapper> datum = reader.get_latest_ro();
+					 switchboard::ptr<const uint64_wrapper> datum = reader.get_latest_ro();
 					 std::cerr << "reader-0 " << *datum << std::endl;
 					 ASSERT_TRUE(*datum % 3 == 0);
 					 if (*datum % 6 == 0) {
@@ -103,19 +103,23 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 
 			 for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
 				 if (reader.valid()) {
-					 ptr<const uint64_wrapper> datum = reader.get_latest_ro();
+					 switchboard::ptr<const uint64_wrapper> datum = reader.get_ro();
 					 std::cerr << "reader-1 " << *datum << std::endl;
 					 ASSERT_TRUE(*datum % 3 == 0);
 					 if (*datum % 6 == 0) {
+						 // Async reader, could have "skipped" values
+						 // Will check <= instead of ==
 						 ASSERT_TRUE(last_m6p0 <= *datum);
 						 last_m6p0 = *datum;
 					 } else {
 						 ASSERT_TRUE((*datum + 3) % 6 == 0);
+						 // Async reader, could have "skipped" values
+						 // Will check <= instead of ==
 						 ASSERT_TRUE(last_m6p3 <= *datum);
 						 last_m6p3 = *datum;
 					 }
 				 } else {
-					 ASSERT_TRUE(!reader.get_latest_ro_nullable());
+					 ASSERT_TRUE(!reader.get_ro_nullable());
 					 ASSERT_TRUE(last_m6p0 == 0);
 					 ASSERT_TRUE(last_m6p3 == 0);
 					 std::cerr << "reader-1 not ready yet" << std::endl;
