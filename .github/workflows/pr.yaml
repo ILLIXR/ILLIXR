@@ -19,8 +19,8 @@ jobs:
         with:
           submodules: recursive
 
-      - if: steps.ghcr_token.token != ''
-        name: Login to ghcr.io
+      # - if: steps.ghcr_token.token != ''
+      - name: Login to ghcr.io
         run: echo ${{ steps.ghcr_token.token }} | docker login ghcr.io -u illixr-ci --password-stdin
 
       - name: Extract Branch Name
