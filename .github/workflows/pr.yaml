@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [ master ]
 
+  pull_request_target:
+    types: [opened, edited, synchronize]
+
 jobs:
   illixr-tests-pr:
     runs-on: ubuntu-18.04
