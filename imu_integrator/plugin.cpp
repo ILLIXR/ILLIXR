@@ -53,7 +53,7 @@ public:
 		_imu_vec.emplace_back(data);
 
 		clean_imu_vec(timestamp_in_seconds);
-        propogate_imu_values(timestamp_in_seconds);
+        propagate_imu_values(timestamp_in_seconds, datum->time);
 	}
 
 private:
@@ -88,8 +88,8 @@ private:
          }
 	}
 
-	// Timestamp we are propogating the biases to (new IMU reading time)
-	void propogate_imu_values(double timestamp) {
+	// Timestamp we are propagating the biases to (new IMU reading time)
+	void propagate_imu_values(double timestamp, time_type real_time) {
 		const imu_integrator_input *input_values = _m_imu_integrator_input->get_latest_ro();
 		if (input_values == NULL || !input_values->slam_ready) {
 			return;
@@ -172,6 +172,7 @@ private:
 			w_hat2,
 			a_hat2,
 			state_plus,
+			real_time
 		});
     }
 
