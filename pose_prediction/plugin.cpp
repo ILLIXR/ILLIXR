@@ -148,7 +148,8 @@ public:
 		return _m_true_pose->get_latest_ro();
 	}
 
-    virtual Eigen::Quaternionf get_offset() override {
+    virtual Eigen::Quaternionf get_offset() const override {
+        std::shared_lock lock {offset_mutex};
         return offset;
     }
 
