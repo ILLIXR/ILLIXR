@@ -1,4 +1,4 @@
-name: illixr-tests-pr
+name: illixr-tests-forked-pr
 
 on:
   pull_request_target:
