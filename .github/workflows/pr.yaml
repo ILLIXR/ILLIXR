@@ -14,7 +14,7 @@ jobs:
         with:
           submodules: recursive
 
-      - if: github.head_ref == ''
+      - if: github.actor == github.event.repository.owner.login
         name: Login to ghcr.io
         run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
 
@@ -32,7 +32,7 @@ jobs:
       - name: Build Docker Image
         run: docker build --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
-      - if: github.head_ref == ''
+      - if: github.actor == github.event.repository.owner.login
         name: Push Docker Image
         run: docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
@@ -41,7 +41,7 @@ jobs:
         name: Tag Master Docker Image As Latest
         run: docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest
 
-      - if: github.head_ref == ''
+      - if: github.actor == github.event.repository.owner.login
         name: Pull Docker Image
         run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
