@@ -11,6 +11,6 @@ public:
 	virtual bool fast_pose_reliable() const = 0;
 	virtual bool true_pose_reliable() const = 0;
 	virtual void set_offset(const Eigen::Quaternionf& orientation) = 0;
-	virtual Eigen::Quaternionf get_offset() = 0;
+	virtual Eigen::Quaternionf get_offset() const = 0;
 	virtual ~pose_prediction() { }
 };
