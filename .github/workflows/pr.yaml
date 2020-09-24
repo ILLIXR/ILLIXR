@@ -1,13 +1,12 @@
 name: illixr-tests-pr
 
 on:
-  pull_request_target:
-    types: [opened, edited, synchronize]
   pull_request:
     branches: [ master ]
 
 jobs:
   illixr-tests-pr:
+    if: github.actor == 'repo-owner'
     runs-on: ubuntu-18.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
