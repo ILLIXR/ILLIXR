@@ -21,7 +21,7 @@ jobs:
 
       - if: steps.ghcr_token.token != ''
         name: Login to ghcr.io
-        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
+        run: echo ${{ steps.ghcr_token.token }} | docker login ghcr.io -u illixr-ci --password-stdin
 
       - name: Extract Branch Name
         shell: bash
