@@ -146,9 +146,7 @@ protected:
 
         // Time as time_point
         using time_point = std::chrono::system_clock::time_point;
-        time_point uptime_timepoint{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
-        std::time_t time2 = std::chrono::system_clock::to_time_t(uptime_timepoint);
-        t = std::chrono::system_clock::from_time_t(time2);
+        time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
@@ -170,7 +168,7 @@ protected:
         }});
 
         _m_imu_cam->put(new imu_cam_type {
-            t,
+            imu_time_point,
             av,
             la,
             img0,
