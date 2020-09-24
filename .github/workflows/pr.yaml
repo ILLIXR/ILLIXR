@@ -22,6 +22,10 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
         id: extract_branch
+      
+      - name: TESTING STUFF
+        shell: bash
+        run: echo "${GITHUB_REPOSITORY}"
 
       # Pulls latest and current branch tag of this container. This allows the docker build to use the cache for faster builds.
       - name: Pull Docker Cache
