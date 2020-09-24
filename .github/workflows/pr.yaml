@@ -10,11 +10,6 @@ jobs:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
     runs-on: ubuntu-18.04
     steps:
-      - name: Check Secrets Token
-        shell: bash
-        run: echo "##[set-output name=token;]$(echo ${{ secrets.GHCR_TOKEN }})"
-        id: ghcr_token
-
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
