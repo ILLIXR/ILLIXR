@@ -116,7 +116,7 @@ public:
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
-        , _m_imu_integrator{sb->publish<imu_integrator_seq>("imu_integrator_seq")};
+        , _m_imu_integrator{sb->publish<imu_integrator_seq>("imu_integrator_seq")}
         , it_log{record_logger_}
     {
         camera_thread_.start();
