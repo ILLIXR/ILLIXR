@@ -8,7 +8,8 @@ jobs:
   illixr-tests-pr:
     runs-on: ubuntu-18.04
     steps:
-      - name: TESTING STUFF
+      - if: github.actor == github.event.repository.owner.login
+        name: TESTING STUFF
         shell: bash
         run: echo "${GITHUB_REPOSITORY}"
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
