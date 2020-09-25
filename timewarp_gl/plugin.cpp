@@ -331,11 +331,7 @@ public:
 		glGenVertexArrays(1, &tw_vao);
     	glBindVertexArray(tw_vao);
 
-    	#ifdef USE_ALT_EYE_FORMAT
-    	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
-    	#else
-		timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
-		#endif
+    	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
 		// Acquire attribute and uniform locations from the compiled and linked shader program
 
     	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
@@ -454,11 +450,6 @@ public:
 
 		glUniform1i(eye_sampler_0, 0);
 
-		#ifndef USE_ALT_EYE_FORMAT
-		// Bind the shared texture handle
-		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
-		#endif
-
 		glBindVertexArray(tw_vao);
 
 		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
@@ -471,9 +462,7 @@ public:
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
 
-			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
 			glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
-			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
 			// the distortion mesh for both eyes! They are contiguously
@@ -500,13 +489,6 @@ public:
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
 			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
 			glEnableVertexAttribArray(distortion_uv2_attr);
-
-
-			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
-			// Specify which layer of the eye texture we're going to be using.
-			// Each eye has its own layer.
-			glUniform1i(tw_eye_index_unif, eye);
-			#endif
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
 			// reused for both eyes. Therefore glDrawElements can be immediately called,

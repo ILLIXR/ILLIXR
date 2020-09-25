@@ -24,6 +24,8 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = ILLIXR::FB_HEIGHT;
 static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
+static constexpr GLenum DEPTH_FORMAT = GL_DEPTH_COMPONENT24;
+
 // Monado-style eyebuffers:
 // These are two eye textures; however, each eye texture
 // represnts a swapchain. eyeTextures[0] is a swapchain of
@@ -170,9 +172,16 @@ public:
 				glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
 				glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 				
+				// Bind the color attachment
 				glBindTexture(GL_TEXTURE_2D, eyeTextures[eye_idx]);
 				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
 				glBindTexture(GL_TEXTURE_2D, 0);
+
+				// Bind the depth attachment
+				glBindTexture(GL_TEXTURE_2D, eyeDepthTextures[eye_idx]);
+				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, eyeDepthTextures[eye_idx], 0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+
 				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
@@ -189,6 +198,8 @@ public:
 			auto frame = new rendered_frame;
 			frame->texture_handles[0] = eyeTextures[0];
 			frame->texture_handles[1] = eyeTextures[1];
+			frame->depth_handles[0] = eyeDepthTextures[0];
+			frame->depth_handles[1] = eyeDepthTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
 
@@ -215,6 +226,7 @@ private:
 	time_type lastFrameTime;
 
 	GLuint eyeTextures[2];
+	GLuint eyeDepthTextures[2];
 	GLuint eyeTextureFBO;
 	GLuint eyeTextureDepthTarget;
 
@@ -264,7 +276,31 @@ private:
 		}
 	}
 
-	void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_target){
+	int createSharedDepthBuffer(GLuint* texture_handle){
+
+		// Create the shared eye texture handle.
+		glGenTextures(1, texture_handle);
+		glBindTexture(GL_TEXTURE_2D, *texture_handle);
+
+		// Set the texture parameters for the texture that the FBO will be
+		// mapped into.
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_FORMAT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+
+		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
+
+		if(glGetError()){
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
+	void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_texture_handle, GLuint* depth_target){
 		// Create a framebuffer to draw some things to the eye texture
 		glGenFramebuffers(1, fbo);
 		// Bind the FBO as the active framebuffer.
@@ -282,6 +318,12 @@ private:
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
     	glBindTexture(GL_TEXTURE_2D, 0);
+
+		// Attach depth texture to depth attachment.
+		glBindTexture(GL_TEXTURE_2D, *depth_texture_handle);
+		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *depth_texture_handle, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 		// attach a renderbuffer to depth attachment point
     	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
 
@@ -322,8 +364,11 @@ public:
 		createSharedEyebuffer(&(eyeTextures[0]));
 		createSharedEyebuffer(&(eyeTextures[1]));
 
+		createSharedDepthBuffer(&(eyeDepthTextures[0]));
+		createSharedDepthBuffer(&(eyeDepthTextures[1]));
+
 		// Initialize FBO and depth targets, attaching to the frame handle
-		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
+		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &(eyeDepthTextures[0]), &eyeTextureDepthTarget);
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);
