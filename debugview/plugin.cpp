@@ -312,11 +312,11 @@ public:
 			glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			demoscene->Draw();
+			demoscene.Draw();
 
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-			headset->Draw();
+			headset.Draw();
 			
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -365,8 +365,8 @@ private:
 
 	GLuint colorUniform;
 
-	ObjScene* demoscene;
-	ObjScene* headset;
+	ObjScene demoscene;
+	ObjScene headset;
 
 	Eigen::Matrix4f basicProjection;
 
@@ -442,8 +442,8 @@ public:
 			abort();
 		}
 
-		demoscene = new ObjScene(std::string(obj_dir), "scene.obj");
-		headset = new ObjScene(std::string(obj_dir), "headset.obj");
+		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
+		headset = ObjScene(std::string(obj_dir), "headset.obj");
 
 		// Generate fun test pattern for missing camera images.
 		for(unsigned x = 0; x < TEST_PATTERN_WIDTH; x++){

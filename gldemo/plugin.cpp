@@ -175,7 +175,7 @@ public:
 				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				
-				demoscene->Draw();
+				demoscene.Draw();
 			}
 
 #ifndef NDEBUG
@@ -233,7 +233,7 @@ private:
 
 	GLuint colorUniform;
 
-	ObjScene* demoscene;
+	ObjScene demoscene;
 
 	Eigen::Matrix4f basicProjection;
 
@@ -346,7 +346,7 @@ public:
 			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
 			abort();
 		}
-		demoscene = new ObjScene(std::string(obj_dir), "scene.obj");
+		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
