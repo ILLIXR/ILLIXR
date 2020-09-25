@@ -86,10 +86,12 @@ namespace ILLIXR {
 			if(!err.empty()){
 				std::cout << "[OBJ ERROR] " << err << std::endl;
 				successfully_loaded_model = false;
+				abort();
 			}
 			if(!success){
 				std::cout << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
 				successfully_loaded_model = false;
+				abort();
 			} else {
 				
 				// OBJ file successfully loaded.
