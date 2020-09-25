@@ -1,6 +1,6 @@
 # ILLIXR
 
-[![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE.md)
+[![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/ILLIXR/community)
 
