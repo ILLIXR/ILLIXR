@@ -107,8 +107,8 @@ void HMD::GetDefaultHmdInfo( const int displayPixelsWide, const int displayPixel
 {
 	hmd_info->displayPixelsWide = displayPixelsWide;
 	hmd_info->displayPixelsHigh = displayPixelsHigh;
-	hmd_info->tilePixelsWide = 32;
-	hmd_info->tilePixelsHigh = 32;
+	hmd_info->tilePixelsWide = 8;
+	hmd_info->tilePixelsHigh = 8;
 	hmd_info->eyeTilesWide = displayPixelsWide / hmd_info->tilePixelsWide / NUM_EYES;
 	hmd_info->eyeTilesHigh = displayPixelsHigh / hmd_info->tilePixelsHigh;
 	hmd_info->visiblePixelsWide = hmd_info->eyeTilesWide * hmd_info->tilePixelsWide * NUM_EYES;

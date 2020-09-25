@@ -51,43 +51,76 @@ const char* const timeWarpChromaticFragmentProgramGLSL =
 	"	outColor.a = 1.0;\n"
 	"}\n";
 
-const char* const meshWarpChromaticVertexProgramGLSL =
+const char* const meshWarpVertexProgramGLSL =
 	"#version " GLSL_VERSION "\n"
 	"uniform highp mat4x4 TimeWarpStartTransform;\n"
 	"uniform highp mat4x4 TimeWarpEndTransform;\n"
+
+	"uniform highp mat4x4 u_renderInverseP;\n"
+	"uniform highp mat4x4 u_renderInverseV;\n"
+	"uniform highp mat4x4 u_warpVP;\n"
+
 	"in highp vec3 vertexPosition;\n"
 	"in highp vec2 vertexUv0;\n"
 	"in highp vec2 vertexUv1;\n"
 	"in highp vec2 vertexUv2;\n"
+	"in highp vec2 flatUv;\n"
+	"uniform highp sampler2D Texture;\n"
+	"uniform highp sampler2D _Depth;\n"
+	"uniform highp float u_NearClip;\n"
+	"uniform highp float u_FarClip;\n"
 	"out mediump vec2 fragmentUv0;\n"
 	"out mediump vec2 fragmentUv1;\n"
 	"out mediump vec2 fragmentUv2;\n"
+	"out mediump vec4 test;\n"
+	"out mediump vec2 warpUv;\n"
 	"out gl_PerVertex { vec4 gl_Position; };\n"
+
 	"void main( void )\n"
 	"{\n"
 	"	gl_Position = vec4( vertexPosition, 1.0 );\n"
 	"\n"
-	"	vec3 startUv0 = vec3(vertexUv0, -1);\n"
-	"	vec3 startUv1 = vec3(vertexUv1, -1);\n"
-	"	vec3 startUv2 = vec3(vertexUv2, -1);\n"
-	"	fragmentUv0 = startUv0.xy * ( 1.0 / max( startUv0.z, 0.00001 ) );\n"
-	"	fragmentUv1 = startUv1.xy * ( 1.0 / max( startUv1.z, 0.00001 ) );\n"
-	"	fragmentUv2 = startUv2.xy * ( 1.0 / max( startUv2.z, 0.00001 ) );\n"
+	// "	float displayFraction = vertexPosition.x * 0.5 + 0.5;\n"	// landscape left-to-right
+	"\n"
+	// "	vec3 startUv0 = (TimeWarpStartTransform * vec4( vertexUv0, -1, 1 )).xyz;\n"
+	// "	vec3 startUv1 = (TimeWarpStartTransform * vec4( vertexUv1, -1, 1 )).xyz;\n"
+	// "	vec3 startUv2 = (TimeWarpStartTransform * vec4( vertexUv2, -1, 1 )).xyz;\n"
+	// "	fragmentUv0 = startUv0.xy * ( 1.0 / max( startUv0.z, 0.00001 ) );\n"
+	// "	fragmentUv1 = startUv1.xy * ( 1.0 / max( startUv1.z, 0.00001 ) );\n"
+	// "	fragmentUv2 = startUv2.xy * ( 1.0 / max( startUv2.z, 0.00001 ) );\n"
+
+	// "	fragmentUv0 = vertexUv0 * 0.7 + vec2(0.5,0.5);\n"
+	// "	fragmentUv1 = vertexUv1 * 0.7 + vec2(0.5,0.5);\n"
+	// "	fragmentUv2 = vertexUv2 * 0.7 + vec2(0.5,0.5);\n"
+
+	"	float z = textureLod(_Depth, flatUv, 0.0).x * 2.0 - 1.0;\n"
+	"	vec4 clipSpacePosition = vec4(flatUv * 2.0 - 1.0, z, 1.0);\n"
+
+	"	vec4 frag_viewspace = u_renderInverseP * clipSpacePosition;\n"
+	"	frag_viewspace /= frag_viewspace.w;\n"
+	"	vec3 frag_worldspace = (u_renderInverseV * frag_viewspace).xyz;\n"
+	"	vec4 result = u_warpVP * vec4(frag_worldspace, 1.0);\n"
+
+	"	result /= abs(result.w);\n"
+	"	gl_Position = result;\n"
+	"	test = result;\n"
+	"	warpUv = flatUv;"
 	"}\n";
 
-const char* const meshWarpChromaticFragmentProgramGLSL =
+const char* const meshWarpFragmentProgramGLSL =
 	"#version " GLSL_VERSION "\n"
-	"uniform int ArrayLayer;\n"
 	"uniform highp sampler2D Texture;\n"
 	"in mediump vec2 fragmentUv0;\n"
 	"in mediump vec2 fragmentUv1;\n"
 	"in mediump vec2 fragmentUv2;\n"
-	"out lowp vec4 outColor;\n"
+	"in mediump vec4 test;\n"
+	"in mediump vec2 warpUv;\n"
+	"out mediump vec4 outColor;\n"
 	"void main()\n"
 	"{\n"
-	"	outColor.r = texture( Texture, fragmentUv0 ).r;\n"
-	"	outColor.g = texture( Texture, fragmentUv1 ).g;\n"
-	"	outColor.b = texture( Texture, fragmentUv2 ).b;\n"
-	"	outColor.rgb = vec3(1,1,1) * pow(texture( Texture, fragmentUv0 ).r,50);\n"
-	"	outColor.a = 1.0;\n"
+	"	vec2 correctedUV = warpUv * ((test.w + 1)/2);\n"
+	"	outColor.rgba = texture(Texture, correctedUV);\n"
+	// "	outColor.r = mod(test.x,0.2);\n"
+	// "	outColor.g = mod(test.y,0.2);\n"
+	// "	outColor.b = mod(test.z,0.2);\n"
 	"}\n";

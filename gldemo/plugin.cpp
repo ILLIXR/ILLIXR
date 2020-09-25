@@ -24,7 +24,7 @@ static constexpr int   EYE_TEXTURE_HEIGHT  = ILLIXR::FB_HEIGHT;
 static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
-static constexpr GLenum DEPTH_FORMAT = GL_DEPTH_COMPONENT24;
+static constexpr GLenum DEPTH_FORMAT = GL_DEPTH_COMPONENT32;
 
 // Monado-style eyebuffers:
 // These are two eye textures; however, each eye texture
@@ -149,6 +149,8 @@ public:
 			// Excessive? Maybe.
 			constexpr int LEFT_EYE = 0;
 
+			auto frame = new rendered_frame;
+
 			for(auto eye_idx = 0; eye_idx < 2; eye_idx++) {
 
 				// Offset of eyeball from pose
@@ -167,6 +169,8 @@ public:
 
 				// Objects' "view matrix" is inverse of eye matrix.
 				auto view_matrix = eye_matrix.inverse();
+
+				frame->view_matrices[eye_idx] = view_matrix;
 
 				Eigen::Matrix4f modelViewMatrix = modelMatrix * view_matrix;
 				glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
@@ -195,13 +199,15 @@ public:
 			glFlush();
 
 			// Publish our submitted frame handle to Switchboard!
-			auto frame = new rendered_frame;
+			
 			frame->texture_handles[0] = eyeTextures[0];
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->depth_handles[0] = eyeDepthTextures[0];
 			frame->depth_handles[1] = eyeDepthTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
+
+			frame->render_projection = basicProjection;
 
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
@@ -285,8 +291,7 @@ private:
 		// Set the texture parameters for the texture that the FBO will be
 		// mapped into.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_FORMAT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
