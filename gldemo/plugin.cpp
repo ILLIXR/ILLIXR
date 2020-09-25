@@ -12,9 +12,8 @@
 #include "common/shader_util.hpp"
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
-#include "block_i.hpp"
-#include "demo_model.hpp"
-#include "shaders/blocki_shader.hpp"
+#include "common/gl_util/obj.hpp"
+#include "shaders/demo_shader.hpp"
 
 using namespace ILLIXR;
 
@@ -22,7 +21,6 @@ static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
 static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
-
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
 // Monado-style eyebuffers:
@@ -46,64 +44,6 @@ public:
 		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
 	{ }
-
-
-	// Struct for drawable debug objects (scenery, headset visualization, etc)
-	struct DebugDrawable {
-		DebugDrawable() {}
-		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
-
-		GLuint num_triangles;
-		GLuint positionVBO;
-		GLuint positionAttribute;
-		GLuint normalVBO;
-		GLuint normalAttribute;
-		GLuint colorUniform;
-		std::vector<GLfloat> color;
-
-		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
-					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
-
-			this->positionAttribute = positionAttribute;
-			this->normalAttribute = normalAttribute;
-			this->colorUniform = colorUniform;
-			this->num_triangles = num_triangles;
-
-			glGenBuffers(1, &positionVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
-			
-			glGenBuffers(1, &normalVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
-
-		}
-
-		void drawMe() {
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(positionAttribute);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(normalAttribute);
-			glUniform4fv(colorUniform, 1, color.data());
-			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
-		}
-	};
-
-	void draw_scene() {
-
-		// OBJ exporter is having winding order issues currently.
-		// Please excuse the strange GL_CW and GL_CCW mode switches.
-
-		glFrontFace(GL_CW);
-		groundObject.drawMe();
-		glFrontFace(GL_CCW);
-		waterObject.drawMe();
-		treesObject.drawMe();
-		rocksObject.drawMe();
-		glFrontFace(GL_CCW);
-	}
 
 	// Essentially, a crude equivalent of XRWaitFrame.
 	void wait_vsync()
@@ -178,55 +118,66 @@ public:
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
 
+			glUseProgram(demoShaderProgram);
+			glBindVertexArray(demo_vao);
+			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glClearDepth(1);
+
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
 			Eigen::Matrix4f modelViewMatrix;
 
 			Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
-			{
-				const fast_pose_type fast_pose = pp->get_fast_pose();
-				const pose_type pose = fast_pose.pose;
+			const fast_pose_type fast_pose = pp->get_fast_pose();
+			pose_type pose = fast_pose.pose;
 
-				// Build our head matrix from the pose's position + orientation.
-				Eigen::Matrix4f head_matrix = Eigen::Matrix4f::Identity();
-				head_matrix.block<3,1>(0,3) = pose.position;
-				head_matrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
+			Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
-				// View matrix is inverse of head matrix.
-				Eigen::Matrix4f viewMatrix = head_matrix.inverse();
+			// 64mm IPD, why not
+			// (TODO FIX, pull from centralized config!)
+			// 64mm is also what TW currently uses through HMD::GetDefaultBodyInfo.
+			// Unfortunately HMD:: namespace is currently private to TW. Need to
+			// integrate as a config topic that can share HMD info.
+			float ipd = 0.0640f; 
 
-				modelViewMatrix = modelMatrix * viewMatrix;
+			// Excessive? Maybe.
+			constexpr int LEFT_EYE = 0;
+
+			for(auto eye_idx = 0; eye_idx < 2; eye_idx++) {
+
+				// Offset of eyeball from pose
+				auto eyeball = Eigen::Vector3f((eye_idx == LEFT_EYE ? -ipd/2.0f : ipd/2.0f), 0, 0);
+
+				// Apply head rotation to eyeball offset vector
+				eyeball = head_rotation_matrix * eyeball;
+
+				// Apply head position to eyeball
+				eyeball += pose.position;
+
+				// Build our eye matrix from the pose's position + orientation.
+				Eigen::Matrix4f eye_matrix = Eigen::Matrix4f::Identity();
+				eye_matrix.block<3,1>(0,3) = eyeball; // Set position to eyeball's position
+				eye_matrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
+
+				// Objects' "view matrix" is inverse of eye matrix.
+				auto view_matrix = eye_matrix.inverse();
+
+				Eigen::Matrix4f modelViewMatrix = modelMatrix * view_matrix;
+				glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
+				glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
+				
+				glBindTexture(GL_TEXTURE_2D, eyeTextures[eye_idx]);
+				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				
+				demoscene.Draw();
 			}
 
-			glUseProgram(demoShaderProgram);
-			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-			glEnable(GL_CULL_FACE);
-			glEnable(GL_DEPTH_TEST);
-			glClearDepth(1);
-
-			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
-			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
-
-			glBindVertexArray(demo_vao);
-
-			// Draw things to left eye.
-			glBindTexture(GL_TEXTURE_2D, eyeTextures[0]);
-			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			draw_scene();
-			
-			// Draw things to right eye.
-			glBindTexture(GL_TEXTURE_2D, eyeTextures[1]);
-			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[1], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			draw_scene();
 #ifndef NDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 #endif
@@ -240,7 +191,6 @@ public:
 			frame->swap_indices[0] = buffer_to_use;
 			frame->swap_indices[1] = buffer_to_use;
 
-			const fast_pose_type fast_pose = pp->get_fast_pose();
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			frame->render_time = std::chrono::high_resolution_clock::now();
@@ -282,12 +232,8 @@ private:
 	GLuint projectionAttr;
 
 	GLuint colorUniform;
-	
-	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
-	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
-	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
-	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
 
+	ObjScene demoscene;
 
 	Eigen::Matrix4f basicProjection;
 
@@ -382,7 +328,7 @@ public:
 		glGenVertexArrays(1, &demo_vao);
     	glBindVertexArray(demo_vao);
 
-		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
+		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
 		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 #endif
@@ -391,45 +337,16 @@ public:
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
 		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
 		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
-
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		
-		groundObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Ground_plane_NUM_TRIANGLES,
-			&(Ground_Plane_vertex_data[0]),
-			&(Ground_Plane_normal_data[0]),
-			GL_STATIC_DRAW
-		);
+		// Load/initialize the demo scene.
 
-		waterObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Water_plane001_NUM_TRIANGLES,
-			&(Water_Plane001_vertex_data[0]),
-			&(Water_Plane001_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		treesObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Trees_cone_NUM_TRIANGLES,
-			&(Trees_Cone_vertex_data[0]),
-			&(Trees_Cone_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		rocksObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Rocks_plane002_NUM_TRIANGLES,
-			&(Rocks_Plane002_vertex_data[0]),
-			&(Rocks_Plane002_normal_data[0]),
-			GL_STATIC_DRAW
-		);
+		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
+		if(obj_dir == NULL) {
+			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
+			abort();
+		}
+		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
