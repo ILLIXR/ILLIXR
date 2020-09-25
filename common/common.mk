@@ -59,7 +59,7 @@ endif
 .PHONY: clean
 clean:
 	touch _target && \
-	$(RM) _target *.so *.exe *.o
+	$(RM) _target *.so *.exe *.o tests/test.exe
 # if *.so and *.o do not exist, rm will still work, because it still receives an operand (target)
 
 .PHONY: deepclean

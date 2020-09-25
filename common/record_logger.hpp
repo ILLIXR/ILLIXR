@@ -285,18 +285,20 @@ namespace ILLIXR {
 		 * @brief Appends a log to the buffer, which will eventually be written.
 		 */
 		void log(record r) {
-			buffer.push_back(r);
-			// Log coalescer should only be used with
-			// In the common case, they will be the same pointer, quickly check the pointers.
-			// In the less common case, we check for object-structural equality.
+			if (logger) {
+				buffer.push_back(r);
+				// Log coalescer should only be used with
+				// In the common case, they will be the same pointer, quickly check the pointers.
+				// In the less common case, we check for object-structural equality.
 #ifndef NDEBUG
-			if (&r.get_record_header() != &buffer[0].get_record_header()
-				&& r.get_record_header() == buffer[0].get_record_header()) {
-				std::cerr << "Tried to push a record of type " << r.get_record_header().to_string() << " to a record logger for type " << buffer[0].get_record_header().to_string() << std::endl;
-				abort();
-			}
+				if (&r.get_record_header() != &buffer[0].get_record_header()
+					&& r.get_record_header() == buffer[0].get_record_header()) {
+					std::cerr << "Tried to push a record of type " << r.get_record_header().to_string() << " to a record logger for type " << buffer[0].get_record_header().to_string() << std::endl;
+					abort();
+				}
 #endif
-			maybe_flush();
+				maybe_flush();
+			}
 		}
 
 		/**
@@ -312,10 +314,12 @@ namespace ILLIXR {
 		 * @brief Flush buffer of logs to the underlying logger.
 		 */
 		void flush() {
-			std::vector<record> buffer2;
-			buffer.swap(buffer2);
-			logger->log(buffer2);
-			last_log = std::chrono::high_resolution_clock::now();
+			if (logger) {
+				std::vector<record> buffer2;
+				buffer.swap(buffer2);
+				logger->log(buffer2);
+				last_log = std::chrono::high_resolution_clock::now();
+			}
 		}
 	};
 }

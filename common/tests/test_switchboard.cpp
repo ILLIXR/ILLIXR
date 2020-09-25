@@ -26,8 +26,11 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 
 	uint64_t last_m6p0 = 0;
 	uint64_t last_m6p3 = 3;
-	sb.schedule<uint64_wrapper>("multiples_of_three", [&](switchboard::ptr<const uint64_wrapper> datum) {
+	uint64_t last_it = 0;
+	sb.schedule<uint64_wrapper>(0,"multiples_of_three", [&](switchboard::ptr<const uint64_wrapper> datum, std::size_t it) {
 		std::cerr << "callbk-0 " << *datum << std::endl;
+		assert(it == last_it + 1);
+		last_it++;
 		ASSERT_TRUE(*datum % 3 == 0);
 		if (*datum % 6 == 0) {
 			// assert that we didn't "miss" a value
@@ -41,7 +44,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 		}
 	});
 
-	ASSERT_TRUE(!sb.get_reader<uint64_wrapper>("multiples_of_three").get_latest_ro_nullable());
+	ASSERT_TRUE(!sb.get_reader<uint64_wrapper>("multiples_of_three").get_nullable());
 
 	// seed the topic
 
@@ -73,8 +76,8 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			 auto reader = sb.get_reader<uint64_wrapper>("multiples_of_three");
 
 			 for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
-				 if (reader.valid()) {
-					 switchboard::ptr<const uint64_wrapper> datum = reader.get_latest_ro();
+				 if (reader.get_nullable()) {
+					 switchboard::ptr<const uint64_wrapper> datum = reader.get();
 					 std::cerr << "reader-0 " << *datum << std::endl;
 					 ASSERT_TRUE(*datum % 3 == 0);
 					 if (*datum % 6 == 0) {
@@ -87,7 +90,6 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 						 last_m6p3 = *datum;
 					 }
 				 } else {
-					 ASSERT_TRUE(!reader.get_latest_ro_nullable());
 					 ASSERT_TRUE(last_m6p0 == 0);
 					 ASSERT_TRUE(last_m6p3 == 0);
 					 std::cerr << "reader-1 not ready yet" << std::endl;
@@ -102,8 +104,8 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			 auto reader = sb.get_reader<uint64_wrapper>("multiples_of_three");
 
 			 for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
-				 if (reader.valid()) {
-					 switchboard::ptr<const uint64_wrapper> datum = reader.get_ro();
+				 if (reader.get_nullable()) {
+					 switchboard::ptr<const uint64_wrapper> datum = reader.get();
 					 std::cerr << "reader-1 " << *datum << std::endl;
 					 ASSERT_TRUE(*datum % 3 == 0);
 					 if (*datum % 6 == 0) {
@@ -119,7 +121,6 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 						 last_m6p3 = *datum;
 					 }
 				 } else {
-					 ASSERT_TRUE(!reader.get_ro_nullable());
 					 ASSERT_TRUE(last_m6p0 == 0);
 					 ASSERT_TRUE(last_m6p3 == 0);
 					 std::cerr << "reader-1 not ready yet" << std::endl;
@@ -130,6 +131,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 	for (std::thread& thread : threads) {
 		thread.join();
 	}
+	sb.stop();
 }
 
 }
