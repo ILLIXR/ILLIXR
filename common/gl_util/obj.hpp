@@ -49,6 +49,13 @@ namespace ILLIXR {
     class ObjScene {
 		public:
 
+		// Default constructor for intialization.
+		// If the full constructor is not called,
+		// Draw() will never do anything.
+		ObjScene() {
+			successfully_loaded_model = false;
+		}
+
 		// obj_dir is the containing directory that should contain
 		// the OBJ file, along with any material files and textures.
 		//
@@ -235,8 +242,10 @@ namespace ILLIXR {
 		}
 
 		void Draw() {
-			for(auto obj : objects){
-				obj.Draw();
+			if(successfully_loaded_model) {
+				for(auto obj : objects){
+					obj.Draw();
+				}
 			}
 		}
 
