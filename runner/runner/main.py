@@ -128,9 +128,9 @@ async def load_tests(config: Dict[str, Any]) -> None:
                 build_one_plugin(config, plugin_config, test=True)
                 for plugin_config in config["plugins"]
             ),
-            sync=False,
+            sequential=False,
         ),
-        sync=False,
+        sequential=False,
     )
 
 
@@ -159,26 +159,14 @@ async def cmake(
 async def load_monado(config: Dict[str, Any]) -> None:
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "Release"
+    openxr_app_config = config["loader"]["openxr_app"].get("config", {})
+    monado_config = config["loader"]["monado"].get("config", {})
 
     async with aiohttp.ClientSession() as session:
-
-        runtime_path: Path = await pathify(
-            config["runtime"]["path"], root_dir, cache_path, True, True, session
-        )
-
-        monado_config = config["loader"]["monado"].get("config", {})
-        monado_path = await pathify(
-            config["loader"]["monado"]["path"], root_dir, cache_path, True, True, session
-        )
-
-        openxr_app_config = config["loader"]["openxr_app"].get("config", {})
-        openxr_app_path = await pathify(
-            config["loader"]["openxr_app"]["path"],
-            root_dir,
-            cache_path,
-            True,
-            True,
-            session,
+        runtime_path, monado_path, openxr_app_path = await gather_aws(
+            pathify(config["runtime"]["path"], root_dir, cache_path, True, True, session),
+            pathify(config["loader"]["monado"]["path"], root_dir, cache_path, True, True, session),
+            pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True, session)
         )
 
     _, _, _, plugin_paths = await gather_aws(
@@ -187,15 +175,15 @@ async def load_monado(config: Dict[str, Any]) -> None:
             monado_path / "build",
             dict(
                 CMAKE_BUILD_TYPE=cmake_profile,
-                BUILD_WITH_LIBUDEV=0,
-                BUILD_WITH_LIBUVC=0,
-                BUILD_WITH_LIBUSB=0,
-                BUILD_WITH_NS=0,
-                BUILD_WITH_PSMV=0,
-                BUILD_WITH_PSVR=0,
-                BUILD_WITH_OPENHMD=0,
-                BUILD_WITH_VIVE=0,
-                **monado_config,
+                BUILD_WITH_LIBUDEV="0",
+                BUILD_WITH_LIBUVC="0",
+                BUILD_WITH_LIBUSB="0",
+                BUILD_WITH_NS="0",
+                BUILD_WITH_PSMV="0",
+                BUILD_WITH_PSVR="0",
+                BUILD_WITH_OPENHMD="0",
+                BUILD_WITH_VIVE="0",
+                ILLIXR_PATH=str(runtime_path),
             ),
         ),
         cmake(

@@ -14,8 +14,6 @@ loader:
   name: monado
   monado:
     path: git+https://github.com/ILLIXR/monado_integration.git
-    config:
-      ILLIXR_PATH: ../../ILLIXR
   openxr_app:
     path: git+https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
     config: {}
