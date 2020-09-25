@@ -30,14 +30,6 @@ static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 // represnts a swapchain. eyeTextures[0] is a swapchain of
 // left eyes, and eyeTextures[1] is a swapchain of right eyes
 
-// ILLIXR-style eyebuffers:
-// These are two eye textures; however, each eye texture
-// really contains two eyes. The reason we have two of
-// them is for double buffering the Switchboard connection.
-
-// If this is defined, gldemo will use Monado-style eyebuffers
-//#define USE_ALT_EYE_FORMAT
-
 class gldemo : public threadloop {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
@@ -52,11 +44,7 @@ public:
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
-#ifdef USE_ALT_EYE_FORMAT
-		, _m_eyebuffer{sb->publish<rendered_frame_alt>("eyebuffer")}
-#else
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
-#endif
 	{ }
 
 
@@ -222,8 +210,6 @@ public:
 
 			glBindVertexArray(demo_vao);
 
-			#ifdef USE_ALT_EYE_FORMAT
-
 			// Draw things to left eye.
 			glBindTexture(GL_TEXTURE_2D, eyeTextures[0]);
 			glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[0], 0);
@@ -232,11 +218,6 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
 			draw_scene();
-
-			
-			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			
 			
 			// Draw things to right eye.
 			glBindTexture(GL_TEXTURE_2D, eyeTextures[1]);
@@ -246,42 +227,6 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			draw_scene();
-
-			#else
-			
-			// Draw things to left eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 0);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			draw_scene();
-
-			
-			//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-			//glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			
-			
-			// Draw things to right eye.
-			glBindTexture(GL_TEXTURE_2D_ARRAY, eyeTextures[buffer_to_use]);
-			glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[buffer_to_use], 0, 1);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			draw_scene();
-
-			#endif
-
-			/*
-			glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-			glVertexAttribPointer(vertexPosAttr, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(vertexPosAttr);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_vbo);
-			glDrawElements(GL_TRIANGLES, BLOCKI_NUM_POLYS * 3, GL_UNSIGNED_INT, (void*)0);
-			*/
-
 #ifndef NDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 #endif
@@ -289,8 +234,7 @@ public:
 			glFlush();
 
 			// Publish our submitted frame handle to Switchboard!
-			#ifdef USE_ALT_EYE_FORMAT
-			auto frame = new rendered_frame_alt;
+			auto frame = new rendered_frame;
 			frame->texture_handles[0] = eyeTextures[0];
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
@@ -299,13 +243,6 @@ public:
 			const fast_pose_type fast_pose = pp->get_fast_pose();
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-			#else
-			auto frame = new rendered_frame;
-			frame->texture_handle = eyeTextures[buffer_to_use];
-			frame->render_pose = pp->get_fast_pose();
-			assert(pose);
-			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-			#endif
 			frame->render_time = std::chrono::high_resolution_clock::now();
 			_m_eyebuffer->put(frame);
 			lastFrameTime = std::chrono::high_resolution_clock::now();
@@ -322,11 +259,7 @@ private:
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
 	// correct eye/framebuffer in the "swapchain".
-	#ifdef USE_ALT_EYE_FORMAT
-	std::unique_ptr<writer<rendered_frame_alt>> _m_eyebuffer;
-	#else
 	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
-	#endif
 
 	time_type lastFrameTime;
 
@@ -362,8 +295,6 @@ private:
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 
-		#ifdef USE_ALT_EYE_FORMAT
-
 		// Create the shared eye texture handle.
 		glGenTextures(1, texture_handle);
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
@@ -378,24 +309,6 @@ private:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
-
-		#else
-		// Create the shared eye texture handle.
-		glGenTextures(1, texture_handle);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, *texture_handle);
-
-		// Set the texture parameters for the texture that the FBO will be
-		// mapped into.
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0); // unbind texture, will rebind later
-
-		#endif
 
 		if(glGetError()){
 			return 0;
@@ -419,15 +332,9 @@ private:
 		// Bind eyebuffer texture
 		printf("About to bind eyebuffer texture, texture handle: %d\n", *texture_handle);
 
-		#ifdef USE_ALT_EYE_FORMAT
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
     	glBindTexture(GL_TEXTURE_2D, 0);
-    	#else
-		glBindTexture(GL_TEXTURE_2D_ARRAY, *texture_handle);
-		glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0, 0);
-    	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-    	#endif
 		// attach a renderbuffer to depth attachment point
     	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
 
