@@ -435,8 +435,15 @@ public:
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
 		// Load/initialize the demo scene.
-		demoscene = new ObjScene("demo2.obj");
-		headset = new ObjScene("headset.obj");
+
+		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
+		if(obj_dir == NULL) {
+			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
+			abort();
+		}
+
+		demoscene = new ObjScene(std::string(obj_dir), "scene.obj");
+		headset = new ObjScene(std::string(obj_dir), "headset.obj");
 
 		// Generate fun test pattern for missing camera images.
 		for(unsigned x = 0; x < TEST_PATTERN_WIDTH; x++){

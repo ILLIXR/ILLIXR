@@ -340,7 +340,13 @@ public:
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
 		// Load/initialize the demo scene.
-		demoscene = new ObjScene("demo2.obj");
+
+		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
+		if(obj_dir == NULL) {
+			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
+			abort();
+		}
+		demoscene = new ObjScene(std::string(obj_dir), "scene.obj");
 		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
