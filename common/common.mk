@@ -2,7 +2,7 @@
 # Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
-DBG_FLAGS ?= -Og -g -Wall -Wextra
+DBG_FLAGS ?= -Og -g -Wall -Wextra -fsanitize=address,undefined
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)
@@ -58,7 +58,7 @@ endif
 .PHONY: clean
 clean:
 	touch _target && \
-	$(RM) _target *.so *.exe *.o
+	$(RM) _target *.so *.exe *.o tests/test.exe
 # if *.so and *.o do not exist, rm will still work, because it still receives an operand (target)
 
 .PHONY: deepclean

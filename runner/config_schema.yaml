@@ -31,8 +31,8 @@ properties:
         type: string
         description: Path to https://github.com/ILLIXR/ILLIXR
       config:
-          <<: *key_vals
-          description: Vars that get passed to the build system
+        <<: *key_vals
+        description: Vars that get passed to the build system
   loader:
     type: object
     default: {}
@@ -42,10 +42,10 @@ properties:
       name:
         default: native
         type: string
-        description: "Currently supports: 'native', 'openxr', 'gdb', or 'tests'"
+        description: "Currently supports: 'native', 'openxr', or 'tests'"
       config:
-          <<: *key_vals
-          description: Interpretation of these vars is loader-dependent
+        <<: *key_vals
+        description: Interpretation of these vars is loader-dependent
   data:
     type: string
     description: URL to offline IMU/cam data. Omit if not applicable.

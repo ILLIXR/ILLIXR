@@ -8,6 +8,7 @@
 #include "phonebook.hpp"
 #include "cpu_timer.hpp"
 #include "record_logger.hpp"
+#include "halting_thread.hpp"
 #include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
 
 namespace ILLIXR {
@@ -63,7 +64,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  *
  * while (true) {
  *     // Read topic 1
- *     swirchboard::ptr<topic1_type> event1 = topic1.get_latest_ro();
+ *     swirchboard::ptr<topic1_type> event1 = topic1.get();
  *
  *     // Write to topic 2
  *     switchboard::ptr<topic2_type> event2 = topic2.allocate();
@@ -73,10 +74,10 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  * }
  * 
  * // Read topic 3 synchronously
- * switchboard.schedule<topic3_type>(plugin_id, "topic3", [&](switchboard::ptr<topic3_type> event3) {
+ * switchboard.schedule<topic3_type>(plugin_id, "topic3", [&](switchboard::ptr<topic3_type> event3, std::size_t it) {
  *     // This is a lambda expression
  *     // https://en.cppreference.com/w/cpp/language/lambda
- *     std::cout << "Got a new event on topic3: " << event3->foo << std::endl;
+ *     std::cout << "Got a new event on topic3: " << event3->foo << " for iteration " << it << std::endl;
  * });
  * \endcode
  */
@@ -112,6 +113,8 @@ public:
 	private:
 		underlying_type underlying_data;
 	public:
+		event_wrapper() { }
+
 		event_wrapper(underlying_type underlying_data_)
 			: underlying_data{underlying_data_}
 		{ }
@@ -126,53 +129,55 @@ private:
 	 *
 	 * Each topic can have 0 or more topic_subscriptions.
 	 */
-	class topic_subscription {
+	class topic_subscription : halting_thread<topic_subscription> {
 	private:
 		const std::string& _m_topic_name;
 		const std::size_t _m_plugin_id;
 		std::function<void(ptr<const event>, std::size_t)> _m_callback;
 		const std::shared_ptr<record_logger> _m_record_logger;
 		record_coalescer _m_cb_log;
-		std::thread _m_thread;
 		// Note the use of BlockingConcurrentQueue
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
+		moodycamel::ProducerToken ptok {_m_queue};
+		moodycamel::ConsumerToken ctok {_m_queue};
 		static constexpr std::chrono::milliseconds _m_queue_timeout {100};
+		std::size_t _m_unprocessed = 0;
+		std::size_t _m_processed = 0;
+		std::size_t _m_idle_cycles = 0;
 
-		void thread_main() {
-			std::size_t _m_unprocessed = 0;
-			std::size_t _m_processed = 0;
-			std::size_t _m_idle_cycles = 0;
+		friend class halting_thread<topic_subscription>;
 
-			while (!_m_terminate.load()) {
-				// Try to pull event off of queue
-				ptr<const event> this_event;
-				std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
-				// Note the use of timed blocking wait
-				if (_m_queue.wait_dequeue_timed(this_event, timeout_usecs)) {
-					// Process event
-					// Also, record and log the time
-					_m_processed++;
-					auto cb_start_cpu_time  = thread_cpu_time();
-					auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
-					_m_callback(this_event, _m_processed);
-					_m_cb_log.log(record{__switchboard_callback_header, {
-						{_m_plugin_id},
-						{_m_topic_name},
-						{_m_processed},
-						{cb_start_cpu_time},
-						{thread_cpu_time()},
-						{cb_start_wall_time},
-						{std::chrono::high_resolution_clock::now()},
-					}});
-				} else {
-					// Nothing to do.
-					_m_idle_cycles++;
-				}
-			}
+		void thread_body() {
+			// Try to pull event off of queue
+			ptr<const event> this_event;
+			std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
+			// Note the use of timed blocking wait
+			if (_m_queue.wait_dequeue_timed(ctok, this_event, timeout_usecs)) {
+				// Process event
+				// Also, record and log the time
+				_m_processed++;
+				auto cb_start_cpu_time  = thread_cpu_time();
+				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
+				_m_callback(this_event, _m_processed);
+				_m_cb_log.log(record{__switchboard_callback_header, {
+					{_m_plugin_id},
+					{_m_topic_name},
+					{_m_processed},
+					{cb_start_cpu_time},
+					{thread_cpu_time()},
+					{cb_start_wall_time},
+					{std::chrono::high_resolution_clock::now()},
+				}});
+			} else {
+				// Nothing to do.
+				_m_idle_cycles++;
+			}			
+		}
 
+		void thread_exit() {
 			// Drain queue
 			ptr<const event> this_event;
-			while (!_m_queue.try_dequeue(this_event)) {
+			while (!_m_queue.try_dequeue(ctok, this_event)) {
 				_m_unprocessed++;
 			}
 
@@ -197,21 +202,11 @@ private:
 			, _m_callback{callback}
 			, _m_record_logger{record_logger_}
 			, _m_cb_log{record_logger_}
-			, _m_thread{std::bind(&topic_subscription::thread_main, this)}
 		{ }
 
-		int enqueue(ptr<const event> this_event) {
-			return _m_queue.try_enqueue(this_event);
-		}
-
-		/**
-		 * @brief Destroys the topic_subscription, shutting down its related thread.
-		 */
-		~topic_subscription() {
-			if (!_m_terminate.load()) {
-				_m_terminate.store(true);
-				_m_thread.join();
-			}
+		void enqueue(ptr<const event> this_event) {
+			[[maybe_unused]] bool ret = _m_queue.enqueue(ptok, this_event);
+			assert(ret);
 		}
 	};
 
@@ -245,15 +240,19 @@ private:
 			, _m_record_logger{record_logger_}
 		{ }
 
+		const std::string& name() { return _m_name; }
+
 		const std::type_info& ty() { return _m_ty; }
 
 		/**
 		 * @brief Gets a read-only copy of the event.
 		 */
-		ptr<const event> get_ro() const {
-			ptr<const event> ret = *_m_latest;
-			assert(ret);
-			return ret;
+		ptr<const event> get() const {
+			if (_m_latest) {
+				return *_m_latest.load();
+			} else {
+				return ptr<const event>{nullptr};
+			}
 		}
 
 		void put(ptr<const event>* this_event) {
@@ -266,9 +265,7 @@ private:
 			// Must acquire shared state on _m_subscriptions_lock
 			std::shared_lock lock{_m_subscriptions_lock};
 			for (topic_subscription& ts : _m_subscriptions) {
-				[[maybe_unused]] int ret = ts.enqueue(std::const_pointer_cast<const event>(*this_event));
-				// If the NDEBUG is defined, this assert is noop, and ret is unused.
-				assert(ret);
+				ts.enqueue(std::const_pointer_cast<const event>(*this_event));
 			}
 		}
 
@@ -310,21 +307,27 @@ public:
 	public:
 		reader(topic& topic_)
 			: _m_topic{topic_}
-		{ }
+		{
+#ifndef NDEBUG
+			if (typeid(specific_event) != _m_topic.ty()) {
+				std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name() << ", but caller used type" << typeid(specific_event).name() << std::endl;
+				abort();
+			}
+#endif
+		}
 
 		/**
 		 * @brief Gets a nullable "read-only" copy of the latest value.
 		 *
 		 * This will return null if no event is on the topic yet.
 		 */
-		virtual ptr<const specific_event> get_ro_nullable() const {
-			assert(typeid(specific_event) == _m_topic.ty());
-			ptr<const event> this_event = _m_topic.get_ro();
-			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>();
+		virtual ptr<const specific_event> get_nullable() const {
+			ptr<const event> this_event = _m_topic.get();
+			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
 			if (this_event) {
 				assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
-				return this_event;
+				return this_specific_event;
 			} else {
 				return ptr<const specific_event>{nullptr};
 			}
@@ -335,8 +338,8 @@ public:
 		 *
 		 * @throws If no event is on the topic yet.
 		 */
-		virtual ptr<const specific_event> get_ro() const {
-			ptr<const specific_event> this_specific_event = get_ro_nullable();
+		virtual ptr<const specific_event> get() const {
+			ptr<const specific_event> this_specific_event = get_nullable();
 			assert(this_specific_event /* Otherwise, no event on the topic yet */);
 			return this_specific_event;
 		}
@@ -346,12 +349,12 @@ public:
 		 *
 		 * @throws If no event is on the topic yet.
 		 */
-		virtual ptr<specific_event> get() const {
+		virtual ptr<specific_event> get_rw() const {
 			/*
 			  This method is currently not more efficient than calling get_ro() and making a copy,
 			  but in the future it could be.
 			 */
-			ptr<const specific_event> this_specific_event = get_ro();
+			ptr<const specific_event> this_specific_event = get();
 			return std::make_shared<specific_event>(*this_specific_event);
 		}
 	};
@@ -415,8 +418,16 @@ private:
 
 		// Topic not found. Need to create it here.
 		const std::unique_lock lock{_m_registry_lock};
-		topic& topic_ = _m_registry.emplace(topic_name, topic_name, typeid(specific_event), _m_record_logger).first->second;
-		assert(typeid(specific_event) == topic_.ty());
+		topic ty {topic_name, typeid(specific_event), _m_record_logger};
+		topic& topic_ = _m_registry.try_emplace(topic_name, topic_name, typeid(specific_event), _m_record_logger).first->second;
+
+#ifndef NDEBUG
+		if (typeid(specific_event) != topic_.ty()) {
+			std::cerr << "topic '" << topic_.name() << "' holds type " << topic_.ty().name() << ", but caller used type" << typeid(specific_event).name() << std::endl;
+			abort();
+		}
+#endif
+
 		return topic_;
 	}
 
@@ -440,7 +451,7 @@ public:
 	 */
 	template <typename specific_event>
 	void schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn) {
-		get_or_create_topic<event>(topic_name).schedule(plugin_id, topic_name, [=](ptr<const event> this_event, std::size_t it_no) {
+		get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
 			assert(this_event);
 			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 			assert(this_specific_event);
@@ -468,7 +479,7 @@ public:
 	 * @throws If topic already exists, and its type does not match the @p event.
 	 */
 	template <typename specific_event>
-	writer<specific_event> get_reader(const std::string& topic_name) {
+	reader<specific_event> get_reader(const std::string& topic_name) {
 		return reader<specific_event>{get_or_create_topic<specific_event>(topic_name)};
 	}
 
