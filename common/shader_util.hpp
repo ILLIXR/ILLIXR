@@ -46,6 +46,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
         GLsizei length;
         glGetShaderInfoLog( vertex_shader_handle, sizeof( msg ), &length, msg );
         printf( "1 Error: %s\n", msg);
+        abort();
     }
 
     GLint fragResult = GL_FALSE;
@@ -55,6 +56,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     glCompileShader(fragment_shader_handle);
     if(glGetError()){
         printf("Fragment shader compilation failed\n");
+        abort();
     }
     glGetShaderiv(fragment_shader_handle, GL_COMPILE_STATUS, &fragResult);
     if ( fragResult == GL_FALSE )
@@ -63,6 +65,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
         GLsizei length;
         glGetShaderInfoLog( fragment_shader_handle, sizeof( msg ), &length, msg );
         printf( "2 Error: %s\n", msg);
+        abort();
     }
 
     // Create program and link shaders
@@ -71,6 +74,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     glAttachShader(shader_program, fragment_shader_handle);
     if(glGetError()){
         printf("AttachShader or createProgram failed\n");
+        abort();
     }
 
     ///////////////////
@@ -86,6 +90,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     GLenum err = glGetError();
     if(err){
         printf("initGL, error getting link status, %x", err);
+        abort();
     }
     if ( result == GL_FALSE )
     {
@@ -100,6 +105,7 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
 
     if(glGetError()){
         printf("initGL, error at end of initGL");
+        abort();
     }
 
     // After successful link, detach shaders from shader program
