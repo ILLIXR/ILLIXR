@@ -9,14 +9,13 @@ plugins:
   - path: audio_pipeline/
   # - path: holgoram/
   # - path: zed/
-#data: zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip?path=mav0
-data: ../data1/
+data: file+zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip?path=mav0
 loader:
   name: monado
   monado:
-    path: ../monado_integration
+    path: git+https://github.com/ILLIXR/monado_integration.git
     config: {}
   openxr_app:
-    path: ../Monado_OpenXR_Simple_Example
+    path: git+https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
     config: {}
 profile: dbg

@@ -1,34 +1,32 @@
 #!/usr/bin/env python3
 import asyncio
 import multiprocessing
-import os
-import subprocess
+import tempfile
 from pathlib import Path
 import shlex
-from typing import Any, Dict, List, Optional, cast, Union
-import urllib.parse
+from typing import Any, Dict, List, Optional, cast
 
+import aiohttp
 import click
 import jsonschema  # type: ignore
 import yaml
+from util import flatten1, gather_aws, pathify, relative_to, subprocess_run, replace_all, unflatten
 from yamlinclude import YamlIncludeConstructor  # type: ignore
 
 # isort main.py
-# black main.py
+# black -l 90 main.py
 # mypy --strict main.py
-
-
-def relative_to(path: Path, root: Path):
-    while True:
-        try:
-            return path.relative_to(root)
-        except ValueError:
-            return ".." / relative_to(path, (root / "..").resolve())
 
 root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
 
 
-def fill_defaults(thing: Any, thing_schema: Dict[str, Any], path: Optional[List[str]] = None) -> None:
+cache_path = Path(tempfile.tempdir if tempfile.tempdir else "/tmp") / "ILLIXR" / "cache"
+cache_path.mkdir(parents=True, exist_ok=True)
+
+
+def fill_defaults(
+    thing: Any, thing_schema: Dict[str, Any], path: Optional[List[str]] = None
+) -> None:
     if path is None:
         path = []
 
@@ -45,69 +43,13 @@ def fill_defaults(thing: Any, thing_schema: Dict[str, Any], path: Optional[List[
             fill_defaults(item, thing_schema["items"], path + [str(i)])
 
 
-def pathify(path: Union[Path, str], base: Union[Path, str], should_exist=True):
-    """If path is relative, resolve it relative to base. Also expands git/zip paths."""
-
-    # TODO(git urls):If path2 looks like a git url
-    # Git URLs could be used the config file, handled here, and the rest of this script doesn't care.
-    # I suggest: 
-    # If it exists in ~/.cache/illixr/github.com/username/repo/rev, 
-    #   If it hasn't been pulled in a while, do a git pull (to update)
-    #   This is important because it is persistent.
-    #    Subsequent uses of the same repo will not have to get re-cloned and likely not re-pulled.
-    # Otherwise a git clone to that dir.
-    # Return a path within that repo.
-    path2 = path if isinstance(path, Path) else Path(path)
-    bas2 = base if isinstance(base, Path) else Path(base)
-    ret = path2 if path2.is_absolute() else base / path2
-    if should_exist and not ret.exists():
-        raise ValueError(f"{ret} does not exist")
-    return ret
-
-
-async def gather_aws(*aws, sync: bool = False):
-    if sync:
-        return [
-            await aw
-            for aw in aws
-        ]
-    else:
-        return await asyncio.gather(*aws)
-
-
-async def subprocess_run(
-    args: List[str],
-    cwd: Optional[Union[Path, str]] = None,
-    check: bool = False,
-    env: Optional[Dict[str, str]] = None,
-) -> asyncio.subprocess.Process:
-    """Clone of subprocess.run, but asynchronous.
-
-    This allows concurrency: Launch another process while awaiting this process to complete.
-
-    I will progressively port arguments by need.
-
-    """
-
-    try:
-        cwd = cwd if cwd is not None else Path(".")
-        env = env if env is not None else os.environ
-        proc = await asyncio.create_subprocess_exec(
-            args[0], *args[1:], env=env, cwd=str(cwd)
-        )
-
-        return_code = await proc.wait()
-        if check and return_code != 0:
-            raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
-        return proc
-    except asyncio.CancelledError:
-        proc.terminate()
-        raise
-
-
-async def make(path: Path, targets: List[str], var_dict: Optional[Dict[str, str]] = None) -> None:
+async def make(
+    path: Path, targets: List[str], var_dict: Optional[Dict[str, str]] = None
+) -> None:
     parallelism = max(1, multiprocessing.cpu_count() // 2)
-    var_dict_args = [f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
+    var_dict_args = [
+        f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()
+    ]
     await subprocess_run(
         ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],
         check=True,
@@ -115,10 +57,13 @@ async def make(path: Path, targets: List[str], var_dict: Optional[Dict[str, str]
 
 
 async def build_one_plugin(
-        config: Dict[str, Any], plugin_config: Dict[str, Any], test: bool = False,
+    config: Dict[str, Any],
+    plugin_config: Dict[str, Any],
+    test: bool = False,
+    session: Optional[aiohttp.ClientSession] = None,
 ) -> Path:
     profile = config["profile"]
-    path: Path = pathify(plugin_config["path"], root_dir)
+    path: Path = await pathify(plugin_config["path"], root_dir, cache_path, True, True, session)
     var_dict = plugin_config["config"]
     so_name = f"plugin.{profile}.so"
     targets = [so_name] + (["tests/run"] if test else [])
@@ -126,12 +71,19 @@ async def build_one_plugin(
     return path / so_name
 
 
-async def build_runtime(config: Dict[str, Any], suffix: str, test: bool = False) -> Path:
+async def build_runtime(
+    config: Dict[str, Any],
+    suffix: str,
+    test: bool = False,
+    session: Optional[aiohttp.ClientSession] = None,
+) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
     runtime_name = f"{name}.{profile}.{suffix}"
     runtime_config = config["runtime"]["config"]
-    runtime_path: Path = pathify(config["runtime"]["path"], root_dir)
+    runtime_path: Path = await pathify(
+        config["runtime"]["path"], root_dir, cache_path, True, True, session
+    )
     if not runtime_path.exists():
         raise RuntimeError(
             f"Please change loader.runtime.path ({runtime_path}) to point to a clone of https://github.com/ILLIXR/ILLIXR"
@@ -142,22 +94,28 @@ async def build_runtime(config: Dict[str, Any], suffix: str, test: bool = False)
 
 
 async def load_native(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await gather_aws(
-        build_runtime(config, "exe"),
-        gather_aws(
-            *(
-                build_one_plugin(config, plugin_config)
-                for plugin_config in config["plugins"]
+    async with aiohttp.ClientSession() as session:
+        runtime_exe_path, plugin_paths = await gather_aws(
+            build_runtime(config, "exe", session=session),
+            gather_aws(
+                *(
+                    build_one_plugin(config, plugin_config, session=session)
+                    for plugin_config in config["plugins"]
+                )
+            ),
+        )
+    command_str = config["loader"].get("command", "%a")
+    main_cmd_lst = [str(runtime_exe_path), *map(str, plugin_paths)]
+    command_lst_sbst = list(
+        flatten1(
+            replace_all(
+                unflatten(shlex.split(command_str)),
+                {("%a",): main_cmd_lst, ("%b",): [shlex.quote(shlex.join(main_cmd_lst))]},
             )
-        ),
+        )
     )
     await subprocess_run(
-        [str(runtime_exe_path), *map(str, plugin_paths)],
-        check=True,
-        env=dict(
-            ILLIXR_DATA=config["data"],
-            **os.environ,
-        ),
+        command_lst_sbst, check=True, env_override=dict(ILLIXR_DATA=config["data"],),
     )
 
 
@@ -173,26 +131,6 @@ async def load_tests(config: Dict[str, Any]) -> None:
             sync=False,
         ),
         sync=False,
-    )
-
-
-async def load_gdb(config: Dict[str, Any]) -> None:
-    runtime_exe_path, plugin_paths = await gather_aws(
-        build_runtime(config, "exe"),
-        gather_aws(
-            *(
-                build_one_plugin(config, plugin_config)
-                for plugin_config in config["plugins"]
-            )
-        ),
-    )
-    await subprocess_run(
-        ["gdb", "-q", "--args", str(runtime_exe_path), *map(str, plugin_paths),],
-        check=True,
-        env=dict(
-            ILLIXR_DATA=config["data"],
-            **os.environ,
-        ),
     )
 
 
@@ -222,13 +160,26 @@ async def load_monado(config: Dict[str, Any]) -> None:
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "Release"
 
-    runtime_path: Path = pathify(config["runtime"]["path"], root_dir)
+    async with aiohttp.ClientSession() as session:
 
-    monado_config = config["loader"]["monado"].get("config", {})
-    monado_path = pathify(config["loader"]["monado"]["path"], root_dir)
+        runtime_path: Path = await pathify(
+            config["runtime"]["path"], root_dir, cache_path, True, True, session
+        )
 
-    openxr_app_config = config["loader"]["openxr_app"].get("config", {})
-    openxr_app_path = pathify(config["loader"]["openxr_app"]["path"], root_dir)
+        monado_config = config["loader"]["monado"].get("config", {})
+        monado_path = await pathify(
+            config["loader"]["monado"]["path"], root_dir, cache_path, True, True, session
+        )
+
+        openxr_app_config = config["loader"]["openxr_app"].get("config", {})
+        openxr_app_path = await pathify(
+            config["loader"]["openxr_app"]["path"],
+            root_dir,
+            cache_path,
+            True,
+            True,
+            session,
+        )
 
     _, _, _, plugin_paths = await gather_aws(
         cmake(
@@ -263,19 +214,17 @@ async def load_monado(config: Dict[str, Any]) -> None:
     await subprocess_run(
         [str(openxr_app_path / "build" / "./openxr-example")],
         check=True,
-        env=dict(
+        env_override=dict(
             XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
             ILLIXR_PATH=str(runtime_path),
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
             ILLIXR_DATA=config["data"],
-            **os.environ,
         ),
     )
 
 
 loaders = {
     "native": load_native,
-    "gdb": load_gdb,
     "monado": load_monado,
     "tests": load_tests,
 }
@@ -297,7 +246,7 @@ async def run_config(config_path: Path) -> None:
     fill_defaults(config, config_schema)
 
     loader = config["loader"]["name"]
-    
+
     if loader not in loaders:
         raise RuntimeError(f"No such loader: {loader}")
     await loaders[loader](config)
