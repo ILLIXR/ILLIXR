@@ -14,5 +14,6 @@ loader:
   name: tests
 
 data: /does_not_exist
+demo_data: /does_not_exist
 
 profile: dbg
