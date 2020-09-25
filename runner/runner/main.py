@@ -184,6 +184,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
                 BUILD_WITH_OPENHMD="0",
                 BUILD_WITH_VIVE="0",
                 ILLIXR_PATH=str(runtime_path),
+                **monado_config,
             ),
         ),
         cmake(
