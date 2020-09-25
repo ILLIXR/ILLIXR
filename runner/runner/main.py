@@ -216,7 +216,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
         check=True,
         env_override=dict(
             XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
-            ILLIXR_PATH=str(runtime_path),
+            ILLIXR_PATH=str(runtime_path / "runtime" / f"plugin.{profile}.so"),
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
             ILLIXR_DATA=config["data"],
         ),
