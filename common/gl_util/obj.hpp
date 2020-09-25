@@ -84,15 +84,11 @@ namespace ILLIXR {
 #endif
 			}
 			if(!err.empty()){
-#ifndef NDEBUG
 				std::cout << "[OBJ ERROR] " << err << std::endl;
-#endif
 				successfully_loaded_model = false;
 			}
 			if(!success){
-#ifndef NDEBUG
 				std::cout << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
-#endif				
 				successfully_loaded_model = false;
 			} else {
 				
