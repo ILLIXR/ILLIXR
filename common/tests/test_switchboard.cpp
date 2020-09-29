@@ -20,7 +20,7 @@ void long_delay() {
 
 TEST_F(SwitchboardTest, TestSyncAsync) {
 	typedef switchboard::event_wrapper<uint64_t> uint64_wrapper;
-	const uint64_t MAX_ITERATIONS = 100;
+	const uint64_t MAX_ITERATIONS = 3;
 
 	switchboard sb {nullptr};
 

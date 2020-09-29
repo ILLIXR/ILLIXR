@@ -138,7 +138,6 @@ private:
 		record_coalescer _m_cb_log;
 		// Note the use of BlockingConcurrentQueue
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
-		moodycamel::ProducerToken ptok {_m_queue};
 		moodycamel::ConsumerToken ctok {_m_queue};
 		static constexpr std::chrono::milliseconds _m_queue_timeout {100};
 		std::size_t _m_unprocessed = 0;
@@ -205,7 +204,7 @@ private:
 		{ }
 
 		void enqueue(ptr<const event> this_event) {
-			[[maybe_unused]] bool ret = _m_queue.enqueue(ptok, this_event);
+			[[maybe_unused]] bool ret = _m_queue.enqueue(this_event);
 			assert(ret);
 		}
 	};
@@ -257,9 +256,12 @@ private:
 
 		void put(ptr<const event>* this_event) {
 			assert(this_event);
-			/* The pointer that this gets exchanged with gets dropped immediately. */
+			assert(*this_event);
+
+			/* The pointer that this gets exchanged with needs to get dropped. */
 			ptr<const event>* old_event = _m_latest.exchange(this_event);
 			delete old_event;
+			// corresponds to new in the last iteration of topic::put
 
 			// Read on _m_subscriptions.
 			// Must acquire shared state on _m_subscriptions_lock
@@ -288,8 +290,10 @@ private:
 
 		~topic() {
 			ptr<const event>* last_event = _m_latest.exchange(nullptr);
-			delete last_event;
-			// corresponds to new in most recent topic::writer::put or topic::topic (if put was never called)
+			if (last_event) {
+				delete last_event;
+				// corresponds to new in most recent topic::put
+			}
 		}
 	};
 
@@ -374,8 +378,6 @@ public:
 		{ }
 		/**
 		 * @brief Publish @p ev to this topic.
-		 *
-		 * Currently, nobody is responsible for calling `delete` on it, but this will change.
 		 */
 		virtual void put(const specific_event* this_specific_event) {
 			assert(typeid(specific_event) == _m_topic.ty());
