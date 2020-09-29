@@ -52,7 +52,7 @@ tests/gdb: tests/test.exe
 
 tests/test.exe: $(CPP_TEST_FILES) $(CPP_FILES) $(HPP_FILES)
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) \
-	$(GTEST_FLAGS) -fsanitize=address,undefined -o ./tests/test.exe \
+	$(GTEST_FLAGS) -o ./tests/test.exe \
 	$(CPP_TEST_FILES) $(CPP_FILES) $(LDFLAGS)
 endif
 

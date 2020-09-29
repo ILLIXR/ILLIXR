@@ -18,18 +18,19 @@ protected:
 	void thread_exit() { }
 
 public:
-	halting_thread(halting_thread&& other) noexcept
-		: _m_thread{std::move(other._m_thread)}
-	{ }
+
+	halting_thread() noexcept { }
+
+	halting_thread(halting_thread&& other) noexcept {
+		*this = std::move(other);
+	}
 
 	halting_thread& operator=(halting_thread&& other) noexcept {
 		// Assert my thread was a dummy
 		assert(!_m_thread.joinable());
-		_m_thread = other._m_thread;
-		_m_terminate = other._m_terminate.load();
+		_m_terminate.store(other._m_terminate.load());
+		_m_thread = std::move(other._m_thread);
 	}
-
-	halting_thread() noexcept { }
 
 	~halting_thread() {
 		stop();
@@ -54,7 +55,10 @@ public:
 	}
 
 	void stop() {
+		std::cerr << "Stopping" << std::endl;
 		_m_terminate.store(true);
+		std::cerr << "Joining" << std::endl;
 		_m_thread.join();
+		std::cerr << "Joined" << std::endl;
 	}
 };
