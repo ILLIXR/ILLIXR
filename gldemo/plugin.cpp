@@ -170,8 +170,6 @@ public:
 				// Objects' "view matrix" is inverse of eye matrix.
 				auto view_matrix = eye_matrix.inverse();
 
-				frame->view_matrices[eye_idx] = view_matrix;
-
 				Eigen::Matrix4f modelViewMatrix = modelMatrix * view_matrix;
 				glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
 				glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
