@@ -111,10 +111,10 @@ private:
 	GLuint tw_vao;
 
 	// Position and UV attribute locations
-	GLuint distortion_pos_attr;
-	GLuint distortion_uv0_attr;
-	GLuint distortion_uv1_attr;
-	GLuint distortion_uv2_attr;
+	GLint distortion_pos_attr;
+	GLint distortion_uv0_attr;
+	GLint distortion_uv1_attr;
+	GLint distortion_uv2_attr;
 
 	// Distortion mesh information
 	GLuint num_distortion_vertices;
