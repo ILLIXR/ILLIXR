@@ -134,8 +134,8 @@ private:
 
 	// Handles to the start and end timewarp
 	// transform matrices (3x4 uniforms)
-	GLuint tw_start_transform_unif;
-	GLuint tw_end_transform_unif;
+	GLint tw_start_transform_unif;
+	GLint tw_end_transform_unif;
 
 	// Basic perspective projection matrix
 	Eigen::Matrix4f basicProjection;
