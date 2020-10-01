@@ -44,14 +44,14 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  * topics).
  *
  * - Writing: One can write to a topic (in any thread) through the
- * `ILLIXR::writer` returned by `publish()`.
+ * object returned by `get_writer()`.
  *
  * - There are two ways of reading: asynchronous reading and synchronous
  * reading:
  *
  *   - Asynchronous reading returns the most-recent event on the topic
  * (idempotently). One can do this through (in any thread) the
- * `ILLIXR::reader_latest` handle returned by `subscribe_latest()`.
+ * object returned by `get_reader()`.
  *
  *   - Synchronous reading schedules a callback to be executed on _every_ event
  * which gets published. One can schedule computation by `schedule()`, which
@@ -69,7 +69,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  *     swirchboard::ptr<topic1_type> event1 = topic1.get();
  *
  *     // Write to topic 2
- *     switchboard::ptr<topic2_type> event2 = topic2.allocate();
+ *     topic2_type* event2 = topic2.allocate();
  *     // Populate the event
  *     event2->foo = 3;
  *     topic2.put(event2);
@@ -89,7 +89,7 @@ public:
 	/**
 	 * @brief The type of shared pointer returned by switchboard.
 	 *
-	 * TODO: Make this agnostic to the type of `ptr``
+	 * TODO: Make this agnostic to the type of `ptr`
 	 * Currently, it depends on `ptr` == shared_ptr
 	 */
 	template <typename specific_event>
@@ -128,6 +128,9 @@ public:
 private:
 	/**
 	 * @brief Represents a single topic_subscription (callback and queue)
+	 *
+	 * This class treats everything as `event`s (type-erased) because `topic` treats everything as
+	 * `event`s.
 	 *
 	 * Each topic can have 0 or more topic_subscriptions.
 	 */
@@ -204,9 +207,6 @@ private:
 		}
 
 	public:
-		/**
-		 * Since this class contains an std::thread member, it is not copy-constructable.
-		 */
 		topic_subscription(const std::string& topic_name, std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
 			: _m_topic_name{topic_name}
 			, _m_plugin_id{plugin_id}
@@ -218,6 +218,11 @@ private:
 			_m_thread.start();
 		}
 
+		/**
+		 * @brief Tells the subscriber about @p this_event
+		 *
+		 * Thread-safe
+		 */
 		void enqueue(ptr<const event> this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
 				[[maybe_unused]] bool ret = _m_queue.enqueue(this_event);
@@ -262,7 +267,7 @@ private:
 		const std::type_info& ty() { return _m_ty; }
 
 		/**
-		 * @brief Gets a read-only copy of the event.
+		 * @brief Gets a read-only copy of the most recent event on the topic.
 		 */
 		ptr<const event> get() const {
 			if (_m_latest) {
@@ -272,6 +277,11 @@ private:
 			}
 		}
 
+		/**
+		 * @brief Publishes @p this_event to the topic
+		 *
+		 * Thread-safe
+		 */
 		void put(ptr<const event>* this_event) {
 			assert(this_event);
 			assert(*this_event);
@@ -289,6 +299,11 @@ private:
 			}
 		}
 
+		/**
+		 * @brief Schedules @p callback on the topic (@p plugin_id is for accounting)
+		 *
+		 * Thread-safe
+		 */
 		void schedule(std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
 			// Write on _m_subscriptions.
 			// Must acquire unique state on _m_subscriptions_lock
@@ -341,11 +356,11 @@ public:
 		}
 
 		/**
-		 * @brief Gets a nullable "read-only" copy of the latest value.
+		 * @brief Gets a "read-only" copy of the latest value.
 		 *
 		 * This will return null if no event is on the topic yet.
 		 */
-		virtual ptr<const specific_event> get_nullable() const {
+		 ptr<const specific_event> get_nullable() const {
 			ptr<const event> this_event = _m_topic.get();
 			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
@@ -362,7 +377,7 @@ public:
 		 *
 		 * @throws If no event is on the topic yet.
 		 */
-		virtual ptr<const specific_event> get() const {
+		 ptr<const specific_event> get() const {
 			ptr<const specific_event> this_specific_event = get_nullable();
 			assert(this_specific_event /* Otherwise, no event on the topic yet */);
 			return this_specific_event;
@@ -373,7 +388,7 @@ public:
 		 *
 		 * @throws If no event is on the topic yet.
 		 */
-		virtual ptr<specific_event> get_rw() const {
+		 ptr<specific_event> get_rw() const {
 			/*
 			  This method is currently not more efficient than calling get_ro() and making a copy,
 			  but in the future it could be.
@@ -396,19 +411,19 @@ public:
 		writer(topic& topic_)
 			: _m_topic{topic_}
 		{ }
+
 		/**
 		 * @brief Publish @p ev to this topic.
 		 */
-		virtual void put(const specific_event* this_specific_event) {
+		 void put(const specific_event* this_specific_event) {
 			assert(typeid(specific_event) == _m_topic.ty());
 			assert(this_specific_event);
-			// this new pairs with the delete below for, except for the last time, which pairs with the delete in topic::~topic
 			ptr<const event>* this_event = new ptr<const event>{static_cast<const event*>(this_specific_event)};
 			_m_topic.put(this_event);
 		}
 
 		/**
-		 * @brief Like `new`/`malloc` but more efficient for the specific case.
+		 * @brief Like `new`/`malloc` but more efficient for this specific case.
 		 * 
 		 * There is an optimization available which has not yet been implemented: switchboard can memory
 		 * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
@@ -418,7 +433,7 @@ public:
 		 * [1]: https://en.wikipedia.org/wiki/Slab_allocation
 		 * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
 		 */
-		virtual specific_event* allocate() {
+		 specific_event* allocate() {
 			return new specific_event;
 		}
 	};
