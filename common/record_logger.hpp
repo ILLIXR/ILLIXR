@@ -321,5 +321,9 @@ namespace ILLIXR {
 				last_log = std::chrono::high_resolution_clock::now();
 			}
 		}
+
+		operator bool() const {
+			return bool(logger);
+		}
 	};
 }

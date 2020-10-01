@@ -1,14 +1,16 @@
 #pragma once
 
 #include <memory>
+#include <list>
 #include <atomic>
 #include <shared_mutex>
+#include <type_traits>
 #include <functional>
 #include <chrono>
 #include "phonebook.hpp"
 #include "cpu_timer.hpp"
 #include "record_logger.hpp"
-#include "halting_thread.hpp"
+#include "managed_thread.hpp"
 #include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
 
 namespace ILLIXR {
@@ -32,8 +34,8 @@ const record_header __switchboard_callback_header {"switchboard_callback", {
 const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
 	{"plugin_id", typeid(std::size_t)},
 	{"topic_name", typeid(std::string)},
-	{"processed", typeid(std::size_t)},
-	{"unprocessed", typeid(std::size_t)},
+	{"enqueued", typeid(std::size_t)},
+	{"dequeued", typeid(std::size_t)},
 	{"idle_cycles", typeid(std::size_t)},
 }};
 
@@ -129,63 +131,73 @@ private:
 	 *
 	 * Each topic can have 0 or more topic_subscriptions.
 	 */
-	class topic_subscription : halting_thread<topic_subscription> {
+	class topic_subscription {
 	private:
 		const std::string& _m_topic_name;
-		const std::size_t _m_plugin_id;
+		std::size_t _m_plugin_id;
 		std::function<void(ptr<const event>, std::size_t)> _m_callback;
 		const std::shared_ptr<record_logger> _m_record_logger;
 		record_coalescer _m_cb_log;
-		// Note the use of BlockingConcurrentQueue
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
-		moodycamel::ConsumerToken ctok {_m_queue};
+		moodycamel::ConsumerToken _m_ctok {_m_queue};
 		static constexpr std::chrono::milliseconds _m_queue_timeout {100};
-		std::size_t _m_unprocessed = 0;
-		std::size_t _m_processed = 0;
-		std::size_t _m_idle_cycles = 0;
+		std::size_t _m_enqueued {0};
+		std::size_t _m_dequeued {0};
+		std::size_t _m_idle_cycles {0};
 
-		friend class halting_thread<topic_subscription>;
+		// This needs to be last, 
+		// so it is destructed before the data it uses.
+		managed_thread _m_thread;
+
+		void thread_on_start() {
+#ifndef NDEBUG
+			// std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
+#endif
+		}
 
 		void thread_body() {
 			// Try to pull event off of queue
 			ptr<const event> this_event;
 			std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
 			// Note the use of timed blocking wait
-			if (_m_queue.wait_dequeue_timed(ctok, this_event, timeout_usecs)) {
+			if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
 				// Process event
 				// Also, record and log the time
-				_m_processed++;
+				_m_dequeued++;
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
-				_m_callback(this_event, _m_processed);
-				_m_cb_log.log(record{__switchboard_callback_header, {
-					{_m_plugin_id},
-					{_m_topic_name},
-					{_m_processed},
-					{cb_start_cpu_time},
-					{thread_cpu_time()},
-					{cb_start_wall_time},
-					{std::chrono::high_resolution_clock::now()},
-				}});
+				_m_callback(this_event, _m_dequeued);
+				if (_m_cb_log) {
+					_m_cb_log.log(record{__switchboard_callback_header, {
+						{_m_plugin_id},
+						{_m_topic_name},
+						{_m_dequeued},
+						{cb_start_cpu_time},
+						{thread_cpu_time()},
+						{cb_start_wall_time},
+						{std::chrono::high_resolution_clock::now()},
+					}});
+				}
 			} else {
 				// Nothing to do.
 				_m_idle_cycles++;
 			}			
 		}
 
-		void thread_exit() {
+		void thread_on_stop() {
 			// Drain queue
 			ptr<const event> this_event;
-			while (!_m_queue.try_dequeue(ctok, this_event)) {
-				_m_unprocessed++;
+			std::size_t unprocessed = _m_enqueued - _m_dequeued;
+			for (std::size_t i = 0; i < unprocessed; ++i) {
+				assert(_m_queue.try_dequeue(_m_ctok, this_event));
 			}
 
 			// Log stats
 			if (_m_record_logger) {
 				_m_record_logger->log(record{__switchboard_topic_stop_header, {
 					{_m_topic_name},
-					{_m_processed},
-					{_m_unprocessed},
+					{_m_dequeued},
+					{unprocessed},
 					{_m_idle_cycles},
 				}});
 			}
@@ -201,11 +213,17 @@ private:
 			, _m_callback{callback}
 			, _m_record_logger{record_logger_}
 			, _m_cb_log{record_logger_}
-		{ }
+			, _m_thread{[this]{this->thread_body();}, [this]{this->thread_on_start();}, [this]{this->thread_on_stop();}}
+		{
+			_m_thread.start();
+		}
 
 		void enqueue(ptr<const event> this_event) {
-			[[maybe_unused]] bool ret = _m_queue.enqueue(this_event);
-			assert(ret);
+			if (_m_thread.get_state() == managed_thread::state::running) {
+				[[maybe_unused]] bool ret = _m_queue.enqueue(this_event);
+				assert(ret);
+				_m_enqueued++;
+			}
 		}
 	};
 
@@ -229,7 +247,7 @@ private:
 		// In C++ 20, this should be std::atomic<std::unique_ptr<std::shared_ptr<const event>>>.
 		// Then I wouldn't need a destructor. ¯\_(ツ)_/¯
 		std::atomic<ptr<const event> *> _m_latest {nullptr};
-		std::vector<topic_subscription> _m_subscriptions;
+		std::list<topic_subscription> _m_subscriptions;
 		std::shared_mutex _m_subscriptions_lock;
 
 	public:
@@ -263,9 +281,9 @@ private:
 			delete old_event;
 			// corresponds to new in the last iteration of topic::put
 
-			// Read on _m_subscriptions.
+			// Read/write on _m_subscriptions.
 			// Must acquire shared state on _m_subscriptions_lock
-			std::shared_lock lock{_m_subscriptions_lock};
+			std::unique_lock lock{_m_subscriptions_lock};
 			for (topic_subscription& ts : _m_subscriptions) {
 				ts.enqueue(std::const_pointer_cast<const event>(*this_event));
 			}
@@ -280,6 +298,8 @@ private:
 
 		/**
 		 * @brief Stop and remove all topic_subscription threads.
+		 *
+		 * Thread-safe
 		 */
 		void stop() {
 			// Write on _m_subscriptions.
@@ -383,7 +403,7 @@ public:
 			assert(typeid(specific_event) == _m_topic.ty());
 			assert(this_specific_event);
 			// this new pairs with the delete below for, except for the last time, which pairs with the delete in topic::~topic
-			ptr<const event>* this_event = new ptr<const event>{this_specific_event};
+			ptr<const event>* this_event = new ptr<const event>{static_cast<const event*>(this_specific_event)};
 			_m_topic.put(this_event);
 		}
 
@@ -414,23 +434,24 @@ private:
 			const std::shared_lock lock{_m_registry_lock};
 			auto found = _m_registry.find(topic_name);
 			if (found != _m_registry.end()) {
-				return found->second;
+				topic& topic_ = found->second;
+#ifndef NDEBUG
+				if (typeid(specific_event) != topic_.ty()) {
+					std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name() << ", but caller used type" << typeid(specific_event).name() << std::endl;
+					abort();
+				}
+#endif
+				return topic_;
 			}
 		}
 
+#ifndef NDEBUG
+		std::cerr << "Creating: " << topic_name << " for " << typeid(specific_event).name() << std::endl;
+#endif
 		// Topic not found. Need to create it here.
 		const std::unique_lock lock{_m_registry_lock};
-		topic ty {topic_name, typeid(specific_event), _m_record_logger};
-		topic& topic_ = _m_registry.try_emplace(topic_name, topic_name, typeid(specific_event), _m_record_logger).first->second;
+		return _m_registry.try_emplace(topic_name, topic_name, typeid(specific_event), _m_record_logger).first->second;
 
-#ifndef NDEBUG
-		if (typeid(specific_event) != topic_.ty()) {
-			std::cerr << "topic '" << topic_.name() << "' holds type " << topic_.ty().name() << ", but caller used type" << typeid(specific_event).name() << std::endl;
-			abort();
-		}
-#endif
-
-		return topic_;
 	}
 
 public:
@@ -486,7 +507,7 @@ public:
 	}
 
 	/**
-	 * @brief Stops all switchboard threads.
+	 * @brief Stops calling switchboard callbacks.
 	 *
 	 * This is safe to be called from any thread.
 	 *
