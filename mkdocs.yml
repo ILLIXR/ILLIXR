@@ -12,5 +12,4 @@ nav:
     - 'ILLIXR Debugging Tips': debugging_illixr.md
     - 'Monado Integration Overview': monado_illixr_runtime_overview.md
     - 'Monado Integration Dataflow': monado_integration_dataflow.md
-    - 'Visualizer & Logger': visualizer_logger.md
     - 'API documentation': https://illixr.github.io/ILLIXR/api/html/annotated.html
