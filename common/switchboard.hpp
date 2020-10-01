@@ -239,7 +239,9 @@ private:
 	 * need to hold all of the topics in a homogeneous container (can't add topic<int> and
 	 * topic<float> to the same std::vector<topic<WHAT_GOES_HERE>>).
 	 *
-	 * Therefore, this class uses type-erasure, and regards all events as type `event`.
+	 * Therefore, this class uses type-erasure, and regards all events as type `event`. I could have
+	 * used `std::any` for this, but I think inheriting `event` will be slightly more efficient
+	 * because it avoids a heap-allocation.
 	 *
 	 * However, this class can have _dynamic_ type-information in _m_ty, that gets set and checked
 	 * at runtime.
