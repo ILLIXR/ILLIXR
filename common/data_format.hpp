@@ -36,37 +36,45 @@ namespace ILLIXR {
 	} imu_cam_type;
 
 	typedef struct {
+		Eigen::Matrix<double,3,1> w_hat;
+		Eigen::Matrix<double,3,1> a_hat;
+		Eigen::Matrix<double,3,1> w_hat2;
+		Eigen::Matrix<double,3,1> a_hat2;
+		Eigen::Matrix<double,13,1> state_plus;
+		time_type imu_time;
+	} imu_raw_type;
+
+	typedef struct {
 	  int64_t time;
 	  const unsigned char* rgb;
 	  const unsigned short* depth;
 	} rgb_depth_type;
 
 	typedef struct {
-		time_type time;
+		time_type sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
 	} pose_type;
 
 	typedef struct {
+		pose_type pose;
+		time_type predict_computed_time; // Time at which the prediction was computed
+		time_type predict_target_time; // Time that prediction targeted.
+	} fast_pose_type;
+
+	typedef struct {
 		int pixel[1];
 	} camera_frame;
-
-	// Single-texture format; arrayed by left/right eye
-	// Single-texture format; arrayed by left/right eye
-	struct rendered_frame {
-		GLuint texture_handle;
-		pose_type render_pose; // The pose used when rendering this frame.
-		std::chrono::time_point<std::chrono::system_clock> sample_time;
-	};
 
 	// Using arrays as a swapchain
 	// Array of left eyes, array of right eyes
 	// This more closely matches the format used by Monado
-	struct rendered_frame_alt {
+	struct rendered_frame {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
-		pose_type render_pose; // The pose used when rendering this frame.
+		fast_pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time;
+		std::chrono::time_point<std::chrono::system_clock> render_time;
 	};
 
 	typedef struct {

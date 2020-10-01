@@ -74,8 +74,6 @@ private:
 
     cv::Mat imageL_ocv;
     cv::Mat imageR_ocv;
-    cv::Mat grayL_ocv;
-    cv::Mat grayR_ocv;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -94,13 +92,10 @@ protected:
         auto start_cpu_time  = thread_cpu_time();
         auto start_wall_time = std::chrono::high_resolution_clock::now();
 
-        // Conversion
-        cv::cvtColor(imageL_ocv, grayL_ocv, CV_BGR2GRAY);
-        cv::cvtColor(imageR_ocv, grayR_ocv, CV_BGR2GRAY);
-
         _m_cam_type->put(new cam_type{
-            &grayL_ocv,
-            &grayR_ocv,
+            // Make a copy, so that we don't have race
+            new cv::Mat{imageL_ocv},
+            new cv::Mat{imageR_ocv},
             iteration_no,
         });
     }
