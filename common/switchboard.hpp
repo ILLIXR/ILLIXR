@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <list>
+#include <array>
 #include <atomic>
 #include <shared_mutex>
 #include <type_traits>
@@ -436,7 +437,7 @@ public:
 		 * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
 		 */
 		 specific_event* allocate() {
-			return new specific_event;
+			return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
 		}
 	};
 

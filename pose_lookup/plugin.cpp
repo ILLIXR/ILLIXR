@@ -17,7 +17,7 @@ public:
 	, _m_sensor_data_it{_m_sensor_data.cbegin()}
 	, dataset_first_time{_m_sensor_data_it->first}
 	, _m_start_of_time{std::chrono::high_resolution_clock::now()}
-	, _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
+	, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
     {
     	auto newoffset = correct_pose(_m_sensor_data_it->second).orientation;
     	set_offset(newoffset);
@@ -52,13 +52,13 @@ public:
 	return orientation * offset;
     }
     virtual fast_pose_type get_fast_pose([[maybe_unused]] time_type time) const override {
-		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
+		switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_nullable();
 		time_type vsync;
-		if(estimated_vsync == nullptr) {
+		if(!estimated_vsync) {
 			std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
 			vsync = std::chrono::system_clock::now();
 		} else {
-			vsync = *estimated_vsync;
+			vsync = **estimated_vsync;
 		}
 
 		ullong lookup_time = std::chrono::nanoseconds(vsync - _m_start_of_time ).count() + dataset_first_time;
@@ -120,7 +120,7 @@ private:
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	ullong dataset_first_time;
 	time_type _m_start_of_time;
-	std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
+	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
 	pose_type correct_pose(const pose_type pose) const {
 		pose_type swapped_pose;

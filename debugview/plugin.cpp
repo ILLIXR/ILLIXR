@@ -58,11 +58,11 @@ public:
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
-		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
+		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
-	void imu_cam_handler(const imu_cam_type *datum) {
+	void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
 		if(datum == NULL){ return; }
 		if(datum->img0.has_value() && datum->img1.has_value())
 			last_datum_with_images = datum;
@@ -128,7 +128,7 @@ public:
 		ImGui::Text("Slow pose topic:");
 		ImGui::SameLine();
 
-		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
+		switchboard::ptr<const pose_type> slow_pose_ptr = _m_slow_pose.get_nullable();
 		if(slow_pose_ptr){
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
 			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", slow_pose_ptr->position.x(), slow_pose_ptr->position.y(), slow_pose_ptr->position.z());
@@ -180,7 +180,7 @@ public:
 		if(last_datum_with_images->img0.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
 			cv::Mat img0;
-			cv::cvtColor(*last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
+			cv::cvtColor(last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
 			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -196,7 +196,7 @@ public:
 		if(last_datum_with_images->img1.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
 			cv::Mat img1;
-			cv::cvtColor(*last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
+			cv::cvtColor(last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
 			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -330,7 +330,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 
-	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
+	switchboard::reader<pose_type> _m_slow_pose;
 	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
 	GLFWwindow* gui_window;
 
@@ -350,7 +350,7 @@ private:
 	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
 
-	const imu_cam_type* last_datum_with_images = NULL;
+	switchboard::ptr<const imu_cam_type> last_datum_with_images;
 	// std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
 	GLuint camera_textures[2];
 	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
@@ -379,7 +379,7 @@ public:
 		// It serves more as an event stream. Camera frames are only available on this topic
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
-   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](const imu_cam_type *datum) {
+   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
         	this->imu_cam_handler(datum);
     	});
 
