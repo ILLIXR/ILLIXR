@@ -63,15 +63,9 @@ protected:
 	std::size_t iteration_no = 0;
 	std::size_t skip_no = 0;
 
-private:
 // 	std::mutex pause_mutex;
 // 	std::condition_variable pause_cv;
 // 	bool pause_bool;
-
-	void wait_if_paused() {
-// 		std::unique_lock<std::mutex> lock {pause_mutex};
-// 		cv.wait(lock, [this]{ return pause_bool; });
-	}
 
 // public:
 // 	void unpause() {
@@ -87,14 +81,19 @@ private:
 // 	}
 
 private:
+
+// 	void wait_if_paused() {
+// 		std::unique_lock<std::mutex> lock {pause_mutex};
+// 		cv.wait(lock, [this]{ return pause_bool; });
+// 	}
+
+	void wait_if_paused() { }
+
 	void thread_main() {
 		record_coalescer it_log {record_logger_};
 		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
 		_p_thread_setup();
-
-		auto iteration_start_cpu_time  = thread_cpu_time();
-		auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
 		while (!should_terminate()) {
 			wait_if_paused();
@@ -109,6 +108,8 @@ private:
 				++skip_no;
 				break;
 			case skip_option::run: {
+				auto iteration_start_cpu_time  = thread_cpu_time();
+				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
 				it_log.log(record{__threadloop_iteration_header, {
 					{id},
@@ -119,8 +120,6 @@ private:
 					{iteration_start_wall_time},
 					{std::chrono::high_resolution_clock::now()},
 				}});
-				iteration_start_cpu_time  = thread_cpu_time();
-				iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				++iteration_no;
 				skip_no = 0;
 				break;
