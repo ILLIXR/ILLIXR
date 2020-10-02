@@ -94,8 +94,6 @@ private:
 					{iteration_start_wall_time},
 					{std::chrono::high_resolution_clock::now()},
 				}});
-				iteration_start_cpu_time  = thread_cpu_time();
-				iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				++iteration_no;
 				skip_no = 0;
 				break;
