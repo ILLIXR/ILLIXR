@@ -64,6 +64,29 @@ protected:
 	std::size_t skip_no = 0;
 
 private:
+// 	std::mutex pause_mutex;
+// 	std::condition_variable pause_cv;
+// 	bool pause_bool;
+
+	void wait_if_paused() {
+// 		std::unique_lock<std::mutex> lock {pause_mutex};
+// 		cv.wait(lock, [this]{ return pause_bool; });
+	}
+
+// public:
+// 	void unpause() {
+// 		std::unique_lock<std::mutex> lock {pause_mutex};
+// 		pause_bool = false;
+// 		cv.notify_all();
+// 	}
+
+// 	void pause() {
+// 		std::unique_lock<std::mutex> lock {pause_mutex};
+// 		pause_bool = true;
+// 		cv.notify_all();
+// 	}
+
+private:
 	void thread_main() {
 		record_coalescer it_log {record_logger_};
 		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
@@ -74,6 +97,7 @@ private:
 		auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
 		while (!should_terminate()) {
+			wait_if_paused();
 			skip_option s = _p_should_skip();
 
 			switch (s) {

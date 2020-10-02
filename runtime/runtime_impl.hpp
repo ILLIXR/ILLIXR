@@ -33,6 +33,10 @@ public:
 		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
 			return std::unique_ptr<plugin>{plugin_factory(&pb)};
 		});
+
+		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			plugin->start();
+		});
 	}
 
 	virtual void load_so(const std::string_view so) override {
