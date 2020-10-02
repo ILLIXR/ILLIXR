@@ -12,6 +12,7 @@ namespace ILLIXR {
 
 	class runtime {
 	public:
+		virtual void load_so(std::vector<std::string_view> so) = 0;
 		virtual void load_so(std::string_view so) = 0;
 		virtual void load_plugin_factory(plugin_factory plugin) = 0;
 		virtual void wait() = 0;

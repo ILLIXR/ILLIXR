@@ -20,6 +20,21 @@ public:
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
 	}
 
+	virtual void load_so(std::vector<std::string_view> so_paths) override {
+		std::transform(so_paths.cbegin(), so_paths.cend(), libs.begin(), [](const auto& so_path) {
+			return dynamic_lib::create(so_path);
+		});
+
+		std::vector<plugin_factory> plugin_factories;
+		std::transform(libs.cbegin(), libs.cend(), plugin_factories.begin(), [](const auto& lib) {
+			return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
+		});
+
+		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), plugins.begin(), [this](const auto& plugin_factory) {
+			return std::unique_ptr<plugin>{plugin_factory(&pb)};
+		});
+	}
+
 	virtual void load_so(std::string_view so) override {
 		auto lib = dynamic_lib::create(so);
 		plugin_factory this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
