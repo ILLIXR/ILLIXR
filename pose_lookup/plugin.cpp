@@ -16,11 +16,12 @@ using namespace ILLIXR;
 class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()}
+		: sb{pb->lookup_impl<switchboard>()}
         , _m_sensor_data{load_data()}
-        , dataset_first_time{_m_sensor_data.cbegin()->first}
+        , _m_sensor_data_it{_m_sensor_data.cbegin()}
+        , dataset_first_time{_m_sensor_data_it->first}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
-        , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
         , init_pos_offset{0}
@@ -41,11 +42,12 @@ public:
 
     virtual fast_pose_type get_fast_pose() const override {
         const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
+		switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_nullable();
         if(estimated_vsync == nullptr) {
             std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
             return get_fast_pose(std::chrono::system_clock::now());
         } else {
-            return get_fast_pose(*estimated_vsync);
+            return get_fast_pose(**estimated_vsync);
         }
     }
 
@@ -164,7 +166,7 @@ private:
     const std::map<ullong, sensor_types> _m_sensor_data;
     ullong dataset_first_time;
     time_type _m_start_of_time;
-    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
+	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
     bool enable_alignment;
     Eigen::Vector3f init_pos_offset;
@@ -174,6 +176,7 @@ private:
     double align_scale;
     std::string path_to_alignment;
 };
+
 
 class pose_lookup_plugin : public plugin {
 public:

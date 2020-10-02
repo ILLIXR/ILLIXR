@@ -23,8 +23,8 @@ public:
 		, _m_sensor_data{load_data()}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
-		, _m_imu_integrator{_m_sb->publish<imu_integrator_seq>("imu_integrator_seq")}
+		, _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
+		, _m_imu_integrator{_m_sb->get_writer<imu_integrator_seq>("imu_integrator_seq")}
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
@@ -89,7 +89,7 @@ protected:
 		}
 #endif /// NDEBUG
 
-		auto datum = new imu_cam_type{
+		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
@@ -119,8 +119,8 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	const std::shared_ptr<switchboard> _m_sb;
-	std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
-	std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
+	switchboard::writer<imu_cam_type> _m_imu_cam;
+    switchboard::writer<imu_integrator_seq> _m_imu_integrator;
 
 	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;

@@ -50,9 +50,9 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
-		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
-		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
+		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
+		, _m_hologram{sb->get_writer<switchboard::event_wrapper<std::size_t>>("hologram_in")}
+		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
 		, _m_offload_data{sb->publish<texture_pose>("texture_pose")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
@@ -86,13 +86,13 @@ private:
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
-	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
+	switchboard::reader<rendered_frame> _m_eyebuffer;
 
 	// Switchboard plug for sending hologram calls
-	std::unique_ptr<writer<hologram_input>> _m_hologram;
+	switchboard::writer<switchboard::event_wrapper<std::size_t>> _m_hologram;
 
 	// Switchboard plug for publishing vsync estimates
-	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
+	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
 	// Switchboard plug for publishing offloaded data
 	std::unique_ptr<writer<texture_pose>> _m_offload_data;
@@ -150,7 +150,7 @@ private:
 	Eigen::Matrix4f basicProjection;
 
 	// Hologram call data
-	long long _hologram_seq{0};
+	std::size_t _hologram_seq{0};
 
 	// Sequence number of offload data
 	long long _offload_seq{0};
@@ -360,7 +360,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		if (_m_eyebuffer->get_latest_ro()) {
+		if(_m_eyebuffer.get_nullable()) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
@@ -518,9 +518,7 @@ public:
 
 		glDepthFunc(GL_LEQUAL);
 
-		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
-		// This should be null-checked in _p_should_skip
-		assert(most_recent_frame);
+		auto most_recent_frame = _m_eyebuffer.get();
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
@@ -645,9 +643,7 @@ public:
 		}
 #endif
 		// Call Hologram
-		auto hologram_params = new hologram_input;
-		hologram_params->seq = ++_hologram_seq;
-		_m_hologram->put(hologram_params);
+		_m_hologram.put(new (_m_hologram.allocate()) switchboard::event_wrapper<std::size_t>{++_hologram_seq});
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
@@ -662,7 +658,7 @@ public:
 		[[maybe_unused]] time_type time_after_swap = time_last_swap;
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_type>{GetNextSwapTimeEstimate()});
 
 		std::chrono::nanoseconds imu_to_display = time_last_swap - latest_pose.pose.sensor_time;
 		std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
