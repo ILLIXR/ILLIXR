@@ -42,21 +42,20 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
-		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
-		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
+		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+		, _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")}
 	{ }
 
 	// Essentially, a crude equivalent of XRWaitFrame.
 	void wait_vsync()
 	{
 		using namespace std::chrono_literals;
-		const time_type* next_vsync = vsync->get_latest_ro();
+		switchboard::ptr<const switchboard::event_wrapper<time_type>> next_vsync = _m_vsync.get_nullable();
 		time_type now = std::chrono::high_resolution_clock::now();
 
 		time_type wait_time;
 
-		if(next_vsync == nullptr)
-		{
+		if(!next_vsync) {
 			// If no vsync data available, just sleep for roughly a vsync period.
 			// We'll get synced back up later.
 			std::this_thread::sleep_for(vsync_period);
@@ -77,7 +76,7 @@ public:
 		{
 			// We'll wait until the next vsync, plus a small delay time.
 			// Delay time helps with some inaccuracies in scheduling.
-			wait_time = *next_vsync + VSYNC_DELAY_TIME;
+			wait_time = **next_vsync + VSYNC_DELAY_TIME;
 
 			// If our sleep target is in the past, bump it forward
 			// by a vsync period, so it's always in the future.
@@ -193,7 +192,7 @@ public:
 			glFlush();
 
 			// Publish our submitted frame handle to Switchboard!
-			auto frame = new rendered_frame;
+			rendered_frame* frame = new (_m_eyebuffer.allocate()) rendered_frame;
 			frame->texture_handles[0] = eyeTextures[0];
 			frame->texture_handles[1] = eyeTextures[1];
 			frame->swap_indices[0] = buffer_to_use;
@@ -202,7 +201,7 @@ public:
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
 			frame->render_time = std::chrono::high_resolution_clock::now();
-			_m_eyebuffer->put(frame);
+			_m_eyebuffer.put(frame);
 			lastFrameTime = std::chrono::high_resolution_clock::now();
 		}
 
@@ -224,13 +223,13 @@ private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
-	const std::unique_ptr<reader_latest<time_type>> vsync;
+	const switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync;
 
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
 	// we're just atomically writing the handle to the
 	// correct eye/framebuffer in the "swapchain".
-	std::unique_ptr<writer<rendered_frame>> _m_eyebuffer;
+	switchboard::writer<rendered_frame> _m_eyebuffer;
 
 	time_type lastFrameTime;
 

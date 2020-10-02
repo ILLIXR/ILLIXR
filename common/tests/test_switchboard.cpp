@@ -20,25 +20,10 @@ void long_delay() {
 
 class uint64_wrapper : public switchboard::event {
 public:
-	uint64_wrapper()
-		: _m_default_constructed{true}
-		, _m_datum{0}
-	{}
-
-	uint64_wrapper(uint64_wrapper&)
-		: _m_default_constructed{true}
-		, _m_datum{0}
+	uint64_wrapper(uint64_wrapper&& other) noexcept
+		: _m_default_constructed{other._m_default_constructed}
+		, _m_datum{other._m_datum}
 	{ }
-
-	uint64_wrapper(uint64_wrapper&& other) noexcept {
-		*this = std::move(other);
-	}
-
-	uint64_wrapper& operator=(uint64_wrapper&& other) noexcept {
-		_m_default_constructed = other._m_default_constructed;
-		_m_datum = other._m_datum;
-		return *this;
-	}
 
 	uint64_wrapper(uint64_t datum)
 		: _m_default_constructed{false}

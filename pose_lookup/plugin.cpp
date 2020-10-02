@@ -14,23 +14,26 @@ class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
-		, _m_sensor_data{load_data()}
-		, dataset_first_time{_m_sensor_data.cbegin()->first}
-		, _m_start_of_time{std::chrono::high_resolution_clock::now()}
-		, _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
+        , _m_sensor_data{load_data()}
+        , _m_sensor_data_it{_m_sensor_data.cbegin()}
+        , dataset_first_time{_m_sensor_data_it->first}
+        , _m_start_of_time{std::chrono::high_resolution_clock::now()}
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
     {
     	auto newoffset = correct_pose(_m_sensor_data.begin()->second).orientation;
     	set_offset(newoffset);
     }
 
     virtual fast_pose_type get_fast_pose() const override {
-		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
-		if(estimated_vsync == nullptr) {
+		switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_nullable();
+		time_type vsync;
+		if(!estimated_vsync) {
 			std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
-			return get_fast_pose(std::chrono::system_clock::now());
+			vsync = std::chrono::system_clock::now();
 		} else {
-			return get_fast_pose(*estimated_vsync);
+			vsync = **estimated_vsync;
 		}
+		return vsync;
     }
 
     virtual pose_type get_true_pose() const override {
@@ -123,7 +126,27 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	ullong dataset_first_time;
 	time_type _m_start_of_time;
-	std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
+	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
+
+	pose_type correct_pose(const pose_type pose) const {
+		pose_type swapped_pose;
+
+		// This uses the OpenVINS standard output coordinate system.
+		// This is a mapping between the OV coordinate system and the OpenGL system.
+		swapped_pose.position.x() = -pose.position.y();
+		swapped_pose.position.y() = pose.position.z();
+		swapped_pose.position.z() = -pose.position.x();
+
+		// There is a slight issue with the orientations: basically,
+		// the output orientation acts as though the "top of the head" is the
+		// forward direction, and the "eye direction" is the up direction.
+	Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
+
+	swapped_pose.orientation = apply_offset(raw_o);
+
+		return swapped_pose;
+	}
+
 };
 
 class pose_lookup_plugin : public plugin {

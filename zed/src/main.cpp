@@ -18,13 +18,11 @@ const record_header __imu_cam_record {"imu_cam", {
     {"has_camera", typeid(bool)},
 }};
 
-typedef struct {
-    cv::Mat* img0;
-    cv::Mat* img1;
-    cv::Mat* rgb;
-    cv::Mat* depth;
+struct cam_type : switchboard::event {
+    cv::Mat img0;
+    cv::Mat img1;
     std::size_t serial_no;
-} cam_type;
+};
 
 std::shared_ptr<Camera> start_camera() {
     std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
@@ -56,7 +54,7 @@ public:
     zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
     : threadloop{name_, pb_}
     , sb{pb->lookup_impl<switchboard>()}
-    , _m_cam_type{sb->publish<cam_type>("cam_type")}
+    , _m_cam_type{sb->get_writer<cam_type>("cam_type")}
     , zedm{zedm_}
     , image_size{zedm->getCameraInformation().camera_configuration.resolution}
     {
@@ -75,7 +73,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard> sb;
-    std::unique_ptr<writer<cam_type>> _m_cam_type;
+	switchboard::writer<cam_type> _m_cam_type;
     std::shared_ptr<Camera> zedm;
     Resolution image_size;
     RuntimeParameters runtime_parameters;
@@ -110,12 +108,10 @@ protected:
         auto start_cpu_time  = thread_cpu_time();
         auto start_wall_time = std::chrono::high_resolution_clock::now();
 
-        _m_cam_type->put(new cam_type{
+        _m_cam_type.put(new (_m_cam_type.allocate()) cam_type{
             // Make a copy, so that we don't have race
-            new cv::Mat{imageL_ocv},
-            new cv::Mat{imageR_ocv},
-            new cv::Mat{rgb_ocv},
-            new cv::Mat{depth_ocv},
+            cv::Mat{imageL_ocv},
+            cv::Mat{imageR_ocv},
             iteration_no,
         });
     }
@@ -132,12 +128,12 @@ public:
     zed_imu_thread(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_imu_cam{sb->publish<imu_cam_type>("imu_cam")}
-        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
+        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
+        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
+        , _m_imu_integrator{sb->get_writer<imu_integrator_seq>("imu_integrator_seq")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
-        , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
-        , _m_imu_integrator{sb->publish<imu_integrator_seq>("imu_integrator_seq")}
         , it_log{record_logger_}
     {
         camera_thread_.start();
@@ -173,12 +169,10 @@ protected:
         la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
         av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
 
-        std::optional<cv::Mat*> img0 = std::nullopt;
-        std::optional<cv::Mat*> img1 = std::nullopt;
-        cv::Mat* depth = nullptr;
-        cv::Mat* rgb = nullptr;
+        std::optional<cv::Mat> img0 = std::nullopt;
+        std::optional<cv::Mat> img1 = std::nullopt;
 
-        const cam_type* c = _m_cam_type->get_latest_ro();
+        const switchboard::ptr<cam_type> c = _m_cam_type.get_nullable();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
@@ -192,7 +186,7 @@ protected:
             {bool(img0)},
         }});
 
-        _m_imu_cam->put(new imu_cam_type {
+        _m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type {
             imu_time_point,
             av,
             la,
@@ -221,10 +215,10 @@ private:
     zed_camera_thread camera_thread_;
 
     const std::shared_ptr<switchboard> sb;
-    std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
-    std::unique_ptr<reader_latest<cam_type>> _m_cam_type;
-    std::unique_ptr<writer<rgb_depth_type>> _m_rgb_depth;
-    std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
+    switchboard::writer<imu_cam_type> _m_imu_cam;
+    switchboard::reader<cam_type> _m_cam_type;
+    switchboard::writer<rgb_depth_type> _m_rgb_depth;
+    switchboard::writer<imu_integrator_seq> _m_imu_integrator;
 
     // IMU
     SensorsData sensors_data;
