@@ -35,6 +35,10 @@ public:
 		});
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			plugin->setup();
+		});
+
+		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start();
 		});
 	}
@@ -48,6 +52,8 @@ public:
 
 	virtual void load_plugin_factory(plugin_factory plugin_main) override {
 		plugins.emplace_back(plugin_main(&pb));
+		plugins.back()->setup();
+		plugins.back()->start();
 	}
 
 	virtual void wait() override {

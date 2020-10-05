@@ -22,11 +22,16 @@ namespace ILLIXR {
 	class plugin {
 	public:
 		/**
-		 * @brief A method which Spindle calls when it starts the component.
-		 * 
+		 * @brief A method which Spindle called after the constructor.
+		 *
 		 * This is necessary for actions which have to be started after constructions, such as
 		 * threads. These cannot be started in the constructor because virtual methods don't work in
 		 * consturctors.
+		 */
+		virtual void setup() { }
+
+		/**
+		 * @brief A method which Spindle calls when it starts the component.
 		 */
 		virtual void start() {
 			record_logger_->log(record{__plugin_start_header, {
