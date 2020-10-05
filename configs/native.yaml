@@ -13,5 +13,5 @@ plugins:
 data: ../data1/
 demo_data: ../demo_data/
 loader:
-  name: gdb
-profile: dbg
+  name: native
+profile: opt
