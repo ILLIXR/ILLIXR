@@ -539,12 +539,6 @@ public:
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
 
-		mtp_logger.log(record{mtp_record, {
-			{iteration_no},
-			{std::chrono::high_resolution_clock::now()},
-			{latest_pose.pose.sensor_time},
-		}});
-
 #ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
@@ -566,6 +560,12 @@ public:
 			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
 			{std::chrono::nanoseconds(elapsed_time)},
+		}});
+
+		mtp_logger.log(record{mtp_record, {
+			{iteration_no},
+			{std::chrono::high_resolution_clock::now()},
+			{latest_pose.pose.sensor_time},
 		}});
 
 #ifndef NDEBUG
