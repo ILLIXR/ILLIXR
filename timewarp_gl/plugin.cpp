@@ -29,7 +29,9 @@ const record_header timewarp_gpu_record {"timewarp_gpu", {
 const record_header mtp_record {"mtp_record", {
 	{"iteration_no", typeid(std::size_t)},
 	{"vsync", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"imu_time", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"imu_to_display", typeid(std::chrono::nanoseconds)},
+	{"predict_to_display", typeid(std::chrono::nanoseconds)},
+	{"render_to_display", typeid(std::chrono::nanoseconds)},
 }};
 
 class timewarp_gl : public threadloop {
@@ -539,15 +541,24 @@ public:
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
 
+		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
+		std::chrono::nanoseconds predict_to_display = lastSwapTime - latest_pose.predict_computed_time;
+		std::chrono::nanoseconds render_to_display = lastSwapTime - most_recent_frame->render_time;
+
 		mtp_logger.log(record{mtp_record, {
 			{iteration_no},
-			{std::chrono::high_resolution_clock::now()},
-			{latest_pose.pose.sensor_time},
+			{lastSwapTime},
+			{imu_to_display},
+			{predict_to_display},
+			{render_to_display},
 		}});
 
 #ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
+		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(mtp.count()) / 1e6);
+		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
+		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
 #endif
 
 		// retrieving the recorded elapsed time
@@ -567,20 +578,6 @@ public:
 			{std::chrono::high_resolution_clock::now()},
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
-
-#ifndef NDEBUG
-		// TODO (implement-logging): When we have logging infra, delete this code.
-		// Compute time difference between current post-vsync time and the time of the most recent
-		// imu sample that was used to generate the predicted pose. This is the MTP, assuming good prediction
-		// was used to compute the most recent fast pose.
-		std::chrono::duration<double,std::nano> mtp = (lastSwapTime - latest_pose.pose.sensor_time);
-		std::chrono::duration<double,std::nano> predict_to_display = (lastSwapTime - latest_pose.predict_computed_time);
-
-		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", (float)(mtp.count() / 1000000.0));
-		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", (float)(predict_to_display.count() / 1000000.0));
-
-		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
-#endif
 	}
 
 	virtual ~timewarp_gl() override {
