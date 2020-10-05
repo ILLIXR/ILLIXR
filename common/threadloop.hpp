@@ -32,6 +32,7 @@ public:
 
 	virtual void setup() override {
 		plugin::setup();
+		pause();
 	}
 
 	/**
