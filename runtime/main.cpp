@@ -40,7 +40,7 @@ int main(int argc, const char * argv[]) {
 	// And timer
 	cancellable_sleep cs;
 	std::thread th{[&]{
-		cs.sleep(std::chrono::seconds(60));
+		cs.sleep(std::chrono::seconds(10));
 		r->stop();
 	}};
 
