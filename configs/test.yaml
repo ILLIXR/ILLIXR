@@ -1,0 +1,17 @@
+plugin_groups:
+  - plugin_group:
+    # - path: git+https://github.com/ILLIXR/open_vins.git@fe9f594c1cf9c4a151565ea959d2329a0d47069b
+    # - path: .cache/paths/git+https:%%%%github.com%%ILLIXR%%open_vins.git/
+    # - path: .cache/paths/git+https:github.comILLIXRopen_vins.git123456789/
+    # - path: .cache/paths/git+https:github.comILLIXRov12345
+    # - path: .cache/paths/git+https:github.comILLIXRov123
+    # - path: .cache/paths/git+https:github.comILLIXRov1
+    # - path: .cache/paths/git+https:github.comILLIXRov
+    - path: .cache/paths/ov/
+
+data: file+zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip#path=mav0
+demo_data: demo_data/
+loader:
+  name: native
+  # command: gdb -q --args %a
+profile: opt

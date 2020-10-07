@@ -60,15 +60,15 @@ def escape_fname(string: str) -> str:
     """
 
     ret = escape_string(
-        string, "%", {"/": "%", "\\": "backslash"}
+        string, "%", {"/": "s", "\\": "b", ":": "c"}
     )
     # handle some special cases
     if ret == ".":
-        return "%dot"
+        return "%d"
     elif ret == "..":
-        return "%dot%dot"
+        return "%d%d"
     elif ret == "~":
-        return "%tilde"
+        return "%t"
     else:
         return ret
 

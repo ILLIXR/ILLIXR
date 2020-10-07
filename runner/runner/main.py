@@ -21,9 +21,7 @@ from yamlinclude import YamlIncludeConstructor  # type: ignore
 root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
 
 
-cache_path = Path(
-    tempfile.tempdir if tempfile.tempdir else os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
-) / "ILLIXR" / "paths"
+cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
 
 
@@ -125,10 +123,9 @@ async def load_native(config: Dict[str, Any]) -> None:
     await subprocess_run(
         command_lst_sbst,
         check=True,
-        env=dict(
+        env_override=dict(
             ILLIXR_DATA=data_path,
             ILLIXR_DEMO_DATA=demo_data_path,
-            **os.environ,
         ),
     )
 
@@ -227,7 +224,6 @@ async def load_monado(config: Dict[str, Any]) -> None:
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
             ILLIXR_DATA=data_path,
             ILLIXR_DEMO_DATA=demo_data_path,
-            **os.environ,
         ),
     )
 
