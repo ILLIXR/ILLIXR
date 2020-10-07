@@ -133,12 +133,12 @@ async def load_native(config: Dict[str, Any]) -> None:
 async def load_tests(config: Dict[str, Any]) -> None:
     runtime_exe_path, _, plugin_paths = await gather_aws(
         build_runtime(config, "exe", test=True),
-        make(Path("../common"), ["tests/run"]),
+        make(Path("common"), ["tests/run"]),
         gather_aws(
             *(
                 build_one_plugin(config, plugin_config, test=True)
                     for plugin_group in config["plugin_groups"]
-                    for plugin_config in plugin_group
+                    for plugin_config in plugin_group["plugin_group"]
             ),
             sequential=False,
         ),
@@ -211,7 +211,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
             *(
                 build_one_plugin(config, plugin_config)
                 for plugin_group in config["plugin_groups"]
-                for plugin_config in plugin_group
+                for plugin_config in plugin_group["plugin_group"]
             )
         ),
     )
