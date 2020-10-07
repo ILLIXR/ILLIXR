@@ -7,11 +7,23 @@
   * Make sure you have defined all of the plugins you want with paths that exist.
 
   * Currently we support the following loaders: `native` (which runs ILLIXR in standalone mode),
-    `gdb` (which runs standalone mode in GDB for debugging purposes), and `monado` (which runs an
-    OpenXR application in Monado using ILLIXR as a backend)
+    `tests` (which runs integreation tests headlessly for CI/CD purposes), and `monado` (which runs
+    an OpenXR application in Monado using ILLIXR as a backend)
 
-    * If you want to run with Monado, make sure you define Monado and an OpenXR application in the
-      loader (see `runner/config_schema.yaml` for specifics).
+   * If you want to run with `gdb`, `apitrace`, or some other tool, use `native` loader, and set
+     `loader.command`. `%a` will be expanded with the ILLIXR binary and its arguments, while `%b`
+     will be expanded to a string containing the binary and its arguments.
+
+```yaml
+# Example:
+loader:
+  name: native
+  gdb -q --args %a
+  # expands to `gdb -q --args /path/to/ILLIXR-runtime /path/to/ILLIXR-plugin ...`
+```
+
+   * If you want to run with Monado, make sure you define Monado and an OpenXR application in the
+      loader.
 
   * Paths are resolved relative to the project root.
 
@@ -24,6 +36,14 @@
 
   * This also sets the environment variables properly.
 
+* Anywhere a path is required, one can use a URL (Git, HTTP, HTTPS, zip, and file schemes).
+  - HTTP/HTTPS (specifies file): `http[s]://[<user>@[:<password>]]<domain>[:<port>]/[<path>][?<query>][#<query>]`
+  - Git (specifies directory): `git+<repo_url>[@<revision>]` as in `git+https://github.com/username/repo`
+  - Zip (specifies directory): `zip+<zip_file_url>` as in `zip+https://exmaple.com/path/to/archive.zip`
+  - File (specifies file or directory): `file:///absolute_path/to/file` or `file:relative_path/to/file`
+  - File (again) (speficies file or directory): `file+<directory_url>#path=<path_within_directory>`can be used in combination with a URL to a directory: `file+zip+https://exmaple.com/path/to/archive.zip#path=path/within/zip`
+  - See `runner/runner/util.py:pathify` for more details
+
 ## Rationale
 
 - Previously, we would have to specify which plugins to build and which to run separately, violating
@@ -34,9 +54,7 @@
   deal with all configurations.
 
 - Currently, plugins are specificed by a path to the directory containing their source code and
-  build system. In the future, the same config file could support HTTP URLs Git URLs
-  (`git+https://github.com/username/repo@rev?path=optional/path/within/repo`), or Zip URLs
-  (`zip+http://path/to/archive.zip?path=optional/path/within/zip`), or even Nix URLs (TBD).
+  build system.
 
 [7]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 [8]: https://pypi.org/project/pyyaml-include/

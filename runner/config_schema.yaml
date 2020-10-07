@@ -8,20 +8,26 @@ definitions:
     additionalProperties:
       type: string    
 properties:
-  plugins:
+  plugin_groups:
     type: array
     default: []
     items:
       type: object
       properties:
-        path:
-          type: string
-          description: Path to the directory containing the SO.
-        config:
-          <<: *key_vals
-          description: Vars that get passed to the build system
-      required:
-        - path
+        plugin_group:
+          type: array
+          default: []
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+                description: Path to the directory containing the SO.
+              config:
+                <<: *key_vals
+                description: Vars that get passed to the build system
+            required:
+              - path
   runtime:
     default: {}
     type: object

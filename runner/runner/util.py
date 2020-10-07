@@ -1,11 +1,13 @@
 import asyncio
+from dataclasses import dataclass
 import itertools
 import os
+import sys
 import shlex
 import subprocess
 import urllib.parse
 from pathlib import Path
-from typing import Any, Awaitable, Mapping, Optional, Sequence, Tuple, Union, TypeVar, Iterable
+from typing import Any, Awaitable, Mapping, Optional, Sequence, Tuple, Union, TypeVar, Iterable, List
 
 import aiohttp
 import aiofiles
@@ -57,10 +59,18 @@ def escape_fname(string: str) -> str:
     See https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
     """
 
-    return escape_string(
-        string, "%", {"/": "slash", ".": "dot", "~": "tilde", "\\": "backslash"}
+    ret = escape_string(
+        string, "%", {"/": "%", "\\": "backslash"}
     )
-
+    # handle some special cases
+    if ret == ".":
+        return "%dot"
+    elif ret == "..":
+        return "%dot%dot"
+    elif ret == "~":
+        return "%tilde"
+    else:
+        return ret
 
 async def pathify(
     url_str: str,
@@ -108,7 +118,7 @@ Supported schemes:
 
 - `file:` (default if no scheme is provided)
   - Supports optional sub-schemes
-  - Supports absolute (e.g. file://path/to/file) and relative (file:path/to/file), where relative paths are resolved relative to `base`
+  - Supports absolute (e.g. file:///path/to/file) and relative (file:path/to/file), where relative paths are resolved relative to `base`
   - Also accepts the path through a `path` fragment argument
     - This way, one can specify a path within a directory retrieved by another scheme (e.g. file+git://github.com/a/b#path=path/within/repo).
   - Returns files or directories
@@ -164,21 +174,28 @@ Supported schemes:
             archive_path = await pathify(
                 archive_url, base, cache_path, True, False, session
             )
-            await subprocess_run(["zip", str(archive_path), "-d", str(cache_dest)])
+            await subprocess_run(["unzip", str(archive_path), "-d", str(cache_dest)], check=True)
             return cache_dest
     elif first_scheme == "git":
+        repo_scheme = url.scheme.partition("+")[2]  # could be git+b+c, we want b+c
+        repo_url, _, rev = urllib.parse.urlunparse((repo_scheme, *url[1:6])).partition("@")
         if not should_dir:
             raise ValueError(
                 f"{url} points to a dir (because of the git scheme) not a file"
             )
         elif cache_dest.exists():
             return cache_dest
-        else:
-            repo_scheme = url.scheme.partition("+")[2]  # could be git+b+c, we want b+c
-            repo_url, _, rev = urllib.parse.urlunparse((repo_scheme, *url[1:6])).partition("@")
-            rev_flags = ["-b", rev] if rev else []
-            await subprocess_run(["git", "clone", *rev_flags, repo_url, str(cache_dest)])
+        elif not rev:
+            await subprocess_run(["git", "clone", repo_url, str(cache_dest), "--recursive"], check=True)
             return cache_dest
+        else:
+            repo_path = await pathify(
+                f"git+{repo_url}", base, cache_path, True, True, session
+            )
+            await subprocess_run(["git", "-C", str(repo_path), "fetch"], check=True)
+            await subprocess_run(["git", "-C", str(repo_path), "checkout", rev], check=True)
+            await subprocess_run(["git", "-C", str(repo_path), "submodule", "update", "--recursive"], check=True)
+            return repo_path
     elif first_scheme in set(["file", ""]) and not rest_schemes:
         # no scheme; just a plain path
         path = Path(url.path)
@@ -199,9 +216,29 @@ Supported schemes:
 async def gather_aws(*aws: Awaitable[Any], sequential: bool = False) -> Tuple[Any, ...]:
     """Await on all of aws, either sequentially or in parallel"""
     if sequential:
-        return tuple(await aw for aw in aws)
+        return tuple([(await aw) for aw in aws])
     else:
         return tuple(await asyncio.gather(*aws))
+
+
+class CalledProcessError(Exception):
+    ...
+
+
+@dataclass
+class CompletedProcess:
+    args: List[str]
+    returncode: int
+    stdout: bytes
+    stderr: bytes
+
+    def check_returncode(self):
+        if self.returncode != 0:
+            print("$ " + shlex.join(self.args))
+            sys.stdout.buffer.write(self.stdout)
+            sys.stdout.buffer.write(self.stderr)
+            print(f"Exit code {self.returncode}")
+            raise CalledProcessError(f"{shlex.join(self.args)} returned {self.returncode}")
 
 
 async def subprocess_run(
@@ -210,6 +247,8 @@ async def subprocess_run(
     check: bool = False,
     env: Optional[Mapping[str, str]] = None,
     env_override: Optional[Mapping[str, str]] = None,
+    capture_output: bool = False,
+    silence_output: bool = False,
 ) -> asyncio.subprocess.Process:
     """Clone of subprocess.run, but asynchronous.
 
@@ -221,19 +260,35 @@ async def subprocess_run(
 
     """
 
-    try:
-        cwd = cwd if cwd is not None else Path(".")
-        env = dict(env if env is not None else os.environ)
-        if env_override:
-            env.update(env_override)
-        proc = await asyncio.create_subprocess_exec(
-            args[0], *args[1:], env=env, cwd=str(cwd)
-        )
+    if capture_output:
+        stdout = asyncio.subprocess.PIPE
+        stderr = asyncio.subprocess.PIPE
+    elif silence_output:
+        stdout = asyncio.subprocess.DEVNULL
+        stderr = asyncio.subprocess.DEVNULL
+    else:
+        stdout = None
+        stderr = None
 
-        return_code = await proc.wait()
-        if check and return_code != 0:
-            raise subprocess.CalledProcessError(return_code, cmd=shlex.join(args))
-        return proc
+    cwd = cwd if cwd is not None else Path(".")
+    env = dict(env if env is not None else os.environ)
+    if env_override:
+        env.update(env_override)
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            args[0], *args[1:], env=env, cwd=str(cwd), stdout=stdout, stderr=stderr,
+        )
+        if capture_output:
+            stdout, stderr = await proc.communicate()
+            returncode = proc.returncode
+        else:
+            stdout, stderr = (b"", b"")
+            returncode = await proc.wait()
+        comp_proc = CompletedProcess(args, returncode, stdout, stderr)
+        if check:
+            comp_proc.check_returncode()
+        return comp_proc
     except asyncio.CancelledError:
         proc.terminate()
         raise

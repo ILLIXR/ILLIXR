@@ -3,6 +3,7 @@ import asyncio
 import multiprocessing
 import tempfile
 from pathlib import Path
+import os
 import shlex
 from typing import Any, Dict, List, Optional, cast
 
@@ -20,7 +21,9 @@ from yamlinclude import YamlIncludeConstructor  # type: ignore
 root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
 
 
-cache_path = Path(tempfile.tempdir if tempfile.tempdir else "/tmp") / "ILLIXR" / "cache"
+cache_path = Path(
+    tempfile.tempdir if tempfile.tempdir else os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
+) / "ILLIXR" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
 
 
@@ -64,6 +67,10 @@ async def build_one_plugin(
 ) -> Path:
     profile = config["profile"]
     path: Path = await pathify(plugin_config["path"], root_dir, cache_path, True, True, session)
+    if not (path / "common").exists():
+        runtime_path = await pathify(config["runtime"]["path"], root_dir, cache_path, True, True, session)
+        runtime_path = runtime_path.resolve()
+        os.symlink(runtime_path / "common", path / "common")
     var_dict = plugin_config["config"]
     so_name = f"plugin.{profile}.so"
     targets = [so_name] + (["tests/run"] if test else [])
@@ -81,9 +88,7 @@ async def build_runtime(
     name = "main" if suffix == "exe" else "plugin"
     runtime_name = f"{name}.{profile}.{suffix}"
     runtime_config = config["runtime"]["config"]
-    runtime_path: Path = await pathify(
-        config["runtime"]["path"], root_dir, cache_path, True, True, session
-    )
+    runtime_path = await pathify(config["runtime"]["path"], root_dir, cache_path, True, True, session)
     if not runtime_path.exists():
         raise RuntimeError(
             f"Please change loader.runtime.path ({runtime_path}) to point to a clone of https://github.com/ILLIXR/ILLIXR"
@@ -95,14 +100,17 @@ async def build_runtime(
 
 async def load_native(config: Dict[str, Any]) -> None:
     async with aiohttp.ClientSession() as session:
-        runtime_exe_path, plugin_paths = await gather_aws(
+        runtime_exe_path, plugin_paths, data_path, demo_data_path = await gather_aws(
             build_runtime(config, "exe", session=session),
             gather_aws(
                 *(
                     build_one_plugin(config, plugin_config, session=session)
-                    for plugin_config in config["plugins"]
+                    for plugin_group in config["plugin_groups"]
+                    for plugin_config in plugin_group["plugin_group"]
                 )
             ),
+            pathify(config["data"], root_dir, cache_path, True, True, session),
+            pathify(config["demo_data"], root_dir, cache_path, True, True, session),
         )
     command_str = config["loader"].get("command", "%a")
     main_cmd_lst = [str(runtime_exe_path), *map(str, plugin_paths)]
@@ -118,8 +126,8 @@ async def load_native(config: Dict[str, Any]) -> None:
         command_lst_sbst,
         check=True,
         env=dict(
-            ILLIXR_DATA=config["data"],
-            ILLIXR_DEMO_DATA=config["demo_data"],
+            ILLIXR_DATA=data_path,
+            ILLIXR_DEMO_DATA=demo_data_path,
             **os.environ,
         ),
     )
@@ -132,7 +140,8 @@ async def load_tests(config: Dict[str, Any]) -> None:
         gather_aws(
             *(
                 build_one_plugin(config, plugin_config, test=True)
-                for plugin_config in config["plugins"]
+                    for plugin_group in config["plugin_groups"]
+                    for plugin_config in plugin_group
             ),
             sequential=False,
         ),
@@ -169,10 +178,12 @@ async def load_monado(config: Dict[str, Any]) -> None:
     monado_config = config["loader"]["monado"].get("config", {})
 
     async with aiohttp.ClientSession() as session:
-        runtime_path, monado_path, openxr_app_path = await gather_aws(
+        runtime_path, monado_path, openxr_app_path, data_path, demo_data_path = await gather_aws(
             pathify(config["runtime"]["path"], root_dir, cache_path, True, True, session),
             pathify(config["loader"]["monado"]["path"], root_dir, cache_path, True, True, session),
-            pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True, session)
+            pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True, session),
+            pathify(config["data"], root_dir, cache_path, True, False, session),
+            pathify(config["demo_data"], root_dir, cache_path, True, False, session),
         )
 
     _, _, _, plugin_paths = await gather_aws(
@@ -202,7 +213,8 @@ async def load_monado(config: Dict[str, Any]) -> None:
         gather_aws(
             *(
                 build_one_plugin(config, plugin_config)
-                for plugin_config in config.get("plugins", [])
+                for plugin_group in config["plugin_groups"]
+                for plugin_config in plugin_group
             )
         ),
     )
@@ -213,8 +225,8 @@ async def load_monado(config: Dict[str, Any]) -> None:
             XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
             ILLIXR_PATH=str(runtime_path / "runtime" / f"plugin.{profile}.so"),
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
-            ILLIXR_DATA=config["data"],
-            ILLIXR_DEMO_DATA=config["demo_data"],
+            ILLIXR_DATA=data_path,
+            ILLIXR_DEMO_DATA=demo_data_path,
             **os.environ,
         ),
     )
