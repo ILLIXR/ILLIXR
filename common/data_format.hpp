@@ -45,7 +45,7 @@ namespace ILLIXR {
 		double gyro_walk;
 		Eigen::Vector3d biasAcc;
 		Eigen::Vector3d biasGyro;
-		Eigen::Matrix3d gravity;
+		Eigen::Vector3d gravity;
 	} imu_integrator_input2;
 
 	typedef struct {
