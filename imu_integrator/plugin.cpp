@@ -14,7 +14,10 @@
 #include <gtsam/navigation/CombinedImuFactor.h>  // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include <boost/smart_ptr/make_shared.hpp>
 
+using PimUniquePtr = std::unique_ptr<gtsam::PreintegrationType>;
 using ImuBias = gtsam::imuBias::ConstantBias;
 using namespace ILLIXR;
 
@@ -82,7 +85,7 @@ private:
 	double last_cam_time = 0;
 	bool slam_ready = false;
 	std::vector<imu_type> _imu_vec;
-	gtsam::PreintegratedCombinedMeasurements pim_;
+  	PimUniquePtr pim_ = nullptr;
 
 	int counter = 0;
 	int cam_count = 0;
@@ -109,19 +112,19 @@ private:
 		}
 
 		ImuBias imu_bias = ImuBias(input_values->biasAcc, input_values->biasGyro);
-		// if (!input_values->slam_ready) {
-		// 	slam_ready = true;
-		// 	// auto params = gtsam::PreintegratedCombinedMeasurements::Params(gtsam::Vector3::Zero());
-		// 	auto params = gtsam::PreintegratedCombinedMeasurements::Params();
+		if (!input_values->slam_ready) {
+			slam_ready = true;
+			boost::shared_ptr<gtsam::PreintegratedCombinedMeasurements::Params> params =
+          			boost::make_shared<gtsam::PreintegratedCombinedMeasurements::Params>(input_values->gravity);
 
-		// 	params.setGyroscopeCovariance(std::pow(input_values->gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
-  		// 	params.setAccelerometerCovariance(std::pow(input_values->acc_noise, 2.0) * Eigen::Matrix3d::Identity());
-  		// 	params.setIntegrationCovariance(std::pow(input_values->imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
-		// 	params.biasAccCovariance = std::pow(input_values->acc_walk, 2.0) * Eigen::Matrix3d::Identity();
-		// 	params.biasOmegaCovariance = std::pow(input_values->gyro_walk, 2.0) * Eigen::Matrix3d::Identity();
+			params->setGyroscopeCovariance(std::pow(input_values->gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
+  			params->setAccelerometerCovariance(std::pow(input_values->acc_noise, 2.0) * Eigen::Matrix3d::Identity());
+  			params->setIntegrationCovariance(std::pow(input_values->imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
+			params->biasAccCovariance = std::pow(input_values->acc_walk, 2.0) * Eigen::Matrix3d::Identity();
+			params->biasOmegaCovariance = std::pow(input_values->gyro_walk, 2.0) * Eigen::Matrix3d::Identity();
 
-		// 	pim_ = gtsam::PreintegratedCombinedMeasurements(params, imu_bias);
-		// }
+			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias);
+		}
 
 		// Uncomment this for some helpful prints
 		// total_imu++;
@@ -135,24 +138,24 @@ private:
 		// counter++;
 
 		if (input_values->last_cam_integration_time > last_cam_time) {
-			pim_.resetIntegrationAndSetBias(imu_bias);
+			pim_->resetIntegrationAndSetBias(imu_bias);
 		}
 
 		// This is the last CAM time
 		double time_begin = input_values->last_cam_integration_time;
 		double time_end = timestamp;
 
-		ImuBias prev_bias = pim_.biasHat();
-		ImuBias bias = pim_.biasHat();
+		ImuBias prev_bias = pim_->biasHat();
+		ImuBias bias = pim_->biasHat();
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 		for (int i = 0; i < prop_data.size()-1; i++) {
 			const gtsam::Vector3& measured_acc = prop_data.at(i).am;
 			const gtsam::Vector3& measured_omega = prop_data.at(i).wm;
 			const double& delta_t = prop_data.at(i+1).timestamp - prop_data.at(i).timestamp;
-			pim_.integrateMeasurement(measured_acc, measured_omega, delta_t);
+			pim_->integrateMeasurement(measured_acc, measured_omega, delta_t);
 
 			prev_bias = bias;
-			bias = pim_.biasHat();
+			bias = pim_->biasHat();
 		}
 		
 		_m_imu_raw->put(new imu_raw_type{
@@ -160,9 +163,9 @@ private:
 			prev_bias.accelerometer(),
 			bias.gyroscope(),
 			bias.accelerometer(),
-			pim_.deltaPij(), // Position
-			pim_.deltaVij(), // Velocity
-			pim_.deltaRij().toQuaternion(), // Eigen Quat
+			pim_->deltaPij(), // Position
+			pim_->deltaVij(), // Velocity
+			pim_->deltaRij().toQuaternion(), // Eigen Quat
 			real_time
 		});
     }
