@@ -87,6 +87,10 @@ then
 		. ./scripts/install_openxr.sh
 	fi
 
+	if [ ! -d "${temp_dir}/gtsam" ] && y_or_n "Next: Install gtsam from souce"; then
+		. ./scripts/install_gtsam.sh
+	fi
+
 	if [ ! -d "data1" ] && y_or_n "Next: Download Vicon Room 1 Medium SLAM dataset"; then
 		. ./scripts/install_euroc.sh
 	fi
