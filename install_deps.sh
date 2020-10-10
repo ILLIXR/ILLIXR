@@ -71,6 +71,10 @@ then
 		. ./scripts/install_gtest.sh
 	fi
 
+	if [ ! -d "${opt_dir}/qemu" ] && y_or_n "Next: Install qemu"; then
+		. ./scripts/install_qemu.sh
+	fi
+
 	# if [ ! -d Vulkan-Loader ]; then
 	# 	echo "Next: Install Vulkan Loader from source"
 	# 	if y_or_n; then
