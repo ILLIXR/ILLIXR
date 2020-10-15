@@ -179,8 +179,8 @@ async def load_monado(config: Dict[str, Any]) -> None:
             pathify(config["runtime"]["path"], root_dir, cache_path, True, True, session),
             pathify(config["loader"]["monado"]["path"], root_dir, cache_path, True, True, session),
             pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True, session),
-            pathify(config["data"], root_dir, cache_path, True, False, session),
-            pathify(config["demo_data"], root_dir, cache_path, True, False, session),
+            pathify(config["data"], root_dir, cache_path, True, True, session),
+            pathify(config["demo_data"], root_dir, cache_path, True, True, session),
         )
 
     _, _, _, plugin_paths = await gather_aws(
