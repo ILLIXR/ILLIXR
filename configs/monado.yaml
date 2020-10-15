@@ -3,7 +3,6 @@ plugin_groups:
   - !include "core_plugins.yaml"
   - plugin_group:
     - path: timewarp_gl/
-    - path: git+https://github.com/ILLIXR/audio_pipeline.git@13bb460
 
 data: file+zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip#path=mav0
 demo_data: demo_data/
