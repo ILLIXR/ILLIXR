@@ -1,14 +1,17 @@
 ########
 # To add packages to this file:
+#
 #     . $HOME/miniconda3/etc/profile.d/conda.sh
 #     conda deactivate
 #     conda activate illixr-runner
 #     conda install $package # where $packages is the name of a package in Conda Forge
-#     conda env export > environment.yml
+#     conda env export > runner/environment.yml
+#
 # Please be a good citizen and also copy/resotre this block comment!!
 ########
 name: illixr-runner
 channels:
+  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
@@ -16,10 +19,11 @@ dependencies:
   - aiohttp=3.6.2=py38h7b6447c_0
   - async-timeout=3.0.1=py38_0
   - attrs=20.1.0=py_0
-  - ca-certificates=2020.7.22=0
+  - ca-certificates=2020.10.14=0
   - certifi=2020.6.20=py38_0
   - chardet=3.0.4=py38_1003
   - click=7.1.2=py_0
+  - dataclasses=0.7=py38_0
   - idna=2.10=py_0
   - importlib-metadata=1.7.0=py38_0
   - importlib_metadata=1.7.0=0
@@ -35,12 +39,14 @@ dependencies:
   - pip=20.2.2=py38_0
   - pyrsistent=0.16.0=py38h7b6447c_0
   - python=3.8.5=hcff3b4d_0
+  - python_abi=3.8=1_cp38
   - pyyaml=5.3.1=py38h7b6447c_1
   - readline=8.0=h7b6447c_0
   - setuptools=49.6.0=py38_0
   - six=1.15.0=py_0
   - sqlite=3.33.0=h62c20be_0
   - tk=8.6.10=hbc83047_0
+  - tqdm=4.50.2=py_0
   - wheel=0.35.1=py_0
   - xz=5.2.5=h7b6447c_0
   - yaml=0.2.5=h7b6447c_0

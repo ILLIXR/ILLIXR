@@ -9,14 +9,14 @@ from typing import Any, Dict, List, Optional, cast
 
 import aiohttp
 import click
-import jsonschema  # type: ignore
+import jsonschema
 import yaml
 from util import flatten1, gather_aws, pathify, relative_to, subprocess_run, replace_all, unflatten
-from yamlinclude import YamlIncludeConstructor  # type: ignore
+from yamlinclude import YamlIncludeConstructor
 
 # isort main.py
 # black -l 90 main.py
-# mypy --strict main.py
+# mypy --strict --ignore-missing-imports main.py
 
 root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
 
@@ -54,6 +54,7 @@ async def make(
     await subprocess_run(
         ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],
         check=True,
+        capture_output=True,
     )
 
 
@@ -105,10 +106,12 @@ async def load_native(config: Dict[str, Any]) -> None:
                     build_one_plugin(config, plugin_config, session=session)
                     for plugin_group in config["plugin_groups"]
                     for plugin_config in plugin_group["plugin_group"]
-                )
+                ),
+                desc="Compile plugins",
             ),
             pathify(config["data"], root_dir, cache_path, True, True, session),
             pathify(config["demo_data"], root_dir, cache_path, True, True, session),
+            desc="Compile plugins, runtime, and fetch paths",
         )
     command_str = config["loader"].get("command", "%a")
     main_cmd_lst = [str(runtime_exe_path), *map(str, plugin_paths)]
@@ -141,7 +144,9 @@ async def load_tests(config: Dict[str, Any]) -> None:
                     for plugin_config in plugin_group["plugin_group"]
             ),
             sequential=False,
+            desc="Compile and test plugins",
         ),
+        desc="Compile and test runtime, plugins, and common",
         sequential=False,
     )
 
@@ -164,6 +169,7 @@ async def cmake(
             *var_args,
         ],
         check=True,
+        capture_output=True,
     )
     await make(build_path, ["all"])
 
@@ -181,6 +187,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
             pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True, session),
             pathify(config["data"], root_dir, cache_path, True, True, session),
             pathify(config["demo_data"], root_dir, cache_path, True, True, session),
+            desc="Collect paths",
         )
 
     _, _, _, plugin_paths = await gather_aws(
@@ -212,8 +219,10 @@ async def load_monado(config: Dict[str, Any]) -> None:
                 build_one_plugin(config, plugin_config)
                 for plugin_group in config["plugin_groups"]
                 for plugin_config in plugin_group["plugin_group"]
-            )
+            ),
+            desc="Compile plugins",
         ),
+        desc="Compile Monado, OpenXR app, runtime, and plugins"
     )
     await subprocess_run(
         [str(openxr_app_path / "build" / "./openxr-example")],

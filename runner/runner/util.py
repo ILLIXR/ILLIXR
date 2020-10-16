@@ -8,6 +8,8 @@ import subprocess
 import urllib.parse
 from pathlib import Path
 from typing import Any, Awaitable, Mapping, Optional, Sequence, Tuple, Union, TypeVar, Iterable, List
+from tqdm import tqdm
+
 
 import aiohttp
 import aiofiles
@@ -174,7 +176,7 @@ Supported schemes:
             archive_path = await pathify(
                 archive_url, base, cache_path, True, False, session
             )
-            await subprocess_run(["unzip", str(archive_path), "-d", str(cache_dest)], check=True)
+            await subprocess_run(["unzip", str(archive_path), "-d", str(cache_dest)], check=True, capture_output=True)
             return cache_dest
     elif first_scheme == "git":
         repo_scheme = url.scheme.partition("+")[2]  # could be git+b+c, we want b+c
@@ -186,15 +188,15 @@ Supported schemes:
         elif cache_dest.exists():
             return cache_dest
         elif not rev:
-            await subprocess_run(["git", "clone", repo_url, str(cache_dest), "--recursive"], check=True)
+            await subprocess_run(["git", "clone", repo_url, str(cache_dest), "--recursive"], check=True, capture_output=True)
             return cache_dest
         else:
             repo_path = await pathify(
                 f"git+{repo_url}", base, cache_path, True, True, session
             )
-            await subprocess_run(["git", "-C", str(repo_path), "fetch"], check=True)
-            await subprocess_run(["git", "-C", str(repo_path), "checkout", rev], check=True)
-            await subprocess_run(["git", "-C", str(repo_path), "submodule", "update", "--recursive"], check=True)
+            await subprocess_run(["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True)
+            await subprocess_run(["git", "-C", str(repo_path), "checkout", rev], check=True, capture_output=True)
+            await subprocess_run(["git", "-C", str(repo_path), "submodule", "update", "--recursive"], check=True, capture_output=True)
             return repo_path
     elif first_scheme in set(["file", ""]) and not rest_schemes:
         # no scheme; just a plain path
@@ -213,12 +215,36 @@ Supported schemes:
         raise ValueError(f"Unsupported urlscheme {url.scheme}")
 
 
-async def gather_aws(*aws: Awaitable[Any], sequential: bool = False) -> Tuple[Any, ...]:
+async def gather_aws(*aws: Awaitable[Any], desc: Optional[str] = None, sequential: bool = False) -> Tuple[Any, ...]:
     """Await on all of aws, either sequentially or in parallel"""
     if sequential:
-        return tuple([(await aw) for aw in aws])
+        return tuple([
+            await aw
+            for aw in tqdm(aws, desc=desc, total=len(aws))
+        ])
     else:
-        return tuple(await asyncio.gather(*aws))
+        # I have to number all of the aws
+        # because asyncio.as_completed returns results out-of-order
+
+        aws_numbered: List[Awaitable[Tuple[int, Any]]] = []
+        for i, aw in enumerate(aws):
+            # There is no async-lambda :'(
+            async def aw2(i=i, aw=aw) -> Tuple[int, Any]:
+                return (i, await aw)
+            aws_numbered.append(aw2())
+
+        results_numbered = [
+            await aw
+            for aw in tqdm(
+                    asyncio.as_completed(aws_numbered),
+                    desc=desc,
+                    total=len(aws),
+            )
+        ]
+
+        results = map(lambda pair: pair[1], sorted(results_numbered, key=lambda pair: pair[0]))
+        return tuple(results)
+
 
 
 class CalledProcessError(Exception):
@@ -227,12 +253,12 @@ class CalledProcessError(Exception):
 
 @dataclass
 class CompletedProcess:
-    args: List[str]
+    args: Sequence[str]
     returncode: int
     stdout: bytes
     stderr: bytes
 
-    def check_returncode(self):
+    def check_returncode(self) -> None:
         if self.returncode != 0:
             print("$ " + shlex.join(self.args))
             sys.stdout.buffer.write(self.stdout)
@@ -249,7 +275,7 @@ async def subprocess_run(
     env_override: Optional[Mapping[str, str]] = None,
     capture_output: bool = False,
     silence_output: bool = False,
-) -> asyncio.subprocess.Process:
+) -> CompletedProcess:
     """Clone of subprocess.run, but asynchronous.
 
     This allows concurrency: Launch another process while awaiting this process to complete.
@@ -260,15 +286,14 @@ async def subprocess_run(
 
     """
 
+    stdout_descr: Optional[int] = None
+    stderr_descr: Optional[int] = None
     if capture_output:
-        stdout = asyncio.subprocess.PIPE
-        stderr = asyncio.subprocess.PIPE
+        stdout_descr = asyncio.subprocess.PIPE
+        stderr_descr = asyncio.subprocess.PIPE
     elif silence_output:
-        stdout = asyncio.subprocess.DEVNULL
-        stderr = asyncio.subprocess.DEVNULL
-    else:
-        stdout = None
-        stderr = None
+        stdout_descr = asyncio.subprocess.DEVNULL
+        stderr_descr = asyncio.subprocess.DEVNULL
 
     cwd = cwd if cwd is not None else Path(".")
     env = dict(env if env is not None else os.environ)
@@ -277,7 +302,7 @@ async def subprocess_run(
 
     try:
         proc = await asyncio.create_subprocess_exec(
-            args[0], *args[1:], env=env, cwd=str(cwd), stdout=stdout, stderr=stderr,
+            args[0], *args[1:], env=env, cwd=str(cwd), stdout=stdout_descr, stderr=stderr_descr,
         )
         if capture_output:
             stdout, stderr = await proc.communicate()
@@ -285,7 +310,7 @@ async def subprocess_run(
         else:
             stdout, stderr = (b"", b"")
             returncode = await proc.wait()
-        comp_proc = CompletedProcess(args, returncode, stdout, stderr)
+        comp_proc = CompletedProcess(args, returncode or 0, stdout, stderr)
         if check:
             comp_proc.check_returncode()
         return comp_proc
