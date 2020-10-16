@@ -14,7 +14,7 @@ plugin.dbg.so: build/Debug/Makefile
 plugin.opt.so: build/Release/Makefile
 	make -C build/Release "-j$(nproc)" && \
 	rm -f $@ && \
-	ln -s build/Debug/libplugin.so $@ && \
+	ln -s build/Release/libplugin.so $@ && \
 	true
 
 build/%/Makefile:
