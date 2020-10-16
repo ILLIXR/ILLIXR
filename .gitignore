@@ -10,3 +10,4 @@ imgui.ini
 output.*
 metrics/
 .cache
+install/

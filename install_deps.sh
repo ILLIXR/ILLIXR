@@ -95,6 +95,7 @@ then
 		fi
 	fi
 
+	sudo ldconfig
 	# I won't ask the user first, because this is not a global installation.
 	# All of this stuff goes into a project-specific venv.
 	$HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
