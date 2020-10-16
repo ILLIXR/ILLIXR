@@ -18,6 +18,7 @@ from yamlinclude import YamlIncludeConstructor  # type: ignore
 # black -l 90 main.py
 # mypy --strict main.py
 
+SEQ_MODE = False
 root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
 
 
@@ -105,10 +106,12 @@ async def load_native(config: Dict[str, Any]) -> None:
                     build_one_plugin(config, plugin_config, session=session)
                     for plugin_group in config["plugin_groups"]
                     for plugin_config in plugin_group["plugin_group"]
-                )
+                ),
+                sequential=SEQ_MODE
             ),
             pathify(config["data"], root_dir, cache_path, True, True, session),
             pathify(config["demo_data"], root_dir, cache_path, True, True, session),
+            sequential=SEQ_MODE
         )
     command_str = config["loader"].get("command", "%a")
     main_cmd_lst = [str(runtime_exe_path), *map(str, plugin_paths)]
@@ -140,9 +143,9 @@ async def load_tests(config: Dict[str, Any]) -> None:
                     for plugin_group in config["plugin_groups"]
                     for plugin_config in plugin_group["plugin_group"]
             ),
-            sequential=False,
+            sequential=SEQ_MODE,
         ),
-        sequential=False,
+        sequential=SEQ_MODE,
     )
 
 
@@ -181,6 +184,7 @@ async def load_monado(config: Dict[str, Any]) -> None:
             pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True, session),
             pathify(config["data"], root_dir, cache_path, True, True, session),
             pathify(config["demo_data"], root_dir, cache_path, True, True, session),
+            sequential=SEQ_MODE
         )
 
     _, _, _, plugin_paths = await gather_aws(
@@ -212,8 +216,10 @@ async def load_monado(config: Dict[str, Any]) -> None:
                 build_one_plugin(config, plugin_config)
                 for plugin_group in config["plugin_groups"]
                 for plugin_config in plugin_group["plugin_group"]
-            )
+            ),
+            sequential=SEQ_MODE
         ),
+        sequential=SEQ_MODE
     )
     await subprocess_run(
         [str(openxr_app_path / "build" / "./openxr-example")],
@@ -261,7 +267,10 @@ if __name__ == "__main__":
 
     @click.command()
     @click.argument("config_path", type=click.Path(exists=True))
-    def main(config_path: str) -> None:
+    @click.option("--sequential", default=False, is_flag=True)
+    def main(config_path: str, sequential: bool) -> None:
+        global SEQ_MODE
+        SEQ_MODE = sequential
         asyncio.run(run_config(Path(config_path)))
 
     main()

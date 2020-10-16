@@ -6,4 +6,11 @@ cd "$(dirname ${0})/"
 
 conda deactivate
 conda activate illixr-runner
-python runner/runner/main.py "${1}"
+
+argc=$#
+if [ "$argc" -eq "2" ]; then
+	python runner/runner/main.py "${1}" "${2}"
+else
+	python runner/runner/main.py "${1}"
+fi
+
