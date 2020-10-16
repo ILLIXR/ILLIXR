@@ -46,6 +46,9 @@ namespace ILLIXR {
 		Eigen::Vector3d biasAcc;
 		Eigen::Vector3d biasGyro;
 		Eigen::Vector3d gravity;
+		Eigen::Matrix<double,3,1> position;
+		Eigen::Matrix<double,3,1> velocity;
+		Eigen::Quaterniond quat;
 	} imu_integrator_input2;
 
 	typedef struct {
