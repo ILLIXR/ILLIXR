@@ -43,7 +43,7 @@ public:
 		auto in = _m_in->get_latest_ro();
 		if (!in || in->seq == _seq_expect-1) {
 			// No new data, sleep to keep CPU utilization low
-			std::this_thread::sleep_for(std::chrono::milliseconds{2});
+			std::this_thread::sleep_for(std::chrono::milliseconds{4});
 			return skip_option::skip_and_yield;
 		} else {
 			if (in->seq != _seq_expect) {
@@ -91,6 +91,8 @@ private:
 	int cam_count = 0;
 	int total_imu = 0;
 	long long _seq_expect, _stat_processed, _stat_missed;
+	double last_imu_offset;
+	bool has_last_offset = false;
 
 	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
 	void clean_imu_vec(double timestamp) {
@@ -126,6 +128,11 @@ private:
 			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias);
 		}
 
+		if (!has_last_offset) {
+			last_imu_offset = input_values->t_offset;
+			has_last_offset = true;
+		}
+
 		// Uncomment this for some helpful prints
 		// total_imu++;
 		// if (input_values->last_cam_integration_time > last_cam_time) {
@@ -155,8 +162,8 @@ private:
 		// 		<< baseQuat.z() << std::endl;
 
 		// This is the last CAM time
-		double time_begin = last_cam_time;
-		double time_end = timestamp;
+		double time_begin = last_cam_time + last_imu_offset;
+		double time_end = timestamp + input_values->t_offset;
 
 		// std::cout << "Begin: " << time_begin << " End: " << time_end << " Difference: " << time_end - time_begin << std::endl;
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
@@ -170,8 +177,8 @@ private:
 
 			// Delta T should be in seconds
 			const double& delta_t = prop_data.at(i+1).timestamp - prop_data.at(i).timestamp;
-			// std::cout << "delta_t = " << delta_t << std::endl;
-			pim_->integrateMeasurement(measured_acc, measured_omega, delta_t);
+			std::cout << "delta_t = " << delta_t << std::endl;
+			pim_->integrateMeasurement(measured_acc, measured_omega, .005);
 
 			prev_bias = bias;
 			bias = pim_->biasHat();
