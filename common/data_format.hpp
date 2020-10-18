@@ -36,19 +36,25 @@ namespace ILLIXR {
 	} imu_cam_type;
 
 	typedef struct {
+		double gyro_noise;
+    	double acc_noise;
+		double gyro_walk;
+		double acc_walk;
+		Eigen::Matrix<double,3,1> n_gravity;
+		double imu_integration_sigma;
+		double nominal_rate;
+	} imu_params;
+
+	typedef struct {
 		bool slam_ready;
 		double last_cam_integration_time;
-		double gyro_noise;
-		double acc_noise;
-		double imu_integration_sigma;
-		double acc_walk;
-		double gyro_walk;
+		imu_params params;
+		
 		Eigen::Vector3d biasAcc;
 		Eigen::Vector3d biasGyro;
-		Eigen::Vector3d gravity;
-		Eigen::Matrix<double,3,1> position;
-		Eigen::Matrix<double,3,1> velocity;
-		Eigen::Quaterniond quat;
+		Eigen::Matrix<float,3,1> position;
+		Eigen::Matrix<float,3,1> velocity;
+		Eigen::Quaternionf quat;
 	} imu_integrator_input2;
 
 	typedef struct {

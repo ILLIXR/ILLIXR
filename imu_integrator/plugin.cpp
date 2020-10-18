@@ -43,7 +43,7 @@ public:
 		auto in = _m_in->get_latest_ro();
 		if (!in || in->seq == _seq_expect-1) {
 			// No new data, sleep to keep CPU utilization low
-			std::this_thread::sleep_for(std::chrono::milliseconds{1});
+			std::this_thread::sleep_for(std::chrono::milliseconds{2});
 			return skip_option::skip_and_yield;
 		} else {
 			if (in->seq != _seq_expect) {
@@ -115,13 +115,13 @@ private:
 		if (input_values->slam_ready && !slam_ready) {
 			slam_ready = true;
 			boost::shared_ptr<gtsam::PreintegratedCombinedMeasurements::Params> params =
-          			boost::make_shared<gtsam::PreintegratedCombinedMeasurements::Params>(input_values->gravity);
+          			boost::make_shared<gtsam::PreintegratedCombinedMeasurements::Params>(input_values->params.n_gravity);
 
-			params->setGyroscopeCovariance(std::pow(input_values->gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
-  			params->setAccelerometerCovariance(std::pow(input_values->acc_noise, 2.0) * Eigen::Matrix3d::Identity());
-  			params->setIntegrationCovariance(std::pow(input_values->imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
-			params->biasAccCovariance = std::pow(input_values->acc_walk, 2.0) * Eigen::Matrix3d::Identity();
-			params->biasOmegaCovariance = std::pow(input_values->gyro_walk, 2.0) * Eigen::Matrix3d::Identity();
+			params->setGyroscopeCovariance(std::pow(input_values->params.gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
+  			params->setAccelerometerCovariance(std::pow(input_values->params.acc_noise, 2.0) * Eigen::Matrix3d::Identity());
+  			params->setIntegrationCovariance(std::pow(input_values->params.imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
+			params->biasAccCovariance = std::pow(input_values->params.acc_walk, 2.0) * Eigen::Matrix3d::Identity();
+			params->biasOmegaCovariance = std::pow(input_values->params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity();
 
 			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias);
 		}
@@ -136,54 +136,55 @@ private:
 		// 	counter = 0;
 		// }
 		// counter++;
+		pim_->resetIntegrationAndSetBias(imu_bias);
 
-		//if (input_values->last_cam_integration_time > last_cam_time) {
-      std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
-			pim_->resetIntegrationAndSetBias(imu_bias);
-      last_cam_time = input_values->last_cam_integration_time;
-		//}
+		if (input_values->last_cam_integration_time > last_cam_time) {
+			std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
+			// pim_->resetIntegrationAndSetBias(imu_bias);
+			last_cam_time = input_values->last_cam_integration_time;
+		}
 
-    const auto basePos = input_values->position;
-    const auto baseVel = input_values->velocity;
-    const auto baseQuat = input_values->quat;
+		const auto basePos = input_values->position;
+		const auto baseVel = input_values->velocity;
+		const auto baseQuat = input_values->quat;
 
-    std::cout << "Base Position (x, y, z) = "
-              << basePos(0) << " "
-              << basePos(1) << " "
-              << basePos(2) << std::endl;
-    std::cout << "Base Quaternion (w, x, y, z) = "
-              << baseQuat.w() << " "
-              << baseQuat.x() << " "
-              << baseQuat.y() << " "
-              << baseQuat.z() << std::endl;
+		// std::cout << "Base Quaternion (w, x, y, z) = "
+		// 		<< baseQuat.w() << " "
+		// 		<< baseQuat.x() << " "
+		// 		<< baseQuat.y() << " "
+		// 		<< baseQuat.z() << std::endl;
 
 		// This is the last CAM time
-		double time_begin = input_values->last_cam_integration_time;
+		double time_begin = last_cam_time;
 		double time_end = timestamp;
 
-		ImuBias prev_bias = pim_->biasHat();
-		ImuBias bias = pim_->biasHat();
+		// std::cout << "Begin: " << time_begin << " End: " << time_end << " Difference: " << time_end - time_begin << std::endl;
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
-    //std::cout << "-------Integrating over " << prop_data.size() << " IMU samples\n";
+   		ImuBias prev_bias = pim_->biasHat();
+		ImuBias bias = pim_->biasHat();
+
+		std::cout << "-------Integrating over " << prop_data.size() << " IMU samples\n";
 		for (int i = 0; i < prop_data.size()-1; i++) {
 			const gtsam::Vector3& measured_acc = prop_data.at(i).am;
 			const gtsam::Vector3& measured_omega = prop_data.at(i).wm;
+
+			// Delta T should be in seconds
 			const double& delta_t = prop_data.at(i+1).timestamp - prop_data.at(i).timestamp;
-      //std::cout << "delta_t = " << delta_t << std::endl;
+			// std::cout << "delta_t = " << delta_t << std::endl;
 			pim_->integrateMeasurement(measured_acc, measured_omega, delta_t);
 
 			prev_bias = bias;
 			bias = pim_->biasHat();
 
-      //std::cout << "Position (x, y, z) = "
-      //          << pim_->deltaPij()(0) << " "
-      //          << pim_->deltaPij()(1) << " "
-      //          << pim_->deltaPij()(2) << std::endl;
-      //std::cout << "Quaternion (w, x, y, z) = "
-      //          << pim_->deltaRij().toQuaternion().w() << " "
-      //          << pim_->deltaRij().toQuaternion().x() << " "
-      //          << pim_->deltaRij().toQuaternion().y() << " "
-      //          << pim_->deltaRij().toQuaternion().z() << std::endl;
+			//std::cout << "Position (x, y, z) = "
+			//          << pim_->deltaPij()(0) << " "
+			//          << pim_->deltaPij()(1) << " "
+			//          << pim_->deltaPij()(2) << std::endl;
+			//std::cout << "Quaternion (w, x, y, z) = "
+			//          << pim_->deltaRij().toQuaternion().w() << " "
+			//          << pim_->deltaRij().toQuaternion().x() << " "
+			//          << pim_->deltaRij().toQuaternion().y() << " "
+			//          << pim_->deltaRij().toQuaternion().z() << std::endl;
 		}
 
     //std::cout << "Biases:\n"
@@ -196,14 +197,24 @@ private:
     //          << "baz = " << bias.accelerometer()(2)
     //          << std::endl;
 
-    const auto deltaPos = pim_->deltaPij();
-    const auto deltaVel = pim_->deltaVij();
-    const auto deltaQuat = pim_->deltaRij().toQuaternion();
+		const auto deltaPos = pim_->deltaPij();
+		const auto deltaVel = pim_->deltaVij();
+		const auto deltaQuat = pim_->deltaRij().toQuaternion();
 
-    auto pos = basePos + deltaPos;
-    auto vel = baseVel + deltaVel;
-    auto quat = baseQuat * deltaQuat;
+		Eigen::Matrix<double,3,1> pos = Eigen::Matrix<double,3,1>(double(basePos(0)), double(basePos(1)), double(basePos(2))) + deltaPos;
+		Eigen::Matrix<double,3,1> vel = Eigen::Matrix<double,3,1>(double(baseVel(0)), double(baseVel(1)), double(baseVel(2))) + deltaVel;
+		Eigen::Quaterniond quat = Eigen::Quaterniond(double(baseQuat.w()), double(baseQuat.x()), double(baseQuat.y()), double(baseQuat.y())) * deltaQuat;
 		
+		std::cout << "Base Position (x, y, z) = "
+				<< basePos(0) << " "
+				<< basePos(1) << " "
+				<< basePos(2) << std::endl;
+
+		std::cout << "New  Position (x, y, z) = "
+				<< pos(0) << " "
+				<< pos(1) << " "
+				<< pos(2) << std::endl;
+
 		_m_imu_raw->put(new imu_raw_type{
 			prev_bias.gyroscope(),
 			prev_bias.accelerometer(),
@@ -215,25 +226,25 @@ private:
 			real_time
 		});
 
-    std::cout << "Delta Position (x, y, z) = "
-              << pim_->deltaPij()(0) << " "
-              << pim_->deltaPij()(1) << " "
-              << pim_->deltaPij()(2) << std::endl;
-    std::cout << "Delta Quaternion (w, x, y, z) = "
-              << pim_->deltaRij().toQuaternion().w() << " "
-              << pim_->deltaRij().toQuaternion().x() << " "
-              << pim_->deltaRij().toQuaternion().y() << " "
-              << pim_->deltaRij().toQuaternion().z() << std::endl;
+    // std::cout << "Delta Position (x, y, z) = "
+    //           << pim_->deltaPij()(0) << " "
+    //           << pim_->deltaPij()(1) << " "
+    //           << pim_->deltaPij()(2) << std::endl;
+    // std::cout << "Delta Quaternion (w, x, y, z) = "
+    //           << pim_->deltaRij().toQuaternion().w() << " "
+    //           << pim_->deltaRij().toQuaternion().x() << " "
+    //           << pim_->deltaRij().toQuaternion().y() << " "
+    //           << pim_->deltaRij().toQuaternion().z() << std::endl;
 
-    std::cout << "Absolute Position (x, y, z) = "
-              << pos(0) << " "
-              << pos(1) << " "
-              << pos(2) << std::endl;
-    std::cout << "Absolute Quaternion (w, x, y, z) = "
-              << quat.w() << " "
-              << quat.x() << " "
-              << quat.y() << " "
-              << quat.z() << std::endl;
+    // std::cout << "Absolute Position (x, y, z) = "
+    //           << pos(0) << " "
+    //           << pos(1) << " "
+    //           << pos(2) << std::endl;
+    // std::cout << "Absolute Quaternion (w, x, y, z) = "
+    //           << quat.w() << " "
+    //           << quat.x() << " "
+    //           << quat.y() << " "
+    //           << quat.z() << std::endl;
     }
 
 	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
