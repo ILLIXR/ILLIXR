@@ -9,6 +9,12 @@
 
 using namespace ILLIXR;
 
+static constexpr int IMAGE_WIDTH = 640;
+static constexpr int IMAGE_HEIGHT = 480;
+static constexpr int FPS = 30;
+static constexpr int GYRO_RATE = 400; // 200 or 400
+static constexpr int ACCEL_RATE = 250; // 63 or 250
+
 typedef struct {
 	cv::Mat* img0;
 	cv::Mat* img1;
@@ -34,8 +40,12 @@ public:
 				if (auto fs = frame.as<rs2::frameset>()) {
 					rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
 					rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
-					cv::Mat dMat_left = cv::Mat(cv::Size(640, 480), CV_8UC1, (void*)ir_frame_left.get_data());
-					cv::Mat dMat_right = cv::Mat(cv::Size(640, 480), CV_8UC1, (void*)ir_frame_right.get_data());
+					rs2::video_frame depth_frame = fs.get_depth_frame();
+					rs2::video_frame rgb_frame = fs.get_color_frame();
+					cv::Mat dMat_left = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC1, (void*)ir_frame_left.get_data());
+					cv::Mat dMat_right = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC1, (void*)ir_frame_right.get_data());
+					cv::Mat depth_ocv = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16UC1, (void*)depth_frame.get_data());
+
 					cam_type_.img0 = new cv::Mat{dMat_left};
 					cam_type_.img1 = new cv::Mat{dMat_right};
 					cam_type_.iteration = iteration_cam;
@@ -97,10 +107,12 @@ public:
     };
 
 		cfg.disable_all_streams();
-		cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, 250); // adjustable to 0, 63 (default), 250 hz
-		cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, 400); // adjustable set to 0, 200 (default), 400 hz
-		cfg.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 30);
-		cfg.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 30);
+		cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE); // adjustable to 0, 63 (default), 250 hz
+		cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, GYRO_RATE); // adjustable set to 0, 200 (default), 400 hz
+		cfg.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Y8, FPS);
+		cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Y8, FPS);
+		cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_BGR8, FPS);
+		cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Z16, FPS);
 		profiles = pipe.start(cfg, callback);
 	}
 

@@ -35,8 +35,8 @@ std::shared_ptr<Camera> start_camera() {
     init_params.coordinate_units = UNIT::MILLIMETER; // for kf
     init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
     init_params.camera_fps = 15;
-    // init_params.depth_mode = DEPTH_MODE::ULTRA;
-		// init_params.depth_stabilization = true;
+    init_params.depth_mode = DEPTH_MODE::PERFORMANCE;
+		init_params.depth_stabilization = true;
 		// init_params.depth_minimum_distance = 0.1;
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
@@ -57,10 +57,10 @@ public:
     , zedm{zedm_}
     , image_size{zedm->getCameraInformation().camera_configuration.resolution}
     {
-			// runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
+				runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
-        imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
-        imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
+        imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
 				rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
 				depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1);
 
@@ -99,10 +99,10 @@ protected:
 
     virtual void _p_one_iteration() override {
         // Retrieve images
-        zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
-        zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
+        zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
+        zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
 				zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
-				zedm->retrieveImage(rgb_zed, VIEW::LEFT_UNRECTIFIED, MEM::CPU, image_size);
+				zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
         auto start_cpu_time  = thread_cpu_time();
         auto start_wall_time = std::chrono::high_resolution_clock::now();
