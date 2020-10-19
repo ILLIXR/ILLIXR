@@ -10,4 +10,5 @@ data: file+zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 demo_data: demo_data/
 loader:
   name: native
+  # command: gdb -q --args %a
 profile: opt
