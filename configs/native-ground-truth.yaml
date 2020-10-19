@@ -1,5 +1,7 @@
 # Run with ground truth pose lookup instead of pose prediction
 plugin_groups:
+  - plugin_group:
+      - path: pose_lookup
   - !include "core_plugins.yaml"
   - plugin_group:
     - path: pose_lookup/
