@@ -43,7 +43,7 @@ public:
 		auto in = _m_in->get_latest_ro();
 		if (!in || in->seq == _seq_expect-1) {
 			// No new data, sleep to keep CPU utilization low
-			std::this_thread::sleep_for(std::chrono::milliseconds{4});
+			// std::this_thread::sleep_for(std::chrono::milliseconds{4});
 			return skip_option::skip_and_yield;
 		} else {
 			if (in->seq != _seq_expect) {
@@ -82,17 +82,14 @@ private:
 	// Write IMU Biases for PP
 	std::unique_ptr<writer<imu_raw_type>> _m_imu_raw;
 
-	double last_cam_time = 0;
-	bool slam_ready = false;
 	std::vector<imu_type> _imu_vec;
-  	PimUniquePtr pim_ = nullptr;
+  	PimUniquePtr pim_ = NULL;
 
 	int counter = 0;
 	int cam_count = 0;
 	int total_imu = 0;
+	double last_cam_time = 0;
 	long long _seq_expect, _stat_processed, _stat_missed;
-	double last_imu_offset;
-	bool has_last_offset = false;
 
 	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
 	void clean_imu_vec(double timestamp) {
@@ -109,13 +106,12 @@ private:
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
 		const imu_integrator_input2 *input_values = _m_imu_integrator_input->get_latest_ro();
-		if (input_values == NULL || !input_values->slam_ready) {
+		if (input_values == NULL) {
 			return;
 		}
 
 		ImuBias imu_bias = ImuBias(input_values->biasAcc, input_values->biasGyro);
-		if (input_values->slam_ready && !slam_ready) {
-			slam_ready = true;
+		if (pim_ == NULL) {
 			boost::shared_ptr<gtsam::PreintegratedCombinedMeasurements::Params> params =
           			boost::make_shared<gtsam::PreintegratedCombinedMeasurements::Params>(input_values->params.n_gravity);
 
@@ -128,11 +124,6 @@ private:
 			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias);
 		}
 
-		if (!has_last_offset) {
-			last_imu_offset = input_values->t_offset;
-			has_last_offset = true;
-		}
-
 		// Uncomment this for some helpful prints
 		// total_imu++;
 		// if (input_values->last_cam_integration_time > last_cam_time) {
@@ -143,29 +134,16 @@ private:
 		// 	counter = 0;
 		// }
 		// counter++;
-		pim_->resetIntegrationAndSetBias(imu_bias);
-
 		if (input_values->last_cam_integration_time > last_cam_time) {
 			std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
-			// pim_->resetIntegrationAndSetBias(imu_bias);
 			last_cam_time = input_values->last_cam_integration_time;
 		}
+		pim_->resetIntegrationAndSetBias(imu_bias);
 
-		const auto basePos = input_values->position;
-		const auto baseVel = input_values->velocity;
-		const auto baseQuat = input_values->quat;
+		// Predict that cam integration takes .015 seconds
+		double time_begin = input_values->last_cam_integration_time + .015;
+		double time_end = timestamp;
 
-		// std::cout << "Base Quaternion (w, x, y, z) = "
-		// 		<< baseQuat.w() << " "
-		// 		<< baseQuat.x() << " "
-		// 		<< baseQuat.y() << " "
-		// 		<< baseQuat.z() << std::endl;
-
-		// This is the last CAM time
-		double time_begin = last_cam_time + last_imu_offset;
-		double time_end = timestamp + input_values->t_offset;
-
-		// std::cout << "Begin: " << time_begin << " End: " << time_end << " Difference: " << time_end - time_begin << std::endl;
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
    		ImuBias prev_bias = pim_->biasHat();
 		ImuBias bias = pim_->biasHat();
@@ -177,56 +155,20 @@ private:
 
 			// Delta T should be in seconds
 			const double& delta_t = prop_data.at(i+1).timestamp - prop_data.at(i).timestamp;
-			// std::cout << "delta_t = " << delta_t << std::endl;
 			pim_->integrateMeasurement(measured_acc, measured_omega, delta_t);
 
 			prev_bias = bias;
 			bias = pim_->biasHat();
-
-			//std::cout << "Position (x, y, z) = "
-			//          << pim_->deltaPij()(0) << " "
-			//          << pim_->deltaPij()(1) << " "
-			//          << pim_->deltaPij()(2) << std::endl;
-			//std::cout << "Quaternion (w, x, y, z) = "
-			//          << pim_->deltaRij().toQuaternion().w() << " "
-			//          << pim_->deltaRij().toQuaternion().x() << " "
-			//          << pim_->deltaRij().toQuaternion().y() << " "
-			//          << pim_->deltaRij().toQuaternion().z() << std::endl;
 		}
 
 		gtsam::NavState navstate_lkf(gtsam::Pose3(gtsam::Rot3(input_values->quat), input_values->position), input_values->velocity);
 		gtsam::NavState navstate_k = pim_->predict(navstate_lkf, imu_bias);
-
 		gtsam::Pose3 out_pose = navstate_k.pose();
- 		Eigen::Matrix<double,3,1> out_vel = navstate_k.velocity();
 
-		// std::cout <<  << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
-
-    //std::cout << "Biases:\n"
-    //          << "bgx = " << bias.gyroscope()(0)
-    //          << "bgy = " << bias.gyroscope()(1)
-    //          << "bgz = " << bias.gyroscope()(2)
-    //          << "\n"
-    //          << "bax = " << bias.accelerometer()(0)
-    //          << "bay = " << bias.accelerometer()(1)
-    //          << "baz = " << bias.accelerometer()(2)
-    //          << std::endl;
-
-		// Unforuntately it seems like these are magnitude without direction... so we cant just add them 
-		const auto deltaPos = pim_->deltaPij();
-		const auto deltaVel = pim_->deltaVij();
-		const auto deltaQuat = pim_->deltaRij().toQuaternion();
-
-		// std::cout << deltaPos(0) << ", " << deltaPos(1) << ", " << deltaPos(2) << std::endl;  
-
-		Eigen::Matrix<double,3,1> pos = Eigen::Matrix<double,3,1>(double(basePos(0)), double(basePos(1)), double(basePos(2))) + deltaPos;
-		Eigen::Matrix<double,3,1> vel = Eigen::Matrix<double,3,1>(double(baseVel(0)), double(baseVel(1)), double(baseVel(2))) + deltaVel;
-		Eigen::Quaterniond quat = Eigen::Quaterniond(double(baseQuat.w()), double(baseQuat.x()), double(baseQuat.y()), double(baseQuat.y())) * deltaQuat;
-		
 		std::cout << "Base Position (x, y, z) = "
-				<< basePos(0) << " "
-				<< basePos(1) << " "
-				<< basePos(2) << std::endl;
+				<< input_values->position(0) << " "
+				<< input_values->position(1) << " "
+				<< input_values->position(2) << std::endl;
 
 		std::cout << "New  Position (x, y, z) = "
 				<< out_pose.x() << " "
@@ -238,32 +180,12 @@ private:
 			prev_bias.accelerometer(),
 			bias.gyroscope(),
 			bias.accelerometer(),
-			pos, // Position
-			vel, // Velocity
-			quat, // Eigen Quat
+			out_pose.translation(), // Position
+			navstate_k.velocity(), // Velocity
+			out_pose.rotation().toQuaternion(), // Eigen Quat
 			real_time
 		});
-
-    // std::cout << "Delta Position (x, y, z) = "
-    //           << pim_->deltaPij()(0) << " "
-    //           << pim_->deltaPij()(1) << " "
-    //           << pim_->deltaPij()(2) << std::endl;
-    // std::cout << "Delta Quaternion (w, x, y, z) = "
-    //           << pim_->deltaRij().toQuaternion().w() << " "
-    //           << pim_->deltaRij().toQuaternion().x() << " "
-    //           << pim_->deltaRij().toQuaternion().y() << " "
-    //           << pim_->deltaRij().toQuaternion().z() << std::endl;
-
-    // std::cout << "Absolute Position (x, y, z) = "
-    //           << pos(0) << " "
-    //           << pos(1) << " "
-    //           << pos(2) << std::endl;
-    // std::cout << "Absolute Quaternion (w, x, y, z) = "
-    //           << quat.w() << " "
-    //           << quat.x() << " "
-    //           << quat.y() << " "
-    //           << quat.z() << std::endl;
-    }
+	}
 
 	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
 		std::vector<imu_type> prop_data;

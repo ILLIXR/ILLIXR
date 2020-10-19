@@ -46,9 +46,7 @@ namespace ILLIXR {
 	} imu_params;
 
 	typedef struct {
-		bool slam_ready;
 		double last_cam_integration_time;
-		double t_offset;
 		imu_params params;
 		
 		Eigen::Vector3d biasAcc;
