@@ -89,6 +89,7 @@ private:
 	int cam_count = 0;
 	int total_imu = 0;
 	double last_cam_time = 0;
+	double last_imu_offset = 0;
 	long long _seq_expect, _stat_processed, _stat_missed;
 
 	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
@@ -122,6 +123,7 @@ private:
 			params->biasOmegaCovariance = std::pow(input_values->params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity();
 
 			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias);
+			last_imu_offset = input_values->t_offset;
 		}
 
 		// Uncomment this for some helpful prints
@@ -141,8 +143,8 @@ private:
 		pim_->resetIntegrationAndSetBias(imu_bias);
 
 		// Predict that cam integration takes .015 seconds
-		double time_begin = input_values->last_cam_integration_time + .015;
-		double time_end = timestamp;
+		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
+		double time_end = timestamp + input_values->t_offset;
 
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
    		ImuBias prev_bias = pim_->biasHat();
