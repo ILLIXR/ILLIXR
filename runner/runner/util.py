@@ -1,18 +1,23 @@
-import asyncio
+from __future__ import annotations
+
 from dataclasses import dataclass
 import itertools
+import multiprocessing
+import operator
 import os
 import sys
 import shlex
 import subprocess
 import urllib.parse
 from pathlib import Path
-from typing import Any, Awaitable, Mapping, Optional, Sequence, Tuple, Union, TypeVar, Iterable, List
-from tqdm import tqdm
+import queue
+import threading
+from typing import Any, Awaitable, Mapping, Optional, Sequence, Tuple, Union, TypeVar, Iterable, List, Callable
 
 
 import aiohttp
 import aiofiles
+from tqdm import tqdm
 
 # isort util.py
 # black --line-length 90 util.py
@@ -73,14 +78,162 @@ def escape_fname(string: str) -> str:
         return "%t"
     else:
         return ret
+            
 
-async def pathify(
+@dataclass
+class CalledProcessError:
+    args: List[str]
+    cwd: Union[Path, str]
+    env: Mapping[str, str]
+    stdout: bytes
+    stderr: bytes
+    returncode: int
+
+    def __str__(self):
+        env_str = shlex.join("f{key}={val}" for key, val in env.items())
+        return """'{shlex.join(self.args)}' returned non-zero exit status {self.returncode}.
+Full command:
+  env -C {shlex.quote(cwd)} - {env_str} {shlex.join(self.args)}
+stdout:
+{textwrap.indent(self.stdout.decode(), "  ")}
+stderr:
+{textwrap.indent(self.stderr.decode(), "  ")}
+"""
+        
+
+def subprocess_run(
+    args: Sequence[str],
+    cwd: Optional[Union[Path, str]] = None,
+    check: bool = False,
+    env: Optional[Mapping[str, str]] = None,
+    env_override: Optional[Mapping[str, str]] = None,
+    capture_output: bool = False,
+) -> subprocess.CompletedProcess:
+    """Wrapper around of subprocess.run.
+
+    I will progressively port arguments by need.
+
+    env_override is a mapping used to update (not replace) env.
+
+    If the subprocess's returns non-zero and the return code is
+    checked (`subprocess_run(..., check=True)`), all captured output
+    is dumped.
+
+    """
+
+    env = dict(env if env is not None else os.environ)
+    cwd = cwd if cwd is not None else Path()
+    if env_override:
+        env.update(env_override)
+
+    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output)
+
+    if check:
+        if proc.returncode != 0:
+            raise CalledProcessError(args, cwd, env, proc.stdout, proc.stderr, proc.returncode)
+    return proc
+
+
+T = TypeVar("T")
+def chunker(it: Iterable[T], size: int) -> Iterable[List[T]]:
+    '''chunk input into size or less chunks
+shamelessly swiped from Lib/multiprocessing.py:Pool._get_task'''
+    it = iter(it)
+    while True:
+        x = list(itertools.islice(it, size))
+        if not x:
+            return
+        yield x
+
+
+def threading_imap_unordered(func: Callable[[T], V], iterable: Iterable[T], chunksize: int = 1, desc: Optional[str] = None, length_hint: Optional[int] = 0) -> Iterable[V]:
+    """Clone of multiprocessing.imap_unordered for threads with tqdm for progress
+
+    `desc` is an optional label for the progress bar.
+
+    If the length cannot be determined by operator.length_hint, `length_hint` will be used. If it is None, we fallback to tqdm without a `total`.
+    """
+    results: queue.Queue[V] = queue.Queue(maxsize=operator.length_hint(iterable))
+
+    def worker(chunk: List[T], results: queue.Queue[V]) -> None:
+        for elem in chunk:
+            results.put(func(elem))
+
+    threads = [
+        threading.Thread(target=worker, args=(chunk, results))
+        for chunk in chunker(iterable, chunksize)
+    ]
+
+    for thread in threads:
+        thread.start()
+
+    def get_results(results: queue.Queue[V]) -> Iterable[V]:
+        while any(thread.is_alive() for thread in threads):
+            try:
+                result = results.get(timeout=0.5)
+            except queue.Empty:
+                pass
+            else:
+                tqdm.write(str(result))
+                yield result
+
+    results_list = list(tqdm(
+        get_results(results),
+        total=operator.length_hint(iterable, length_hint),
+        desc=desc,
+    ))
+
+    for thread in threads:
+        thread.join()
+
+    return results_list
+
+
+def threading_map(func: Callable[[T], V], iterable: Sequence[T], chunksize: int = 1, desc: Optional[str] = None, length_hint: Optional[int] = 0) -> Sequence[V]:
+    """Clone of multiprocessing.map for threads with tqdm for progress
+
+    `desc` is an optional label for the progress bar.
+
+    If the length cannot be determined by operator.length_hint, `length_hint` will be used. If it is None, we fallback to tqdm without a `total`.
+    """
+
+    return map(
+        lambda tupl: tupl[1],
+        sorted(
+            threading_imap_unordered(
+                lambda tupl: (tupl[0], func(tupl[1])),
+                list(enumerate(iterable)),
+                chunksize=chunksize,
+                length_hint=operator.length_hint(iterable, length_hint),
+            ),
+        )
+    )
+
+
+def fill_defaults(
+    thing: Any, thing_schema: Mapping[str, Any], path: Optional[List[str]] = None
+) -> None:
+    if path is None:
+        path = []
+
+    if thing_schema["type"] == "object":
+        for key in thing_schema.get("properties", []):
+            if key not in thing:
+                if "default" in thing_schema["properties"][key]:
+                    thing[key] = thing_schema["properties"][key]["default"]
+                    # print(f'{".".join(path + [key])} is defaulting to {thing_schema["properties"][key]["default"]}')
+            # even if key is present, it may be incomplete
+            fill_defaults(thing[key], thing_schema["properties"][key], path + [key])
+    elif thing_schema["type"] == "array":
+        for i, item in enumerate(thing):
+            fill_defaults(item, thing_schema["items"], path + [str(i)])
+
+def pathify(
     url_str: str,
     base: Path,
     cache_path: Path,
     should_exist: bool,
     should_dir: bool,
-    session: Optional[aiohttp.ClientSession] = None,
 ) -> Path:
     """Takes a URL, copies it to disk (if not already there), and returns a local path to it.
 
@@ -90,7 +243,6 @@ Args:
     cache_path (Path): the location where this fn will put objects
     should_exist (bool): ensure that the file exists or raise ValueError (applicable to the file: scheme)
     should_dir (bool): expect the url to point to a directory, otherwise a file, and raise ValueError if that expectation is violated
-    session (Optional[aiohttp.ClientSession]): aiohttp session to be used if URLs are http/https
 
 Returns:
     Path: a path to the resource on the local disk. Do not modify the file at this path.
@@ -99,7 +251,6 @@ Supported schemes:
 
 - `http:` and `https:`
   - Does not support sub-schemes.
-  - Caller must pass a aiohttp session.
   - Result is cached
   - Returns files (not directories)
 
@@ -139,12 +290,10 @@ Supported schemes:
             )
         elif cache_dest.exists():
             return cache_dest
-        elif session is None:
-            raise ValueError(f"{url_str} given, so aiohttp.ClientSession expected")
         else:
-            async with session.get(url_str) as src:
-                async with aiofiles.open(cache_dest, "wb") as dst:
-                    await dst.write(await src.read())
+            with urllib.requests.get(url_str) as src:
+                with open(cache_dest, "wb") as dst:
+                    shutil.copyfileobj(src, dst)
             return cache_dest
     elif first_scheme == "file" and rest_schemes and "path" in fragment:
         underlying_fragment = {key: val for key, val in fragment.items() if key != "path"}
@@ -152,7 +301,7 @@ Supported schemes:
         dir_url = urllib.parse.urlunparse(
             (rest_schemes, *url[1:5], underlying_fragment_str)
         )
-        dir_path = await pathify(dir_url, base, cache_path, True, True, session)
+        dir_path = pathify(dir_url, base, cache_path, True, True)
         path_within_dir = Path(fragment["path"][0])
         path = dir_path / path_within_dir
         if should_exist and not path.exists():
@@ -173,10 +322,8 @@ Supported schemes:
             return cache_dest
         else:
             archive_url = urllib.parse.urlunparse((rest_schemes, *url[1:]))
-            archive_path = await pathify(
-                archive_url, base, cache_path, True, False, session
-            )
-            await subprocess_run(["unzip", str(archive_path), "-d", str(cache_dest)], check=True, capture_output=True)
+            archive_path = pathify(archive_url, base, cache_path, True, False)
+            subprocess_run(["unzip", str(archive_path), "-d", str(cache_dest)], check=True, capture_output=True)
             return cache_dest
     elif first_scheme == "git":
         repo_scheme = url.scheme.partition("+")[2]  # could be git+b+c, we want b+c
@@ -188,15 +335,13 @@ Supported schemes:
         elif cache_dest.exists():
             return cache_dest
         elif not rev:
-            await subprocess_run(["git", "clone", repo_url, str(cache_dest), "--recursive"], check=True, capture_output=True)
+            subprocess_run(["git", "clone", repo_url, str(cache_dest), "--recursive"], check=True, capture_output=True)
             return cache_dest
         else:
-            repo_path = await pathify(
-                f"git+{repo_url}", base, cache_path, True, True, session
-            )
-            await subprocess_run(["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True)
-            await subprocess_run(["git", "-C", str(repo_path), "checkout", rev], check=True, capture_output=True)
-            await subprocess_run(["git", "-C", str(repo_path), "submodule", "update", "--recursive"], check=True, capture_output=True)
+            repo_path = pathify(f"git+{repo_url}", base, cache_path, True, True)
+            subprocess_run(["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True)
+            subprocess_run(["git", "-C", str(repo_path), "checkout", rev], check=True, capture_output=True)
+            subprocess_run(["git", "-C", str(repo_path), "submodule", "update", "--recursive"], check=True, capture_output=True)
             return repo_path
     elif first_scheme in set(["file", ""]) and not rest_schemes:
         # no scheme; just a plain path
@@ -213,107 +358,3 @@ Supported schemes:
             return normed_path
     else:
         raise ValueError(f"Unsupported urlscheme {url.scheme}")
-
-
-async def gather_aws(*aws: Awaitable[Any], desc: Optional[str] = None, sequential: bool = False) -> Tuple[Any, ...]:
-    """Await on all of aws, either sequentially or in parallel"""
-    if sequential:
-        return tuple([
-            await aw
-            for aw in tqdm(aws, desc=desc, total=len(aws))
-        ])
-    else:
-        # I have to number all of the aws
-        # because asyncio.as_completed returns results out-of-order
-
-        aws_numbered: List[Awaitable[Tuple[int, Any]]] = []
-        for i, aw in enumerate(aws):
-            # There is no async-lambda :'(
-            async def aw2(i=i, aw=aw) -> Tuple[int, Any]:
-                return (i, await aw)
-            aws_numbered.append(aw2())
-
-        results_numbered = [
-            await aw
-            for aw in tqdm(
-                    asyncio.as_completed(aws_numbered),
-                    desc=desc,
-                    total=len(aws),
-            )
-        ]
-
-        results = map(lambda pair: pair[1], sorted(results_numbered, key=lambda pair: pair[0]))
-        return tuple(results)
-
-
-
-class CalledProcessError(Exception):
-    ...
-
-
-@dataclass
-class CompletedProcess:
-    args: Sequence[str]
-    returncode: int
-    stdout: bytes
-    stderr: bytes
-
-    def check_returncode(self) -> None:
-        if self.returncode != 0:
-            print("$ " + shlex.join(self.args))
-            sys.stdout.buffer.write(self.stdout)
-            sys.stdout.buffer.write(self.stderr)
-            print(f"Exit code {self.returncode}")
-            raise CalledProcessError(f"{shlex.join(self.args)} returned {self.returncode}")
-
-
-async def subprocess_run(
-    args: Sequence[str],
-    cwd: Optional[Union[Path, str]] = None,
-    check: bool = False,
-    env: Optional[Mapping[str, str]] = None,
-    env_override: Optional[Mapping[str, str]] = None,
-    capture_output: bool = False,
-    silence_output: bool = False,
-) -> CompletedProcess:
-    """Clone of subprocess.run, but asynchronous.
-
-    This allows concurrency: Launch another process while awaiting this process to complete.
-
-    I will progressively port arguments by need.
-
-    env_override is a mapping used to update (not replace) env.
-
-    """
-
-    stdout_descr: Optional[int] = None
-    stderr_descr: Optional[int] = None
-    if capture_output:
-        stdout_descr = asyncio.subprocess.PIPE
-        stderr_descr = asyncio.subprocess.PIPE
-    elif silence_output:
-        stdout_descr = asyncio.subprocess.DEVNULL
-        stderr_descr = asyncio.subprocess.DEVNULL
-
-    cwd = cwd if cwd is not None else Path(".")
-    env = dict(env if env is not None else os.environ)
-    if env_override:
-        env.update(env_override)
-
-    try:
-        proc = await asyncio.create_subprocess_exec(
-            args[0], *args[1:], env=env, cwd=str(cwd), stdout=stdout_descr, stderr=stderr_descr,
-        )
-        if capture_output:
-            stdout, stderr = await proc.communicate()
-            returncode = proc.returncode
-        else:
-            stdout, stderr = (b"", b"")
-            returncode = await proc.wait()
-        comp_proc = CompletedProcess(args, returncode or 0, stdout, stderr)
-        if check:
-            comp_proc.check_returncode()
-        return comp_proc
-    except asyncio.CancelledError:
-        proc.terminate()
-        raise
