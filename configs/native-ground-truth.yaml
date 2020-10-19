@@ -1,5 +1,7 @@
 # Run with ground truth pose lookup instead of pose prediction
 plugin_groups:
+  - plugin_group:
+      - path: pose_lookup
   - !include "core_plugins.yaml"
   - plugin_group:
     - path: pose_lookup/
@@ -10,4 +12,5 @@ data: file+zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 demo_data: demo_data/
 loader:
   name: native
+  # command: gdb -q --args %a
 profile: opt
