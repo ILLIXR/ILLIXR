@@ -177,8 +177,8 @@ private:
 
 			// Delta T should be in seconds
 			const double& delta_t = prop_data.at(i+1).timestamp - prop_data.at(i).timestamp;
-			std::cout << "delta_t = " << delta_t << std::endl;
-			pim_->integrateMeasurement(measured_acc, measured_omega, .005);
+			// std::cout << "delta_t = " << delta_t << std::endl;
+			pim_->integrateMeasurement(measured_acc, measured_omega, delta_t);
 
 			prev_bias = bias;
 			bias = pim_->biasHat();
@@ -194,6 +194,14 @@ private:
 			//          << pim_->deltaRij().toQuaternion().z() << std::endl;
 		}
 
+		gtsam::NavState navstate_lkf(gtsam::Pose3(gtsam::Rot3(input_values->quat), input_values->position), input_values->velocity);
+		gtsam::NavState navstate_k = pim_->predict(navstate_lkf, imu_bias);
+
+		gtsam::Pose3 out_pose = navstate_k.pose();
+ 		Eigen::Matrix<double,3,1> out_vel = navstate_k.velocity();
+
+		// std::cout <<  << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
+
     //std::cout << "Biases:\n"
     //          << "bgx = " << bias.gyroscope()(0)
     //          << "bgy = " << bias.gyroscope()(1)
@@ -204,9 +212,12 @@ private:
     //          << "baz = " << bias.accelerometer()(2)
     //          << std::endl;
 
+		// Unforuntately it seems like these are magnitude without direction... so we cant just add them 
 		const auto deltaPos = pim_->deltaPij();
 		const auto deltaVel = pim_->deltaVij();
 		const auto deltaQuat = pim_->deltaRij().toQuaternion();
+
+		// std::cout << deltaPos(0) << ", " << deltaPos(1) << ", " << deltaPos(2) << std::endl;  
 
 		Eigen::Matrix<double,3,1> pos = Eigen::Matrix<double,3,1>(double(basePos(0)), double(basePos(1)), double(basePos(2))) + deltaPos;
 		Eigen::Matrix<double,3,1> vel = Eigen::Matrix<double,3,1>(double(baseVel(0)), double(baseVel(1)), double(baseVel(2))) + deltaVel;
@@ -218,9 +229,9 @@ private:
 				<< basePos(2) << std::endl;
 
 		std::cout << "New  Position (x, y, z) = "
-				<< pos(0) << " "
-				<< pos(1) << " "
-				<< pos(2) << std::endl;
+				<< out_pose.x() << " "
+				<< out_pose.y() << " "
+				<< out_pose.z() << std::endl;
 
 		_m_imu_raw->put(new imu_raw_type{
 			prev_bias.gyroscope(),
