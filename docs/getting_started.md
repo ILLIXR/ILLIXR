@@ -81,7 +81,7 @@ ILLIXR can also benchmark each component in isolation.
 
 ## Virtual Machine
 
-ILLIXR can be run inside a Qemu-KVM image. Check out the instructions [here](../qemu/INSTRUCTIONS.md)
+ILLIXR can be run inside a Qemu-KVM image. Check out the instructions [here](https://github.com/ILLIXR/ILLIXR/blob/master/qemu/INSTRUCTIONS.md)
 
 ## Next steps
 
