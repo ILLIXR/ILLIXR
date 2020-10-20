@@ -71,7 +71,7 @@ then
 		. ./scripts/install_gtest.sh
 	fi
 
-	if [ ! -d "${opt_dir}/qemu" ] && y_or_n "Next: Install qemu"; then
+	if [ ! -d "${opt_dir}/qemu" ] && y_or_n "Next: Install qemu (not necessary for core ILLIXR; necessary for virtualization)"; then
 		. ./scripts/install_qemu.sh
 	fi
 
