@@ -1,10 +1,10 @@
-# Setting up IlliXR in Qemu
+# Setting up ILLIXR in Qemu
 
 ## Build Qemu
-Run `ILLIXR/install_deps.sh` and select `yes` when asked to install Qemu. This will build Qemu and install it to `/opt/illixr`. 
+Run `ILLIXR/install_deps.sh` and select `yes` when asked to install Qemu. This will build Qemu and install it to `/opt/ILLIXR`. 
 
 ### Why build Qemu from source?
-The version of Qemu available through package managers doesn't always ship with all the options we need to run IlliXR, so building Qemu from source is the best option. This `qemu` installation will not conflict with existing `qemu` installs on your system.
+The version of Qemu available through package managers doesn't always ship with all the options we need to run ILLIXR, so building Qemu from source is the best option. This `qemu` installation will not conflict with existing `qemu` installs on your system.
 
 ## Setup Ubuntu in the VM
 Run `ILLIXR/qemu/run.sh` to download `ubuntu 18.04`, create a virtual hard drive (`illixr.qcow2`), and launch `qemu` from `/opt/ILLIXR`.
@@ -31,7 +31,7 @@ Once Ubuntu is installed you will be asked to reboot. Close `qemu` and then run 
 To launch the VM from now on, just use `ILLIXR/qemu/run.sh`. This will boot from the Ubuntu image we created earlier (`illixr.qcow2`). Once Ubuntu is installed, it is safe to delete `ubuntu-18.04.5-desktop-amd64.iso`.
 
 ## Setting up the VM
-Once inside the VM, open a terminal and run the following commands to setup IlliXR:
+Once inside the VM, open a terminal and run the following commands to setup ILLIXR:
 
 `sudo apt-get install -y git`
 
@@ -41,7 +41,7 @@ Once inside the VM, open a terminal and run the following commands to setup Illi
 
 `yes | ./install_deps.sh`
 
-Finally, run IlliXR with:
+Finally, run ILLIXR with:
 
 `./runner.sh configs/native.yaml`
 
