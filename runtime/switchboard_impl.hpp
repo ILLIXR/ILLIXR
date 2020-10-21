@@ -4,7 +4,6 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
-/*#include <mutex> - Replaced mutex with shared_mutex*/
 #include <shared_mutex>
 
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
