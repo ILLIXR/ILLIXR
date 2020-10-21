@@ -199,7 +199,7 @@ protected:
 
 private:
 	std::unordered_map<std::size_t, sqlite_thread> registered_tables;
-	std::mutex _m_registry_lock;
+	std::shared_mutex _m_registry_lock;
 };
 
 }

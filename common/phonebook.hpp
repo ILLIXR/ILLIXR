@@ -4,7 +4,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <cassert>
-#include <mutex>
+/*#include <mutex> - Replaced Mutex with Shared Mutex*/
+#include <shared_mutex>
 #include <memory>
 #include <unordered_map>
 
@@ -95,7 +96,7 @@ namespace ILLIXR {
 		 */
 		template <typename specific_service>
 		void register_impl(std::shared_ptr<specific_service> impl) {
-			const std::lock_guard<std::mutex> lock{_m_mutex};
+			const std::lock_guard<std::shared_mutex> lock{_m_mutex};
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
 #ifndef NDEBUG
@@ -116,7 +117,7 @@ namespace ILLIXR {
 		 */
 		template <typename specific_service>
 		std::shared_ptr<specific_service> lookup_impl() const {
-			const std::lock_guard<std::mutex> lock{_m_mutex};
+			const std::lock_guard<std::shared_mutex> lock{_m_mutex};
 
 			const std::type_index type_index = std::type_index(typeid(specific_service));
 
@@ -138,7 +139,7 @@ namespace ILLIXR {
 
 	private:
 		std::unordered_map<std::type_index, const std::shared_ptr<service>> _m_registry;
-		mutable std::mutex _m_mutex;
+		mutable std::shared_mutex _m_mutex;
 	};
 }
 

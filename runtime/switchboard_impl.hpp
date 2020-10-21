@@ -4,7 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
-#include <mutex>
+/*#include <mutex> - Replaced mutex with shared_mutex*/
+#include <shared_mutex>
 
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 template <typename T>
@@ -152,7 +153,7 @@ namespace ILLIXR {
 		}
 
 		void schedule(std::size_t component_id, std::function<void(const void*)> callback) {
-			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
+			const std::lock_guard<std::shared_mutex> lock{_m_callbacks_lock};
 			_m_callbacks.push_back({component_id, callback});
 		}
 
@@ -205,7 +206,7 @@ namespace ILLIXR {
 			 * One caveat:
 			 * - callback should not attempt to create a new subscription, publish, or schedule (that would try to acquire _m_registry_lock)
 			 */
-			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
+			const std::lock_guard<std::shared_mutex> lock{_m_callbacks_lock};
 			for (const auto& pair : _m_callbacks) {
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
@@ -229,7 +230,7 @@ namespace ILLIXR {
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
-		std::mutex _m_callbacks_lock;
+		std::shared_mutex _m_callbacks_lock;
 		const std::string _m_name;
 		std::size_t _m_iteration_no = 0;
 		std::size_t _m_unprocessed = 0;
@@ -377,7 +378,7 @@ namespace ILLIXR {
 		}
 
 		std::unordered_map<std::string, topic> _m_registry;
-		std::mutex _m_registry_lock;
+		std::shared_mutex _m_registry_lock;
 		std::vector<std::thread> _m_threads;
 		std::atomic<bool> _m_terminate {false};
 		queue<std::pair<std::string, const void*>> _m_queue;
