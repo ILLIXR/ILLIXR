@@ -180,7 +180,7 @@ private:
 		if (result != registered_tables.cend()) {
 			return result->second;
 		} else {
-			const std::lock_guard lock{_m_registry_lock};
+			const std::shared_lock lock{_m_registry_lock};
 			auto pair = registered_tables.try_emplace(rh.get_id(), rh);
 			return pair.first->second;
 		}
