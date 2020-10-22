@@ -1,5 +1,7 @@
 plugin_group:
   - path: offline_imu_cam/
   # - path: zed/
-  - path: git+https://github.com/ILLIXR/open_vins.git@92a4584f0c992acae89370f93667077754be1f60
+  - path:
+      git_repo: https://github.com/ILLIXR/open_vins.git
+      version: 92a4584f0c992acae89370f93667077754be1f60
   - path: pose_prediction/

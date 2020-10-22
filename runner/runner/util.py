@@ -5,18 +5,38 @@ import itertools
 import multiprocessing
 import operator
 import os
-import sys
+import queue
 import shlex
 import subprocess
-import urllib.parse
-from pathlib import Path
-import queue
+import sys
 import threading
-from typing import Any, Awaitable, Mapping, Optional, Sequence, Tuple, Union, TypeVar, Iterable, List, Callable
+import urllib.parse
+import urllib.request
+from pathlib import Path
+import shutil
+import textwrap
+from types import TracebackType
+from typing import (
+    cast,
+    Any,
+    AnyStr,
+    Awaitable,
+    Callable,
+    Iterable,
+    Generic,
+    IO,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Sized,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
+import zipfile
 
-
-import aiohttp
-import aiofiles
 from tqdm import tqdm
 
 # isort util.py
@@ -25,6 +45,8 @@ from tqdm import tqdm
 
 
 V = TypeVar("V")
+
+
 def flatten1(it: Iterable[Iterable[V]]) -> Iterable[V]:
     """Flatten 1 level of iterables"""
     return itertools.chain.from_iterable(it)
@@ -54,7 +76,7 @@ def relative_to(path: Path, root: Path) -> Path:
 
 def escape_string(string: str, escape_seq: str, escapes: Mapping[str, str]) -> str:
     """Escapes each of the escapes in string with escape_seq"""
-    string.replace(escape_seq, escape_seq + escape_seq)
+    string = string.replace(escape_seq, escape_seq + escape_seq)
     for unsafe_string, safe_string in escapes.items():
         string = string.replace(unsafe_string, escape_seq + safe_string)
     return string
@@ -66,9 +88,7 @@ def escape_fname(string: str) -> str:
     See https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
     """
 
-    ret = escape_string(
-        string, "%", {"/": "s", "\\": "b", ":": "c"}
-    )
+    ret = escape_string(string, "%", {"/": "s", "\\": "b", ":": "c"})
     # handle some special cases
     if ret == ".":
         return "%d"
@@ -78,28 +98,47 @@ def escape_fname(string: str) -> str:
         return "%t"
     else:
         return ret
-            
 
-@dataclass
-class CalledProcessError:
-    args: List[str]
-    cwd: Union[Path, str]
-    env: Mapping[str, str]
-    stdout: bytes
-    stderr: bytes
-    returncode: int
 
-    def __str__(self):
-        env_str = shlex.join("f{key}={val}" for key, val in env.items())
-        return """'{shlex.join(self.args)}' returned non-zero exit status {self.returncode}.
-Full command:
-  env -C {shlex.quote(cwd)} - {env_str} {shlex.join(self.args)}
+class CalledProcessError(Exception):
+    # unfortunately, Exception is not compatible with @dataclass
+    def __init__(
+            self,
+            args: Sequence[str],
+            cwd: Path,
+            env: Mapping[str, str],
+            stdout: bytes,
+            stderr: bytes,
+            returncode: int,
+    ) -> None:
+        self.args2 = args
+        self.cwd = cwd
+        self.env = env
+        self.stdout = stdout
+        self.stderr = stderr
+        self.returncode = returncode
+
+    def __str__(self) -> str:
+        env_var_str = shlex.join(
+            f"{key}={val}"
+            for key, val in self.env.items()
+            if os.environ[key] != val
+        )
+        if env_var_str:
+            env_var_str += " "
+        cwd_str = f"-C {shlex.quote(str(self.cwd))} " if self.cwd.resolve() != Path().resolve() else ""
+        env_cmd_str = f"env {cwd_str}- {env_var_str}" if env_var_str or cwd_str else ""
+        cmd_str = f"{env_cmd_str}{shlex.join(self.args2)}"
+
+        return f"""Command returned non-zero exit status {self.returncode}.
+command:
+  {cmd_str}
 stdout:
 {textwrap.indent(self.stdout.decode(), "  ")}
 stderr:
 {textwrap.indent(self.stderr.decode(), "  ")}
 """
-        
+
 
 def subprocess_run(
     args: Sequence[str],
@@ -108,7 +147,7 @@ def subprocess_run(
     env: Optional[Mapping[str, str]] = None,
     env_override: Optional[Mapping[str, str]] = None,
     capture_output: bool = False,
-) -> subprocess.CompletedProcess:
+) -> subprocess.CompletedProcess[bytes]:
     """Wrapper around of subprocess.run.
 
     I will progressively port arguments by need.
@@ -122,7 +161,7 @@ def subprocess_run(
     """
 
     env = dict(env if env is not None else os.environ)
-    cwd = cwd if cwd is not None else Path()
+    cwd = (cwd if isinstance(cwd, Path) else Path(cwd)) if cwd is not None else Path()
     if env_override:
         env.update(env_override)
 
@@ -130,14 +169,18 @@ def subprocess_run(
 
     if check:
         if proc.returncode != 0:
-            raise CalledProcessError(args, cwd, env, proc.stdout, proc.stderr, proc.returncode)
+            raise CalledProcessError(
+                args, cwd, env, proc.stdout, proc.stderr, proc.returncode
+            )
     return proc
 
 
 T = TypeVar("T")
+
+
 def chunker(it: Iterable[T], size: int) -> Iterable[List[T]]:
-    '''chunk input into size or less chunks
-shamelessly swiped from Lib/multiprocessing.py:Pool._get_task'''
+    """chunk input into size or less chunks
+shamelessly swiped from Lib/multiprocessing.py:Pool._get_task"""
     it = iter(it)
     while True:
         x = list(itertools.islice(it, size))
@@ -146,7 +189,22 @@ shamelessly swiped from Lib/multiprocessing.py:Pool._get_task'''
         yield x
 
 
-def threading_imap_unordered(func: Callable[[T], V], iterable: Iterable[T], chunksize: int = 1, desc: Optional[str] = None, length_hint: Optional[int] = 0) -> Iterable[V]:
+def my_length_hint(iterable: Iterable[T], default: V) -> Union[int, V]:
+    if hasattr(iterable, "__len__"):
+        return len(cast(Sized, iterable))
+    elif hasattr(iterable, "__length_hint__"):
+        return operator.length_hint(iterable)
+    else:
+        return default
+
+
+def threading_imap_unordered(
+    func: Callable[[T], V],
+    iterable: Iterable[T],
+    chunksize: int = 1,
+    desc: Optional[str] = None,
+    length_hint: Optional[int] = 0,
+) -> Iterable[V]:
     """Clone of multiprocessing.imap_unordered for threads with tqdm for progress
 
     `desc` is an optional label for the progress bar.
@@ -156,8 +214,11 @@ def threading_imap_unordered(func: Callable[[T], V], iterable: Iterable[T], chun
     results: queue.Queue[V] = queue.Queue(maxsize=operator.length_hint(iterable))
 
     def worker(chunk: List[T], results: queue.Queue[V]) -> None:
-        for elem in chunk:
-            results.put(func(elem))
+        try:
+            for elem in chunk:
+                results.put(("elem", func(elem)))
+        except BaseException as e:
+            results.put(("exception", e))
 
     threads = [
         threading.Thread(target=worker, args=(chunk, results))
@@ -174,14 +235,21 @@ def threading_imap_unordered(func: Callable[[T], V], iterable: Iterable[T], chun
             except queue.Empty:
                 pass
             else:
-                tqdm.write(str(result))
-                yield result
+                if result[0] == "elem":
+                    tqdm.write(str(result[1]))
+                    yield result[1]
+                elif result[0] == "exception":
+                    raise result[1]
+                else:
+                    raise ValueError(f"Unknown signal from thread worker: {result[0]}")
 
-    results_list = list(tqdm(
-        get_results(results),
-        total=operator.length_hint(iterable, length_hint),
-        desc=desc,
-    ))
+    results_list = list(
+        tqdm(
+            get_results(results),
+            total=my_length_hint(iterable, length_hint),
+            desc=desc,
+        )
+    )
 
     for thread in threads:
         thread.join()
@@ -189,7 +257,13 @@ def threading_imap_unordered(func: Callable[[T], V], iterable: Iterable[T], chun
     return results_list
 
 
-def threading_map(func: Callable[[T], V], iterable: Sequence[T], chunksize: int = 1, desc: Optional[str] = None, length_hint: Optional[int] = 0) -> Sequence[V]:
+def threading_map(
+    func: Callable[[T], V],
+    iterable: Sequence[T],
+    chunksize: int = 1,
+    desc: Optional[str] = None,
+    length_hint: Optional[int] = 0,
+) -> Iterable[V]:
     """Clone of multiprocessing.map for threads with tqdm for progress
 
     `desc` is an optional label for the progress bar.
@@ -204,9 +278,9 @@ def threading_map(func: Callable[[T], V], iterable: Sequence[T], chunksize: int 
                 lambda tupl: (tupl[0], func(tupl[1])),
                 list(enumerate(iterable)),
                 chunksize=chunksize,
-                length_hint=operator.length_hint(iterable, length_hint),
+                length_hint=my_length_hint(iterable, length_hint),
             ),
-        )
+        ),
     )
 
 
@@ -216,7 +290,7 @@ def fill_defaults(
     if path is None:
         path = []
 
-    if thing_schema["type"] == "object":
+    if "type" in thing_schema and thing_schema["type"] == "object":
         for key in thing_schema.get("properties", []):
             if key not in thing:
                 if "default" in thing_schema["properties"][key]:
@@ -224,12 +298,92 @@ def fill_defaults(
                     # print(f'{".".join(path + [key])} is defaulting to {thing_schema["properties"][key]["default"]}')
             # even if key is present, it may be incomplete
             fill_defaults(thing[key], thing_schema["properties"][key], path + [key])
-    elif thing_schema["type"] == "array":
+    elif "type" in thing_schema and thing_schema["type"] == "array":
         for i, item in enumerate(thing):
             fill_defaults(item, thing_schema["items"], path + [str(i)])
 
+
+BLOCKSIZE = 4096
+
+@dataclass
+class TqdmOutputFile(Generic[AnyStr]):
+    fileobj: IO[AnyStr]
+    length: Optional[int]
+    desc: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        self.t = tqdm(total=self.length, desc=self.desc)
+
+    def read(self, block_size: int = BLOCKSIZE) -> AnyStr:
+        buf = self.fileobj.read(block_size)
+        self.t.update(len(buf))
+        return buf
+
+    def __enter__(self) -> TqdmOutputFile[AnyStr]:
+        return self
+
+    def __exit__(self, exctype: Optional[Type[BaseException]], excinst: Optional[BaseException], exctb: Optional[TracebackType]) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self.t.close()
+        self.fileobj.close()
+
+    @staticmethod
+    def from_url(url: str, desc: Optional[str] = None) -> TqdmOutputFile[bytes]:
+        resp = urllib.request.urlopen(url)
+        length = int(resp.getheader('content-length'))
+        return TqdmOutputFile(cast(IO[bytes], resp), length, desc)
+
+
+def truncate(string: str, length: int) -> str:
+    if len(string) <= length:
+        return string
+    else:
+        left_portion = int(2/3*length)
+        right_portion = length - left_portion - 3
+        return string[:left_portion] + "..." + string[-right_portion:]
+
+
+def unzip_with_progress(zip_path: Path, output_dir: Path, desc: Optional[str] = None) -> None:
+    try:
+        with zipfile.PyZipFile(zip_path) as zf:
+            total = sum(zi.file_size for zi in zf.infolist())
+            progress = tqdm(desc=desc, total=total)
+            for zi in zf.infolist():
+                output_path = output_dir / zi.filename
+                if not zi.is_dir():
+                    output_path.parent.mkdir(parents=True, exist_ok=True)
+                    with output_path.open("wb") as output_fileobj:
+                        with zf.open(zi, "r") as input_fileobj:
+                            while True:
+                                buf = input_fileobj.read(BLOCKSIZE)
+                                if not buf:
+                                    break
+                                progress.update(len(buf))
+                                output_fileobj.write(buf)
+    except BaseException as e:
+        print("Exception is caught")
+        if output_dir.exists():
+            shutil.rmtree(output_dir)
+        raise e
+
+
+# Only Python 3.9 has Path.is_relative_to :'(
+def is_relative_to(a: Path, b: Path) -> bool:
+    try:
+        a.relative_to(b)
+    except ValueError:
+        return False
+    else:
+        return True
+
+
+DISPLAY_PATH_LENGTH = 60
+
+
 def pathify(
-    url_str: str,
+    path_descr: Union[str, Mapping[str, Any]],
     base: Path,
     cache_path: Path,
     should_exist: bool,
@@ -238,7 +392,7 @@ def pathify(
     """Takes a URL, copies it to disk (if not already there), and returns a local path to it.
 
 Args:
-    url_str (str): the URL in question
+    path_descr
     base (Path): the base path for resolving relative file paths
     cache_path (Path): the location where this fn will put objects
     should_exist (bool): ensure that the file exists or raise ValueError (applicable to the file: scheme)
@@ -247,114 +401,98 @@ Args:
 Returns:
     Path: a path to the resource on the local disk. Do not modify the file at this path.
 
-Supported schemes:
-
-- `http:` and `https:`
-  - Does not support sub-schemes.
-  - Result is cached
-  - Returns files (not directories)
-
-- `zip:`
-  - Requires a sub-scheme (e.g. `zip+file:///path/to/archive.zip`)
-  - Calls `unzip` on the file returned by the sub-scheme
-  - Result is cached
-  - Returns directories
-
-- `git:`
-  - Supports optional sub-schemes
-  - Calls `git clone` on the URL with the sub-scheme
-    - Optionally, A branch, tag, or commit hash can be appended to the URL after a `@`.
-    - e.g. `git+https://github.com/a/b@v1` calls `git clone -b v1 https://github.com/a/b`
-  - Result is cached
-  - Inspired by [Pip](https://pip.pypa.io/en/stable/reference/pip_install/#vcs-support)
-  - Returns directories
-
-- `file:` (default if no scheme is provided)
-  - Supports optional sub-schemes
-  - Supports absolute (e.g. file:///path/to/file) and relative (file:path/to/file), where relative paths are resolved relative to `base`
-  - Also accepts the path through a `path` fragment argument
-    - This way, one can specify a path within a directory retrieved by another scheme (e.g. file+git://github.com/a/b#path=path/within/repo).
-  - Returns files or directories
-
     """
 
-    url = urllib.parse.urlparse(url_str)
-    cache_dest = Path(cache_path / escape_fname(url_str))
-    first_scheme, _, rest_schemes = url.scheme.partition("+")
-    fragment = urllib.parse.parse_qs(url.fragment)
-
-    if first_scheme in set(["http", "https"]) and not rest_schemes:
-        if should_dir:
-            raise ValueError(
-                f"{url} points to a file (because of the http[s] scheme) not a dir"
-            )
-        elif cache_dest.exists():
-            return cache_dest
-        else:
-            with urllib.requests.get(url_str) as src:
-                with open(cache_dest, "wb") as dst:
-                    shutil.copyfileobj(src, dst)
-            return cache_dest
-    elif first_scheme == "file" and rest_schemes and "path" in fragment:
-        underlying_fragment = {key: val for key, val in fragment.items() if key != "path"}
-        underlying_fragment_str = urllib.parse.urlencode(underlying_fragment, doseq=True)
-        dir_url = urllib.parse.urlunparse(
-            (rest_schemes, *url[1:5], underlying_fragment_str)
-        )
-        dir_path = pathify(dir_url, base, cache_path, True, True)
-        path_within_dir = Path(fragment["path"][0])
-        path = dir_path / path_within_dir
-        if should_exist and not path.exists():
-            raise ValueError(f"Expected {path_within_dir} to exist within {dir_url}")
-        elif path.exists() and (path.is_dir() != should_dir):
-            raise ValueError(
-                f"{path_within_dir} points to a {'dir' if path.is_dir() else 'file'} "
-                f"but a {'dir' if should_dir else 'file'} expected"
-            )
-        else:
-            return path
-    elif first_scheme == "zip" and rest_schemes:
-        if not should_dir:
-            raise ValueError(
-                f"{url} points to a dir (because of the zip scheme) not a file"
-            )
-        elif cache_dest.exists():
-            return cache_dest
-        else:
-            archive_url = urllib.parse.urlunparse((rest_schemes, *url[1:]))
-            archive_path = pathify(archive_url, base, cache_path, True, False)
-            subprocess_run(["unzip", str(archive_path), "-d", str(cache_dest)], check=True, capture_output=True)
-            return cache_dest
-    elif first_scheme == "git":
-        repo_scheme = url.scheme.partition("+")[2]  # could be git+b+c, we want b+c
-        repo_url, _, rev = urllib.parse.urlunparse((repo_scheme, *url[1:6])).partition("@")
-        if not should_dir:
-            raise ValueError(
-                f"{url} points to a dir (because of the git scheme) not a file"
-            )
-        elif cache_dest.exists():
-            return cache_dest
-        elif not rev:
-            subprocess_run(["git", "clone", repo_url, str(cache_dest), "--recursive"], check=True, capture_output=True)
-            return cache_dest
-        else:
-            repo_path = pathify(f"git+{repo_url}", base, cache_path, True, True)
-            subprocess_run(["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True)
-            subprocess_run(["git", "-C", str(repo_path), "checkout", rev], check=True, capture_output=True)
-            subprocess_run(["git", "-C", str(repo_path), "submodule", "update", "--recursive"], check=True, capture_output=True)
-            return repo_path
-    elif first_scheme in set(["file", ""]) and not rest_schemes:
-        # no scheme; just a plain path
-        path = Path(url.path)
+    if isinstance(path_descr, str):
+        path = Path(path_descr)
         normed_path = path if path.is_absolute() else Path(base / path)
         if should_exist and not normed_path.exists():
-            raise ValueError(f"Expected {normed_path} to exist")
+            raise ValueError(f"Expected {path_descr} (=> {normed_path}) to exist")
         elif normed_path.exists() and (normed_path.is_dir() != should_dir):
             raise ValueError(
-                f"{normed_path} points to a {'dir' if normed_path.is_dir() else 'file'} "
+                f"{path_descr} points to a {'dir' if normed_path.is_dir() else 'file'} "
                 f"but a {'dir' if should_dir else 'file'} expected"
             )
         else:
             return normed_path
+        return Path(path_descr)
+    elif "download_url" in path_descr:
+        url = path_descr["download_url"]
+        cache_dest = cache_path / escape_fname(url)
+        if should_dir:
+            raise ValueError(f"{path_descr} points to a file (because of the download_url scheme) not a dir")
+        elif cache_dest.exists():
+            return cache_dest
+        else:
+            with TqdmOutputFile.from_url(url, desc=f"Downloading {truncate(url, DISPLAY_PATH_LENGTH)}") as infileobj:
+                with cache_dest.open('wb') as outfileobj:
+                    shutil.copyfileobj(infileobj, cast(IO[bytes], outfileobj))
+            return cache_dest
+    elif "subpath" in path_descr:
+        ret = cast(Path,
+            pathify(path_descr["relative_to"], base, cache_path, True, True)
+            / path_descr["subpath"]
+        )
+        if should_exist and not ret.exists():
+            raise ValueError(f"Expected {path_descr['subpath']} to exist within {path_descr['relative_to']}")
+        elif ret.exists() and (ret.is_dir() != should_dir):
+            raise ValueError(
+                f"{path_descr['subpath']} relative to {path_descr['relative_to']} points to a {'dir' if path.is_dir() else 'file'} "
+                f"but a {'dir' if should_dir else 'file'} expected"
+            )
+        else:
+            return ret
+    elif "archive_path" in path_descr:
+        archive_path = pathify(
+            path_descr["archive_path"], base, cache_path, True, False
+        )
+        cache_key = archive_path.relative_to(cache_path) if is_relative_to(archive_path, cache_path) else str(archive_path)
+        cache_dest = cache_path / escape_fname(str(cache_key))
+        if not should_dir:
+            raise ValueError(
+                f"{path_descr} points to a dir (because of the archive_path scheme) not a file"
+            )
+        elif cache_dest.exists():
+            return cache_dest
+        else:
+            unzip_with_progress(archive_path, cache_dest, f"Unzipping {truncate(str(cache_key), DISPLAY_PATH_LENGTH)}")
+            return cache_dest
+    elif "git_repo" in path_descr:
+        cache_dest = cache_path / escape_fname(path_descr["git_repo"])
+        if not should_dir:
+            raise ValueError(
+                f"{path_descr} points to a dir (because of the git_repo scheme) not a file"
+            )
+        elif "version" in path_descr:
+            repo_path = pathify(dict(git_repo=path_descr["git_repo"]), base, cache_path, True, True)
+            subprocess_run(
+                ["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True
+            )
+            subprocess_run(
+                ["git", "-C", str(repo_path), "checkout", path_descr["version"]],
+                check=True,
+                capture_output=True,
+            )
+            subprocess_run(
+                ["git", "-C", str(repo_path), "submodule", "update", "--recursive"],
+                check=True,
+                capture_output=True,
+            )
+            return repo_path
+        elif cache_dest.exists():
+            return cache_dest
+        else:
+            subprocess_run(
+                [
+                    "git",
+                    "clone",
+                    path_descr["git_repo"],
+                    str(cache_dest),
+                    "--recursive",
+                ],
+                check=True,
+                capture_output=False,
+            )
+            return cache_dest
     else:
-        raise ValueError(f"Unsupported urlscheme {url.scheme}")
+        raise ValueError(f"Unsupported path description {path_descr}")

@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
 import multiprocessing
-import tempfile
-from pathlib import Path
 import os
 import shlex
-from typing import Any, List, Optional, Mapping
+import tempfile
+from pathlib import Path
+from typing import Any, List, Mapping, Optional
 
 import click
 import jsonschema
 import yaml
-from util import flatten1, pathify, relative_to, subprocess_run, replace_all, unflatten, fill_defaults, threading_map
+from util import (
+    fill_defaults,
+    flatten1,
+    pathify,
+    relative_to,
+    replace_all,
+    subprocess_run,
+    threading_map,
+    unflatten,
+)
 from yamlinclude import YamlIncludeConstructor
 
 # isort main.py
@@ -23,7 +32,10 @@ cache_path.mkdir(parents=True, exist_ok=True)
 
 
 def make(
-        path: Path, targets: List[str], var_dict: Optional[Mapping[str, str]] = None, parallelism: Optional[int] = None,
+    path: Path,
+    targets: List[str],
+    var_dict: Optional[Mapping[str, str]] = None,
+    parallelism: Optional[int] = None,
 ) -> None:
 
     if parallelism is None:
@@ -47,7 +59,16 @@ def cmake(
     var_args = [f"-D{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
     build_path.mkdir(exist_ok=True)
     subprocess_run(
-        ["cmake", "-S", str(path), "-B", str(build_path), "-G", "Unix Makefiles", *var_args],
+        [
+            "cmake",
+            "-S",
+            str(path),
+            "-B",
+            str(build_path),
+            "-G",
+            "Unix Makefiles",
+            *var_args,
+        ],
         check=True,
         capture_output=True,
     )
@@ -55,51 +76,37 @@ def cmake(
 
 
 def build_one_plugin(
-    config: Mapping[str, Any],
-    plugin_config: Mapping[str, Any],
-    test: bool = False,
+    config: Mapping[str, Any], plugin_config: Mapping[str, Any], test: bool = False,
 ) -> Path:
-
     profile = config["profile"]
-
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
-
     if not (path / "common").exists():
-        runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
-        runtime_path = runtime_path.resolve()
-        os.symlink(runtime_path / "common", path / "common")
-
+        common_path = pathify(
+            config["common"]["path"], root_dir, cache_path, True, True
+        )
+        common_path = common_path.resolve()
+        os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
     targets = [plugin_so_name] + (["tests/run"] if test else [])
     make(path, targets, plugin_config["config"])
     return path / plugin_so_name
 
 
-def build_runtime(
-    config: Mapping[str, Any],
-    suffix: str,
-    test: bool = False,
- ) -> Path:
+def build_runtime(config: Mapping[str, Any], suffix: str, test: bool = False,) -> Path:
     profile = config["profile"]
-
     name = "main" if suffix == "exe" else "plugin"
-
     runtime_name = f"{name}.{profile}.{suffix}"
-
     runtime_config = config["runtime"]["config"]
-
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
-
     targets = [runtime_name] + (["tests/run"] if test else [])
-    make(runtime_path / "runtime", targets, runtime_config)
-    return runtime_path / "runtime" / runtime_name
+    make(runtime_path, targets, runtime_config)
+    return runtime_path / runtime_name
 
 
 def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
-
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [
@@ -109,8 +116,6 @@ def load_native(config: Mapping[str, Any]) -> None:
         ],
         desc="Building plugins",
     )
-
-
     command_str = config["loader"].get("command", "%a")
     main_cmd_lst = [str(runtime_exe_path), *map(str, plugin_paths)]
     command_lst_sbst = list(
@@ -123,17 +128,14 @@ def load_native(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         command_lst_sbst,
-        env_override=dict(
-            ILLIXR_DATA=data_path,
-            ILLIXR_DEMO_DATA=demo_data_path,
-        ),
+        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path),),
     )
 
 
 def load_tests(config: Mapping[str, Any]) -> None:
-    runtime_exe_path = build_runtime(config, "exe", test=True),
+    runtime_exe_path = (build_runtime(config, "exe", test=True),)
     make(Path("common"), ["tests/run"])
-        
+
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
         [
@@ -141,7 +143,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
             for plugin_group in config["plugin_groups"]
             for plugin_config in plugin_group["plugin_group"]
         ],
-        desc="Building plugins"
+        desc="Building plugins",
     )
 
 
@@ -151,12 +153,15 @@ def load_monado(config: Mapping[str, Any]) -> None:
     openxr_app_config = config["loader"]["openxr_app"].get("config", {})
     monado_config = config["loader"]["monado"].get("config", {})
 
-    runtime_path    = pathify(config["runtime"]["path"],              root_dir, cache_path, True, True)
-    monado_path     = pathify(config["loader"]["monado"]["path"],     root_dir, cache_path, True, True)
-    openxr_app_path = pathify(config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True)
-    data_path       = pathify(config["data"],                         root_dir, cache_path, True, True)
-    demo_data_path  = pathify(config["demo_data"],                    root_dir, cache_path, True, True)
-
+    runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
+    monado_path = pathify(
+        config["loader"]["monado"]["path"], root_dir, cache_path, True, True
+    )
+    openxr_app_path = pathify(
+        config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True
+    )
+    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
 
     cmake(
         monado_path,
@@ -187,17 +192,17 @@ def load_monado(config: Mapping[str, Any]) -> None:
             for plugin_group in config["plugin_groups"]
             for plugin_config in plugin_group["plugin_group"]
         ],
-        desc="Building plugins"
+        desc="Building plugins",
     )
 
     subprocess_run(
         [str(openxr_app_path / "build" / "./openxr-example")],
         env_override=dict(
             XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
-            ILLIXR_PATH=str(runtime_path / "runtime" / f"plugin.{profile}.so"),
+            ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
-            ILLIXR_DATA=data_path,
-            ILLIXR_DEMO_DATA=demo_data_path,
+            ILLIXR_DATA=str(data_path),
+            ILLIXR_DEMO_DATA=str(demo_data_path),
         ),
     )
 
