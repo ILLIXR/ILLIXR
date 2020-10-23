@@ -7,8 +7,12 @@ demo_data: demo_data/
 loader:
   name: monado
   monado:
-    path: git+https://github.com/ILLIXR/monado_integration.git
+    path:
+      git_repo: https://github.com/ILLIXR/monado_integration.git
+      version: master
   openxr_app:
-    path: git+https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
+    path:
+      git_repo: https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
+      version: master
     config: {}
 profile: opt
