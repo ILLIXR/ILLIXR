@@ -107,7 +107,7 @@ private:
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
 		const imu_integrator_input2 *input_values = _m_imu_integrator_input->get_latest_ro();
-		if (input_values == NULL) {
+		if (input_values == NULL || _imu_vec.size() < 10) {
 			return;
 		}
 
