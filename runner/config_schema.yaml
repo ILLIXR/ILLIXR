@@ -96,7 +96,7 @@ properties:
         description: Vars that get passed to the build system
   loader:
     type: object
-    additionalProperties: false
+    additionalProperties: true
     default: {}
     required:
       - name
@@ -105,6 +105,10 @@ properties:
         default: native
         type: string
         description: "Currently supports: 'native', 'monado', or 'tests'"
+        properties:
+          path:
+            $ref: '#/definitions/path'
+            description: Path to loader
       config:
         default: {}
         type: object
