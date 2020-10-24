@@ -107,9 +107,10 @@ private:
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
 		const imu_integrator_input2 *input_values = _m_imu_integrator_input->get_latest_ro();
-		if (input_values == NULL || _imu_vec.size() < 10) {
+		if (input_values == NULL) {
 			return;
 		}
+		std::cout << "TEST1" << std::endl;
 
 		ImuBias imu_bias = ImuBias(input_values->biasAcc, input_values->biasGyro);
 		if (pim_ == NULL) {
@@ -147,6 +148,10 @@ private:
 		double time_end = timestamp + input_values->t_offset;
 
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
+		if (prop_data.size() < 2) {
+			return;
+		}
+
    		ImuBias prev_bias = pim_->biasHat();
 		ImuBias bias = pim_->biasHat();
 
@@ -191,11 +196,11 @@ private:
 
 	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
 		std::vector<imu_type> prop_data;
-		if (imu_data.empty()) {
+		if (imu_data.size() < 2) {
 			return prop_data;
 		}
 
-		for (size_t i = 0; i < imu_data.size()-1; i++) {
+		for (int i = 0; i < imu_data.size()-1; i++) {
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
 			if (imu_data.at(i+1).timestamp > time_begin && imu_data.at(i).timestamp < time_begin) {
@@ -211,25 +216,19 @@ private:
 			}
 
 			// IMU is past time_end
-			if(imu_data.at(i+1).timestamp > time_end) {
-				if(imu_data.at(i).timestamp > time_end) {
-					imu_type data = interpolate_imu(imu_data.at(i-1), imu_data.at(i), time_end);
-					prop_data.push_back(data);
-				} else {
-					prop_data.push_back(imu_data.at(i));
-				}
-
-				if(prop_data.at(prop_data.size()-1).timestamp != time_end) {
-					imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
-					prop_data.push_back(data);
-				}
+			if (imu_data.at(i+1).timestamp > time_end) {
+				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
+				prop_data.push_back(data);
 				break;
 			}
-
 		}
 
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
+		if (prop_data.size() < 2) {
+			return prop_data;
+		}
+
 		for (size_t i = 0; i < prop_data.size()-1; i++) {
 			if (std::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < 1e-12) {
 				prop_data.erase(prop_data.begin()+i);
