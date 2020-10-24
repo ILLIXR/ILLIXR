@@ -55,7 +55,7 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
-	} imu_integrator_input2;
+	} imu_integrator_input;
 
 	typedef struct {
 		Eigen::Matrix<double,3,1> w_hat;
@@ -120,15 +120,6 @@ namespace ILLIXR {
 	typedef struct {
 		int seq;		
 	} imu_integrator_seq;
-
-	typedef struct {
-		bool slam_ready;
-		double t_offset;
-		double last_cam_integration_time;
-		Eigen::VectorXd imu_value;
-		Eigen::VectorXd imu_fej;
-		Eigen::Matrix<double,3,1> gravity;
-	} imu_integrator_input;
 
 	/* I use "accel" instead of "3-vector" as a datatype, because
 	this checks that you meant to use an acceleration in a certain

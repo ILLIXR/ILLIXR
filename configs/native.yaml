@@ -1,7 +1,8 @@
 plugins:
   - path: ground_truth_slam/
   - path: offline_imu_cam/
-  - path: open_vins/
+  # - path: open_vins/
+  - path: kimera_vio/
   - path: pose_prediction/
   - path: gldemo/
   - path: timewarp_gl/

@@ -34,7 +34,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->subscribe_latest<imu_cam_type>("imu_cam")}
 		, _m_in{sb->subscribe_latest<imu_integrator_seq>("imu_integrator_seq")}
-		, _m_imu_integrator_input{sb->subscribe_latest<imu_integrator_input2>("imu_integrator_input")}
+		, _m_imu_integrator_input{sb->subscribe_latest<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->publish<imu_raw_type>("imu_raw")}
 		, _seq_expect(1)
 	{}
@@ -77,7 +77,7 @@ private:
 	// IMU Data, Sequence Flag, and State Vars Needed
 	std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam;
 	std::unique_ptr<reader_latest<imu_integrator_seq>> _m_in;
-	std::unique_ptr<reader_latest<imu_integrator_input2>> _m_imu_integrator_input;
+	std::unique_ptr<reader_latest<imu_integrator_input>> _m_imu_integrator_input;
 
 	// Write IMU Biases for PP
 	std::unique_ptr<writer<imu_raw_type>> _m_imu_raw;
@@ -106,11 +106,10 @@ private:
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
-		const imu_integrator_input2 *input_values = _m_imu_integrator_input->get_latest_ro();
+		const imu_integrator_input *input_values = _m_imu_integrator_input->get_latest_ro();
 		if (input_values == NULL) {
 			return;
 		}
-		std::cout << "TEST1" << std::endl;
 
 		ImuBias imu_bias = ImuBias(input_values->biasAcc, input_values->biasGyro);
 		if (pim_ == NULL) {
