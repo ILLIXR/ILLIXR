@@ -4,8 +4,6 @@
 sudo apt install -y software-properties-common curl gnupg
 curl https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
 sudo apt-add-repository -u -y "deb https://apt.kitware.com/ubuntu/ ${UBUNTU_CODENAME} main"
-sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
-sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u
 sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
 sudo add-apt-repository -u -y ppa:deadsnakes/ppa
 sudo apt-get install -y \
