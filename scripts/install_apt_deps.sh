@@ -1,7 +1,7 @@
 #!/bin/bash
 
 . /etc/os-release
-sudo apt install -y software-properties-common curl gnupg
+sudo apt install -y software-properties-common curl
 curl https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
 sudo apt-add-repository -u -y "deb https://apt.kitware.com/ubuntu/ ${UBUNTU_CODENAME} main"
 sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
@@ -12,5 +12,5 @@ sudo apt-get install -y \
 	 glslang-tools libsdl2-dev libglu1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev glew-utils libglfw3-dev \
 	 libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
 	 build-essential libx11-xcb-dev libxcb-glx0-dev libxcb-randr0-dev libxrandr-dev libxkbcommon-dev libwayland-dev \
-	 libgtest-dev pkg-config libgtk2.0-dev wget librealsense2-dkms librealsense2-utils
+	 libgtest-dev pkg-config libgtk2.0-dev wget 
 
