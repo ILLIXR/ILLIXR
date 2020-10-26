@@ -59,6 +59,9 @@ properties:
             type: object
             additionalProperties: false
             properties:
+              name:
+                description: An optional name for the plugin
+                type: string
               path:
                 $ref: '#/definitions/path'
                 description: Path to the directory containing the SO.
