@@ -8,7 +8,7 @@ Please follow these steps when making pull requests (PRs):
 4. Fix the issue.
 5. Add your name to CONTRIBUTORS.
 6. Push commits up to GitHub.
-7. Open a PR, and link it to the issue that the PR aims to resolve.
+7. Open a PR, and link it to the issue that the PR aims to resolve. Please give the PR a descriptive name.
 
 Why are the above steps necessary?
 
