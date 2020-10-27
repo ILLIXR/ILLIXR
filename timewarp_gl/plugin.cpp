@@ -19,9 +19,6 @@ using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
-// If this is defined, gldemo will use Monado-style eyebuffers
-//#define USE_ALT_EYE_FORMAT
-
 const record_header timewarp_gpu_record {"timewarp_gpu", {
 	{"iteration_no", typeid(std::size_t)},
 	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
@@ -47,11 +44,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-	#ifdef USE_ALT_EYE_FORMAT
-		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
-	#else
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
-	#endif
 		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
 		, _m_mtp{sb->publish<std::chrono::duration<double, std::nano>>("mtp")}
@@ -64,7 +57,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 
-	static constexpr int   SCREEN_WIDTH    = 448*2;
+	static constexpr int   SCREEN_WIDTH    = 550*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
@@ -81,11 +74,7 @@ private:
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
-	#ifdef USE_ALT_EYE_FORMAT
-	std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
-	#else
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
-	#endif
 
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
