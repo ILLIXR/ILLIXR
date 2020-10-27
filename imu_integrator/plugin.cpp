@@ -136,11 +136,13 @@ private:
 		// 	counter = 0;
 		// }
 		// counter++;
+#ifndef NDEBUG
 		if (input_values->last_cam_integration_time > last_cam_time) {
 			std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
 			last_cam_time = input_values->last_cam_integration_time;
 		}
 		pim_->resetIntegrationAndSetBias(imu_bias);
+#endif
 
 		// Predict that cam integration takes .015 seconds
 		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
