@@ -9,20 +9,15 @@
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
-#include "utils/algebra.hpp"
 #include "utils/hmd.hpp"
+#include "common/math_util.hpp"
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
-#include "common/linalg.hpp"
 #include "common/pose_prediction.hpp"
 
 using namespace ILLIXR;
-using namespace linalg::aliases;
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
-
-// If this is defined, gldemo will use Monado-style eyebuffers
-//#define USE_ALT_EYE_FORMAT
 
 const record_header timewarp_gpu_record {"timewarp_gpu", {
 	{"iteration_no", typeid(std::size_t)},
@@ -49,11 +44,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-	#ifdef USE_ALT_EYE_FORMAT
-		, _m_eyebuffer{sb->subscribe_latest<rendered_frame_alt>("eyebuffer")}
-	#else
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
-	#endif
 		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
 		, _m_mtp{sb->publish<std::chrono::duration<double, std::nano>>("mtp")}
@@ -66,12 +57,14 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 
-	static constexpr int   SCREEN_WIDTH    = 448*2;
+	static constexpr int   SCREEN_WIDTH    = 550*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-	static constexpr double DELAY_FRACTION = 1.0;
+
+	// Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
+	static constexpr double DELAY_FRACTION = 0.8;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
@@ -81,11 +74,7 @@ private:
 	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
-	#ifdef USE_ALT_EYE_FORMAT
-	std::unique_ptr<reader_latest<rendered_frame_alt>> _m_eyebuffer;
-	#else
 	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
-	#endif
 
 	// Switchboard plug for sending hologram calls
 	std::unique_ptr<writer<hologram_input>> _m_hologram;
@@ -146,7 +135,7 @@ private:
 	GLuint tw_start_transform_unif;
 	GLuint tw_end_transform_unif;
 	// Basic perspective projection matrix
-	ksAlgebra::ksMatrix4x4f basicProjection;
+	Eigen::Matrix4f basicProjection;
 
 	// Hologram call data
 	long long _hologram_seq{0};
@@ -228,8 +217,7 @@ private:
 			}
 		}
 		// Construct a basic perspective projection
-		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.1f, 0.0f );
-
+		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.1f, 0.0f );
 		// This was just temporary.
 		free(tw_mesh_base_ptr);
 
@@ -237,53 +225,35 @@ private:
 	}
 
 	/* Calculate timewarm transform from projection matrix, view matrix, etc */
-	void CalculateTimeWarpTransform( ksAlgebra::ksMatrix4x4f * transform, const ksAlgebra::ksMatrix4x4f * renderProjectionMatrix,
-                                        const ksAlgebra::ksMatrix4x4f * renderViewMatrix, const ksAlgebra::ksMatrix4x4f * newViewMatrix )
+	void CalculateTimeWarpTransform( Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
+                                        const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix )
 	{
-		// Convert the projection matrix from [-1, 1] space to [0, 1] space.
-		const ksAlgebra::ksMatrix4x4f texCoordProjection =
-		{ {
-			{ 0.5f * renderProjectionMatrix->m[0][0],        0.0f,                                           0.0f,  0.0f },
-			{ 0.0f,                                          0.5f * renderProjectionMatrix->m[1][1],         0.0f,  0.0f },
-			{ 0.5f * renderProjectionMatrix->m[2][0] - 0.5f, 0.5f * renderProjectionMatrix->m[2][1] - 0.5f, -1.0f,  0.0f },
-			{ 0.0f,                                          0.0f,                                           0.0f,  1.0f }
-		} };
+		// Eigen stores matrices internally in column-major order.
+		// However, the (i,j) accessors are row-major (i.e, the first argument
+		// is which row, and the second argument is which column.)
+		Eigen::Matrix4f texCoordProjection;
+		texCoordProjection <<  0.5f * renderProjectionMatrix(0,0),            0.0f,                                          0.5f * renderProjectionMatrix(0,2) - 0.5f, 0.0f ,
+							   0.0f,                                          0.5f * renderProjectionMatrix(1,1),            0.5f * renderProjectionMatrix(1,2) - 0.5f, 0.0f ,
+							   0.0f,                                          0.0f,                                         -1.0f,                                      0.0f ,
+							   0.0f,                                          0.0f,                                          0.0f,                                      1.0f;
 
 		// Calculate the delta between the view matrix used for rendering and
 		// a more recent or predicted view matrix based on new sensor input.
-		ksAlgebra::ksMatrix4x4f inverseRenderViewMatrix;
-		ksAlgebra::ksMatrix4x4f_InvertHomogeneous( &inverseRenderViewMatrix, renderViewMatrix );
+		Eigen::Matrix4f inverseRenderViewMatrix = renderViewMatrix.inverse();
 
-		ksAlgebra::ksMatrix4x4f deltaViewMatrix;
-		ksAlgebra::ksMatrix4x4f_Multiply( &deltaViewMatrix, &inverseRenderViewMatrix, newViewMatrix );
+		Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
 
-		ksAlgebra::ksMatrix4x4f inverseDeltaViewMatrix;
-		ksAlgebra::ksMatrix4x4f_InvertHomogeneous( &inverseDeltaViewMatrix, &deltaViewMatrix );
-
-		// Make the delta rotation only.
-		inverseDeltaViewMatrix.m[3][0] = 0.0f;
-		inverseDeltaViewMatrix.m[3][1] = 0.0f;
-		inverseDeltaViewMatrix.m[3][2] = 0.0f;
-
-		// TODO: Major issue. The original implementation uses inverseDeltaMatrix... as expected.
-		// This is because we are applying the /inverse/ of the delta between the original render
-		// view matrix and the new latepose. However, when used the inverse, the transformation
-		// was actually backwards. I'm not sure if this is an issue in the demo app/rendering thread,
-		// or if there's something messed up with the ATW code. In any case, using the actual
-		// delta matrix itself yields the correct result, which is very odd. Must investigate!
-
-		deltaViewMatrix.m[3][0] = 0.0f;
-		deltaViewMatrix.m[3][1] = 0.0f;
-		deltaViewMatrix.m[3][2] = 0.0f;
+		deltaViewMatrix(0,3) = 0.0f;
+		deltaViewMatrix(1,3) = 0.0f;
+		deltaViewMatrix(2,3) = 0.0f;
 
 		// Accumulate the transforms.
-		//ksAlgebra::ksMatrix4x4f_Multiply( transform, &texCoordProjection, &inverseDeltaViewMatrix );
-		ksAlgebra::ksMatrix4x4f_Multiply( transform, &texCoordProjection, &deltaViewMatrix );
+		transform = texCoordProjection * deltaViewMatrix;
 	}
 
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
-	time_type GetNextSwapTimeEstimate(){
+	time_type GetNextSwapTimeEstimate() {
 		return lastSwapTime + vsync_period;
 	}
 
@@ -418,18 +388,6 @@ public:
 		glXMakeCurrent(xwin->dpy, None, NULL);
 	}
 
-
-	void GetViewMatrixFromPose( ksAlgebra::ksMatrix4x4f* viewMatrix, const pose_type& pose) {
-		// Cast from the "standard" quaternion to our own, proprietary, Oculus-flavored quaternion
-		auto latest_quat = ksAlgebra::ksQuatf {
-			.x = pose.orientation.x(),
-			.y = pose.orientation.y(),
-			.z = pose.orientation.z(),
-			.w = pose.orientation.w()
-		};
-		ksAlgebra::ksMatrix4x4f_CreateFromQuaternion( viewMatrix, &latest_quat);
-	}
-
 	virtual void warp([[maybe_unused]] float time) {
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
@@ -451,8 +409,9 @@ public:
 
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
-		ksAlgebra::ksMatrix4x4f viewMatrix;
-		GetViewMatrixFromPose(&viewMatrix, most_recent_frame->render_pose.pose);
+		Eigen::Matrix4f viewMatrix = Eigen::Matrix4f::Identity();
+		viewMatrix.block(0,0,3,3) = most_recent_frame->render_pose.pose.orientation.toRotationMatrix();
+		// math_util::view_from_quaternion(&viewMatrix, most_recent_frame->render_pose.pose.orientation);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -461,59 +420,31 @@ public:
 		// these two predictive view transformations
 		// as it renders across the horizontal view,
 		// compensating for display panel refresh delay (wow!)
-		ksAlgebra::ksMatrix4x4f viewMatrixBegin;
-		ksAlgebra::ksMatrix4x4f viewMatrixEnd;
+		Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
+		Eigen::Matrix4f viewMatrixEnd = Eigen::Matrix4f::Identity();
 
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
 		const fast_pose_type latest_pose = pp->get_fast_pose();
-		GetViewMatrixFromPose(&viewMatrixBegin, latest_pose.pose);
-
-		// std::cout << "Timewarp: old " << most_recent_frame->render_pose.pose << ", new " << latest_pose->pose << std::endl;
+		viewMatrixBegin.block(0,0,3,3) = latest_pose.pose.orientation.toRotationMatrix();
 
 		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
 		// and we don't need to visualize this right now (we also don't have prediction setup yet!)
 		viewMatrixEnd = viewMatrixBegin;
 
-		// Get HMD view matrices, one for the beginning of the
-		// panel refresh, one for the end. (This is set to a 0.1s panel
-		// refresh duration, for exaggerated effect)
-		//GetHmdViewMatrixForTime(&viewMatrixBegin, glfwGetTime());
-		//GetHmdViewMatrixForTime(&viewMatrixEnd, glfwGetTime() + 0.1f);
-
-		//ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixBegin, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
-		//ksAlgebra::ksMatrix4x4f_CreateRotation( &viewMatrixEnd, (cursor_y - SCREEN_HEIGHT/2) * 0.05, (cursor_x - SCREEN_WIDTH/2) * 0.05, 0.0f );
-
 		// Calculate the timewarp transformation matrices.
 		// These are a product of the last-known-good view matrix
 		// and the predictive transforms.
-		ksAlgebra::ksMatrix4x4f timeWarpStartTransform4x4;
-		ksAlgebra::ksMatrix4x4f timeWarpEndTransform4x4;
-
-		// DEMONSTRATION:
-		// Every second, toggle timewarp on and off
-		// to show the effect of the reprojection.
-		/*
-		if(glfwGetTime() < 9.0){
-			viewMatrixBegin = viewMatrix;
-			viewMatrixEnd = viewMatrix;
-		}
-		*/
+		Eigen::Matrix4f timeWarpStartTransform4x4;
+		Eigen::Matrix4f timeWarpEndTransform4x4;
 
 		// Calculate timewarp transforms using predictive view transforms
-		CalculateTimeWarpTransform(&timeWarpStartTransform4x4, &basicProjection, &viewMatrix, &viewMatrixBegin);
-		CalculateTimeWarpTransform(&timeWarpEndTransform4x4, &basicProjection, &viewMatrix, &viewMatrixEnd);
+		CalculateTimeWarpTransform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
+		CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-		// We transform from 4x4 to 3x4 as we operate on vec3's in NDC space
-		ksAlgebra::ksMatrix3x4f timeWarpStartTransform3x4;
-		ksAlgebra::ksMatrix3x4f timeWarpEndTransform3x4;
-		ksAlgebra::ksMatrix3x4f_CreateFromMatrix4x4f( &timeWarpStartTransform3x4, &timeWarpStartTransform4x4 );
-		ksAlgebra::ksMatrix3x4f_CreateFromMatrix4x4f( &timeWarpEndTransform3x4, &timeWarpEndTransform4x4 );
-
-		// Push timewarp transform matrices to timewarp shader
-		glUniformMatrix3x4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)&(timeWarpStartTransform3x4.m[0][0]));
-		glUniformMatrix3x4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)&(timeWarpEndTransform3x4.m[0][0]));
+		glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)(timeWarpStartTransform4x4.data()));
+		glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)(timeWarpEndTransform4x4.data()));
 
 		// Debugging aid, toggle switch for rendering in the fragment shader
 		glUniform1i(glGetUniformLocation(timewarpShaderProgram, "ArrayIndex"), 0);
@@ -602,6 +533,12 @@ public:
 
 		glXSwapBuffers(xwin->dpy, xwin->win);
 
+		// The swap time needs to be obtained and published as soon as possible
+		lastSwapTime = std::chrono::high_resolution_clock::now();
+
+		// Now that we have the most recent swap time, we can publish the new estimate.
+		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+
 #ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
@@ -625,17 +562,11 @@ public:
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 
-		lastSwapTime = std::chrono::high_resolution_clock::now();
-
 		mtp_logger.log(record{mtp_record, {
 			{iteration_no},
 			{std::chrono::high_resolution_clock::now()},
 			{latest_pose.pose.sensor_time},
 		}});
-
-		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
-
 
 #ifndef NDEBUG
 		// TODO (implement-logging): When we have logging infra, delete this code.
