@@ -31,19 +31,7 @@ Once Ubuntu is installed you will be asked to reboot. Close `qemu` and then run 
 To launch the VM from now on, just use `ILLIXR/qemu/run.sh`. This will boot from the Ubuntu image we created earlier (`illixr.qcow2`). Once Ubuntu is installed, it is safe to delete `ubuntu-18.04.5-desktop-amd64.iso`.
 
 ## Setting up the VM
-Once inside the VM, open a terminal and run the following commands to setup ILLIXR:
-
-`sudo apt-get install -y git`
-
-`git clone --recursive https://github.com/ILLIXR/ILLIXR.git`
-
-`cd ILLIXR`
-
-`yes | ./install_deps.sh`
-
-Finally, run ILLIXR with:
-
-`./runner.sh configs/native.yaml`
+Once inside the VM, set up and run ILLIXR [as usual](https://illixr.github.io/ILLIXR/getting_started/).
 
 ## Uninstalling
 To delete your local VM, just delete `ILLIXR/qemu/illixr.qcow2`.
