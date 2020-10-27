@@ -34,7 +34,7 @@ plugin_groups:
       - path: plugin1/
       - path: plugin2/
       - path: plugin3/
-	  - path: plugin4/
+      - path: plugin4/
 ```
 
 This defines a list of plugins by their location, `path`. Allowed paths will be described below. The
@@ -106,7 +106,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
 - subpath: path/within/git_repo
   relative_to:
     git_repo: ...
-	version: ...
+    version: ...
 ```
 
 ## Rationale
