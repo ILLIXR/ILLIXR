@@ -1,5 +1,5 @@
 #!/bin/bash
-QEMU_PATH="/opt/ILLIXR/qemu/build/x86_64-softmmu"
+QEMU_PATH="/opt/ILLIXR/qemu/build"
 
 # Make sure qemu is installed
 if [ ! -d $QEMU_PATH ]; then
@@ -17,12 +17,12 @@ fi
 
 # Create a qcow2 image, if one doesn't exist
 if [ ! -f illixr.qcow2 ]; then
-    qemu-img create -f qcow2 illixr.qcow2 30G
+    $QEMU_PATH/qemu-img create -f qcow2 illixr.qcow2 30G
 fi
 
 if [ ! -f ubuntu-18.04.5-desktop-amd64.iso ]; then
 	# Ubuntu image doesn't exist anymore, so launch without the CDROM option
-    $QEMU_PATH/qemu-system-x86_64 -enable-kvm -M q35 -smp 2 -m 4G \
+    $QEMU_PATH/x86_64-softmmu/qemu-system-x86_64 -enable-kvm -M q35 -smp 2 -m 4G \
         -hda illixr.qcow2 \
         -net nic,model=virtio \
         -net user,hostfwd=tcp::2222-:22 \
@@ -32,7 +32,7 @@ else
 	# Ubuntu image exists, so launch with CDROM option (user may be installing Ubuntu or just never removed the image)
 	echo "Running with CDROM"
 	echo "Once you've finished installing Ubuntu, it's safe to delete ubuntu-18.04.5-desktop-amd64.iso"
-	$QEMU_PATH/qemu-system-x86_64 -enable-kvm -M q35 -smp 2 -m 4G \
+	$QEMU_PATH/x86_64-softmmu/qemu-system-x86_64 -enable-kvm -M q35 -smp 2 -m 4G \
         -hda illixr.qcow2 \
         -net nic,model=virtio \
         -net user,hostfwd=tcp::2222-:22 \
