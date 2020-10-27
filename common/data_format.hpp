@@ -66,18 +66,10 @@ namespace ILLIXR {
 		int pixel[1];
 	} camera_frame;
 
-	// Single-texture format; arrayed by left/right eye
-	// Single-texture format; arrayed by left/right eye
-	struct rendered_frame {
-		GLuint texture_handle;
-		pose_type render_pose; // The pose used when rendering this frame.
-		std::chrono::time_point<std::chrono::system_clock> sample_time;
-	};
-
 	// Using arrays as a swapchain
 	// Array of left eyes, array of right eyes
 	// This more closely matches the format used by Monado
-	struct rendered_frame_alt {
+	struct rendered_frame {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
