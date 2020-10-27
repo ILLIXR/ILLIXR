@@ -15,3 +15,11 @@ Why are the above steps necessary?
 1. Assigning the issue to yourself ensures that multiple people don't work on the same thing in parallel.
 2. The branch naming scheme organizes things a bit for us, and also makes it easy to find branches.
 3. Opening a PR via Hub makes sure that the issue itself is converted into a PR. This is different than linking issues to PRs. While linking is nice, it still means that we have two separate threads of discussion, one on the issue and one on the PR. By converting the issue itself into a PR, everything resides in one place, making it easier to keep track of things.
+
+# Getting Help
+
+You can get help from our development community in three ways:
+
+1. [Main documentation site](https://illixr.github.io/ILLIXR/)
+2. [API documentation site](https://illixr.github.io/ILLIXR/api/html/annotated.html)
+3. [Gitter](https://gitter.im/ILLIXR/community)
