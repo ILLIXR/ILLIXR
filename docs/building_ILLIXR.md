@@ -71,6 +71,9 @@ The `native` loader supports an optional `command` argument. In that argument `%
 the separated command-line arguments to run ILLIR, while `%b` is replaced with the stringified
 command-line arguments.
 
+Finally, we support two profiles: `opt`, which compiles with `-O3` and disables debug prints, and
+`dbg`, which compiles with debug flags and enables debug prints.
+
 ```yaml
 profile: opt
 ```
