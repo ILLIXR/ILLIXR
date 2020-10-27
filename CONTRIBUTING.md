@@ -6,14 +6,15 @@ Please follow these steps when making pull requests (PRs):
 2. Assign the issue to yourself and add appropriate labels. If you are an external contributor, comment on the issue so one of the ILLIXR team members can assign the issue to you.
 3. Before you start making changes, make a new branch. The branch **MUST** be named `issue-<issue number>-<some descriptive name>`. For instance, `issue-32-fix-mem-leak` addresses the memory leak described in issue 32.
 4. Fix the issue.
-5. Push commits up to GitHub.
-6. Open a PR, and link it to the issue that the PR aims to resolve.
+5. Add your name to CONTRIBUTORS.
+6. Push commits up to GitHub.
+7. Open a PR, and link it to the issue that the PR aims to resolve.
 
 Why are the above steps necessary?
 
 1. Assigning the issue to yourself ensures that multiple people don't work on the same thing in parallel.
 3. The branch naming scheme organizes things a bit for us, and also makes it easy to find branches.
-6. Linking the issue to the PR ensures that we know which issue is being resolved, and also automatically closes the issue when the PR gets merged.
+7. Linking the issue to the PR ensures that we know which issue is being resolved, and also automatically closes the issue when the PR gets merged.
 
 # Getting Help
 
