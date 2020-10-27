@@ -1,6 +1,13 @@
 #!/bin/bash
 QEMU_PATH="/opt/ILLIXR/qemu/build/x86_64-softmmu"
 
+# Make sure qemu is installed
+if [ ! -d $QEMU_PATH ]; then
+    echo "ILLIXR qemu not detected at $QEMU_PATH"
+    echo "Did you make sure to run ILLIXR/install_deps.sh and select 'yes' for qemu?"
+    exit -1
+fi
+
 # Download ubuntu-18.04.5-desktop-amd64.iso if it doesn't exist already and if there is no illixr image created
 if [ ! -f ubuntu-18.04.5-desktop-amd64.iso ]; then
 	if [ ! -f illixr.qcow2 ]; then

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Pull latest Qemu
-git clone --recursive git://git.qemu.org/qemu.git "${opt_dir}/qemu"
+# Pull Qemu v5.1.0
+git clone --recursive --branch v5.1.0 git://git.qemu.org/qemu.git "${opt_dir}/qemu"
 mkdir "${opt_dir}/qemu/build"
 cd "${opt_dir}/qemu/build"
 
