@@ -2,7 +2,7 @@
 
 Please follow these steps when making pull requests (PRs):
 
-1. First, create an issue describing the problem that needs to be fixed. If an issue already exists, skip this step.
+1. First, create an issue describing the problem that needs to be fixed. If an issue already exists, skip this step. If you are looking for an issue to fix, see the ["good first issue" label](https://github.com/ILLIXR/ILLIXR/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
 2. Assign the issue to yourself and add appropriate labels.
 3. Before you start making changes, make a new branch. The branch **MUST** be named `issue-<issue number>-<some descriptive name>`. For instance, `issue-32-fix-mem-leak` addresses the memory leak described in issue 32.
 4. Fix the issue.
