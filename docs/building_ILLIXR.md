@@ -2,27 +2,112 @@
 
 ## Basic usage
 
-- Edit `config.yaml`. See `runner/config_schema.yaml` for the schema definition.
+We have a tool called `runner.sh` that downloads, compiles, and runs ILLIXR. This is necessary,
+since ILLIXR has plugins and data are in many different places. The tool consumes a config YAML file
+which specifies those places.
 
-  * Make sure you have defined all of the plugins you want with paths that exist.
+To run ILLIXR natively, use
 
-  * Currently we support the following loaders: `native` (which runs ILLIXR in standalone mode),
-    `gdb` (which runs standalone mode in GDB for debugging purposes), and `monado` (which runs an
-    OpenXR application in Monado using ILLIXR as a backend)
+```
+./runner.sh configs/native.yaml
+```
 
-    * If you want to run with Monado, make sure you define Monado and an OpenXR application in the
-      loader (see `runner/config_schema.yaml` for specifics).
+To drop into `gdb`, add `command: gdb -q --args %a` in the `loader` block of `configs/native.yaml`, and use the same command.
 
-  * Paths are resolved relative to the project root.
+To run ILLIXR with Monado,
 
-  * You can `!include` other YAML files ([documentation][8]). Consider separating the site-specific
-    configuration options into its own file.
+```
+./runner.sh configs/monado.yaml
+```
 
-- Run `./runner.sh config.yaml`.
+The OpenXR application to run is defined in `loader.openxr_app`.
 
-  * This compiles whatever plugins and runtime code is necessary and runs the result.
+## Config file
 
-  * This also sets the environment variables properly.
+- See `config/{native,ci,native-ground-truth,monado}.yaml`.
+
+The first block in the config file contains a list of `plugin_groups`, where each `plugin_group` is a list of plugins.
+
+```yaml
+plugin_groups:
+  - plugin_group:
+      - path: plugin1/
+      - path: plugin2/
+      - path: plugin3/
+      - path: plugin4/
+```
+
+This defines a list of plugins by their location, `path`. Allowed paths will be described below. The
+`plugin_groups` get flattened and those plugins are initialized _in order_ at runtime. Several of
+the default plugins are order-sensitive.
+
+The next block in the config defines the offline IMU data, camera data, and ground-truth data.
+
+```yaml
+data:
+  subpath: mav0
+  relative_to:
+    archive_path:
+      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+```
+
+Next, we define the location of OBJ files for `gldemo`.
+
+```yaml
+demo_data: demo_data/
+```
+
+Currently we support the following loaders: `native` (which runs ILLIXR in standalone mode), `tests`
+(which runs integreation tests headlessly for CI/CD purposes), and `monado` (which runs an OpenXR
+application in Monado using ILLIXR as a backend).
+
+```yaml
+loader:
+  name: native
+  command: gdb -q --args %a
+```
+
+The `native` loader supports an optional `command` argument. In that argument `%a` is replaced with
+the separated command-line arguments to run ILLIR, while `%b` is replaced with the stringified
+command-line arguments.
+
+Finally, we support two profiles: `opt`, which compiles with `-O3` and disables debug prints, and
+`dbg`, which compiles with debug flags and enables debug prints.
+
+```yaml
+profile: opt
+```
+
+You can `!include` other YAML files ([documentation][8]). Consider separating the site-specific
+configuration options into its own file.
+
+## Specifying Paths
+
+A path refers to a location of a resource. There are 5 ways of specifying a path:
+
+- **Simple path**: either absolute or relative path in the native filesystem.
+- **Git repo**: A git repository.
+```yaml
+- git_repo: https://github.com/user/repo.git
+  version: master # branch name, SHA-256, or tag
+```
+- **Download URL**: A resource downloaded from the internet.
+```yaml
+- download_url: https://example.com/file.txt
+```
+- **Zip archive**: A path that points within the contents of a zip archive. Note that `archive_path` is itself a path (recursive).
+```yaml
+- archive_path: path/to/archive.zip
+- archive_path:
+    download_url: https://example.com/file.zip
+```
+- **Complex path**: A hard-coded path relative to another path (recursive). This is useful to specify a _subdirectory_ of a git repository or zip archive.
+```yaml
+- subpath: path/within/git_repo
+  relative_to:
+    git_repo: ...
+    version: ...
+```
 
 ## Rationale
 
@@ -34,45 +119,10 @@
   deal with all configurations.
 
 - Currently, plugins are specificed by a path to the directory containing their source code and
-  build system. In the future, the same config file could support HTTP URLs Git URLs
-  (`git+https://github.com/username/repo@rev?path=optional/path/within/repo`), or Zip URLs
-  (`zip+http://path/to/archive.zip?path=optional/path/within/zip`), or even Nix URLs (TBD).
+  build system.
 
 [7]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 [8]: https://pypi.org/project/pyyaml-include/
-
-## Adding a new plugin (common case)
-
-In the common case, one need only define a `Makefile` with the line `include common/common.mk` and
-symlink common (`ln -s ../common common`). This provides the necessary targets and uses the compiler
-`$(CXX)`, which is defined in Make based on the OS and environment variables.
-
-- It compiles `plugin.cpp` and any other `*.cpp` files into the plugin.
-
-- It will invoke a recompile the target any time any `*.hpp` or `*.cpp` file changes.
-
-- It compiles with C++17. You can change this in your plugin by defining `STDCXX = ...` before the
-  `include`. This change will not affect other plugins; just yours.
-
-- Libraries can be added by appending to `LDFLAGS` and `CFLAGS`, for example
-
-        LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
-        CFLAGS := $(CFLAGS) $(shell pkg-config --cflags eigen3)
-
-- See the source for the exact flags.
-
-- Inserted the path of your directory into the `plugin`-list in `config.yaml`.
-
-## Adding a plugin (general case)
-
-Each plugin can have a completely independent build system, as long as:
-- It defines a `Makefile` with targets for `plugin.dbg.so`, `plugin.opt.so`, and `clean`. Inside
-  this `Makefile`, one can defer to another build system.
-
-- It's compiler maintains _ABI compatibility_ with the compilers used in every other plugin. Using
-  the same version of Clang or GCC on the same architecture is sufficient for this.
-
-- It's path is inserted in the root `config.yaml`, in the `plugins` list.
 
 ## Philosophy
 
