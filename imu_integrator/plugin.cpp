@@ -92,7 +92,7 @@ private:
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
 		const imu_integrator_input *input_values = _m_imu_integrator_input->get_latest_ro();
-		if (input_values == NULL) {
+		if (input_values == NULL || !input_values->slam_ready) {
 			return;
 		}
 
@@ -100,14 +100,6 @@ private:
 			last_imu_offset = input_values->t_offset;
 			has_last_offset = true;
 		}
-
-		Eigen::Matrix<double, 16, 1> imu_value;
-		imu_value.block(0, 0, 4, 1) = input_values->quat;
-		imu_value.block(4, 0, 3, 1) = input_values->position;
-		imu_value.block(7, 0, 3, 1) = input_values->velocity;
-		imu_value.block(10,0, 3, 1) = input_values->biasGyro;
-		imu_value.block(13,0, 3, 1) = input_values->biasAcc;
-		Eigen::Matrix<double, 16, 1> imu_fej = imu_value;
 
 		// Uncomment this for some helpful prints
 		// total_imu++;
@@ -129,8 +121,8 @@ private:
 
 		vector<ov_msckf::Propagator::IMUDATA> prop_data = select_imu_readings(_imu_vec, time0, time1);
 		ov_type::IMU *temp_imu = new ov_type::IMU();
-		temp_imu->set_value(imu_value);
-		temp_imu->set_fej(imu_fej);
+		temp_imu->set_value(input_values->imu_value);
+		temp_imu->set_fej(input_values->imu_fej);
 
 		Eigen::Matrix<double,3,1> w_hat;
 		Eigen::Matrix<double,3,1> a_hat;
@@ -154,7 +146,7 @@ private:
 				// Compute the new state mean value
 				Eigen::Vector4d new_q;
 				Eigen::Vector3d new_v, new_p;
-				predict_mean_rk4(temp_imu->quat(), temp_imu->pos(), temp_imu->vel(), input_values->params.n_gravity,
+				predict_mean_rk4(temp_imu->quat(), temp_imu->pos(), temp_imu->vel(), input_values->gravity,
 								dt, w_hat, a_hat, w_hat2, a_hat2, new_q, new_v, new_p);
 
 				//Now replace imu estimate and fej with propagated values
@@ -180,10 +172,8 @@ private:
 			a_hat,
 			w_hat2,
 			a_hat2,
-			Eigen::Matrix<double,3,1>{state_plus(4), state_plus(5), state_plus(6)},
-			Eigen::Matrix<double,3,1>{state_plus(7), state_plus(8), state_plus(9)},
-			Eigen::Matrix<double,4,1>{state_plus(0), state_plus(1), state_plus(2), state_plus(3)},
-			real_time,
+			state_plus,
+			real_time
 		});
     }
 
