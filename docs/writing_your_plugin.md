@@ -1,5 +1,40 @@
 # Writing your plugin
 
+## Adding a new plugin (common case)
+
+In the common case, one need only define a `Makefile` with the line `include common/common.mk` and
+symlink common (`ln -s ../common common`). This provides the necessary targets and uses the compiler
+`$(CXX)`, which is defined in Make based on the OS and environment variables.
+
+- It compiles `plugin.cpp` and any other `*.cpp` files into the plugin.
+
+- It will invoke a recompile the target any time any `*.hpp` or `*.cpp` file changes.
+
+- It compiles with C++17. You can change this in your plugin by defining `STDCXX = ...` before the
+  `include`. This change will not affect other plugins; just yours.
+
+- Libraries can be added by appending to `LDFLAGS` and `CFLAGS`, for example
+
+        LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
+        CFLAGS := $(CFLAGS) $(shell pkg-config --cflags eigen3)
+
+- See the source for the exact flags.
+
+- Inserted the path of your directory into the `plugin`-list in `config.yaml`.
+
+## Adding a plugin (general case)
+
+Each plugin can have a completely independent build system, as long as:
+- It defines a `Makefile` with targets for `plugin.dbg.so`, `plugin.opt.so`, and `clean`. Inside
+  this `Makefile`, one can defer to another build system.
+
+- It's compiler maintains _ABI compatibility_ with the compilers used in every other plugin. Using
+  the same version of Clang or GCC on the same architecture is sufficient for this.
+
+- It's path is inserted in the root `config.yaml`, in the plugin list.
+
+## Tutorial
+
 With this, you can extend ILLIXR for your own purposes. You can also replace any existing
 functionality this way.
 

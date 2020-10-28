@@ -72,10 +72,10 @@ private:
 	bool has_last_offset = false;
 	long long _seq_expect, _stat_processed, _stat_missed;
 
-	int counter = 0;
-	int cam_count = 0;
-	int total_imu = 0;
-	double last_cam_time = 0;
+	[[maybe_unused]] int counter = 0;
+	[[maybe_unused]] int cam_count = 0;
+	[[maybe_unused]] int total_imu = 0;
+	[[maybe_unused]] double last_cam_time = 0;
 
 	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
 	void clean_imu_vec(double timestamp) {
