@@ -113,7 +113,7 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
-	long long _imu_integrator_seq{0};
+	int64_t _imu_integrator_seq{0};
 };
 
 PLUGIN_MAIN(offline_imu_cam)

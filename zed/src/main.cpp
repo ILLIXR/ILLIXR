@@ -204,7 +204,7 @@ private:
     ullong imu_time;
 
     std::size_t last_serial_no {0};
-    long long _imu_integrator_seq{0};
+    int64_t _imu_integrator_seq{0};
 
     // Logger
     record_coalescer it_log;

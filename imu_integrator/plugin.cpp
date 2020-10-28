@@ -1,3 +1,6 @@
+// This entire IMU integrator has been ported almost as-is from the original OpenVINS integrator, which
+// can be found here: https://github.com/rpng/open_vins/blob/master/ov_msckf/src/state/Propagator.cpp
+
 #include <chrono>
 #include <iomanip>
 #include <thread>
@@ -12,6 +15,8 @@
 #include "common/threadloop.hpp"
 
 using namespace ILLIXR;
+
+#define IMU_SAMPLE_LIFETIME 5
 
 class imu_integrator : public threadloop {
 public:
@@ -70,7 +75,7 @@ private:
 	std::vector<ov_msckf::Propagator::IMUDATA> _imu_vec;
 	double last_imu_offset;
 	bool has_last_offset = false;
-	long long _seq_expect, _stat_processed, _stat_missed;
+	int64_t _seq_expect, _stat_processed, _stat_missed;
 
 	[[maybe_unused]] int counter = 0;
 	[[maybe_unused]] int cam_count = 0;
@@ -81,7 +86,7 @@ private:
 	void clean_imu_vec(double timestamp) {
 		auto it0 = _imu_vec.begin();
         while (it0 != _imu_vec.end()) {
-            if (timestamp-(*it0).timestamp > 5) {
+            if (timestamp-(*it0).timestamp > IMU_SAMPLE_LIFETIME) {
                 it0 = _imu_vec.erase(it0);
             } else {
                 it0++;
