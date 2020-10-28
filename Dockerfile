@@ -8,7 +8,7 @@ ENV opt_dir /opt/ILLIXR
 RUN mkdir -p ${temp_dir}
 RUN mkdir -p ${opt_dir}
 
-RUN apt update && apt install -y sudo
+RUN apt update && apt install -y sudo gnupg2
 
 COPY ./scripts/install_apt_deps.sh $HOME/scripts/install_apt_deps.sh
 RUN ./scripts/install_apt_deps.sh
