@@ -41,7 +41,7 @@ public:
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
 		if ((error = dlerror()) || !handle)
 			throw std::runtime_error{
-				"dlopen(" + std::string{path} + "): " + (error == nullptr ? "NULL" : std::string{error})};
+				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
 			char* error;
@@ -57,7 +57,7 @@ public:
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
 		if ((error = dlerror()))
 			throw std::runtime_error{
-				"dlsym(" + symbol_name + "): " + (error == nullptr ? "NULL" : std::string{error})};
+				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
 		return symbol;
 	}
 

@@ -15,8 +15,5 @@ cmake \
 	-D OPENCV_EXTRA_MODULES_PATH="${temp_dir}/opencv_contrib/modules"
 sudo make -C "${temp_dir}/opencv/build" "-j$(nproc)" install
 
-# Load new library paths
-sudo ldconfig -v
-
 # Remove temp cmake files
 rm -f a.out cmake_hdf5_test.o
