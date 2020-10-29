@@ -17,6 +17,8 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 
+#define IMU_TTL 5
+
 using PimUniquePtr = std::unique_ptr<gtsam::PreintegrationType>;
 using ImuBias = gtsam::imuBias::ConstantBias;
 using namespace ILLIXR;
@@ -89,15 +91,16 @@ private:
 	double last_imu_offset = 0;
 	long long _seq_expect, _stat_processed, _stat_missed;
 
-	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
+	// Remove IMU values older than 5 seconds from the imu buffer
 	void clean_imu_vec(double timestamp) {
-		auto it0 = _imu_vec.begin();
-        while (it0 != _imu_vec.end()) {
-            if (timestamp-(*it0).timestamp > 5) {
-                it0 = _imu_vec.erase(it0);
-            } else {
-                it0++;
+		auto imu_iterator = _imu_vec.begin();
+
+        while (imu_iterator != _imu_vec.end()) {
+            if (timestamp-(*imu_iterator).timestamp < IMU_TTL) {
+				break;
             }
+
+			imu_iterator = _imu_vec.erase(imu_iterator);
          }
 	}
 
@@ -186,6 +189,7 @@ private:
 		});
 	}
 
+	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
 	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
 		std::vector<imu_type> prop_data;
 		if (imu_data.size() < 2) {
@@ -231,7 +235,7 @@ private:
 		return prop_data;
 	}
 
-	// If an integration time ever falls inbetween two imu measurements, interpolate to it
+	// If an integration time ever falls inbetween two imu measurements, also modeled after OpenVINS.
 	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, double timestamp) {
 		imu_type data;
 		data.timestamp = timestamp;
