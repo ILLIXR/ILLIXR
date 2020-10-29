@@ -151,7 +151,7 @@ private:
 #ifndef NDEBUG
 		std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
 #endif
-	
+
 		for (unsigned i = 0; i < prop_data.size()-1; i++) {
 			const gtsam::Vector3& measured_acc = prop_data.at(i).am;
 			const gtsam::Vector3& measured_omega = prop_data.at(i).wm;

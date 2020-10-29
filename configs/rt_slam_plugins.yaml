@@ -6,4 +6,4 @@ plugin_group:
       git_repo: https://github.com/ILLIXR/open_vins.git
       version: 74f068d49d27569f9c932e9eee1e31a729ac9eb2
   - path: pose_prediction/
-  - path: imu_integrator/
+  - path: gtsam_integrator/
