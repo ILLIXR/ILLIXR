@@ -1,17 +1,18 @@
-plugins:
-  - path: ground_truth_slam/
-  - path: offline_imu_cam/
-  - path: open_vins/
-  - path: pose_prediction/
-  - path: gldemo/
-  - path: timewarp_gl/
-  - path: debugview/
-  - path: audio_pipeline/
-  # - path: hologram/
-  # - path: zed/
-#data: zip+http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip?path=mav0
-data: ../data1/
-demo_data: ../demo_data/
+plugin_groups:
+  - !include "rt_slam_plugins.yaml"
+  - !include "core_plugins.yaml"
+  - plugin_group:
+      - path: ground_truth_slam/
+      - path: debugview/
+      - path: gldemo/
+
+data:
+  subpath: mav0
+  relative_to:
+    archive_path:
+      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+demo_data: demo_data/
 loader:
   name: native
-profile: dbg
+  # command: gdb -q --args %a
+profile: opt
