@@ -17,6 +17,7 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 
+// IMU sample time to live in seconds
 #define IMU_TTL 5
 
 using PimUniquePtr = std::unique_ptr<gtsam::PreintegrationType>;
@@ -87,21 +88,23 @@ private:
 	std::vector<imu_type> _imu_vec;
   	PimUniquePtr pim_ = NULL;
 
-	double last_cam_time = 0;
+	[[maybe_unused]] double last_cam_time = 0;
 	double last_imu_offset = 0;
 	long long _seq_expect, _stat_processed, _stat_missed;
 
-	// Remove IMU values older than 5 seconds from the imu buffer
+	// Remove IMU values older than 'IMU_TTL' from the imu buffer
 	void clean_imu_vec(double timestamp) {
 		auto imu_iterator = _imu_vec.begin();
 
-        while (imu_iterator != _imu_vec.end()) {
-            if (timestamp-(*imu_iterator).timestamp < IMU_TTL) {
+		// Since the vector is ordered oldest to latest, keep deleting until you
+		// hit a value less than 'IMU_TTL' seconds old
+		while (imu_iterator != _imu_vec.end()) {
+			if (timestamp-(*imu_iterator).timestamp < IMU_TTL) {
 				break;
-            }
+			}
 
 			imu_iterator = _imu_vec.erase(imu_iterator);
-         }
+		}
 	}
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
@@ -149,7 +152,7 @@ private:
 		std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
 #endif
 	
-		for (int i = 0; i < prop_data.size()-1; i++) {
+		for (unsigned i = 0; i < prop_data.size()-1; i++) {
 			const gtsam::Vector3& measured_acc = prop_data.at(i).am;
 			const gtsam::Vector3& measured_omega = prop_data.at(i).wm;
 
@@ -196,7 +199,7 @@ private:
 			return prop_data;
 		}
 
-		for (int i = 0; i < imu_data.size()-1; i++) {
+		for (unsigned i = 0; i < imu_data.size()-1; i++) {
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
 			if (imu_data.at(i+1).timestamp > time_begin && imu_data.at(i).timestamp < time_begin) {
@@ -221,10 +224,6 @@ private:
 
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
-		if (prop_data.size() < 2) {
-			return prop_data;
-		}
-
 		for (size_t i = 0; i < prop_data.size()-1; i++) {
 			if (std::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < 1e-12) {
 				prop_data.erase(prop_data.begin()+i);
@@ -235,7 +234,7 @@ private:
 		return prop_data;
 	}
 
-	// If an integration time ever falls inbetween two imu measurements, also modeled after OpenVINS.
+	// For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
 	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, double timestamp) {
 		imu_type data;
 		data.timestamp = timestamp;

@@ -4,6 +4,6 @@ plugin_group:
   - name: OpenVINS
     path:
       git_repo: https://github.com/ILLIXR/open_vins.git
-      version: b0e3dd67b4e03de0b3eb42aeb8b9c9081d7937ce
+      version: 74f068d49d27569f9c932e9eee1e31a729ac9eb2
   - path: pose_prediction/
   - path: imu_integrator/
