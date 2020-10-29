@@ -32,7 +32,6 @@ public:
 
 	virtual void setup() override {
 		plugin::setup();
-		pause();
 	}
 
 	/**
@@ -40,19 +39,7 @@ public:
 	 */
 	virtual void start() override {
 		plugin::start();
-		unpause();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
-	}
-
-	void unpause() {
-		std::lock_guard<std::mutex> lock {pause_mutex};
-		pause_bool = true;
-		pause_cv.notify_all();
-	}
-
-	void pause() {
-		std::lock_guard<std::mutex> lock {pause_mutex};
-		pause_bool = false;
 	}
 
 	/**
@@ -80,16 +67,7 @@ protected:
 	std::size_t iteration_no = 0;
 	std::size_t skip_no = 0;
 
-	std::mutex pause_mutex;
-	std::condition_variable pause_cv;
-	bool pause_bool;
-
 private:
-
-	void wait_if_paused() {
-		std::unique_lock<std::mutex> lock {pause_mutex};
-		pause_cv.wait(lock, [this]{ return pause_bool; });
-	}
 
 	void thread_main() {
 		record_coalescer it_log {record_logger_};
@@ -98,7 +76,6 @@ private:
 		_p_thread_setup();
 
 		while (!should_terminate()) {
-			wait_if_paused();
 			skip_option s = _p_should_skip();
 
 			switch (s) {
