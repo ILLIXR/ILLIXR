@@ -32,10 +32,6 @@ RUN ldconfig
 
 COPY . $HOME/ILLIXR/
 WORKDIR ILLIXR
-
-COPY ./scripts/install_euroc.sh $HOME/scripts/install_euroc.sh
-RUN ./scripts/install_euroc.sh
-
 RUN $HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
 
 ENTRYPOINT ./runner.sh configs/ci.yaml
