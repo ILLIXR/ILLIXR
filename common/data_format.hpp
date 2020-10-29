@@ -35,6 +35,7 @@ namespace ILLIXR {
 		ullong dataset_time;
 	} imu_cam_type;
 
+	// Values needed to initialize the IMU integrator
 	typedef struct {
 		double gyro_noise;
     	double acc_noise;
@@ -45,6 +46,7 @@ namespace ILLIXR {
 		double nominal_rate;
 	} imu_params;
 
+	// IMU biases, initialization params, and slow pose needed by the IMU integrator
 	typedef struct {
 		double last_cam_integration_time;
 		double t_offset;
@@ -57,11 +59,15 @@ namespace ILLIXR {
 		Eigen::Quaterniond quat;
 	} imu_integrator_input;
 
+	// Output of the IMU integrator tswapped_rot2o be used by pose prediction
 	typedef struct {
+		// Biases from the last two IMU integration iterations used by RK4 for pose predict
 		Eigen::Matrix<double,3,1> w_hat;
 		Eigen::Matrix<double,3,1> a_hat;
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
+
+		// (faster) Slow pose propagated forwards by the IMU integrator
 		Eigen::Matrix<double,3,1> pos;
 		Eigen::Matrix<double,3,1> vel;
 		Eigen::Quaterniond quat;

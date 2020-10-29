@@ -43,7 +43,7 @@ public:
 		auto in = _m_in->get_latest_ro();
 		if (!in || in->seq == _seq_expect-1) {
 			// No new data, sleep to keep CPU utilization low
-			// std::this_thread::sleep_for(std::chrono::milliseconds{4});
+			std::this_thread::sleep_for(std::chrono::milliseconds{1});
 			return skip_option::skip_and_yield;
 		} else {
 			if (in->seq != _seq_expect) {
@@ -85,9 +85,6 @@ private:
 	std::vector<imu_type> _imu_vec;
   	PimUniquePtr pim_ = NULL;
 
-	int counter = 0;
-	int cam_count = 0;
-	int total_imu = 0;
 	double last_cam_time = 0;
 	double last_imu_offset = 0;
 	long long _seq_expect, _stat_processed, _stat_missed;
@@ -126,25 +123,14 @@ private:
 			last_imu_offset = input_values->t_offset;
 		}
 
-		// Uncomment this for some helpful prints
-		// total_imu++;
-		// if (input_values->last_cam_integration_time > last_cam_time) {
-		// 	cam_count++;
-		// 	last_cam_time = input_values->last_cam_integration_time;
-		// 	std::cout << "Num IMUs recieved since last cam: " << counter << " Diff between new cam and latest IMU: " 
-		// 			  << timestamp - last_cam_time << " Expected IMUs recieved VS Actual: " << cam_count*10 << ", " << total_imu << std::endl;
-		// 	counter = 0;
-		// }
-		// counter++;
 #ifndef NDEBUG
 		if (input_values->last_cam_integration_time > last_cam_time) {
-			std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n";
+			std::cout << "New slow pose has arrived!\n";
 			last_cam_time = input_values->last_cam_integration_time;
 		}
 		pim_->resetIntegrationAndSetBias(imu_bias);
 #endif
 
-		// Predict that cam integration takes .015 seconds
 		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
 		double time_end = timestamp + input_values->t_offset;
 
@@ -156,7 +142,10 @@ private:
    		ImuBias prev_bias = pim_->biasHat();
 		ImuBias bias = pim_->biasHat();
 
-		std::cout << "-------Integrating over " << prop_data.size() << " IMU samples\n";
+#ifndef NDEBUG
+		std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
+#endif
+	
 		for (int i = 0; i < prop_data.size()-1; i++) {
 			const gtsam::Vector3& measured_acc = prop_data.at(i).am;
 			const gtsam::Vector3& measured_omega = prop_data.at(i).wm;
@@ -173,15 +162,17 @@ private:
 		gtsam::NavState navstate_k = pim_->predict(navstate_lkf, imu_bias);
 		gtsam::Pose3 out_pose = navstate_k.pose();
 
+#ifndef NDEBUG
 		std::cout << "Base Position (x, y, z) = "
-				<< input_values->position(0) << " "
-				<< input_values->position(1) << " "
+				<< input_values->position(0) << ", "
+				<< input_values->position(1) << ", "
 				<< input_values->position(2) << std::endl;
 
 		std::cout << "New  Position (x, y, z) = "
-				<< out_pose.x() << " "
-				<< out_pose.y() << " "
+				<< out_pose.x() << ", "
+				<< out_pose.y() << ", "
 				<< out_pose.z() << std::endl;
+#endif
 
 		_m_imu_raw->put(new imu_raw_type{
 			prev_bias.gyroscope(),

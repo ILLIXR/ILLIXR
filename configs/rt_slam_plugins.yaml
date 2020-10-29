@@ -1,0 +1,9 @@
+plugin_group:
+  - path: offline_imu_cam/
+  # - path: zed/
+  - name: OpenVINS
+    path:
+      git_repo: https://github.com/ILLIXR/open_vins.git
+      version: 66f577d24c8cc9085ab57ff46b0d4531075dfb4b
+  - path: pose_prediction/
+  - path: imu_integrator/

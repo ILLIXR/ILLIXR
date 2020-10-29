@@ -17,7 +17,7 @@ plugin.opt.so: build/Release/Makefile
 	ln -s build/Release/libplugin.so $@ && \
 	true
 
-build/%/Makefile:
+build/Debug/Makefile:
 	mkdir -p build/Debug && \
 	cd build/Debug && \
 	cmake -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
@@ -26,7 +26,7 @@ build/%/Makefile:
 build/Release/Makefile:
 	mkdir -p build/Release && \
 	cd build/Release && \
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
 	true
 
 tests/run:
