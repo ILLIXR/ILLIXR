@@ -74,6 +74,10 @@ ILLIXR can also benchmark each component in isolation.
 
 3. Each component is a directory in `benchmark`. See those components for their documentation.
 
+## Virtual Machine
+
+ILLIXR can be run inside a Qemu-KVM image. Check out the instructions [here](https://github.com/ILLIXR/ILLIXR/blob/master/qemu/INSTRUCTIONS.md)
+
 ## Next steps
 
  The source code is divided into the following directories:

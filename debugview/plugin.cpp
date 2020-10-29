@@ -15,12 +15,10 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/shader_util.hpp"
+#include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
-#include "utils/algebra.hpp"
-#include "block_i.hpp"
-#include "demo_model.hpp"
-#include "headset_model.hpp"
-#include "shaders/blocki_shader.hpp"
+#include "common/gl_util/obj.hpp"
+#include "shaders/demo_shader.hpp"
 #include <opencv2/opencv.hpp>
 #include <cmath>
 
@@ -64,49 +62,6 @@ public:
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
-	// Struct for drawable debug objects (scenery, headset visualization, etc)
-	struct DebugDrawable {
-		DebugDrawable() {}
-		DebugDrawable(std::vector<GLfloat> uniformColor) : color(uniformColor) {}
-
-		GLuint num_triangles;
-		GLuint positionVBO;
-		GLuint positionAttribute;
-		GLuint normalVBO;
-		GLuint normalAttribute;
-		GLuint colorUniform;
-		std::vector<GLfloat> color;
-
-		void init(GLuint positionAttribute, GLuint normalAttribute, GLuint colorUniform, GLuint num_triangles, 
-					GLfloat* meshData, GLfloat* normalData, GLenum drawMode) {
-
-			this->positionAttribute = positionAttribute;
-			this->normalAttribute = normalAttribute;
-			this->colorUniform = colorUniform;
-			this->num_triangles = num_triangles;
-
-			glGenBuffers(1, &positionVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 *3) * sizeof(GLfloat), meshData, drawMode);
-			
-			glGenBuffers(1, &normalVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glBufferData(GL_ARRAY_BUFFER, (num_triangles * 3 * 3) * sizeof(GLfloat), normalData, drawMode);
-
-		}
-
-		void drawMe() {
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-			glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(positionAttribute);
-			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-			glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-			glEnableVertexAttribArray(normalAttribute);
-			glUniform4fv(colorUniform, 1, color.data());
-			glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
-		}
-	};
-
 	void imu_cam_handler(const imu_cam_type *datum) {
 		if(datum == NULL){ return; }
 		if(datum->img0.has_value() && datum->img1.has_value())
@@ -147,7 +102,7 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 
 			if(ImGui::Button("Zero orientation")){
-				const pose_type fast_pose = pp->get_fast_pose();
+				const pose_type fast_pose = pp->get_fast_pose().pose;
 				if (pp->fast_pose_reliable()) {
 					// Can only zero if fast_pose is valid
 					pp->set_offset(fast_pose.orientation);
@@ -162,7 +117,7 @@ public:
 		ImGui::SameLine();
 
 		if(pp->fast_pose_reliable()) {
-			const pose_type fast_pose = pp->get_fast_pose();
+			const pose_type fast_pose = pp->get_fast_pose().pose;
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
 			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose.position.x(), fast_pose.position.y(), fast_pose.position.z());
 			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose.orientation.x(), fast_pose.orientation.y(), fast_pose.orientation.z(), fast_pose.orientation.w());
@@ -203,12 +158,10 @@ public:
 		ImGui::Text("Camera view buffers: ");
 		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
 		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
-		if(ImGui::Button("Calculate new orientation offset")){
-			const pose_type pose = pp->get_fast_pose();
-			offsetQuat = Eigen::Quaternionf(pose.orientation);
-		}
 		ImGui::End();
 
+		ImGui::SetNextWindowSize(ImVec2(700,350), ImGuiCond_Once);
+		ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once, ImVec2(1.0f, 1.0f));
 		ImGui::Begin("Onboard camera views");
 		auto windowSize = ImGui::GetWindowSize();
 		auto verticalOffset = ImGui::GetCursorPos().y;
@@ -220,28 +173,16 @@ public:
 		ImGui::Render();
 	}
 
-	void draw_scene() {
-
-		// OBJ exporter is having winding order issues currently.
-		// Please excuse the strange GL_CW and GL_CCW mode switches.
-		
-		glFrontFace(GL_CW);
-		groundObject.drawMe();
-		glFrontFace(GL_CCW);
-		waterObject.drawMe();
-		treesObject.drawMe();
-		rocksObject.drawMe();
-		glFrontFace(GL_CCW);
-	}
-
 	bool load_camera_images(){
 		if(last_datum_with_images == NULL){
 			return false;
 		}
 		if(last_datum_with_images->img0.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img0.value()).ptr());
-			camera_texture_sizes[0] = Eigen::Vector2i((*last_datum_with_images->img0.value()).cols, (*last_datum_with_images->img0.value()).rows);
+			cv::Mat img0;
+			cv::cvtColor(*last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
+			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -254,8 +195,10 @@ public:
 		
 		if(last_datum_with_images->img1.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, (*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows, 0, GL_RED, GL_UNSIGNED_BYTE, (*last_datum_with_images->img1.value()).ptr());
-			camera_texture_sizes[1] = Eigen::Vector2i((*last_datum_with_images->img1.value()).cols, (*last_datum_with_images->img1.value()).rows);
+			cv::Mat img1;
+			cv::cvtColor(*last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
+			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		} else {
@@ -266,10 +209,6 @@ public:
 		}
 
 		return true;
-	}
-
-	void draw_headset(){
-		headsetObject.drawMe();
 	}
 
 	Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation, const Eigen::Vector3f& positionOffset){
@@ -324,16 +263,11 @@ public:
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 
+			const fast_pose_type fast_pose = pp->get_fast_pose();
+
 			if(pp->fast_pose_reliable()) {
-				const pose_type pose = pp->get_fast_pose();
-
-				if(counter == 100){
-					std::cerr << "First pose received: quat(wxyz) is " << pose.orientation.w() << ", " << pose.orientation.x() << ", " << pose.orientation.y() << ", " << pose.orientation.z() << std::endl;
-					offsetQuat = Eigen::Quaternionf(pose.orientation);
-				}
-				counter++;
-
-				Eigen::Quaternionf combinedQuat = pose.orientation * offsetQuat.inverse();
+				const pose_type pose = fast_pose.pose;
+				Eigen::Quaternionf combinedQuat = pose.orientation;
 				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
 
@@ -341,7 +275,7 @@ public:
 
 			// If we are following the headset, and have a valid pose, apply the optional offset.
 			Eigen::Vector3f optionalOffset = (follow_headset && pp->fast_pose_reliable())
-				? (pp->get_fast_pose().position + tracking_position_offset)
+				? (fast_pose.pose.position + tracking_position_offset)
 				: Eigen::Vector3f{0.0f,0.0f,0.0f}
 			;
 
@@ -361,39 +295,29 @@ public:
         	glfwGetFramebufferSize(gui_window, &display_w, &display_h);
 			glViewport(0, 0, display_w, display_h);
 			float ratio = (float)display_h / (float)display_w;
-			// Construct a basic perspective projection
-			ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f * ratio, 40.0f * ratio, 0.03f, 20.0f );
 
+			// Construct a basic perspective projection
+			math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f * ratio, 40.0f * ratio, 0.03f, 20.0f );
+			
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1);
 
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)&(basicProjection.m[0][0]));
+			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 
 			glBindVertexArray(demo_vao);
 			
 			// Draw things
-			glClearColor(0.6f, 0.8f, 0.9f, 1.0f);
+			glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			draw_scene();
+			demoscene.Draw();
 
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-			headsetObject.color = {0.2,0.2,0.2,1};
-			headsetObject.drawMe();
-
-			if(pp->true_pose_reliable()) {
-				const pose_type groundtruth_pose = pp->get_true_pose();
-				headsetPose = generateHeadsetTransform(groundtruth_pose.position, groundtruth_pose.orientation, tracking_position_offset);
-			}
-			modelView = userView * headsetPose;
-			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-
-			headsetObject.color = {0,0.8,0,1};
-			headsetObject.drawMe();
-
+			headset.Draw();
+			
 			draw_GUI();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -412,24 +336,18 @@ private:
 
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
-	uint counter = 0;
-	Eigen::Quaternionf offsetQuat = Eigen::Quaternionf::Identity();
-
 	Eigen::Vector3d view_euler = Eigen::Vector3d::Zero();
 	Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
 	Eigen::Vector2d mouse_velocity = Eigen::Vector2d::Zero();
 	bool beingDragged = false;
 
-	float view_dist = 3.0;
+	float view_dist = 2.0;
 
 	bool follow_headset = true;
 
 	double lastTime;
 
-	// Currently, the GL demo app applies this offset to the camera view.
-	// This is just to make it look nicer with the included SLAM dataset.
-	// Therefore, the debug view also applies this pose offset.
-	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{5.0f, 2.0f, -3.0f};
+	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
 
 	const imu_cam_type* last_datum_with_images = NULL;
@@ -447,16 +365,10 @@ private:
 
 	GLuint colorUniform;
 
-	// Scenery
-	DebugDrawable groundObject = DebugDrawable({0.1, 0.2, 0.1, 1.0});
-	DebugDrawable waterObject =  DebugDrawable({0.0, 0.3, 0.5, 1.0});
-	DebugDrawable treesObject =  DebugDrawable({0.0, 0.3, 0.0, 1.0});
-	DebugDrawable rocksObject =  DebugDrawable({0.3, 0.3, 0.3, 1.0});
+	ObjScene demoscene;
+	ObjScene headset;
 
-	// Headset debug model
-	DebugDrawable headsetObject = DebugDrawable({0.3, 0.3, 0.3, 1.0});
-
-	ksAlgebra::ksMatrix4x4f basicProjection;
+	Eigen::Matrix4f basicProjection;
 
 public:
 	/* compatibility interface */
@@ -510,8 +422,10 @@ public:
 		glGenVertexArrays(1, &demo_vao);
     	glBindVertexArray(demo_vao);
 
-		demoShaderProgram = init_and_link(blocki_vertex_shader, blocki_fragment_shader);
-		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
+		#ifndef NDEBUG
+			std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+		#endif
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
@@ -520,50 +434,16 @@ public:
 
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
-		groundObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Ground_plane_NUM_TRIANGLES,
-			&(Ground_Plane_vertex_data[0]),
-			&(Ground_Plane_normal_data[0]),
-			GL_STATIC_DRAW
-		);
+		// Load/initialize the demo scene.
 
-		waterObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Water_plane001_NUM_TRIANGLES,
-			&(Water_Plane001_vertex_data[0]),
-			&(Water_Plane001_normal_data[0]),
-			GL_STATIC_DRAW
-		);
+		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
+		if(obj_dir == NULL) {
+			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
+			abort();
+		}
 
-		treesObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Trees_cone_NUM_TRIANGLES,
-			&(Trees_Cone_vertex_data[0]),
-			&(Trees_Cone_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		rocksObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			Rocks_plane002_NUM_TRIANGLES,
-			&(Rocks_Plane002_vertex_data[0]),
-			&(Rocks_Plane002_normal_data[0]),
-			GL_STATIC_DRAW
-		);
-
-		headsetObject.init(vertexPosAttr,
-			vertexNormalAttr,
-			colorUniform,
-			headset_NUM_TRIANGLES,
-			&(headset_vertex_data[0]),
-			&(headset_normal_data[0]),
-			GL_DYNAMIC_DRAW
-		);
+		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
+		headset = ObjScene(std::string(obj_dir), "headset.obj");
 
 		// Generate fun test pattern for missing camera images.
 		for(unsigned x = 0; x < TEST_PATTERN_WIDTH; x++){
@@ -581,7 +461,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		// Construct a basic perspective projection
-		ksAlgebra::ksMatrix4x4f_CreateProjectionFov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
+		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
 		glfwMakeContextCurrent(NULL);
 

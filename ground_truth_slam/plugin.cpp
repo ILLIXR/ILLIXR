@@ -30,12 +30,14 @@ public:
 		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
-			std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+			#ifndef NDEBUG
+				std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+			#endif
 			return;
 		}
 
 		pose_type* true_pose = new pose_type{_m_sensor_data_it->second};
- 		true_pose->time = datum->time;
+		true_pose->sensor_time = datum->time;
 		// std::cout << "The pose was found at " << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2] << std::endl; 
 
 		_m_true_pose->put(true_pose);

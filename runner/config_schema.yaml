@@ -1,40 +1,106 @@
 $schema: http://json-schema.org/schema#
 $id: http://illixr.github.io/schemas/config.json
-type: object
 definitions:
-  key_vals: &key_vals
-    default: {}
-    type: object
-    additionalProperties:
-      type: string    
+  path:
+    oneOf:
+      - type: string
+      - type: object
+        additionalProperties: false
+        required:
+          - git_repo
+          - version
+        properties:
+          git_repo:
+            $ref: '#/definitions/path'
+            description: Path to repo
+          version:
+            type: string
+            description: Branch, tag, or commit hash
+      - type: object
+        additionalProperties: false
+        required:
+          - archive_path
+        properties:
+          archive_path:
+            description: Path to archive
+            $ref: '#/definitions/path'
+      - type: object
+        additionalProperties: false
+        required:
+          - download_url
+        properties:
+          download_url:
+            type: string
+            description: URL to download
+      - type: object
+        additionalProperties: false
+        required:
+          - subpath
+          - relative_to
+        properties:
+          subpath:
+            type: string
+          relative_to:
+            $ref: '#/definitions/path'
+type: object
+additionalProperties: false
 properties:
-  plugins:
+  plugin_groups:
     type: array
     default: []
     items:
       type: object
+      additionalProperties: false
       properties:
-        path:
-          type: string
-          description: Path to the directory containing the SO.
-        config:
-          <<: *key_vals
-          description: Vars that get passed to the build system
-      required:
-        - path
+        plugin_group:
+          type: array
+          default: []
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                description: An optional name for the plugin
+                default: ""
+                type: string
+              path:
+                $ref: '#/definitions/path'
+                description: Path to the directory containing the SO.
+              config:
+                default: {}
+                type: object
+                additionalProperties:
+                  type: string
+                description: Vars that get passed to the build system
+            required:
+              - path
+  common:
+    default: {}
+    type: object
+    additionalProperties: false
+    properties:
+      path:
+        default: ./common
+        $ref: '#/definitions/path'
+        description: Path to https://github.com/ILLIXR/ILLIXR
   runtime:
     default: {}
     type: object
+    additionalProperties: false
     properties:
       path:
-        default: .
-        type: string
+        default: ./runtime
+        $ref: '#/definitions/path'
         description: Path to https://github.com/ILLIXR/ILLIXR
       config:
-          <<: *key_vals
-          description: Vars that get passed to the build system
+        default: {}
+        type: object
+        additionalProperties:
+          type: string
+        description: Vars that get passed to the build system
   loader:
     type: object
+    additionalProperties: true
     default: {}
     required:
       - name
@@ -42,13 +108,23 @@ properties:
       name:
         default: native
         type: string
-        description: "Currently supports: 'native', 'headless', 'openxr', 'gdb', or 'tests'"
+        description: "Currently supports: 'native', 'monado', or 'tests'"
+        properties:
+          path:
+            $ref: '#/definitions/path'
+            description: Path to loader
       config:
-          <<: *key_vals
-          description: Interpretation of these vars is loader-dependent
+        default: {}
+        type: object
+        additionalProperties:
+          type: string
+        description: Interpretation of these vars is loader-dependent
   data:
-    type: string
+    $ref: '#/definitions/path'
     description: URL to offline IMU/cam data. Omit if not applicable.
+  demo_data:
+    $ref: '#/definitions/path'
+    description: URL to OBJs to render in gldemo.
   profile:
     default: dbg
     type: string

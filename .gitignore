@@ -1,4 +1,3 @@
-bazel-*
 /data.zip
 /data*
 *.exe
@@ -10,3 +9,5 @@ imgui.ini
 .gdb_history
 output.*
 metrics/
+.cache
+install/

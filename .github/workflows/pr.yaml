@@ -6,6 +6,8 @@ on:
 
 jobs:
   illixr-tests-pr:
+    env:
+      ghcr_token: ${{ secrets.GHCR_TOKEN }}
     runs-on: ubuntu-18.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -14,8 +16,9 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Login to ghcr.io
-        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u illixr-ci --password-stdin
+      - if: ${{ env.ghcr_token }}
+        name: Login to ghcr.io
+        run: echo ${{ env.ghcr_token }} | docker login ghcr.io -u illixr-ci --password-stdin
 
       - name: Extract Branch Name
         shell: bash
@@ -31,7 +34,8 @@ jobs:
       - name: Build Docker Image
         run: docker build --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
-      - name: Push Docker Image
+      - if: ${{ env.ghcr_token }}
+        name: Push Docker Image
         run: docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
       # For builds on master we also want to push the image as the latest tag.
@@ -39,7 +43,8 @@ jobs:
         name: Tag Master Docker Image As Latest
         run: docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest
 
-      - name: Pull Docker Image
+      - if: ${{ env.ghcr_token }}
+        name: Pull Docker Image
         run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
       - name: Run Tests
