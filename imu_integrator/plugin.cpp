@@ -128,8 +128,8 @@ private:
 			std::cout << "New slow pose has arrived!\n";
 			last_cam_time = input_values->last_cam_integration_time;
 		}
-		pim_->resetIntegrationAndSetBias(imu_bias);
 #endif
+		pim_->resetIntegrationAndSetBias(imu_bias);
 
 		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
 		double time_end = timestamp + input_values->t_offset;
