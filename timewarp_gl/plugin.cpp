@@ -14,6 +14,7 @@
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "common/pose_prediction.hpp"
+#include "common/global_module_defs.hpp"
 
 using namespace ILLIXR;
 
@@ -59,8 +60,8 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 
-	static constexpr int   SCREEN_WIDTH    = 550*2;
-	static constexpr int   SCREEN_HEIGHT   = 320*2;
+	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
+	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
 
 	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
