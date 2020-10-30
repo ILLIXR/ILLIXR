@@ -148,6 +148,10 @@ public:
 		return _m_true_pose->get_latest_ro();
 	}
 
+    virtual Eigen::Quaternionf get_offset() override {
+        return offset;
+    }
+
 private:
 	mutable std::atomic<bool> first_time{true};
 	const std::shared_ptr<switchboard> sb;
