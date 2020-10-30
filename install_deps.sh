@@ -87,8 +87,12 @@ then
 	# 	fi
 	# fi
 
-	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from souce"; then
+	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from source"; then
 		. ./scripts/install_openxr.sh
+	fi
+
+	if [ ! -d "${temp_dir}/gtsam" ] && y_or_n "Next: Install gtsam from source"; then
+		. ./scripts/install_gtsam.sh
 	fi
 
 	if ! which conda 2> /dev/null; then
