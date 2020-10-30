@@ -1,7 +1,5 @@
 #include <GL/gl.h>
 
-#define GLSL_VERSION            "430 core"
-
 static const char* const demo_vertex_shader =
     "#version " GLSL_VERSION "\n"
     "layout(location = 0) in vec3 in_position;\n"

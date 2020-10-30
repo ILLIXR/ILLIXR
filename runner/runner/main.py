@@ -128,14 +128,15 @@ def load_native(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         command_lst_sbst,
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path),),
+        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path)),
     )
 
 
 def load_tests(config: Mapping[str, Any]) -> None:
-    runtime_exe_path = (build_runtime(config, "exe", test=True),)
+    runtime_exe_path = build_runtime(config, "exe", test=True)
+    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     make(Path("common"), ["tests/run"])
-
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
         [
@@ -144,6 +145,10 @@ def load_tests(config: Mapping[str, Any]) -> None:
             for plugin_config in plugin_group["plugin_group"]
         ],
         desc="Building plugins",
+    )
+    subprocess_run(
+        ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
+        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), ILLIXR_RUN_DURATION="10"),
     )
 
 
