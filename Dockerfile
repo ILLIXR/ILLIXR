@@ -1,8 +1,9 @@
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV CC=clang-10
 ENV CXX=clang++-10
-ENV temp_dir /tmp/ILLIXR_deps
+ENV temp_dir /tmp/ILLIXR
 ENV opt_dir /opt/ILLIXR
 
 RUN mkdir -p ${temp_dir}
@@ -24,6 +25,9 @@ RUN ./scripts/install_gtest.sh
 
 COPY ./scripts/install_openxr.sh $HOME/scripts/install_openxr.sh
 RUN ./scripts/install_openxr.sh
+
+COPY ./scripts/install_gtsam.sh $HOME/scripts/install_gtsam.sh
+RUN ./scripts/install_gtsam.sh
 
 COPY ./scripts/install_conda.sh $HOME/scripts/install_conda.sh
 RUN ./scripts/install_conda.sh

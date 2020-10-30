@@ -194,9 +194,10 @@ private:
         Eigen::Vector3d a_jerk = (imu_raw->a_hat2-imu_raw->a_hat)/dt;
 
         // y0 ================
-        Eigen::Vector4d q_0 = Eigen::Matrix<double,4,1>{imu_raw->state_plus(0), imu_raw->state_plus(1), imu_raw->state_plus(2), imu_raw->state_plus(3)};
-        Eigen::Vector3d p_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(4), imu_raw->state_plus(5), imu_raw->state_plus(6)};
-        Eigen::Vector3d v_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(7), imu_raw->state_plus(8), imu_raw->state_plus(9)};
+        Eigen::Quaterniond temp_quat = imu_raw->quat;
+        Eigen::Vector4d q_0 = {temp_quat.x(), temp_quat.y(), temp_quat.z(), temp_quat.w()};
+        Eigen::Vector3d p_0 = imu_raw->pos;
+        Eigen::Vector3d v_0 = imu_raw->vel;
 
         // k1 ================
         Eigen::Vector4d dq_0 = {0,0,0,1};
