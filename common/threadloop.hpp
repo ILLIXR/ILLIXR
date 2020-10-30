@@ -70,9 +70,6 @@ private:
 
 		_p_thread_setup();
 
-		auto iteration_start_cpu_time  = thread_cpu_time();
-		auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
-
 		while (!should_terminate()) {
 			skip_option s = _p_should_skip();
 
@@ -85,6 +82,8 @@ private:
 				++skip_no;
 				break;
 			case skip_option::run: {
+				auto iteration_start_cpu_time  = thread_cpu_time();
+				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
 				it_log.log(record{__threadloop_iteration_header, {
 					{id},
@@ -95,8 +94,6 @@ private:
 					{iteration_start_wall_time},
 					{std::chrono::high_resolution_clock::now()},
 				}});
-				iteration_start_cpu_time  = thread_cpu_time();
-				iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				++iteration_no;
 				skip_no = 0;
 				break;
