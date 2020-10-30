@@ -1,8 +1,9 @@
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV CC=clang-10
 ENV CXX=clang++-10
-ENV temp_dir /tmp/ILLIXR_deps
+ENV temp_dir /tmp/ILLIXR
 ENV opt_dir /opt/ILLIXR
 
 RUN mkdir -p ${temp_dir}
