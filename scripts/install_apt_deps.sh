@@ -13,4 +13,4 @@ sudo apt-get install -y \
 	 libusb-dev libusb-1.0 libudev-dev libv4l-dev libhidapi-dev \
 	 build-essential libx11-xcb-dev libxcb-glx0-dev libxcb-randr0-dev libxrandr-dev libxkbcommon-dev libwayland-dev \
 	 libepoxy-dev libdrm-dev libgbm-dev libx11-dev libvirglrenderer-dev libpulse-dev \
-	 libgtest-dev pkg-config libgtk2.0-dev wget  libxrandr-dev xvfb
+	 libgtest-dev pkg-config libgtk2.0-dev wget xvfb
