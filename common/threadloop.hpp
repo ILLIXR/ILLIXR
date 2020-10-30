@@ -30,10 +30,6 @@ class threadloop : public plugin {
 public:
 	threadloop(std::string name_, phonebook* pb_) : plugin(name_, pb_) { }
 
-	virtual void setup() override {
-		plugin::setup();
-	}
-
 	/**
 	 * @brief Starts the thread.
 	 */
