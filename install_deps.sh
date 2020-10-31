@@ -71,6 +71,10 @@ then
 		. ./scripts/install_gtest.sh
 	fi
 
+	if [ ! -d "${opt_dir}/qemu" ] && y_or_n "Next: Install qemu (not necessary for core ILLIXR; necessary for virtualization)"; then
+		. ./scripts/install_qemu.sh
+	fi
+
 	# if [ ! -d Vulkan-Loader ]; then
 	# 	echo "Next: Install Vulkan Loader from source"
 	# 	if y_or_n; then
@@ -83,12 +87,12 @@ then
 	# 	fi
 	# fi
 
-	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from souce"; then
+	if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from source"; then
 		. ./scripts/install_openxr.sh
 	fi
 
-	if [ ! -d "data1" ] && y_or_n "Next: Download Vicon Room 1 Medium SLAM dataset"; then
-		. ./scripts/install_euroc.sh
+	if [ ! -d "${temp_dir}/gtsam" ] && y_or_n "Next: Install gtsam from source"; then
+		. ./scripts/install_gtsam.sh
 	fi
 
 	if ! which conda 2> /dev/null; then
@@ -98,6 +102,9 @@ then
 			fi
 		fi
 	fi
+
+	# Load new library paths
+	sudo ldconfig
 
 	# I won't ask the user first, because this is not a global installation.
 	# All of this stuff goes into a project-specific venv.

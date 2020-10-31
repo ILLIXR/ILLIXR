@@ -35,17 +35,47 @@ namespace ILLIXR {
 		ullong dataset_time;
 	} imu_cam_type;
 
-		typedef struct {
-				std::optional<cv::Mat*> rgb;
-				std::optional<cv::Mat*> depth;
-		} rgb_depth_type;
+    typedef struct {
+        std::optional<cv::Mat*> rgb;
+        std::optional<cv::Mat*> depth;
+    } rgb_depth_type;
 
+	// Values needed to initialize the IMU integrator
 	typedef struct {
+		double gyro_noise;
+		double acc_noise;
+		double gyro_walk;
+		double acc_walk;
+		Eigen::Matrix<double,3,1> n_gravity;
+		double imu_integration_sigma;
+		double nominal_rate;
+	} imu_params;
+
+	// IMU biases, initialization params, and slow pose needed by the IMU integrator
+	typedef struct {
+		double last_cam_integration_time;
+		double t_offset;
+		imu_params params;
+		
+		Eigen::Vector3d biasAcc;
+		Eigen::Vector3d biasGyro;
+		Eigen::Matrix<double,3,1> position;
+		Eigen::Matrix<double,3,1> velocity;
+		Eigen::Quaterniond quat;
+	} imu_integrator_input;
+
+	// Output of the IMU integrator to be used by pose prediction
+	typedef struct {
+		// Biases from the last two IMU integration iterations used by RK4 for pose predict
 		Eigen::Matrix<double,3,1> w_hat;
 		Eigen::Matrix<double,3,1> a_hat;
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
-		Eigen::Matrix<double,13,1> state_plus;
+
+		// Faster pose propagated forwards by the IMU integrator
+		Eigen::Matrix<double,3,1> pos;
+		Eigen::Matrix<double,3,1> vel;
+		Eigen::Quaterniond quat;
 		time_type imu_time;
 	} imu_raw_type;
 
@@ -83,6 +113,10 @@ namespace ILLIXR {
 	typedef struct {
 		int dummy;
 	} hologram_output;
+
+	typedef struct {
+		int seq;		
+	} imu_integrator_seq;
 
 	/* I use "accel" instead of "3-vector" as a datatype, because
 	this checks that you meant to use an acceleration in a certain

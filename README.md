@@ -42,7 +42,7 @@ We request that you cite our following paper (new version coming soon) when you 
 
 ## Getting Started and Documentation
 
-For more information, see our [getting started page](https://illixr.github.io/ILLIXR/docs/getting_started/).
+For more information, see our [getting started page](https://illixr.github.io/ILLIXR/getting_started/).
 
 ## Acknowledgements
 

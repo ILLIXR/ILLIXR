@@ -134,6 +134,7 @@ public:
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
+        , _m_imu_integrator{sb->publish<imu_integrator_seq>("imu_integrator_seq")}
         , it_log{record_logger_}
     {
         camera_thread_.start();
@@ -163,9 +164,7 @@ protected:
 
         // Time as time_point
         using time_point = std::chrono::system_clock::time_point;
-        time_point uptime_timepoint{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
-        std::time_t time2 = std::chrono::system_clock::to_time_t(uptime_timepoint);
-        t = std::chrono::system_clock::from_time_t(time2);
+        time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
@@ -191,7 +190,7 @@ protected:
         }});
 
         _m_imu_cam->put(new imu_cam_type {
-            t,
+            imu_time_point,
             av,
             la,
             img0,
@@ -199,12 +198,16 @@ protected:
             imu_time,
         });
 
-				if (rgb && depth) {
-					_m_rgb_depth->put(new rgb_depth_type{
-							rgb,
-							depth
-						});
-				}
+        if (rgb && depth) {
+            _m_rgb_depth->put(new rgb_depth_type{
+                    rgb,
+                    depth
+            });
+        }
+        auto imu_integrator_params = new imu_integrator_seq{
+			.seq = static_cast<int>(++_imu_integrator_seq),
+		};
+		_m_imu_integrator->put(imu_integrator_params);
 
         last_imu_ts = sensors_data.imu.timestamp;
     }
@@ -216,7 +219,8 @@ private:
     const std::shared_ptr<switchboard> sb;
     std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
     std::unique_ptr<reader_latest<cam_type>> _m_cam_type;
-		std::unique_ptr<writer<rgb_depth_type>> _m_rgb_depth;
+    std::unique_ptr<writer<rgb_depth_type>> _m_rgb_depth;
+    std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
 
     // IMU
     SensorsData sensors_data;
@@ -229,6 +233,7 @@ private:
     ullong imu_time;
 
     std::size_t last_serial_no {0};
+    long long _imu_integrator_seq{0};
 
     // Logger
     record_coalescer it_log;
