@@ -134,14 +134,7 @@ public:
 			pose_type raw_pose;
 			raw_pose.position = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
             raw_pose.orientation = Eigen::Quaternionf{float(raw_imu->quat.w()), float(raw_imu->quat.x()), float(raw_imu->quat.y()), float(raw_imu->quat.z())};
-		
-			pose_type swapped_pose;
-			swapped_pose.position.x() = -raw_pose.position.y();
-			swapped_pose.position.y() = raw_pose.position.z();
-			swapped_pose.position.z() = -raw_pose.position.x();
-
-			Eigen::Quaternionf raw_o (raw_pose.orientation.w(), -raw_pose.orientation.y(), raw_pose.orientation.z(), -raw_pose.orientation.x());
-			swapped_pose.orientation = raw_o * pp->get_offset();
+			pose_type swapped_pose = pp->correct_pose(raw_pose);
 
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
 			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
@@ -155,20 +148,7 @@ public:
 
 		const pose_type *slow_pose_ptr = _m_slow_pose->get_latest_ro();
 		if (slow_pose_ptr){
-			pose_type swapped_pose;
-
-			// This uses the OpenVINS standard output coordinate system.
-			// This is a mapping between the OV coordinate system and the OpenGL system.
-			swapped_pose.position.x() = -slow_pose_ptr->position.y();
-			swapped_pose.position.y() = slow_pose_ptr->position.z();
-			swapped_pose.position.z() = -slow_pose_ptr->position.x();
-
-			
-			// There is a slight issue with the orientations: basically,
-			// the output orientation acts as though the "top of the head" is the
-			// forward direction, and the "eye direction" is the up direction.
-			Eigen::Quaternionf raw_o (slow_pose_ptr->orientation.w(), -slow_pose_ptr->orientation.y(), slow_pose_ptr->orientation.z(), -slow_pose_ptr->orientation.x());
-			swapped_pose.orientation = raw_o * pp->get_offset();;
+			pose_type swapped_pose = pp->correct_pose(*slow_pose_ptr);
 
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
 			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
@@ -304,7 +284,6 @@ public:
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 
 			const fast_pose_type predicted_pose = pp->get_fast_pose();
-
 			if(pp->fast_pose_reliable()) {
 				const pose_type pose = predicted_pose.pose;
 				Eigen::Quaternionf combinedQuat = pose.orientation;
