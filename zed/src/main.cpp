@@ -21,8 +21,8 @@ const record_header __imu_cam_record {"imu_cam", {
 typedef struct {
     cv::Mat* img0;
     cv::Mat* img1;
-		cv::Mat* rgb;
-		cv::Mat* depth;
+    cv::Mat* rgb;
+    cv::Mat* depth;
     std::size_t serial_no;
 } cam_type;
 
@@ -36,7 +36,7 @@ std::shared_ptr<Camera> start_camera() {
     init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
     init_params.camera_fps = 15;
     init_params.depth_mode = DEPTH_MODE::PERFORMANCE;
-		init_params.depth_stabilization = true;
+    init_params.depth_stabilization = true;
 		// init_params.depth_minimum_distance = 0.1;
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
@@ -57,17 +57,17 @@ public:
     , zedm{zedm_}
     , image_size{zedm->getCameraInformation().camera_configuration.resolution}
     {
-				runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
+        runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
         imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
         imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
-				rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
-				depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1);
+        rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1, MEM::CPU);
 
         imageL_ocv = slMat2cvMat(imageL_zed);
         imageR_ocv = slMat2cvMat(imageR_zed);
-				rgb_ocv = slMat2cvMat(rgb_zed);
-				depth_ocv = slMat2cvMat(depth_zed);
+        rgb_ocv = slMat2cvMat(rgb_zed);
+        depth_ocv = slMat2cvMat(depth_zed);
     }
 
 private:
@@ -80,13 +80,13 @@ private:
 
     Mat imageL_zed;
     Mat imageR_zed;
-		Mat depth_zed;
-		Mat rgb_zed;
+    Mat depth_zed;
+    Mat rgb_zed;
 
     cv::Mat imageL_ocv;
     cv::Mat imageR_ocv;
-		cv::Mat depth_ocv;
-		cv::Mat rgb_ocv;
+    cv::Mat depth_ocv;
+    cv::Mat rgb_ocv;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -101,8 +101,8 @@ protected:
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
-				zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
-				zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
+        zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
+        zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
         auto start_cpu_time  = thread_cpu_time();
         auto start_wall_time = std::chrono::high_resolution_clock::now();
@@ -111,8 +111,8 @@ protected:
             // Make a copy, so that we don't have race
             new cv::Mat{imageL_ocv},
             new cv::Mat{imageR_ocv},
-						new cv::Mat{rgb_ocv},
-						new cv::Mat{depth_ocv},
+            new cv::Mat{rgb_ocv},
+            new cv::Mat{depth_ocv},
             iteration_no,
         });
     }
@@ -130,7 +130,7 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->publish<imu_cam_type>("imu_cam")}
-				, _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
+        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->subscribe_latest<cam_type>("cam_type")}
@@ -172,16 +172,16 @@ protected:
 
         std::optional<cv::Mat*> img0 = std::nullopt;
         std::optional<cv::Mat*> img1 = std::nullopt;
-				cv::Mat* depth = nullptr;
-				cv::Mat* rgb = nullptr;
+        cv::Mat* depth = nullptr;
+        cv::Mat* rgb = nullptr;
 
         const cam_type* c = _m_cam_type->get_latest_ro();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
             img1 = c->img1;
-						depth = c->depth;
-						rgb = c->rgb;
+            depth = c->depth;
+            rgb = c->rgb;
         }
 
         it_log.log(record{__imu_cam_record, {
@@ -202,7 +202,7 @@ protected:
             _m_rgb_depth->put(new rgb_depth_type{
                     rgb,
                     depth
-            });
+                });
         }
         auto imu_integrator_params = new imu_integrator_seq{
 			.seq = static_cast<int>(++_imu_integrator_seq),

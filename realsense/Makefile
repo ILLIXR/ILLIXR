@@ -26,7 +26,7 @@ build/Debug/Makefile:
 build/Release/Makefile:
 	mkdir -p build/Release && \
 	cd build/Release && \
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
 	true
 
 tests/run:
