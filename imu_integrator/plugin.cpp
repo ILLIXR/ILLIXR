@@ -107,7 +107,8 @@ private:
 		}
 
 		Eigen::Matrix<double, 16, 1> imu_value;
-		imu_value.block(0, 0, 4, 1) = input_values->quat;
+		imu_value.block(0, 0, 4, 1) = Matrix<double,4,1>{input_values->quat.w(), input_values->quat.x(), 
+				input_values->quat.y(), input_values->quat.z()};
 		imu_value.block(4, 0, 3, 1) = input_values->position;
 		imu_value.block(7, 0, 3, 1) = input_values->velocity;
 		imu_value.block(10,0, 3, 1) = input_values->biasGyro;
@@ -186,7 +187,7 @@ private:
 			a_hat2,
 			Eigen::Matrix<double,3,1>{state_plus(4), state_plus(5), state_plus(6)},
 			Eigen::Matrix<double,3,1>{state_plus(7), state_plus(8), state_plus(9)},
-			Eigen::Matrix<double,4,1>{state_plus(0), state_plus(1), state_plus(2), state_plus(3)},
+			Eigen::Quaterniond{state_plus(0), state_plus(1), state_plus(2), state_plus(3)},
 			real_time,
 		});
     }
