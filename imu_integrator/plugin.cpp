@@ -107,7 +107,7 @@ private:
 		}
 
 		Eigen::Matrix<double, 16, 1> imu_value;
-		imu_value.block(0, 0, 4, 1) = Matrix<double,4,1>{input_values->quat.w(), input_values->quat.x(), 
+		imu_value.block(0, 0, 4, 1) = Eigen::Matrix<double,4,1>{input_values->quat.w(), input_values->quat.x(), 
 				input_values->quat.y(), input_values->quat.z()};
 		imu_value.block(4, 0, 3, 1) = input_values->position;
 		imu_value.block(7, 0, 3, 1) = input_values->velocity;
