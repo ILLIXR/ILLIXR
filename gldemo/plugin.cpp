@@ -42,6 +42,7 @@ public:
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, vsync{sb->subscribe_latest<time_type>("vsync_estimate")}
+		, mframe{sb->subscribe_latest<int>("mxre_frame")}
 		, _m_eyebuffer{sb->publish<rendered_frame>("eyebuffer")}
 	{ }
 
@@ -110,6 +111,8 @@ public:
 
 			// Essentially, XRWaitFrame.
 			wait_vsync();
+			auto in = mframe->get_latest_ro();
+			printf("[MXRE TEST] %d \n", *in);
 
 			glUseProgram(demoShaderProgram);
 
@@ -204,6 +207,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 	const std::unique_ptr<reader_latest<time_type>> vsync;
+	const std::unique_ptr<reader_latest<int>> mframe;
 
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
