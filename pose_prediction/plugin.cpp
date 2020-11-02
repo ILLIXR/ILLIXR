@@ -151,20 +151,9 @@ public:
     virtual Eigen::Quaternionf get_offset() override {
         return offset;
     }
-
-private:
-	mutable std::atomic<bool> first_time{true};
-	const std::shared_ptr<switchboard> sb;
-    std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
-    std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
-	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
-    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
-	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::shared_mutex offset_mutex;
-
     // Correct the orientation of the pose due to the lopsided IMU in the 
     // current Dataset we are using (EuRoC)
-    pose_type correct_pose(const pose_type pose) const {
+    virtual pose_type correct_pose(const pose_type pose) const override {
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below
@@ -184,6 +173,18 @@ private:
 
         return swapped_pose;
     }
+
+private:
+	mutable std::atomic<bool> first_time{true};
+	const std::shared_ptr<switchboard> sb;
+    std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
+    std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
+	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
+	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
+	mutable std::shared_mutex offset_mutex;
+
+    
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
