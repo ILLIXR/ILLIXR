@@ -8,6 +8,7 @@ nav:
     - 'Default Plugins': default_plugins.md
     - 'Writing Your Plugin': writing_your_plugin.md
     - 'Building ILLIXR': building_ILLIXR.md
+    - 'ILLIXR Debugging Tips': debugging_ILLIXR.md
     - 'Monado Integration Overview': monado_illixr_runtime_overview.md
     - 'Monado Integration Dataflow': monado_integration_dataflow.md
     - 'Visualizer & Logger': visualizer_logger.md
