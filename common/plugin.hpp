@@ -21,12 +21,9 @@ namespace ILLIXR {
 	 */
 	class plugin {
 	public:
+
 		/**
 		 * @brief A method which Spindle calls when it starts the component.
-		 * 
-		 * This is necessary for actions which have to be started after constructions, such as
-		 * threads. These cannot be started in the constructor because virtual methods don't work in
-		 * consturctors.
 		 */
 		virtual void start() {
 			record_logger_->log(record{__plugin_start_header, {
@@ -70,7 +67,6 @@ namespace ILLIXR {
 #define PLUGIN_MAIN(plugin_class)                                   \
     extern "C" plugin* this_plugin_factory(phonebook* pb) {         \
         plugin_class* obj = new plugin_class {#plugin_class, pb};   \
-        obj->start();                                               \
         return obj;                                                 \
     }
 }

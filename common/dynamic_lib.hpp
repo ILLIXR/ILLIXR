@@ -36,6 +36,10 @@ public:
 		return *this;
 	}
 
+	static dynamic_lib create(const std::string& path) {
+		return dynamic_lib::create(std::string_view{path.c_str()});
+	}
+
 	static dynamic_lib create(const std::string_view& path) {
 		char* error;
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
