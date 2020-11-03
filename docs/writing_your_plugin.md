@@ -60,9 +60,9 @@ functionality this way.
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
         #include "common/threadloop.hpp"
-    
+        
         using namespace ILLIXR;
-    
+        
         // Inherit from `plugin` if you don't need the threadloop
         class plugin_name : public threadloop {
         public:
@@ -72,12 +72,12 @@ functionality this way.
             virtual void start() override { }
             virtual ~plugin_name() override { }
         };
-    
+        
         // This line makes the plugin importable by Spindle
         PLUGIN_MAIN(plugin_name);
 
 
-4. At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update `configs/native.yaml`
+4. At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update `configs/native.yaml`. See [Building ILLIXR][1] for more details on the config file.
 
    ```
    plugin_groups:
