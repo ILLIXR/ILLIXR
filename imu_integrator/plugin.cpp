@@ -150,10 +150,10 @@ private:
 				double dt = prop_data.at(i+1).timestamp-prop_data.at(i).timestamp;
 
 				// Corrected imu measurements
-				w_hat = prop_data.at(i).wm - w_hat;
-				a_hat = prop_data.at(i).am - a_hat;
-				w_hat2 = prop_data.at(i+1).wm - w_hat;
-				a_hat2 = prop_data.at(i+1).am - a_hat;
+				w_hat = prop_data.at(i).wm - imu_value.block(10,0, 3, 1);
+				a_hat = prop_data.at(i).am - imu_value.block(13,0, 3, 1);
+				w_hat2 = prop_data.at(i+1).wm - imu_value.block(10,0, 3, 1);
+				a_hat2 = prop_data.at(i+1).am - imu_value.block(13,0, 3, 1);
 
 				// Compute the new state mean value
 				Eigen::Vector4d new_q;
@@ -171,8 +171,8 @@ private:
 		state_plus.block(4,0,3,1) = imu_value.block(4,0,3,1);
 		state_plus.block(7,0,3,1) = imu_value.block(7,0,3,1);
 
-		if (prop_data.size() > 1) state_plus.block(10,0,3,1) = prop_data.at(prop_data.size()-2).wm - w_hat;
-		else if (!prop_data.empty()) state_plus.block(10,0,3,1) = prop_data.at(prop_data.size()-1).wm - w_hat;
+		if (prop_data.size() > 1) state_plus.block(10,0,3,1) = prop_data.at(prop_data.size()-2).wm - imu_value.block(10,0, 3, 1);
+		else if (!prop_data.empty()) state_plus.block(10,0,3,1) = prop_data.at(prop_data.size()-1).wm - imu_value.block(10,0, 3, 1);
 
 		_m_imu_raw->put(new imu_raw_type{
 			w_hat,
