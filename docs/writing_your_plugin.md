@@ -77,7 +77,7 @@ functionality this way.
         PLUGIN_MAIN(plugin_name);
 
 
-4. At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update `configs/native.yaml`. See [Building ILLIXR][1] for more details on the config file.
+4. At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update `configs/native.yaml`. If the new plugin is the same type as one of the other components you will need to remove that component from the config before running the new component. For example, if the new component is a SLAM then the old SLAM needs to be removed from the config. See [Building ILLIXR][1] for more details on the config file.
 
    ```
    plugin_groups:
