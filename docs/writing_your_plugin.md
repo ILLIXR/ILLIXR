@@ -106,7 +106,7 @@ functionality this way.
 5. Finally, run ILLIXR with your new plugin with the following command: `./runner.sh configs/native.yaml`
 
 6. This is all that is required to be a plugin which can be loaded by Spindle in the ILLIXR
-   runtime. Reading and writing from Phonebook and Switchboard optional, but nearly every plugin
+   runtime. Reading and writing from Phonebook and Switchboard is optional, but nearly every plugin
    does it. See `default_plugins.md` for more details.
 
    First, we can query the [`phonebook`][2] to get various services including [`switchboard`][5]. Then we
