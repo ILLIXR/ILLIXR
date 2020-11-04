@@ -11,7 +11,7 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 //#undef Complex // For 'Complex' conflict
-#include "phonebook.hpp"
+#include "phonebook.hpp" 
 #include "switchboard.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
@@ -34,6 +34,12 @@ namespace ILLIXR {
 		std::optional<cv::Mat*> img1;
 		ullong dataset_time;
 	} imu_cam_type;
+
+    typedef struct {
+        std::optional<cv::Mat*> rgb;
+        std::optional<cv::Mat*> depth;
+        ullong timestamp;
+    } rgb_depth_type;
 
 	// Values needed to initialize the IMU integrator
 	typedef struct {
@@ -73,12 +79,6 @@ namespace ILLIXR {
 		Eigen::Quaterniond quat;
 		time_type imu_time;
 	} imu_raw_type;
-
-	typedef struct {
-	  int64_t time;
-	  const unsigned char* rgb;
-	  const unsigned short* depth;
-	} rgb_depth_type;
 
 	typedef struct {
 		time_type sensor_time; // Recorded time of sensor data ingestion

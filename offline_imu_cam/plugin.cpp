@@ -73,6 +73,11 @@ protected:
 			: std::nullopt
 			;
 
+		if (cam0 && cam1) {
+			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
+			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
+		}
+
 		auto datum = new imu_cam_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
