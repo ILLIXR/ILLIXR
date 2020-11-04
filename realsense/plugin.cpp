@@ -45,7 +45,7 @@ public:
             cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_BGR8, FPS);
             cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Z16, FPS);
             profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
-            profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f);
+            profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter
         }
 
 	void callback(const rs2::frame& frame)
@@ -108,9 +108,7 @@ public:
 
                     // Time as time_point
                     using time_point = std::chrono::system_clock::time_point;
-                    time_point uptime_timepoint{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
-                    std::time_t time2 = std::chrono::system_clock::to_time_t(uptime_timepoint);
-                    time_type t = std::chrono::system_clock::from_time_t(time2);
+                    time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
 
                     // Images
                     std::optional<cv::Mat *> img0 = std::nullopt;
@@ -128,7 +126,7 @@ public:
 
                     // Submit to switchboard
                     _m_imu_cam->put(new imu_cam_type{
-                            t,
+                            imu_time_point,
                             av,
                             la,
                             img0,

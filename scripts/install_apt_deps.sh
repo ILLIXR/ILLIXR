@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 . /etc/os-release
 sudo apt install -y software-properties-common curl gnupg

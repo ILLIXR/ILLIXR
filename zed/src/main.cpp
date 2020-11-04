@@ -37,13 +37,16 @@ std::shared_ptr<Camera> start_camera() {
     init_params.camera_fps = 15;
     init_params.depth_mode = DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization = true;
-		// init_params.depth_minimum_distance = 0.1;
+    // init_params.depth_minimum_distance = 0.1;
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
     if (err != ERROR_CODE::SUCCESS) {
         printf("%s\n", toString(err).c_str());
         zedm->close();
     }
+
+    // This is 4% of camera frame time, not 4 ms
+    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, 4);
 
     return zedm;
 }
@@ -201,7 +204,8 @@ protected:
         if (rgb && depth) {
             _m_rgb_depth->put(new rgb_depth_type{
                     rgb,
-                    depth
+                    depth,
+                    imu_time
                 });
         }
         auto imu_integrator_params = new imu_integrator_seq{
