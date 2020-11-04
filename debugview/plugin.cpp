@@ -59,6 +59,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
+		, _m_fast_pose{sb->subscribe_latest<imu_raw_type>("imu_raw")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{}
 
@@ -102,10 +103,10 @@ public:
 			ImGui::Text("Resets to zero'd out tracking universe");
 
 			if(ImGui::Button("Zero orientation")){
-				const pose_type fast_pose = pp->get_fast_pose().pose;
+				const pose_type predicted_pose = pp->get_fast_pose().pose;
 				if (pp->fast_pose_reliable()) {
-					// Can only zero if fast_pose is valid
-					pp->set_offset(fast_pose.orientation);
+					// Can only zero if predicted_pose is valid
+					pp->set_offset(predicted_pose.orientation);
 				}
 			}
 			ImGui::SameLine();
@@ -113,14 +114,31 @@ public:
 		}
 		ImGui::Spacing();
 		ImGui::Text("Switchboard connection status:");
+		ImGui::Text("Predicted pose topic:");
+		ImGui::SameLine();
+
+		if (pp->fast_pose_reliable()) {
+			const pose_type predicted_pose = pp->get_fast_pose().pose;
+			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid predicted pose pointer");
+			ImGui::Text("Prediced pose position (XYZ):\n  (%f, %f, %f)", predicted_pose.position.x(), predicted_pose.position.y(), predicted_pose.position.z());
+			ImGui::Text("Predicted pose quaternion (XYZW):\n  (%f, %f, %f, %f)", predicted_pose.orientation.x(), predicted_pose.orientation.y(), predicted_pose.orientation.z(), predicted_pose.orientation.w());
+		} else {
+			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid predicted pose pointer");
+		}
+
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		if(pp->fast_pose_reliable()) {
-			const pose_type fast_pose = pp->get_fast_pose().pose;
+		const imu_raw_type *raw_imu = _m_fast_pose->get_latest_ro();
+		if (raw_imu) {
+			pose_type raw_pose;
+			raw_pose.position = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
+            raw_pose.orientation = Eigen::Quaternionf{float(raw_imu->quat.w()), float(raw_imu->quat.x()), float(raw_imu->quat.y()), float(raw_imu->quat.z())};
+			pose_type swapped_pose = pp->correct_pose(raw_pose);
+
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
-			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", fast_pose.position.x(), fast_pose.position.y(), fast_pose.position.z());
-			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", fast_pose.orientation.x(), fast_pose.orientation.y(), fast_pose.orientation.z(), fast_pose.orientation.w());
+			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
+			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", swapped_pose.orientation.x(), swapped_pose.orientation.y(), swapped_pose.orientation.z(), swapped_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid fast pose pointer");
 		}
@@ -128,11 +146,13 @@ public:
 		ImGui::Text("Slow pose topic:");
 		ImGui::SameLine();
 
-		const pose_type* slow_pose_ptr = _m_slow_pose->get_latest_ro();
-		if(slow_pose_ptr){
+		const pose_type *slow_pose_ptr = _m_slow_pose->get_latest_ro();
+		if (slow_pose_ptr){
+			pose_type swapped_pose = pp->correct_pose(*slow_pose_ptr);
+
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
-			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", slow_pose_ptr->position.x(), slow_pose_ptr->position.y(), slow_pose_ptr->position.z());
-			ImGui::Text("Slow pose quaternion (XYZW):\n  (%f, %f, %f, %f)", slow_pose_ptr->orientation.x(), slow_pose_ptr->orientation.y(), slow_pose_ptr->orientation.z(), slow_pose_ptr->orientation.w());
+			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
+			ImGui::Text("Slow pose quaternion (XYZW):\n  (%f, %f, %f, %f)", swapped_pose.orientation.x(), swapped_pose.orientation.y(), swapped_pose.orientation.z(), swapped_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid slow pose pointer");
 		}
@@ -261,10 +281,9 @@ public:
 
 			Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 
-			const fast_pose_type fast_pose = pp->get_fast_pose();
-
+			const fast_pose_type predicted_pose = pp->get_fast_pose();
 			if(pp->fast_pose_reliable()) {
-				const pose_type pose = fast_pose.pose;
+				const pose_type pose = predicted_pose.pose;
 				Eigen::Quaternionf combinedQuat = pose.orientation;
 				headsetPose = generateHeadsetTransform(pose.position, combinedQuat, tracking_position_offset);
 			}
@@ -273,7 +292,7 @@ public:
 
 			// If we are following the headset, and have a valid pose, apply the optional offset.
 			Eigen::Vector3f optionalOffset = (follow_headset && pp->fast_pose_reliable())
-				? (fast_pose.pose.position + tracking_position_offset)
+				? (predicted_pose.pose.position + tracking_position_offset)
 				: Eigen::Vector3f{0.0f,0.0f,0.0f}
 			;
 
@@ -329,6 +348,7 @@ private:
 	const std::shared_ptr<pose_prediction> pp;
 
 	std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
+	std::unique_ptr<reader_latest<imu_raw_type>> _m_fast_pose;
 	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
 	GLFWwindow* gui_window;
 

@@ -28,12 +28,14 @@ private:
 	std::atomic<bool> _m_terminate {false};
 };
 
-int main(int argc, const char * argv[]) {
+int main(int argc, char* const* argv) {
 	r = ILLIXR::runtime_factory(nullptr);
 
-	for (int i = 1; i < argc; ++i) {
-		r->load_so(argv[i]);
-	}
+	std::vector<std::string> lib_paths;
+	std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
+		return std::string{arg};
+	});
+	r->load_so(lib_paths);
 
 	// Two ways of shutting down:
 	// Ctrl+C

@@ -20,7 +20,26 @@ public:
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
 	}
 
-	virtual void load_so(std::string_view so) override {
+	virtual void load_so(const std::vector<std::string>& so_paths) override {
+		std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
+			return dynamic_lib::create(so_path);
+		});
+
+		std::vector<plugin_factory> plugin_factories;
+		std::transform(libs.cbegin(), libs.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
+			return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
+		});
+
+		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
+			return std::unique_ptr<plugin>{plugin_factory(&pb)};
+		});
+
+		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			plugin->start();
+		});
+	}
+
+	virtual void load_so(const std::string_view so) override {
 		auto lib = dynamic_lib::create(so);
 		plugin_factory this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
 		load_plugin_factory(this_plugin_factory);
@@ -29,6 +48,7 @@ public:
 
 	virtual void load_plugin_factory(plugin_factory plugin_main) override {
 		plugins.emplace_back(plugin_main(&pb));
+		plugins.back()->start();
 	}
 
 	virtual void wait() override {
