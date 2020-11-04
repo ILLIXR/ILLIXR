@@ -24,5 +24,11 @@ This is how you can modify an existing ILLIXR plugin
      ```
      plugin_group:
        - path: timewarp_gl/
-       - name: /PATH/TO/LOCAL/PLUGIN
+       - name: /PATH/TO/LOCAL/AUDIO-PLUGIN
      ```
+   
+3. See the instructions on [Building ILLIXR][1] to learn how to run ILLIXR.
+
+4. To push the modification to upstream ILLIXR, push up the changes to the plugin's repository and modify the original config with the commit version updated. Then create a PR on the main ILLIXR repository.
+
+[1]: building_ILLIXR.md
