@@ -7,7 +7,9 @@ nav:
     - 'Getting Started': getting_started.md
     - 'Default Plugins': default_plugins.md
     - 'Writing Your Plugin': writing_your_plugin.md
-    - 'Building ILLIXR': building_ILLIXR.md
+    - 'Modifying A Plugin': modifying_a_plugin.md
+    - 'Building ILLIXR': building_illixr.md
+    - 'ILLIXR Debugging Tips': debugging_illixr.md
     - 'Monado Integration Overview': monado_illixr_runtime_overview.md
     - 'Monado Integration Dataflow': monado_integration_dataflow.md
     - 'Visualizer & Logger': visualizer_logger.md
