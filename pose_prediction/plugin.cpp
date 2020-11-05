@@ -14,6 +14,7 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_imu_raw{sb->subscribe_latest<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
+        , _m_ground_truth_offset{sb->subscribe_latest<Eigen::Vector3f>("ground_truth_offset")}
         , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     { }
 
@@ -32,14 +33,20 @@ public:
 
     virtual pose_type get_true_pose() const override {
 		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
-		return correct_pose(
-			pose_ptr ? *pose_ptr : pose_type{
-				.sensor_time = std::chrono::system_clock::now(),
-				.position = Eigen::Vector3f{0, 0, 0},
-				.orientation = Eigen::Quaternionf{1, 0, 0, 0},
-			}
-		);
-    }
+		pose_type offset_pose;
+
+		// Subtract offset if valid pose pointer, otherwise use zero pose
+		if (pose_ptr) {
+			offset_pose = *pose_ptr;
+			offset_pose.position -= *(_m_ground_truth_offset->get_latest_ro());
+		} else {
+			offset_pose.sensor_time = std::chrono::system_clock::now();
+			offset_pose.position = Eigen::Vector3f{0, 0, 0};
+			offset_pose.orientation = Eigen::Quaternionf{1, 0, 0, 0};
+		}
+
+		return correct_pose(offset_pose);
+	}
 
     // future_time: An absolute timepoint in the future
     virtual fast_pose_type get_fast_pose(time_type future_timestamp) const override {
@@ -180,6 +187,7 @@ private:
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
     std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+	std::unique_ptr<reader_latest<Eigen::Vector3f>> _m_ground_truth_offset;
     std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;

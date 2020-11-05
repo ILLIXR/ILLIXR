@@ -15,6 +15,7 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
+		, _m_ground_truth_offset{sb->publish<Eigen::Vector3f>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
 	{ }
 
@@ -40,6 +41,12 @@ public:
 		true_pose->sensor_time = datum->time;
 		_m_true_pose->put(true_pose);
 
+		// Ground truth position offset is the first ground truth position
+		if (first_time) {
+			first_time = false;
+			_m_ground_truth_offset->put(new Eigen::Vector3f{true_pose->position});
+		}
+
 #ifndef NDEBUG
 		std::cout << "Ground truth pose was found at T: " << rounded_time
 				  << " | "
@@ -60,9 +67,12 @@ public:
 private:
 	const std::shared_ptr<switchboard> sb;
 	std::unique_ptr<writer<pose_type>> _m_true_pose;
+	std::unique_ptr<writer<Eigen::Vector3f>> _m_ground_truth_offset;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
+
+	bool first_time{true};
 };
 
 PLUGIN_MAIN(ground_truth_slam);
