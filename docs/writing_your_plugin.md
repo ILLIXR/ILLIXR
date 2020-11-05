@@ -177,7 +177,7 @@ functionality this way.
         PLUGIN_MAIN(plugin_name);
 
 
-[1]: building_ILLIXR.md
+[1]: building_illixr.md
 [2]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html
 [3]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1threadloop.html
 [4]: https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1plugin.html
