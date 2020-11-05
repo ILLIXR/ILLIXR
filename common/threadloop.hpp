@@ -44,8 +44,10 @@ public:
 	virtual void stop() override {
 		if (! _m_terminate.load()) {
 			_m_terminate.store(true);
-			_m_thread.join();
-			std::cerr << "Joined " << name << std::endl;
+			if (_m_thread.joinable()) {
+				_m_thread.join();
+				std::cerr << "Joined " << name << std::endl;
+			}
 			plugin::stop();
 		} else {
 			std::cerr << "You called stop() on this plugin twice." << std::endl;
@@ -64,6 +66,7 @@ protected:
 	std::size_t skip_no = 0;
 
 private:
+
 	void thread_main() {
 		record_coalescer it_log {record_logger_};
 		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
