@@ -85,7 +85,7 @@ private:
 	[[maybe_unused]] int total_imu = 0;
 	[[maybe_unused]] double last_cam_time = 0;
 
-	// Open_VINS cleans IMU values older than 20 seconds, we clean values older than 5 seconds
+	// Clean IMU values older than IMU_SAMPLE_LIFETIME seconds
 	void clean_imu_vec(double timestamp) {
 		auto it0 = _imu_vec.begin();
         while (it0 != _imu_vec.end()) {
@@ -109,13 +109,10 @@ private:
 			has_last_offset = true;
 		}
 
-		Eigen::Matrix<double, 16, 1> imu_value;
-		imu_value.block(0, 0, 4, 1) = Eigen::Matrix<double,4,1>{input_values->quat.x(), 
+		Eigen::Matrix<double,4,1> curr_quat = Eigen::Matrix<double,4,1>{input_values->quat.x(), 
 				input_values->quat.y(), input_values->quat.z(), input_values->quat.w()};
-		imu_value.block(4, 0, 3, 1) = input_values->position;
-		imu_value.block(7, 0, 3, 1) = input_values->velocity;
-		imu_value.block(10,0, 3, 1) = input_values->biasGyro;
-		imu_value.block(13,0, 3, 1) = input_values->biasAcc;
+		Eigen::Matrix<double,3,1> curr_pos = input_values->position;
+		Eigen::Matrix<double,3,1> curr_vel = input_values->velocity;
 
 		// Uncomment this for some helpful prints
 		// total_imu++;
@@ -150,31 +147,31 @@ private:
 				double dt = prop_data.at(i+1).timestamp-prop_data.at(i).timestamp;
 
 				// Corrected imu measurements
-				w_hat = prop_data.at(i).wm - imu_value.block(10,0, 3, 1);
-				a_hat = prop_data.at(i).am - imu_value.block(13,0, 3, 1);
-				w_hat2 = prop_data.at(i+1).wm - imu_value.block(10,0, 3, 1);
-				a_hat2 = prop_data.at(i+1).am - imu_value.block(13,0, 3, 1);
+				w_hat = prop_data.at(i).wm - input_values->biasGyro;
+				a_hat = prop_data.at(i).am - input_values->biasAcc;
+				w_hat2 = prop_data.at(i+1).wm - input_values->biasGyro;
+				a_hat2 = prop_data.at(i+1).am - input_values->biasAcc;
 
 				// Compute the new state mean value
-				Eigen::Vector4d new_q;
-				Eigen::Vector3d new_v, new_p;
-				predict_mean_rk4(imu_value.block(0,0,4,1), imu_value.block(4,0,3,1), imu_value.block(7,0,3,1), dt, w_hat, a_hat, w_hat2, a_hat2, new_q, new_v, new_p);
+				Eigen::Vector4d new_quat;
+				Eigen::Vector3d new_vel, new_pos;
+				predict_mean_rk4(curr_quat, curr_pos, curr_vel, dt, w_hat, a_hat, w_hat2, a_hat2, new_quat, new_vel, new_pos);
 
-				imu_value.block(0,0,4,1) = new_q;
-				imu_value.block(4,0,3,1) = new_p;
-				imu_value.block(7,0,3,1) = new_v;
+				curr_quat = new_quat;
+				curr_pos = new_pos;
+				curr_vel = new_vel;
 			}
 		}
 
 		_m_imu_raw->put(new imu_raw_type{
-			w_hat,
-			a_hat,
-			w_hat2,
-			a_hat2,
-			Eigen::Matrix<double,3,1>{imu_value(4), imu_value(5), imu_value(6)},
-			Eigen::Matrix<double,3,1>{imu_value(7), imu_value(8), imu_value(9)},
-			Eigen::Quaterniond{imu_value(3), imu_value(0), imu_value(1), imu_value(2)},
-			real_time,
+			.w_hat = w_hat,
+			.a_hat = a_hat,
+			.w_hat2 = w_hat2,
+			.a_hat2 = a_hat2,
+			.pos = curr_pos,
+			.vel = curr_vel,
+			.quat = Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
+			.imu_time = real_time,
 		});
     }
 
@@ -236,6 +233,8 @@ private:
                                   const Eigen::Vector3d &w_hat1, const Eigen::Vector3d &a_hat1,
                                   const Eigen::Vector3d &w_hat2, const Eigen::Vector3d &a_hat2,
                                   Eigen::Vector4d &new_q, Eigen::Vector3d &new_v, Eigen::Vector3d &new_p) {
+									  
+		Eigen::Matrix<double,3,1> gravity_vec = Eigen::Matrix<double,3,1>(0.0, 0.0, 9.81);
 
 		// Pre-compute things
 		Eigen::Vector3d w_hat = w_hat1;
@@ -253,7 +252,7 @@ private:
 		Eigen::Vector4d q0_dot = 0.5*Omega(w_hat)*dq_0;
 		Eigen::Vector3d p0_dot = v_0;
 		Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0,q_0));
-		Eigen::Vector3d v0_dot = R_Gto0.transpose()*a_hat-Eigen::Matrix<double,3,1>(0.0, 0.0, 9.81);
+		Eigen::Vector3d v0_dot = R_Gto0.transpose()*a_hat-gravity_vec;
 
 		Eigen::Vector4d k1_q = q0_dot*dt;
 		Eigen::Vector3d k1_p = p0_dot*dt;
@@ -270,7 +269,7 @@ private:
 		Eigen::Vector4d q1_dot = 0.5*Omega(w_hat)*dq_1;
 		Eigen::Vector3d p1_dot = v_1;
 		Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1,q_0));
-		Eigen::Vector3d v1_dot = R_Gto1.transpose()*a_hat-Eigen::Matrix<double,3,1>(0.0, 0.0, 9.81);
+		Eigen::Vector3d v1_dot = R_Gto1.transpose()*a_hat-gravity_vec;
 
 		Eigen::Vector4d k2_q = q1_dot*dt;
 		Eigen::Vector3d k2_p = p1_dot*dt;
@@ -284,7 +283,7 @@ private:
 		Eigen::Vector4d q2_dot = 0.5*Omega(w_hat)*dq_2;
 		Eigen::Vector3d p2_dot = v_2;
 		Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2,q_0));
-		Eigen::Vector3d v2_dot = R_Gto2.transpose()*a_hat-Eigen::Matrix<double,3,1>(0.0, 0.0, 9.81);
+		Eigen::Vector3d v2_dot = R_Gto2.transpose()*a_hat-gravity_vec;
 
 		Eigen::Vector4d k3_q = q2_dot*dt;
 		Eigen::Vector3d k3_p = p2_dot*dt;
@@ -301,7 +300,7 @@ private:
 		Eigen::Vector4d q3_dot = 0.5*Omega(w_hat)*dq_3;
 		Eigen::Vector3d p3_dot = v_3;
 		Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3,q_0));
-		Eigen::Vector3d v3_dot = R_Gto3.transpose()*a_hat-Eigen::Matrix<double,3,1>(0.0, 0.0, 9.81);
+		Eigen::Vector3d v3_dot = R_Gto3.transpose()*a_hat-gravity_vec;
 
 		Eigen::Vector4d k4_q = q3_dot*dt;
 		Eigen::Vector3d k4_p = p3_dot*dt;
