@@ -7,26 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/building_illixr/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Building ILLIXR - ILLIXR Docs</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+  <title>Building illixr - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../css/theme.css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Building ILLIXR";
+    var mkdocs_page_name = "Building illixr";
     var mkdocs_page_input_path = "building_illixr.md";
-    var mkdocs_page_url = "/ILLIXR/docs/building_illixr/";
+    var mkdocs_page_url = "/building_illixr/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -36,75 +34,92 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    <input type="text" name="q" placeholder="Search docs" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../default_plugins/">Default Plugins</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../writing_your_plugin/">Writing Your Plugin</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying A Plugin</a>
-                    </li>
-                </ul>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Building ILLIXR</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#config-file">Config file</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#specifying-paths">Specifying Paths</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a>
-    </li>
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Building illixr</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#building-illixr">Building ILLIXR</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#basic-usage">Basic usage</a></li>
+        
+            <li><a class="toctree-l3" href="#config-file">Config file</a></li>
+        
+            <li><a class="toctree-l3" href="#specifying-paths">Specifying Paths</a></li>
+        
+            <li><a class="toctree-l3" href="#rationale">Rationale</a></li>
+        
+            <li><a class="toctree-l3" href="#philosophy">Philosophy</a></li>
+        
+        </ul>
+    
+
     </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Integration Overview</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Integration Dataflow</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../visualizer_logger/">Visualizer & Logger</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="" href="https://illixr.github.io/ILLIXR/api/html/annotated.html">API documentation</a>
-                    </li>
-                </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../debugging_illixr/">Debugging illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../default_plugins/">Default plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../modifying_a_plugin/">Modifying a plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../visualizer_logger/">Visualizer logger</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../writing_your_plugin/">Writing your plugin</a>
+	    </li>
+          
+        </ul>
       </div>
-    </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -124,12 +139,11 @@
     
       
     
-    <li>Building ILLIXR</li>
+    <li>Building illixr</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
-  
   <hr/>
 </div>
           <div role="main">
@@ -143,50 +157,57 @@ which specifies those places.</p>
 <p>To run ILLIXR natively, use</p>
 <pre><code>./runner.sh configs/native.yaml
 </code></pre>
+
 <p>To drop into <code>gdb</code>, add <code>command: gdb -q --args %a</code> in the <code>loader</code> block of <code>configs/native.yaml</code>, and use the same command.</p>
 <p>To run ILLIXR with Monado,</p>
 <pre><code>./runner.sh configs/monado.yaml
 </code></pre>
+
 <p>The OpenXR application to run is defined in <code>loader.openxr_app</code>.</p>
 <h2 id="config-file">Config file</h2>
 <ul>
 <li>See <code>config/{native,ci,native-ground-truth,monado}.yaml</code>.</li>
 </ul>
 <p>The first block in the config file contains a list of <code>plugin_groups</code>, where each <code>plugin_group</code> is a list of plugins.</p>
-<pre><code class="language-yaml">plugin_groups:
+<pre><code class="yaml">plugin_groups:
   - plugin_group:
       - path: plugin1/
       - path: plugin2/
       - path: plugin3/
       - path: plugin4/
 </code></pre>
+
 <p>This defines a list of plugins by their location, <code>path</code>. Allowed paths will be described below. The
 <code>plugin_groups</code> get flattened and those plugins are initialized <em>in order</em> at runtime. Several of
 the default plugins are order-sensitive.</p>
 <p>The next block in the config defines the offline IMU data, camera data, and ground-truth data.</p>
-<pre><code class="language-yaml">data:
+<pre><code class="yaml">data:
   subpath: mav0
   relative_to:
     archive_path:
       download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 </code></pre>
+
 <p>Next, we define the location of OBJ files for <code>gldemo</code>.</p>
-<pre><code class="language-yaml">demo_data: demo_data/
+<pre><code class="yaml">demo_data: demo_data/
 </code></pre>
+
 <p>Currently we support the following loaders: <code>native</code> (which runs ILLIXR in standalone mode), <code>tests</code>
 (which runs integreation tests headlessly for CI/CD purposes), and <code>monado</code> (which runs an OpenXR
 application in Monado using ILLIXR as a backend).</p>
-<pre><code class="language-yaml">loader:
+<pre><code class="yaml">loader:
   name: native
   command: gdb -q --args %a
 </code></pre>
+
 <p>The <code>native</code> loader supports an optional <code>command</code> argument. In that argument <code>%a</code> is replaced with
 the separated command-line arguments to run ILLIR, while <code>%b</code> is replaced with the stringified
 command-line arguments.</p>
 <p>Finally, we support two profiles: <code>opt</code>, which compiles with <code>-O3</code> and disables debug prints, and
 <code>dbg</code>, which compiles with debug flags and enables debug prints.</p>
-<pre><code class="language-yaml">profile: opt
+<pre><code class="yaml">profile: opt
 </code></pre>
+
 <p>You can <code>!include</code> other YAML files (<a href="https://pypi.org/project/pyyaml-include/">documentation</a>). Consider separating the site-specific
 configuration options into its own file.</p>
 <h2 id="specifying-paths">Specifying Paths</h2>
@@ -195,29 +216,33 @@ configuration options into its own file.</p>
 <li><strong>Simple path</strong>: either absolute or relative path in the native filesystem.</li>
 <li><strong>Git repo</strong>: A git repository.</li>
 </ul>
-<pre><code class="language-yaml">- git_repo: https://github.com/user/repo.git
+<pre><code class="yaml">- git_repo: https://github.com/user/repo.git
   version: master # branch name, SHA-256, or tag
 </code></pre>
+
 <ul>
 <li><strong>Download URL</strong>: A resource downloaded from the internet.</li>
 </ul>
-<pre><code class="language-yaml">- download_url: https://example.com/file.txt
+<pre><code class="yaml">- download_url: https://example.com/file.txt
 </code></pre>
+
 <ul>
 <li><strong>Zip archive</strong>: A path that points within the contents of a zip archive. Note that <code>archive_path</code> is itself a path (recursive).</li>
 </ul>
-<pre><code class="language-yaml">- archive_path: path/to/archive.zip
+<pre><code class="yaml">- archive_path: path/to/archive.zip
 - archive_path:
     download_url: https://example.com/file.zip
 </code></pre>
+
 <ul>
 <li><strong>Complex path</strong>: A hard-coded path relative to another path (recursive). This is useful to specify a <em>subdirectory</em> of a git repository or zip archive.</li>
 </ul>
-<pre><code class="language-yaml">- subpath: path/within/git_repo
+<pre><code class="yaml">- subpath: path/within/git_repo
   relative_to:
     git_repo: ...
     version: ...
 </code></pre>
+
 <h2 id="rationale">Rationale</h2>
 <ul>
 <li>
@@ -269,10 +294,10 @@ configuration options into its own file.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../debugging_illixr/" class="btn btn-neutral float-right" title="ILLIXR Debugging Tips">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../debugging_illixr/" class="btn btn-neutral float-right" title="Debugging illixr">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../modifying_a_plugin/" class="btn btn-neutral" title="Modifying A Plugin"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -284,35 +309,28 @@ configuration options into its own file.</p>
     
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
     </section>
-
+    
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../modifying_a_plugin/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../debugging_illixr/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        };
-    </script>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>

@@ -7,26 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/writing_your_plugin/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Writing Your Plugin - ILLIXR Docs</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+  <title>Writing your plugin - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../css/theme.css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Writing Your Plugin";
+    var mkdocs_page_name = "Writing your plugin";
     var mkdocs_page_input_path = "writing_your_plugin.md";
-    var mkdocs_page_url = "/ILLIXR/docs/writing_your_plugin/";
+    var mkdocs_page_url = "/writing_your_plugin/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -36,71 +34,88 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    <input type="text" name="q" placeholder="Search docs" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../default_plugins/">Default Plugins</a>
-                    </li>
-                </ul>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Writing Your Plugin</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-plugin-common-case">Adding a new plugin (common case)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#adding-a-plugin-general-case">Adding a plugin (general case)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a>
-    </li>
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../building_illixr/">Building illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../debugging_illixr/">Debugging illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../default_plugins/">Default plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../modifying_a_plugin/">Modifying a plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../visualizer_logger/">Visualizer logger</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Writing your plugin</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#writing-your-plugin">Writing your plugin</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#adding-a-new-plugin-common-case">Adding a new plugin (common case)</a></li>
+        
+            <li><a class="toctree-l3" href="#adding-a-plugin-general-case">Adding a plugin (general case)</a></li>
+        
+            <li><a class="toctree-l3" href="#tutorial">Tutorial</a></li>
+        
+        </ul>
+    
+
     </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying A Plugin</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Integration Overview</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Integration Dataflow</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../visualizer_logger/">Visualizer & Logger</a>
-                    </li>
-                </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="" href="https://illixr.github.io/ILLIXR/api/html/annotated.html">API documentation</a>
-                    </li>
-                </ul>
+	    </li>
+          
+        </ul>
       </div>
-    </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -120,12 +135,11 @@
     
       
     
-    <li>Writing Your Plugin</li>
+    <li>Writing your plugin</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
-  
   <hr/>
 </div>
           <div role="main">
@@ -222,29 +236,27 @@ PLUGIN_MAIN(plugin_name);
 </li>
 <li>
 <p>At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update <code>configs/native.yaml</code>. If the new plugin is the same type as one of the other components you will need to remove that component from the config before running the new component. For example, if the new component is a SLAM then the old SLAM needs to be removed from the config. See <a href="../building_illixr/">Building ILLIXR</a> for more details on the config file.</p>
+<pre><code>plugin_groups:
+  - !include "rt_slam_plugins.yaml"
+  - !include "core_plugins.yaml"
+  - plugin_group:
+     - path: /PATH/TO/NEW/PLUGIN
+     - path: ground_truth_slam/
+     - path: gldemo/
+     - path: debugview/
+
+data:
+  subpath: mav0
+  relative_to:
+  archive_path:
+  download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+  demo_data: demo_data/
+  loader:
+    name: native
+    # command: gdb -q --args %a
+    profile: opt
+</code></pre>
 </li>
-</ol>
-<p>```
-   plugin_groups:
-     - !include "rt_slam_plugins.yaml"
-     - !include "core_plugins.yaml"
-     - plugin_group:
-         - path: /PATH/TO/NEW/PLUGIN
-         - path: ground_truth_slam/
-         - path: gldemo/
-         - path: debugview/</p>
-<p>data:
-     subpath: mav0
-     relative_to:
-       archive_path:
-         download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-   demo_data: demo_data/
-   loader:
-     name: native
-     # command: gdb -q --args %a
-   profile: opt
-   ```</p>
-<ol>
 <li>
 <p>Finally, run ILLIXR with your new plugin with the following command: <code>./runner.sh configs/native.yaml</code></p>
 </li>
@@ -326,10 +338,8 @@ PLUGIN_MAIN(plugin_name);
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../modifying_a_plugin/" class="btn btn-neutral float-right" title="Modifying A Plugin">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-      
-        <a href="../default_plugins/" class="btn btn-neutral" title="Default Plugins"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../visualizer_logger/" class="btn btn-neutral" title="Visualizer logger"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -341,35 +351,26 @@ PLUGIN_MAIN(plugin_name);
     
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
     </section>
-
+    
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../default_plugins/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../visualizer_logger/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-      
-        <span style="margin-left: 15px"><a href="../modifying_a_plugin/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        };
-    </script>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>
