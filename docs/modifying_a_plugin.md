@@ -8,24 +8,20 @@ This is how you can modify an existing ILLIXR plugin
 
 2.  Modify the config file like this:
 
-   - Original Config
+	Original Config
 
-     ```
-     plugin_group:
-       - path: timewarp_gl/
-       - name: audio
-         path:
-           git_repo: https://github.com/ILLIXR/audio_pipeline.git
-           version: 3433bb452b2ec661c9d3ef65d9cf3a2805e94cdc
-     ```
+		plugin_group:
+		  - path: timewarp_gl/
+		  - name: audio
+		  path:
+		    git_repo: https://github.com/ILLIXR/audio_pipeline.git
+			version: 3433bb452b2ec661c9d3ef65d9cf3a2805e94cdc
 
-   - New Config
+	New Config
 
-     ```
-     plugin_group:
-       - path: timewarp_gl/
-       - name: /PATH/TO/LOCAL/AUDIO-PLUGIN
-     ```
+		plugin_group:
+		  - path: timewarp_gl/
+		  - name: /PATH/TO/LOCAL/AUDIO-PLUGIN
    
 3. See the instructions on [Building ILLIXR][1] to learn how to run ILLIXR.
 

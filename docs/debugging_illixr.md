@@ -6,6 +6,7 @@ The config described in [Building ILLIXR][1] supports running the runtime with a
 ## Debugging PRs
 ### Running the CI/CD Docker Container Locally
 Follow these steps when a CI/CD build fails on a PR:
+
 - Click details on the failing build
 - In the build view go to the Push Docker Image tab and copy the `docker push ghcr.io/illixr/illixr-tests:<branch-name>` command
 - Then in your terminal run `docker pull ghcr.io/illixr/illixr-tests:<branch-name>`
