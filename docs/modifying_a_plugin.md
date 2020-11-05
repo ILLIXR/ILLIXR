@@ -31,4 +31,4 @@ This is how you can modify an existing ILLIXR plugin
 
 4. To push the modification to upstream ILLIXR, push up the changes to the plugin's repository and modify the original config with the commit version updated. Then create a PR on the main ILLIXR repository.
 
-[1]: building_ILLIXR.md
+[1]: building_illixr.md

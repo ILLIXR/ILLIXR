@@ -13,4 +13,4 @@ Follow these steps when a CI/CD build fails on a PR:
 
 This now gives you a bash shell in a docker container with all of the code that ran on CI/CD.
 
-[1]: building_ILLIXR.md
+[1]: building_illixr.md
