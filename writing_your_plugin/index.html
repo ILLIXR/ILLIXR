@@ -181,7 +181,7 @@ functionality this way.</p>
 <p>Create a new directory anywhere for your new plugin and set it up for ILLIXR. We recommend you also push this plugin to a git repository on Github/Gitlab if you want it as a part of upstream ILLIXR in the future.</p>
 </li>
 <li>
-<p>Create a <code>Makefile</code> with the following contents. See <a href="building_ILLIXR.md">Building ILLIXR</a> for more details and alternative setups.</p>
+<p>Create a <code>Makefile</code> with the following contents. See <a href="../building_illixr/">Building ILLIXR</a> for more details and alternative setups.</p>
 <pre><code>include common.mk
 </code></pre>
 </li>
@@ -221,7 +221,7 @@ PLUGIN_MAIN(plugin_name);
 </code></pre>
 </li>
 <li>
-<p>At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update <code>configs/native.yaml</code>. If the new plugin is the same type as one of the other components you will need to remove that component from the config before running the new component. For example, if the new component is a SLAM then the old SLAM needs to be removed from the config. See <a href="building_ILLIXR.md">Building ILLIXR</a> for more details on the config file.</p>
+<p>At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update <code>configs/native.yaml</code>. If the new plugin is the same type as one of the other components you will need to remove that component from the config before running the new component. For example, if the new component is a SLAM then the old SLAM needs to be removed from the config. See <a href="../building_illixr/">Building ILLIXR</a> for more details on the config file.</p>
 </li>
 </ol>
 <p>```
