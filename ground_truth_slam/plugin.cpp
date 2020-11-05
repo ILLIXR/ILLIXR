@@ -26,21 +26,35 @@ public:
 	}
 
 	void feed_ground_truth(const imu_cam_type *datum) {
-		ullong rounded_time = datum->dataset_time;
+		ullong rounded_time = floor(datum->dataset_time / 10000);
 		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
-			#ifndef NDEBUG
+#ifndef NDEBUG
 				std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
-			#endif
+#endif
 			return;
 		}
 
 		pose_type* true_pose = new pose_type{_m_sensor_data_it->second};
 		true_pose->sensor_time = datum->time;
-		// std::cout << "The pose was found at " << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2] << std::endl; 
-
 		_m_true_pose->put(true_pose);
+
+#ifndef NDEBUG
+		std::cout << "Ground truth pose was found at T: " << rounded_time
+				  << " | "
+				  << "Pos: ("
+				  << true_pose->position[0] << ", "
+				  << true_pose->position[1] << ", "
+				  << true_pose->position[2] << ")"
+				  << " | "
+				  << "Quat: ("
+				  << true_pose->orientation.w() << ", "
+				  << true_pose->orientation.x() << ", "
+				  << true_pose->orientation.y() << ","
+				  << true_pose->orientation.z() << ")"
+				  << std::endl;
+#endif
 	}
 
 private:
