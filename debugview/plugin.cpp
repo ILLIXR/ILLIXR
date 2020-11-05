@@ -157,7 +157,7 @@ public:
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid slow pose pointer");
 		}
 
-		ImGui::Text("GROUND TRUTH pose topic:");
+		ImGui::Text("Ground truth pose topic:");
 		ImGui::SameLine();
 
 		if (pp->true_pose_reliable()) {

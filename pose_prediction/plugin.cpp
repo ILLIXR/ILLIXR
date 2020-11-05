@@ -18,20 +18,19 @@ public:
         , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     { }
 
-    // No paramter get_fast_pose() should just predict to the next vsync
-	// However, we don't have vsync estimation yet.
-	// So we will predict to `now()`, as a temporary approximation
+    // No parameter get_fast_pose() predicts to the next vsync if a vsync
+    // estimate is available, and predicts to `now` otherwise
     virtual fast_pose_type get_fast_pose() const override {
 		const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
 
-        if(vsync_estimate == nullptr) {
-		return get_fast_pose(std::chrono::high_resolution_clock::now());
+        if (vsync_estimate == nullptr) {
+            return get_fast_pose(std::chrono::high_resolution_clock::now());
         } else {
             return get_fast_pose(*vsync_estimate);
         }
-	}
+    }
 
-    virtual pose_type get_true_pose() const override {
+	virtual pose_type get_true_pose() const override {
 		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
 		pose_type offset_pose;
 
