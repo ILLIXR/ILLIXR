@@ -79,28 +79,25 @@ functionality this way.
 
 4. At this point, you should be able to build your plugin with ILLIXR. Move to the ILLIXR repo and update `configs/native.yaml`. If the new plugin is the same type as one of the other components you will need to remove that component from the config before running the new component. For example, if the new component is a SLAM then the old SLAM needs to be removed from the config. See [Building ILLIXR][1] for more details on the config file.
 
-   ```
-   plugin_groups:
-     - !include "rt_slam_plugins.yaml"
-     - !include "core_plugins.yaml"
-     - plugin_group:
-         - path: /PATH/TO/NEW/PLUGIN
-         - path: ground_truth_slam/
-         - path: gldemo/
-         - path: debugview/
+		plugin_groups:
+		  - !include "rt_slam_plugins.yaml"
+		  - !include "core_plugins.yaml"
+		  - plugin_group:
+		     - path: /PATH/TO/NEW/PLUGIN
+			 - path: ground_truth_slam/
+			 - path: gldemo/
+			 - path: debugview/
    
-   data:
-     subpath: mav0
-     relative_to:
-       archive_path:
-         download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-   demo_data: demo_data/
-   loader:
-     name: native
-     # command: gdb -q --args %a
-   profile: opt
-   ```
-
+		data:
+		  subpath: mav0
+		  relative_to:
+		  archive_path:
+		  download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+		  demo_data: demo_data/
+		  loader:
+		    name: native
+            # command: gdb -q --args %a
+			profile: opt
    
 
 5. Finally, run ILLIXR with your new plugin with the following command: `./runner.sh configs/native.yaml`
