@@ -29,6 +29,15 @@ RUN ./scripts/install_openxr.sh
 COPY ./scripts/install_gtsam.sh $HOME/scripts/install_gtsam.sh
 RUN ./scripts/install_gtsam.sh
 
+COPY ./scripts/install_opengv.sh $HOME/scripts/install_opengv.sh
+RUN ./scripts/install_opengv.sh
+
+COPY ./scripts/install_dbow2.sh $HOME/scripts/install_dbow2.sh
+RUN ./scripts/install_dbow2.sh
+
+COPY ./scripts/install_kimera_rpgo.sh $HOME/scripts/install_kimera_rpgo.sh
+RUN ./scripts/install_kimera_rpgo.sh
+
 COPY ./scripts/install_conda.sh $HOME/scripts/install_conda.sh
 RUN ./scripts/install_conda.sh
 
