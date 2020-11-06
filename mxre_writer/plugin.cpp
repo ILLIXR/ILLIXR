@@ -12,8 +12,7 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 	{
-    illixrSource.setup("source");
-    data = 0;
+    illixrSource.setup("source", MX_DTYPE_CVMAT);
 	}
 
 	virtual void start() override {
@@ -29,14 +28,14 @@ public:
       return;
     }
 
-    illixrSource.send(&data);
-    data++;
+    debug_print("send data");
+    cv::Mat img0{*datum->img0.value()};
+    illixrSource.send(&img0);
 	}
 
 private:
 	const std::shared_ptr<switchboard> sb;
-  mxre::types::ILLIXRSource<int> illixrSource;
-  int data;
+  mxre::types::ILLIXRSource<cv::Mat> illixrSource;
 };
 
 PLUGIN_MAIN(mxre_writer)
