@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV CC=clang-10
 ENV CXX=clang++-10
 ENV temp_dir /tmp/ILLIXR
