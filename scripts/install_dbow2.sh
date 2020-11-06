@@ -6,4 +6,4 @@ cmake \
 	-S "${temp_dir}/DBoW2" \
 	-B "${temp_dir}/DBoW2/build"
 
-sudo make "${temp_dir}/DBoW2/build" -j$(nproc) install
+sudo make -C "${temp_dir}/DBoW2/build" "-j$(nproc)" install

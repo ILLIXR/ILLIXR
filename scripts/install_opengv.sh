@@ -7,4 +7,5 @@ cmake \
 	-B "${temp_dir}/opengv/build" \
     -DEIGEN_INCLUDE_DIR="${temp_dir}/gtsam/gtsam/3rdparty/Eigen" \
     -DEIGEN_INCLUDE_DIRS="${temp_dir}/gtsam/gtsam/3rdparty/Eigen"
-sudo make "${temp_dir}/opengv/build" -j$(nproc) install
+
+sudo make -C "${temp_dir}/opengv/build" "-j$(nproc)" install

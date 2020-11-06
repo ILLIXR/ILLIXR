@@ -6,4 +6,4 @@ cmake \
 	-S "${temp_dir}/Kimera-RPGO" \
 	-B "${temp_dir}/Kimera-RPGO/build"
 
-sudo make "${temp_dir}/Kimera-RPGO/build" -j$(nproc) install
+sudo make -C "${temp_dir}/Kimera-RPGO/build" "-j$(nproc)" install
