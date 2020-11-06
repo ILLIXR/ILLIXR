@@ -6,7 +6,7 @@ cmake \
 	-S "${temp_dir}/gtsam" \
 	-B "${temp_dir}/gtsam/build" \
 	-D CMAKE_INSTALL_PREFIX=/usr/local \
-	-D GTSAM_USE_TBB=OFF \
+	-D GTSAM_WITH_TBB=OFF \
 	-D GTSAM_USE_SYSTEM_EIGEN=OFF \
 	-D GTSAM_POSE3_EXPMAP=ON \
 	-D GTSAM_ROT3_EXPMAP=ON
