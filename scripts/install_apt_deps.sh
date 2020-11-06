@@ -1,6 +1,8 @@
 #!/bin/bash
 
 . /etc/os-release
+
+export DEBIAN_FRONTEND=noninteractive
 sudo apt install -y software-properties-common curl gnupg2
 curl https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
 sudo apt-add-repository -u -y "deb https://apt.kitware.com/ubuntu/ ${UBUNTU_CODENAME} main"
