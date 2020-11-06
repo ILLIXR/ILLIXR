@@ -52,7 +52,7 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 - [`open_vins`][7]: This is an alternate SLAM ([upstream][19]) that uses a MSCKF (Multi-State Constrained Kalman Filter) to determine poses via camera/IMU.
 - [`rk4_integrator`][16]: Integrates over all IMU samples since the last published SLAM pose to provide a fast-pose everytime a new IMU sample arrives using RK4 integration.
 
-See [Building ILLIXR][4] fFor more information on adding plugins to a config file.
+See [Building ILLIXR][4] for more information on adding plugins to a config file.
 
 [1]: https://github.com/MIT-SPARK/Kimera-VIO
 [2]: https://en.wikipedia.org/wiki/Asynchronous_reprojection
