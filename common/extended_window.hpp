@@ -136,9 +136,19 @@ namespace ILLIXR{
 
             // Sync to process errors
             XSync(dpy, false);
-            glXMakeCurrent(dpy, win, glc);
 
 #ifndef NDEBUG
+            // Doing glXMakeCurrent here makes a third thread, the runtime one, enter the mix, and
+            // then there are three GL threads: runtime, timewarp, and gldemo, and the switching of
+            // contexts without synchronization during the initialization phase causes a data race.
+            // This is why native.yaml sometimes succeeds and sometimes doesn't. Headless succeeds
+            // because this behavior is OpenGL implementation dependent, and apparently mesa
+            // differs from NVIDIA in this regard.
+            // The proper fix is #173. Comment the below back in once #173 is done. In any case,
+            // this is just for debugging and does not affect any functionality.
+
+            /*
+            glXMakeCurrent(dpy, win, glc);
             int major = 0, minor = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &major);
             glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -146,6 +156,8 @@ namespace ILLIXR{
                 major, minor,
                 glGetString(GL_VENDOR),
                 glGetString(GL_RENDERER));
+            glXMakeCurrent(dpy, None, NULL);
+            */
 #endif
         }
     };
