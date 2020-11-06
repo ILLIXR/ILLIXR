@@ -1,13 +1,12 @@
 #!/bin/bash
 
-#git clone --branch kimera-gtsam https://github.com/ILLIXR/gtsam.git "${temp_dir}/gtsam"
-git clone https://github.com/ILLIXR/gtsam.git "${temp_dir}/gtsam"
+git clone --branch kimera-gtsam https://github.com/ILLIXR/gtsam.git "${temp_dir}/gtsam"
 
-# 	-D WITH_TBB=OFF \
 cmake \
 	-S "${temp_dir}/gtsam" \
 	-B "${temp_dir}/gtsam/build" \
 	-D CMAKE_INSTALL_PREFIX=/usr/local \
+	-D GTSAM_USE_TBB=OFF \
 	-D GTSAM_USE_SYSTEM_EIGEN=OFF \
 	-D GTSAM_POSE3_EXPMAP=ON \
 	-D GTSAM_ROT3_EXPMAP=ON
