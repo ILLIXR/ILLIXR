@@ -1,3 +1,0 @@
-% Don't ignore png files in the testing directory, they are used for unit tests
-
-!*.png

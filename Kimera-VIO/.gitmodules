@@ -1,3 +1,0 @@
-[submodule "dev_tools/linter"]
-	path = dev_tools/linter
-	url = https://github.com/ToniRV/linter.git
