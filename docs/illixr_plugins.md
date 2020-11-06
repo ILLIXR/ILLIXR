@@ -8,14 +8,15 @@
 - [`ground_truth_slam`][6]: Reads the ground-truth from the same dataset to compare our output against
   (uses timing from `offline_imu_cam`).
 
-- [`kimera_vio`][13]: Runs Kimera-VIO ([upstream][1]) on the input, and outputs a the headset's pose. In practice, this
-  publishes a fairly slow pose, so pose prediction is required to infer a fast pose. We do not yet
-  have pose prediction, so we say `kimera-vio` also publishes a fast pose.
+- [`kimera_vio`][13]: Runs Kimera-VIO ([upstream][1]) on the input, and outputs the headset's pose. In practice, this
+  publishes a fairly slow pose, so IMU integration and pose prediction is required to infer a fast pose.
 
-- [`gtsam_integrator`][15]: Integrates over all IMU samples since the last SLAM pose publish to provide a fast-pose everytime IMU sample 
+- [`gtsam_integrator`][15]: Integrates over all IMU samples since the last published SLAM pose to provide a fast-pose everytime a new IMU sample.
   arrives using the GTSAM library ([upstream][14]). 
 
-- [`gldemo`][8]: Renders a static scene (into left and right eyebuffers) given the pose from `open_vins`.
+- [`pose_prediction`][18]: Uses the latest IMU value to predict a pose for a future point in time.
+
+- [`gldemo`][8]: Renders a static scene (into left and right eyebuffers) given the pose from `pose_prediction`.
 
 - [`timewarp_gl`][9]: [Asynchronous reprojection][2] of the eyebuffers.
 
@@ -48,10 +49,10 @@ See [Writing Your Plugin][4] to extend ILLIXR.
 ## Other Supported Plugins
 ILLIXR supports additional plugins to replace some of the default plugins.
 
-- [`open_vins`][7]: This is an alternate SLAM that uses a MSCKF (Multi-State Constrained Kalman Filter) to determine poses via camera/IMU.
-- [`rk4_integrator`][16]: Integrates over all IMU samples since the last SLAM pose publish to provide a fast-pose everytime IMU sample using RK4. 
+- [`open_vins`][7]: This is an alternate SLAM ([upstream][19]) that uses a MSCKF (Multi-State Constrained Kalman Filter) to determine poses via camera/IMU.
+- [`rk4_integrator`][16]: Integrates over all IMU samples since the last published SLAM pose to provide a fast-pose everytime a new IMU sample arrives using RK4 integration.
 
-See [Building ILLIXR][4] For more information on adding plugins to a config file. 
+See [Building ILLIXR][4] fFor more information on adding plugins to a config file.
 
 [1]: https://github.com/MIT-SPARK/Kimera-VIO
 [2]: https://en.wikipedia.org/wiki/Asynchronous_reprojection
@@ -70,3 +71,5 @@ See [Building ILLIXR][4] For more information on adding plugins to a config file
 [15]: https://github.com/ILLIXR/ILLIXR/tree/master/gtsam_integrator
 [16]: https://github.com/ILLIXR/ILLIXR/tree/master/rk4_integrator
 [17]: building_illixr.md
+[18]: https://github.com/ILLIXR/ILLIXR/tree/master/pose_prediction
+[19]: https://docs.openvins.com/
