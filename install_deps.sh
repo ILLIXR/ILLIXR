@@ -95,6 +95,18 @@ then
 		. ./scripts/install_gtsam.sh
 	fi
 
+	if [ ! -d "${temp_dir}/opengv" ] && y_or_n "Next: Install opengv from source"; then
+		. ./scripts/install_opengv.sh
+	fi
+
+	if [ ! -d "${temp_dir}/DBoW2" ] && y_or_n "Next: Install DBoW2 from source"; then
+		. ./scripts/install_dbow2.sh
+	fi
+
+	if [ ! -d "${temp_dir}/Kimera-RPGO" ] && y_or_n "Next: Install Kimera-RPGO from source"; then
+		. ./scripts/install_kimera_rpgo.sh
+	fi
+
 	if ! which conda 2> /dev/null; then
 		if [ ! -d "$HOME/miniconda3" ]; then
 			if y_or_n "Next: Install Conda"; then

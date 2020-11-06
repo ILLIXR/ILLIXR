@@ -17,3 +17,4 @@ sudo apt-get install -y \
 	 libepoxy-dev libdrm-dev libgbm-dev libx11-dev libvirglrenderer-dev libpulse-dev \
 	 libgtest-dev pkg-config libgtk2.0-dev wget xvfb librealsense2-dkms librealsense2-utils \
      libjpeg-dev libpng-dev libtiff-dev libvtk6-dev libgtk-3-dev libparmetis-dev gfortran \
+	 libgflags-dev libgoogle-glog-dev
