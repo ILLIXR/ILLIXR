@@ -5,7 +5,7 @@ site_url: https://illixr.github.io/ILLIXR/docs/
 nav:
     - 'ILLIXR': index.md
     - 'Getting Started': getting_started.md
-    - 'Default Plugins': default_plugins.md
+    - 'ILLIXR Plugins': illixr_plugins.md
     - 'Writing Your Plugin': writing_your_plugin.md
     - 'Modifying A Plugin': modifying_a_plugin.md
     - 'Building ILLIXR': building_illixr.md
