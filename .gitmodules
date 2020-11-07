@@ -1,3 +1,0 @@
-[submodule "slam1/okvis"]
-	path = slam1/okvis
-	url = https://github.com/ILLIXR/okvis.git
