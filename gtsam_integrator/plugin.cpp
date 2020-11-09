@@ -90,7 +90,7 @@ private:
 
 	[[maybe_unused]] double last_cam_time = 0;
 	double last_imu_offset = 0;
-	long long _seq_expect, _stat_processed, _stat_missed;
+	int64_t _seq_expect, _stat_processed, _stat_missed;
 
 	// Remove IMU values older than 'IMU_TTL' from the imu buffer
 	void clean_imu_vec(double timestamp) {

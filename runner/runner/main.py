@@ -128,7 +128,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         command_lst_sbst,
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path)),
+        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"]),
     )
 
 
