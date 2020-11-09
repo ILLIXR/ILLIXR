@@ -69,6 +69,9 @@ function y_or_n() {
 	fi
 }
 
+# Function for printing a warning message (with red foreground)
+function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
+
 ### Main ###
 
 if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]
