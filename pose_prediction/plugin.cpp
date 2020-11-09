@@ -31,13 +31,14 @@ public:
     }
 
 	virtual pose_type get_true_pose() const override {
-		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
+		const auto *pose = _m_true_pose->get_latest_ro();
+		const auto *offset = _m_ground_truth_offset->get_latest_ro();
 		pose_type offset_pose;
 
-		// Subtract offset if valid pose pointer, otherwise use zero pose
-		if (pose_ptr) {
-			offset_pose = *pose_ptr;
-			offset_pose.position -= *(_m_ground_truth_offset->get_latest_ro());
+		// Subtract offset if valid pose and offset, otherwise use zero pose
+		if (pose && offset) {
+			offset_pose = *pose;
+			offset_pose.position -= *offset;
 		} else {
 			offset_pose.sensor_time = std::chrono::system_clock::now();
 			offset_pose.position = Eigen::Vector3f{0, 0, 0};
