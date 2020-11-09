@@ -39,13 +39,12 @@ public:
 
 		pose_type* true_pose = new pose_type{_m_sensor_data_it->second};
 		true_pose->sensor_time = datum->time;
-		_m_true_pose->put(true_pose);
-
 		// Ground truth position offset is the first ground truth position
 		if (first_time) {
 			first_time = false;
 			_m_ground_truth_offset->put(new Eigen::Vector3f{true_pose->position});
 		}
+		_m_true_pose->put(true_pose);
 
 #ifndef NDEBUG
 		std::cout << "Ground truth pose was found at T: " << rounded_time
