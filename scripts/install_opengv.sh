@@ -8,4 +8,4 @@ cmake \
     -D EIGEN_INCLUDE_DIR="${opt_dir}/gtsam/gtsam/3rdparty/Eigen" \
     -D EIGEN_INCLUDE_DIRS="${opt_dir}/gtsam/gtsam/3rdparty/Eigen"
 
-sudo make -C "${opt_dir}/opengv/build" "-j$(nproc)" install
+sudo make -C "${opt_dir}/opengv/build" "-j${illixr_nproc}" install

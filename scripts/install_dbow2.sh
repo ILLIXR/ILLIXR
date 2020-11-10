@@ -6,4 +6,4 @@ cmake \
 	-S "${opt_dir}/DBoW2" \
 	-B "${opt_dir}/DBoW2/build"
 
-sudo make -C "${opt_dir}/DBoW2/build" "-j$(nproc)" install
+sudo make -C "${opt_dir}/DBoW2/build" "-j${illixr_nproc}" install

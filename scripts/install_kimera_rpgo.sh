@@ -6,4 +6,4 @@ cmake \
 	-S "${opt_dir}/Kimera-RPGO" \
 	-B "${opt_dir}/Kimera-RPGO/build"
 
-sudo make -C "${opt_dir}/Kimera-RPGO/build" "-j$(nproc)" install
+sudo make -C "${opt_dir}/Kimera-RPGO/build" "-j${illixr_nproc}" install

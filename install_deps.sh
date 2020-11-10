@@ -46,6 +46,9 @@ function y_or_n() {
 
 if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]
 then
+	# Set nproc to either 1 or half the available cores
+	illixr_nproc=$(python3 -c 'import multiprocessing; print( max(multiprocessing.cpu_count() // 2, 1))')
+
 	# For system-wide installs that are not possible via apt
 	temp_dir=/tmp/ILLIXR_deps
 	mkdir -p "${temp_dir}"

@@ -10,4 +10,4 @@ cmake \
 	-D GTSAM_USE_SYSTEM_EIGEN=OFF \
 	-D GTSAM_POSE3_EXPMAP=ON \
 	-D GTSAM_ROT3_EXPMAP=ON
-sudo make -C "${opt_dir}/gtsam/build" "-j$(nproc)" install
+sudo make -C "${opt_dir}/gtsam/build" "-j${illixr_nproc}" install
