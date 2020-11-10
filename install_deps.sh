@@ -91,19 +91,19 @@ then
 		. ./scripts/install_openxr.sh
 	fi
 
-	if [ ! -d "${temp_dir}/gtsam" ] && y_or_n "Next: Install gtsam from source"; then
+	if [ ! -d "${opt_dir}/gtsam" ] && y_or_n "Next: Install gtsam from source"; then
 		. ./scripts/install_gtsam.sh
 	fi
 
-	if [ ! -d "${temp_dir}/opengv" ] && y_or_n "Next: Install opengv from source"; then
+	if [ ! -d "${opt_dir}/opengv" ] && y_or_n "Next: Install opengv from source"; then
 		. ./scripts/install_opengv.sh
 	fi
 
-	if [ ! -d "${temp_dir}/DBoW2" ] && y_or_n "Next: Install DBoW2 from source"; then
+	if [ ! -d "${opt_dir}/DBoW2" ] && y_or_n "Next: Install DBoW2 from source"; then
 		. ./scripts/install_dbow2.sh
 	fi
 
-	if [ ! -d "${temp_dir}/Kimera-RPGO" ] && y_or_n "Next: Install Kimera-RPGO from source"; then
+	if [ ! -d "${opt_dir}/Kimera-RPGO" ] && y_or_n "Next: Install Kimera-RPGO from source"; then
 		. ./scripts/install_kimera_rpgo.sh
 	fi
 
