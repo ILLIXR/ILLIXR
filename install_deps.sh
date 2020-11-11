@@ -73,7 +73,12 @@ function y_or_n() {
 function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
 
 # Function for flattening a string with items seperated by new lines
-# and white space to a single line seperated by a single space
+# and white space to a single line seperated by a single space.
+# When calling flatten list, the multi-line list (string) passed as
+# the first argument must be protected by double quotes when expanding
+# a variable.
+# Good sample call site: flat_string=$(flatten_list "${multi_line_string}")
+# Bad sample call site:  flat_string="$(flatten_list ${multi_line_string})"
 function flatten_list() { echo "${1}" | xargs; }
 
 
