@@ -9,24 +9,20 @@
 
 ### Helper functions ###
 
-function get_repo_with_add() {
+# Add a repository and the necessary keys required given a list of key servers
+# and a repository url.
+# If a key ID is provided, use that key ID to search each key server.
+# If successful, only one key is added per call (one server used).
+function add_repo() {
     key_srv_url_list=${1}
     repo_url=${2}
+    key_id=${3}
     for key_srv_url in ${key_srv_url_list}; do
-        curl "${key_srv_url}" | sudo apt-key add -
-        if [ "${?}" -eq "0" ]; then
-            break # Stop adding keys after the first success
+        if [ -z "${key_id}" ]; then
+            curl "${key_srv_url}" | sudo apt-key add -
+        else
+            sudo apt-key adv --keyserver "${key_srv_url}" --recv-key "${key_id}"
         fi
-    done
-    sudo add-apt-repository -u -y "deb ${repo_url} ${VERSION_CODENAME} main"
-}
-
-function get_repo_with_adv() {
-    key_srv_url_list=${1}
-    key_id=${2}
-    repo_url=${3}
-    for key_srv_url in ${key_srv_url_list}; do
-        sudo apt-key adv --keyserver "${key_srv_url}" --recv-key "${key_id}"
         if [ "${?}" -eq "0" ]; then
             break # Stop adding keys after the first success
         fi
@@ -128,6 +124,7 @@ pkg_dep_list_nogroup="
     libgtk-3-dev
     libgflags-dev
     libgoogle-glog-dev
+    libssl-dev
 " # End list
 
 pkg_dep_list_realsense="
@@ -144,7 +141,7 @@ pkg_dep_groups="common gl mesa display image sound usb thread math nogroup"
 
 pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
 pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
-pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. If your project requires IntelRealSense support, please build and install the IntelRealSense SDK from source. For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
+pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. If your project requires Intel RealSense support, please build and install the Intel RealSense SDK from source. For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the required install
@@ -182,14 +179,14 @@ sudo apt-get install -y $(flatten_list "${pkg_dep_list_prereq}")
 # Add Kitware repository (for third party Ubuntu dependencies)
 key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
 repo_url_kitware="https://apt.kitware.com/ubuntu"
-get_repo_with_add "${key_srv_url_kitware}" "${repo_url_kitware}"
+add_repo "${key_srv_url_kitware}" "${repo_url_kitware}"
 
 # If supported, add the gpg keys and repository for Intel RealSense
 if [ "${use_realsense}" == "yes" ]; then
     key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
-    key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
     repo_url_realsense="http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo"
-    get_repo_with_adv "${key_srv_url_list_realsense}" "${key_id_realsense}" "${repo_url_realsense}"
+    key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
+    add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "${key_id_realsense}"
 fi
 
 # Add repositories needed for drivers and miscellaneous dependencies (python)
