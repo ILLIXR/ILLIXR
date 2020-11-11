@@ -1,14 +1,15 @@
 FROM ubuntu:18.04
 
+ARG JOBS=1
+
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 ENV CC=clang-10
 ENV CXX=clang++-10
 ENV temp_dir /tmp/ILLIXR
 ENV opt_dir /opt/ILLIXR
+ENV illixr_nproc ${JOBS}
 
-#RUN export illixr_nproc=$(($(nproc) / 2))
-RUN export illixr_nproc=1
 RUN mkdir -p ${temp_dir}
 RUN mkdir -p ${opt_dir}
 
