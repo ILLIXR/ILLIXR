@@ -9,6 +9,9 @@
 
 ### Helper functions ###
 
+# Function for printing a warning message (with red foreground)
+function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
+
 # Function for flattening a string with items seperated by new lines
 # and white space to a single line seperated by a single space.
 # When calling flatten list, the multi-line list (string) passed as
