@@ -9,6 +9,15 @@
 
 ### Helper functions ###
 
+# Function for flattening a string with items seperated by new lines
+# and white space to a single line seperated by a single space.
+# When calling flatten list, the multi-line list (string) passed as
+# the first argument must be protected by double quotes when expanding
+# a variable.
+# Good sample call site: flat_string=$(flatten_list "${multi_line_string}")
+# Bad sample call site:  flat_string="$(flatten_list ${multi_line_string})"
+function flatten_list() { echo "${1}" | xargs; }
+
 # Add a repository and the necessary keys required given a list of key servers
 # and a repository url.
 # If a key ID is provided, use that key ID to search each key server.
