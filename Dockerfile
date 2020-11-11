@@ -7,7 +7,7 @@ ENV CXX=clang++-10
 ENV temp_dir /tmp/ILLIXR
 ENV opt_dir /opt/ILLIXR
 
-RUN export illixr_nproc=$(($(nproc) - 1))
+RUN export illixr_nproc=$(($(nproc) / 2))
 RUN mkdir -p ${temp_dir}
 RUN mkdir -p ${opt_dir}
 
