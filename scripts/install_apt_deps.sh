@@ -7,10 +7,45 @@
 . /etc/os-release
 
 
+### Helper functions ###
+
+function get_repo_with_add() {
+    key_srv_url_list=${1}
+    repo_url=${2}
+    echo "Getting repo with '${1}' '${2}'"
+    for key_srv_url in ${key_srv_url_list}; do
+        curl "${key_srv_url}" | sudo apt-key add -
+        if [ "${?}" -eq "0" ]; then
+            break # Stop adding keys after the first success
+        fi
+    done
+    sudo add-apt-repository -u -y "deb ${repo_url} ${VERSION_CODENAME} main"
+}
+
+function get_repo_with_adv() {
+    key_srv_url_list=${1}
+    key_id=${2}
+    repo_url=${3}
+    for key_srv_url in ${key_srv_url_list}; do
+        sudo apt-key adv --keyserver "${key_srv_url}" --recv-key "${key_id}"
+        if [ "${?}" -eq "0" ]; then
+            break # Stop adding keys after the first success
+        fi
+    done
+    sudo add-apt-repository -u -y "deb ${repo_url} ${VERSION_CODENAME} main"
+}
+
+
 ### Package dependencies setup ###
 
 # List of common package dependencies for the ILLIXR project,
 # grouped by purpose/feature
+
+pkg_dep_list_prereq="
+    curl
+    gnupg2
+    software-properties-common
+" # End list
 
 pkg_dep_list_common="
     build-essential
@@ -101,7 +136,8 @@ pkg_dep_list_realsense="
     librealsense2-utils
 " # End List
 
-# List of package dependency group names
+# List of package dependency group names (not including group 'prereq'
+# and other groups added later based on need/support)
 pkg_dep_groups="common gl mesa display image sound usb thread math nogroup"
 
 
@@ -126,25 +162,37 @@ fi
 
 ### Package dependencies installation ###
 
-# Flatten the package dependency list string to a single line, by group
+# Generate the list of package dependencies to install based on groups
 pkg_dep_list=""
 for group in ${pkg_dep_groups}; do
-    pkg_dep_list_group="pkg_dep_list_${group}"
-    pkg_dep_list+="$(echo ${!pkg_dep_list_group} | xargs) "
+    pkg_dep_list_group_var="pkg_dep_list_${group}"
+    pkg_dep_list_group=$(flatten_list "${!pkg_dep_list_group_var}")
+    pkg_dep_list+="${pkg_dep_list_group} "
 done
 
-echo "Packages marked for installation: ${pkg_dep_list}"
+echo "Packages marked for installation: $(flatten_list ${pkg_dep_list_prereq}) ${pkg_dep_list}"
 
-sudo apt-get install -y software-properties-common curl gnupg2
-curl https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
-sudo apt-add-repository -u -y "deb https://apt.kitware.com/ubuntu/ ${UBUNTU_CODENAME} main"
+# Refresh package list and grab prerequisite packages needed for package
+# and repository management within this script
+sudo apt-get update
+sudo apt-get install -y $(flatten_list ${pkg_dep_list_prereq})
+
+# Add Kitware repository (for third party Ubuntu dependencies)
+key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
+repo_url_kitware="https://apt.kitware.com/ubuntu"
+get_repo_with_add "${key_srv_url_kitware}" "${repo_url_kitware}"
 
 # If supported, add the gpg keys and repository for Intel RealSense
 if [ "${use_realsense}" == "yes" ]; then
-    sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
-    sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u
+    key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
+    key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
+    repo_url_realsense="http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo"
+    get_repo_with_adv "${key_srv_url_list_realsense}" "${key_id_realsense}" "${repo_url_realsense}"
 fi
 
+# Add repositories needed for drivers and miscellaneous dependencies (python)
 sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
 sudo add-apt-repository -u -y ppa:deadsnakes/ppa
+
+# Install all packages marked by this script
 sudo apt-get install -y ${pkg_dep_list}
