@@ -217,4 +217,9 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
+
+	struct thread_info : switchboard::event {
+		pid_t pid;
+		std::string name;
+	};
 }

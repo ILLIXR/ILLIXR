@@ -5,7 +5,9 @@
 #include <future>
 #include <algorithm>
 #include "plugin.hpp"
+#include "switchboard.hpp"
 #include "cpu_timer.hpp"
+#include "data_format.hpp"
 
 namespace ILLIXR {
 
@@ -28,57 +30,31 @@ const record_header __threadloop_iteration_header {"threadloop_iteration", {
  */
 class threadloop : public plugin {
 public:
-	threadloop(std::string name_, phonebook* pb_) : plugin(name_, pb_) { }
+	threadloop(std::string name_, phonebook* pb_)
+		: plugin(name_, pb_)
+		, sb{pb->lookup_impl<switchboard>()}
+		, thread_id_publisher{sb->get_writer<thread_info>(name_ + "_thread_id")}
+	{ }
 
 	/**
 	 * @brief Starts the thread.
 	 */
 	virtual void start() override {
 		plugin::start();
-		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
-	}
-
-	/**
-	 * @brief Stops the thread.
-	 */
-	virtual void stop() override {
-		if (! _m_terminate.load()) {
-			_m_terminate.store(true);
-			if (_m_thread.joinable()) {
-				_m_thread.join();
-				std::cerr << "Joined " << name << std::endl;
+		const managed_thread& thread = sb->schedule<switchboard::event_wrapper<bool>>(id, name + "_trigger", [this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
+			iteration_no++;
+			if (first_time) {
+				_p_thread_setup();
+				first_time = false;
 			}
-			plugin::stop();
-		} else {
-			std::cerr << "You called stop() on this plugin twice." << std::endl;
-		}
-	}
 
-	virtual ~threadloop() override {
-		if (!_m_terminate.load()) {
-			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
-			abort();
-		}
-	}
+			auto iteration_start_cpu_time  = thread_cpu_time();
+			auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
-protected:
-	std::size_t iteration_no = 0;
-	std::size_t skip_no = 0;
-
-private:
-
-	void thread_main() {
-		record_coalescer it_log {record_logger_};
-		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
-
-		_p_thread_setup();
-
-		while (!should_terminate()) {
 			skip_option s = _p_should_skip();
 
 			switch (s) {
 			case skip_option::skip_and_yield:
-				std::this_thread::yield();
 				++skip_no;
 				break;
 			case skip_option::skip_and_spin:
@@ -101,12 +77,28 @@ private:
 				skip_no = 0;
 				break;
 			}
-			case skip_option::stop:
-				stop();
-				break;
 			}
-		}
+		});
+		pid_t pid = thread.get_pid();
+
+		thread_info* info = thread_id_publisher.allocate();
+		info->pid = pid;
+		info->name = name;
+		thread_id_publisher.put(info);
+		std::cout << "thread," << pid << ",threadloop," << name << std::endl;
+
+
 	}
+
+protected:
+	std::size_t iteration_no = 0;
+	std::size_t skip_no = 0;
+
+private:
+	const std::shared_ptr<switchboard> sb;
+	switchboard::writer<thread_info> thread_id_publisher;
+	bool first_time = true;
+	record_coalescer it_log {record_logger_};
 
 protected:
 
@@ -117,12 +109,7 @@ protected:
 		/// AKA "busy wait". Skip but try again very quickly.
 		skip_and_spin,
 
-		/// Yielding gives up a scheduling quantum, which is determined by the OS, but usually on
-		/// the order of 1-10ms. This is nicer to the other threads in the system.
 		skip_and_yield,
-
-		/// Calls stop.
-		stop,
 	};
 
 	/**
