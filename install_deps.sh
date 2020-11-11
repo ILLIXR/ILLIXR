@@ -10,15 +10,38 @@ set -e
 cd "$(dirname "${0}")"
 
 ### Parse args ###
-
+show_help=0
+exit_code=
 assume_yes=
+JOBS=1
 while [[ "$#" -gt 0 ]]; do
     case "${1}" in
         -y|--yes) assume_yes=true ;;
-        *) echo "Unknown parameter passed: ${1}"; exit 1 ;;
+		-h|--help)
+			show_help=1
+			;;
+		-j|--jobs)
+			if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+				JOBS=$2
+				shift
+			else
+				echo "Error: Argument for number of jobs is missing"
+				show_help=1
+				exit_code=1
+			fi
+			;;
+        *) 	echo "Error: Unknown parameter passed: ${1}"; show_help=1; exit_code=1 ;;
     esac
     shift
 done
+
+if  [[ "$show_help" -eq 1 ]]; then
+	echo "ILLIXR install_deps:"
+	echo "    -y/--yes - yes to all dependencies"
+	echo "    -j/--jobs - number of jobs/cores/threads for make to use"
+	echo "    -h/--help - help info for install_deps"
+	exit $exit_code
+fi
 
 ### Get OS ###
 
@@ -47,7 +70,7 @@ function y_or_n() {
 if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]
 then
 	# Set nproc to either 1 or half the available cores
-	illixr_nproc=$(python3 -c 'import multiprocessing; print( max(multiprocessing.cpu_count() // 2, 1))')
+	illixr_nproc=$JOBS
 
 	# For system-wide installs that are not possible via apt
 	temp_dir=/tmp/ILLIXR_deps
