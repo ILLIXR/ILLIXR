@@ -74,7 +74,7 @@ function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
 
 # Function for flattening a string with items seperated by new lines
 # and white space to a single line seperated by a single space
-function flatten_list() { echo ${1} | xargs; }
+function flatten_list() { echo "${1}" | xargs; }
 
 
 ### Main ###

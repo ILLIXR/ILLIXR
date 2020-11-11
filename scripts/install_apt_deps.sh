@@ -12,7 +12,6 @@
 function get_repo_with_add() {
     key_srv_url_list=${1}
     repo_url=${2}
-    echo "Getting repo with '${1}' '${2}'"
     for key_srv_url in ${key_srv_url_list}; do
         curl "${key_srv_url}" | sudo apt-key add -
         if [ "${?}" -eq "0" ]; then
@@ -170,12 +169,15 @@ for group in ${pkg_dep_groups}; do
     pkg_dep_list+="${pkg_dep_list_group} "
 done
 
-echo "Packages marked for installation: $(flatten_list ${pkg_dep_list_prereq}) ${pkg_dep_list}"
+# Print all packages marked for installation
+echo -n "Packages marked for installation: "
+echo -n $(flatten_list "${pkg_dep_list_prereq}")
+echo " ${pkg_dep_list}"
 
 # Refresh package list and grab prerequisite packages needed for package
 # and repository management within this script
 sudo apt-get update
-sudo apt-get install -y $(flatten_list ${pkg_dep_list_prereq})
+sudo apt-get install -y $(flatten_list "${pkg_dep_list_prereq}")
 
 # Add Kitware repository (for third party Ubuntu dependencies)
 key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
