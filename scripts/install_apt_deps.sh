@@ -96,20 +96,17 @@ pkg_dep_list_nogroup="
     libgoogle-glog-dev
 " # End list
 
+pkg_dep_list_realsense="
+    librealsense2-dkms
+    librealsense2-utils
+" # End List
+
 # List of package dependency group names
 pkg_dep_groups="common gl mesa display image sound usb thread math nogroup"
-
-# Flatten the package dependency list string to a single line, by group
-pkg_dep_list=""
-for group in ${pkg_dep_groups}; do
-    pkg_dep_list_group="pkg_dep_list_${group}"
-    pkg_dep_list+="$(echo ${!pkg_dep_list_group} | xargs) "
-done
 
 
 ### Intel RealSense package dependencies setup ###
 
-pkg_dep_list_realsense="librealsense2-dkms librealsense2-utils"
 pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
 pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
 pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. If your project requires IntelRealSense support, please build and install the IntelRealSense SDK from source. For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
@@ -120,10 +117,7 @@ pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary packa
 echo "Detected OS: '${PRETTY_NAME}'"
 if [ "${ID}" == "ubuntu" ] && [ "${VERSION_ID}" == "18.04" ]; then
     use_realsense="yes"
-    pkg_dep_list+="${pkg_dep_list_realsense} "
-elif [ "${ID}" == "ubuntu" ] && [ "${VERSION_ID}" == "20.04" ]; then
-    use_realsense="no"
-    print_warning "${pkg_warn_msg_realsense}"
+    pkg_dep_groups+=" realsense"
 else
     use_realsense="no"
     print_warning "${pkg_warn_msg_realsense}"
@@ -131,6 +125,15 @@ fi
 
 
 ### Package dependencies installation ###
+
+# Flatten the package dependency list string to a single line, by group
+pkg_dep_list=""
+for group in ${pkg_dep_groups}; do
+    pkg_dep_list_group="pkg_dep_list_${group}"
+    pkg_dep_list+="$(echo ${!pkg_dep_list_group} | xargs) "
+done
+
+echo "Packages marked for installation: ${pkg_dep_list}"
 
 sudo apt-get install -y software-properties-common curl gnupg2
 curl https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
