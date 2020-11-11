@@ -4,6 +4,10 @@
 #include <thread>
 #include <functional>
 #include <atomic>
+#include <unistd.h>
+#include <sys/syscall.h>
+
+#define gettid() syscall(SYS_gettid)
 
 namespace ILLIXR {
 
@@ -17,9 +21,11 @@ private:
 	std::function<void()> _m_body;
 	std::function<void()> _m_on_start;
 	std::function<void()> _m_on_stop;
+	pid_t pid;
 
 	void thread_main() {
 		assert(_m_body);
+		pid = ::gettid();
 		if (_m_on_start) {
 			_m_on_start();
 		}
@@ -72,7 +78,7 @@ public:
 
 	/**
 	 */
-	state get_state() {
+	state get_state() const {
 		bool stopped = _m_stop.load();
 		if (false) {
 		} else if (!_m_body) {
@@ -105,6 +111,11 @@ public:
 		_m_stop.store(true);
 		_m_thread.join();
 		assert(get_state() == state::stopped);
+	}
+
+	pid_t get_pid() const {
+		assert(get_state() == state::running);
+		return pid;
 	}
 };
 

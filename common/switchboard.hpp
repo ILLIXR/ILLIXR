@@ -231,6 +231,10 @@ private:
 				_m_enqueued++;
 			}
 		}
+
+		const managed_thread& get_thread() const {
+			return _m_thread;
+		}
 	};
 
 	/**
@@ -307,11 +311,12 @@ private:
 		 *
 		 * Thread-safe
 		 */
-		void schedule(std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
+		const managed_thread& schedule(std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
 			// Write on _m_subscriptions.
 			// Must acquire unique state on _m_subscriptions_lock
 			const std::unique_lock lock{_m_subscriptions_lock};
 			_m_subscriptions.emplace_back(_m_name, plugin_id, callback, _m_record_logger);
+			return _m_subscriptions.back().get_thread();
 		}
 
 		/**
@@ -491,8 +496,8 @@ public:
 	 * @throws if topic already exists and its type does not match the @p event.
 	 */
 	template <typename specific_event>
-	void schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn) {
-		get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
+	const managed_thread& schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn) {
+		return get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
 			assert(this_event);
 			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 			assert(this_specific_event);
