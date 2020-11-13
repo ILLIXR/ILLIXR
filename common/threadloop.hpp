@@ -34,6 +34,7 @@ public:
 		: plugin(name_, pb_)
 		, sb{pb->lookup_impl<switchboard>()}
 		, thread_id_publisher{sb->get_writer<thread_info>(name_ + "_thread_id")}
+		, completion_publisher{sb->get_writer<switchboard::event_wrapper<bool>>(name_ + "_completion")}
 	{ }
 
 	/**
@@ -75,14 +76,14 @@ public:
 				}});
 				++iteration_no;
 				skip_no = 0;
+				completion_publisher.put(new (completion_publisher.allocate()) {true});
 				break;
 			}
 			}
 		});
-		pid_t pid = thread.get_pid();
 
 		thread_info* info = thread_id_publisher.allocate();
-		info->pid = pid;
+		info->pid = thread.get_pid();
 		info->name = name;
 		thread_id_publisher.put(info);
 		std::cout << "thread," << pid << ",threadloop," << name << std::endl;
@@ -97,6 +98,7 @@ protected:
 private:
 	const std::shared_ptr<switchboard> sb;
 	switchboard::writer<thread_info> thread_id_publisher;
+	switchboard::writer<switchboard::event_wrapper<bool>> completion_publisher;
 	bool first_time = true;
 	record_coalescer it_log {record_logger_};
 
