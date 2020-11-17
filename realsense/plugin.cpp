@@ -113,35 +113,29 @@ public:
                     // Images
                     std::optional<cv::Mat *> img0 = std::nullopt;
                     std::optional<cv::Mat *> img1 = std::nullopt;
-                    std::optional<cv::Mat *> rgb = std::nullopt;
-                    std::optional<cv::Mat *> depth = std::nullopt;
+                    std::optional<cv::Mat *> depth_img = std::nullopt;
+
+					// Removing this since rgb image is currently not used.
+					//std::optional<cv::Mat *> rgb = std::nullopt;
+					
                     if (last_iteration_cam != cam_type_.iteration)
                     {
                         last_iteration_cam = cam_type_.iteration;
                         img0 = cam_type_.img0;
                         img1 = cam_type_.img1;
-                        rgb = cam_type_.rgb;
-                        depth = cam_type_.depth;
+                        depth_img = cam_type_.depth;
                     }
 
                     // Submit to switchboard
                     _m_imu_cam->put(new imu_cam_type{
-                            imu_time_point,
-                            av,
-                            la,
-                            img0,
-                            img1,
-                            imu_time,
+							imu_time_point,
+								av,
+								la,
+								img0,
+								img1,
+								depth_img,
+								imu_time,
                         });
-
-                    if (rgb && depth)
-                    {
-                        _m_rgb_depth->put(new rgb_depth_type{
-                                rgb,
-                                depth,
-                                imu_time,
-                            });
-                    }
 
                     auto imu_integrator_params = new imu_integrator_seq{
                         .seq = static_cast<int>(++_imu_integrator_seq),

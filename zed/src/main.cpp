@@ -175,16 +175,17 @@ protected:
 
         std::optional<cv::Mat*> img0 = std::nullopt;
         std::optional<cv::Mat*> img1 = std::nullopt;
-        cv::Mat* depth = nullptr;
-        cv::Mat* rgb = nullptr;
+		std::optional<cv::Mat*> depth_img = std::nullopt;
+
+		// Removing this since rgb image is currently not used.
+		// cv::Mat* rgb = nullptr;
 
         const cam_type* c = _m_cam_type->get_latest_ro();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
             img1 = c->img1;
-            depth = c->depth;
-            rgb = c->rgb;
+            depth_img = c->depth;
         }
 
         it_log.log(record{__imu_cam_record, {
@@ -193,21 +194,15 @@ protected:
         }});
 
         _m_imu_cam->put(new imu_cam_type {
-            imu_time_point,
-            av,
-            la,
-            img0,
-            img1,
-            imu_time,
+				imu_time_point,
+					av,
+					la,
+					img0,
+					img1,
+					depth_img,
+					imu_time,
         });
 
-        if (rgb && depth) {
-            _m_rgb_depth->put(new rgb_depth_type{
-                    rgb,
-                    depth,
-                    imu_time
-                });
-        }
         auto imu_integrator_params = new imu_integrator_seq{
 			.seq = static_cast<int>(++_imu_integrator_seq),
 		};

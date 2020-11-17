@@ -73,6 +73,9 @@ protected:
 			: std::nullopt
 			;
 
+		// No depth image in current dataset
+		std::optional<cv::Mat*> depth_img = std::nullopt;
+		
 		if (cam0 && cam1) {
 			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
 			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
@@ -84,6 +87,7 @@ protected:
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
 			cam0,
 			cam1,
+			depth_img,
 			dataset_now,
 		};
 		_m_imu_cam->put(datum);
