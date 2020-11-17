@@ -1,9 +1,9 @@
 #!/bin/bash
 
-git clone https://github.com/dorian3d/DBoW2.git "${temp_dir}/DBoW2"
+git clone https://github.com/dorian3d/DBoW2.git "${opt_dir}/DBoW2"
 
 cmake \
-	-S "${temp_dir}/DBoW2" \
-	-B "${temp_dir}/DBoW2/build"
+	-S "${opt_dir}/DBoW2" \
+	-B "${opt_dir}/DBoW2/build"
 
-sudo make -C "${temp_dir}/DBoW2/build" "-j$(nproc)" install
+sudo make -C "${opt_dir}/DBoW2/build" "-j${illixr_nproc}" install
