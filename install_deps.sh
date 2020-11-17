@@ -24,14 +24,15 @@ while [[ "$#" -gt 0 ]]; do
 			exit_code=1
 			;;
 		-j|--jobs)
+			# Checks if the number of jobs is given and not negative
 			if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
 				illixr_nproc=$2
-				shift
 			else
-				echo "Error: Argument for number of jobs is missing"
+				echo "Error: Argument for number of jobs is missing or negative"
 				show_help=1
 				exit_code=1
 			fi
+			shift
 			;;
         *) 	echo "Error: Unknown parameter passed: ${1}"; show_help=1; exit_code=1 ;;
     esac
