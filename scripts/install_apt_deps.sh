@@ -155,6 +155,7 @@ pkg_dep_list_nogroup=(
     libgoogle-glog-dev
     libssl-dev
     libsdl2-dev
+    mkdocs
 ) # End list
 
 # List of selected/optional package dependencies for the ILLIXR project,
