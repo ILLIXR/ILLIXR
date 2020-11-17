@@ -90,6 +90,9 @@ then
         if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
             export use_docker="yes"
         fi
+        if y_or_n "^^^^  Also install CUDA (cuda) for GPU plugin support"; then
+            export use_cuda="yes"
+        fi
 		. ./scripts/install_apt_deps.sh
 	fi
 

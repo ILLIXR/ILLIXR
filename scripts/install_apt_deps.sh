@@ -9,13 +9,17 @@ fi
 if [ -z "${use_docker}" ]; then
     use_docker="no"
 fi
+if [ -z "${use_cuda}" ]; then
+    use_cuda="no"
+fi
 
 
 ### Initial setup ###
 
 # Source environment variables describing the current OS distribution
 . /etc/os-release
-echo "Detected OS: '${PRETTY_NAME}'"
+kernel_version="$(uname -r)"
+echo "Detected OS: '${PRETTY_NAME}' on kernel version '${kernel_version}'"
 
 
 ### Helper functions ###
@@ -34,7 +38,7 @@ function add_repo() {
     local key_id=${4}
     for key_srv_url in ${key_srv_url_list}; do
         if [ -z "${key_id}" ]; then
-            curl "${key_srv_url}" | sudo apt-key add -
+            sudo apt-key adv --fetch-keys "${key_srv_url}"
         else
             sudo apt-key adv --keyserver "${key_srv_url}" --recv-key "${key_id}"
         fi
@@ -42,7 +46,7 @@ function add_repo() {
             break # Stop adding keys after the first success
         fi
     done
-    sudo add-apt-repository -u -y "deb ${repo_url} ${VERSION_CODENAME} ${repo_comp}"
+    sudo add-apt-repository -u -y "deb ${repo_url} ${repo_comp}"
 }
 
 # Generate the list of package dependencies to install based on the provided package groups
@@ -55,7 +59,7 @@ function pkg_dep_list_from() {
     for group in ${pkg_dep_groups}; do
         pkg_dep_list_group_var="pkg_dep_list_${group}"
         pkg_dep_list_group="${pkg_dep_list_group_var}[@]"
-        pkg_dep_list+="${!pkg_dep_list_group} "
+        pkg_dep_list+=" ${!pkg_dep_list_group}"
     done
     echo "${pkg_dep_list}"
 }
@@ -175,6 +179,14 @@ pkg_dep_list_realsense=(
     librealsense2-utils
 ) # End List
 
+pkg_dep_list_prereq_cuda=(
+    linux-headers-${kernel_version}
+) # End List
+
+pkg_dep_list_cuda=(
+    cuda 
+) # End List
+
 # List of package dependency group names (for prerequisites and other
 # packages added later based on need/support)
 pkg_dep_groups_prereq="prereq"
@@ -195,14 +207,36 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
-pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
-pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. If your project requires Intel RealSense support, please build and install the Intel RealSense SDK from source. For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
 if [ "${ID}" == "ubuntu" ] && [ "${VERSION_ID}" == "18.04" ]; then
     use_realsense="yes"
     pkg_dep_groups+=" realsense"
 else
+    pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
+    pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
+    pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. If your project requires Intel RealSense support, please build and install the Intel RealSense SDK from source. For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
     print_warning "${pkg_warn_msg_realsense}"
+fi
+
+## CUDA ##
+
+# If CUDA is prompted for installation, check for a CUDA compatible NVIDIA GPU
+# Disable installation if not supported (only Ubuntu 18 for now) or no hardware is detected
+if [ "${use_cuda}" == "yes" ]; then
+    supported_gpus=$(lspci | egrep -i "\<VGA\>.*\<NVIDIA\>")
+    if [ -z "${supported_gpus}" ]; then
+        use_cuda="no"
+        pkg_support_url_cuda="https://developer.nvidia.com/cuda-gpus"
+        pkg_warn_msg_cuda="Unable to detect a CUDA compatible NVIDIA GPU. Check if your hardware is supported at '${pkg_warn_msg_cuda}'."
+        print_warning "${pkg_warn_msg_cuda}"
+    elif [ "${ID}" != "ubuntu" ] || [ "${VERSION_ID}" != "18.04" ]; then
+        use_cuda="no"
+        pkg_install_url_cuda="https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#package-manager-installation"
+        pkg_warn_msg_cuda="This ILLIXR script currently only supports Ubuntu 18 LTS. See '${pkg_install_url_cuda}' for details on your distribution's install process."
+        print_warning "${pkg_warn_msg_cuda}"
+    else
+        pkg_dep_groups_prereq+=" prereq_cuda"
+        pkg_dep_groups+=" cuda"
+    fi
 fi
 
 
@@ -221,13 +255,13 @@ sudo apt-get install -q -y ${pkg_dep_list}
 # Add Kitware repository (for third party Ubuntu dependencies)
 key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
 repo_url_kitware="https://apt.kitware.com/ubuntu"
-add_repo "${key_srv_url_kitware}" "${repo_url_kitware}" "main"
+add_repo "${key_srv_url_kitware}" "${repo_url_kitware}" "${VERSION_CODENAME} main"
 
 # If prompted, add Docker repository (for local CI/CD debugging)
 if [ "${use_docker}" == "yes" ]; then
     key_srv_url_docker="https://download.docker.com/linux/ubuntu/gpg"
     repo_url_docker="https://download.docker.com/linux/ubuntu"
-    add_repo "${key_srv_url_docker}" "${repo_url_docker}" "stable"
+    add_repo "${key_srv_url_docker}" "${repo_url_docker}" "${VERSION_CODENAME} stable"
 fi
 
 # If supported, add the gpg keys and repository for Intel RealSense
@@ -235,12 +269,22 @@ if [ "${use_realsense}" == "yes" ]; then
     key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
     repo_url_realsense="http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo"
     key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
-    add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "main" "${key_id_realsense}"
+    add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "${VERSION_CODENAME} main" "${key_id_realsense}"
 fi
 
-# Add repositories needed for drivers and miscellaneous dependencies (python)
-sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
-sudo add-apt-repository -u -y ppa:deadsnakes/ppa
+# If supported, add the keys and repository for CUDA (for GPU plugin support)
+if [ "${use_cuda}" == "yes" ]; then
+    distro_cuda="ubuntu1804"
+    arch_cuda="x86_64"
+    repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_cuda}/${arch_cuda}"
+    key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
+    add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
+
+    path_cmd_cuda='export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}'
+    lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
+    pkg_warn_msg_cuda="Before running ILLIXR with plugins using CUDA, make sure to update the following environment variables:\n> ${path_cmd_cuda}\n> ${lib64_cmd_cuda}"
+    print_warning "${pkg_warn_msg_cuda}"
+fi
 
 
 ### General package dependencies installation ###
