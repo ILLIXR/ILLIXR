@@ -13,16 +13,19 @@ cd "$(dirname "${0}")"
 show_help=0
 exit_code=
 assume_yes=
-JOBS=1
+
+# Set nproc to either 1 or half the available cores
+illixr_nproc=1
 while [[ "$#" -gt 0 ]]; do
     case "${1}" in
         -y|--yes) assume_yes=true ;;
 		-h|--help)
 			show_help=1
+			exit_code=1
 			;;
 		-j|--jobs)
 			if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-				JOBS=$2
+				illixr_nproc=$2
 				shift
 			else
 				echo "Error: Argument for number of jobs is missing"
@@ -69,9 +72,6 @@ function y_or_n() {
 
 if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]
 then
-	# Set nproc to either 1 or half the available cores
-	illixr_nproc=$JOBS
-
 	# For system-wide installs that are not possible via apt
 	temp_dir=/tmp/ILLIXR_deps
 	mkdir -p "${temp_dir}"
