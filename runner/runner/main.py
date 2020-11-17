@@ -190,6 +190,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         openxr_app_path / "build",
         dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
     )
+    build_runtime(config, "so")
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [
