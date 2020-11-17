@@ -32,7 +32,7 @@ jobs:
       # Performs the docker build and pulls the cache from either the branch name tag or from latest.
       # The latest tag is what is on master so it will use that cache the first time this branch runs
       - name: Build Docker Image
-        run: docker build --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        run: docker build --build-arg JOBS="$(nproc)" --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
 
       - if: ${{ env.ghcr_token }}
         name: Push Docker Image

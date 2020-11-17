@@ -8,7 +8,7 @@ cd "${opt_dir}/qemu/build"
 ../configure --enable-sdl --enable-opengl --enable-virglrenderer --enable-system --enable-modules --audio-drv-list=pa --target-list=x86_64-softmmu --enable-kvm
 
 # Build
-make -j$(nproc --ignore=1)
+make "-j${illixr_nproc}"
 
 # Qemu is located at:
 # ${opt_dir}/qemu/build/x86_64-softmmu/qemu-system-x86_64
