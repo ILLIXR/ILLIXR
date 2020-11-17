@@ -252,6 +252,10 @@ echo "Installing prerequisite packages: ${pkg_dep_list}"
 sudo apt-get update
 sudo apt-get install -q -y ${pkg_dep_list}
 
+# Add repositories needed for drivers and miscellaneous dependencies (python)
+sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
+sudo add-apt-repository -u -y ppa:deadsnakes/ppa
+
 # Add Kitware repository (for third party Ubuntu dependencies)
 key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
 repo_url_kitware="https://apt.kitware.com/ubuntu"
