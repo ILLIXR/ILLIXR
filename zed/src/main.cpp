@@ -21,7 +21,8 @@ const record_header __imu_cam_record {"imu_cam", {
 typedef struct {
     cv::Mat* img0;
     cv::Mat* img1;
-    cv::Mat* rgb;
+    cv::Mat* rgb_img0;
+	cv::Mat* rgb_img1;
     cv::Mat* depth;
     std::size_t serial_no;
 } cam_type;
@@ -64,12 +65,14 @@ public:
         // Image setup
         imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
         imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
-        rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        rgbL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        rgbR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
         depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1, MEM::CPU);
 
         imageL_ocv = slMat2cvMat(imageL_zed);
         imageR_ocv = slMat2cvMat(imageR_zed);
-        rgb_ocv = slMat2cvMat(rgb_zed);
+		rgbL_ocv = slMat2cvMat(rgbL_zed);
+		rgbR_ocv = slMat2cvMat(rgbR_zed);
         depth_ocv = slMat2cvMat(depth_zed);
     }
 
@@ -84,12 +87,14 @@ private:
     Mat imageL_zed;
     Mat imageR_zed;
     Mat depth_zed;
-    Mat rgb_zed;
+    Mat rgbL_zed;
+	Mat rgbR_zed;
 
     cv::Mat imageL_ocv;
     cv::Mat imageR_ocv;
     cv::Mat depth_ocv;
-    cv::Mat rgb_ocv;
+    cv::Mat rgbL_ocv;
+	cv::Mat rgbR_ocv;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -105,7 +110,8 @@ protected:
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
-        zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
+        zedm->retrieveImage(rgbL_zed, VIEW::LEFT, MEM::CPU, image_size);
+		zedm->retrieveImage(rgbR_zed, VIEW::RIGHT, MEM::CPU, image_size);
 
         auto start_cpu_time  = thread_cpu_time();
         auto start_wall_time = std::chrono::high_resolution_clock::now();
@@ -114,7 +120,8 @@ protected:
             // Make a copy, so that we don't have race
             new cv::Mat{imageL_ocv},
             new cv::Mat{imageR_ocv},
-            new cv::Mat{rgb_ocv},
+            new cv::Mat{rgbL_ocv},
+            new cv::Mat{rgbR_ocv},	
             new cv::Mat{depth_ocv},
             iteration_no,
         });
@@ -175,16 +182,17 @@ protected:
 
         std::optional<cv::Mat*> img0 = std::nullopt;
         std::optional<cv::Mat*> img1 = std::nullopt;
+        std::optional<cv::Mat*> rgb_img0 = std::nullopt;
+        std::optional<cv::Mat*> rgb_img1 = std::nullopt;
 		std::optional<cv::Mat*> depth_img = std::nullopt;
-
-		// Removing this since rgb image is currently not used.
-		// cv::Mat* rgb = nullptr;
 
         const cam_type* c = _m_cam_type->get_latest_ro();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
             img1 = c->img1;
+			rgb_img0 = c->rgb_img0;
+            rgb_img1 = c->rgb_img1;
             depth_img = c->depth;
         }
 
@@ -199,6 +207,8 @@ protected:
 					la,
 					img0,
 					img1,
+					rgb_img0,
+					rgb_img1,
 					depth_img,
 					imu_time,
         });

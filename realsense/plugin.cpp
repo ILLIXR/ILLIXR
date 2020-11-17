@@ -18,7 +18,7 @@ static constexpr int ACCEL_RATE = 250; // 63 or 250
 typedef struct {
 	cv::Mat* img0;
 	cv::Mat* img1;
-	cv::Mat* rgb;
+	cv::Mat* rgb_img0;
 	cv::Mat* depth;
 	int iteration;
 } cam_type;
@@ -113,16 +113,17 @@ public:
                     // Images
                     std::optional<cv::Mat *> img0 = std::nullopt;
                     std::optional<cv::Mat *> img1 = std::nullopt;
+					std::optional<cv::Mat *> rgb_img0 = std::nullopt;
+					// Realsense only has rgb image for left image so rgb_img1 will always be null
+                    std::optional<cv::Mat *> rgb_img1 = std::nullopt;
                     std::optional<cv::Mat *> depth_img = std::nullopt;
-
-					// Removing this since rgb image is currently not used.
-					//std::optional<cv::Mat *> rgb = std::nullopt;
 					
                     if (last_iteration_cam != cam_type_.iteration)
                     {
                         last_iteration_cam = cam_type_.iteration;
                         img0 = cam_type_.img0;
                         img1 = cam_type_.img1;
+						rgb_img0 = cam_type_rgb_img0;
                         depth_img = cam_type_.depth;
                     }
 
@@ -133,6 +134,8 @@ public:
 								la,
 								img0,
 								img1,
+								rgb_img0,
+								rgb_img1,
 								depth_img,
 								imu_time,
                         });

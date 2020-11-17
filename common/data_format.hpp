@@ -32,6 +32,8 @@ namespace ILLIXR {
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat*> img0;
 		std::optional<cv::Mat*> img1;
+		std::optional<cv::Mat*> rgb_img0;
+		std::optional<cv::Mat*> rgb_img1;
 		std::optional<cv::Mat*> depth_img;
 		ullong dataset_time;
 	} imu_cam_type;

@@ -73,6 +73,10 @@ protected:
 			: std::nullopt
 			;
 
+		// No rgb images in current dataset
+		std::optional<cv::Mat*> rgb_img0 = std::nullopt;
+		std::optional<cv::Mat*> rgb_img1 = std::nullopt;
+
 		// No depth image in current dataset
 		std::optional<cv::Mat*> depth_img = std::nullopt;
 		
@@ -87,6 +91,8 @@ protected:
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
 			cam0,
 			cam1,
+			rgb_img0,
+			rgb_img1,
 			depth_img,
 			dataset_now,
 		};
