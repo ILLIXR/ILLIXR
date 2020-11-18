@@ -21,22 +21,33 @@
 namespace ILLIXR {
 
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
-	typedef unsigned long long ullong;
+	typedef unsigned long long
 
-	// Data type that combines the IMU and camera data at a certain timestamp.
-	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
-	// time is the current UNIX time where dataset_time is the time read from the csv
+	// IMU Data type, dataset_time is an optional value that can be set for when
+	// the IMU data comes from a dataset.
 	typedef struct {
 		time_type time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
+		std::optional<ullong> dataset_time;
+	} imu_type;
+
+	// Stereo Images Data type, dataset_time is an optional value that can be set for when
+	// the image data comes from a dataset.
+	typedef struct {
+		time_type time;
 		std::optional<cv::Mat*> img0;
 		std::optional<cv::Mat*> img1;
-		std::optional<cv::Mat*> rgb_img0;
-		std::optional<cv::Mat*> rgb_img1;
-		std::optional<cv::Mat*> depth_img;
-		ullong dataset_time;
-	} imu_cam_type;
+		std::optional<ullong> dataset_time;
+	} stereo_image_type;
+
+	// Mono Image Data type, dataset_time is an optional value that can be set for when
+	// the image data comes from a dataset.
+	typedef struct {
+		time_type time;
+		std::optional<cv::Mat*> img0;
+		std::optional<ullong> dataset_time;
+	} mono_image_type;
 
 	// Values needed to initialize the IMU integrator
 	typedef struct {
