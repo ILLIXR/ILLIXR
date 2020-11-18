@@ -38,12 +38,6 @@ namespace ILLIXR {
 		ullong dataset_time;
 	} imu_cam_type;
 
-    // typedef struct {
-    //     std::optional<cv::Mat*> rgb;
-    //     std::optional<cv::Mat*> depth;
-    //     ullong timestamp;
-    // } rgb_depth_type;
-
 	// Values needed to initialize the IMU integrator
 	typedef struct {
 		double gyro_noise;
