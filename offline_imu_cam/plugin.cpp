@@ -21,7 +21,8 @@ public:
 		, _m_sensor_data{load_data()}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{_m_sb->publish<imu_cam_type>("imu_cam")}
+		, _m_imu{_m_sb->publish<imu_type>("imu")}
+		, _m_stereo_cam{_m_sb->publish<stereo_img_type>("stero_cam")}
 		, _m_imu_integrator{_m_sb->publish<imu_integrator_seq>("imu_integrator_seq")}
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
@@ -73,30 +74,33 @@ protected:
 			: std::nullopt
 			;
 
-		// No rgb images in current dataset
-		std::optional<cv::Mat*> rgb_img0 = std::nullopt;
-		std::optional<cv::Mat*> rgb_img1 = std::nullopt;
+		std::optional<ullong> dataset_time = dataset_now
+			? std::make_optional<dataset_time>(dataset_now)
+			: std::nullopt
+			;
 
-		// No depth image in current dataset
-		std::optional<cv::Mat*> depth_img = std::nullopt;
-		
+
 		if (cam0 && cam1) {
 			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
 			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
 		}
 
-		auto datum = new imu_cam_type{
+		auto imu_datum = new imu_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
-			cam0,
-			cam1,
-			rgb_img0,
-			rgb_img1,
-			depth_img,
-			dataset_now,
+			dataset_time,
 		};
-		_m_imu_cam->put(datum);
+
+		auto stereo_cam_datum = new stereo_img_type{
+			real_now,
+			cam0,
+			cam1
+			dataset_time,
+		};
+
+		_m_imu->put(imu_datum);
+		_m_stereo_cam->put(stereo_cam_datum);
 
 		auto imu_integrator_params = new imu_integrator_seq{
 			.seq = static_cast<int>(++_imu_integrator_seq),
@@ -116,7 +120,8 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	const std::shared_ptr<switchboard> _m_sb;
-	std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
+	std::unique_ptr<writer<imu_type>> _m_imu;
+	std::unique_ptr<writer<stereo_img_type>> _m_stereo_cam;
 	std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
 
 	// Timestamp of the first IMU value from the dataset
