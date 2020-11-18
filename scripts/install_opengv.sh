@@ -1,11 +1,11 @@
 #!/bin/bash
 
-git clone https://github.com/laurentkneip/opengv.git "${temp_dir}/opengv"
+git clone https://github.com/laurentkneip/opengv.git "${opt_dir}/opengv"
 
 cmake \
-	-S "${temp_dir}/opengv" \
-	-B "${temp_dir}/opengv/build" \
-    -D EIGEN_INCLUDE_DIR="${temp_dir}/gtsam/gtsam/3rdparty/Eigen" \
-    -D EIGEN_INCLUDE_DIRS="${temp_dir}/gtsam/gtsam/3rdparty/Eigen"
+	-S "${opt_dir}/opengv" \
+	-B "${opt_dir}/opengv/build" \
+    -D EIGEN_INCLUDE_DIR="${opt_dir}/gtsam/gtsam/3rdparty/Eigen" \
+    -D EIGEN_INCLUDE_DIRS="${opt_dir}/gtsam/gtsam/3rdparty/Eigen"
 
-sudo make -C "${temp_dir}/opengv/build" "-j$(nproc)" install
+sudo make -C "${opt_dir}/opengv/build" "-j${illixr_nproc}" install

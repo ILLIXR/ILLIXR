@@ -5,4 +5,4 @@ cmake \
 	-S "${temp_dir}/Vulkan-Headers" \
 	-B "${temp_dir}/Vulkan-Headers/build" \
 	-D CMAKE_INSTALL_PREFIX=install
-sudo make -C "${temp_dir}/Vulkan-Headers/build" "-j$(nproc)" install
+sudo make -C "${temp_dir}/Vulkan-Headers/build" "-j${illixr_nproc}" install
