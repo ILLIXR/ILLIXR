@@ -61,6 +61,10 @@ def unflatten(it: Iterable[V]) -> Iterable[Iterable[V]]:
 
 
 def flatten_maps_list(maps: List[Mapping[str, str]], key_prefix: Optional[str] = "") -> Mapping[str, str]:
+    """
+    Take a list of maps, returning a single map with every mapping found with
+    each key name updated with the (optionally) provided key prefix
+    """
     flat_map = dict()
     for m in maps:
         for k, v in m.items():

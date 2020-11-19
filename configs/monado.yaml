@@ -40,3 +40,6 @@ action:
   audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
 
 profile: opt
+
+#constants:
+#  - !include "global_module_defs.yaml"

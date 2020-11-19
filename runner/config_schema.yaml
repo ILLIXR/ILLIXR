@@ -185,4 +185,4 @@ properties:
       default: {}
       additionalProperties:
         type: string
-      description: A map of constant names to their set (stringified) values. For examples, a constant with name "FOO" will be set in the application environment to the value provided under the name "DEFAULT_FOO". The value can be destringified at application run-time.
+      description: A map of constant names to their set (stringified) values. The value can be destringified at application run-time.

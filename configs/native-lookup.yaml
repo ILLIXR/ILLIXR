@@ -34,3 +34,6 @@ action:
   # log_stdout: metrics/output.log
 
 profile: opt
+
+#constants:
+#  - !include "global_module_defs.yaml"

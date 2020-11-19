@@ -17,8 +17,8 @@
 
 using namespace ILLIXR;
 
-static const int GLX_FB_WIDTH   { ILLIXR::DEFAULT_FB_WIDTH  };
-static const int GLX_FB_HEIGHT  { ILLIXR::DEFAULT_FB_HEIGHT };
+static const int GLX_FB_WIDTH   { ILLIXR::FB_WIDTH  };
+static const int GLX_FB_HEIGHT  { ILLIXR::FB_HEIGHT };
 
 
 class runtime_impl : public runtime {

@@ -5,7 +5,7 @@
 
 
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION {10};
-const std::chrono::seconds ILLIXR_RUN_DURATION { ILLIXR::DEFAULT_RUN_DURATION };
+const std::chrono::seconds ILLIXR_RUN_DURATION { ILLIXR::RUN_DURATION };
 
 ILLIXR::runtime* r;
 

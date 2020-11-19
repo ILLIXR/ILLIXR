@@ -24,14 +24,20 @@ namespace ILLIXR
  * _FROM_STR:   The conversion function from a std::string to a value of type _TYPE
  * _VALUE:      The default value for the constant
  *
+ * This declaration provides two constant definitions given a variable name "FOO":
+ *   1. A const FOO of type _TYPE which is initialized to the default value if
+ *      the environment variable "FOO" does not exist or is an empty string
+ *   2. A constexpr DEFAULT_FOO of type _TYPE which is always initialized to the
+ *      default value provided
+ *
  * TODO: Support dynamic type casting
- * TODO: Support more than just longs/integers
  * TODO: Support constexpr
  */
 #ifndef DECLARE_CONST
 #define DECLARE_CONST(_NAME, _TYPE, _FROM_STR, _VALUE) \
 static const std::string VAL_STR_##_NAME{ var_from_env(STRINGIFY(_NAME)) }; \
-static const _TYPE _NAME{ (VAL_STR_##_NAME.empty()) ? _VALUE : _FROM_STR(VAL_STR_##_NAME) }
+static const _TYPE _NAME{ (VAL_STR_##_NAME.empty()) ? _VALUE : _FROM_STR(VAL_STR_##_NAME) }; \
+static constexpr _TYPE DEFAULT_##_NAME{ _VALUE }
 #endif // DECLARE_CONST
 
 
@@ -52,9 +58,9 @@ inline bool str_to_bool(std::string var) {
 }
 
 
-DECLARE_CONST(DEFAULT_FB_WIDTH,     int,    std::stoi,  2560); // Pixels
-DECLARE_CONST(DEFAULT_FB_HEIGHT,    int,    std::stoi,  1440); // Pixels
-DECLARE_CONST(DEFAULT_RUN_DURATION, long,   std::stol,  60L ); // Seconds
-DECLARE_CONST(DEFAULT_REFRESH_RATE, double, std::stod,  60.0); // Hz
+DECLARE_CONST(FB_WIDTH,     int,    std::stoi,  2560); // Pixels
+DECLARE_CONST(FB_HEIGHT,    int,    std::stoi,  1440); // Pixels
+DECLARE_CONST(RUN_DURATION, long,   std::stol,  60L ); // Seconds
+DECLARE_CONST(REFRESH_RATE, double, std::stod,  60.0); // Hz
 
 }
