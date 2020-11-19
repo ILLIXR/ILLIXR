@@ -14,7 +14,12 @@
 #include "common/error_util.hpp"
 #include "common/stoplight.hpp"
 
+
 using namespace ILLIXR;
+
+static const int GLX_FB_WIDTH   { ILLIXR::DEFAULT_FB_WIDTH  };
+static const int GLX_FB_HEIGHT  { ILLIXR::DEFAULT_FB_HEIGHT };
+
 
 class runtime_impl : public runtime {
 public:

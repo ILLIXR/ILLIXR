@@ -60,6 +60,14 @@ def unflatten(it: Iterable[V]) -> Iterable[Iterable[V]]:
         yield (elem,)
 
 
+def flatten_maps_list(maps: List[Mapping[str, str]], key_prefix: Optional[str] = "") -> Mapping[str, str]:
+    flat_map = dict()
+    for m in maps:
+        for k, v in m.items():
+            flat_map[key_prefix + k] = v
+    return flat_map
+
+
 def replace_all(it: Iterable[V], replacements: Mapping[V, V]) -> Iterable[V]:
     for elem in it:
         yield replacements.get(elem, elem)
@@ -144,6 +152,7 @@ def subprocess_run(
     check: bool = False,
     env: Optional[Mapping[str, str]] = None,
     env_override: Optional[Mapping[str, str]] = None,
+    env_constants: Optional[Mapping[str, str]] = None,
     capture_output: bool = False,
     stdout: Optional[BinaryIO] = None,
 ) -> subprocess.CompletedProcess[bytes]:
@@ -163,6 +172,8 @@ def subprocess_run(
     cwd = (cwd if isinstance(cwd, Path) else Path(cwd)) if cwd is not None else Path()
     if env_override:
         env.update(env_override)
+    if env_constants:
+        env.update(env_constants)
 
     proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout)
 

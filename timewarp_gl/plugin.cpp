@@ -9,6 +9,7 @@
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
+#include "common/global_module_defs.hpp"
 #include "utils/hmd.hpp"
 #include "common/math_util.hpp"
 #include "shaders/basic_shader.hpp"
@@ -18,6 +19,8 @@
 #include "common/error_util.hpp"
 
 using namespace ILLIXR;
+
+
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
@@ -69,18 +72,18 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 
-	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
-	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
+    static const int SCREEN_WIDTH  { ILLIXR::DEFAULT_FB_WIDTH  };
+    static const int SCREEN_HEIGHT { ILLIXR::DEFAULT_FB_HEIGHT };
 
-	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
+    static const double DISPLAY_REFRESH_RATE { ILLIXR::DEFAULT_REFRESH_RATE };
+    static const std::chrono::nanoseconds vsync_period { static_cast<size_t>(NANO_SEC/DISPLAY_REFRESH_RATE) };
+
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
 
 	// Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
 	static constexpr double DELAY_FRACTION = 0.8;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
-
-	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
 
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
 

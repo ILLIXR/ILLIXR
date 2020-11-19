@@ -1,0 +1,13 @@
+---
+### Global definitions visible to all modules ###
+# 
+# Users are free to place any new (arbitrary) constant definitions here
+# Definitions are added to the environment variables with the prefix "DEFAULT_"
+#
+#FB_WIDTH:     "2560"
+#FB_HEIGHT:    "1400"
+#RUN_DURATION: "60"
+#REFRESH_RATE: "60.0"
+# 
+# Dummy value used to allow compilation without any overriding defaults
+DUMMY_VAR:     "VALUE"

@@ -13,6 +13,7 @@
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/gl_util/obj.hpp"
+#include "common/global_module_defs.hpp"
 #include "shaders/demo_shader.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/error_util.hpp"
@@ -22,7 +23,11 @@ using namespace ILLIXR;
 static constexpr int   EYE_TEXTURE_WIDTH   = ILLIXR::FB_WIDTH;
 static constexpr int   EYE_TEXTURE_HEIGHT  = ILLIXR::FB_HEIGHT;
 
-static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
+static const int EYE_TEXTURE_WIDTH   { ILLIXR::DEFAULT_FB_WIDTH  };
+static const int EYE_TEXTURE_HEIGHT  { ILLIXR::DEFAULT_FB_HEIGHT };
+
+static const double DISPLAY_REFRESH_RATE { ILLIXR::DEFAULT_REFRESH_RATE };
+static const std::chrono::nanoseconds VSYNC_PERIOD { static_cast<size_t>(NANO_SEC/DISPLAY_REFRESH_RATE) };
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
 // Monado-style eyebuffers:
@@ -60,7 +65,7 @@ public:
 		if (next_vsync == nullptr) {
 			// If no vsync data available, just sleep for roughly a vsync period.
 			// We'll get synced back up later.
-			std::this_thread::sleep_for(vsync_period);
+			std::this_thread::sleep_for(VSYNC_PERIOD);
 			return;
 		}
 
@@ -71,7 +76,7 @@ public:
 		}
 #endif
 		
-		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
+		bool hasRenderedThisInterval = (now - lastFrameTime) < VSYNC_PERIOD;
 
 		// If less than one frame interval has passed since we last rendered...
 		if (hasRenderedThisInterval)
@@ -84,7 +89,7 @@ public:
 			// by a vsync period, so it's always in the future.
 			while(wait_time < now)
 			{
-				wait_time += vsync_period;
+				wait_time += VSYNC_PERIOD;
 			}
 
 #ifndef NDEBUG

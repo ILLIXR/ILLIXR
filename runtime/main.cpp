@@ -4,8 +4,8 @@
 #include "common/global_module_defs.hpp"
 
 
-constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION {10};
+const std::chrono::seconds ILLIXR_RUN_DURATION { ILLIXR::DEFAULT_RUN_DURATION };
 
 ILLIXR::runtime* r;
 
@@ -96,10 +96,7 @@ int main(int argc, char* const* argv) {
 #endif /// NDEBUG
 
 	/// Shutting down method 2: Run timer
-	std::chrono::seconds run_duration = 
-		getenv("ILLIXR_RUN_DURATION")
-		? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
-		: ILLIXR_RUN_DURATION_DEFAULT;
+    std::chrono::seconds run_duration = ILLIXR_RUN_DURATION;
 
 	RAC_ERRNO_MSG("main after creating runtime");
 
