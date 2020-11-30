@@ -7,6 +7,14 @@
 #FB_HEIGHT:    "1400"
 #RUN_DURATION: "60"
 #REFRESH_RATE: "60.0"
-# 
-# Dummy value used to allow compilation without any overriding defaults
-DUMMY_VAR:     "VALUE"
+#
+
+# URI to offline IMU/cam data (omit if not applicable)
+DATA_PATH:
+  subpath: mav0
+  relative_to:
+    archive_path:
+      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+
+# URI to objects to render in gldemo
+DEMO_OBJ_PATH: demo_data/

@@ -151,12 +151,6 @@ properties:
             additionalProperties:
               type: string
             description: Vars that get passed to the build system
-  data:
-    $ref: '#/definitions/path'
-    description: URL to offline IMU/cam data. Omit if not applicable.
-  demo_data:
-    $ref: '#/definitions/path'
-    description: URL to OBJs to render in gldemo.
   enable_offload:
     type: boolean
     description: Flag to activate data collection at runtime.
@@ -184,5 +178,5 @@ properties:
       type: object
       default: {}
       additionalProperties:
-        type: string
+        $ref: '#/definitions/path'
       description: A map of constant names to their set (stringified) values. The value can be destringified at application run-time.

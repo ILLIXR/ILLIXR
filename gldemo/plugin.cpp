@@ -20,8 +20,7 @@
 
 using namespace ILLIXR;
 
-static constexpr int   EYE_TEXTURE_WIDTH   = ILLIXR::FB_WIDTH;
-static constexpr int   EYE_TEXTURE_HEIGHT  = ILLIXR::FB_HEIGHT;
+static const std::string OBJ_DIR { ILLIXR::DEMO_OBJ_PATH };
 
 static const int EYE_TEXTURE_WIDTH   { ILLIXR::FB_WIDTH  };
 static const int EYE_TEXTURE_HEIGHT  { ILLIXR::FB_HEIGHT };
@@ -402,13 +401,8 @@ public:
 		RAC_ERRNO_MSG("gldemo after glGetUniformLocation");
 
 		// Load/initialize the demo scene.
-
-		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-		if (obj_dir == nullptr) {
-            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
-		}
-		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
-
+		demoscene = ObjScene(OBJ_DIR, "scene.obj");
+		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 

@@ -8,17 +8,19 @@ import operator
 import os
 import queue
 import shlex
+import shutil
 import subprocess
 import sys
+import textwrap
 import threading
 import urllib.parse
 import urllib.request
+import zipfile
+from dataclasses import dataclass
 from pathlib import Path
-import shutil
-import textwrap
 from types import TracebackType
 from typing import (
-    cast,
+    IO,
     Any,
     AnyStr,
     Awaitable,
@@ -26,8 +28,9 @@ from typing import (
     Callable,
     Iterable,
     Iterator,
+    Dict,
     Generic,
-    IO,
+    Iterable,
     List,
     Mapping,
     Optional,
@@ -37,8 +40,8 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
 )
-import zipfile
 
 from tqdm import tqdm
 
@@ -60,12 +63,14 @@ def unflatten(it: Iterable[V]) -> Iterable[Iterable[V]]:
         yield (elem,)
 
 
-def flatten_maps_list(maps: List[Mapping[str, str]], key_prefix: Optional[str] = "") -> Mapping[str, str]:
+def flatten_maps_list(
+    maps: List[Mapping[str, V]], key_prefix: str = ""
+) -> Mapping[str, V]:
     """
     Take a list of maps, returning a single map with every mapping found with
     each key name updated with the (optionally) provided key prefix
     """
-    flat_map = dict()
+    flat_map: Dict[str, V] = dict()
     for m in maps:
         for k, v in m.items():
             flat_map[key_prefix + k] = v
@@ -118,13 +123,13 @@ def escape_fname(string: str) -> str:
 class CalledProcessError(Exception):
     # unfortunately, Exception is not compatible with @dataclass
     def __init__(
-            self,
-            args: Sequence[str],
-            cwd: Path,
-            env: Mapping[str, str],
-            stdout: bytes,
-            stderr: bytes,
-            returncode: int,
+        self,
+        args: Sequence[str],
+        cwd: Path,
+        env: Mapping[str, str],
+        stdout: bytes,
+        stderr: bytes,
+        returncode: int,
     ) -> None:
         self.args2 = args
         self.cwd = cwd
@@ -156,7 +161,6 @@ def subprocess_run(
     check: bool = False,
     env: Optional[Mapping[str, str]] = None,
     env_override: Optional[Mapping[str, str]] = None,
-    env_constants: Optional[Mapping[str, str]] = None,
     capture_output: bool = False,
     stdout: Optional[BinaryIO] = None,
 ) -> subprocess.CompletedProcess[bytes]:
@@ -176,8 +180,6 @@ def subprocess_run(
     cwd = (cwd if isinstance(cwd, Path) else Path(cwd)) if cwd is not None else Path()
     if env_override:
         env.update(env_override)
-    if env_constants:
-        env.update(env_constants)
 
     proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout)
 
@@ -194,7 +196,7 @@ T = TypeVar("T")
 
 def chunker(it: Iterable[T], size: int) -> Iterable[List[T]]:
     """chunk input into size or less chunks
-shamelessly swiped from Lib/multiprocessing.py:Pool._get_task"""
+    shamelessly swiped from Lib/multiprocessing.py:Pool._get_task"""
     it = iter(it)
     while True:
         x = list(itertools.islice(it, size))
@@ -249,7 +251,7 @@ def threading_imap_unordered(
             except queue.Empty:
                 pass
             else:
-                if result[0] == "elem":
+                if result[0] == "elem" and not isinstance(result[1], BaseException):
                     tqdm.write(str(result[1]))
                     yield cast(V, result[1])
                 elif result[0] == "exception":
@@ -320,6 +322,7 @@ def fill_defaults(
 
 BLOCKSIZE = 4096
 
+
 @dataclass
 class TqdmOutputFile(Generic[AnyStr]):
     fileobj: IO[AnyStr]
@@ -337,7 +340,12 @@ class TqdmOutputFile(Generic[AnyStr]):
     def __enter__(self) -> TqdmOutputFile[AnyStr]:
         return self
 
-    def __exit__(self, exctype: Optional[Type[BaseException]], excinst: Optional[BaseException], exctb: Optional[TracebackType]) -> None:
+    def __exit__(
+        self,
+        exctype: Optional[Type[BaseException]],
+        excinst: Optional[BaseException],
+        exctb: Optional[TracebackType],
+    ) -> None:
         self.close()
 
     def close(self) -> None:
@@ -347,7 +355,7 @@ class TqdmOutputFile(Generic[AnyStr]):
     @staticmethod
     def from_url(url: str, desc: Optional[str] = None) -> TqdmOutputFile[bytes]:
         resp = urllib.request.urlopen(url)
-        length = int(resp.getheader('content-length'))
+        length = int(resp.getheader("content-length"))
         return TqdmOutputFile(cast(IO[bytes], resp), length, desc)
 
 
@@ -355,12 +363,14 @@ def truncate(string: str, length: int) -> str:
     if len(string) <= length:
         return string
     else:
-        left_portion = int(2/3*length)
+        left_portion = int(2 / 3 * length)
         right_portion = length - left_portion - 3
         return string[:left_portion] + "..." + string[-right_portion:]
 
 
-def unzip_with_progress(zip_path: Path, output_dir: Path, desc: Optional[str] = None) -> None:
+def unzip_with_progress(
+    zip_path: Path, output_dir: Path, desc: Optional[str] = None
+) -> None:
     try:
         with zipfile.PyZipFile(str(zip_path)) as zf:
             total = sum(zi.file_size for zi in zf.infolist())
@@ -406,15 +416,15 @@ def pathify(
 ) -> Path:
     """Takes a URL, copies it to disk (if not already there), and returns a local path to it.
 
-Args:
-    path_descr
-    base (Path): the base path for resolving relative file paths
-    cache_path (Path): the location where this fn will put objects
-    should_exist (bool): ensure that the file exists or raise ValueError (applicable to the file: scheme)
-    should_dir (bool): expect the url to point to a directory, otherwise a file, and raise ValueError if that expectation is violated
+    Args:
+        path_descr
+        base (Path): the base path for resolving relative file paths
+        cache_path (Path): the location where this fn will put objects
+        should_exist (bool): ensure that the file exists or raise ValueError (applicable to the file: scheme)
+        should_dir (bool): expect the url to point to a directory, otherwise a file, and raise ValueError if that expectation is violated
 
-Returns:
-    Path: a path to the resource on the local disk. Do not modify the file at this path.
+    Returns:
+        Path: a path to the resource on the local disk. Do not modify the file at this path.
 
     """
 
@@ -435,21 +445,28 @@ Returns:
         url = path_descr["download_url"]
         cache_dest = cache_path / escape_fname(url)
         if should_dir:
-            raise ValueError(f"{path_descr} points to a file (because of the download_url scheme) not a dir")
+            raise ValueError(
+                f"{path_descr} points to a file (because of the download_url scheme) not a dir"
+            )
         elif cache_dest.exists():
             return cache_dest
         else:
-            with TqdmOutputFile.from_url(url, desc=f"Downloading {truncate(url, DISPLAY_PATH_LENGTH)}") as infileobj:
-                with cache_dest.open('wb') as outfileobj:
+            with TqdmOutputFile.from_url(
+                url, desc=f"Downloading {truncate(url, DISPLAY_PATH_LENGTH)}"
+            ) as infileobj:
+                with cache_dest.open("wb") as outfileobj:
                     shutil.copyfileobj(infileobj, cast(IO[bytes], outfileobj))
             return cache_dest
     elif "subpath" in path_descr:
-        ret = cast(Path,
+        ret = cast(
+            Path,
             pathify(path_descr["relative_to"], base, cache_path, True, True)
-            / path_descr["subpath"]
+            / path_descr["subpath"],
         )
         if should_exist and not ret.exists():
-            raise ValueError(f"Expected {path_descr['subpath']} to exist within {path_descr['relative_to']}")
+            raise ValueError(
+                f"Expected {path_descr['subpath']} to exist within {path_descr['relative_to']}"
+            )
         elif ret.exists() and (ret.is_dir() != should_dir):
             raise ValueError(
                 f"{path_descr['subpath']} relative to {path_descr['relative_to']} points to a {'dir' if path.is_dir() else 'file'} "
@@ -458,10 +475,12 @@ Returns:
         else:
             return ret
     elif "archive_path" in path_descr:
-        archive_path = pathify(
-            path_descr["archive_path"], base, cache_path, True, False
+        archive_path = pathify(path_descr["archive_path"], base, cache_path, True, False)
+        cache_key = (
+            archive_path.relative_to(cache_path)
+            if is_relative_to(archive_path, cache_path)
+            else str(archive_path)
         )
-        cache_key = archive_path.relative_to(cache_path) if is_relative_to(archive_path, cache_path) else str(archive_path)
         cache_dest = cache_path / escape_fname(str(cache_key))
         if not should_dir:
             raise ValueError(
@@ -470,7 +489,11 @@ Returns:
         elif cache_dest.exists():
             return cache_dest
         else:
-            unzip_with_progress(archive_path, cache_dest, f"Unzipping {truncate(str(cache_key), DISPLAY_PATH_LENGTH)}")
+            unzip_with_progress(
+                archive_path,
+                cache_dest,
+                f"Unzipping {truncate(str(cache_key), DISPLAY_PATH_LENGTH)}",
+            )
             return cache_dest
     elif "git_repo" in path_descr:
         cache_dest = cache_path / escape_fname(path_descr["git_repo"])
@@ -479,7 +502,9 @@ Returns:
                 f"{path_descr} points to a dir (because of the git_repo scheme) not a file"
             )
         elif "version" in path_descr:
-            repo_path = pathify(dict(git_repo=path_descr["git_repo"]), base, cache_path, True, True)
+            repo_path = pathify(
+                dict(git_repo=path_descr["git_repo"]), base, cache_path, True, True
+            )
             subprocess_run(
                 ["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True
             )
@@ -498,13 +523,7 @@ Returns:
             return cache_dest
         else:
             subprocess_run(
-                [
-                    "git",
-                    "clone",
-                    path_descr["git_repo"],
-                    str(cache_dest),
-                    "--recursive",
-                ],
+                ["git", "clone", path_descr["git_repo"], str(cache_dest), "--recursive",],
                 check=True,
                 capture_output=False,
             )
@@ -569,3 +588,27 @@ def cmake(
         env_override=env_override,
     )
     make(build_path, ["all"], parallelism=parallelism, env_override=env_override)
+
+
+def pathify_path_vars(
+    vars_map: Mapping[str, str],
+    base: Path,
+    cache_path: Path,
+    should_exist: bool,
+    should_dir: bool,
+    key_suffix: str = "_PATH",
+) -> Mapping[str, str]:
+    """
+    For each variable mapping, pathify the (path) value of the entry if the key
+    name ends in `key_suffix` (default: "_PATH")
+    """
+
+    def path_fun(tup: Tuple[str, str]) -> Tuple[str, str]:
+        k, v = tup
+        if k.endswith(key_suffix):
+            path: Path = pathify(v, base, cache_path, should_exist, should_dir)
+            return (k, str(path))
+        else:
+            return (k, v)
+
+    return dict(map(path_fun, vars_map.items()))

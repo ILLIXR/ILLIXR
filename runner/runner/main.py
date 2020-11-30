@@ -13,13 +13,14 @@ from typing import Any, BinaryIO, ContextManager, List, Mapping, Optional, cast
 import click
 import jsonschema
 import yaml
+from yamlinclude import YamlIncludeConstructor
+
 from util import (
     cmake,
     fill_defaults,
     flatten1,
-    make,
-    noop_context,
     pathify,
+    pathify_path_vars,
     relative_to,
     replace_all,
     subprocess_run,
@@ -30,7 +31,6 @@ from util import (
     cmake,
     flatten_maps_list,
 )
-from yamlinclude import YamlIncludeConstructor
 
 # isort main.py
 # black -l 90 main.py
@@ -95,13 +95,15 @@ def build_runtime(
 
 
 def load_native(config: Mapping[str, Any]) -> None:
+    consts_map: Mapping[str, str] = flatten_maps_list(config["constants"])
+    consts_map_pathified = pathify_path_vars(consts_map, root_dir, cache_path, True, True)
+
     runtime_exe_path = build_runtime(config, "exe")
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
-    consts_map = flatten_maps_list(config["constants"])
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
@@ -110,16 +112,14 @@ def load_native(config: Mapping[str, Any]) -> None:
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(
-        ILLIXR_DATA=str(data_path),
-        ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
         REALSENSE_CAM=str(realsense_cam_string),
+        **consts_map_pathified,
     )
     env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
     actual_cmd_list = list(
@@ -150,19 +150,20 @@ def load_native(config: Mapping[str, Any]) -> None:
         subprocess_run(
             actual_cmd_list,
             env_override=env_override,
-            env_constants=consts_map,
             stdout=log_stdout,
             check=True,
         )
 
 
 def load_tests(config: Mapping[str, Any]) -> None:
+    consts_map: Mapping[str, str] = flatten_maps_list(config["constants"])
+    consts_map_pathified = pathify_path_vars(consts_map, root_dir, cache_path, True, True)
+
     runtime_exe_path = build_runtime(config, "exe", test=True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
-    consts_map = flatten_maps_list(config["constants"])
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
     make(Path("common"), ["tests/run"], env_override=env_override)
     realsense_cam_string = config["realsense_cam"]
@@ -181,9 +182,6 @@ def load_tests(config: Mapping[str, Any]) -> None:
     subprocess_run(
         cmd_list,
         env_override=dict(
-            ILLIXR_DATA=str(data_path),
-            ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
@@ -191,14 +189,16 @@ def load_tests(config: Mapping[str, Any]) -> None:
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
             REALSENSE_CAM=str(realsense_cam_string),
+            **consts_map_pathified
         ),
-        env_constants=consts_map,
         check=True,
     )
 
 
 def load_monado(config: Mapping[str, Any]) -> None:
     action_name = config["action"]["name"]
+    consts_map = flatten_maps_list(config["constants"])
+    consts_map_pathified = pathify_path_vars(consts_map, root_dir, cache_path, True, True)
 
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "RelWithDebInfo"
@@ -211,7 +211,6 @@ def load_monado(config: Mapping[str, Any]) -> None:
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
-    consts_map = flatten_maps_list(config["constants"])
 
     is_mainline: bool = bool(config["action"]["is_mainline"])
     build_runtime(config, "so", is_mainline=is_mainline)
@@ -301,7 +300,6 @@ def load_monado(config: Mapping[str, Any]) -> None:
     subprocess_run(
         [str(openxr_app_bin_path)],
         env_override=dict(
-            ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
@@ -310,8 +308,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
             AUDIO_ROOT=config["action"]["audio_path"],
             REALSENSE_CAM=str(realsense_cam_string),
             **env_monado,
+            **consts_map_pathified,
         ),
-        env_constants=consts_map,
         check=True,
     )
 
