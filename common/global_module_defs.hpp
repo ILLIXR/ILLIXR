@@ -31,6 +31,8 @@ namespace ILLIXR
  *   2. A constexpr DEFAULT_FOO of type _TYPE which is always initialized to the
  *      default value provided
  *
+ * See `configs/global_module_defs.yaml` for examples overriding default values
+ *
  * TODO: Support dynamic type casting
  * TODO: Support constexpr
  */
