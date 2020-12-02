@@ -11,10 +11,10 @@
 #
 # Example definitions of values of type 'A'
 #
-#    FB_WIDTH:     "2560"  # Pixels (int)
-#    FB_HEIGHT:    "1400"  # Pixels (int)
-#    RUN_DURATION: "60"    # Seconds (long)
-#    REFRESH_RATE: "60.0"  # Hz (double)
+#     FB_WIDTH:     "2560"  # Pixels (int)
+#     FB_HEIGHT:    "1400"  # Pixels (int)
+#     RUN_DURATION: "60"    # Seconds (long)
+#     REFRESH_RATE: "60.0"  # Hz (double)
 #
 # For examples of type 'B', see the globally included data paths below
 #
