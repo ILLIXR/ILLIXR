@@ -4,7 +4,7 @@ import os
 import shlex
 import tempfile
 from pathlib import Path
-from typing import Any, List, Mapping, Optional
+from typing import Any, List, Mapping, Optional, ContextManager, BinaryIO, cast
 
 import click
 import jsonschema
@@ -18,6 +18,7 @@ from util import (
     subprocess_run,
     threading_map,
     unflatten,
+    noop_context,
 )
 from yamlinclude import YamlIncludeConstructor
 
@@ -116,21 +117,36 @@ def load_native(config: Mapping[str, Any]) -> None:
         ],
         desc="Building plugins",
     )
-    command_str = config["loader"].get("command", "%a")
-    main_cmd_lst = [str(runtime_exe_path), *map(str, plugin_paths)]
-    command_lst_sbst = list(
+    actual_cmd_str = config["loader"].get("command", "$cmd")
+    illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
+    env_override = dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"])
+    env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
+    actual_cmd_list = list(
         flatten1(
             replace_all(
-                unflatten(shlex.split(command_str)),
-                {("%a",): main_cmd_lst, ("%b",): [shlex.quote(shlex.join(main_cmd_lst))]},
+                unflatten(shlex.split(actual_cmd_str)),
+                {
+                    ("$env_cmd",): ["env", "-C", Path(".").resolve(), *env_list, *illixr_cmd_list],
+                    ("$cmd",): illixr_cmd_list,
+                    ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
+                    ("$env",): env_list,
+                },
             )
         )
     )
-    subprocess_run(
-        command_lst_sbst,
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"]),
-        check=True,
+    log_stdout_str = config.get("log_stdout", None)
+    log_stdout_ctx: ContextManager[Optional[BinaryIO]] = cast(ContextManager[Optional[BinaryIO]],
+        open(log_stdout_str, "wb")
+        if log_stdout_str is not None
+        else noop_context(None)
     )
+    with log_stdout_ctx as log_stdout:
+        subprocess_run(
+            actual_cmd_list,
+            env_override=env_override,
+            stdout=log_stdout,
+            check=True,
+        )
 
 
 def load_tests(config: Mapping[str, Any]) -> None:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
 import itertools
 import multiprocessing
@@ -21,8 +22,10 @@ from typing import (
     Any,
     AnyStr,
     Awaitable,
+    BinaryIO,
     Callable,
     Iterable,
+    Iterator,
     Generic,
     IO,
     List,
@@ -145,6 +148,7 @@ def subprocess_run(
     env: Optional[Mapping[str, str]] = None,
     env_override: Optional[Mapping[str, str]] = None,
     capture_output: bool = False,
+    stdout: Optional[BinaryIO] = None,
 ) -> subprocess.CompletedProcess[bytes]:
     """Wrapper around of subprocess.run.
 
@@ -163,7 +167,7 @@ def subprocess_run(
     if env_override:
         env.update(env_override)
 
-    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output)
+    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout)
 
     if check:
         if proc.returncode != 0:
@@ -209,9 +213,9 @@ def threading_imap_unordered(
 
     If the length cannot be determined by operator.length_hint, `length_hint` will be used. If it is None, we fallback to tqdm without a `total`.
     """
-    results: queue.Queue[V] = queue.Queue(maxsize=operator.length_hint(iterable))
+    results: queue.Queue[Tuple[str, Union[V, BaseException]]] = queue.Queue(maxsize=operator.length_hint(iterable))
 
-    def worker(chunk: List[T], results: queue.Queue[V]) -> None:
+    def worker(chunk: List[T], results: queue.Queue[Tuple[str, Union[V, BaseException]]]) -> None:
         try:
             for elem in chunk:
                 results.put(("elem", func(elem)))
@@ -226,7 +230,7 @@ def threading_imap_unordered(
     for thread in threads:
         thread.start()
 
-    def get_results(results: queue.Queue[V]) -> Iterable[V]:
+    def get_results(results: queue.Queue[Tuple[str, Union[V, BaseException]]]) -> Iterable[V]:
         while any(thread.is_alive() for thread in threads):
             try:
                 result = results.get(timeout=0.5)
@@ -235,9 +239,9 @@ def threading_imap_unordered(
             else:
                 if result[0] == "elem":
                     tqdm.write(str(result[1]))
-                    yield result[1]
+                    yield cast(V, result[1])
                 elif result[0] == "exception":
-                    raise result[1]
+                    raise cast(BaseException, result[1])
                 else:
                     raise ValueError(f"Unknown signal from thread worker: {result[0]}")
 
@@ -345,7 +349,7 @@ def truncate(string: str, length: int) -> str:
 
 def unzip_with_progress(zip_path: Path, output_dir: Path, desc: Optional[str] = None) -> None:
     try:
-        with zipfile.PyZipFile(zip_path) as zf:
+        with zipfile.PyZipFile(str(zip_path)) as zf:
             total = sum(zi.file_size for zi in zf.infolist())
             progress = tqdm(desc=desc, total=total)
             for zi in zf.infolist():
@@ -494,3 +498,8 @@ Returns:
             return cache_dest
     else:
         raise ValueError(f"Unsupported path description {path_descr}")
+
+
+@contextlib.contextmanager
+def noop_context(x: Any) -> Iterator[Any]:
+    yield x
