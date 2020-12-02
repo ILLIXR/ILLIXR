@@ -31,6 +31,10 @@ namespace ILLIXR
  *   2. A constexpr DEFAULT_FOO of type _TYPE which is always initialized to the
  *      default value provided
  *
+ * If a client (out-of-repo) module requires access to constant FOO, we currently
+ * must also add a `#define FOO FOO` preceeding the call to DECLARE_CONST so that
+ * we can detect missing definitions from within modules in a backwards compatible way
+ *
  * See `configs/global_module_defs.yaml` for examples overriding default values
  *
  * TODO: Support dynamic type casting
@@ -71,12 +75,25 @@ inline bool str_to_bool(std::string var) {
 }
 
 
+/*--- Declarations ---*/
+
+#define DATA_PATH DATA_PATH
 DECLARE_CONST(DATA_PATH,     RawPath, noop,       "/dev/null");
+
+#define DEMO_OBJ_PATH DEMO_OBJ_PATH    
 DECLARE_CONST(DEMO_OBJ_PATH, RawPath, noop,       "/dev/null");
 
+    
+#define FB_WIDTH FB_WIDTH
 DECLARE_CONST(FB_WIDTH,      int,     std::stoi,  2560); // Pixels
+    
+#define FB_HEIGHT FB_HEIGHT
 DECLARE_CONST(FB_HEIGHT,     int,     std::stoi,  1440); // Pixels
+
+#define RUN_DURATION RUN_DURATION
 DECLARE_CONST(RUN_DURATION,  long,    std::stol,  60L ); // Seconds
+
+#define REFRESH_RATE REFRESH_RATE
 DECLARE_CONST(REFRESH_RATE,  double,  std::stod,  60.0); // Hz
 
 }
