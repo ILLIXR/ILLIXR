@@ -29,4 +29,3 @@ DATA_PATH:
 
 # URI to objects to render in gldemo
 DEMO_OBJ_PATH: demo_data/
----
