@@ -174,16 +174,6 @@ public:
         return offset;
     }
 
-private:
-	mutable std::atomic<bool> first_time{true};
-	const std::shared_ptr<switchboard> sb;
-    switchboard::reader<pose_type> _m_slow_pose;
-    switchboard::reader<imu_raw_type> _m_imu_raw;
-	switchboard::reader<pose_type> _m_true_pose;
-    switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
-	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::shared_mutex offset_mutex;
-
     // Correct the orientation of the pose due to the lopsided IMU in the 
     // current Dataset we are using (EuRoC)
     virtual pose_type correct_pose(const pose_type pose) const override {
@@ -210,14 +200,13 @@ private:
 private:
 	mutable std::atomic<bool> first_time{true};
 	const std::shared_ptr<switchboard> sb;
-    std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
-    std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
-	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
-	std::unique_ptr<reader_latest<Eigen::Vector3f>> _m_ground_truth_offset;
-    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
+    switchboard::reader<pose_type> _m_slow_pose;
+    switchboard::reader<imu_raw_type> _m_imu_raw;
+	switchboard::reader<pose_type> _m_true_pose;
+    switchboard::reader<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
+    switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
-
     
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp

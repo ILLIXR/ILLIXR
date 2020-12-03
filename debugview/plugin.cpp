@@ -148,7 +148,7 @@ public:
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		const imu_raw_type *raw_imu = _m_fast_pose->get_latest_ro();
+		switchboard::ptr<const imu_raw_type> raw_imu = _m_fast_pose.get();
 		if (raw_imu) {
 			pose_type raw_pose;
 			raw_pose.position = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};

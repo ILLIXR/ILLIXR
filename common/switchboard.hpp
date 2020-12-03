@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <list>
+#include <string>
 #include <array>
+#include <sstream>
 #include <atomic>
 #include <shared_mutex>
 #include <type_traits>
@@ -39,6 +41,14 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
 	{"dequeued", typeid(std::size_t)},
 	{"idle_cycles", typeid(std::size_t)},
 }};
+
+	std::string ptr_to_str(const void* ptr) {
+		std::ostringstream ss;
+		ss << ptr;
+		std::string s = ss.str();
+		s.erase(2, 6);
+		return s;
+	}
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -139,7 +149,7 @@ private:
 	private:
 		const std::string& _m_topic_name;
 		std::size_t _m_plugin_id;
-		std::function<void(ptr<const event>, std::size_t)> _m_callback;
+		std::function<void(ptr<const event>&&, std::size_t)> _m_callback;
 		const std::shared_ptr<record_logger> _m_record_logger;
 		record_coalescer _m_cb_log;
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
@@ -170,7 +180,8 @@ private:
 				_m_dequeued++;
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
-				_m_callback(this_event, _m_dequeued);
+				// std::cerr << "d " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+				_m_callback(std::move(this_event), _m_dequeued);
 				if (_m_cb_log) {
 					_m_cb_log.log(record{__switchboard_callback_header, {
 						{_m_plugin_id},
@@ -208,7 +219,7 @@ private:
 		}
 
 	public:
-		topic_subscription(const std::string& topic_name, std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
+		topic_subscription(const std::string& topic_name, std::size_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
 			: _m_topic_name{topic_name}
 			, _m_plugin_id{plugin_id}
 			, _m_callback{callback}
@@ -274,7 +285,9 @@ private:
 		 */
 		ptr<const event> get() const {
 			if (_m_latest) {
-				return *_m_latest.load();
+				ptr<const event> this_event = *_m_latest.load();
+				// std::cerr << "g " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+				return this_event;
 			} else {
 				return ptr<const event>{nullptr};
 			}
@@ -288,9 +301,18 @@ private:
 		void put(ptr<const event>* this_event) {
 			assert(this_event);
 			assert(*this_event);
+			assert(this_event->unique());
 
 			/* The pointer that this gets exchanged with needs to get dropped. */
 			ptr<const event>* old_event = _m_latest.exchange(this_event);
+			std// ::cerr << "s ";
+			// if (old_event) {
+			// 	std::cerr << ptr_to_str(reinterpret_cast<const void*>(old_event->get())) << " " << old_event->use_count() << " v ";
+			// } else {
+			// 	std::cerr << "@ 0 ";
+			// }
+			// std::cerr << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " = 1\n";
+			
 			delete old_event;
 			// corresponds to new in the last iteration of topic::put
 
@@ -298,8 +320,10 @@ private:
 			// Must acquire shared state on _m_subscriptions_lock
 			std::unique_lock lock{_m_subscriptions_lock};
 			for (topic_subscription& ts : _m_subscriptions) {
+				// std::cerr << "e " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
 				ts.enqueue(std::const_pointer_cast<const event>(*this_event));
 			}
+			// std::cerr << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " = 1 + len(sub) \n";
 		}
 
 		/**
@@ -307,7 +331,7 @@ private:
 		 *
 		 * Thread-safe
 		 */
-		void schedule(std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
+		void schedule(std::size_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback) {
 			// Write on _m_subscriptions.
 			// Must acquire unique state on _m_subscriptions_lock
 			const std::unique_lock lock{_m_subscriptions_lock};
@@ -329,6 +353,7 @@ private:
 		~topic() {
 			ptr<const event>* last_event = _m_latest.exchange(nullptr);
 			if (last_event) {
+				// std::cerr << "~ " << ptr_to_str(reinterpret_cast<const void*>(last_event->get())) << " " << last_event->use_count() << "v \n";
 				delete last_event;
 				// corresponds to new in most recent topic::put
 			}
@@ -373,6 +398,7 @@ public:
 			} else {
 				return ptr<const specific_event>{nullptr};
 			}
+
 		}
 
 		/**
@@ -422,6 +448,7 @@ public:
 			assert(typeid(specific_event) == _m_topic.ty());
 			assert(this_specific_event);
 			ptr<const event>* this_event = new ptr<const event>{static_cast<const event*>(this_specific_event)};
+			assert(this_event->unique());
 			_m_topic.put(this_event);
 		}
 
@@ -436,8 +463,9 @@ public:
 		 * [1]: https://en.wikipedia.org/wiki/Slab_allocation
 		 * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
 		 */
-		 specific_event* allocate() {
-			return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
+		specific_event* allocate() {
+			return new char[sizeof(specific_event)];
+			// return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
 		}
 	};
 
@@ -491,12 +519,12 @@ public:
 	 * @throws if topic already exists and its type does not match the @p event.
 	 */
 	template <typename specific_event>
-	void schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn) {
-		get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
+	void schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>&&, std::size_t)> fn) {
+		get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event>&& this_event, std::size_t it_no) {
 			assert(this_event);
 			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 			assert(this_specific_event);
-			fn(this_specific_event, it_no);
+			fn(std::move(this_specific_event), it_no);
 		});
 	}
 
