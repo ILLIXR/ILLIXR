@@ -46,7 +46,9 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
 		std::ostringstream ss;
 		ss << ptr;
 		std::string s = ss.str();
-		s.erase(2, 6);
+		if (s.size() > 10) {
+			s.erase(2, 8);
+		}
 		return s;
 	}
 
@@ -180,7 +182,7 @@ private:
 				_m_dequeued++;
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
-				// std::cerr << "d " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+				std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				if (_m_cb_log) {
 					_m_cb_log.log(record{__switchboard_callback_header, {
@@ -204,7 +206,9 @@ private:
 			ptr<const event> this_event;
 			std::size_t unprocessed = _m_enqueued - _m_dequeued;
 			for (std::size_t i = 0; i < unprocessed; ++i) {
-				assert(_m_queue.try_dequeue(_m_ctok, this_event));
+				[[maybe_unused]] bool ret = _m_queue.try_dequeue(_m_ctok, this_event);
+				assert(ret);
+				std::cerr << "deq (stopping) " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 			}
 
 			// Log stats
@@ -286,7 +290,7 @@ private:
 		ptr<const event> get() const {
 			if (_m_latest) {
 				ptr<const event> this_event = *_m_latest.load();
-				// std::cerr << "g " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+				std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
 				return this_event;
 			} else {
 				return ptr<const event>{nullptr};
@@ -305,13 +309,13 @@ private:
 
 			/* The pointer that this gets exchanged with needs to get dropped. */
 			ptr<const event>* old_event = _m_latest.exchange(this_event);
-			std// ::cerr << "s ";
-			// if (old_event) {
-			// 	std::cerr << ptr_to_str(reinterpret_cast<const void*>(old_event->get())) << " " << old_event->use_count() << " v ";
-			// } else {
-			// 	std::cerr << "@ 0 ";
-			// }
-			// std::cerr << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " = 1\n";
+			std::cerr << "swap ";
+			if (old_event) {
+				std::cerr << ptr_to_str(reinterpret_cast<const void*>(old_event->get())) << " " << old_event->use_count() << " v";
+			} else {
+				std::cerr << "@";
+			}
+			std::cerr << " for " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1)\n";
 			
 			delete old_event;
 			// corresponds to new in the last iteration of topic::put
@@ -320,10 +324,10 @@ private:
 			// Must acquire shared state on _m_subscriptions_lock
 			std::unique_lock lock{_m_subscriptions_lock};
 			for (topic_subscription& ts : _m_subscriptions) {
-				// std::cerr << "e " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
+				std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
 				ts.enqueue(std::const_pointer_cast<const event>(*this_event));
 			}
-			// std::cerr << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " = 1 + len(sub) \n";
+			std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1 + len(sub)) \n";
 		}
 
 		/**
@@ -353,7 +357,7 @@ private:
 		~topic() {
 			ptr<const event>* last_event = _m_latest.exchange(nullptr);
 			if (last_event) {
-				// std::cerr << "~ " << ptr_to_str(reinterpret_cast<const void*>(last_event->get())) << " " << last_event->use_count() << "v \n";
+				std::cerr << "~ " << ptr_to_str(reinterpret_cast<const void*>(last_event->get())) << " " << last_event->use_count() << " v\n";
 				delete last_event;
 				// corresponds to new in most recent topic::put
 			}
@@ -464,8 +468,7 @@ public:
 		 * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
 		 */
 		specific_event* allocate() {
-			return new char[sizeof(specific_event)];
-			// return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
+			return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
 		}
 	};
 
@@ -522,7 +525,7 @@ public:
 	void schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>&&, std::size_t)> fn) {
 		get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event>&& this_event, std::size_t it_no) {
 			assert(this_event);
-			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
 			assert(this_specific_event);
 			fn(std::move(this_specific_event), it_no);
 		});
