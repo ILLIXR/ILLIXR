@@ -21,6 +21,8 @@ const record_header __imu_cam_record {"imu_cam", {
 struct cam_type : switchboard::event {
     cv::Mat img0;
     cv::Mat img1;
+	cv::Mat rgb;
+	cv::Mat depth;
     std::size_t serial_no;
 };
 
@@ -112,6 +114,8 @@ protected:
             // Make a copy, so that we don't have race
             cv::Mat{imageL_ocv},
             cv::Mat{imageR_ocv},
+			cv::Mat{rgb_ocv},
+            cv::Mat{depth_ocv},
             iteration_no,
         });
     }
@@ -133,6 +137,7 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , _m_imu_integrator{sb->get_writer<imu_integrator_seq>("imu_integrator_seq")}
         , zedm{start_camera()}
+        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_}
     {
@@ -171,6 +176,8 @@ protected:
 
         std::optional<cv::Mat> img0 = std::nullopt;
         std::optional<cv::Mat> img1 = std::nullopt;
+		std::optional<cv::Mat> depth = std::nullopt;
+		std::optional<cv::Mat> rgb = std::nullopt;
 
         const switchboard::ptr<cam_type> c = _m_cam_type.get_nullable();
         if (c && c->serial_no != last_serial_no) {
@@ -196,12 +203,13 @@ protected:
         });
 
         if (rgb && depth) {
-            _m_rgb_depth->put(new rgb_depth_type{
+            _m_rgb_depth.put(new (_m_rgb_depth.allocate()) rgb_depth_type{
                     rgb,
                     depth,
                     imu_time
                 });
         }
+
         auto imu_integrator_params = new imu_integrator_seq{
 			.seq = static_cast<int>(++_imu_integrator_seq),
 		};
@@ -215,9 +223,9 @@ private:
     zed_camera_thread camera_thread_;
 
     const std::shared_ptr<switchboard> sb;
-    switchboard::writer<imu_cam_type> _m_imu_cam;
-    switchboard::reader<cam_type> _m_cam_type;
-    switchboard::writer<rgb_depth_type> _m_rgb_depth;
+	switchboard::writer<imu_cam_type> _m_imu_cam;
+	switchboard::reader<cam_type> _m_cam_type;
+	switchboard::writer<rgb_depth_type> _m_rgb_depth;
     switchboard::writer<imu_integrator_seq> _m_imu_integrator;
 
     // IMU

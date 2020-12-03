@@ -129,7 +129,7 @@ public:
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		const imu_raw_type *raw_imu = _m_fast_pose->get_latest_ro();
+		switchboard::ptr<const imu_raw_type> raw_imu = _m_fast_pose.get();
 		if (raw_imu) {
 			pose_type raw_pose;
 			raw_pose.position = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
@@ -147,7 +147,7 @@ public:
 		ImGui::SameLine();
 
 		switchboard::ptr<const pose_type> slow_pose_ptr = _m_slow_pose.get_nullable();
-		if(slow_pose_ptr){
+		if(slow_pose_ptr) {
 			pose_type swapped_pose = pp->correct_pose(*slow_pose_ptr);
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
 			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());

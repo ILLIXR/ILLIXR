@@ -317,7 +317,7 @@ public:
 
 		// Initialize the GLFW library, still need it to get time
 		if(!glfwInit()){
-			printf("Failed to initialize glfw\n");
+			throw std::runtime_error{"Failed to initialize glfw"};
 		}
 
     	// Construct timewarp meshes and other data

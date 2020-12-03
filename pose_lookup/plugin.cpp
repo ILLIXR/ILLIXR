@@ -128,25 +128,6 @@ private:
 	time_type _m_start_of_time;
 	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
-	pose_type correct_pose(const pose_type pose) const {
-		pose_type swapped_pose;
-
-		// This uses the OpenVINS standard output coordinate system.
-		// This is a mapping between the OV coordinate system and the OpenGL system.
-		swapped_pose.position.x() = -pose.position.y();
-		swapped_pose.position.y() = pose.position.z();
-		swapped_pose.position.z() = -pose.position.x();
-
-		// There is a slight issue with the orientations: basically,
-		// the output orientation acts as though the "top of the head" is the
-		// forward direction, and the "eye direction" is the up direction.
-	Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
-
-	swapped_pose.orientation = apply_offset(raw_o);
-
-		return swapped_pose;
-	}
-
 };
 
 class pose_lookup_plugin : public plugin {

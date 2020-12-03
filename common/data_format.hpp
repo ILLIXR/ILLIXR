@@ -66,7 +66,7 @@ namespace ILLIXR {
 	} imu_params;
 
 	// IMU biases, initialization params, and slow pose needed by the IMU integrator
-	typedef struct {
+	struct imu_integrator_input : public switchboard::event {
 		double last_cam_integration_time;
 		double t_offset;
 		imu_params params;
@@ -76,7 +76,26 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
-	} imu_integrator_input;
+		imu_integrator_input(
+							 double last_cam_integration_time_,
+							 double t_offset_,
+							 imu_params params_,
+							 Eigen::Vector3d biasAcc_,
+							 Eigen::Vector3d biasGyro_,
+							 Eigen::Matrix<double,3,1> position_,
+							 Eigen::Matrix<double,3,1> velocity_,
+							 Eigen::Quaterniond quat_
+							 )
+			: last_cam_integration_time{last_cam_integration_time_}
+			, t_offset{t_offset_}
+			, params{params_}
+			, biasAcc{biasAcc_}
+			, biasGyro{biasGyro_}
+			, position{position_}
+			, velocity{velocity_}
+			, quat{quat_}
+		{ }
+	};
 
 	// Output of the IMU integrator to be used by pose prediction
 	struct imu_raw_type : switchboard::event{
@@ -95,13 +114,17 @@ namespace ILLIXR {
 					 Eigen::Matrix<double,3,1> a_hat_,
 					 Eigen::Matrix<double,3,1> w_hat2_,
 					 Eigen::Matrix<double,3,1> a_hat2_,
-					 Eigen::Matrix<double,13,1> state_plus_,
+					 Eigen::Matrix<double,3,1> pos_,
+					 Eigen::Matrix<double,3,1> vel_,
+					 Eigen::Quaterniond quat_,
 					 time_type imu_time_)
 			: w_hat{w_hat_}
 			, a_hat{a_hat_}
 			, w_hat2{w_hat2_}
 			, a_hat2{a_hat2_}
-			, state_plus{state_plus_}
+			, pos{pos_}
+			, vel{vel_}
+			, quat{quat_}
 			, imu_time{imu_time_}
 		{ }
 	};

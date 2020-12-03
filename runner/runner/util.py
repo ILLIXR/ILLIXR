@@ -135,10 +135,7 @@ class CalledProcessError(Exception):
         stdout = ("\nstdout:\n" + textwrap.indent(self.stdout.decode(), "  ")) if self.stdout is not None else ""
         stderr = ("\nstderr:\n" + textwrap.indent(self.stderr.decode(), "  ")) if self.stderr is not None else ""
 
-        return f"""Command returned non-zero exit status {self.returncode}.
-command:
-  {cmd_str}{stdout}{stderr}
-"""
+        return f"""Command returned non-zero exit status {self.returncode}.command:{cmd_str}{stdout}{stderr}"""
 
 
 def subprocess_run(

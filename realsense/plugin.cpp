@@ -33,9 +33,9 @@ public:
 	realsense(std::string name_, phonebook *pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_imu_cam{sb->publish<imu_cam_type>("imu_cam")}
-        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
-        , _m_imu_integrator{sb->publish<imu_integrator_seq>("imu_integrator_seq")}
+        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
+        , _m_imu_integrator{sb->get_writer<imu_integrator_seq>("imu_integrator_seq")}
         {
             cfg.disable_all_streams();
             cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE); // adjustable to 0, 63 (default), 250 hz
@@ -156,9 +156,9 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
-	std::unique_ptr<writer<rgb_depth_type>> _m_rgb_depth;
-    std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
+    switchboard::writer<imu_cam_type>> _m_imu_cam;
+	switchboard::writer<rgb_depth_type>> _m_rgb_depth;
+    switchboard::writer<imu_integrator_seq>> _m_imu_integrator;
 
 	std::mutex mutex;
 	rs2::pipeline_profile profiles;
@@ -173,7 +173,6 @@ private:
 	int iteration_accel = 0;
 	int last_iteration_cam;
 	int last_iteration_accel;
-
     long long _imu_integrator_seq{0};
 };
 
