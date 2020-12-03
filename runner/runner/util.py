@@ -122,7 +122,7 @@ class CalledProcessError(Exception):
         env_var_str = shlex.join(
             f"{key}={val}"
             for key, val in self.env.items()
-            if os.environ[key] != val
+            if key not in os.environ or os.environ[key] != val
         )
         if env_var_str:
             env_var_str += " "
