@@ -129,6 +129,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     subprocess_run(
         command_lst_sbst,
         env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"]),
+        check=True,
     )
 
 
@@ -149,6 +150,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
     subprocess_run(
         ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
         env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), ILLIXR_RUN_DURATION="10"),
+        check=True,
     )
 
 
@@ -210,6 +212,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
         ),
+        check=True,
     )
 
 
