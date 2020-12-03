@@ -149,7 +149,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), ILLIXR_RUN_DURATION="10"),
+        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), ILLIXR_RUN_DURATION="10", KIMERA_ROOT=config["loader"]["kimera_path"]),
         check=True,
     )
 
