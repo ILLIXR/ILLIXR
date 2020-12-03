@@ -148,6 +148,32 @@ public:
 		return bool(_m_true_pose.get_nullable());
 	}
 
+    virtual Eigen::Quaternionf get_offset() override {
+        return offset;
+    }
+    // Correct the orientation of the pose due to the lopsided IMU in the 
+    // current Dataset we are using (EuRoC)
+    virtual pose_type correct_pose(const pose_type pose) const override {
+        pose_type swapped_pose;
+
+        // Make any changes to the axes direction below
+        // This is a mapping between the coordinate system of the current 
+        // SLAM (OpenVINS) we are using and the OpenGL system.
+        swapped_pose.position.x() = -pose.position.y();
+        swapped_pose.position.y() = pose.position.z();
+        swapped_pose.position.z() = -pose.position.x();
+
+        // Make any chanes to orientation of the output below
+        // For the dataset were currently using (EuRoC), the output orientation acts as though 
+        // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
+		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
+
+		swapped_pose.orientation = apply_offset(raw_o);
+        swapped_pose.sensor_time = pose.sensor_time;
+
+        return swapped_pose;
+    }
+
 private:
 	mutable std::atomic<bool> first_time{true};
 	const std::shared_ptr<switchboard> sb;
@@ -158,27 +184,7 @@ private:
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
 
-    // Correct the orientation of the pose due to the lopsided IMU in the EuRoC Dataset
-    pose_type correct_pose(const pose_type pose) const {
-        pose_type swapped_pose;
-
-        // This uses the OpenVINS standard output coordinate system.
-        // This is a mapping between the OV coordinate system and the OpenGL system.
-        swapped_pose.position.x() = -pose.position.y();
-        swapped_pose.position.y() = pose.position.z();
-        swapped_pose.position.z() = -pose.position.x();
-
-		
-        // There is a slight issue with the orientations: basically,
-        // the output orientation acts as though the "top of the head" is the
-        // forward direction, and the "eye direction" is the up direction.
-		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
-
-		swapped_pose.orientation = apply_offset(raw_o);
-        swapped_pose.sensor_time = pose.sensor_time;
-
-        return swapped_pose;
-    }
+    
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
@@ -194,9 +200,10 @@ private:
         Eigen::Vector3d a_jerk = (imu_raw->a_hat2-imu_raw->a_hat)/dt;
 
         // y0 ================
-        Eigen::Vector4d q_0 = Eigen::Matrix<double,4,1>{imu_raw->state_plus(0), imu_raw->state_plus(1), imu_raw->state_plus(2), imu_raw->state_plus(3)};
-        Eigen::Vector3d p_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(4), imu_raw->state_plus(5), imu_raw->state_plus(6)};
-        Eigen::Vector3d v_0 = Eigen::Matrix<double,3,1>{imu_raw->state_plus(7), imu_raw->state_plus(8), imu_raw->state_plus(9)};
+        Eigen::Quaterniond temp_quat = imu_raw->quat;
+        Eigen::Vector4d q_0 = {temp_quat.x(), temp_quat.y(), temp_quat.z(), temp_quat.w()};
+        Eigen::Vector3d p_0 = imu_raw->pos;
+        Eigen::Vector3d v_0 = imu_raw->vel;
 
         // k1 ================
         Eigen::Vector4d dq_0 = {0,0,0,1};

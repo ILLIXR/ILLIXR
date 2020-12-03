@@ -36,12 +36,16 @@ public:
 		return *this;
 	}
 
+	static dynamic_lib create(const std::string& path) {
+		return dynamic_lib::create(std::string_view{path.c_str()});
+	}
+
 	static dynamic_lib create(const std::string_view& path) {
 		char* error;
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
 		if ((error = dlerror()) || !handle)
 			throw std::runtime_error{
-				"dlopen(" + std::string{path} + "): " + (error == nullptr ? "NULL" : std::string{error})};
+				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
 			char* error;
@@ -57,7 +61,7 @@ public:
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
 		if ((error = dlerror()))
 			throw std::runtime_error{
-				"dlsym(" + symbol_name + "): " + (error == nullptr ? "NULL" : std::string{error})};
+				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
 		return symbol;
 	}
 

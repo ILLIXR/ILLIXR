@@ -1,0 +1,19 @@
+# Run with ground truth pose lookup instead of pose prediction
+plugin_groups:
+  - plugin_group:
+      - path: pose_lookup
+  - !include "core_plugins.yaml"
+  - plugin_group:
+    - path: gldemo/
+    - path: debugview/
+
+data:
+  subpath: mav0
+  relative_to:
+    archive_path:
+      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+demo_data: demo_data/
+loader:
+  name: native
+  # command: gdb -q --args %a
+profile: opt

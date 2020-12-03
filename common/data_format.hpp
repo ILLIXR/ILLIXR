@@ -11,7 +11,7 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 //#undef Complex // For 'Complex' conflict
-#include "phonebook.hpp"
+#include "phonebook.hpp" 
 #include "switchboard.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
@@ -48,24 +48,83 @@ namespace ILLIXR {
 		{ }
 	};
 
+    typedef struct {
+        std::optional<cv::Mat*> rgb;
+        std::optional<cv::Mat*> depth;
+        ullong timestamp;
+    } rgb_depth_type3;
+
+	// Values needed to initialize the IMU integrator
+	typedef struct {
+		double gyro_noise;
+		double acc_noise;
+		double gyro_walk;
+		double acc_walk;
+		Eigen::Matrix<double,3,1> n_gravity;
+		double imu_integration_sigma;
+		double nominal_rate;
+	} imu_params;
+
+	// IMU biases, initialization params, and slow pose needed by the IMU integrator
+	struct imu_integrator_input : public switchboard::event {
+		double last_cam_integration_time;
+		double t_offset;
+		imu_params params;
+		
+		Eigen::Vector3d biasAcc;
+		Eigen::Vector3d biasGyro;
+		Eigen::Matrix<double,3,1> position;
+		Eigen::Matrix<double,3,1> velocity;
+		Eigen::Quaterniond quat;
+		imu_integrator_input(
+							 double last_cam_integration_time_,
+							 double t_offset_,
+							 imu_params params_,
+							 Eigen::Vector3d biasAcc_,
+							 Eigen::Vector3d biasGyro_,
+							 Eigen::Matrix<double,3,1> position_,
+							 Eigen::Matrix<double,3,1> velocity_,
+							 Eigen::Quaterniond quat_
+							 )
+			: last_cam_integration_time{last_cam_integration_time_}
+			, t_offset{t_offset_}
+			, params{params_}
+			, biasAcc{biasAcc_}
+			, biasGyro{biasGyro_}
+			, position{position_}
+			, velocity{velocity_}
+			, quat{quat_}
+		{ }
+	};
+
+	// Output of the IMU integrator to be used by pose prediction
 	struct imu_raw_type : switchboard::event{
+		// Biases from the last two IMU integration iterations used by RK4 for pose predict
 		Eigen::Matrix<double,3,1> w_hat;
 		Eigen::Matrix<double,3,1> a_hat;
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
-		Eigen::Matrix<double,13,1> state_plus;
+
+		// Faster pose propagated forwards by the IMU integrator
+		Eigen::Matrix<double,3,1> pos;
+		Eigen::Matrix<double,3,1> vel;
+		Eigen::Quaterniond quat;
 		time_type imu_time;
 		imu_raw_type(Eigen::Matrix<double,3,1> w_hat_,
 					 Eigen::Matrix<double,3,1> a_hat_,
 					 Eigen::Matrix<double,3,1> w_hat2_,
 					 Eigen::Matrix<double,3,1> a_hat2_,
-					 Eigen::Matrix<double,13,1> state_plus_,
+					 Eigen::Matrix<double,3,1> pos_,
+					 Eigen::Matrix<double,3,1> vel_,
+					 Eigen::Quaterniond quat_,
 					 time_type imu_time_)
 			: w_hat{w_hat_}
 			, a_hat{a_hat_}
 			, w_hat2{w_hat2_}
 			, a_hat2{a_hat2_}
-			, state_plus{state_plus_}
+			, pos{pos_}
+			, vel{vel_}
+			, quat{quat_}
 			, imu_time{imu_time_}
 		{ }
 	};
@@ -74,7 +133,7 @@ namespace ILLIXR {
 	  int64_t time;
 	  const unsigned char* rgb;
 	  const unsigned short* depth;
-	} rgb_depth_type;
+	} rgb_depth_type2;
 
 	struct pose_type : switchboard::event {
 		time_type sensor_time; // Recorded time of sensor data ingestion
@@ -110,6 +169,33 @@ namespace ILLIXR {
 		std::chrono::time_point<std::chrono::system_clock> sample_time;
 		std::chrono::time_point<std::chrono::system_clock> render_time;
 	};
+
+	typedef struct {
+		int seq;
+	} hologram_input;
+
+	typedef struct {
+		int dummy;
+	} hologram_output;
+
+	/*
+	class sequence : public switchboard::event {
+		bool operator==(const sequence& other) { return i == other.i; }
+		bool operator!=(const sequence& other) { return i != other.i; }
+		bool operator<=(const sequence& other) { return i <= other.i; }
+		bool operator< (const sequence& other) { return i <  other.i; }
+		bool operator>=(const sequence& other) { return i >= other.i; }
+		bool operator> (const sequence& other) { return i >  other.i; }
+		int64_t operator-(const sequence& other) { return i - other.i; }
+		sequence operator+(int64_t other) { return sequence{i + other}; }
+		void increment() {
+			++i;
+		}
+	private:
+		sequence(int64_t _i) : i{_i} { }
+		int64_t i = 0;
+	};
+*/
 
 	/* I use "accel" instead of "3-vector" as a datatype, because
 	this checks that you meant to use an acceleration in a certain

@@ -21,6 +21,8 @@ const record_header __imu_cam_record {"imu_cam", {
 struct cam_type : switchboard::event {
     cv::Mat img0;
     cv::Mat img1;
+	cv::Mat rgb;
+	cv::Mat depth;
     std::size_t serial_no;
 };
 
@@ -30,16 +32,21 @@ std::shared_ptr<Camera> start_camera() {
     // Cam setup
     InitParameters init_params;
     init_params.camera_resolution = RESOLUTION::VGA;
-    init_params.coordinate_units = UNIT::METER;
+    init_params.coordinate_units = UNIT::MILLIMETER; // for kf
     init_params.coordinate_system = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps = 60;
-    init_params.depth_mode = DEPTH_MODE::NONE;
+    init_params.camera_fps = 15;
+    init_params.depth_mode = DEPTH_MODE::PERFORMANCE;
+    init_params.depth_stabilization = true;
+    // init_params.depth_minimum_distance = 0.1;
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
     if (err != ERROR_CODE::SUCCESS) {
         printf("%s\n", toString(err).c_str());
         zedm->close();
     }
+
+    // This is 4% of camera frame time, not 4 ms
+    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, 4);
 
     return zedm;
 }
@@ -53,12 +60,17 @@ public:
     , zedm{zedm_}
     , image_size{zedm->getCameraInformation().camera_configuration.resolution}
     {
+        runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
-        imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
-        imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
+        imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
+        rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1, MEM::CPU);
 
         imageL_ocv = slMat2cvMat(imageL_zed);
         imageR_ocv = slMat2cvMat(imageR_zed);
+        rgb_ocv = slMat2cvMat(rgb_zed);
+        depth_ocv = slMat2cvMat(depth_zed);
     }
 
 private:
@@ -71,9 +83,13 @@ private:
 
     Mat imageL_zed;
     Mat imageR_zed;
+    Mat depth_zed;
+    Mat rgb_zed;
 
     cv::Mat imageL_ocv;
     cv::Mat imageR_ocv;
+    cv::Mat depth_ocv;
+    cv::Mat rgb_ocv;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -86,8 +102,10 @@ protected:
 
     virtual void _p_one_iteration() override {
         // Retrieve images
-        zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
-        zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
+        zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
+        zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
+        zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
+        zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
         auto start_cpu_time  = thread_cpu_time();
         auto start_wall_time = std::chrono::high_resolution_clock::now();
@@ -96,6 +114,8 @@ protected:
             // Make a copy, so that we don't have race
             cv::Mat{imageL_ocv},
             cv::Mat{imageR_ocv},
+			cv::Mat{rgb_ocv},
+            cv::Mat{depth_ocv},
             iteration_no,
         });
     }
@@ -114,6 +134,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , zedm{start_camera()}
+        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
         , it_log{record_logger_}
@@ -145,9 +166,7 @@ protected:
 
         // Time as time_point
         using time_point = std::chrono::system_clock::time_point;
-        time_point uptime_timepoint{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
-        std::time_t time2 = std::chrono::system_clock::to_time_t(uptime_timepoint);
-        t = std::chrono::system_clock::from_time_t(time2);
+        time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
@@ -155,12 +174,16 @@ protected:
 
         std::optional<cv::Mat> img0 = std::nullopt;
         std::optional<cv::Mat> img1 = std::nullopt;
+		std::optional<cv::Mat> depth = std::nullopt;
+		std::optional<cv::Mat> rgb = std::nullopt;
 
         const switchboard::ptr<cam_type> c = _m_cam_type.get_nullable();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
             img1 = c->img1;
+            depth = c->depth;
+            rgb = c->rgb;
         }
 
         it_log.log(record{__imu_cam_record, {
@@ -169,7 +192,7 @@ protected:
         }});
 
         _m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type {
-            t,
+            imu_time_point,
             av,
             la,
             img0,
@@ -177,6 +200,13 @@ protected:
             imu_time,
         });
 
+        if (rgb && depth) {
+            _m_rgb_depth.put(new (_m_rgb_depth.allocate()) rgb_depth_type{
+                    rgb,
+                    depth,
+                    imu_time
+                });
+        }
         last_imu_ts = sensors_data.imu.timestamp;
     }
 
@@ -187,6 +217,7 @@ private:
     const std::shared_ptr<switchboard> sb;
 	switchboard::writer<imu_cam_type> _m_imu_cam;
 	switchboard::reader<cam_type> _m_cam_type;
+	switchboard::writer<rgb_depth_type> _m_rgb_depth;
 
     // IMU
     SensorsData sensors_data;

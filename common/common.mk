@@ -2,8 +2,9 @@
 # Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
-DBG_FLAGS ?= -Og -g -Wall -Wextra -fsanitize=address,undefined
-OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -fsanitize=thread
+OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
+CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)
 HPP_FILES ?= $(shell find -L . -name '*.hpp')
