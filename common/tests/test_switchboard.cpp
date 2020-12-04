@@ -13,12 +13,12 @@ class SwitchboardTest : public ::testing::Test { };
 thread_local std::minstd_rand rd {};
 	thread_local std::binomial_distribution<long> short_dist{10, 0.5};
 void short_delay() {
-	std::this_thread::sleep_for(std::chrono::milliseconds{short_dist(rd)});
+	//std::this_thread::sleep_for(std::chrono::milliseconds{short_dist(rd)});
 }
 
 	thread_local std::binomial_distribution<long> long_dist{15, 0.5};
 void long_delay() {
-	std::this_thread::sleep_for(std::chrono::milliseconds{long_dist(rd)});
+	//std::this_thread::sleep_for(std::chrono::milliseconds{long_dist(rd)});
 }
 
 class uint64_wrapper : public switchboard::event {
@@ -65,7 +65,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 		std::atomic<uint64_t> last_it_0 = 0;
 		std::thread::id callbk_0;
 
-		sb.schedule<uint64_wrapper>(0, "multiples_of_six", [&](switchboard::ptr<const uint64_wrapper> datum, std::size_t it) {
+		sb.schedule<uint64_wrapper>(0, "multiples_of_six", [&](switchboard::ptr<const uint64_wrapper>&& datum, std::size_t it) {
 			// std::cerr << "callbk-0: " << *datum << std::endl;
 			// Assert we are on our own thread
 			if (last_it_0 == 0) {
@@ -85,33 +85,33 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			last_datum_0 = *datum;
 		});
 
-		// std::atomic<uint64_t> last_datum_1 = 0;
-		// std::atomic<uint64_t> last_it_1 = 0;
-		// std::thread::id callbk_1;
+		std::atomic<uint64_t> last_datum_1 = 0;
+		std::atomic<uint64_t> last_it_1 = 0;
+		std::thread::id callbk_1;
 
-		// sb.schedule<uint64_wrapper>(1, "multiples_of_six", [&](switchboard::ptr<const uint64_wrapper>&& datum, std::size_t it) {
-		// 	// std::cerr << "callbk-1: " << *datum << std::endl;
-		// 	// Assert we are on our own thread
-		// 	if (last_it_1 == 0) {
-		// 		callbk_1 = std::this_thread::get_id();
-		// 	} else {
-		// 		ASSERT_EQ(callbk_1, std::this_thread::get_id());
-		// 	}
+		sb.schedule<uint64_wrapper>(1, "multiples_of_six", [&](switchboard::ptr<const uint64_wrapper>&& datum, std::size_t it) {
+			// std::cerr << "callbk-1: " << *datum << std::endl;
+			// Assert we are on our own thread
+			if (last_it_1 == 0) {
+				callbk_1 = std::this_thread::get_id();
+			} else {
+				ASSERT_EQ(callbk_1, std::this_thread::get_id());
+			}
 
-		// 	long_delay();
+			long_delay();
 
-		// 	// Assert we didn't "miss" any values
-		// 	// Despite being much slower than our other reader
-		// 	// This also stresses memory correctness
+			// Assert we didn't "miss" any values
+			// Despite being much slower than our other reader
+			// This also stresses memory correctness
 
-		// 	ASSERT_EQ(last_it_1 + 1, it);
-		// 	last_it_1 = it;
+			ASSERT_EQ(last_it_1 + 1, it);
+			last_it_1 = it;
 
-		// 	ASSERT_EQ(last_datum_1 + 6,  *datum);
-		// 	last_datum_1 = *datum;
-		// });
+			ASSERT_EQ(last_datum_1 + 6,  *datum);
+			last_datum_1 = *datum;
+		});
 
-		// ASSERT_EQ(sb.get_reader<uint64_wrapper>("multiples_of_six").get_nullable(), nullptr);
+		ASSERT_EQ(sb.get_reader<uint64_wrapper>("multiples_of_six").get_nullable(), nullptr);
 
 		std::thread writer {[&sb] {
 			auto writer = sb.get_writer<uint64_wrapper>("multiples_of_six");
@@ -123,69 +123,69 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			}
 		}};
 
-		// std::thread fast_reader {[&sb] {
-		// 	uint64_t last_datum = 0;
-		// 	auto reader = sb.get_reader<uint64_wrapper>("multiples_of_six");
+		std::thread fast_reader {[&sb] {
+			uint64_t last_datum = 0;
+			auto reader = sb.get_reader<uint64_wrapper>("multiples_of_six");
 
-		// 	for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
-		// 		switchboard::ptr<const uint64_wrapper> datum = reader.get_nullable();
-		// 		if (!datum) {
-		// 			// Nothing on topic yet
-		// 			// Assert this only happens in the beginning
-		// 			// std::cerr << "reader-1: null" << std::endl;
-		// 			ASSERT_EQ(last_datum, 0);
-		// 		} else {
-		// 			// std::cerr << "reader-1: " << *datum << std::endl;
-		// 			// I use leq here because get_latest can return the same thing twice
-		// 			ASSERT_LE(last_datum, *datum);
-		// 			ASSERT_EQ(*datum % 6, 0);
-		// 			last_datum = *datum;
-		// 		}
-		// 		short_delay();
-		// 	}
-		// }};
-		// std::thread slow_reader {[&sb] {
-		// 	uint64_t last_datum = 0;
-		// 	auto reader = sb.get_reader<uint64_wrapper>("multiples_of_six");
+			for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
+				switchboard::ptr<const uint64_wrapper> datum = reader.get_nullable();
+				if (!datum) {
+					// Nothing on topic yet
+					// Assert this only happens in the beginning
+					// std::cerr << "reader-1: null" << std::endl;
+					ASSERT_EQ(last_datum, 0);
+				} else {
+					// std::cerr << "reader-1: " << *datum << std::endl;
+					// I use leq here because get_latest can return the same thing twice
+					ASSERT_LE(last_datum, *datum);
+					ASSERT_EQ(*datum % 6, 0);
+					last_datum = *datum;
+				}
+				short_delay();
+			}
+		}};
+		std::thread slow_reader {[&sb] {
+			uint64_t last_datum = 0;
+			auto reader = sb.get_reader<uint64_wrapper>("multiples_of_six");
 
-		// 	for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
-		// 		switchboard::ptr<const uint64_wrapper> datum = reader.get_nullable();
-		// 		if (!datum) {
-		// 			// Nothing on topic yet
-		// 			// Assert this only happens in the beginning
-		// 			// std::cerr << "reader-1: null" << std::endl;
-		// 			ASSERT_EQ(last_datum, 0);
-		// 		} else {
-		// 			// std::cerr << "reader-1: " << *datum << std::endl;
-		// 			// I use leq here because get_latest can return the same thing twice
-		// 			ASSERT_LE(last_datum, *datum);
-		// 			ASSERT_EQ(*datum % 6, 0);
-		// 			last_datum = *datum;
-		// 		}
-		// 		long_delay();
-		// 	}
-		// }};
+			for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
+				switchboard::ptr<const uint64_wrapper> datum = reader.get_nullable();
+				if (!datum) {
+					// Nothing on topic yet
+					// Assert this only happens in the beginning
+					// std::cerr << "reader-1: null" << std::endl;
+					ASSERT_EQ(last_datum, 0);
+				} else {
+					// std::cerr << "reader-1: " << *datum << std::endl;
+					// I use leq here because get_latest can return the same thing twice
+					ASSERT_LE(last_datum, *datum);
+					ASSERT_EQ(*datum % 6, 0);
+					last_datum = *datum;
+				}
+				long_delay();
+			}
+		}};
 
 		writer.join();
-		// fast_reader.join();
-		// slow_reader.join();
+		fast_reader.join();
+		slow_reader.join();
 
-		// while (last_it_0 != MAX_ITERATIONS - 1 || last_it_1 != MAX_ITERATIONS - 1) {
-		// 	std::this_thread::sleep_for(std::chrono::milliseconds{100});
-		// }
+		while (last_it_0 != MAX_ITERATIONS - 1 || last_it_1 != MAX_ITERATIONS - 1) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{100});
+		}
 
 		// Assert both of callbacks have run on all inputs
-		// ASSERT_EQ(last_datum_0, (MAX_ITERATIONS - 1) * 6);
-		// ASSERT_EQ(last_datum_1, (MAX_ITERATIONS - 1) * 6);
+		ASSERT_EQ(last_datum_0, (MAX_ITERATIONS - 1) * 6);
+		ASSERT_EQ(last_datum_1, (MAX_ITERATIONS - 1) * 6);
 
 		// The last uint64_wrapper is still around because it could be accessed by an async reader
-		// ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 2);
+		ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 2);
 	}
 	// I need to end the block here, so switchboard gets destructed
 	// Then the last uint64_wrapper's should get destructed
 
 	// Assert destructors get called
-	// ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 1);
+	ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 1);
 }
 
 }
