@@ -122,21 +122,19 @@ class CalledProcessError(Exception):
         env_var_str = shlex.join(
             f"{key}={val}"
             for key, val in self.env.items()
-            if os.environ[key] != val
+            if key not in os.environ or os.environ[key] != val
         )
         if env_var_str:
             env_var_str += " "
         cwd_str = f"-C {shlex.quote(str(self.cwd))} " if self.cwd.resolve() != Path().resolve() else ""
         env_cmd_str = f"env {cwd_str}- {env_var_str}" if env_var_str or cwd_str else ""
         cmd_str = f"{env_cmd_str}{shlex.join(self.args2)}"
+        stdout = ("\nstdout:\n" + textwrap.indent(self.stdout.decode(), "  ")) if self.stdout is not None else ""
+        stderr = ("\nstderr:\n" + textwrap.indent(self.stderr.decode(), "  ")) if self.stderr is not None else ""
 
         return f"""Command returned non-zero exit status {self.returncode}.
 command:
-  {cmd_str}
-stdout:
-{textwrap.indent(self.stdout.decode(), "  ")}
-stderr:
-{textwrap.indent(self.stderr.decode(), "  ")}
+  {cmd_str}{stdout}{stderr}
 """
 
 
