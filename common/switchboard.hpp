@@ -194,6 +194,7 @@ private:
             }
         }
 
+
         void thread_on_stop() {
             // Drain queue
             std::size_t unprocessed = _m_enqueued - _m_dequeued;
