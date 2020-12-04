@@ -13,4 +13,5 @@ data:
 demo_data: demo_data/
 loader:
   name: tests
+  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
 profile: dbg
