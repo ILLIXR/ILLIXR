@@ -2,7 +2,12 @@
 # Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
-DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -fsanitize=thread
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -fsanitize=address,undefined
+#-fsanitize=thread
+# Unfortunately, we have what I believe to be a false-positive TSan datarace in Switchboard.
+# Therefore, I will not enable TSan.
+# We can have ASan and UBSan instead, at least.
+
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
@@ -48,7 +53,7 @@ tests/run: tests/test.exe
 	./tests/test.exe
 
 tests/gdb: tests/test.exe
-	gdb -q ./tests/test.exe -ex r
+	gdb -q ./tests/test.exe
 
 tests/test.exe: $(CPP_TEST_FILES) $(CPP_FILES) $(HPP_FILES)
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) \
