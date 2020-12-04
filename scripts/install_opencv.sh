@@ -26,7 +26,7 @@ cmake \
 	    -D WITH_VTK=ON \
 	    -D OPENCV_EXTRA_MODULES_PATH="${temp_dir}/opencv_contrib/modules" \
 	    ${extra_cmake_args}
-sudo make -C "${temp_dir}/opencv/build" "-j$(nproc)" install
+sudo make -C "${temp_dir}/opencv/build" "-j${illixr_nproc}" install
 
 # Remove temp cmake files
 rm -f a.out cmake_hdf5_test.o
