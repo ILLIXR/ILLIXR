@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-### Default variables setup ###
+### Default imported variables setup ###
 
 if [ -z "${use_realsense}" ]; then
     use_realsense="no"

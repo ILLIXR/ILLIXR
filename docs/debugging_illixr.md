@@ -5,7 +5,7 @@ The config described in [Building ILLIXR][1] supports running the runtime with a
 
 ## Debugging Pull Requests or with a Clean Environment
 ### 1. Get a Docker Image
-####From your Local Project
+#### From your Local Project
 From the root directory in your project, run `docker build --tag <repository>:<tag>.` For this project's main module, you can use something like `illixr-illixr` for the `<repository>` value, and your current branch name or release version as the `<tag>` value.
 
 Note that building the docker image can take some time (up to 40min on a 4-core desktop machine) and uses somewhere between 2-4GB of RAM.
