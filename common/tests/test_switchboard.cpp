@@ -187,7 +187,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 	// Then the last uint64_wrapper's should get destructed
 
 	// Assert destructors get called
-	// ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 1);
+	ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 1);
 }
 
 }

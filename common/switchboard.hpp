@@ -194,7 +194,6 @@ private:
             }
         }
 
-
         void thread_on_stop() {
             // Drain queue
             std::size_t unprocessed = _m_enqueued - _m_dequeued;
@@ -264,21 +263,18 @@ private:
         const std::string _m_name;
         const std::type_info& _m_ty;
         const std::shared_ptr<record_logger> _m_record_logger;
-		std::atomic<size_t> _m_latest_index;
-		static constexpr std::size_t _m_latest_buffer_size = 256;
-		std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
+        std::atomic<size_t> _m_latest_index;
+        static constexpr std::size_t _m_latest_buffer_size = 256;
+        std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
         std::list<topic_subscription> _m_subscriptions;
         std::shared_mutex _m_subscriptions_lock;
 
     public:
-        topic(
-            std::string name,
-            const std::type_info& ty,
-            std::shared_ptr<record_logger> record_logger_
-        )   : _m_name{name}
+        topic(std::string name, const std::type_info& ty, std::shared_ptr<record_logger> record_logger_)
+            : _m_name{name}
             , _m_ty{ty}
             , _m_record_logger{record_logger_}
-			, _m_latest_index{0}
+            , _m_latest_index{0}
         { }
 
         const std::string& name() { return _m_name; }
@@ -289,12 +285,12 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-			size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
-			ptr<const event> this_event = _m_latest_buffer[idx];
-			// if (this_event) {
-			// 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
-			// }
-			return this_event;
+            size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
+            ptr<const event> this_event = _m_latest_buffer[idx];
+            // if (this_event) {
+            //  std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+            // }
+            return this_event;
         }
 
         /**
@@ -303,13 +299,13 @@ private:
          * Thread-safe
          */
         void put(ptr<const event>&& this_event) {
-			assert(this_event != nullptr);
-			// assert(this_event.unique());  /// <-- TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event != nullptr);
+            // assert(this_event.unique());  /// <-- TODO: Revisit for solution that guarantees uniqueness
 
-			/* The pointer that this gets exchanged with needs to get dropped. */
-			size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
-			_m_latest_buffer[index] = this_event;
-			_m_latest_index++;
+            /* The pointer that this gets exchanged with needs to get dropped. */
+            size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
+            _m_latest_buffer[index] = this_event;
+            _m_latest_index++;
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
@@ -384,7 +380,7 @@ public:
           ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
            if (this_event != nullptr) {
-			   assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
+               assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
                return this_specific_event;
            } else {
                return ptr<const specific_event>{nullptr};
@@ -442,11 +438,11 @@ public:
          * @brief Publish @p ev to this topic.
          */
          void put(const specific_event* this_specific_event) {
-			assert(typeid(specific_event) == _m_topic.ty());
-			assert(this_specific_event);
-			ptr<const event> this_event {static_cast<const event*>(this_specific_event)};
-			assert(this_event.unique());
-			_m_topic.put(std::move(this_event));
+            assert(typeid(specific_event) == _m_topic.ty());
+            assert(this_specific_event);
+            ptr<const event> this_event {static_cast<const event*>(this_specific_event)};
+            assert(this_event.unique());
+            _m_topic.put(std::move(this_event));
         }
 
         /**
@@ -460,21 +456,21 @@ public:
          * [1]: https://en.wikipedia.org/wiki/Slab_allocation
          * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
          */
-		template<class... Args>
+        template<class... Args>
         ptr<specific_event> allocate(Args&&... args) {
-			return std::make_shared<specific_event>(std::forward<Args>(args)...);
+            return std::make_shared<specific_event>(std::forward<Args>(args)...);
         }
 
         /**
          * @brief Publish @p ev to this topic.
          */
-		void put(ptr<specific_event>&& this_specific_event) {
-			assert(typeid(specific_event) == _m_topic.ty());
-			assert(this_specific_event != nullptr);
-			assert(this_specific_event.unique());
-			ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-			assert(this_event.unique());
-			_m_topic.put(std::move(this_event));
+        void put(ptr<specific_event>&& this_specific_event) {
+            assert(typeid(specific_event) == _m_topic.ty());
+            assert(this_specific_event != nullptr);
+            assert(this_specific_event.unique());
+            ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
+            assert(this_event.unique());
+            _m_topic.put(std::move(this_event));
         }
     };
 
