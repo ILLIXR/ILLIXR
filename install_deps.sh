@@ -90,7 +90,9 @@ then
         if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
             export use_docker="yes"
         fi
-        if y_or_n "^^^^  Also install CUDA (cuda) for GPU plugin support"; then
+        pmt_msg_warn_cuda="Also automate install of CUDA 11 (cuda) for GPU plugin support on Ubuntu (_only_!)"
+        pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, or if a supported GPU is not found)"
+        if y_or_n "^^^^  ${msg_warn_cuda}"; then
             export use_cuda="yes"
         fi
         . ./scripts/install_apt_deps.sh
