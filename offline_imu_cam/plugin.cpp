@@ -46,7 +46,8 @@ protected:
 			}
 
 		} else {
-			return skip_option::stop;
+			stop();
+			return skip_option::skip_and_yield;
 		}
 	}
 

@@ -49,9 +49,6 @@ public:
 				first_time = false;
 			}
 
-			auto iteration_start_cpu_time  = thread_cpu_time();
-			auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
-
 			skip_option s = _p_should_skip();
 
 			switch (s) {
@@ -76,19 +73,13 @@ public:
 				}});
 				++iteration_no;
 				skip_no = 0;
-				completion_publisher.put(new (completion_publisher.allocate()) {true});
+				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 				break;
 			}
 			}
 		});
 
-		thread_info* info = thread_id_publisher.allocate();
-		info->pid = thread.get_pid();
-		info->name = name;
-		thread_id_publisher.put(info);
-		std::cout << "thread," << pid << ",threadloop," << name << std::endl;
-
-
+		thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), name});
 	}
 
 protected:

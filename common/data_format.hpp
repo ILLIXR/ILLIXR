@@ -33,7 +33,6 @@ namespace ILLIXR {
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
 		ullong dataset_time;
-<<<<<<< Updated upstream
 		imu_cam_type(time_type time_,
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
@@ -48,8 +47,6 @@ namespace ILLIXR {
 			, dataset_time{dataset_time_}
 		{ }
 	};
-=======
-	} imu_cam_type;
 
     typedef struct {
         std::optional<cv::Mat*> rgb;
@@ -57,39 +54,12 @@ namespace ILLIXR {
         ullong timestamp;
     } rgb_depth_type;
 
-	// Values needed to initialize the IMU integrator
+
 	typedef struct {
-		double gyro_noise;
-		double acc_noise;
-		double gyro_walk;
-		double acc_walk;
-		Eigen::Matrix<double,3,1> n_gravity;
-		double imu_integration_sigma;
-		double nominal_rate;
-	} imu_params;
-
-	// IMU biases, initialization params, and slow pose needed by the IMU integrator
-	typedef struct {
-		double last_cam_integration_time;
-		double t_offset;
-		imu_params params;
-		
-		Eigen::Vector3d biasAcc;
-		Eigen::Vector3d biasGyro;
-		Eigen::Matrix<double,3,1> position;
-		Eigen::Matrix<double,3,1> velocity;
-		Eigen::Quaterniond quat;
-
-		time_type cam_time;
-		time_type imu_time;
-	} imu_integrator_input;
->>>>>>> Stashed changes
-
-    typedef struct {
-        std::optional<cv::Mat*> rgb;
-        std::optional<cv::Mat*> depth;
-        ullong timestamp;
-    } rgb_depth_type3;
+	  int64_t time;
+	  const unsigned char* rgb;
+	  const unsigned short* depth;
+	} rgb_depth_type2;
 
 	// Values needed to initialize the IMU integrator
 	typedef struct {
@@ -165,12 +135,6 @@ namespace ILLIXR {
 			, imu_time{imu_time_}
 		{ }
 	};
-
-	typedef struct {
-	  int64_t time;
-	  const unsigned char* rgb;
-	  const unsigned short* depth;
-	} rgb_depth_type2;
 
 	struct pose_type : switchboard::event {
 		time_type sensor_time; // Recorded time of sensor data ingestion
@@ -258,5 +222,9 @@ namespace ILLIXR {
 	struct thread_info : switchboard::event {
 		pid_t pid;
 		std::string name;
+		thread_info(pid_t pid_, std::string name_)
+			: pid{pid_}
+			, name{name_}
+		{ }
 	};
 }
