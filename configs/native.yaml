@@ -16,4 +16,4 @@ loader:
   name: native
   # command: gdb -q --args %a
   # command: valgrind %a
-profile: dbg
+profile: opt
