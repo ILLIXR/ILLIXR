@@ -1,11 +1,2 @@
 plugin_group:
   - path: timewarp_gl/
-  # - path: ../ILLIXR_comp/audio_pipeline
-  # - name: audio
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/audio_pipeline.git
-  #     version: 3ad1d9409433fc3d3dd9e8db810f3ca3d107211d
-  # - name: hologram
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/HOTlab.git
-  #     version: 51b8ef86cb1efa1204cb4a33dfaf15bb09d66903
