@@ -1,14 +1,18 @@
 #!/bin/bash
 
+#--- Script for installing binary packages via apt ---#
+
 
 ### Default imported variables setup ###
 
 if [ -z "${use_realsense}" ]; then
     use_realsense="no"
 fi
+
 if [ -z "${use_docker}" ]; then
     use_docker="no"
 fi
+
 if [ -z "${use_cuda}" ]; then
     use_cuda="no"
 fi
@@ -213,7 +217,11 @@ if [ "${ID}" == "ubuntu" ] && [ "${VERSION_ID}" == "18.04" ]; then
 else
     pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
     pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
-    pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. If your project requires Intel RealSense support, please build and install the Intel RealSense SDK from source. For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
+    pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations "
+    pkg_warn_msg_realsense+="for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. "
+    pkg_warn_msg_realsense+="If your project requires Intel RealSense support, "
+    pkg_warn_msg_realsense+="please build and install the Intel RealSense SDK from source. "
+    pkg_warn_msg_realsense+="For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
     print_warning "${pkg_warn_msg_realsense}"
 fi
 
@@ -221,21 +229,41 @@ fi
 
 # If CUDA is prompted for installation, check for a CUDA compatible NVIDIA GPU
 # Disable installation if not supported (only Ubuntu 18 for now) or no hardware is detected
+# CUDA will not be reinstalled if an existing installation is detected
 if [ "${use_cuda}" == "yes" ]; then
-    supported_gpus=$(lspci | egrep -i "\<VGA\>.*\<NVIDIA\>")
-    if [ -z "${supported_gpus}" ]; then
-        use_cuda="no"
-        pkg_support_url_cuda="https://developer.nvidia.com/cuda-gpus"
-        pkg_warn_msg_cuda="Unable to detect a CUDA compatible NVIDIA GPU. Check if your hardware is supported at '${pkg_warn_msg_cuda}'."
-        print_warning "${pkg_warn_msg_cuda}"
-    elif [ "${ID}" != "ubuntu" ] || [ "${VERSION_ID}" != "18.04" ]; then
+    is_atleast_ubuntu1804="$(echo "${VERSION_ID} >= 18.04" | bc -l)"
+
+    if [ "${ID}" == "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ]; then
+        supported_hw_cuda=$(lspci | egrep -i "\<VGA\>.*\<NVIDIA\>")
+
+        if [ ! -z "${supported_hw_cuda}" ]; then
+            driver_path_cuda="/proc/driver/nvidia/version"
+            check_compiler_cuda=$(nvcc -V)
+
+            # Check if CUDA is already installed. If so, skip CUDA
+            if [ "$?" -eq 0 ] || [ -e "${driver_path_cuda}" ]; then
+                use_cuda="no"
+                driver_info_cuda=$(cat "${driver_path_cuda}")
+                pkg_warn_msg_cuda="Detected components of an existing CUDA installation.\n"
+                pkg_warn_msg_cuda+="${driver_info_cuda}\nSkipping."
+                print_warning "${pkg_warn_msg_cuda}"
+            else
+                pkg_dep_groups_prereq+=" prereq_cuda"
+                pkg_dep_groups+=" cuda"
+            fi
+        else
+            use_cuda="no"
+            pkg_support_url_cuda="https://developer.nvidia.com/cuda-gpus"
+            pkg_warn_msg_cuda="Unable to detect a CUDA compatible NVIDIA GPU. "
+            pkg_warn_msg_cuda+="Check if your hardware is supported at '${pkg_warn_msg_cuda}'."
+            print_warning "${pkg_warn_msg_cuda}"
+        fi
+    else
         use_cuda="no"
         pkg_install_url_cuda="https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#package-manager-installation"
-        pkg_warn_msg_cuda="This ILLIXR script currently only supports Ubuntu 18 LTS. See '${pkg_install_url_cuda}' for details on your distribution's install process."
+        pkg_warn_msg_cuda="This ILLIXR script currently only supports Ubuntu 18 LTS. "
+        pkg_warn_msg_cuda+="See '${pkg_install_url_cuda}' for details on your distribution's install process."
         print_warning "${pkg_warn_msg_cuda}"
-    else
-        pkg_dep_groups_prereq+=" prereq_cuda"
-        pkg_dep_groups+=" cuda"
     fi
 fi
 
@@ -286,7 +314,9 @@ if [ "${use_cuda}" == "yes" ]; then
 
     path_cmd_cuda='export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}'
     lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
-    pkg_warn_msg_cuda="Before running ILLIXR with plugins using CUDA, make sure to update the following environment variables:\n> ${path_cmd_cuda}\n> ${lib64_cmd_cuda}"
+    pkg_warn_msg_cuda="Before running ILLIXR with plugins using CUDA, "
+    pkg_warn_msg_cuda+="make sure to update the following environment variables:\n> "
+    pkg_warn_msg_cuda+="${path_cmd_cuda}\n> ${lib64_cmd_cuda}"
     print_warning "${pkg_warn_msg_cuda}"
 fi
 
