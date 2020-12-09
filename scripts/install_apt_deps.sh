@@ -28,8 +28,8 @@ echo "Detected OS: '${PRETTY_NAME}' on kernel version '${kernel_version}'"
 
 ### Helper functions ###
 
-# Function for printing a warning message (with red foreground)
-function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
+# Source the global helper functions
+. scripts/bash_utils.sh
 
 # Add a repository and the necessary keys required given a list of key servers,
 # a repository url, and a repository component name

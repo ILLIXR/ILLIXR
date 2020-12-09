@@ -14,6 +14,12 @@ if [ -z "${illixr_nproc}" ]; then
 fi
 
 
+### Helper functions ###
+
+# Source the global helper functions
+. scripts/bash_utils.sh
+
+
 ### Package metadata setup ###
 
 branch_tag_name="kimera-gtsam"
@@ -21,7 +27,13 @@ repo_url="https://github.com/ILLIXR/gtsam.git"
 gtsam_dir="${opt_dir}/gtsam"
 prefix_dir="/usr/local"
 build_type="RelWithDebInfo"
-so_file="libgtsam${build_type}.so"
+
+case "${build_type}" in
+    Release)          so_file="libgtsam.so" ;;
+    RelWithDebInfo)   so_file="libgtsamRelWithDebInfo.so" ;;
+    Debug)            so_file="libgtsamDebug.so" ;;
+    *)                print_warning "Bad cmake build type '${build_type}'" && exit 1 ;;
+esac
 
 
 ### Fetch, build and install ###
@@ -44,8 +56,13 @@ cmake \
 sudo make -C "${gtsam_dir}/build" "-j${illixr_nproc}" install
 
 # Fix 'RelWithDebugInfo'-suffixed symlinks for the generated shared libaries
-cd "${gtsam_dir}/build/gtsam"
-if [ -f "${so_file}" ]; then
-    sudo ln -s "${so_file}" libgtsam.so
+if [ "${build_type}" != "Release" ]; then
+    cd "${gtsam_dir}/build/gtsam"
+    if  [ -f "${so_file}" ]; then
+        if [ -f libgtsam.so ]; then
+            sudo rm -f libgtsam.so
+        fi
+        sudo ln -s "${so_file}" libgtsam.so
+    fi
+    cd -
 fi
-cd -
