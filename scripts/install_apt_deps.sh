@@ -234,6 +234,13 @@ if [ "${use_cuda}" == "yes" ]; then
     is_atleast_ubuntu1804="$(echo "${VERSION_ID} >= 18.04" | bc -l)"
 
     if [ "${ID}" == "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ]; then
+        case "${VERSION_ID}" in
+            18.04)  distro_cuda="ubuntu1804" ;;
+            #20.04)  distro_cuda="ubuntu2004" ;;
+            *)      print_warning "Bad distribution version '${VERSION_ID}" && exit 1 ;;
+        esac
+
+        arch_cuda="x86_64"
         supported_hw_cuda=$(lspci | egrep -i "\<VGA\>.*\<NVIDIA\>")
 
         if [ ! -z "${supported_hw_cuda}" ]; then
@@ -306,8 +313,6 @@ fi
 
 # If supported, add the keys and repository for CUDA (for GPU plugin support)
 if [ "${use_cuda}" == "yes" ]; then
-    distro_cuda="ubuntu1804"
-    arch_cuda="x86_64"
     repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_cuda}/${arch_cuda}"
     key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
     add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
