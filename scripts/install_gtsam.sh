@@ -55,7 +55,7 @@ cmake \
 # Install
 sudo make -C "${gtsam_dir}/build" "-j${illixr_nproc}" install
 
-# Fix 'RelWithDebugInfo'-suffixed symlinks for the generated shared libaries
+# Fix suffixed symlinks for the generated shared libaries
 if [ "${build_type}" != "Release" ]; then
     cd "${gtsam_dir}/build/gtsam"
     if  [ -f "${so_file}" ]; then
