@@ -84,14 +84,16 @@ then
     sudo chown $USER: "${opt_dir}"
 
     echo "* The user will now be prompted to install the following dependencies and optional features:"
-    echo "  Binary packages (apt-get), Docker, OpenCV, Vulkan, gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)"
+    echo "  Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan, gtest, qemu, OpenXR-SDK, "
+    echo "  gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)"
 
     if y_or_n "Next: Add apt-get sources list/keys and install necessary packages"; then
         if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
             export use_docker="yes"
         fi
         pmt_msg_warn_cuda="Also automate install of CUDA 11 (cuda) for GPU plugin support on Ubuntu (_only_!)"
-        pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, or if a supported GPU is not found)"
+        pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, "
+        pmt_msg_warn_cuda+="or if a supported GPU is not found)"
         if y_or_n "^^^^  ${pmt_msg_warn_cuda}"; then
             export use_cuda="yes"
         fi
