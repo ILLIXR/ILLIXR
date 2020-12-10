@@ -223,15 +223,15 @@ fi
 # For supported distributions, automatically add the RealSense package group to our list
 if [ "${distro_name}" == "ubuntu" ] && [ "${distro_name}" == "18.04" ]; then
     case "${arch_name}" in
-        x86_64)     use_realsense="yes";
-                    pkg_dep_groups+=" realsense_anyarch";
-                    pkg_dep_groups+=" realsense_x86_64";
+        x86_64)     use_realsense="yes"
+                    pkg_dep_groups+=" realsense_anyarch"
+                    pkg_dep_groups+=" realsense_x86_64"
                     ;;
-        aarch64)    use_realsense="yes";
-                    pkg_dep_groups+=" realsense_anyarch";
+        aarch64)    use_realsense="yes"
+                    pkg_dep_groups+=" realsense_anyarch"
                     ;;
-        *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense.";
-                    exit 1;
+        *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense."
+                    exit 1
                     ;;
     esac
 else
@@ -255,21 +255,21 @@ if [ "${use_cuda}" == "yes" ]; then
 
     if [ "${distro_name}" == "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" == "x86_64" ]; then
         case "${distro_version}" in
-            #20.04)  distro_name_cuda="ubuntu2004";
+            #20.04)  distro_name_cuda="ubuntu2004"
             #        ;;
-            18.04)  distro_name_cuda="ubuntu1804";
+            18.04)  distro_name_cuda="ubuntu1804"
                     ;;
-            *)      print_warning "Bad distribution version '${distro_version}' for CUDA.";
-                    exit 1;
+            *)      print_warning "Bad distribution version '${distro_version}' for CUDA."
+                    exit 1
                     ;;
         esac
         case "${arch_name}" in
-            #aarch64)    arch_name_cuda="arm64";
+            #aarch64)    arch_name_cuda="arm64"
             #            ;;
-            x86_64)     arch_name_cuda="x86_64";
+            x86_64)     arch_name_cuda="x86_64"
                         ;;
-            *)          print_warning "Unsupported arch '${arch_name}' for CUDA.";
-                        exit 1;
+            *)          print_warning "Unsupported arch '${arch_name}' for CUDA."
+                        exit 1
                         ;;
         esac
 
