@@ -58,7 +58,7 @@ function y_or_n() {
         return 0
     else
         while true; do
-            echo "${1}"
+            echo -e "${1}"
             read -rp "Yes or no? " yn
             case "${yn}" in
                 [Yy]* ) return 0 ;;
