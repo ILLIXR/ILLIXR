@@ -268,7 +268,7 @@ if [ "${use_cuda}" == "yes" ]; then
             #            ;;
             x86_64)     arch_name_cuda="x86_64";
                         ;;
-            *)          print_warning "Unspported arch '${arch_name}' for CUDA.";
+            *)          print_warning "Unsupported arch '${arch_name}' for CUDA.";
                         exit 1;
                         ;;
         esac
