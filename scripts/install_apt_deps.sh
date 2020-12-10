@@ -22,8 +22,14 @@ fi
 
 # Source environment variables describing the current OS distribution
 . /etc/os-release
+
 kernel_version="$(uname -r)"
-echo "Detected OS: '${PRETTY_NAME}' on kernel version '${kernel_version}'"
+arch_name="$(uname -m)"
+distro_version="${VERSION_ID}"
+distro_name="${ID}"
+distro_codename="${VERSION_CODENAME}"
+
+echo "Detected OS: '${PRETTY_NAME}' on kernel version '${kernel_version}' on arch '${arch_name}'"
 
 
 ### Helper functions ###
@@ -178,9 +184,13 @@ pkg_dep_list_docker=(
     docker-ce
 ) # End List
 
-pkg_dep_list_realsense=(
-    librealsense2-dkms
+pkg_dep_list_realsense_anyarch=(
     librealsense2-utils
+    librealsense2-dev
+) # End List
+
+pkg_dep_list_realsense_x86_64=(
+    librealsense2-dkms
 ) # End List
 
 pkg_dep_list_prereq_cuda=(
@@ -211,9 +221,19 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${ID}" == "ubuntu" ] && [ "${VERSION_ID}" == "18.04" ]; then
-    use_realsense="yes"
-    pkg_dep_groups+=" realsense"
+if [ "${distro_name}" == "ubuntu" ] && [ "${distro_name}" == "18.04" ]; then
+    case "${arch_name}" in
+        x86_64)     use_realsense="yes";
+                    pkg_dep_groups+=" realsense_anyarch";
+                    pkg_dep_groups+=" realsense_x86_64";
+                    ;;
+        aarch64)    use_realsense="yes";
+                    pkg_dep_groups+=" realsense_anyarch";
+                    ;;
+        *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense.";
+                    exit 1;
+                    ;;
+    esac
 else
     pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
     pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
@@ -231,16 +251,28 @@ fi
 # Disable installation if not supported (only Ubuntu 18 for now) or no hardware is detected
 # CUDA will not be reinstalled if an existing installation is detected
 if [ "${use_cuda}" == "yes" ]; then
-    is_atleast_ubuntu1804="$(echo "${VERSION_ID} >= 18.04" | bc -l)"
+    is_atleast_ubuntu1804="$(echo "${distro_version} >= 18.04" | bc -l)"
 
-    if [ "${ID}" == "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ]; then
-        case "${VERSION_ID}" in
-            18.04)  distro_cuda="ubuntu1804" ;;
-            #20.04)  distro_cuda="ubuntu2004" ;;
-            *)      print_warning "Bad distribution version '${VERSION_ID}" && exit 1 ;;
+    if [ "${distro_name}" == "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" == "x86_64" ]; then
+        case "${distro_version}" in
+            #20.04)  distro_name_cuda="ubuntu2004";
+            #        ;;
+            18.04)  distro_name_cuda="ubuntu1804";
+                    ;;
+            *)      print_warning "Bad distribution version '${distro_version}' for CUDA.";
+                    exit 1;
+                    ;;
+        esac
+        case "${arch_name}" in
+            #aarch64)    arch_name_cuda="arm64";
+            #            ;;
+            x86_64)     arch_name_cuda="x86_64";
+                        ;;
+            *)          print_warning "Unspported arch '${arch_name}' for CUDA.";
+                        exit 1;
+                        ;;
         esac
 
-        arch_cuda="x86_64"
         supported_hw_cuda=$(lspci | egrep -i "\<VGA\>.*\<NVIDIA\>")
 
         if [ ! -z "${supported_hw_cuda}" ]; then
@@ -294,13 +326,13 @@ sudo add-apt-repository -u -y ppa:deadsnakes/ppa
 # Add Kitware repository (for third party Ubuntu dependencies)
 key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
 repo_url_kitware="https://apt.kitware.com/ubuntu"
-add_repo "${key_srv_url_kitware}" "${repo_url_kitware}" "${VERSION_CODENAME} main"
+add_repo "${key_srv_url_kitware}" "${repo_url_kitware}" "${distro_codename} main"
 
 # If prompted, add Docker repository (for local CI/CD debugging)
 if [ "${use_docker}" == "yes" ]; then
     key_srv_url_docker="https://download.docker.com/linux/ubuntu/gpg"
     repo_url_docker="https://download.docker.com/linux/ubuntu"
-    add_repo "${key_srv_url_docker}" "${repo_url_docker}" "${VERSION_CODENAME} stable"
+    add_repo "${key_srv_url_docker}" "${repo_url_docker}" "${distro_codename} stable"
 fi
 
 # If supported, add the gpg keys and repository for Intel RealSense
@@ -308,12 +340,12 @@ if [ "${use_realsense}" == "yes" ]; then
     key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
     repo_url_realsense="http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo"
     key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
-    add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "${VERSION_CODENAME} main" "${key_id_realsense}"
+    add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "${distro_codename} main" "${key_id_realsense}"
 fi
 
 # If supported, add the keys and repository for CUDA (for GPU plugin support)
 if [ "${use_cuda}" == "yes" ]; then
-    repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_cuda}/${arch_cuda}"
+    repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_name_cuda}/${arch_name_cuda}"
     key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
     add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
 
