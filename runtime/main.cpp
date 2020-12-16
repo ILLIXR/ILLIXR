@@ -5,8 +5,6 @@
 
 
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION {10};
-const std::chrono::seconds ILLIXR_RUN_DURATION { ILLIXR::RUN_DURATION };
-
 ILLIXR::runtime* r;
 
 
@@ -96,7 +94,7 @@ int main(int argc, char* const* argv) {
 #endif /// NDEBUG
 
 	/// Shutting down method 2: Run timer
-    std::chrono::seconds run_duration = ILLIXR_RUN_DURATION;
+    std::chrono::seconds run_duration { r->get_run_duration() } ;
 
 	RAC_ERRNO_MSG("main after creating runtime");
 

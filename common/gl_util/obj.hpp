@@ -76,8 +76,8 @@ namespace ILLIXR {
 
 			std::string warn, err;
 
-			const std::string obj_dir_term = (obj_dir.back() == '/') ? obj_dir : obj_dir + "/";
-			const std::string obj_file = obj_dir_term + obj_filename;
+			const std::string obj_file_sep {(obj_dir.back() == '/') ? "" : "/"};
+			const std::string obj_file {obj_dir + obj_file_sep + obj_filename};
 
 			// We pass obj_dir as the last argument to LoadObj to let us load
 			// any material (.mtl) files associated with the .obj in the same directory.

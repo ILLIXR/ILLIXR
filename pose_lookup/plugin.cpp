@@ -17,8 +17,9 @@ class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
-        , _m_sensor_data{load_data()}
-        , _m_sensor_data_it{_m_sensor_data.cbegin()}
+		, cr{pb->lookup_impl<const_registry>()}
+		, _m_sensor_data{load_data(cr->DATA_PATH.value())}
+		, _m_sensor_data_it{_m_sensor_data.cbegin()}
         , dataset_first_time{_m_sensor_data_it->first}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
@@ -174,6 +175,7 @@ public:
     }
 
 private:
+	const std::shared_ptr<const_registry> cr;
     const std::shared_ptr<switchboard> sb;
     mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex offset_mutex;

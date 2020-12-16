@@ -44,15 +44,13 @@ typedef struct {
 
 static
 std::map<ullong, sensor_types>
-load_data() {
-	std::string illixr_data {ILLIXR::DATA_PATH};
-
+load_data(const std::string& data_path) {
 	std::map<ullong, sensor_types> data;
 
 	const std::string imu0_subpath {"/imu0/data.csv"};
-	std::ifstream imu0_file {illixr_data + imu0_subpath};
+	std::ifstream imu0_file {data_path + imu0_subpath};
 	if (!imu0_file.good()) {
-		std::cerr << "'" << illixr_data << imu0_subpath << "' is not a good path" << std::endl;
+		std::cerr << "'" << data_path << imu0_subpath << "' is not a good path" << std::endl;
         ILLIXR::abort();
 	}
 	for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
@@ -63,27 +61,26 @@ load_data() {
 	}
 
 	const std::string cam0_subpath {"/cam0/data.csv"};
-	std::ifstream cam0_file {illixr_data + cam0_subpath};
+	std::ifstream cam0_file {data_path + cam0_subpath};
 	if (!cam0_file.good()) {
-		std::cerr << "'" << illixr_data << cam0_subpath << "' is not a good path" << std::endl;
+		std::cerr << "'" << data_path << cam0_subpath << "' is not a good path" << std::endl;
         ILLIXR::abort();
 	}
 	for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
-		data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
+		data[t].cam0 = {data_path + "/cam0/data/" + row[1]};
 	}
 
 	const std::string cam1_subpath {"/cam1/data.csv"};
-	std::ifstream cam1_file {illixr_data + cam1_subpath};
+	std::ifstream cam1_file {data_path + cam1_subpath};
 	if (!cam1_file.good()) {
-		std::cerr << "'" << illixr_data << cam1_subpath << "' is not a good path" << std::endl;
+		std::cerr << "'" << data_path << cam1_subpath << "' is not a good path" << std::endl;
         ILLIXR::abort();
-		abort();
 	}
 	for (CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		std::string fname = row[1];
-		data[t].cam1 = {illixr_data + "/cam1/data/" + row[1]};
+		data[t].cam1 = {data_path + "/cam1/data/" + row[1]};
 	}
 
 	return data;

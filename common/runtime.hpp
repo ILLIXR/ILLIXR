@@ -29,6 +29,7 @@ namespace ILLIXR {
 
 		virtual ~runtime() = default;
 
+		virtual long get_run_duration() const = 0;
 	};
 
 #ifdef ILLIXR_MONADO_MAINLINE

@@ -30,8 +30,6 @@
 
 using namespace ILLIXR;
 
-const std::string OBJ_DIR {ILLIXR::DEMO_OBJ_PATH};
-
 constexpr size_t TEST_PATTERN_WIDTH = 256;
 constexpr size_t TEST_PATTERN_HEIGHT = 256;
 
@@ -75,6 +73,8 @@ public:
 	// the data whenever it needs to.
 	debugview(std::string name_, phonebook *pb_)
 		: threadloop{name_, pb_}
+		, cr{pb->lookup_impl<const_registry>()}
+		, _m_obj_dir{cr->DEMO_OBJ_PATH.value()}
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
@@ -430,6 +430,11 @@ public:
 	}
 private:
 
+	const std::shared_ptr<const_registry> cr;
+
+	using CR = ILLIXR::const_registry;
+	const CR::DECL_DEMO_OBJ_PATH::type _m_obj_dir;
+
 	//GLFWwindow * const glfw_context;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
@@ -562,8 +567,8 @@ public:
 
 		// Load/initialize the demo scene.
 
-		demoscene = ObjScene(OBJ_DIR, "scene.obj");
-		headset = ObjScene(OBJ_DIR, "headset.obj");
+		demoscene = ObjScene(_m_obj_dir, "scene.obj");
+		headset = ObjScene(_m_obj_dir, "headset.obj");
 
 		// Generate fun test pattern for missing camera images.
 		for (unsigned x = 0; x < TEST_PATTERN_WIDTH; x++) {

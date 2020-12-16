@@ -13,10 +13,11 @@ class ground_truth_slam : public plugin {
 public:
 	ground_truth_slam(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
+		, cr{pb->lookup_impl<const_registry>()}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-		, _m_sensor_data{load_data()}
+		, _m_sensor_data{load_data(cr->DATA_PATH.value())}
 		, _m_first_time{true}
 	{ }
 
@@ -74,6 +75,7 @@ public:
 	}
 
 private:
+	const std::shared_ptr<const_registry> cr;
 	const std::shared_ptr<switchboard> sb;
 	switchboard::writer<pose_type> _m_true_pose;
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;

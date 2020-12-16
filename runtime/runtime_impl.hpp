@@ -17,24 +17,26 @@
 
 using namespace ILLIXR;
 
-static const int GLX_FB_WIDTH   { ILLIXR::FB_WIDTH  };
-static const int GLX_FB_HEIGHT  { ILLIXR::FB_HEIGHT };
-
 
 class runtime_impl : public runtime {
 public:
 	runtime_impl(
 #ifndef ILLIXR_MONADO_MAINLINE
-        GLXContext appGLCtx
+	    GLXContext appGLCtx
 #endif /// ILLIXR_MONADO_MAINLINE
-	) {
+	) : cr{std::make_shared<const_registry>()}
+      , _m_glx_fb_width{cr->FB_WIDTH.value()}
+	  , _m_glx_fb_height{cr->FB_WIDTH.value()}
+	  , _m_run_duration{cr->RUN_DURATION.value()}
+	{
+		pb.register_impl<const_registry>(cr);
 		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
-#ifndef ILLIXR_MONADO_MAINLINE
-        pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, appGLCtx));
-#endif /// ILLIXR_MONADO_MAINLINE
 		pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
+#ifndef ILLIXR_MONADO_MAINLINE
+		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(_m_glx_fb_width, _m_glx_fb_height, appGLCtx));
+#endif /// ILLIXR_MONADO_MAINLINE
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
@@ -103,6 +105,10 @@ public:
 		pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
 	}
 
+	virtual long get_run_duration() const override {
+		return _m_run_duration;
+	}
+
 	virtual ~runtime_impl() override {
 		if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
 			stop();
@@ -127,7 +133,16 @@ private:
 	std::vector<dynamic_lib> libs;
 	phonebook pb;
 	std::vector<std::unique_ptr<plugin>> plugins;
-};
+	std::atomic<bool> terminate {false};
+
+	// Constants set at construction-time (lookup from const_registry)
+	const std::shared_ptr<const_registry> cr;
+
+	using CR = ILLIXR::const_registry;
+	const CR::DECL_FB_WIDTH::type     _m_glx_fb_width;
+	const CR::DECL_FB_HEIGHT::type    _m_glx_fb_height;
+	const CR::DECL_RUN_DURATION::type _m_run_duration;
+u;
 
 #ifdef ILLIXR_MONADO_MAINLINE
 extern "C" runtime* runtime_factory() {
