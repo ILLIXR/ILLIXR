@@ -30,11 +30,12 @@ const record_header __threadloop_iteration_header {"threadloop_iteration", {
  */
 class threadloop : public plugin {
 public:
-	threadloop(std::string name_, phonebook* pb_)
+	threadloop(std::string name_, phonebook* pb_, bool is_scheduled_ = true)
 		: plugin(name_, pb_)
 		, sb{pb->lookup_impl<switchboard>()}
-		, thread_id_publisher{sb->get_writer<thread_info>(name_ + "_thread_id")}
-		, completion_publisher{sb->get_writer<switchboard::event_wrapper<bool>>(name_ + "_completion")}
+		, thread_id_publisher{sb->get_writer<thread_info>(std::to_string(id) + "_thread_id")}
+		, completion_publisher{sb->get_writer<switchboard::event_wrapper<bool>>(std::to_string(id) + "_completion")}
+		, is_scheduled{is_scheduled_}
 	{ }
 
 	/**
@@ -42,7 +43,28 @@ public:
 	 */
 	virtual void start() override {
 		plugin::start();
-		const managed_thread& thread = sb->schedule<switchboard::event_wrapper<bool>>(id, name + "_trigger", [this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
+		if (is_scheduled) {
+			const managed_thread& thread = sb->schedule<switchboard::event_wrapper<bool>>(
+					id,
+					std::to_string(id) + "_trigger",
+					[this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
+				thread_main();
+			});
+			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), std::to_string(id)});
+		} else {
+			thread.swap(std::make_unique<managed_thread>([this]{
+				thread_main();
+			}));
+		}
+	}
+
+protected:
+	std::size_t iteration_no = 0;
+	std::size_t skip_no = 0;
+	bool is_scheduled;
+	std::unique_ptr<managed_thread> thread {nullptr};
+
+	void thread_main() {
 			iteration_no++;
 			if (first_time) {
 				_p_thread_setup();
@@ -77,14 +99,7 @@ public:
 				break;
 			}
 			}
-		});
-
-		thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), name});
-	}
-
-protected:
-	std::size_t iteration_no = 0;
-	std::size_t skip_no = 0;
+		}
 
 private:
 	const std::shared_ptr<switchboard> sb;

@@ -17,7 +17,7 @@ const record_header imu_cam_record {
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
 	offline_imu_cam(std::string name_, phonebook* pb_)
-		: threadloop{name_, pb_}
+		: threadloop{name_, pb_, false}
 		, _m_sensor_data{load_data()}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}

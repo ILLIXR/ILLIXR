@@ -54,7 +54,7 @@ std::shared_ptr<Camera> start_camera() {
 class zed_camera_thread : public threadloop {
 public:
     zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
-    : threadloop{name_, pb_}
+	: threadloop{name_, pb_, false}
     , sb{pb->lookup_impl<switchboard>()}
     , _m_cam_type{sb->get_writer<cam_type>("cam_type")}
     , zedm{zedm_}
@@ -130,7 +130,7 @@ public:
     }
 
     zed_imu_thread(std::string name_, phonebook* pb_)
-        : threadloop{name_, pb_}
+        : threadloop{name_, pb_, false}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , zedm{start_camera()}

@@ -42,7 +42,7 @@ public:
 	// references to the switchboard plugs, so the component can read the
 	// data whenever it needs to.
 	timewarp_gl(std::string name_, phonebook* pb_)
-		: threadloop{name_, pb_}
+		: threadloop{name_, pb_, false}
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}

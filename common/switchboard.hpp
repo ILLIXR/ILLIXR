@@ -39,6 +39,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
 	{"topic_name", typeid(std::string)},
 	{"enqueued", typeid(std::size_t)},
 	{"dequeued", typeid(std::size_t)},
+	{"skipped", typeid(std::size_t)},
 	{"idle_cycles", typeid(std::size_t)},
 }};
 
@@ -139,16 +140,19 @@ private:
 	 */
 	class topic_subscription {
 	private:
+		const phonebook* pb;
 		const std::string& _m_topic_name;
 		std::size_t _m_plugin_id;
 		std::function<void(ptr<const event>&&, std::size_t)> _m_callback;
 		const std::shared_ptr<record_logger> _m_record_logger;
 		record_coalescer _m_cb_log;
+		bool _m_flush_on_read;
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
 		moodycamel::ConsumerToken _m_ctok {_m_queue};
 		static constexpr std::chrono::milliseconds _m_queue_timeout {100};
 		std::size_t _m_enqueued {0};
 		std::size_t _m_dequeued {0};
+		std::size_t _m_skipped {0};
 		std::size_t _m_idle_cycles {0};
 
 		// This needs to be last, 
@@ -156,12 +160,33 @@ private:
 		managed_thread _m_thread;
 
 		void thread_on_start() {
+			auto sb = pb->lookup_impl<switchboard>();
+			auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
+			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});
 #ifndef NDEBUG
 			// std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
 #endif
 		}
 
+		template <typename T>
+		static size_t flush(moodycamel::BlockingConcurrentQueue<ptr<T>> queue, moodycamel::ConsumerToken ctok) {
+			const size_t batch_size = 128;
+			std::vector<ptr<T>> items {batch_size, nullptr};
+			size_t total = 0;
+			size_t actual = 0;
+			while (0 != (actual = queue.try_dequeue_bulk(ctok, items.begin(), batch_size))) {
+				for (size_t i = 0; i < actual; ++i) {
+					items.at(i).reset();
+				}
+				total += actual;
+			}
+			return total;
+		}
+
 		void thread_body() {
+			auto sb = pb->lookup_impl<switchboard>();
+			auto completion_publisher = sb->get_writer<switchboard::event_wrapper<bool>>(std::to_string(_m_plugin_id) + "_completion");
+
 			// Try to pull event off of queue
 			ptr<const event> this_event;
 			std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
@@ -170,10 +195,16 @@ private:
 				// Process event
 				// Also, record and log the time
 				_m_dequeued++;
+
+				if (flush_on_read) {
+					_m_skipped += flush(_m_queue, _m_ctok);
+				}
+
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
+				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 				if (_m_cb_log) {
 					_m_cb_log.log(record{__switchboard_callback_header, {
 						{_m_plugin_id},
@@ -193,36 +224,30 @@ private:
 
 		void thread_on_stop() {
 			// Drain queue
-			std::size_t unprocessed = _m_enqueued - _m_dequeued;
-			{
-				// 
-				ptr<const event> this_event;
-				for (std::size_t i = 0; i < unprocessed; ++i) {
-					[[maybe_unused]] bool ret = _m_queue.try_dequeue(_m_ctok, this_event);
-					assert(ret);
-					// std::cerr << "deq (stopping) " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
-					this_event.reset();
-				}
-			}
+			std::size_t unprocessed = flush(_m_queue, _m_ctok);
 
 			// Log stats
 			if (_m_record_logger) {
 				_m_record_logger->log(record{__switchboard_topic_stop_header, {
+					{_m_plugin_id},
 					{_m_topic_name},
+					{unprocessed + _m_skipped + _m_dequeued},
 					{_m_dequeued},
-					{unprocessed},
+					{_m_skipped},
 					{_m_idle_cycles},
 				}});
 			}
 		}
 
 	public:
-		topic_subscription(const std::string& topic_name, std::size_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
-			: _m_topic_name{topic_name}
+		topic_subscription(const phonebook* _pb, const std::string& topic_name, std::size_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger, bool flush_on_read)
+			: pb{_pb}
+			, _m_topic_name{topic_name}
 			, _m_plugin_id{plugin_id}
 			, _m_callback{callback}
-			, _m_record_logger{record_logger_}
-			, _m_cb_log{record_logger_}
+			, _m_record_logger{record_logger}
+			, _m_cb_log{record_logger}
+			, _m_flush_on_read{flush_on_read}
 			, _m_thread{[this]{this->thread_body();}, [this]{this->thread_on_start();}, [this]{this->thread_on_stop();}}
 		{
 			_m_thread.start();
@@ -334,11 +359,11 @@ private:
 		 *
 		 * Thread-safe
 		 */
-		const managed_thread& schedule(std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
+		const managed_thread& schedule(const phonebook* pb, std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
 			// Write on _m_subscriptions.
 			// Must acquire unique state on _m_subscriptions_lock
 			const std::unique_lock lock{_m_subscriptions_lock};
-			_m_subscriptions.emplace_back(_m_name, plugin_id, callback, _m_record_logger);
+			_m_subscriptions.emplace_back(_m_name, pb, plugin_id, callback, _m_record_logger);
 			return _m_subscriptions.back().get_thread();
 		}
 
@@ -523,7 +548,7 @@ public:
 	 */
 	template <typename specific_event>
 	const managed_thread& schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn) {
-		return get_or_create_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
+		return get_or_create_topic<specific_event>(topic_name).schedule(pb, plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
 			assert(this_event);
 			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
 			assert(this_specific_event);
