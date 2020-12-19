@@ -45,23 +45,24 @@ public:
 		plugin::start();
 		if (is_scheduled) {
 			const managed_thread& thread = sb->schedule<switchboard::event_wrapper<bool>>(
-					id,
-					std::to_string(id) + "_trigger",
-					[this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
-				thread_main();
-			});
+				id,
+				std::to_string(id) + "_trigger",
+				[this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
+					thread_main();
+				},
+				true
+			);
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), std::to_string(id)});
 		} else {
-			thread.swap(std::make_unique<managed_thread>([this]{
+			thread = std::make_unique<managed_thread>([this]{
 				thread_main();
-			}));
+			});
 		}
 	}
 
 protected:
 	std::size_t iteration_no = 0;
 	std::size_t skip_no = 0;
-	bool is_scheduled;
 	std::unique_ptr<managed_thread> thread {nullptr};
 
 	void thread_main() {
@@ -107,6 +108,7 @@ private:
 	switchboard::writer<switchboard::event_wrapper<bool>> completion_publisher;
 	bool first_time = true;
 	record_coalescer it_log {record_logger_};
+	bool is_scheduled;
 
 protected:
 

@@ -43,6 +43,8 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
 	{"idle_cycles", typeid(std::size_t)},
 }};
 
+	static void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb);
+
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
  * topics).
@@ -159,17 +161,8 @@ private:
 		// so it is destructed before the data it uses.
 		managed_thread _m_thread;
 
-		void thread_on_start() {
-			auto sb = pb->lookup_impl<switchboard>();
-			auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
-			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});
-#ifndef NDEBUG
-			// std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
-#endif
-		}
-
 		template <typename T>
-		static size_t flush(moodycamel::BlockingConcurrentQueue<ptr<T>> queue, moodycamel::ConsumerToken ctok) {
+		static size_t flush(moodycamel::BlockingConcurrentQueue<ptr<T>>& queue, moodycamel::ConsumerToken& ctok) {
 			const size_t batch_size = 128;
 			std::vector<ptr<T>> items {batch_size, nullptr};
 			size_t total = 0;
@@ -196,7 +189,7 @@ private:
 				// Also, record and log the time
 				_m_dequeued++;
 
-				if (flush_on_read) {
+				if (_m_flush_on_read) {
 					_m_skipped += flush(_m_queue, _m_ctok);
 				}
 
@@ -248,7 +241,7 @@ private:
 			, _m_record_logger{record_logger}
 			, _m_cb_log{record_logger}
 			, _m_flush_on_read{flush_on_read}
-			, _m_thread{[this]{this->thread_body();}, [this]{this->thread_on_start();}, [this]{this->thread_on_stop();}}
+			, _m_thread{[this]{this->thread_body();}, [this]{thread_on_start(_m_thread, _m_plugin_id, pb);}, [this]{this->thread_on_stop();}}
 		{
 			_m_thread.start();
 		}
@@ -359,11 +352,11 @@ private:
 		 *
 		 * Thread-safe
 		 */
-		const managed_thread& schedule(const phonebook* pb, std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback) {
+		const managed_thread& schedule(const phonebook* pb, std::size_t plugin_id, std::function<void(ptr<const event>, std::size_t)> callback, bool flush_on_read) {
 			// Write on _m_subscriptions.
 			// Must acquire unique state on _m_subscriptions_lock
 			const std::unique_lock lock{_m_subscriptions_lock};
-			_m_subscriptions.emplace_back(_m_name, pb, plugin_id, callback, _m_record_logger);
+			_m_subscriptions.emplace_back(pb, _m_name, plugin_id, callback, _m_record_logger, flush_on_read);
 			return _m_subscriptions.back().get_thread();
 		}
 
@@ -498,6 +491,7 @@ public:
 	};
 
 private:
+	const phonebook* pb;
 	std::unordered_map<std::string, topic> _m_registry;
 	std::shared_mutex _m_registry_lock;
 	std::shared_ptr<record_logger> _m_record_logger;
@@ -533,8 +527,9 @@ public:
 	/**
 	 * If @p pb is null, then logging is disabled.
 	 */
-	switchboard(const phonebook* pb)
-		: _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr}
+	switchboard(const phonebook* pb_)
+		: pb{pb_}
+		, _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr}
 	{ }
 
 	/**
@@ -547,13 +542,18 @@ public:
 	 * @throws if topic already exists and its type does not match the @p event.
 	 */
 	template <typename specific_event>
-	const managed_thread& schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn) {
-		return get_or_create_topic<specific_event>(topic_name).schedule(pb, plugin_id, [=](ptr<const event> this_event, std::size_t it_no) {
-			assert(this_event);
-			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
-			assert(this_specific_event);
-			fn(std::move(this_specific_event), it_no);
-		});
+	const managed_thread& schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn, bool flush_on_read = false) {
+		return get_or_create_topic<specific_event>(topic_name).schedule(
+			pb,
+			plugin_id,
+			[=](ptr<const event> this_event, std::size_t it_no) {
+				assert(this_event);
+				ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
+				assert(this_specific_event);
+				fn(std::move(this_specific_event), it_no);
+			},
+			flush_on_read
+		);
 	}
 
 	/**
@@ -596,3 +596,5 @@ public:
 };
 
 }
+
+#include "data_format.hpp"
