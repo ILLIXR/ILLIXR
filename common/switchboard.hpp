@@ -243,6 +243,7 @@ private:
 			, _m_flush_on_read{flush_on_read}
 			, _m_thread{[this]{this->thread_body();}, [this]{thread_on_start(_m_thread, _m_plugin_id, pb);}, [this]{this->thread_on_stop();}}
 		{
+			std::cerr << "topic_subscription, topic_name: " << topic_name << ", plugin_id: " << plugin_id << "\n";
 			_m_thread.start();
 		}
 

@@ -52,11 +52,19 @@ public:
 				},
 				true
 			);
-			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), std::to_string(id)});
+			// std::cerr << "\e[0;31m";
+			// std::cerr << "threadloop::start, is_scheduled, id = " << id << "\n";
+			// std::cerr << "\e[0m";
+			// thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), std::to_string(id)});
 		} else {
 			thread = std::make_unique<managed_thread>([this]{
 				thread_main();
 			});
+			thread->start();
+			std::cerr << "\e[0;31m";
+			std::cerr << "threadloop::start, !is_scheduled, id = " << id << "\n";
+			std::cerr << "\e[0m";
+			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread->get_pid(), std::to_string(id)});
 		}
 	}
 
@@ -96,7 +104,7 @@ protected:
 				}});
 				++iteration_no;
 				skip_no = 0;
-				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
+				// completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 				break;
 			}
 			}

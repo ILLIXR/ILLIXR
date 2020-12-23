@@ -122,11 +122,11 @@ class CalledProcessError(Exception):
         self.returncode = returncode
 
     def __str__(self) -> str:
-        env_var_str = shlex.join(
+        env_var_str = [
             f"{key}={val}"
             for key, val in self.env.items()
             if os.environ[key] != val
-        )
+        ]
         if env_var_str:
             env_var_str += " "
         cwd_str = f"-C {shlex.quote(str(self.cwd))} " if self.cwd.resolve() != Path().resolve() else ""

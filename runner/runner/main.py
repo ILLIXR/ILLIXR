@@ -120,7 +120,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     actual_cmd_str = config["loader"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"])
-    env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
+    env_list = [f"{var}={val}" for var, val in env_override.items()]
     actual_cmd_list = list(
         flatten1(
             replace_all(

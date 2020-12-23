@@ -22,13 +22,24 @@ private:
 	std::function<void()> _m_on_start;
 	std::function<void()> _m_on_stop;
 	pid_t pid;
+	bool thread_is_started;
+	std::condition_variable thread_is_started_cv;
+	std::mutex thread_is_started_mutex;
+
 
 	void thread_main() {
 		assert(_m_body);
 		pid = ::gettid();
+
+		{
+			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
+			thread_is_started = true;
+			thread_is_started_cv.notify_all();
+		}
 		if (_m_on_start) {
 			_m_on_start();
 		}
+
 		while (!this->_m_stop.load()) {
 			_m_body();
 		}
@@ -55,6 +66,7 @@ public:
 		: _m_body{body}
 		, _m_on_start{on_start}
 		, _m_on_stop{on_stop}
+		, pid{0}
 	{ }
 
 	/**
@@ -70,10 +82,10 @@ public:
 
 	/// Possible states for a managed_thread
 	enum class state {
-		nonstartable,
-		startable,
-		running,
-		stopped,
+		nonstartable = 0,
+		startable = 1,
+		running = 2,
+		stopped = 3,
 	};
 
 	/**
@@ -83,9 +95,9 @@ public:
 		if (false) {
 		} else if (!_m_body) {
 			return state::nonstartable;
-		} else if (!stopped && !_m_thread.joinable()) {
+		} else if (!stopped && pid == 0) {
 			return state::startable;
-		} else if (!stopped &&  _m_thread.joinable()) {
+		} else if (!stopped && pid != 0) {
 			return state::running;
 		} else if (stopped) {
 			return state::stopped;
@@ -100,6 +112,11 @@ public:
 	void start() {
 		assert(get_state() == state::startable);
 		_m_thread = std::thread{&managed_thread::thread_main, this};
+		{
+			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
+			thread_is_started_cv.wait(lock, [this]{return thread_is_started;});
+		}
+		std::cerr << int(get_state()) << "\n";
 		assert(get_state() == state::running);
 	}
 
