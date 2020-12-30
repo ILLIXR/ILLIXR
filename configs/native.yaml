@@ -1,12 +1,14 @@
 plugin_groups:
+  - plugin_group:
+    - path: ../robotics_project/scheduler_plugin/
+      # This has to go first because the n_thread_start queue needs to be listening
+      # when the other plugins actually start up
   - !include "rt_slam_plugins.yaml"
   - plugin_group:
     - path: gldemo/
       # threadloop, by scheduler
     # - path: debugview/
   - !include "core_plugins.yaml"
-  - plugin_group:
-    - path: ../robotics_project/scheduler_plugin/
 
 data:
   subpath: mav0
@@ -18,8 +20,6 @@ loader:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   name: native
 
-  # command: sudo $env_cmd
-
   # run in GDB:
   # command: gdb -q --args $cmd
 
@@ -29,5 +29,7 @@ loader:
   # command: env ILLIXR_STDOUT_METRICS=y $cmd
 
   # log_stdout: metrics/output.log
+
+  command: sudo taskset -a -c 0 $env_cmd
 
 profile: opt

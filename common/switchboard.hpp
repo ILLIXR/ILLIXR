@@ -151,6 +151,7 @@ private:
 		bool _m_flush_on_read;
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
 		moodycamel::ConsumerToken _m_ctok {_m_queue};
+		std::atomic<size_t> _m_queue_size {0};
 		static constexpr std::chrono::milliseconds _m_queue_timeout {100};
 		std::size_t _m_enqueued {0};
 		std::size_t _m_dequeued {0};
@@ -161,13 +162,13 @@ private:
 		// so it is destructed before the data it uses.
 		managed_thread _m_thread;
 
-		template <typename T>
-		static size_t flush(moodycamel::BlockingConcurrentQueue<ptr<T>>& queue, moodycamel::ConsumerToken& ctok) {
+		size_t flush() {
 			const size_t batch_size = 128;
-			std::vector<ptr<T>> items {batch_size, nullptr};
+			std::vector<ptr<const event>> items {batch_size, nullptr};
 			size_t total = 0;
 			size_t actual = 0;
-			while (0 != (actual = queue.try_dequeue_bulk(ctok, items.begin(), batch_size))) {
+			while (0 != (actual = _m_queue.try_dequeue_bulk(_m_ctok, items.begin(), batch_size))) {
+				_m_queue_size -= actual;
 				for (size_t i = 0; i < actual; ++i) {
 					items.at(i).reset();
 				}
@@ -190,11 +191,12 @@ private:
 				_m_dequeued++;
 
 				if (_m_flush_on_read) {
-					_m_skipped += flush(_m_queue, _m_ctok);
+					_m_skipped += flush();
 				}
 
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
+				_m_queue_size--;
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
@@ -217,7 +219,7 @@ private:
 
 		void thread_on_stop() {
 			// Drain queue
-			std::size_t unprocessed = flush(_m_queue, _m_ctok);
+			std::size_t unprocessed = flush();
 
 			// Log stats
 			if (_m_record_logger) {
@@ -245,6 +247,11 @@ private:
 		{
 			std::cerr << "topic_subscription, topic_name: " << topic_name << ", plugin_id: " << plugin_id << "\n";
 			_m_thread.start();
+			if (_m_plugin_id == 1) {
+				_m_thread.set_priority(4);
+			} else {
+				_m_thread.set_priority(2);
+			}
 		}
 
 		/**
@@ -254,6 +261,11 @@ private:
 		 */
 		void enqueue(ptr<const event>&& this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
+				if (_m_queue_size.load() > 1000) {
+					std::cerr << "topic " << _m_topic_name << " is full." << std::endl;
+					abort();
+				}
+				_m_queue_size++;
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
 				assert(ret);
 				_m_enqueued++;

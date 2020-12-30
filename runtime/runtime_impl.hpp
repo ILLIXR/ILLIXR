@@ -9,6 +9,10 @@
 #include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
 
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+
 using namespace ILLIXR;
 
 class runtime_impl : public runtime {
@@ -18,6 +22,7 @@ public:
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
+		std::cout << "cv::getNumberOfCPUs() = " << cv::getNumberOfCPUs() << std::endl;
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {

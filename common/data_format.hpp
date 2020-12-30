@@ -228,7 +228,6 @@ namespace ILLIXR {
 		{ }
 	};
 	void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb) {
-		std::cerr << "thread_on_start(" << &_m_thread << ", " << _m_plugin_id << ", " << pb << ")\n";
 		auto sb = pb->lookup_impl<switchboard>();
 		auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
 		thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});

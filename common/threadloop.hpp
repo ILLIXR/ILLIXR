@@ -44,7 +44,7 @@ public:
 	virtual void start() override {
 		plugin::start();
 		if (is_scheduled) {
-			const managed_thread& thread = sb->schedule<switchboard::event_wrapper<bool>>(
+			[[maybe_unused]] const managed_thread& thread = sb->schedule<switchboard::event_wrapper<bool>>(
 				id,
 				std::to_string(id) + "_trigger",
 				[this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
@@ -59,11 +59,9 @@ public:
 		} else {
 			thread = std::make_unique<managed_thread>([this]{
 				thread_main();
+				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 			});
 			thread->start();
-			std::cerr << "\e[0;31m";
-			std::cerr << "threadloop::start, !is_scheduled, id = " << id << "\n";
-			std::cerr << "\e[0m";
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread->get_pid(), std::to_string(id)});
 		}
 	}

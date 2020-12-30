@@ -6,6 +6,7 @@
 #include <atomic>
 #include <unistd.h>
 #include <sys/syscall.h>
+#include <sched.h>
 
 #define gettid() syscall(SYS_gettid)
 
@@ -133,6 +134,12 @@ public:
 	pid_t get_pid() const {
 		assert(get_state() == state::running);
 		return pid;
+	}
+
+	void set_priority(int priority) const {
+		struct sched_param sp = { .sched_priority = priority,};
+		[[maybe_unused]] int ret = sched_setscheduler(get_pid(), SCHED_FIFO, &sp);
+		assert(ret);
 	}
 };
 
