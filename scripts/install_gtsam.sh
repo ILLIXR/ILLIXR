@@ -26,7 +26,7 @@ branch_tag_name="kimera-gtsam"
 repo_url="https://github.com/ILLIXR/gtsam.git"
 gtsam_dir="${opt_dir}/gtsam"
 prefix_dir="/usr/local"
-build_type="RelWithDebInfo"
+build_type="Release"
 
 case "${build_type}" in
     Release)          so_file="libgtsam.so" ;;
