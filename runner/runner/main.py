@@ -34,6 +34,19 @@ cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
 
 
+def clean_one_plugin(
+    config: Mapping[str, Any], plugin_config: Mapping[str, Any]
+) -> Path:
+    profile = config["profile"]
+    path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+    path_str: str = str(path)
+    name: str = plugin_config["name"] if plugin_config["name"] else os.path.basename(path_str)
+    targets: List[str] = ["clean"]
+    print(f"[Clean] Plugin '{name}' @ '{path_str}/'")
+    make(path, targets, plugin_config["config"])
+    return path
+
+
 def build_one_plugin(
     config: Mapping[str, Any], plugin_config: Mapping[str, Any], test: bool = False,
 ) -> Path:
@@ -73,12 +86,12 @@ def load_native(config: Mapping[str, Any]) -> None:
         ],
         desc="Building plugins",
     )
-    actual_cmd_str = config["loader"].get("command", "$cmd")
+    actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(
         ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
-        KIMERA_ROOT=config["loader"]["kimera_path"],
+        KIMERA_ROOT=config["action"]["kimera_path"],
     )
     env_list = [
         f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()
@@ -102,7 +115,7 @@ def load_native(config: Mapping[str, Any]) -> None:
             )
         )
     )
-    log_stdout_str = config["loader"].get("log_stdout", None)
+    log_stdout_str = config["action"].get("log_stdout", None)
     log_stdout_ctx = cast(
         ContextManager[Optional[BinaryIO]],
         (
@@ -136,8 +149,8 @@ def load_tests(config: Mapping[str, Any]) -> None:
         env_override=dict(
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_RUN_DURATION=str(config["loader"].get("ILLIXR_RUN_DURATION", 10)),
-            KIMERA_ROOT=config["loader"]["kimera_path"],
+            ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
+            KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
     )
@@ -146,15 +159,15 @@ def load_tests(config: Mapping[str, Any]) -> None:
 def load_monado(config: Mapping[str, Any]) -> None:
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "Release"
-    openxr_app_config = config["loader"]["openxr_app"].get("config", {})
-    monado_config = config["loader"]["monado"].get("config", {})
+    openxr_app_config = config["action"]["openxr_app"].get("config", {})
+    monado_config = config["action"]["monado"].get("config", {})
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_path = pathify(
-        config["loader"]["monado"]["path"], root_dir, cache_path, True, True
+        config["action"]["monado"]["path"], root_dir, cache_path, True, True
     )
     openxr_app_path = pathify(
-        config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True
+        config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True
     )
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
@@ -205,10 +218,23 @@ def load_monado(config: Mapping[str, Any]) -> None:
     )
 
 
-loaders = {
+def clean_project(config: Mapping[str, Any]) -> None:
+    plugin_paths = threading_map(
+        lambda plugin_config: clean_one_plugin(config, plugin_config),
+        [
+            plugin_config
+            for plugin_group in config["plugin_groups"]
+            for plugin_config in plugin_group["plugin_group"]
+        ],
+        desc="Cleaning plugins",
+    )
+
+
+actions = {
     "native": load_native,
     "monado": load_monado,
     "tests": load_tests,
+    "clean": clean_project,
 }
 
 
@@ -227,11 +253,11 @@ def run_config(config_path: Path) -> None:
     jsonschema.validate(instance=config, schema=config_schema)
     fill_defaults(config, config_schema)
 
-    loader = config["loader"]["name"]
+    action = config["action"]["name"]
 
-    if loader not in loaders:
-        raise RuntimeError(f"No such loader: {loader}")
-    loaders[loader](config)
+    if action not in actions:
+        raise RuntimeError(f"No such action: {action}")
+    actions[action](config)
 
 
 if __name__ == "__main__":
