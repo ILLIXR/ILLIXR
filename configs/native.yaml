@@ -4,7 +4,7 @@ plugin_groups:
   - plugin_group:
       - path: ground_truth_slam/
       - path: gldemo/
-      # - path: debugview/
+      - path: debugview/
 
 data:
   subpath: mav0
@@ -22,6 +22,7 @@ loader:
   # Print cmd for external use:
   #command: printf %s\n $env_cmd
 
+  # Capture stdout for metrics
   # log_stdout: metrics/output.log
 
 profile: opt
