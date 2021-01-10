@@ -64,8 +64,10 @@ public:
 		}
 
 #ifndef NDEBUG
-		std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
-		printf("\033[1;32m[GL DEMO APP]\033[0m First vsync is in %4fms\n", vsync_in.count());
+		if (log_count > LOG_PERIOD) {
+			std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
+			printf("\033[1;32m[GL DEMO APP]\033[0m First vsync is in %4fms\n", vsync_in.count());
+		}
 #endif
 		
 		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
@@ -83,21 +85,24 @@ public:
 			{
 				wait_time += vsync_period;
 			}
+
 #ifndef NDEBUG
-			std::chrono::duration<double, std::milli> wait_in = wait_time - now;
-			printf("\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in %4fms\n", wait_in.count());
+			if (log_count > LOG_PERIOD) {
+				std::chrono::duration<double, std::milli> wait_in = wait_time - now;
+				printf("\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in %4fms\n", wait_in.count());
+			}
 #endif
+			// Perform the sleep.
+			// TODO: Consider using Monado-style sleeping, where we nanosleep for
+			// most of the wait, and then spin-wait for the rest?
+			std::this_thread::sleep_until(wait_time);
 		} else {
 #ifndef NDEBUG
-			printf("\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately.");
+			if (log_count > LOG_PERIOD) {
+				printf("\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately.");
+			}
 #endif
-			return;
 		}
-
-		// Perform the sleep.
-		// TODO: Consider using Monado-style sleeping, where we nanosleep for
-		// most of the wait, and then spin-wait for the rest?
-		std::this_thread::sleep_until(wait_time);
 	}
 
 	void _p_thread_setup() override {
@@ -180,7 +185,9 @@ public:
 			}
 
 #ifndef NDEBUG
-			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+			if (log_count > LOG_PERIOD) {
+				printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+			}
 #endif
 			lastTime = glfwGetTime();
 			glFlush();
@@ -198,7 +205,16 @@ public:
 			_m_eyebuffer->put(frame);
 			lastFrameTime = std::chrono::high_resolution_clock::now();
 		}
+
+		if (log_count > LOG_PERIOD) {
+			log_count = 0;
+		} else {
+			log_count++;
+		}
 	}
+
+	size_t log_count = 0;
+	size_t LOG_PERIOD = 20;
 
 private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;

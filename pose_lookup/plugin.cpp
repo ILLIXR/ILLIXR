@@ -19,7 +19,9 @@ public:
 		, _m_start_of_time{std::chrono::high_resolution_clock::now()}
 		, _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     {
-	}
+    	auto newoffset = correct_pose(_m_sensor_data.begin()->second).orientation;
+    	set_offset(newoffset);
+    }
 
     virtual fast_pose_type get_fast_pose() const override {
 		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
@@ -43,6 +45,11 @@ public:
     virtual bool true_pose_reliable() const override {
 		return false;
     }
+
+	virtual Eigen::Quaternionf get_offset() override {
+        return offset;
+    }
+
 	virtual pose_type correct_pose(const pose_type pose) const override {
 		pose_type swapped_pose;
 
@@ -96,11 +103,11 @@ public:
 		}
 
 		auto looked_up_pose = nearest_row->second;
-		looked_up_pose.sensor_time = _m_start_of_time + std::chrono::nanoseconds{nearest_timestamp - dataset_first_time};
+		looked_up_pose.sensor_time = _m_start_of_time + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
 		return fast_pose_type{
 			.pose = correct_pose(looked_up_pose),
 			.predict_computed_time = std::chrono::system_clock::now(),
-			.predict_target_time = vsync
+			.predict_target_time = time
 		};
 
 	}
@@ -114,7 +121,6 @@ private:
 
 	/*pyh: reusing data_loading from ground_truth_slam*/
 	const std::map<ullong, sensor_types> _m_sensor_data;
-	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	ullong dataset_first_time;
 	time_type _m_start_of_time;
 	std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;

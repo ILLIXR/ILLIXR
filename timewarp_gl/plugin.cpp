@@ -530,13 +530,16 @@ public:
 
 #ifndef NDEBUG
 		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
-		//printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+		if (log_count > LOG_PERIOD) {
+			printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+			// We have always been warping from the correct swap, so I will disable this.
+			// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
+		}
+
 		if(delta > vsync_period)
 		{
 			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
 		}
-		// Even in debug builds, this is quite verbose
-		// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
 #endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;
@@ -551,6 +554,7 @@ public:
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = std::chrono::high_resolution_clock::now();
+		[[maybe_unused]] auto afterSwap = glfwGetTime();
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
@@ -568,12 +572,13 @@ public:
 		}});
 
 #ifndef NDEBUG
-		auto afterSwap = glfwGetTime();
-		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
-		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
-		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
-		printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);
-		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+		if (log_count > LOG_PERIOD) {
+			printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
+			printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
+			printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
+			printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);
+			std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+		}
 #endif
 
 		// retrieving the recorded elapsed time
@@ -593,7 +598,16 @@ public:
 			{std::chrono::high_resolution_clock::now()},
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
+
+		if (log_count > LOG_PERIOD) {
+			log_count = 0;
+		} else {
+			log_count++;
+		}
 	}
+
+	size_t log_count = 0;
+	size_t LOG_PERIOD = 20;
 
 	virtual ~timewarp_gl() override {
 		// TODO: Need to cleanup resources here!

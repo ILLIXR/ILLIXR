@@ -279,7 +279,6 @@ namespace ILLIXR {
 
 		~record_coalescer() {
 			flush();
-			assert(buffer.empty());
 		}
 
 		/**
