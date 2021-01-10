@@ -102,6 +102,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         KIMERA_ROOT=config["action"]["kimera_path"],
     )
     env_list = [

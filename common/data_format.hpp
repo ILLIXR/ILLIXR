@@ -84,6 +84,7 @@ namespace ILLIXR {
 		time_type sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
+		ullong dataset_time;
 	} pose_type;
 
 	typedef struct {
