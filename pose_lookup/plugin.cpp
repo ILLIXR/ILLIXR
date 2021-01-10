@@ -60,6 +60,11 @@ public:
     virtual bool true_pose_reliable() const override {
         return false;
     }
+
+	virtual Eigen::Quaternionf get_offset() override {
+        return offset;
+    }
+
 	virtual pose_type correct_pose(const pose_type pose) const override {
 		pose_type swapped_pose;
 
