@@ -326,6 +326,18 @@ namespace ILLIXR {
 			std::cerr << "Drained switchboard" << std::endl;
 		}
 
+		topic& try_emplace(const std::string& topic_name, std::size_t ty) {
+			{
+				const std::shared_lock lock{_m_registry_lock};
+				auto result = _m_registry.find(topic_name);
+				if (result != _m_registry.cend()) {
+					return result->second;
+				}
+			}
+			const std::unique_lock lock{_m_registry_lock};
+			return _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+		}
+
 		virtual void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
@@ -334,8 +346,7 @@ namespace ILLIXR {
 			  - Calls topic.schedule, which acquires _m_callbacks_lock, (see its proof of thread-safety)
 			  Therefore this method is thread-safe.
 			 */
-			const std::shared_lock lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+			topic& topic = try_emplace(topic_name, ty);
 			assert(topic.ty() == ty);
 			topic.schedule(component_id, callback);
 		}
@@ -349,8 +360,7 @@ namespace ILLIXR {
 			  - Returns a writer handle (see its proof of thread-safety)
 			  Therefore this method is thread-safe.
 			 */
-			const std::unique_lock lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+			topic& topic = try_emplace(topic_name, ty);
 			assert(topic.ty() == ty);
 			return std::unique_ptr<writer<void>>(topic.get_writer().release());
 			/* TODO: (code beautify) why can't I write
@@ -367,8 +377,7 @@ namespace ILLIXR {
 			  - Returns a writer handle (see its proof of thread-safety)
 			  Therefore this method is thread-safe.
 			 */
-			const std::shared_lock lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+			topic& topic = try_emplace(topic_name, ty);
 			assert(topic.ty() == ty);
 			return std::unique_ptr<reader_latest<void>>(topic.get_reader_latest().release());
 			/* TODO: (code beautify) why can't I write
