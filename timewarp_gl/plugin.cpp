@@ -35,6 +35,15 @@ const record_header mtp_record {"mtp_record", {
 	{"render_to_display", typeid(std::chrono::nanoseconds)},
 }};
 
+std::string
+getenv_or(std::string var, std::string default_) {
+	if (std::getenv(var.c_str())) {
+		return {std::getenv(var.c_str())};
+	} else {
+		return default_;
+	}
+}
+
 class timewarp_gl : public threadloop {
 
 public:
@@ -54,6 +63,7 @@ public:
 		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
+		, disable_warp{bool(std::stoi(getenv_or("ILLIXR_TIMEWARP_DISABLE", "0")))}
 	{ }
 
 private:
@@ -142,6 +152,8 @@ private:
 
 	// Hologram call data
 	long long _hologram_seq{0};
+
+	bool disable_warp;
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -429,7 +441,7 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		const fast_pose_type latest_pose = pp->get_fast_pose();
+		const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
 		viewMatrixBegin.block(0,0,3,3) = latest_pose.pose.orientation.toRotationMatrix();
 
 		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
@@ -518,12 +530,13 @@ public:
 
 #ifndef NDEBUG
 		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
-		printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+		//printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
 		if(delta > vsync_period)
 		{
 			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
 		}
-		printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
+		// Even in debug builds, this is quite verbose
+		// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
 #endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;

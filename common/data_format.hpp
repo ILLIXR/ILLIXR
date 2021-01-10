@@ -84,6 +84,7 @@ namespace ILLIXR {
 		time_type sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
+		ullong dataset_time;
 	} pose_type;
 
 	typedef struct {
@@ -91,10 +92,6 @@ namespace ILLIXR {
 		time_type predict_computed_time; // Time at which the prediction was computed
 		time_type predict_target_time; // Time that prediction targeted.
 	} fast_pose_type;
-
-	typedef struct {
-		int pixel[1];
-	} camera_frame;
 
 	// Using arrays as a swapchain
 	// Array of left eyes, array of right eyes

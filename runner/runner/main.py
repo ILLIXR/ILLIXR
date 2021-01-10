@@ -18,6 +18,8 @@ from util import (
     subprocess_run,
     threading_map,
     unflatten,
+    make,
+    cmake,
 )
 from yamlinclude import YamlIncludeConstructor
 
@@ -29,50 +31,6 @@ root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").re
 
 cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
-
-
-def make(
-    path: Path,
-    targets: List[str],
-    var_dict: Optional[Mapping[str, str]] = None,
-    parallelism: Optional[int] = None,
-) -> None:
-
-    if parallelism is None:
-        parallelism = max(1, multiprocessing.cpu_count() // 2)
-
-    var_dict_args = shlex.join(
-        f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()
-    )
-
-    subprocess_run(
-        ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],
-        check=True,
-        capture_output=True,
-    )
-
-
-def cmake(
-    path: Path, build_path: Path, var_dict: Optional[Mapping[str, str]] = None
-) -> None:
-    parallelism = max(1, multiprocessing.cpu_count() // 2)
-    var_args = [f"-D{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
-    build_path.mkdir(exist_ok=True)
-    subprocess_run(
-        [
-            "cmake",
-            "-S",
-            str(path),
-            "-B",
-            str(build_path),
-            "-G",
-            "Unix Makefiles",
-            *var_args,
-        ],
-        check=True,
-        capture_output=True,
-    )
-    make(build_path, ["all"])
 
 
 def build_one_plugin(
@@ -128,7 +86,12 @@ def load_native(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         command_lst_sbst,
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"]),
+        env_override=dict(
+            ILLIXR_DATA=str(data_path),
+            ILLIXR_DEMO_DATA=str(demo_data_path),
+            ILLIXR_RUN_DURATION=str(config["loader"].get("ILLIXR_RUN_DURATION", 60)),
+            KIMERA_ROOT=config["loader"]["kimera_path"],
+        ),
         check=True,
     )
 
@@ -149,7 +112,12 @@ def load_tests(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), ILLIXR_RUN_DURATION="10", KIMERA_ROOT=config["loader"]["kimera_path"]),
+        env_override=dict(
+            ILLIXR_DATA=str(data_path),
+            ILLIXR_DEMO_DATA=str(demo_data_path),
+            ILLIXR_RUN_DURATION=str(config["loader"].get("ILLIXR_RUN_DURATION", 10)),
+            KIMERA_ROOT=config["loader"]["kimera_path"],
+        ),
         check=True,
     )
 

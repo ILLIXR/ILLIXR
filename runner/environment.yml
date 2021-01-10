@@ -1,14 +1,3 @@
-########
-# To add packages to this file:
-#
-#     . $HOME/miniconda3/etc/profile.d/conda.sh
-#     conda deactivate
-#     conda activate illixr-runner
-#     conda install $package # where $packages is the name of a package in Conda Forge
-#     conda env export > runner/environment.yml
-#
-# Please be a good citizen and also copy/resotre this block comment!!
-########
 name: illixr-runner
 channels:
   - conda-forge
@@ -17,42 +6,178 @@ dependencies:
   - _libgcc_mutex=0.1=main
   - aiofiles=0.5.0=py38_0
   - aiohttp=3.6.2=py38h7b6447c_0
+  - apptools=4.5.0=pyh9f0ad1d_1
   - async-timeout=3.0.1=py38_0
   - attrs=20.1.0=py_0
-  - ca-certificates=2020.10.14=0
-  - certifi=2020.6.20=py38_0
+  - backcall=0.2.0=py_0
+  - blas=1.0=mkl
+  - blosc=1.20.1=he1b5a44_0
+  - brotli=1.0.9=he1b5a44_3
+  - bzip2=1.0.8=h516909a_3
+  - c-ares=1.17.1=h36c2ea0_0
+  - ca-certificates=2020.11.8=ha878542_0
+  - certifi=2020.11.8=py38h578d9bd_0
   - chardet=3.0.4=py38_1003
+  - charls=2.1.0=he1b5a44_2
   - click=7.1.2=py_0
+  - cloudpickle=1.6.0=py_0
+  - configobj=5.0.6=py_0
+  - curl=7.71.1=he644dc0_8
+  - cycler=0.10.0=py38_0
+  - cytoolz=0.11.0=py38h25fe258_1
+  - dask-core=2.30.0=py_0
   - dataclasses=0.7=py38_0
+  - dbus=1.13.18=hb2f20db_0
+  - decorator=4.4.2=py_0
+  - double-conversion=3.1.5=he1b5a44_2
+  - eigen=3.3.8=h0efe328_0
+  - envisage=4.9.2=pyh9f0ad1d_1
+  - expat=2.2.10=he6710b0_2
+  - ffmpeg=4.3.1=h3215721_1
+  - fontconfig=2.13.1=he4413a7_1000
+  - freetype=2.10.4=h5ab3b9f_0
+  - giflib=5.2.1=h36c2ea0_2
+  - gl2ps=1.4.2=he06d7ca_0
+  - glew=2.1.0=he1b5a44_0
+  - glib=2.66.1=h92f7085_0
+  - gmp=6.2.1=h58526e2_0
+  - gnutls=3.6.13=h85f3911_1
+  - gst-plugins-base=1.14.0=hbbd80ab_1
+  - gstreamer=1.14.0=hb31296c_0
+  - hdf4=4.2.13=hf30be14_1003
+  - hdf5=1.10.6=nompi_h3c11f04_101
+  - icu=58.2=he6710b0_3
   - idna=2.10=py_0
+  - imagecodecs=2020.5.30=py38h36e1e94_1
+  - imageio=2.9.0=py_0
   - importlib-metadata=1.7.0=py38_0
   - importlib_metadata=1.7.0=0
+  - intel-openmp=2020.2=254
+  - ipython=7.19.0=py38hb070fc8_0
+  - ipython_genutils=0.2.0=py38_0
+  - jedi=0.17.2=py38_0
+  - jpeg=9d=h36c2ea0_0
+  - jsoncpp=1.8.4=hc9558a2_1002
   - jsonschema=3.2.0=py38_0
+  - jxrlib=1.1=h516909a_2
+  - kiwisolver=1.3.0=py38h2531618_0
+  - krb5=1.17.2=h926e7f8_0
+  - lame=3.100=h14c3975_1001
+  - lcms2=2.11=h396b838_0
   - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libaec=1.0.4=he1b5a44_1
+  - libcurl=7.71.1=hcdd3856_8
   - libedit=3.1.20191231=h14c3975_1
+  - libev=4.33=h516909a_1
   - libffi=3.3=he6710b0_2
   - libgcc-ng=9.1.0=hdf63c60_0
+  - libgfortran-ng=7.3.0=hdf63c60_0
+  - libglu=9.0.0=he1b5a44_1001
+  - libiconv=1.16=h516909a_0
+  - libllvm10=10.0.1=hbcb73fb_5
+  - libnetcdf=4.7.4=nompi_hefab0ff_106
+  - libnghttp2=1.41.0=h8cfc5f6_2
+  - libogg=1.3.2=h516909a_1002
+  - libpng=1.6.37=hbc83047_0
+  - libssh2=1.9.0=hab1572f_5
   - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libtheora=1.1.1=h516909a_1004
+  - libtiff=4.1.0=h2733197_1
+  - libuuid=2.32.1=h14c3975_1000
+  - libvorbis=1.3.7=he1b5a44_0
+  - libwebp-base=1.1.0=h36c2ea0_3
+  - libxcb=1.14=h7b6447c_0
+  - libxml2=2.9.10=hb55368b_3
+  - libzopfli=1.0.3=he1b5a44_0
+  - llvmlite=0.34.0=py38h269e1b5_4
+  - loguru=0.5.3=py38h32f6830_2
+  - lz4-c=1.9.2=heb0550a_3
+  - matplotlib=3.3.2=0
+  - matplotlib-base=3.3.2=py38h817c723_0
+  - mayavi=4.7.2=py38h648616b_2
+  - mkl=2020.2=256
+  - mkl-service=2.3.0=py38he904b0f_0
+  - mkl_fft=1.2.0=py38h23d657b_0
+  - mkl_random=1.1.1=py38h0573a6f_0
   - multidict=4.7.6=py38h7b6447c_1
+  - mypy=0.790=py_0
+  - mypy_extensions=0.4.3=py38_0
   - ncurses=6.2=he6710b0_1
-  - openssl=1.1.1h=h7b6447c_0
+  - nettle=3.6=he412f7d_0
+  - networkx=2.5=py_0
+  - numba=0.51.2=py38h0573a6f_1
+  - numpy=1.19.2=py38h54aff64_0
+  - numpy-base=1.19.2=py38hfa32c7d_0
+  - olefile=0.46=py_0
+  - openh264=2.1.1=h8b12597_0
+  - openjpeg=2.3.1=h981e76c_3
+  - openssl=1.1.1h=h516909a_0
+  - pandas=1.1.3=py38he6710b0_0
+  - parso=0.7.0=py_0
+  - pcre=8.44=he6710b0_0
+  - pexpect=4.8.0=pyhd3eb1b0_3
+  - pickleshare=0.7.5=py38_1000
+  - pillow=8.0.1=py38he98fc37_0
   - pip=20.2.2=py38_0
+  - proj=7.1.1=h966b41f_3
+  - prompt-toolkit=3.0.8=py_0
+  - psutil=5.7.2=py38h7b6447c_0
+  - ptyprocess=0.6.0=pyhd3eb1b0_2
+  - pugixml=1.10=he1b5a44_1
+  - pyface=7.1.0=pyh9f0ad1d_0
+  - pygments=2.7.2=pyhd3eb1b0_0
+  - pyparsing=2.4.7=py_0
+  - pyqt=5.9.2=py38h05f1152_4
   - pyrsistent=0.16.0=py38h7b6447c_0
   - python=3.8.5=hcff3b4d_0
+  - python-dateutil=2.8.1=py_0
   - python_abi=3.8=1_cp38
+  - pytz=2020.1=py_0
+  - pywavelets=1.1.1=py38hab2c0dc_3
   - pyyaml=5.3.1=py38h7b6447c_1
+  - qt=5.9.7=h5867ecd_1
   - readline=8.0=h7b6447c_0
+  - scikit-image=0.17.2=py38h0ef3d22_4
+  - scipy=1.5.2=py38h0b6359f_0
   - setuptools=49.6.0=py38_0
+  - sip=4.19.13=py38he6710b0_0
   - six=1.15.0=py_0
+  - snappy=1.1.8=he1b5a44_3
   - sqlite=3.33.0=h62c20be_0
+  - tbb=2020.3=hfd86e86_0
+  - tbb-devel=2020.3=hfd86e86_0
+  - tifffile=2020.11.26=pyhd8ed1ab_0
   - tk=8.6.10=hbc83047_0
+  - toolz=0.11.1=py_0
+  - tornado=6.0.4=py38h7b6447c_1
   - tqdm=4.50.2=py_0
+  - traitlets=5.0.5=py_0
+  - traits=6.1.1=py38h25fe258_0
+  - traitsui=7.1.0=pyh9f0ad1d_0
+  - typed-ast=1.4.1=py38h7b6447c_0
+  - typing_extensions=3.7.4.3=py_0
+  - utfcpp=3.1.2=0
+  - vtk=9.0.1=no_osmesa_py38h31de780_102
+  - wcwidth=0.2.5=py_0
   - wheel=0.35.1=py_0
+  - x264=1!152.20180806=h14c3975_0
+  - xorg-kbproto=1.0.7=h14c3975_1002
+  - xorg-libice=1.0.10=h516909a_0
+  - xorg-libsm=1.2.3=h84519dc_1000
+  - xorg-libx11=1.6.12=h516909a_0
+  - xorg-libxext=1.3.4=h516909a_0
+  - xorg-libxt=1.2.0=h516909a_0
+  - xorg-xextproto=7.3.0=h14c3975_1002
+  - xorg-xproto=7.0.31=h14c3975_1007
   - xz=5.2.5=h7b6447c_0
   - yaml=0.2.5=h7b6447c_0
   - yarl=1.5.1=py38h7b6447c_0
   - zipp=3.1.0=py_0
   - zlib=1.2.11=h7b6447c_3
+  - zstd=1.4.5=h9ceee32_0
   - pip:
+    - charmonium-cache==0.6.0
+    - charmonium-time-block==0.2.1
+    - numpy-quaternion==2020.11.2.17.0.49
     - pyyaml-include==1.2
 prefix: /home/sam/miniconda3/envs/illixr-runner
