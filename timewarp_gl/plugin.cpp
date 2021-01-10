@@ -63,6 +63,7 @@ public:
 		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
+		  // TODO: Use #198 to configure this. Delete getenv_or.
 		, disable_warp{bool(std::stoi(getenv_or("ILLIXR_TIMEWARP_DISABLE", "0")))}
 	{ }
 
