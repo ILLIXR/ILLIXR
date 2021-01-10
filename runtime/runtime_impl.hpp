@@ -18,11 +18,11 @@ using namespace ILLIXR;
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
+		cv::setNumThreads(0);
 		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
-		std::cout << "cv::getNumberOfCPUs() = " << cv::getNumberOfCPUs() << std::endl;
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {

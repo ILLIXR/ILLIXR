@@ -1,5 +1,6 @@
 #include <signal.h>
 #include "runtime_impl.hpp"
+#include "stacktrace.hpp"
 
 constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
 
@@ -28,8 +29,16 @@ private:
 	std::atomic<bool> _m_terminate {false};
 };
 
+
+
 int main(int argc, char* const* argv) {
+#ifndef NDEBUG
+	set_stacktrace_handler();
+#endif
 	r = ILLIXR::runtime_factory(nullptr);
+
+	int ret = pthread_setname_np(pthread_self(), "main");
+	assert(!ret);
 
 	std::vector<std::string> lib_paths;
 	std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
@@ -50,6 +59,8 @@ int main(int argc, char* const* argv) {
 
 	cancellable_sleep cs;
 	std::thread th{[&]{
+		int ret = pthread_setname_np(pthread_self(), "main_timer");
+		assert(!ret);
 		cs.sleep(run_duration);
 		r->stop();
 	}};

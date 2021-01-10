@@ -77,6 +77,12 @@ public:
 	{ }
 
 	void pull_queue() {
+		char* name = new char[100];
+		snprintf(name, 100, "sql_%s", table_name.c_str());
+		name[15] = '\0';
+		int ret = pthread_setname_np(pthread_self(), name);
+		assert(!ret);
+
 		const std::size_t max_record_batch_size = 1024 * 256;
 		std::vector<record> record_batch {max_record_batch_size};
 		std::size_t actual_batch_size;

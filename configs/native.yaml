@@ -32,4 +32,4 @@ loader:
 
   command: sudo taskset -a -c 0 $env_cmd
 
-profile: opt
+profile: dbg

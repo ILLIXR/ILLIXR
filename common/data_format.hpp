@@ -231,8 +231,23 @@ namespace ILLIXR {
 		auto sb = pb->lookup_impl<switchboard>();
 		auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
 		thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});
+
+		char* name = new char[100];
+		snprintf(name, 100, "subsc_%zu", _m_plugin_id);
+		printf("'%s'\n", name);
+
+		errno = 0;
+		int ret = pthread_setname_np(pthread_self(), name);
+		int tmp_errno = errno;
+		errno = 0;
+
+		if (ret) {
+			std::cerr << "ret = " << ret << " errno = " << tmp_errno << std::endl;
+		}
+		// assert(!ret);
+
 #ifndef NDEBUG
-			// std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
+		std::cerr << "Thread of plugin " << _m_plugin_id << " start" << std::endl;
 #endif
 	}
 }

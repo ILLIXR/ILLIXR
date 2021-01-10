@@ -58,6 +58,11 @@ public:
 			// thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), std::to_string(id)});
 		} else {
 			thread = std::make_unique<managed_thread>([this]{
+				char* name = new char[100];
+				snprintf(name, 100, "tl_%zu", id);
+				int ret = pthread_setname_np(pthread_self(), "main");
+				assert(!ret);
+
 				thread_main();
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 			});

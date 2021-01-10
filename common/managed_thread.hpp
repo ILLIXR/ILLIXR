@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <thread>
+#include <cerrno>
 #include <functional>
 #include <atomic>
 #include <unistd.h>
@@ -138,8 +139,25 @@ public:
 
 	void set_priority(int priority) const {
 		struct sched_param sp = { .sched_priority = priority,};
+
+		{
+			int ferrno = errno;
+			errno = 0;
+			if (ferrno != 0) {
+				std::system_error err (std::make_error_code(std::errc(ferrno)), "Before sched_setscheduler");
+				std::cerr << ferrno << " " << err.what() << "\n";
+			}
+		}
+
 		[[maybe_unused]] int ret = sched_setscheduler(get_pid(), SCHED_FIFO, &sp);
-		assert(ret);
+
+		if (ret) {
+			int ferrno = errno;
+			errno = 0;
+			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setscheduler");
+			std::cerr << ret << " " << ferrno << " " << err.what() << "\n";
+			throw err;
+		}
 	}
 };
 

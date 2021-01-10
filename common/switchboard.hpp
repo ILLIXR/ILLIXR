@@ -190,8 +190,13 @@ private:
 				// Also, record and log the time
 				_m_dequeued++;
 
+				if (_m_plugin_id == 3) {
+					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " pull." << std::endl;
+				}
+
 				if (_m_flush_on_read) {
 					_m_skipped += flush();
+					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " flush." << std::endl;
 				}
 
 				auto cb_start_cpu_time  = thread_cpu_time();
@@ -247,9 +252,13 @@ private:
 		{
 			std::cerr << "topic_subscription, topic_name: " << topic_name << ", plugin_id: " << plugin_id << "\n";
 			_m_thread.start();
+
+			// If is scheduler, have highest priority
 			if (_m_plugin_id == 1) {
+				std::cerr << "scheduler_thread.set_priority(4)\n";
 				_m_thread.set_priority(4);
 			} else {
+				std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";
 				_m_thread.set_priority(2);
 			}
 		}
@@ -262,8 +271,12 @@ private:
 		void enqueue(ptr<const event>&& this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
 				if (_m_queue_size.load() > 1000) {
-					std::cerr << "topic " << _m_topic_name << " is full." << std::endl;
+					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " is full." << std::endl;
 					abort();
+				} else {
+				if (_m_plugin_id == 3) {
+					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " add." << std::endl;
+				}
 				}
 				_m_queue_size++;
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
