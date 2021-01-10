@@ -5,19 +5,9 @@
 #include <future>
 #include <algorithm>
 #include "plugin.hpp"
-#include "cpu_timer.hpp"
+#include "cpu_timer3.hpp"
 
 namespace ILLIXR {
-
-const record_header __threadloop_iteration_header {"threadloop_iteration", {
-	{"plugin_id", typeid(std::size_t)},
-	{"iteration_no", typeid(std::size_t)},
-	{"skips", typeid(std::size_t)},
-	{"cpu_time_start", typeid(std::chrono::nanoseconds)},
-	{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-}};
 
 /**
  * @brief A reusable threadloop for plugins.
@@ -85,18 +75,8 @@ private:
 				++skip_no;
 				break;
 			case skip_option::run: {
-				auto iteration_start_cpu_time  = thread_cpu_time();
-				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
+				CPU_TIMER3_TIME_BLOCK_("_p_one_iteration", std::to_string(id));
 				_p_one_iteration();
-				it_log.log(record{__threadloop_iteration_header, {
-					{id},
-					{iteration_no},
-					{skip_no},
-					{iteration_start_cpu_time},
-					{thread_cpu_time()},
-					{iteration_start_wall_time},
-					{std::chrono::high_resolution_clock::now()},
-				}});
 				++iteration_no;
 				skip_no = 0;
 				break;

@@ -15,6 +15,7 @@ using namespace ILLIXR;
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
+		CPU_TIMER3_INITIALIZE();
 		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(create_switchboard(&pb));

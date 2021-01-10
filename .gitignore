@@ -10,4 +10,5 @@ imgui.ini
 output.*
 metrics/
 .cache
-install/
+__pycache__
+.cpu_timer3

@@ -1,5 +1,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/cpu_timer3.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
@@ -163,7 +164,6 @@ namespace ILLIXR {
 
 		topic(std::shared_ptr<record_logger> record_logger_, std::size_t ty, const std::string name, queue<std::pair<std::string, const void*>>& queue)
 			: _m_record_logger{record_logger_}
-			, _m_cb_log {_m_record_logger}
 			, _m_ty{ty}
 			, _m_name{name}
 			, _m_queue{queue}
@@ -207,17 +207,8 @@ namespace ILLIXR {
 			 */
 			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
 			for (const auto& pair : _m_callbacks) {
-				auto cb_start_cpu_time  = thread_cpu_time();
-				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
+				CPU_TIMER3_TIME_BLOCK_("invoke_callbacks", std::to_string(pair.first));
 				pair.second(event);
-				_m_cb_log.log(record{__switchboard_callback_header, {
-					{pair.first},
-					{_m_iteration_no},
-					{cb_start_cpu_time},
-					{thread_cpu_time()},
-					{cb_start_wall_time},
-					{std::chrono::high_resolution_clock::now()},
-				}});
 			}
 			_m_iteration_no++;
 		}
@@ -225,7 +216,6 @@ namespace ILLIXR {
 	private:
 
 		const std::shared_ptr<record_logger> _m_record_logger;
-		record_coalescer _m_cb_log;
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
