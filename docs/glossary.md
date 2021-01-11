@@ -95,6 +95,14 @@ For more details about the structure of a configuration, see the [Building ILLIX
 A region of memory used to hold graphical information to be output to a display or graphics device.
 
 -   **Frame**:
+    A single frame (image) to be output to a display at a certain instant of time based on the
+        system's _Frame Rate_.
+    ***TODO***
+
+-   **Frame Rate**:
+    The interval period between complete (as defined by the output resolution) frame updates
+        and refreshes.
+    In many systems, the target frame rate is determined by a fixed vertical sync (_VSYNC_) period.
     ***TODO***
 
 -   **Depth Buffer**:

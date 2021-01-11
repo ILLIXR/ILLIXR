@@ -37,7 +37,7 @@ The integration:
 
 1.  Cannot submit frame with depth buffer.
 
-1.  Cannot have poses reflect the coordinate space represented by the simulated OpenXR environment.
+1.  Cannot have poses that make use of [OpenXR Spaces][1].
     Raw pose data is instead retrieved from the application's [_SLAM_][32] algorithms.
 
 1.  Does not support controller action.
@@ -49,6 +49,10 @@ The integration:
 
 1.  Must initialize ILLIXR during the session initilization.
 
+
+[//]: # (- References -)
+
+[1]:    https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#spaces
 
 [//]: # (- Internal -)
 
