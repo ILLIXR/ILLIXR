@@ -6,7 +6,7 @@ plugin_group:
   #   path:
   #     git_repo: https://github.com/ILLIXR/Kimera-VIO
   #     version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
-  - path: ../ILLIXR_comp/open_vins
+  - path: ../open_vins
     # switchboard sync subscribe
   - path: gtsam_integrator/
     # switchboard sync subscribe
