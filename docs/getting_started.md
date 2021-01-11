@@ -106,6 +106,6 @@ Otherwise, proceed to the next section, [Building ILLIXR][12].
 [15]:   glossary.md#phonebook
 [16]:   qemu.md
 [17]:   glossary.md#xvfb
-[18]:	glossary.md#monado
-[19]:	glossary.md#openxr
-[20]:	glossary.md#qemu-kvm
+[18]:   glossary.md#monado
+[19]:   glossary.md#openxr
+[20]:   glossary.md#qemu-kvm

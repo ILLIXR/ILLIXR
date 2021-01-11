@@ -9,18 +9,18 @@
 
 -   [`ground_truth_slam`][3]:
     Reads the [_Ground Truth_][34] from the same dataset as the `offline_imu_cam` plugin.
-	This data can be compared against the measurements from `offline_imu_cam` for accuracy.
-	Timing information is taken from the `offline_imu_cam` measurements/data.
+    This data can be compared against the measurements from `offline_imu_cam` for accuracy.
+    Timing information is taken from the `offline_imu_cam` measurements/data.
 
 -   [`kimera_vio`][10]:
     Runs Kimera-VIO ([upstream][1]) on the input, and outputs the headset's pose.
     In practice, this publishes a fairly [_Slow Pose_][37], so [_IMU_][36] integration
-		and pose prediction is required to infer a [_Fast Pose_][37].
+        and pose prediction is required to infer a [_Fast Pose_][37].
 
 -   [`gtsam_integrator`][12]:
     Integrates over all [_IMU_][36] samples since the last published SLAM pose to provide a
         [_Fast Pose_][37] every time a new IMU sample arrives using
-		the GTSAM library ([upstream][11]).
+        the GTSAM library ([upstream][11]).
 
 -   [`pose_prediction`][17]:
     Uses the latest IMU value to predict a pose for a future point in time.
@@ -109,4 +109,4 @@ See [Building ILLIXR][31] for more information on adding plugins to a config fil
 [34]:   glossary.md#eye-buffers
 [35]:   glossary.md#asynchronous-reprojection
 [36]:   glossary.md#inertial-measurement-unit
-[37]:	glossary.md#pose
+[37]:   glossary.md#pose

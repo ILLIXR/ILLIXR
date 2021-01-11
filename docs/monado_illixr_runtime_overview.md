@@ -28,7 +28,7 @@ Consult the OpenXR specifications and the OpenXR-SDK from Khronous Group for mor
 ## Monado Device Probe and ILLIXR Initialization
 
 During initialization, [_Monado_][20] asks all drivers to probe for and initialize [_HMDs_][25]
-	and controllers, internally known as `xdev`s.
+    and controllers, internally known as `xdev`s.
 We have an ILLIXR driver, which will always respond to Monado with one discovered HMD that
     will be used to capture OpenXR queries and events from Monado's state tracker.
 The ILLIXR driver obtains the path to the ILLIXR runtime `.so` file and a list of plugins from
@@ -43,14 +43,14 @@ At this moment, all necessary data is ready and ILLIXR will be launched.
 ## ILLIXR Runtime Launch
 
 When used with [_Monado_][20], the ILLIXR [_Runtime_][24] is compiled into
-	a shared library instead of an executable.
+    a shared library instead of an executable.
 The library exports its two major functionalities:
     initializing [_Switchboard_][26] and [_Phonebook_][27],
     and
     loading [_Plugins_][23].
 
 The driver starts to load the runtime by loading the shared library into the current
-	(application's) address space and calls the Switchboard and Phonebook initialization.
+    (application's) address space and calls the Switchboard and Phonebook initialization.
 Then, it calls the plugin loading for each ILLIXR plugin
     (except [`gldemo`][28], which is replaced by the OpenXR app).
 Finally, it calls a special plugin loading which takes a function address instead of a file path
@@ -65,7 +65,7 @@ This way, the driver will be able to reacquire control and return to Monado
 ## Translation Plugin
 
 When the application and all [ILLIXR plugins][28] are up and running,
-	the translation plugin handles the connection between [_Monado_][20] and ILLIXR.
+    the translation plugin handles the connection between [_Monado_][20] and ILLIXR.
 It might be confusing to see that this plugin is part of the ILLIXR driver which is part of
     Monado while at the same time also part of ILLIXR as a plugin.
 However, Monado and ILLIXR are running in different threads in the same address space.
@@ -86,14 +86,14 @@ For implementation details regarding the representation of poses and frames in M
 
 [//]: # (- Internal -)
 
-[20]:	glossary.md#monado
-[21]:	glossary.md#openxr
-[22]:	monado_integration_dataflow.md
-[23]:	glossary.md#plugin
-[24]:	glossary.md#runtime
-[25]:	glossary.md#head-mounted-display
-[26]:	glossary.md#switchboard
-[27]:	glossary.md#phonebook
-[28]:	illixr_plugins.md
-[29]:	glossary.md#framebuffer
+[20]:   glossary.md#monado
+[21]:   glossary.md#openxr
+[22]:   monado_integration_dataflow.md
+[23]:   glossary.md#plugin
+[24]:   glossary.md#runtime
+[25]:   glossary.md#head-mounted-display
+[26]:   glossary.md#switchboard
+[27]:   glossary.md#phonebook
+[28]:   illixr_plugins.md
+[29]:   glossary.md#framebuffer
 [30]:   glossary.md#translation-plugin
