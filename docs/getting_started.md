@@ -1,83 +1,111 @@
 # Getting Started
 
-## ILLIXR Runtime
-
 These instructions have been tested with Ubuntu 18.04 and 20.04.
 
-1. Clone the repository:
 
+## ILLIXR Runtime without Monado
+
+1.  **Clone the repository**:
+
+    <!--- language: lang-shell -->
         git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
 
+    ***Note for ILLIXR versions older than `v2.2.0`***:
 
-2. Update the submodules. Submodules are git repositories inside a git repository that need to be
-   pulled down separately:
+    Update the submodules.
+    Submodules are git repositories inside a git repository that need to be pulled down separately:
 
+    <!--- language: lang-shell -->
         git submodule update --init --recursive
 
-3. Install dependencies. This script installs some Ubuntu/Debian packages and builds several dependencies
-   from source:
+1.  **Install dependencies**:
 
+    <!--- language: lang-shell -->
         ./install_deps.sh
 
-4. Inspect `configs/native.yaml`. The schema definition is in `runner/config_schema.yaml`. For more
-   details on the runner and the config files, see [Building ILLIXR][6].
+    This script installs some Ubuntu/Debian packages and builds several dependencies from source:
 
-5. Build and run ILLIXR standalone:
+1.  **Inspect `configs/native.yaml`**.
 
+    The schema definition is in `runner/config_schema.yaml`.
+    For more details on the runner and the config files, see [Building ILLIXR][12].
+
+1.  **Build and run ILLIXR without Monado**:
+
+    <!--- language: lang-shell -->
         ./runner.sh configs/native.yaml
 
-6. If so desired, you can run ILLIXR headlessly using [xvfb][5]:
+    If you are running ILLIXR without a graphical environment,
+        try ILLIXR headlessly using [Xvfb][17]:
 
+    <!--- language: lang-shell -->
         ./runner.sh configs/headless.yaml
 
-## ILLIXR Runtime with Monado (supports OpenXR)
+1.  **To clean up after building, run**:
 
-ILLIXR leverages [Monado][3], an open-source implementation of [OpenXR][4], to support a wide range
-of applications. Because of a low-level driver issue, Monado only supports Ubuntu 18.04+.
+    <!--- language: lang-shell -->
+        ./runner.sh configs/clean.yaml
 
-6. Compile and run:
+    Or simply:
 
+    <!--- language: lang-shell -->
+        ./clean.sh
+
+
+## ILLIXR Runtime with Monado
+
+ILLIXR leverages [Monado][18], an open-source implementation of [OpenXR][19],
+    to support a wide range of OpenXR client applications.
+Because of a low-level driver issue, Monado only supports Ubuntu 18.04+.
+
+1.  Compile and run:
+
+    <!--- language: lang-shell -->
         ./runner.sh configs/monado.yaml
 
-## ILLIXR Standalone
 
-ILLIXR can also benchmark each component in isolation.
+## ILLIXR under Virtualization
 
-1. Clone the repository.
+ILLIXR can be run inside a [_QEMU-KVM_][20] image.
+Check out the instructions [here][16].
 
-        git clone --recursive --branch v1-latest https://github.com/ILLIXR/ILLIXR
 
-2. Update the submodules. Submodules are git repositories inside a git repository that need to be
-   pulled down separately.
+## Next Steps
 
-        git submodule update --init --recursive
+Try browsing the source for the runtime and provided plugins.
+The source code is divided into components in the following directories:
 
-3. Each component is a directory in `benchmark`. See those components for their documentation.
+-   `ILLIXR/runtime/`:
+    A directory holding the implementation for loading and interfacing plugins.
+    This directory contains [_Spindle_][13].
 
-## Virtual Machine
+-   `ILLIXR/common/`:
+    A directory holding resources and utilities available globally to all plugins.
+    Most plugins symlink this directory into theirs.
+    This directory contains the interfaces for [_Switchboard_][14] and [_Phonebook_][15].
 
-ILLIXR can be run inside a Qemu-KVM image. Check out the instructions [here][7].
+-   `ILLIXR/<plugin_dir>/`:
+    A unique directory for each plugin.
+    Most of the core XR functionality is implemented via plugins.
+    See [Default Components][10] for more details.
 
-## Next steps
+If you edit any of the source files, the runner will detect and rebuild the respective binary
+    the next time it runs.
+If you want to add your own plugin, see [Writing Your Plugin][11].
 
- The source code is divided into the following directories:
-- `runtime`: create a runnable binary that loads every plugin.
-    * This contains Spindle, which is responsible for loading plugins.
+Otherwise, proceed to the next section, [Building ILLIXR][12].
 
-- `common`: resources one might use in each plugin. Most plugins symlink this directory into theirs.
-    * Contains the interface for Switchboard, which maintains event-streams (implementation is in `runtime`).
-    * Contains the interface for Phonebook, which is a service-directory (implementation is in `runtime`).
 
-- a directory for each plugin. Almost all of the XR functionality is implemented in plugins. See
-  [Default Components][1] for more details.
+[//]: # (- Internal -)
 
-Try browsing the source of plugins. If you edit any of the source files, the runner will
-detect and rebuild the respective binary. If you want to add your own, see [Writing Your Plugin][2].
-
-[1]: default_plugins.md
-[2]: writing_your_plugin.md
-[3]: https://monado.dev/
-[4]: https://www.khronos.org/openxr/
-[5]: http://manpages.ubuntu.com/manpages/bionic/man1/Xvfb.1.html
-[6]: building_illixr.md
-[7]: https://github.com/ILLIXR/ILLIXR/blob/master/qemu/INSTRUCTIONS.md
+[10]:   illixr_plugins.md
+[11]:   writing_your_plugin.md
+[12]:   building_illixr.md
+[13]:   glossary.md#spindle
+[14]:   glossary.md#switchboard
+[15]:   glossary.md#phonebook
+[16]:   qemu.md
+[17]:   glossary.md#xvfb
+[18]:	glossary.md#monado
+[19]:	glossary.md#openxr
+[20]:	glossary.md#qemu-kvm
