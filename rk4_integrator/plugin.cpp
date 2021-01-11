@@ -29,7 +29,7 @@ public:
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
-		sb.schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
 			callback(datum);
 		});
 	}
@@ -142,16 +142,16 @@ private:
 			}
 		}
 
-		_m_imu_raw->put(new imu_raw_type{
-			.w_hat = w_hat,
-			.a_hat = a_hat,
-			.w_hat2 = w_hat2,
-			.a_hat2 = a_hat2,
-			.pos = curr_pos,
-			.vel = curr_vel,
-			.quat = Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
-			.imu_time = real_time,
-		});
+        _m_imu_raw.put(new (_m_imu_raw.allocate()) imu_raw_type{
+				w_hat,
+				a_hat,
+				w_hat2,
+				a_hat2,
+				curr_pos,
+				curr_vel,
+				Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
+				real_time,
+       });
     }
 
 	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

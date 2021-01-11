@@ -151,11 +151,11 @@ public:
 
 		[[maybe_unused]] int ret = sched_setscheduler(get_pid(), SCHED_FIFO, &sp);
 
-		if (ret) {
+		if (ret && std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER") && strcmp(std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER"), "y") != 0) {
 			int ferrno = errno;
 			errno = 0;
 			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setscheduler");
-			std::cerr << ret << " " << ferrno << " " << err.what() << "\n";
+			std::cerr << ret << " " << ferrno << " " << err.what() << " " << strcmp(std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER"), "y") << " " << std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER") << "\n";
 			throw err;
 		}
 	}

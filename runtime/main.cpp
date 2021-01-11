@@ -37,7 +37,7 @@ int main(int argc, char* const* argv) {
 #endif
 	r = ILLIXR::runtime_factory(nullptr);
 
-	int ret = pthread_setname_np(pthread_self(), "main");
+	[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), "main");
 	assert(!ret);
 
 	std::vector<std::string> lib_paths;
@@ -59,7 +59,7 @@ int main(int argc, char* const* argv) {
 
 	cancellable_sleep cs;
 	std::thread th{[&]{
-		int ret = pthread_setname_np(pthread_self(), "main_timer");
+		[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), "main_timer");
 		assert(!ret);
 		cs.sleep(run_duration);
 		r->stop();

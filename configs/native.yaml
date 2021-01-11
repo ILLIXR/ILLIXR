@@ -9,6 +9,8 @@ plugin_groups:
       # threadloop, by scheduler
     # - path: debugview/
   - !include "core_plugins.yaml"
+  - plugin_group:
+    - path: offline_cam/
 
 data:
   subpath: mav0
@@ -21,15 +23,16 @@ loader:
   name: native
 
   # run in GDB:
-  # command: gdb -q --args $cmd
+  command: env ILLIXR_IGNORE_SCHED_SETSCHEDULER=y gdb -q --args $cmd
 
   # print cmd for external use:
   # command: printf %s\n $env_cmd
 
   # command: env ILLIXR_STDOUT_METRICS=y $cmd
 
+  # command: sudo taskset -a -c 0 $env_cmd
+
   # log_stdout: metrics/output.log
+  # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
-  command: sudo taskset -a -c 0 $env_cmd
-
-profile: dbg
+profile: opt
