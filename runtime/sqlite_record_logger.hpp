@@ -80,7 +80,7 @@ public:
 		char* name = new char[100];
 		snprintf(name, 100, "sql_%s", table_name.c_str());
 		name[15] = '\0';
-		int ret = pthread_setname_np(pthread_self(), name);
+		[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), name);
 		assert(!ret);
 
 		const std::size_t max_record_batch_size = 1024 * 256;

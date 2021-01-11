@@ -60,7 +60,7 @@ public:
 			thread = std::make_unique<managed_thread>([this]{
 				char* name = new char[100];
 				snprintf(name, 100, "tl_%zu", id);
-				int ret = pthread_setname_np(pthread_self(), "main");
+				[[maybe_unused]]int ret = pthread_setname_np(pthread_self(), name);
 				assert(!ret);
 
 				thread_main();

@@ -23,6 +23,23 @@ namespace ILLIXR {
 	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
 	typedef unsigned long long ullong;
 
+	struct cam_type : switchboard::event {
+		time_type time;
+		cv::Mat img0;
+		cv::Mat img1;
+		ullong dataset_time;
+		cam_type(
+				 time_type _time,
+				 cv::Mat _img0,
+				 cv::Mat _img1,
+				 ullong _dataset_time)
+			: time{_time}
+			, img0{_img0}
+			, img1{_img1}
+			, dataset_time{_dataset_time}
+		{ }
+	};
+
 	// Data type that combines the IMU and camera data at a certain timestamp.
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
@@ -234,17 +251,17 @@ namespace ILLIXR {
 
 		char* name = new char[100];
 		snprintf(name, 100, "subsc_%zu", _m_plugin_id);
-		printf("'%s'\n", name);
 
 		errno = 0;
-		int ret = pthread_setname_np(pthread_self(), name);
+		name[15] = '\0';
+		[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), name);
 		int tmp_errno = errno;
 		errno = 0;
 
 		if (ret) {
 			std::cerr << "ret = " << ret << " errno = " << tmp_errno << std::endl;
 		}
-		// assert(!ret);
+		assert(!ret);
 
 #ifndef NDEBUG
 		std::cerr << "Thread of plugin " << _m_plugin_id << " start" << std::endl;

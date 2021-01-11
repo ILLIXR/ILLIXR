@@ -1,5 +1,5 @@
 plugin_group:
-  - path: offline_imu_cam/
+  - path: offline_imu/
     # threadloop(..., false)
   # - path: zed/
   # - name: Kimera-VIO/
@@ -8,7 +8,8 @@ plugin_group:
   #     version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
   - path: ../open_vins
     # switchboard sync subscribe
-  - path: gtsam_integrator/
+  # - path: gtsam_integrator/
+  - path: rk4_integrator/
     # switchboard sync subscribe
   - path: pose_prediction/
     # service, gets called
