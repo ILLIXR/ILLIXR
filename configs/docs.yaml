@@ -1,0 +1,10 @@
+##
+## Configuration to generate the mkdocs and doxygen documentation
+##
+action:
+  name: docs
+
+## Unused definitions
+profile: opt
+data: data
+demo_data: demo_data

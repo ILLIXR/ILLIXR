@@ -9,6 +9,8 @@ from typing import Any, List, Mapping, Optional, ContextManager, BinaryIO, cast
 import click
 import jsonschema
 import yaml
+from yamlinclude import YamlIncludeConstructor
+
 from util import (
     fill_defaults,
     flatten1,
@@ -22,7 +24,6 @@ from util import (
     make,
     cmake,
 )
-from yamlinclude import YamlIncludeConstructor
 
 # isort main.py
 # black -l 90 main.py
@@ -48,7 +49,9 @@ def clean_one_plugin(
 
 
 def build_one_plugin(
-    config: Mapping[str, Any], plugin_config: Mapping[str, Any], test: bool = False,
+    config: Mapping[str, Any],
+    plugin_config: Mapping[str, Any],
+    test: bool = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -62,7 +65,11 @@ def build_one_plugin(
     return path / plugin_so_name
 
 
-def build_runtime(config: Mapping[str, Any], suffix: str, test: bool = False,) -> Path:
+def build_runtime(
+    config: Mapping[str, Any],
+    suffix: str,
+    test: bool = False,
+) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
     runtime_name = f"{name}.{profile}.{suffix}"
@@ -163,9 +170,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     monado_config = config["action"]["monado"].get("config", {})
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
-    monado_path = pathify(
-        config["action"]["monado"]["path"], root_dir, cache_path, True, True
-    )
+    monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
     openxr_app_path = pathify(
         config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True
     )
@@ -230,18 +235,41 @@ def clean_project(config: Mapping[str, Any]) -> None:
     )
 
 
+def make_docs(config: Mapping[str, Any]) -> None:
+    dir_api = "site/api"
+    dir_docs = "site/docs"
+    cmd_doxygen = ["doxygen", "doxygen.conf"]
+    cmd_mkdocs = ["python3", "-m", "mkdocs", "build"]
+    if not os.path.exists(dir_api):
+        os.makedirs(dir_api)
+    if not os.path.exists(dir_docs):
+        os.makedirs(dir_docs)
+    subprocess_run(
+        cmd_doxygen,
+        check=True,
+        capture_output=False,
+    )
+    subprocess_run(
+        cmd_mkdocs,
+        check=True,
+        capture_output=False,
+    )
+
+
 actions = {
     "native": load_native,
     "monado": load_monado,
     "tests": load_tests,
     "clean": clean_project,
+    "docs": make_docs,
 }
 
 
 def run_config(config_path: Path) -> None:
     """Parse a YAML config file, returning the validated ILLIXR system config."""
     YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader, base_dir=config_path.parent,
+        loader_class=yaml.FullLoader,
+        base_dir=config_path.parent,
     )
 
     with config_path.open() as f:
