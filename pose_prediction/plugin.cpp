@@ -14,32 +14,43 @@ public:
 		, _m_slow_pose{sb->subscribe_latest<pose_type>("slow_pose")}
         , _m_imu_raw{sb->subscribe_latest<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
+        , _m_ground_truth_offset{sb->subscribe_latest<Eigen::Vector3f>("ground_truth_offset")}
         , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     { }
 
-    // No paramter get_fast_pose() should just predict to the next vsync
-	// However, we don't have vsync estimation yet.
-	// So we will predict to `now()`, as a temporary approximation
+    // No parameter get_fast_pose() predicts to the next vsync if a vsync
+    // estimate is available, and predicts to `now` otherwise
     virtual fast_pose_type get_fast_pose() const override {
-		const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
+		const time_type * const vsync_estimate = _m_vsync_estimate->get_latest_ro();
 
-        if(vsync_estimate == nullptr) {
-		return get_fast_pose(std::chrono::high_resolution_clock::now());
+        if (vsync_estimate == nullptr) {
+            return get_fast_pose(std::chrono::high_resolution_clock::now());
         } else {
             return get_fast_pose(*vsync_estimate);
         }
-	}
-
-    virtual pose_type get_true_pose() const override {
-		const pose_type* pose_ptr = _m_true_pose->get_latest_ro();
-		return correct_pose(
-			pose_ptr ? *pose_ptr : pose_type{
-				.sensor_time = std::chrono::system_clock::now(),
-				.position = Eigen::Vector3f{0, 0, 0},
-				.orientation = Eigen::Quaternionf{1, 0, 0, 0},
-			}
-		);
     }
+
+	virtual pose_type get_true_pose() const override {
+		const auto * const pose = _m_true_pose->get_latest_ro();
+		const auto * const offset = _m_ground_truth_offset->get_latest_ro();
+		pose_type offset_pose;
+
+		// Subtract offset if valid pose and offset, otherwise use zero pose.
+		// Checking that pose and offset are both valid is safer than just
+		// checking one or the other because it assumes nothing about the
+		// ordering of writes on the producer's end or about the producer
+		// actually writing to both streams.
+		if (pose && offset) {
+			offset_pose = *pose;
+			offset_pose.position -= *offset;
+		} else {
+			offset_pose.sensor_time = std::chrono::system_clock::now();
+			offset_pose.position = Eigen::Vector3f{0, 0, 0};
+			offset_pose.orientation = Eigen::Quaternionf{1, 0, 0, 0};
+		}
+
+		return correct_pose(offset_pose);
+	}
 
     // future_time: An absolute timepoint in the future
     virtual fast_pose_type get_fast_pose(time_type future_timestamp) const override {
@@ -180,6 +191,7 @@ private:
     std::unique_ptr<reader_latest<pose_type>> _m_slow_pose;
     std::unique_ptr<reader_latest<imu_raw_type>> _m_imu_raw;
 	std::unique_ptr<reader_latest<pose_type>> _m_true_pose;
+	std::unique_ptr<reader_latest<Eigen::Vector3f>> _m_ground_truth_offset;
     std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;

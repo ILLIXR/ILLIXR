@@ -43,7 +43,7 @@ load_data() {
 	}
 
 	for(CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
-		ullong t = floor(std::stoull(row[0]) / 10000);
+		ullong t = std::stoull(row[0]);
 		Eigen::Vector3f av {std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
 		Eigen::Quaternionf la {std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
 		data[t] = {{}, av, la};
