@@ -21,7 +21,7 @@ public:
     // No parameter get_fast_pose() predicts to the next vsync if a vsync
     // estimate is available, and predicts to `now` otherwise
     virtual fast_pose_type get_fast_pose() const override {
-		const time_type *vsync_estimate = _m_vsync_estimate->get_latest_ro();
+		const time_type * const vsync_estimate = _m_vsync_estimate->get_latest_ro();
 
         if (vsync_estimate == nullptr) {
             return get_fast_pose(std::chrono::high_resolution_clock::now());
@@ -31,11 +31,15 @@ public:
     }
 
 	virtual pose_type get_true_pose() const override {
-		const auto *pose = _m_true_pose->get_latest_ro();
-		const auto *offset = _m_ground_truth_offset->get_latest_ro();
+		const auto * const pose = _m_true_pose->get_latest_ro();
+		const auto * const offset = _m_ground_truth_offset->get_latest_ro();
 		pose_type offset_pose;
 
-		// Subtract offset if valid pose and offset, otherwise use zero pose
+		// Subtract offset if valid pose and offset, otherwise use zero pose.
+		// Checking that pose and offset are both valid is safer than just
+		// checking one or the other because it assumes nothing about the
+		// ordering of writes on the producer's end or about the producer
+		// actually writing to both streams.
 		if (pose && offset) {
 			offset_pose = *pose;
 			offset_pose.position -= *offset;
