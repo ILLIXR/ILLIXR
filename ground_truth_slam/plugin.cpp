@@ -17,6 +17,7 @@ public:
 		, _m_true_pose{sb->publish<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->publish<Eigen::Vector3f>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
+		, first_time{true}
 	{ }
 
 	virtual void start() override {
@@ -27,7 +28,7 @@ public:
 	}
 
 	void feed_ground_truth(const imu_cam_type *datum) {
-		ullong rounded_time = floor(datum->dataset_time / 10000);
+		ullong rounded_time = datum->dataset_time;
 		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
 
 		if (_m_sensor_data_it == _m_sensor_data.end()) {
@@ -71,7 +72,7 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 
-	bool first_time{true};
+	bool first_time;
 };
 
 PLUGIN_MAIN(ground_truth_slam);
