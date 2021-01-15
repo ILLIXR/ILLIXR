@@ -206,15 +206,19 @@ public:
 			lastFrameTime = std::chrono::high_resolution_clock::now();
 		}
 
+#ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
 			log_count = 0;
 		} else {
 			log_count++;
 		}
+#endif
 	}
 
+#ifndef NDEBUG
 	size_t log_count = 0;
 	size_t LOG_PERIOD = 20;
+#endif
 
 private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;

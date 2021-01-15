@@ -600,15 +600,19 @@ public:
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 
+#ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
 			log_count = 0;
 		} else {
 			log_count++;
 		}
+#endif
 	}
 
+#ifndef NDEBUG
 	size_t log_count = 0;
 	size_t LOG_PERIOD = 20;
+#endif
 
 	virtual ~timewarp_gl() override {
 		// TODO: Need to cleanup resources here!
