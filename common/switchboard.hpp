@@ -458,6 +458,34 @@ public:
          * [1]: https://en.wikipedia.org/wiki/Slab_allocation
          * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
          */
+		template<class... Args>
+        ptr<specific_event> allocate(Args&&... args) {
+			return std::make_shared<specific_event>(std::forward<Args>(args)...);
+        }
+
+        /**
+         * @brief Publish @p ev to this topic.
+         */
+		void put(ptr<specific_event>&& this_specific_event) {
+			assert(typeid(specific_event) == _m_topic.ty());
+			assert(this_specific_event);
+			assert(this_specific_event.unique());
+			ptr<event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<specific_event>(std::move(this_specific_event)));
+			assert(this_event.unique());
+			_m_topic.put(std::move(this_event));
+        }
+
+        /**
+         * @brief Like `new`/`malloc` but more efficient for this specific case.
+         *
+         * There is an optimization available which has not yet been implemented: switchboard can reuse memory
+         * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
+         * B. B's deallocation through the destructor, and A's allocation through this method completes
+         * the cycle in a [double-buffer (AKA swap-chain)][2].
+         *
+         * [1]: https://en.wikipedia.org/wiki/Slab_allocation
+         * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
+         */
         specific_event* allocate() {
             return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
         }
