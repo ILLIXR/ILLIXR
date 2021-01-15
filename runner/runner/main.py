@@ -82,9 +82,7 @@ def build_one_plugin(
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
     if not (path / "common").exists():
-        common_path = pathify(
-            config["common"]["path"], root_dir, cache_path, True, True
-        )
+        common_path = pathify(config["common"]["path"], root_dir, cache_path, True, True)
         common_path = common_path.resolve()
         os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
@@ -119,14 +117,26 @@ def load_native(config: Mapping[str, Any]) -> None:
     )
     actual_cmd_str = config["loader"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
-    env_override = dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"])
-    env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
+    env_override = dict(
+        ILLIXR_DATA=str(data_path),
+        ILLIXR_DEMO_DATA=str(demo_data_path),
+        KIMERA_ROOT=config["loader"]["kimera_path"],
+    )
+    env_list = [
+        f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()
+    ]
     actual_cmd_list = list(
         flatten1(
             replace_all(
                 unflatten(shlex.split(actual_cmd_str)),
                 {
-                    ("$env_cmd",): ["env", "-C", Path(".").resolve(), *env_list, *illixr_cmd_list],
+                    ("$env_cmd",): [
+                        "env",
+                        "-C",
+                        Path(".").resolve(),
+                        *env_list,
+                        *illixr_cmd_list,
+                    ],
                     ("$cmd",): illixr_cmd_list,
                     ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
                     ("$env",): env_list,
@@ -134,18 +144,18 @@ def load_native(config: Mapping[str, Any]) -> None:
             )
         )
     )
-    log_stdout_str = config.get("log_stdout", None)
-    log_stdout_ctx: ContextManager[Optional[BinaryIO]] = cast(ContextManager[Optional[BinaryIO]],
-        open(log_stdout_str, "wb")
-        if log_stdout_str is not None
-        else noop_context(None)
+    log_stdout_str = config["loader"].get("log_stdout", None)
+    log_stdout_ctx: ContextManager[Optional[BinaryIO]] = cast(
+        ContextManager[Optional[BinaryIO]],
+        (
+            open(log_stdout_str, "wb")
+            if (log_stdout_str is not None)
+            else noop_context(None)
+        ),
     )
     with log_stdout_ctx as log_stdout:
         subprocess_run(
-            actual_cmd_list,
-            env_override=env_override,
-            stdout=log_stdout,
-            check=True,
+            actual_cmd_list, env_override=env_override, stdout=log_stdout, check=True,
         )
 
 
@@ -165,7 +175,12 @@ def load_tests(config: Mapping[str, Any]) -> None:
     )
     subprocess_run(
         ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
-        env_override=dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), ILLIXR_RUN_DURATION="10", KIMERA_ROOT=config["loader"]["kimera_path"]),
+        env_override=dict(
+            ILLIXR_DATA=str(data_path),
+            ILLIXR_DEMO_DATA=str(demo_data_path),
+            ILLIXR_RUN_DURATION="10",
+            KIMERA_ROOT=config["loader"]["kimera_path"],
+        ),
         check=True,
     )
 
