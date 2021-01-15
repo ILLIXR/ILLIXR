@@ -54,7 +54,7 @@ private:
 std::atomic<std::size_t> uint64_wrapper::_s_destructed_count {0};
 
 TEST_F(SwitchboardTest, TestSyncAsync) {
-	const uint64_t MAX_ITERATIONS = 3;
+	const uint64_t MAX_ITERATIONS = 300;
 
 	// I need to start a block here, so the destructor of switchboard gets called
 	{
@@ -111,7 +111,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			last_datum_1 = *datum;
 		});
 
-		ASSERT_EQ(sb.get_reader<uint64_wrapper>("multiples_of_six").get_nullable(), nullptr);
+		ASSERT_EQ(sb.get_reader<uint64_wrapper>("multiples_of_six").get_ro_nullable(), nullptr);
 
 		std::thread writer {[&sb] {
 			auto writer = sb.get_writer<uint64_wrapper>("multiples_of_six");
@@ -128,7 +128,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			auto reader = sb.get_reader<uint64_wrapper>("multiples_of_six");
 
 			for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
-				switchboard::ptr<const uint64_wrapper> datum = reader.get_nullable();
+				switchboard::ptr<const uint64_wrapper> datum = reader.get_ro_nullable();
 				if (!datum) {
 					// Nothing on topic yet
 					// Assert this only happens in the beginning
@@ -149,7 +149,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 			auto reader = sb.get_reader<uint64_wrapper>("multiples_of_six");
 
 			for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
-				switchboard::ptr<const uint64_wrapper> datum = reader.get_nullable();
+				switchboard::ptr<const uint64_wrapper> datum = reader.get_ro_nullable();
 				if (!datum) {
 					// Nothing on topic yet
 					// Assert this only happens in the beginning
@@ -179,8 +179,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 		ASSERT_EQ(last_datum_0, (MAX_ITERATIONS - 1) * 6);
 		ASSERT_EQ(last_datum_1, (MAX_ITERATIONS - 1) * 6);
 
-		// The last uint64_wrapper is still around because it could be accessed by an async reader
-		ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 2);
+		// The last few events are still around because it is in the latest buffer
 	}
 	// I need to end the block here, so switchboard gets destructed
 	// Then the last uint64_wrapper's should get destructed
