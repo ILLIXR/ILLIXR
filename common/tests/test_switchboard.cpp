@@ -11,12 +11,12 @@ class SwitchboardTest : public ::testing::Test { };
 
 
 thread_local std::minstd_rand rd {};
-	thread_local std::binomial_distribution<long> short_dist{10, 0.5};
+thread_local std::binomial_distribution<long> short_dist{10, 0.5};
 void short_delay() {
 	//std::this_thread::sleep_for(std::chrono::milliseconds{short_dist(rd)});
 }
 
-	thread_local std::binomial_distribution<long> long_dist{15, 0.5};
+thread_local std::binomial_distribution<long> long_dist{15, 0.5};
 void long_delay() {
 	//std::this_thread::sleep_for(std::chrono::milliseconds{long_dist(rd)});
 }
@@ -171,6 +171,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 		slow_reader.join();
 
 		while (last_it_0 != MAX_ITERATIONS - 1 || last_it_1 != MAX_ITERATIONS - 1) {
+		    // TODO: Configure with Issue #94 when merged
 			std::this_thread::sleep_for(std::chrono::milliseconds{100});
 		}
 
