@@ -51,7 +51,7 @@ public:
 	void wait_vsync()
 	{
 		using namespace std::chrono_literals;
-		switchboard::ptr<const switchboard::event_wrapper<time_type>> next_vsync = _m_vsync.get_nullable();
+		switchboard::ptr<const switchboard::event_wrapper<time_type>> next_vsync = _m_vsync.get_ro_nullable();
 		time_type now = std::chrono::system_clock::now();
 
 		time_type wait_time;
