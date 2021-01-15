@@ -263,9 +263,9 @@ private:
         const std::string _m_name;
         const std::type_info& _m_ty;
         const std::shared_ptr<record_logger> _m_record_logger;
-        // In C++ 20, this should be std::atomic<std::unique_ptr<std::shared_ptr<const event>>>.
-        // Then I wouldn't need a destructor. ¯\_(ツ)_/¯
-        std::atomic<ptr<const event> *> _m_latest {nullptr};
+		std::atomic<size_t> _m_latest_index;
+		static constexpr std::size_t _m_latest_buffer_size = 256;
+		std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
         std::list<topic_subscription> _m_subscriptions;
         std::shared_mutex _m_subscriptions_lock;
 
@@ -277,6 +277,7 @@ private:
         )   : _m_name{name}
             , _m_ty{ty}
             , _m_record_logger{record_logger_}
+			, _m_latest_index{0}
         { }
 
         const std::string& name() { return _m_name; }
@@ -287,13 +288,12 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-            if (_m_latest) {
-                ptr<const event> this_event = *_m_latest.load();
-                // std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
-                return this_event;
-            } else {
-                return ptr<const event>{nullptr};
-            }
+			size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
+			ptr<const event> this_event = _m_latest_buffer[idx];
+			// if (this_event) {
+			// 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+			// }
+			return this_event;
         }
 
         /**
@@ -301,30 +301,21 @@ private:
          *
          * Thread-safe
          */
-        void put(ptr<const event>* this_event) {
-            assert(this_event);
-            assert(*this_event);
-            assert(this_event->unique());
+        void put(ptr<const event>&& this_event) {
+			assert(this_event);
+			assert(this_event.unique());
 
-            /* The pointer that this gets exchanged with needs to get dropped. */
-            ptr<const event>* old_event = _m_latest.exchange(this_event);
-            // std::cerr << "swap ";
-            // if (old_event) {
-            //  std::cerr << ptr_to_str(reinterpret_cast<const void*>(old_event->get())) << " " << old_event->use_count() << " v";
-            // } else {
-            //  std::cerr << "@";
-            // }
-            // std::cerr << " for " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1)\n";
-
-            // corresponds to new in the last iteration of topic::put
-            delete old_event;
+			/* The pointer that this gets exchanged with needs to get dropped. */
+			size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
+			_m_latest_buffer[index] = this_event;
+			_m_latest_index++;
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
             std::unique_lock lock{_m_subscriptions_lock};
             for (topic_subscription& ts : _m_subscriptions) {
                 // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
-                ptr<const event> event_ptr_copy {*this_event};
+                ptr<const event> event_ptr_copy {this_event};
                 ts.enqueue(std::move(event_ptr_copy));
             }
             // std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1 + len(sub)) \n";
@@ -355,15 +346,6 @@ private:
             // Must acquire unique state on _m_subscriptions_lock
             const std::unique_lock lock{_m_subscriptions_lock};
             _m_subscriptions.clear();
-        }
-
-        ~topic() {
-            ptr<const event>* last_event = _m_latest.exchange(nullptr);
-            if (last_event) {
-                // std::cerr << "~ " << ptr_to_str(reinterpret_cast<const void*>(last_event->get())) << " " << last_event->use_count() << " v\n";
-                delete last_event;
-                // corresponds to new in most recent topic::put
-            }
         }
     };
 
@@ -399,9 +381,8 @@ public:
           ptr<const event> this_event = _m_topic.get();
           ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
-           /// Check for `nullptr`. Also check `this_specific_event` since
-           /// the dynamic cast may fail => dynamic type information could be wrong
-           if (this_event != nullptr && this_specific_event != nullptr) {
+           if (this_event != nullptr) {
+			   assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
                return this_specific_event;
            } else {
                return ptr<const specific_event>{nullptr};
@@ -459,11 +440,11 @@ public:
          * @brief Publish @p ev to this topic.
          */
          void put(const specific_event* this_specific_event) {
-            assert(typeid(specific_event) == _m_topic.ty());
-            assert(this_specific_event);
-            ptr<const event>* this_event = new ptr<const event>{static_cast<const event*>(this_specific_event)};
-            assert(this_event->unique());
-            _m_topic.put(this_event);
+			assert(typeid(specific_event) == _m_topic.ty());
+			assert(this_specific_event);
+			ptr<const event> this_event {static_cast<const event*>(this_specific_event)};
+			assert(this_event.unique());
+			_m_topic.put(std::move(this_event));
         }
 
         /**
