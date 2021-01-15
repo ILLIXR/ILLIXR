@@ -20,33 +20,33 @@
 
 namespace ILLIXR {
 
-	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
-	typedef unsigned long long ullong;
+    typedef std::chrono::time_point<std::chrono::system_clock> time_type;
+    typedef unsigned long long ullong;
 
-	// Data type that combines the IMU and camera data at a certain timestamp.
-	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
-	// time is the current UNIX time where dataset_time is the time read from the csv
-	struct imu_cam_type : switchboard::event {
-		time_type time;
-		Eigen::Vector3f angular_v;
-		Eigen::Vector3f linear_a;
-		std::optional<cv::Mat> img0;
-		std::optional<cv::Mat> img1;
-		ullong dataset_time;
-		imu_cam_type(time_type time_,
-					 Eigen::Vector3f angular_v_,
-					 Eigen::Vector3f linear_a_,
-					 std::optional<cv::Mat> img0_,
-					 std::optional<cv::Mat> img1_,
-					 ullong dataset_time_)
-			: time{time_}
-			, angular_v{angular_v_}
-			, linear_a{linear_a_}
-			, img0{img0_}
-			, img1{img1_}
-			, dataset_time{dataset_time_}
-		{ }
-	};
+    // Data type that combines the IMU and camera data at a certain timestamp.
+    // If there is only IMU data for a certain timestamp, img0 and img1 will be null
+    // time is the current UNIX time where dataset_time is the time read from the csv
+    struct imu_cam_type : switchboard::event {
+        time_type time;
+        Eigen::Vector3f angular_v;
+        Eigen::Vector3f linear_a;
+        std::optional<cv::Mat> img0;
+        std::optional<cv::Mat> img1;
+        ullong dataset_time;
+        imu_cam_type(time_type time_,
+                     Eigen::Vector3f angular_v_,
+                     Eigen::Vector3f linear_a_,
+                     std::optional<cv::Mat> img0_,
+                     std::optional<cv::Mat> img1_,
+                     ullong dataset_time_)
+            : time{time_}
+            , angular_v{angular_v_}
+            , linear_a{linear_a_}
+            , img0{img0_}
+            , img1{img1_}
+            , dataset_time{dataset_time_}
+        { }
+    };
 
     typedef struct {
         std::optional<cv::Mat*> rgb;
@@ -172,24 +172,24 @@ namespace ILLIXR {
 		int seq;		
 	} imu_integrator_seq;
 
-	/* I use "accel" instead of "3-vector" as a datatype, because
-	this checks that you meant to use an acceleration in a certain
-	place. */
-	struct accel { };
+    /* I use "accel" instead of "3-vector" as a datatype, because
+    this checks that you meant to use an acceleration in a certain
+    place. */
+    struct accel { };
 
-	// High-level HMD specification, timewarp plugin
-	// may/will calculate additional HMD info based on these specifications
-	struct hmd_physical_info {
-		float   ipd;
-		int		displayPixelsWide;
-		int		displayPixelsHigh;
-		float	chromaticAberration[4];
-		float	K[11];
-		int		visiblePixelsWide;
-		int		visiblePixelsHigh;
-		float	visibleMetersWide;
-		float	visibleMetersHigh;
-		float	lensSeparationInMeters;
-		float	metersPerTanAngleAtCenter;
-	};
+    // High-level HMD specification, timewarp plugin
+    // may/will calculate additional HMD info based on these specifications
+    struct hmd_physical_info {
+        float   ipd;
+        int     displayPixelsWide;
+        int     displayPixelsHigh;
+        float   chromaticAberration[4];
+        float   K[11];
+        int     visiblePixelsWide;
+        int     visiblePixelsHigh;
+        float   visibleMetersWide;
+        float   visibleMetersHigh;
+        float   lensSeparationInMeters;
+        float   metersPerTanAngleAtCenter;
+    };
 }

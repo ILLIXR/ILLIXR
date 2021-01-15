@@ -93,7 +93,7 @@ private:
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
-		 auto input_values = _m_imu_integrator_input.get_nullable();
+		 auto input_values = _m_imu_integrator_input.get_ro_nullable();
 		 if (!input_values) {
 			 return;
 		 }

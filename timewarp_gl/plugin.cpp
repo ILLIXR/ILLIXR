@@ -295,7 +295,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		if(_m_eyebuffer.get_nullable()) {
+		if(_m_eyebuffer.get_ro_nullable()) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet

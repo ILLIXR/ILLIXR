@@ -10,35 +10,36 @@ using namespace ILLIXR;
 class pose_prediction_impl : public pose_prediction {
 public:
     pose_prediction_impl(const phonebook* const pb)
-		: sb{pb->lookup_impl<switchboard>()}
-		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
+        : sb{pb->lookup_impl<switchboard>()}
+        , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
     { }
 
-    // No parameter get_fast_pose() predicts to the next vsync if a vsync
-    // estimate is available, and predicts to `now` otherwise
+    // No parameter get_fast_pose() should just predict to the next vsync
+    // However, we don't have vsync estimation yet.
+    // So we will predict to `now()`, as a temporary approximation
     virtual fast_pose_type get_fast_pose() const override {
-		switchboard::ptr<const switchboard::event_wrapper<time_type>> vsync_estimate = _m_vsync_estimate.get_nullable();
+        switchboard::ptr<const switchboard::event_wrapper<time_type>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
 
         if (vsync_estimate == nullptr) {
             return get_fast_pose(std::chrono::high_resolution_clock::now());
         } else {
             return get_fast_pose(*vsync_estimate);
         }
-	}
+    }
 
     virtual pose_type get_true_pose() const override {
-		switchboard::ptr<const pose_type> pose_ptr = _m_true_pose.get_nullable();
-		return correct_pose(
-			pose_ptr ? *pose_ptr : pose_type{
-				std::chrono::system_clock::now(),
-				Eigen::Vector3f{0, 0, 0},
-				Eigen::Quaternionf{1, 0, 0, 0},
-			}
-		);
+        switchboard::ptr<const pose_type> pose_ptr = _m_true_pose.get_ro_nullable();
+        return correct_pose(
+            pose_ptr ? *pose_ptr : pose_type{
+                std::chrono::system_clock::now(),
+                Eigen::Vector3f{0, 0, 0},
+                Eigen::Quaternionf{1, 0, 0, 0},
+            }
+        );
     }
 
 	virtual pose_type get_true_pose() const override {
@@ -65,30 +66,30 @@ public:
 
     // future_time: An absolute timepoint in the future
     virtual fast_pose_type get_fast_pose(time_type future_timestamp) const override {
-		switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_nullable();
-		if (!slow_pose) {
-			// No slow pose, return 0
+        switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_ro_nullable();
+        if (!slow_pose) {
+            // No slow pose, return 0
             return fast_pose_type{
                 correct_pose(pose_type{}),
-				std::chrono::system_clock::now(),
-				future_timestamp,
+                std::chrono::system_clock::now(),
+                future_timestamp,
             };
-		}
+        }
 
-		switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_nullable();
+        switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (!imu_raw) {
 #ifndef NDEBUG
             printf("FAST POSE IS SLOW POSE!");
 #endif
-			// No imu_raw, return slow_pose
+            // No imu_raw, return slow_pose
             return fast_pose_type{
                 .pose = correct_pose(*slow_pose),
-				.predict_computed_time = std::chrono::system_clock::now(),
-				.predict_target_time = future_timestamp,
+                .predict_computed_time = std::chrono::system_clock::now(),
+                .predict_target_time = future_timestamp,
             };
         }
 
-		// slow_pose and imu_raw, do pose prediction
+        // slow_pose and imu_raw, do pose prediction
 
         double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
         std::pair<Eigen::Matrix<double,13,1>, time_type> predictor_result = predict_mean_rk4(dt/NANO_SEC);
@@ -102,17 +103,17 @@ public:
             predictor_imu_time,
             Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)), static_cast<float>(state_plus(6))}, 
             Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}
-		});
+        });
 
-		// Make the first valid fast pose be straight ahead.
-		if (first_time) {
-			std::unique_lock lock {offset_mutex};
-			// check again, now that we have mutual exclusion
-			if (first_time) {
-				first_time = false;
-				offset = predicted_pose.orientation.inverse();
-			}
-		}
+        // Make the first valid fast pose be straight ahead.
+        if (first_time) {
+            std::unique_lock lock {offset_mutex};
+            // check again, now that we have mutual exclusion
+            if (first_time) {
+                first_time = false;
+                offset = predicted_pose.orientation.inverse();
+            }
+        }
 
         // Several timestamps are logged:
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
@@ -124,51 +125,51 @@ public:
         };
     }
 
-	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
-		std::unique_lock lock {offset_mutex};
-		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-		offset = raw_o.inverse();
-		/*
-		  Now, `raw_o` is maps to the identity quaternion.
-		  Proof:
-		  apply_offset(raw_o)
-		      = raw_o * offset
-		      = raw_o * raw_o.inverse()
-		      = Identity.
-		 */
-	}
+    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+        std::unique_lock lock {offset_mutex};
+        Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
+        offset = raw_o.inverse();
+        /*
+          Now, `raw_o` is maps to the identity quaternion.
+          Proof:
+          apply_offset(raw_o)
+              = raw_o * offset
+              = raw_o * raw_o.inverse()
+              = Identity.
+         */
+    }
 
-	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-		std::shared_lock lock {offset_mutex};
-		return orientation * offset;
-	}
+    Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+        std::shared_lock lock {offset_mutex};
+        return orientation * offset;
+    }
 
 
-	virtual bool fast_pose_reliable() const override {
-		return _m_slow_pose.get_nullable() && _m_imu_raw.get_nullable();
-		/*
-		  SLAM takes some time to initialize, so initially fast_pose
-		  is unreliable.
+    virtual bool fast_pose_reliable() const override {
+        return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
+        /*
+          SLAM takes some time to initialize, so initially fast_pose
+          is unreliable.
 
-		  In such cases, we might return a fast_pose based only on the
-		  IMU data (currently, we just return a zero-pose)., and mark
-		  it as "unreliable"
+          In such cases, we might return a fast_pose based only on the
+          IMU data (currently, we just return a zero-pose)., and mark
+          it as "unreliable"
 
-		  This way, there always a pose coming out of pose_prediction,
-		  representing our best guess at that time, and we indicate
-		  how reliable that guess is here.
+          This way, there always a pose coming out of pose_prediction,
+          representing our best guess at that time, and we indicate
+          how reliable that guess is here.
 
-		 */
-	}
+         */
+    }
 
-	virtual bool true_pose_reliable() const override {
-		//return _m_true_pose.valid();
-		/*
-		  We do not have a "ground truth" available in all cases, such
-		  as when reading live data.
-		 */
-		return bool(_m_true_pose.get_nullable());
-	}
+    virtual bool true_pose_reliable() const override {
+        //return _m_true_pose.valid();
+        /*
+          We do not have a "ground truth" available in all cases, such
+          as when reading live data.
+         */
+        return bool(_m_true_pose.get_ro_nullable());
+    }
 
     virtual Eigen::Quaternionf get_offset() override {
         return offset;
@@ -189,17 +190,17 @@ public:
         // Make any chanes to orientation of the output below
         // For the dataset were currently using (EuRoC), the output orientation acts as though 
         // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
-		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
+        Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
 
-		swapped_pose.orientation = apply_offset(raw_o);
+        swapped_pose.orientation = apply_offset(raw_o);
         swapped_pose.sensor_time = pose.sensor_time;
 
         return swapped_pose;
     }
 
 private:
-	mutable std::atomic<bool> first_time{true};
-	const std::shared_ptr<switchboard> sb;
+    mutable std::atomic<bool> first_time{true};
+    const std::shared_ptr<switchboard> sb;
     switchboard::reader<pose_type> _m_slow_pose;
     switchboard::reader<imu_raw_type> _m_imu_raw;
 	switchboard::reader<pose_type> _m_true_pose;
@@ -406,14 +407,14 @@ private:
 class pose_prediction_plugin : public plugin {
 public:
     pose_prediction_plugin(const std::string& name, phonebook* pb)
-    	: plugin{name, pb}
-	{
-		pb->register_impl<pose_prediction>(
-			std::static_pointer_cast<pose_prediction>(
-				std::make_shared<pose_prediction_impl>(pb)
-			)
-		);
-	}
+        : plugin{name, pb}
+    {
+        pb->register_impl<pose_prediction>(
+            std::static_pointer_cast<pose_prediction>(
+                std::make_shared<pose_prediction_impl>(pb)
+            )
+        );
+    }
 };
 
 PLUGIN_MAIN(pose_prediction_plugin);
