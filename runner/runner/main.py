@@ -145,7 +145,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         )
     )
     log_stdout_str = config["loader"].get("log_stdout", None)
-    log_stdout_ctx: ContextManager[Optional[BinaryIO]] = cast(
+    log_stdout_ctx = cast(
         ContextManager[Optional[BinaryIO]],
         (
             open(log_stdout_str, "wb")
