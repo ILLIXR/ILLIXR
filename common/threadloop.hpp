@@ -60,6 +60,7 @@ public:
 			thread = std::make_unique<managed_thread>([this]{
 				char* name = new char[100];
 				snprintf(name, 100, "tl_%zu", id);
+				name[15] = '\0';
 				[[maybe_unused]]int ret = pthread_setname_np(pthread_self(), name);
 				assert(!ret);
 
@@ -82,6 +83,8 @@ protected:
 				_p_thread_setup();
 				first_time = false;
 			}
+
+			// PAUSE
 
 			skip_option s = _p_should_skip();
 
@@ -161,8 +164,6 @@ protected:
 
 private:
 	std::atomic<bool> _m_terminate {false};
-
-	std::thread _m_thread;
 };
 
 }

@@ -190,7 +190,7 @@ private:
 				// Also, record and log the time
 				_m_dequeued++;
 
-				if (_m_plugin_id == 3) {
+				if (_m_plugin_id == 3 || _m_plugin_id == 4) {
 					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " pull." << std::endl;
 				}
 
@@ -274,7 +274,7 @@ private:
 					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " is full." << std::endl;
 					abort();
 				} else {
-				if (_m_plugin_id == 3) {
+				if (_m_plugin_id == 3 || _m_plugin_id == 4) {
 					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " add." << std::endl;
 				}
 				}

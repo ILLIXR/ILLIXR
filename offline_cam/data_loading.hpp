@@ -12,14 +12,21 @@
 
 typedef unsigned long long ullong;
 
+// #define LAZY
+
 class lazy_load_image {
 public:
 	lazy_load_image(const std::string& path)
 		: _m_path(path)
 	{
+#ifndef LAZY
 		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+#endif
 	}
 	cv::Mat load() const {
+#ifdef LAZY
+		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+#endif
 		auto img = _m_mat;
 		assert(!img.empty());
 		return img;
