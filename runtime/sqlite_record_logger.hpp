@@ -5,6 +5,7 @@
 #include <chrono>
 #include <atomic>
 #include <thread>
+#include <shared_mutex>
 #include <experimental/filesystem>
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "sqlite3pp/sqlite3pp.hpp"
@@ -176,14 +177,16 @@ class sqlite_record_logger : public record_logger {
 private:
 	sqlite_thread& get_sqlite_thread(const record& r) {
 		const record_header& rh = r.get_record_header();
-		auto result = registered_tables.find(rh.get_id());
-		if (result != registered_tables.cend()) {
-			return result->second;
-		} else {
-			const std::lock_guard lock{_m_registry_lock};
-			auto pair = registered_tables.try_emplace(rh.get_id(), rh);
-			return pair.first->second;
+		{
+			const std::shared_lock<std::shared_mutex> lock {_m_registry_lock};
+			auto result = registered_tables.find(rh.get_id());
+			if (result != registered_tables.cend()) {
+				return result->second;
+			}
 		}
+		const std::unique_lock<std::shared_mutex> lock{_m_registry_lock};
+		auto pair = registered_tables.try_emplace(rh.get_id(), rh);
+		return pair.first->second;
 	}
 
 protected:
@@ -199,7 +202,7 @@ protected:
 
 private:
 	std::unordered_map<std::size_t, sqlite_thread> registered_tables;
-	std::mutex _m_registry_lock;
+	std::shared_mutex _m_registry_lock;
 };
 
 }

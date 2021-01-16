@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
-#include <mutex>
+#include <shared_mutex>
 
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 template <typename T>
@@ -152,7 +152,7 @@ namespace ILLIXR {
 		}
 
 		void schedule(std::size_t component_id, std::function<void(const void*)> callback) {
-			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
+			const std::unique_lock<std::shared_mutex> lock{_m_callbacks_lock};
 			_m_callbacks.push_back({component_id, callback});
 		}
 
@@ -205,7 +205,7 @@ namespace ILLIXR {
 			 * One caveat:
 			 * - callback should not attempt to create a new subscription, publish, or schedule (that would try to acquire _m_registry_lock)
 			 */
-			const std::lock_guard<std::mutex> lock{_m_callbacks_lock};
+			const std::shared_lock<std::shared_mutex> lock{_m_callbacks_lock};
 			for (const auto& pair : _m_callbacks) {
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
@@ -229,7 +229,7 @@ namespace ILLIXR {
 		const std::size_t _m_ty;
 		std::atomic<const void*> _m_latest {nullptr};
 		std::vector<std::pair<std::size_t, std::function<void(const void*)>>> _m_callbacks;
-		std::mutex _m_callbacks_lock;
+		std::shared_mutex _m_callbacks_lock;
 		const std::string _m_name;
 		std::size_t _m_iteration_no = 0;
 		std::size_t _m_unprocessed = 0;
@@ -298,7 +298,7 @@ namespace ILLIXR {
 			while (!_m_terminate.load()) {
 				const std::chrono::milliseconds max_wait_time {50};
 				if (_m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count())) {
-					const std::lock_guard lock{_m_registry_lock};
+					const std::shared_lock lock{_m_registry_lock};
 					check_queues.log(record{__switchboard_check_queues_header, {
 						{iteration_no},
 						{check_queues_start_cpu_time},
@@ -326,6 +326,18 @@ namespace ILLIXR {
 			std::cerr << "Drained switchboard" << std::endl;
 		}
 
+		topic& try_emplace(const std::string& topic_name, std::size_t ty) {
+			{
+				const std::shared_lock lock{_m_registry_lock};
+				auto result = _m_registry.find(topic_name);
+				if (result != _m_registry.cend()) {
+					return result->second;
+				}
+			}
+			const std::unique_lock lock{_m_registry_lock};
+			return _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+		}
+
 		virtual void _p_schedule(std::size_t component_id, const std::string& topic_name, std::function<void(const void*)> callback, std::size_t ty) override {
 			/*
 			  Proof of thread-safety:
@@ -334,8 +346,7 @@ namespace ILLIXR {
 			  - Calls topic.schedule, which acquires _m_callbacks_lock, (see its proof of thread-safety)
 			  Therefore this method is thread-safe.
 			 */
-			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+			topic& topic = try_emplace(topic_name, ty);
 			assert(topic.ty() == ty);
 			topic.schedule(component_id, callback);
 		}
@@ -349,8 +360,7 @@ namespace ILLIXR {
 			  - Returns a writer handle (see its proof of thread-safety)
 			  Therefore this method is thread-safe.
 			 */
-			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+			topic& topic = try_emplace(topic_name, ty);
 			assert(topic.ty() == ty);
 			return std::unique_ptr<writer<void>>(topic.get_writer().release());
 			/* TODO: (code beautify) why can't I write
@@ -367,8 +377,7 @@ namespace ILLIXR {
 			  - Returns a writer handle (see its proof of thread-safety)
 			  Therefore this method is thread-safe.
 			 */
-			const std::lock_guard lock{_m_registry_lock};
-			topic& topic = _m_registry.try_emplace(topic_name, _m_record_logger, ty, topic_name, _m_queue).first->second;
+			topic& topic = try_emplace(topic_name, ty);
 			assert(topic.ty() == ty);
 			return std::unique_ptr<reader_latest<void>>(topic.get_reader_latest().release());
 			/* TODO: (code beautify) why can't I write
@@ -377,7 +386,7 @@ namespace ILLIXR {
 		}
 
 		std::unordered_map<std::string, topic> _m_registry;
-		std::mutex _m_registry_lock;
+		std::shared_mutex _m_registry_lock;
 		std::vector<std::thread> _m_threads;
 		std::atomic<bool> _m_terminate {false};
 		queue<std::pair<std::string, const void*>> _m_queue;
