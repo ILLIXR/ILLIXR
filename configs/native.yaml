@@ -3,8 +3,6 @@ plugin_groups:
     - path: ../robotics_project/scheduler_plugin/
       # This has to go first because the n_thread_start queue needs to be listening
       # when the other plugins actually start up
-    - path: offline_imu/
-    - path: offline_cam/
     # - path: zed/
     - path: ../open_vins
     - path: gtsam_integrator/
@@ -12,7 +10,10 @@ plugin_groups:
     # - path: pose_lookup/
     - path: gldemo/
     - path: timewarp_gl/
-    # - path: debugview/
+    # - path: dummy/
+    - path: debugview/
+    - path: offline_imu/
+    - path: offline_cam/
 
 data:
   subpath: mav0
@@ -30,7 +31,7 @@ loader:
 
   # command: sudo taskset -a -c 0 gdb -q --args $env_cmd
 
-  command: taskset -a -c 0 $env_cmd
+  command: sudo taskset -a -c 0 $env_cmd
 
   # log_stdout: metrics/output.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <functional>
+#include <sched.h>
 
 // IMGUI Immediate-mode GUI library
 #include "imgui/imgui.h"
@@ -55,7 +56,7 @@ public:
 	// references to the switchboard plugs, so the plugin can read
 	// the data whenever it needs to.
 	debugview(std::string name_, phonebook *pb_)
-		: threadloop{name_, pb_}
+		: threadloop{name_, pb_, false}
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
@@ -247,6 +248,12 @@ public:
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glfwMakeContextCurrent(gui_window);
+
+		cpu_set_t mask;
+		CPU_ZERO(&mask);
+		CPU_SET(5, &mask);
+
+		[[maybe_unused]] int ret = sched_setaffinity(0, sizeof(mask), &mask);
 	}
 
 	void _p_one_iteration() override {

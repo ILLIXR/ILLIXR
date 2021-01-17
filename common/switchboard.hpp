@@ -260,7 +260,7 @@ private:
 				_m_thread.set_priority(2);
 				}*/
 
-			if (_m_plugin_id == 5) {
+			if (_m_plugin_id == 4) {
 				_m_thread.set_cpu(4);
 			}
 		}
