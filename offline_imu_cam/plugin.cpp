@@ -3,6 +3,7 @@
 #include "data_loading.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include "common/realtime_clock.hpp"
 
 using namespace ILLIXR;
 
@@ -25,6 +26,7 @@ public:
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
+		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
 protected:
@@ -34,8 +36,7 @@ protected:
 			// Sleep for the difference between the current IMU vs 1st IMU and current UNIX time vs UNIX time the component was init
 			std::this_thread::sleep_for(
 				std::chrono::nanoseconds{dataset_now - dataset_first_time}
-				+ real_first_time
-				- std::chrono::high_resolution_clock::now()
+				- _m_rtc->time_since_start()
 			);
 
 			if (_m_sensor_data_it->second.imu0) {
@@ -57,7 +58,7 @@ protected:
 		auto start = std::chrono::steady_clock::now();
 		auto start_comptime = thread_cpu_time();
 
-		time_type real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
+		time_point real_now = _m_rtc->get_start() + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
 
@@ -96,14 +97,6 @@ protected:
 
 	size_t slow_count = 0, fast_count = 0;
 
-public:
-	virtual void _p_thread_setup() override {
-		// this is not done in the constructor, because I want it to
-		// be done at thread-launch time, not load-time.
-		auto now = std::chrono::system_clock::now();
-		real_first_time = std::chrono::time_point_cast<std::chrono::seconds>(now);
-	}
-
 private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
@@ -112,13 +105,12 @@ private:
 
 	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;
-	// UNIX timestamp when this component is initialized
-	time_type real_first_time;
 	// Current IMU timestamp
 	ullong dataset_now;
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
+	std::shared_ptr<realtime_clock> _m_rtc;
 };
 
 PLUGIN_MAIN(offline_imu_cam)

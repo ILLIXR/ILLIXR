@@ -41,18 +41,24 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
-		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
 		, _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")}
+		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
 	// Essentially, a crude equivalent of XRWaitFrame.
 	void wait_vsync()
 	{
 		using namespace std::chrono_literals;
+<<<<<<< HEAD
 		switchboard::ptr<const switchboard::event_wrapper<time_type>> next_vsync = _m_vsync.get_nullable();
 		time_type now = std::chrono::high_resolution_clock::now();
+=======
+		switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();
+		time_point now = _m_rtc->now();
+>>>>>>> 226ecd08... Added global clock
 
-		time_type wait_time;
+		time_point wait_time;
 
 		if(!next_vsync) {
 			// If no vsync data available, just sleep for roughly a vsync period.
@@ -192,9 +198,9 @@ public:
 
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-			frame->render_time = std::chrono::high_resolution_clock::now();
+			frame->render_time = _m_rtc->now();
 			_m_eyebuffer.put(frame);
-			lastFrameTime = std::chrono::high_resolution_clock::now();
+			lastFrameTime = _m_rtc->now();
 		}
 	}
 
@@ -202,7 +208,7 @@ private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
-	const switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync;
+	const switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 
 	// Switchboard plug for application eye buffer.
 	// We're not "writing" the actual buffer data,
@@ -210,7 +216,7 @@ private:
 	// correct eye/framebuffer in the "swapchain".
 	switchboard::writer<rendered_frame> _m_eyebuffer;
 
-	time_type lastFrameTime;
+	time_point lastFrameTime;
 
 	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;
@@ -237,6 +243,8 @@ private:
 	Eigen::Matrix4f basicProjection;
 
 	double lastTime;
+
+	std::shared_ptr<realtime_clock> _m_rtc;
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 

@@ -14,42 +14,43 @@ public:
 		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
-		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+		, _m_rtc{pb->lookup_impl<realtime_clock>()}
     { }
 
     // No paramter get_fast_pose() should just predict to the next vsync
 	// However, we don't have vsync estimation yet.
 	// So we will predict to `now()`, as a temporary approximation
     virtual fast_pose_type get_fast_pose() const override {
-		switchboard::ptr<const switchboard::event_wrapper<time_type>> vsync_estimate = _m_vsync_estimate.get_nullable();
+        switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
 
         if(vsync_estimate == nullptr) {
-		return get_fast_pose(std::chrono::high_resolution_clock::now());
+            return get_fast_pose(_m_rtc->now());
         } else {
             return get_fast_pose(*vsync_estimate);
         }
 	}
 
     virtual pose_type get_true_pose() const override {
-		switchboard::ptr<const pose_type> pose_ptr = _m_true_pose.get_nullable();
-		return correct_pose(
-			pose_ptr ? *pose_ptr : pose_type{
-				std::chrono::system_clock::now(),
-				Eigen::Vector3f{0, 0, 0},
-				Eigen::Quaternionf{1, 0, 0, 0},
-			}
-		);
+        switchboard::ptr<const pose_type> pose_ptr = _m_true_pose.get_ro_nullable();
+        return correct_pose(
+            pose_ptr ? *pose_ptr : pose_type{
+                _m_rtc->now(),
+                Eigen::Vector3f{0, 0, 0},
+                Eigen::Quaternionf{1, 0, 0, 0},
+            }
+        );
     }
 
     // future_time: An absolute timepoint in the future
-    virtual fast_pose_type get_fast_pose(time_type future_timestamp) const override {
-		switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_nullable();
-		if (!slow_pose) {
-			// No slow pose, return 0
+    virtual fast_pose_type get_fast_pose(time_point future_timestamp) const override {
+        switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_ro_nullable();
+        if (!slow_pose) {
+            // No slow pose, return 0
             return fast_pose_type{
                 correct_pose(pose_type{}),
-				std::chrono::system_clock::now(),
-				future_timestamp,
+                _m_rtc->now(),
+                future_timestamp,
             };
 		}
 
@@ -61,15 +62,15 @@ public:
 			// No imu_raw, return slow_pose
             return fast_pose_type{
                 .pose = correct_pose(*slow_pose),
-				.predict_computed_time = std::chrono::system_clock::now(),
-				.predict_target_time = future_timestamp,
+                .predict_computed_time = _m_rtc->now(),
+                .predict_target_time = future_timestamp,
             };
         }
 
 		// slow_pose and imu_raw, do pose prediction
 
-        double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
-        std::pair<Eigen::Matrix<double,13,1>, time_type> predictor_result = predict_mean_rk4(dt/NANO_SEC);
+        double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - _m_rtc->now()).count();
+        std::pair<Eigen::Matrix<double,13,1>, time_point> predictor_result = predict_mean_rk4(dt/NANO_SEC);
 
         auto state_plus = predictor_result.first;
 
@@ -97,7 +98,7 @@ public:
         //       - the prediction target (the time that was requested for this pose.)
         return fast_pose_type {
             .pose = predicted_pose,
-            .predict_computed_time = std::chrono::high_resolution_clock::now(),
+            .predict_computed_time = _m_rtc->now(),
             .predict_target_time = future_timestamp
         };
     }
@@ -183,13 +184,13 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
-
+	std::shared_ptr<const realtime_clock> _m_rtc;
     
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
     // most recent imu reading used to perform this prediction.
-    std::pair<Eigen::Matrix<double,13,1>,time_type> predict_mean_rk4(double dt) const {
+    std::pair<Eigen::Matrix<double,13,1>,time_point> predict_mean_rk4(double dt) const {
 
         // Pre-compute things
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get();

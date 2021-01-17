@@ -3,6 +3,7 @@
 #include "data_loading.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include "common/realtime_clock.hpp"
 
 using namespace ILLIXR;
 
@@ -27,6 +28,8 @@ public:
 		, camera_cvtfmt_log{record_logger_}
 		, _m_cam{_m_sb->get_reader<cam_type>("cam")}
 		, last_cam_ts{0}
+		, _m_log{"imu_cam.csv"}
+		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
 protected:
@@ -36,11 +39,9 @@ protected:
 			// Sleep for the difference between the current IMU vs 1st IMU and current UNIX time vs UNIX time the component was init
 			std::this_thread::sleep_for(
 				std::chrono::nanoseconds{dataset_now - dataset_first_time}
-				+ real_first_time
-				- std::chrono::high_resolution_clock::now()
+				- _m_rtc->time_since_start()
 			);
 
-			++_m_sensor_data_it;
 			return skip_option::run;
 
 		} else {
@@ -52,20 +53,22 @@ protected:
 	virtual void _p_one_iteration() override {
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
-		time_type real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
+		time_point real_now = _m_rtc->get_start() + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
-		++_m_sensor_data_it;
-
 
 		std::optional<cv::Mat> cam0 = std::nullopt;
 		std::optional<cv::Mat> cam1 = std::nullopt;
 
-		switchboard::ptr<const cam_type> cam = _m_cam.get_nullable();
+		_m_log << dataset_now << ",";
+
+		switchboard::ptr<const cam_type> cam = _m_cam.get_ro_nullable();
 		if (cam && last_cam_ts != cam->dataset_time) {
 			last_cam_ts = cam->dataset_time;
 			cam0 = cam->img0;
 			cam1 = cam->img1;
+			_m_log << cam->dataset_time;
 		}
+		_m_log << "\n";
 		
 		imu_cam_log.log(record{imu_cam_record, {
 			{iteration_no},
@@ -80,14 +83,8 @@ protected:
 			cam1,
 			dataset_now,
 		});
-	}
 
-public:
-	virtual void _p_thread_setup() override {
-		// this is not done in the constructor, because I want it to
-		// be done at thread-launch time, not load-time.
-		auto now = std::chrono::system_clock::now();
-		real_first_time = std::chrono::time_point_cast<std::chrono::seconds>(now);
+		++_m_sensor_data_it;
 	}
 
 private:
@@ -98,8 +95,6 @@ private:
 
 	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;
-	// UNIX timestamp when this component is initialized
-	time_type real_first_time;
 	// Current IMU timestamp
 	ullong dataset_now;
 
@@ -108,6 +103,8 @@ private:
 
 	switchboard::reader<cam_type> _m_cam;
 	ullong last_cam_ts;
+	std::ofstream _m_log;
+	std::shared_ptr<realtime_clock> _m_rtc;
 };
 
 PLUGIN_MAIN(offline_imu)
