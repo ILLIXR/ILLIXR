@@ -54,7 +54,7 @@ public:
             };
 		}
 
-		switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_nullable();
+		switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (!imu_raw) {
 #ifndef NDEBUG
             printf("FAST POSE IS SLOW POSE!");
@@ -124,7 +124,7 @@ public:
 
 
 	virtual bool fast_pose_reliable() const override {
-		return _m_slow_pose.get_nullable() && _m_imu_raw.get_nullable();
+		return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
 		/*
 		  SLAM takes some time to initialize, so initially fast_pose
 		  is unreliable.
@@ -146,7 +146,7 @@ public:
 		  We do not have a "ground truth" available in all cases, such
 		  as when reading live data.
 		 */
-		return bool(_m_true_pose.get_nullable());
+		return bool(_m_true_pose.get_ro_nullable());
 	}
 
     virtual Eigen::Quaternionf get_offset() override {
@@ -181,7 +181,7 @@ private:
     switchboard::reader<pose_type> _m_slow_pose;
     switchboard::reader<imu_raw_type> _m_imu_raw;
 	switchboard::reader<pose_type> _m_true_pose;
-    switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
+    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
 	std::shared_ptr<const realtime_clock> _m_rtc;

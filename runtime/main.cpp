@@ -2,7 +2,7 @@
 #include "runtime_impl.hpp"
 #include "stacktrace.hpp"
 
-constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
+constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {100};
 
 ILLIXR::runtime* r;
 

@@ -280,7 +280,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		if(_m_eyebuffer.get_nullable()) {
+		if(_m_eyebuffer.get_ro_nullable()) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
@@ -290,7 +290,14 @@ public:
 	}
 
 	virtual void _p_one_iteration() override {
+		auto start_cpu_time = thread_cpu_time();
+		auto start_wall_time = _m_rtc->time_since_start();
 		warp(glfwGetTime());
+		auto stop_cpu_time = thread_cpu_time();
+		auto stop_wall_time = _m_rtc->time_since_start();
+		if (stop_cpu_time - start_cpu_time > std::chrono::nanoseconds(std::chrono::milliseconds(30))) {
+			std::cout << "Timewarp took " << std::chrono::duration_cast<std::chrono::milliseconds>(stop_cpu_time - start_cpu_time).count() << "ms CPU, " << std::chrono::duration_cast<std::chrono::milliseconds>(stop_wall_time - start_wall_time).count() << "ms wall\n";
+		}
 	}
 
 	virtual void _p_thread_setup() override {

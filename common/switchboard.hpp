@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <functional>
 #include <chrono>
+#include <exception>
 #include "phonebook.hpp"
 #include "cpu_timer.hpp"
 #include "record_logger.hpp"
@@ -18,11 +19,13 @@
 
 namespace ILLIXR {
 
+using plugin_id_t = std::size_t;
+
 /**
  * @Should be private to Switchboard.
  */
 const record_header __switchboard_callback_header {"switchboard_callback", {
-	{"plugin_id", typeid(std::size_t)},
+	{"plugin_id", typeid(plugin_id_t)},
 	{"topic_name", typeid(std::string)},
 	{"iteration_no", typeid(std::size_t)},
 	{"cpu_time_start", typeid(std::chrono::nanoseconds)},
@@ -35,11 +38,10 @@ const record_header __switchboard_callback_header {"switchboard_callback", {
  * @Should be private to Switchboard.
  */
 const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
-	{"plugin_id", typeid(std::size_t)},
+	{"plugin_id", typeid(plugin_id_t)},
 	{"topic_name", typeid(std::string)},
 	{"enqueued", typeid(std::size_t)},
 	{"dequeued", typeid(std::size_t)},
-	{"skipped", typeid(std::size_t)},
 	{"idle_cycles", typeid(std::size_t)},
 }};
 
@@ -71,21 +73,21 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  * switchboard::writer<topic2_type> topic2 = switchboard.get_reader<topic2_type>("topic1");
  *
  * while (true) {
- *     // Read topic 1
- *     swirchboard::ptr<topic1_type> event1 = topic1.get();
+ *	 // Read topic 1
+ *	 switchboard::ptr<topic1_type> event1 = topic1.get();
  *
- *     // Write to topic 2
- *     topic2_type* event2 = topic2.allocate();
- *     // Populate the event
- *     event2->foo = 3;
- *     topic2.put(event2);
+ *	 // Write to topic 2
+ *	 topic2_type* event2 = topic2.allocate();
+ *	 // Populate the event
+ *	 event2->foo = 3;
+ *	 topic2.put(event2);
  * }
  * 
  * // Read topic 3 synchronously
  * switchboard.schedule<topic3_type>(plugin_id, "topic3", [&](switchboard::ptr<topic3_type> event3, std::size_t it) {
- *     // This is a lambda expression
- *     // https://en.cppreference.com/w/cpp/language/lambda
- *     std::cout << "Got a new event on topic3: " << event3->foo << " for iteration " << it << std::endl;
+ *	 // This is a lambda expression
+ *	 // https://en.cppreference.com/w/cpp/language/lambda
+ *	 std::cout << "Got a new event on topic3: " << event3->foo << " for iteration " << it << std::endl;
  * });
  * \endcode
  */
@@ -144,7 +146,7 @@ private:
 	private:
 		const phonebook* pb;
 		const std::string& _m_topic_name;
-		std::size_t _m_plugin_id;
+		plugin_id_t _m_plugin_id;
 		std::function<void(ptr<const event>&&, std::size_t)> _m_callback;
 		const std::shared_ptr<record_logger> _m_record_logger;
 		record_coalescer _m_cb_log;
@@ -158,7 +160,7 @@ private:
 		std::size_t _m_skipped {0};
 		std::size_t _m_idle_cycles {0};
 
-		// This needs to be last, 
+		// This needs to be last,
 		// so it is destructed before the data it uses.
 		managed_thread _m_thread;
 
@@ -190,9 +192,9 @@ private:
 				// Also, record and log the time
 				_m_dequeued++;
 
-				if (_m_plugin_id == 3 || _m_plugin_id == 4) {
-					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " pull." << std::endl;
-				}
+				// if (_m_plugin_id == 3 || _m_plugin_id == 4) {
+				// 	std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " pull." << std::endl;
+				// }
 
 				if (_m_flush_on_read) {
 					_m_skipped += flush();
@@ -219,7 +221,7 @@ private:
 			} else {
 				// Nothing to do.
 				_m_idle_cycles++;
-			}			
+			}
 		}
 
 		void thread_on_stop() {
@@ -240,7 +242,7 @@ private:
 		}
 
 	public:
-		topic_subscription(const phonebook* _pb, const std::string& topic_name, std::size_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger, bool flush_on_read)
+		topic_subscription(const phonebook* _pb, const std::string& topic_name, plugin_id_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger, bool flush_on_read)
 			: pb{_pb}
 			, _m_topic_name{topic_name}
 			, _m_plugin_id{plugin_id}
@@ -261,6 +263,10 @@ private:
 				std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";
 				_m_thread.set_priority(2);
 			}
+
+			if (_m_plugin_id == 4) {
+				_m_thread.set_cpu(4);
+			}
 		}
 
 		/**
@@ -274,9 +280,9 @@ private:
 					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " is full." << std::endl;
 					abort();
 				} else {
-				if (_m_plugin_id == 3 || _m_plugin_id == 4) {
-					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " add." << std::endl;
-				}
+					// if (_m_plugin_id == 3 || _m_plugin_id == 4) {
+					// 	std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " add." << std::endl;
+					// }
 				}
 				_m_queue_size++;
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
@@ -309,17 +315,21 @@ private:
 		const std::string _m_name;
 		const std::type_info& _m_ty;
 		const std::shared_ptr<record_logger> _m_record_logger;
-		// In C++ 20, this should be std::atomic<std::unique_ptr<std::shared_ptr<const event>>>.
-		// Then I wouldn't need a destructor. ¯\_(ツ)_/¯
-		std::atomic<ptr<const event> *> _m_latest {nullptr};
+		std::atomic<size_t> _m_latest_index;
+		static constexpr std::size_t _m_latest_buffer_size = 256;
+		std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
 		std::list<topic_subscription> _m_subscriptions;
 		std::shared_mutex _m_subscriptions_lock;
 
 	public:
-		topic(std::string name, const std::type_info& ty, std::shared_ptr<record_logger> record_logger_)
-			: _m_name{name}
+		topic(
+			std::string name,
+			const std::type_info& ty,
+			std::shared_ptr<record_logger> record_logger_
+		)   : _m_name{name}
 			, _m_ty{ty}
 			, _m_record_logger{record_logger_}
+			, _m_latest_index{0}
 		{ }
 
 		const std::string& name() { return _m_name; }
@@ -330,13 +340,12 @@ private:
 		 * @brief Gets a read-only copy of the most recent event on the topic.
 		 */
 		ptr<const event> get() const {
-			if (_m_latest) {
-				ptr<const event> this_event = *_m_latest.load();
-				// std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
-				return this_event;
-			} else {
-				return ptr<const event>{nullptr};
-			}
+			size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
+			ptr<const event> this_event = _m_latest_buffer[idx];
+			// if (this_event) {
+			// 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
+			// }
+			return this_event;
 		}
 
 		/**
@@ -344,30 +353,21 @@ private:
 		 *
 		 * Thread-safe
 		 */
-		void put(ptr<const event>* this_event) {
+		void put(ptr<const event>&& this_event) {
 			assert(this_event);
-			assert(*this_event);
-			assert(this_event->unique());
+			assert(this_event.unique());
 
 			/* The pointer that this gets exchanged with needs to get dropped. */
-			ptr<const event>* old_event = _m_latest.exchange(this_event);
-			// std::cerr << "swap ";
-			// if (old_event) {
-			// 	std::cerr << ptr_to_str(reinterpret_cast<const void*>(old_event->get())) << " " << old_event->use_count() << " v";
-			// } else {
-			// 	std::cerr << "@";
-			// }
-			// std::cerr << " for " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1)\n";
-			
-			// corresponds to new in the last iteration of topic::put
-			delete old_event;
+			size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
+			_m_latest_buffer[index] = this_event;
+			_m_latest_index++;
 
 			// Read/write on _m_subscriptions.
 			// Must acquire shared state on _m_subscriptions_lock
 			std::unique_lock lock{_m_subscriptions_lock};
 			for (topic_subscription& ts : _m_subscriptions) {
 				// std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
-				ptr<const event> event_ptr_copy {*this_event};
+				ptr<const event> event_ptr_copy {this_event};
 				ts.enqueue(std::move(event_ptr_copy));
 			}
 			// std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1 + len(sub)) \n";
@@ -397,15 +397,6 @@ private:
 			const std::unique_lock lock{_m_subscriptions_lock};
 			_m_subscriptions.clear();
 		}
-
-		~topic() {
-			ptr<const event>* last_event = _m_latest.exchange(nullptr);
-			if (last_event) {
-				// std::cerr << "~ " << ptr_to_str(reinterpret_cast<const void*>(last_event->get())) << " " << last_event->use_count() << " v\n";
-				delete last_event;
-				// corresponds to new in most recent topic::put
-			}
-		}
 	};
 
 public:
@@ -416,7 +407,7 @@ public:
 	template <typename specific_event>
 	class reader {
 	private:
-		// Reference to the underlying topic
+		/// Reference to the underlying topic
 		topic& _m_topic;
 
 	public:
@@ -431,48 +422,54 @@ public:
 #endif
 		}
 
-		/**
-		 * @brief Gets a "read-only" copy of the latest value.
-		 *
-		 * This will return null if no event is on the topic yet.
-		 */
-		 ptr<const specific_event> get_nullable() const {
-			ptr<const event> this_event = _m_topic.get();
-			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+	   /**
+		* @brief Gets a "read-only" copy of the latest value.
+		*
+		* This will return null if no event is on the topic yet.
+		*/
+	   ptr<const specific_event> get_ro_nullable() const noexcept {
+		  ptr<const event> this_event = _m_topic.get();
+		  ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
-			if (this_event) {
-				assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
-				return this_specific_event;
-			} else {
-				return ptr<const specific_event>{nullptr};
-			}
+		   if (this_event != nullptr) {
+			   assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
+			   return this_specific_event;
+		   } else {
+			   return ptr<const specific_event>{nullptr};
+		   }
+	   }
 
+	   /**
+		* @brief Gets a non-null "read-only" copy of the latest value.
+		*
+		* @throws `runtime_error` If no event is on the topic yet.
+		*/
+		ptr<const specific_event> get_ro() const {
+		   ptr<const specific_event> this_specific_event = get_ro_nullable();
+		   if (this_specific_event != nullptr) {
+			   return this_specific_event;
+		   } else {
+			   /// Otherwise, no event on the topic yet
+			   throw std::runtime_error("No event on topic");
+		   }
 		}
 
-		/**
-		 * @brief Gets a non-null "read-only" copy of the latest value.
-		 *
-		 * @throws If no event is on the topic yet.
-		 */
-		 ptr<const specific_event> get() const {
-			ptr<const specific_event> this_specific_event = get_nullable();
-			assert(this_specific_event /* Otherwise, no event on the topic yet */);
-			return this_specific_event;
+	   /**
+		* @brief Gets a non-null mutable copy of the latest value.
+		*
+		* @throws `runtime_error` If no event is on the topic yet.
+		*/
+		ptr<specific_event> get_rw() const {
+		   /*
+			 This method is currently not more efficient than calling get_ro() and making a copy,
+			 but in the future it could be.
+			*/
+		   ptr<const specific_event> this_specific_event = get();
+		   return std::make_shared<specific_event>(*this_specific_event);
 		}
 
-		/**
-		 * @brief Gets a non-null mutable copy of the latest value.
-		 *
-		 * @throws If no event is on the topic yet.
-		 */
-		 ptr<specific_event> get_rw() const {
-			/*
-			  This method is currently not more efficient than calling get_ro() and making a copy,
-			  but in the future it could be.
-			 */
-			ptr<const specific_event> this_specific_event = get();
-			return std::make_shared<specific_event>(*this_specific_event);
-		}
+		/// Member function alias for common case `get_ro`
+		const std::function< ptr<const specific_event>() > get = [this]() { return get_ro(); };
 	};
 
 	/**
@@ -495,15 +492,43 @@ public:
 		 void put(const specific_event* this_specific_event) {
 			assert(typeid(specific_event) == _m_topic.ty());
 			assert(this_specific_event);
-			ptr<const event>* this_event = new ptr<const event>{static_cast<const event*>(this_specific_event)};
-			assert(this_event->unique());
-			_m_topic.put(this_event);
+			ptr<const event> this_event {static_cast<const event*>(this_specific_event)};
+			assert(this_event.unique());
+			_m_topic.put(std::move(this_event));
 		}
 
 		/**
 		 * @brief Like `new`/`malloc` but more efficient for this specific case.
-		 * 
-		 * There is an optimization available which has not yet been implemented: switchboard can memory
+		 *
+		 * There is an optimization available which has not yet been implemented: switchboard can reuse memory
+		 * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
+		 * B. B's deallocation through the destructor, and A's allocation through this method completes
+		 * the cycle in a [double-buffer (AKA swap-chain)][2].
+		 *
+		 * [1]: https://en.wikipedia.org/wiki/Slab_allocation
+		 * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
+		 */
+		template<class... Args>
+		ptr<specific_event> allocate(Args&&... args) {
+			return std::make_shared<specific_event>(std::forward<Args>(args)...);
+		}
+
+		/**
+		 * @brief Publish @p ev to this topic.
+		 */
+		void put(ptr<specific_event>&& this_specific_event) {
+			assert(typeid(specific_event) == _m_topic.ty());
+			assert(this_specific_event);
+			assert(this_specific_event.unique());
+			ptr<event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<specific_event>(std::move(this_specific_event)));
+			assert(this_event.unique());
+			_m_topic.put(std::move(this_event));
+		}
+
+		/**
+		 * @brief Like `new`/`malloc` but more efficient for this specific case.
+		 *
+		 * There is an optimization available which has not yet been implemented: switchboard can reuse memory
 		 * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
 		 * B. B's deallocation through the destructor, and A's allocation through this method completes
 		 * the cycle in a [double-buffer (AKA swap-chain)][2].
@@ -523,7 +548,7 @@ private:
 	std::shared_ptr<record_logger> _m_record_logger;
 
 	template <typename specific_event>
-	topic& get_or_create_topic(const std::string& topic_name) {
+	topic& try_register_topic(const std::string& topic_name) {
 		{
 			const std::shared_lock lock{_m_registry_lock};
 			auto found = _m_registry.find(topic_name);
@@ -569,7 +594,7 @@ public:
 	 */
 	template <typename specific_event>
 	const managed_thread& schedule(std::size_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>, std::size_t)> fn, bool flush_on_read = false) {
-		return get_or_create_topic<specific_event>(topic_name).schedule(
+		return try_register_topic<specific_event>(topic_name).schedule(
 			pb,
 			plugin_id,
 			[=](ptr<const event> this_event, std::size_t it_no) {
@@ -591,7 +616,7 @@ public:
 	 */
 	template <typename specific_event>
 	writer<specific_event> get_writer(const std::string& topic_name) {
-		return writer<specific_event>{get_or_create_topic<specific_event>(topic_name)};
+		return writer<specific_event>{try_register_topic<specific_event>(topic_name)};
 	}
 
 	/**
@@ -603,7 +628,7 @@ public:
 	 */
 	template <typename specific_event>
 	reader<specific_event> get_reader(const std::string& topic_name) {
-		return reader<specific_event>{get_or_create_topic<specific_event>(topic_name)};
+		return reader<specific_event>{try_register_topic<specific_event>(topic_name)};
 	}
 
 	/**

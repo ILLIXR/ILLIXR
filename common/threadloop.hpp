@@ -68,6 +68,7 @@ public:
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 			});
 			thread->start();
+			thread->set_cpu(3);
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread->get_pid(), std::to_string(id)});
 		}
 	}

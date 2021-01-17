@@ -87,13 +87,8 @@ private:
 	}
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
-<<<<<<< HEAD
-	void propagate_imu_values(double timestamp, time_type real_time) {
-		 auto input_values = _m_imu_integrator_input.get_nullable();
-=======
 	void propagate_imu_values(double timestamp, time_point real_time) {
 		 auto input_values = _m_imu_integrator_input.get_ro_nullable();
->>>>>>> 226ecd08... Added global clock
 		 if (!input_values) {
 			 return;
 		 }
@@ -208,14 +203,10 @@ private:
 
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
-		std::cerr << "prop_data.size(): " << prop_data.size() << "\n";
 		for (size_t i = 0; i < prop_data.size()-1 && !(prop_data.size() == 0); i++) {
-			std::cerr << "i: " << i << "\n";
 			if (std::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < 1e-12) {
-				std::cerr << "prop_data.erase(prop_data.begin()+i)\n";
 				prop_data.erase(prop_data.begin()+i);
 				i--;
-				std::cerr << "new prop_data.size(): " << prop_data.size() << "\n";
 			}
 		}
 

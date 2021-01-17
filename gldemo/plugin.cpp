@@ -50,13 +50,8 @@ public:
 	void wait_vsync()
 	{
 		using namespace std::chrono_literals;
-<<<<<<< HEAD
-		switchboard::ptr<const switchboard::event_wrapper<time_type>> next_vsync = _m_vsync.get_nullable();
-		time_type now = std::chrono::high_resolution_clock::now();
-=======
 		switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();
 		time_point now = _m_rtc->now();
->>>>>>> 226ecd08... Added global clock
 
 		time_point wait_time;
 

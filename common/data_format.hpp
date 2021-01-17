@@ -20,13 +20,6 @@
 
 namespace ILLIXR {
 
-<<<<<<< HEAD
-	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
-	typedef unsigned long long ullong;
-
-	struct cam_type : switchboard::event {
-		time_type time;
-=======
 	typedef std::chrono::nanoseconds duration;
 	typedef std::chrono::steady_clock::time_point time_point;
 
@@ -34,16 +27,11 @@ namespace ILLIXR {
 
 	struct cam_type : switchboard::event {
 		time_point time;
->>>>>>> 226ecd08... Added global clock
 		cv::Mat img0;
 		cv::Mat img1;
 		ullong dataset_time;
 		cam_type(
-<<<<<<< HEAD
-				 time_type _time,
-=======
 				 time_point _time,
->>>>>>> 226ecd08... Added global clock
 				 cv::Mat _img0,
 				 cv::Mat _img1,
 				 ullong _dataset_time)
@@ -58,21 +46,13 @@ namespace ILLIXR {
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
 	struct imu_cam_type : switchboard::event {
-<<<<<<< HEAD
-		time_type time;
-=======
 		time_point time;
->>>>>>> 226ecd08... Added global clock
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
 		ullong dataset_time;
-<<<<<<< HEAD
-		imu_cam_type(time_type time_,
-=======
 		imu_cam_type(time_point time_,
->>>>>>> 226ecd08... Added global clock
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
 					 std::optional<cv::Mat> img0_,
@@ -155,11 +135,7 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> pos;
 		Eigen::Matrix<double,3,1> vel;
 		Eigen::Quaterniond quat;
-<<<<<<< HEAD
-		time_type imu_time;
-=======
 		time_point imu_time;
->>>>>>> 226ecd08... Added global clock
 		imu_raw_type(Eigen::Matrix<double,3,1> w_hat_,
 					 Eigen::Matrix<double,3,1> a_hat_,
 					 Eigen::Matrix<double,3,1> w_hat2_,
@@ -167,11 +143,7 @@ namespace ILLIXR {
 					 Eigen::Matrix<double,3,1> pos_,
 					 Eigen::Matrix<double,3,1> vel_,
 					 Eigen::Quaterniond quat_,
-<<<<<<< HEAD
-					 time_type imu_time_)
-=======
 					 time_point imu_time_)
->>>>>>> 226ecd08... Added global clock
 			: w_hat{w_hat_}
 			, a_hat{a_hat_}
 			, w_hat2{w_hat2_}
@@ -184,19 +156,11 @@ namespace ILLIXR {
 	};
 
 	struct pose_type : switchboard::event {
-<<<<<<< HEAD
-		time_type sensor_time; // Recorded time of sensor data ingestion
-		Eigen::Vector3f position;
-		Eigen::Quaternionf orientation;
-		pose_type() { }
-		pose_type(time_type sensor_time_,
-=======
 		time_point sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
 		pose_type() { }
 		pose_type(time_point sensor_time_,
->>>>>>> 226ecd08... Added global clock
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
 			: sensor_time{sensor_time_}
@@ -207,13 +171,8 @@ namespace ILLIXR {
 
 	typedef struct {
 		pose_type pose;
-<<<<<<< HEAD
-		time_type predict_computed_time; // Time at which the prediction was computed
-		time_type predict_target_time; // Time that prediction targeted.
-=======
 		time_point predict_computed_time; // Time at which the prediction was computed
 		time_point predict_target_time; // Time that prediction targeted.
->>>>>>> 226ecd08... Added global clock
 	} fast_pose_type;
 
 	typedef struct {
@@ -227,13 +186,8 @@ namespace ILLIXR {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
-<<<<<<< HEAD
-		std::chrono::time_point<std::chrono::system_clock> sample_time;
-		std::chrono::time_point<std::chrono::system_clock> render_time;
-=======
 		time_point sample_time;
 		time_point render_time;
->>>>>>> 226ecd08... Added global clock
 	};
 
 	typedef struct {
@@ -284,7 +238,6 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 
-<<<<<<< HEAD
 	struct thread_info : switchboard::event {
 		pid_t pid;
 		std::string name;
@@ -293,6 +246,7 @@ namespace ILLIXR {
 			, name{name_}
 		{ }
 	};
+
 	void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb) {
 		auto sb = pb->lookup_impl<switchboard>();
 		auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
@@ -312,10 +266,6 @@ namespace ILLIXR {
 		}
 		assert(!ret);
 
-#ifndef NDEBUG
 		std::cerr << "Thread of plugin " << _m_plugin_id << " start" << std::endl;
-#endif
 	}
-=======
->>>>>>> 226ecd08... Added global clock
 }

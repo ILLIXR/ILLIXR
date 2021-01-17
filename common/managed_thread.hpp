@@ -137,17 +137,28 @@ public:
 		return pid;
 	}
 
+	void set_cpu(size_t core) const {
+		errno = 0;
+
+		cpu_set_t mask;
+		CPU_ZERO(&mask);
+		CPU_SET(core, &mask);
+
+		[[maybe_unused]] int ret = sched_setaffinity(get_pid(), sizeof(mask), &mask);
+
+		if (ret) {
+			int ferrno = errno;
+			errno = 0;
+			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setaffinity");
+			std::cerr << ret << " " << ferrno << " " << err.what() << "\n";
+			throw err;
+		}
+	}
+
 	void set_priority(int priority) const {
 		struct sched_param sp = { .sched_priority = priority,};
 
-		{
-			int ferrno = errno;
-			errno = 0;
-			if (ferrno != 0) {
-				std::system_error err (std::make_error_code(std::errc(ferrno)), "Before sched_setscheduler");
-				std::cerr << ferrno << " " << err.what() << "\n";
-			}
-		}
+		errno = 0;
 
 		[[maybe_unused]] int ret = sched_setscheduler(get_pid(), SCHED_FIFO, &sp);
 

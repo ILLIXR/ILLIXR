@@ -19,7 +19,6 @@ public:
 	lazy_load_image(const std::string& path)
 		: _m_path(path)
 	{
-<<<<<<< HEAD
 #ifndef LAZY
 		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 #endif
@@ -28,21 +27,8 @@ public:
 #ifdef LAZY
 		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 #endif
-		auto img = _m_mat;
-		assert(!img.empty());
-		return img;
-=======
-// #ifndef LAZY
-		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-// #endif
-	}
-	cv::Mat load() const {
-// #ifdef LAZY
-// 		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-// #endif
 		assert(!_m_mat.empty());
 		return _m_mat;
->>>>>>> 226ecd08... Added global clock
 	}
 
 private:
