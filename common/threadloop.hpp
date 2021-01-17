@@ -69,7 +69,9 @@ public:
 			});
 			thread->start();
 			thread->set_cpu(3);
-			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread->get_pid(), std::to_string(id)});
+			auto pid = thread->get_pid();
+			assert(pid != 0);
+			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{pid, std::to_string(id)});
 		}
 	}
 

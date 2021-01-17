@@ -8,7 +8,7 @@ plugin_group:
   - path: ../open_vins
     # switchboard sync subscribe
   # - path: gtsam_integrator/
-  - path: gtsam_integrator/
+  # - path: gtsam_integrator/
     # switchboard sync subscribe
   - path: pose_prediction/
     # service, gets called
