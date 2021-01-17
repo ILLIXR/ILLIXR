@@ -48,11 +48,12 @@ public:
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->get_writer<switchboard::event_wrapper<std::size_t>>("hologram_in")}
-		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
 		, _m_mtp{sb->get_writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>>("mtp")}
 		, _m_frame_age{sb->get_writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>>("warp_frame_age")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
+		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
 private:
@@ -82,7 +83,7 @@ private:
 	switchboard::writer<switchboard::event_wrapper<std::size_t>> _m_hologram;
 
 	// Switchboard plug for publishing vsync estimates
-	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
+	switchboard::writer<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 
 	// Switchboard plug for publishing MTP metrics
 	switchboard::writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>> _m_mtp;
@@ -95,7 +96,7 @@ private:
 
 	GLuint timewarpShaderProgram;
 
-	time_type lastSwapTime;
+	time_point lastSwapTime;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -141,6 +142,8 @@ private:
 
 	// Hologram call data
 	std::size_t _hologram_seq{0};
+
+	std::shared_ptr<realtime_clock> _m_rtc;
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -255,14 +258,14 @@ private:
 
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
-	time_type GetNextSwapTimeEstimate() {
+	time_point GetNextSwapTimeEstimate() {
 		return lastSwapTime + vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
 	// given a specified percentage of the total Vsync period to delay.
 	std::chrono::duration<double, std::nano> EstimateTimeToSleep(double framePercentage){
-		return (GetNextSwapTimeEstimate() - std::chrono::high_resolution_clock::now()) * framePercentage;
+		return (GetNextSwapTimeEstimate() - _m_rtc->now()) * framePercentage;
 	}
 
 
@@ -291,7 +294,7 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
-		lastSwapTime = std::chrono::high_resolution_clock::now();
+		lastSwapTime = _m_rtc->now();
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -458,7 +461,7 @@ public:
 
 		glBindVertexArray(tw_vao);
 
-		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
+		auto gpu_start_wall_time = _m_rtc->now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
@@ -514,7 +517,7 @@ public:
 		glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
-		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
+		auto delta = _m_rtc->now() - most_recent_frame->render_time;
 		printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
 		if(delta > vsync_period)
 		{
@@ -532,10 +535,10 @@ public:
 		glXSwapBuffers(xwin->dpy, xwin->win);
 
 		// The swap time needs to be obtained and published as soon as possible
-		lastSwapTime = std::chrono::high_resolution_clock::now();
+		lastSwapTime = _m_rtc->now();
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_type>{GetNextSwapTimeEstimate()});
+		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_point>{GetNextSwapTimeEstimate()});
 
 		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
 		std::chrono::nanoseconds predict_to_display = lastSwapTime - latest_pose.predict_computed_time;
@@ -572,7 +575,7 @@ public:
 		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
 			{iteration_no},
 			{gpu_start_wall_time},
-			{std::chrono::high_resolution_clock::now()},
+			{_m_rtc->now()},
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 	}

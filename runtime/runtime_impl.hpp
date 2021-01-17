@@ -8,6 +8,7 @@
 #include "stdout_record_logger.hpp"
 #include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
+#include "common/realtime_clock.hpp"
 
 using namespace ILLIXR;
 
@@ -18,6 +19,7 @@ public:
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
+		pb.register_impl<realtime_clock>(std::make_shared<realtime_clock>());
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {

@@ -15,9 +15,9 @@ const record_header imu_cam_record {
 	},
 };
 
-class offline_imu_cam : public ILLIXR::threadloop {
+class offline_imu : public ILLIXR::threadloop {
 public:
-	offline_imu_cam(std::string name_, phonebook* pb_)
+	offline_imu(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
 		, _m_sensor_data{load_data()}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
@@ -26,6 +26,9 @@ public:
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
+		, _m_cam{_m_sb->get_reader<cam_type>("cam")}
+		, last_cam_ts{0}
+		, _m_log{"imu_cam.csv"}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
@@ -39,15 +42,11 @@ protected:
 				- _m_rtc->time_since_start()
 			);
 
-			if (_m_sensor_data_it->second.imu0) {
-				return skip_option::run;
-			} else {
-				++_m_sensor_data_it;
-				return skip_option::skip_and_yield;
-			}
+			return skip_option::run;
 
 		} else {
-			return skip_option::stop;
+			stop();
+			return skip_option::skip_and_yield;
 		}
 	}
 
@@ -56,31 +55,36 @@ protected:
 		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
 		time_point real_now = _m_rtc->get_start() + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
-		++_m_sensor_data_it;
 
+		std::optional<cv::Mat> cam0 = std::nullopt;
+		std::optional<cv::Mat> cam1 = std::nullopt;
+
+		_m_log << dataset_now << ",";
+
+		switchboard::ptr<const cam_type> cam = _m_cam.get_ro_nullable();
+		if (cam && last_cam_ts != cam->dataset_time) {
+			last_cam_ts = cam->dataset_time;
+			cam0 = cam->img0;
+			cam1 = cam->img1;
+			_m_log << cam->dataset_time;
+		}
+		_m_log << "\n";
+		
 		imu_cam_log.log(record{imu_cam_record, {
 			{iteration_no},
-			{bool(sensor_datum.cam0)},
+			{bool(cam0)},
 		}});
-
-
-		std::optional<cv::Mat> cam0 = sensor_datum.cam0
-			? std::make_optional<cv::Mat>(sensor_datum.cam0.value().load())
-			: std::nullopt
-			;
-		std::optional<cv::Mat> cam1 = sensor_datum.cam1
-			? std::make_optional<cv::Mat>(sensor_datum.cam1.value().load())
-			: std::nullopt
-			;
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
-			(sensor_datum.imu0.value().angular_v).cast<float>(),
-			(sensor_datum.imu0.value().linear_a).cast<float>(),
+			(sensor_datum.imu0.angular_v).cast<float>(),
+			(sensor_datum.imu0.linear_a).cast<float>(),
 			cam0,
 			cam1,
 			dataset_now,
 		});
+
+		++_m_sensor_data_it;
 	}
 
 private:
@@ -96,7 +100,11 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
+
+	switchboard::reader<cam_type> _m_cam;
+	ullong last_cam_ts;
+	std::ofstream _m_log;
 	std::shared_ptr<realtime_clock> _m_rtc;
 };
 
-PLUGIN_MAIN(offline_imu_cam)
+PLUGIN_MAIN(offline_imu)

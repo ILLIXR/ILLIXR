@@ -221,3 +221,14 @@ std::thread timed_thread(const std::string& account_name, Function&& f, Args&&..
         }
     });
 }
+
+class maybe_thread {
+public:
+	void join() {}
+};
+
+template< class Function, class... Args >
+maybe_thread maybe_timed_thread(const std::string&, Function&& f, Args&&... args) {
+	std::invoke(f, args...);
+	return maybe_thread{};
+}
