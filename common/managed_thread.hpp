@@ -2,8 +2,14 @@
 
 #include <cassert>
 #include <thread>
+#include <cerrno>
 #include <functional>
 #include <atomic>
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <sched.h>
+
+#define gettid() syscall(SYS_gettid)
 
 namespace ILLIXR {
 
@@ -17,12 +23,25 @@ private:
 	std::function<void()> _m_body;
 	std::function<void()> _m_on_start;
 	std::function<void()> _m_on_stop;
+	pid_t pid;
+	bool thread_is_started;
+	std::condition_variable thread_is_started_cv;
+	std::mutex thread_is_started_mutex;
+
 
 	void thread_main() {
 		assert(_m_body);
+		pid = ::gettid();
+
+		{
+			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
+			thread_is_started = true;
+			thread_is_started_cv.notify_all();
+		}
 		if (_m_on_start) {
 			_m_on_start();
 		}
+
 		while (!this->_m_stop.load()) {
 			_m_body();
 		}
@@ -49,6 +68,7 @@ public:
 		: _m_body{body}
 		, _m_on_start{on_start}
 		, _m_on_stop{on_stop}
+		, pid{0}
 	{ }
 
 	/**
@@ -64,22 +84,22 @@ public:
 
 	/// Possible states for a managed_thread
 	enum class state {
-		nonstartable,
-		startable,
-		running,
-		stopped,
+		nonstartable = 0,
+		startable = 1,
+		running = 2,
+		stopped = 3,
 	};
 
 	/**
 	 */
-	state get_state() {
+	state get_state() const {
 		bool stopped = _m_stop.load();
 		if (false) {
 		} else if (!_m_body) {
 			return state::nonstartable;
-		} else if (!stopped && !_m_thread.joinable()) {
+		} else if (!stopped && pid == 0) {
 			return state::startable;
-		} else if (!stopped &&  _m_thread.joinable()) {
+		} else if (!stopped && pid != 0) {
 			return state::running;
 		} else if (stopped) {
 			return state::stopped;
@@ -94,6 +114,11 @@ public:
 	void start() {
 		assert(get_state() == state::startable);
 		_m_thread = std::thread{&managed_thread::thread_main, this};
+		{
+			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
+			thread_is_started_cv.wait(lock, [this]{return thread_is_started;});
+		}
+		std::cerr << int(get_state()) << "\n";
 		assert(get_state() == state::running);
 	}
 
@@ -105,6 +130,45 @@ public:
 		_m_stop.store(true);
 		_m_thread.join();
 		assert(get_state() == state::stopped);
+	}
+
+	pid_t get_pid() const {
+		assert(get_state() == state::running);
+		return pid;
+	}
+
+	void set_cpu(size_t core) const {
+		errno = 0;
+
+		cpu_set_t mask;
+		CPU_ZERO(&mask);
+		CPU_SET(core, &mask);
+
+		[[maybe_unused]] int ret = sched_setaffinity(get_pid(), sizeof(mask), &mask);
+
+		if (ret) {
+			int ferrno = errno;
+			errno = 0;
+			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setaffinity");
+			std::cerr << ret << " " << ferrno << " " << err.what() << "\n";
+			throw err;
+		}
+	}
+
+	void set_priority(int priority) const {
+		struct sched_param sp = { .sched_priority = priority,};
+
+		errno = 0;
+
+		[[maybe_unused]] int ret = sched_setscheduler(get_pid(), SCHED_FIFO, &sp);
+
+		if (ret && std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER") && strcmp(std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER"), "y") != 0) {
+			int ferrno = errno;
+			errno = 0;
+			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setscheduler");
+			std::cerr << ret << " " << ferrno << " " << err.what() << " " << strcmp(std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER"), "y") << " " << std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER") << "\n";
+			throw err;
+		}
 	}
 };
 
