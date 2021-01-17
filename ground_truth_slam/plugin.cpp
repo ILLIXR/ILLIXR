@@ -70,6 +70,7 @@ private:
 	std::unique_ptr<writer<Eigen::Vector3f>> _m_ground_truth_offset;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;
+	bool first_time;
 };
 
 PLUGIN_MAIN(ground_truth_slam);
