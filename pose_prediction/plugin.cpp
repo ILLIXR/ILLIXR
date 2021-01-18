@@ -124,7 +124,8 @@ public:
 
 
 	virtual bool fast_pose_reliable() const override {
-		return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
+		return bool(_m_slow_pose.get_ro_nullable());
+		// return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
 		/*
 		  SLAM takes some time to initialize, so initially fast_pose
 		  is unreliable.

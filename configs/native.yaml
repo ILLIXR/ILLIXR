@@ -5,7 +5,7 @@ plugin_groups:
       # when the other plugins actually start up
     # - path: zed/
     - path: ../open_vins
-    - path: gtsam_integrator/
+    - path: dummy/
     - path: pose_prediction/
     # - path: pose_lookup/
     - path: gldemo/
