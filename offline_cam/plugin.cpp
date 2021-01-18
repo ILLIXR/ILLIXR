@@ -66,13 +66,13 @@ public:
 			good++;
 		} else {
 			bad++;
-			std::cerr
-				<< "Last image published at: " << last_ts - dataset_first_time << "\n"
-				<< "Now is: " << std::chrono::nanoseconds(time_since_start).count() << "\n"
-				<< "Diff is " << std::chrono::nanoseconds(time_since_start - std::chrono::nanoseconds{last_ts - dataset_first_time}).count() << "\n"
-				<< "Therefore, I'm skipping publishing a camera image.\n"
-				<< "Ratio is " << good << ":" << bad << "\n"
-				;
+			// std::cerr
+			// 	<< "Last image published at: " << last_ts - dataset_first_time << "\n"
+			// 	<< "Now is: " << std::chrono::nanoseconds(time_since_start).count() << "\n"
+			// 	<< "Diff is " << std::chrono::nanoseconds(time_since_start - std::chrono::nanoseconds{last_ts - dataset_first_time}).count() << "\n"
+			// 	<< "Therefore, I'm skipping publishing a camera image.\n"
+			// 	<< "Ratio is " << good << ":" << bad << "\n"
+			// 	;
 			// abort();
 		}
 		// std::this_thread::sleep_for(std::chrono::milliseconds{5});
