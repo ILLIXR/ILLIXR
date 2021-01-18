@@ -73,21 +73,21 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  * switchboard::writer<topic2_type> topic2 = switchboard.get_reader<topic2_type>("topic1");
  *
  * while (true) {
- *	 // Read topic 1
- *	 switchboard::ptr<topic1_type> event1 = topic1.get();
+ *        // Read topic 1
+ *        switchboard::ptr<topic1_type> event1 = topic1.get();
  *
- *	 // Write to topic 2
- *	 topic2_type* event2 = topic2.allocate();
- *	 // Populate the event
- *	 event2->foo = 3;
- *	 topic2.put(event2);
+ *        // Write to topic 2
+ *        topic2_type* event2 = topic2.allocate();
+ *        // Populate the event
+ *        event2->foo = 3;
+ *        topic2.put(event2);
  * }
  * 
  * // Read topic 3 synchronously
  * switchboard.schedule<topic3_type>(plugin_id, "topic3", [&](switchboard::ptr<topic3_type> event3, std::size_t it) {
- *	 // This is a lambda expression
- *	 // https://en.cppreference.com/w/cpp/language/lambda
- *	 std::cout << "Got a new event on topic3: " << event3->foo << " for iteration " << it << std::endl;
+ *       // This is a lambda expression
+ *       // https://en.cppreference.com/w/cpp/language/lambda
+ *       std::cout << "Got a new event on topic3: " << event3->foo << " for iteration " << it << std::endl;
  * });
  * \endcode
  */

@@ -19,14 +19,14 @@ public:
 	lazy_load_image(const std::string& path)
 		: _m_path(path)
 	{
-#ifndef LAZY
+// #ifndef LAZY
 		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-#endif
+// #endif
 	}
 	cv::Mat load() const {
-#ifdef LAZY
-		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-#endif
+// #ifdef LAZY
+// 		_m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+// #endif
 		assert(!_m_mat.empty());
 		return _m_mat;
 	}

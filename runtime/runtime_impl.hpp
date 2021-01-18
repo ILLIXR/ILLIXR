@@ -9,9 +9,6 @@
 #include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
 #include "common/realtime_clock.hpp"
-
-#include "opencv2/objdetect/objdetect.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 using namespace ILLIXR;

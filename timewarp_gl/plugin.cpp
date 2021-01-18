@@ -1,7 +1,6 @@
 #include <chrono>
 #include <future>
 #include <iostream>
-#include <csignal>
 #include <thread>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -55,7 +54,6 @@ public:
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-		, timing_data{"timewarp.csv"}
 	{ }
 
 private:
@@ -291,20 +289,8 @@ public:
 		}
 	}
 
-	std::ofstream timing_data;
-
 	virtual void _p_one_iteration() override {
-		auto start_cpu_time = thread_cpu_time();
-		auto start_wall_time = _m_rtc->time_since_start();
-		timing_data << start_wall_time.count() << ",";
 		warp(glfwGetTime());
-		auto stop_cpu_time = thread_cpu_time();
-		auto stop_wall_time = _m_rtc->time_since_start();
-		timing_data << stop_wall_time.count() << "," << (stop_cpu_time - start_cpu_time).count() << "\n";
-		timing_data.flush();
-		if (stop_cpu_time - start_cpu_time > std::chrono::nanoseconds(std::chrono::milliseconds(30))) {
-			std::cout << "Timewarp took " << std::chrono::duration_cast<std::chrono::milliseconds>(stop_cpu_time - start_cpu_time).count() << "ms CPU, " << std::chrono::duration_cast<std::chrono::milliseconds>(stop_wall_time - start_wall_time).count() << "ms wall\n";
-		}
 	}
 
 	virtual void _p_thread_setup() override {
@@ -545,18 +531,8 @@ public:
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
 		[[maybe_unused]] auto beforeSwap = glfwGetTime();
-
-		__sync_synchronize();
-		timing_data << _m_rtc->time_since_start().count() << ",";
-		__sync_synchronize();
-
-		// std::raise(SIGINT);
 		
 		glXSwapBuffers(xwin->dpy, xwin->win);
-
-		__sync_synchronize();
-		timing_data << _m_rtc->time_since_start().count() << ",";
-		__sync_synchronize();
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();
