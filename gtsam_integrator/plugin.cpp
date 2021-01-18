@@ -203,7 +203,7 @@ private:
 
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
-		for (size_t i = 0; i < prop_data.size()-1; i++) {
+		for (size_t i = 0; prop_data.size() != 0 && i < prop_data.size()-1; i++) {
 			if (std::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < 1e-12) {
 				prop_data.erase(prop_data.begin()+i);
 				i--;

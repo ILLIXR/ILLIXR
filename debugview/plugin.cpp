@@ -249,11 +249,11 @@ public:
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glfwMakeContextCurrent(gui_window);
 
-		// cpu_set_t mask;
-		// CPU_ZERO(&mask);
-		// CPU_SET(5, &mask);
-		// [[maybe_unused]] int ret = sched_setaffinity(0, sizeof(mask), &mask);
-		// if (ret != 0) { abort(); }
+		cpu_set_t mask;
+		CPU_ZERO(&mask);
+		CPU_SET(5, &mask);
+		[[maybe_unused]] int ret = sched_setaffinity(0, sizeof(mask), &mask);
+		if (ret != 0) { abort(); }
 	}
 
 	void _p_one_iteration() override {

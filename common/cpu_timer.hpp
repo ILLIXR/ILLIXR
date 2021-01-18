@@ -207,6 +207,8 @@ public:
 #define PRINT_RECORD_FOR_THIS_BLOCK(name)                                    \
     print_timer2 PRINT_RECORD_FOR_THIS_BLOCK_timer {name};
 
+#ifdef MULTICORE
+
 /**
  * @brief Use this in place of std::thread(...) to print times.
  */
@@ -222,13 +224,16 @@ std::thread timed_thread(const std::string& account_name, Function&& f, Args&&..
     });
 }
 
+#else
+
 class maybe_thread {
 public:
 	void join() {}
 };
-
 template< class Function, class... Args >
 maybe_thread maybe_timed_thread(const std::string&, Function&& f, Args&&... args) {
 	std::invoke(f, args...);
 	return maybe_thread{};
 }
+
+#endif
