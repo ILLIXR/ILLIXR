@@ -231,7 +231,7 @@ public:
 	void join() {}
 };
 template< class Function, class... Args >
-maybe_thread maybe_timed_thread(const std::string&, Function&& f, Args&&... args) {
+maybe_thread timed_thread(const std::string&, Function&& f, Args&&... args) {
 	std::invoke(f, args...);
 	return maybe_thread{};
 }

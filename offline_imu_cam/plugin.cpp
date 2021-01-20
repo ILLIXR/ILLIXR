@@ -74,6 +74,7 @@ protected:
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
+				cam1 ? real_now : time_point{},
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
 			cam0,

@@ -30,16 +30,13 @@ private:
 };
 
 int main(int argc, char* const* argv) {
-	assert(errno == 0);
 	r = ILLIXR::runtime_factory(nullptr);
-	assert(errno == 0);
 
 	std::vector<std::string> lib_paths;
 	std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
 		return std::string{arg};
 	});
 	r->load_so(lib_paths);
-	assert(errno == 0);
 
 	// Two ways of shutting down:
 	// Ctrl+C

@@ -12,9 +12,12 @@ plugin_groups:
     - path: gldemo/
     - path: timewarp_gl/
     - path: debugview/
-    # - path: offline_imu_cam/ # -> imu_cam
-    - path: offline_imu/ # cam -> imu_cam
-    - path: offline_cam/ # -> cam
+    - path: offline_imu_cam/ # -> imu_cam
+      # starts the timer when it loads, it sends the very first frame first
+
+    # - path: offline_imu/ # cam -> imu_cam
+    # - path: offline_cam/ # -> cam
+      # starts the timer at system load, its ends t+2sec frame first.    
 
 data:
   subpath: mav0
@@ -34,11 +37,12 @@ loader:
 
   # command: sudo taskset -a -c 0 gdb -q --args $env_cmd
 
-  log_stdout: metrics/output.log
-  command: env ILLIXR_STDOUT_METRICS=y $cmd
+  # log_stdout: metrics/output.log
+  # command: env ILLIXR_STDOUT_METRICS=y $cmd
 
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
-  # command: taskset -a -c 0 $env_cmd
+  command: taskset -a -c 0 env ILLIXR_RUN_DURATION=100 $env_cmd
+  # command: env ILLIXR_RUN_DURATION=100 $env_cmd
 
-profile: opt
+profile: dbg

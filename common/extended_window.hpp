@@ -30,7 +30,14 @@ namespace ILLIXR{
             if (!dpy) {
                 printf("\n\tcannot connect to X server\n\n");
                 exit(1);
-            }
+            } else {
+				// Apparently, XOpenDisplay's _true_ error indication is whether dpy is nullptr.
+				// https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
+				// if (errno != 0) {
+				// 	std::cerr << "XOpenDisplay succeeded, but errno = " << errno << "; This is benign, so I'm clearing it now.\n";
+				// }
+				errno = 0;
+			}
 
             Window root = DefaultRootWindow(dpy);
 
@@ -86,6 +93,7 @@ namespace ILLIXR{
                 }
                 XFree(vi);
             }
+
 
             GLXFBConfig bestFbc = fbc[best_fbc];
 

@@ -30,7 +30,9 @@ public:
 		, last_cam_ts{0}
 		, _m_log{"imu_cam.csv"}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-	{ }
+	{
+		_m_log << "imu_rt,imu_dt,cam_dt\n";
+	}
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -58,14 +60,16 @@ protected:
 
 		std::optional<cv::Mat> cam0 = std::nullopt;
 		std::optional<cv::Mat> cam1 = std::nullopt;
+		time_point cam_time;
 
-		_m_log << dataset_now << ",";
+		_m_log << "0," << dataset_now << ",";
 
 		switchboard::ptr<const cam_type> cam = _m_cam.get_ro_nullable();
 		if (cam && last_cam_ts != cam->dataset_time) {
 			last_cam_ts = cam->dataset_time;
 			cam0 = cam->img0;
 			cam1 = cam->img1;
+			cam_time = cam->time;
 			_m_log << cam->dataset_time;
 		}
 		_m_log << "\n";
@@ -77,6 +81,7 @@ protected:
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
+			cam_time,
 			(sensor_datum.imu0.angular_v).cast<float>(),
 			(sensor_datum.imu0.linear_a).cast<float>(),
 			cam0,
