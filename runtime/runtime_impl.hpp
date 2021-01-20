@@ -1,4 +1,5 @@
 #include <thread>
+#include <cerrno>
 #include <chrono>
 #include "common/runtime.hpp"
 #include "common/extended_window.hpp"
@@ -71,6 +72,7 @@ public:
 			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
 			abort();
 		}
+		assert(errno == 0);
 	}
 
 private:
