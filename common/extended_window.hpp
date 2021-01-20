@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cerrno>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>

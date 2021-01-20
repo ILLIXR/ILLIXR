@@ -1,4 +1,5 @@
 #include <thread>
+#include <cassert>
 #include <cerrno>
 #include <chrono>
 #include "common/runtime.hpp"
