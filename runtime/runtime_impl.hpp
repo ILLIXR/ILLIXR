@@ -1,5 +1,6 @@
-#include <thread>
 #include <chrono>
+#include <deque>
+#include <thread>
 #include "common/runtime.hpp"
 #include "common/extended_window.hpp"
 #include "common/dynamic_lib.hpp"
@@ -11,6 +12,8 @@
 
 using namespace ILLIXR;
 
+static void process_run(const cpu_timer::Stack&, std::deque<cpu_timer::StackFrame>&&, const std::deque<cpu_timer::StackFrame>&) { }
+
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
@@ -18,6 +21,7 @@ public:
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
+		cpu_timer::get_process().make_process(true, );
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
