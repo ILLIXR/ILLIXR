@@ -73,7 +73,18 @@ public:
 			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
 			abort();
 		}
-		assert(errno == 0);
+		assert(errno == 0 && "errno was set during run. Maybe spurious?");
+		/*
+		  Note that this assertion can have false positives AND false negatives!
+		  - False positive because the contract of some functions specifies that errno is only meaningful if the return code was an error [1].
+		    - We will try to mitigate this by clearing errno on success in ILLIXR.
+		  - False negative if some intervening call clears errno.
+		    - We will try to mitigate this by checking for errors immediately after a call.
+
+		  Despite these mitigations, the best way to catch errors is to check errno immediately after a calling function.
+
+		  [1] https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
+		 */
 	}
 
 private:
