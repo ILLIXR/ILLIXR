@@ -64,6 +64,10 @@ public:
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
 		  // TODO: Use #198 to configure this. Delete getenv_or.
+		  // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
+		  // Timewarp poses a "second channel" by which pose data can correct the video stream,
+		  // which results in a "multipath" between the pose and the video stream.
+		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
 		, disable_warp{bool(std::stoi(getenv_or("ILLIXR_TIMEWARP_DISABLE", "0")))}
 	{ }
 
