@@ -5,9 +5,18 @@
 #include <future>
 #include <algorithm>
 #include "plugin.hpp"
-#include "cpu_timer.hpp"
+#include "managed_thread.hpp"
+#include "cpu_timer/cpu_timer.hpp"
 
 namespace ILLIXR {
+
+	class threadloop_marker {
+	public:
+		plugin_id_t plugin_id;
+		threadloop_marker(plugin_id_t plugin_id_)
+			: plugin_id{plugin_id_}
+		{ }
+	};
 
 /**
  * @brief A reusable threadloop for plugins.
@@ -24,7 +33,7 @@ public:
 			[this]{this->thread_main();},
 			[this]{this->thread_setup();},
 			nullptr,
-			cpu_timer::make_type_eraser<threadloop_marker>(_m_plugin_id)
+			cpu_timer::make_type_eraser<threadloop_marker>(id)
 		}
 	{ }
 
@@ -57,7 +66,7 @@ private:
 	void thread_main() {
 		skip_option s;
 		{
-			CPU_TIMER_TIME_BLOCK_INFO("_p_should_skip");
+			CPU_TIMER_TIME_BLOCK("_p_should_skip");
 			s = _p_should_skip();
 		}
 
@@ -70,7 +79,7 @@ private:
 			++skip_no;
 			break;
 		case skip_option::run: {
-			CPU_TIMER_TIME_BLOCK_INFO("_p_one_iteration");
+			CPU_TIMER_TIME_BLOCK("_p_one_iteration");
 			_p_one_iteration();
 			++iteration_no;
 			skip_no = 0;
@@ -128,7 +137,7 @@ protected:
 private:
 	std::atomic<bool> _m_terminate {false};
 
-	std::thread _m_thread;
+	managed_thread _m_thread;
 };
 
 }

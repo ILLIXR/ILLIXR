@@ -5,11 +5,14 @@
 #include "common/extended_window.hpp"
 #include "common/dynamic_lib.hpp"
 #include "common/plugin.hpp"
+#include "common/gen_guid.hpp"
 #include "common/switchboard.hpp"
 
 using namespace ILLIXR;
 
-static void process_run(const cpu_timer::Stack&, std::deque<cpu_timer::StackFrame>&&, const std::deque<cpu_timer::StackFrame>&) { }
+static void cpu_timer_callback(const cpu_timer::Stack&, cpu_timer::Frames&& frames, const cpu_timer::Frames&) {
+	std::cout << "Got " << frames.size() << " finished frames" << std::endl;
+}
 
 class runtime_impl : public runtime {
 public:
@@ -17,7 +20,9 @@ public:
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));
-		cpu_timer::get_process().make_process(true, );
+		cpu_timer::get_process().set_callback(&cpu_timer_callback);
+		cpu_timer::get_process().set_log_period(cpu_timer::CpuNs{0});
+		cpu_timer::get_process().set_enabled(true);
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {

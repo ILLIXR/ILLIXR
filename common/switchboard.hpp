@@ -11,12 +11,37 @@
 #include <functional>
 #include <chrono>
 #include <exception>
+#include "plugin.hpp"
 #include "phonebook.hpp"
-#include "cpu_timer.hpp"
+#include "cpu_timer/cpu_timer.hpp"
 #include "managed_thread.hpp"
 #include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
 
 namespace ILLIXR {
+
+
+
+	class switchboard_subscriber_marker {
+	public:
+		size_t plugin_id;
+		std::string topic_name;
+
+		switchboard_subscriber_marker(size_t plugin_id_, std::string topic_name_)
+			: plugin_id{plugin_id_}
+			, topic_name{std::move(topic_name_)}
+		{ }
+	};
+
+	class switchboard_data_marker {
+	public:
+		size_t serial_no;
+		std::string topic_name;
+
+		switchboard_data_marker(size_t serial_no_, std::string topic_name_)
+			: serial_no{serial_no_}
+			, topic_name{std::move(topic_name_)}
+		{ }
+	};
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -121,6 +146,9 @@ private:
         moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
         moodycamel::ConsumerToken _m_ctok {_m_queue};
         static constexpr std::chrono::milliseconds _m_queue_timeout {100};
+		// Assuming single writer
+		size_t _m_enqueued{0};
+		size_t _m_dequeued{0};
 
         // This needs to be last,
         // so it is destructed before the data it uses.
@@ -136,7 +164,7 @@ private:
             if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
 				CPU_TIMER_TIME_BLOCK("callback");
                 // Process event
-                _m_dequeued++;
+				_m_dequeued++;
                 // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
                 _m_callback(std::move(this_event), _m_dequeued);
             }
@@ -165,7 +193,7 @@ private:
 				[this]{this->thread_body();},
 				[this]{this->thread_on_start();},
 				[this]{this->thread_on_stop();},
-				cpu_timer::make_type_eraser<switchboard_marker>(_m_plugin_id, _m_topic_name)
+				cpu_timer::make_type_eraser<switchboard_subscriber_marker>(_m_plugin_id, _m_topic_name)
 			}
         {
             _m_thread.start();
@@ -177,10 +205,11 @@ private:
          * Thread-safe
          */
         void enqueue(ptr<const event>&& this_event) {
-			CPU_TIME_FUNCTION_COMMENT(_m_topic_name);
+			CPU_TIMER_TIME_FUNCTION();
             assert (_m_thread.get_state() == managed_thread::state::running);
 			[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
 			assert(ret);
+			_m_enqueued++;
         }
     };
 
@@ -211,7 +240,7 @@ private:
     public:
         topic(
             std::string name,
-            const std::type_info& ty,
+            const std::type_info& ty
         )   : _m_name{name}
             , _m_ty{ty}
 			, _m_latest_index{0}
@@ -226,7 +255,7 @@ private:
          */
         ptr<const event> get() const {
 			size_t serial_no = _m_latest_index.load();
-			CPU_TIMER_EVENT_INFO("get", make_type_eraser<switchboard_data_marker>(serial_no));
+			CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<switchboard_data_marker>(serial_no, _m_name));
 			ptr<const event> this_event = _m_latest_buffer[serial_no % _m_latest_buffer_size];
 			// if (this_event) {
 			// 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
@@ -252,7 +281,7 @@ private:
 			// Otherwise, readers (looking at _m_latest_index) would race with this write.
 			// I will assume one writer, so no two writers get the same serial_no.
 			_m_latest_index++;
-			CPU_TIMER_EVENT_INFO("put", make_type_eraser<switchboard_data_marker>(serial_no));
+			CPU_TIMER_TIME_EVENT_INFO(false, false, "put", cpu_timer::make_type_eraser<switchboard_data_marker>(serial_no, _m_name));
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
@@ -467,10 +496,9 @@ private:
 
 public:
 
-    /**
-     * If @p pb is null, then logging is disabled.
-     */
-    switchboard(const phonebook* pb) { }
+    switchboard(const phonebook*) {
+		// Phonebook may be used here in the future.
+	}
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.

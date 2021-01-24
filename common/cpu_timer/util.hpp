@@ -42,9 +42,19 @@ namespace detail {
 		}
 	}
 
-	static void error(const char* msg) {
-		std::cerr << msg << "\n";
-		abort();
+	// static void error(const char* msg) {
+	// 	std::cerr << msg << "\n";
+	// 	abort();
+	// }
+
+	static const char* null_to_empty(const char* str) {
+		static constexpr const char* empty = "";
+		if (str) {
+			return str;
+		} else {
+			return empty;
+		}
 	}
+
 } // namespace detail
 } // namespace cpu_timer

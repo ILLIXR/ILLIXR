@@ -1,6 +1,7 @@
 #pragma once // NOLINT(llvm-header-guard)
 #include "clock.hpp"
 #include "compiler_specific.hpp"
+#include "type_eraser.hpp"
 #include "util.hpp"
 #include <cassert>
 #include <deque>
@@ -19,32 +20,39 @@ namespace detail {
 
 	static constexpr bool use_fences = true;
 
+	class Frame;
 	class Stack;
+	class Process;
+	class StackFrameContext;
 
 	/**
 	 * @brief Timing and runtime data relating to one stack-frame.
 	 */
-	class StackFrame {
+	class Frame {
 	private:
-		std::string comment;
+		friend class Stack;
+
+		WallTime process_start;
+
 		const char* function_name;
 		const char* file_name;
 		size_t line;
-		size_t caller_start_index;
-		WallTime process_start;
+		// I don't want to use Frame* for pointers to other frames,
+		// because they can be moved aroudn in memory (e.g. from stack to finished),
+		// and pointers wouldn't work after serialization anyway.
+		size_t index;
+		size_t caller_index;
+		size_t prev_index;
 		WallTime start_wall;
 		CpuTime start_cpu;
-		size_t start_index;
 		WallTime stop_wall;
 		CpuTime stop_cpu;
-		size_t stop_index;
+		TypeEraser info;
 
-		friend class Stack;
+		size_t youngest_child_index;
 
-		void start_timer(size_t start_index_) {
-			start_index = start_index_;
-
-			assert(start_cpu == CpuTime{0} && "start_timer should only be called once");
+		void start_timers() {
+			assert(start_cpu == CpuTime{0} && "timer already started");
 
 			// very last thing:
 			if (use_fences) { fence(); }
@@ -52,43 +60,61 @@ namespace detail {
 			start_cpu = cpu_now();
 			if (use_fences) { fence(); }
 		}
-		void stop_timer(size_t stop_index_) {
-			assert(stop_cpu == CpuTime{0} && "stop_timer should only be called once");
+		void stop_timers() {
+			assert(stop_cpu == CpuTime{0} && "timer already started");
 			// almost very first thing:
 			if (use_fences) { fence(); }
 			stop_wall = wall_now();
 			stop_cpu = cpu_now();
 			if (use_fences) { fence(); }
 
-			assert(start_cpu != CpuTime{0} && "stop_timer should be called after start_timer");
-			stop_index = stop_index_;
+			assert(start_cpu != CpuTime{0} && "timer never started");
+		}
+
+		void start_and_stop_timers(bool wall_time, bool cpu_time) {
+			if (use_fences) { fence(); }
+			if (wall_time) {
+				assert(start_wall == WallTime{0}  && "timer already started");
+				assert(start_wall == WallTime{0}  && "timer already stopped" );
+				start_wall = stop_wall = wall_now();
+			}
+			if (cpu_time) {
+				start_cpu  = stop_cpu  = cpu_now ();
+			}
+			if (use_fences) { fence(); }
 		}
 
 	public:
-		StackFrame(std::string&& comment_,
-				   const char* function_name_,
-				   const char* file_name_,
-				   size_t line_,
-				   size_t caller_start_index_,
-				   WallTime process_start_)
-			: comment{std::move(comment_)}
+		Frame(
+			WallTime process_start_,
+			const char* function_name_,
+			const char* file_name_,
+			size_t line_,
+			size_t index_,
+			size_t caller_index_,
+			size_t prev_index_,
+			TypeEraser info_
+		)
+			: process_start{process_start_}
 			, function_name{function_name_}
 			, file_name{file_name_}
 			, line{line_}
-			, caller_start_index{caller_start_index_}
-			, process_start{process_start_}
+			, index{index_}
+			, caller_index{caller_index_}
+			, prev_index{prev_index_}
 			, start_wall{0}
 			, start_cpu{0}
-			, start_index{0}
 			, stop_wall{0}
 			, stop_cpu{0}
-			, stop_index{0}
+			, info{std::move(info_)}
+			, youngest_child_index{0}
 		{ }
 
 		/**
-		 * @brief `comment` has a user-specified meaning.
+		 * @brief User-specified meaning.
 		 */
-		const std::string& get_comment() const { return comment; }
+		const TypeEraser& get_info() const { return info; }
+		TypeEraser& get_info() { return info; }
 
 		const char* get_function_name() const { return function_name; }
 
@@ -97,18 +123,25 @@ namespace detail {
 		size_t get_line() const { return line; }
 
 		/**
-		 * @brief The start_index of the StackFrame which called this one.
+		 * @brief The index of the "parent" Frame (the Frame which called this one).
 		 *
 		 * The top of the stack is a loop.
-		 *
-		 * When a new StackFrame is created, we don't know the stop_index, since the caller has not yet stopped.
 		 */
-		size_t get_caller_start_index() const { return caller_start_index; }
+		size_t get_caller_index() const { return caller_index; }
+
+		/**
+		 * @brief The index of the "older sibling" Frame (the previous Frame with the same caller).
+		 *
+		 * 0 if this is the eldest child.
+		 */
+		size_t get_prev_index() const { return prev_index; }
+
+		bool has_prev() const { return prev_index != 0; }
 
 		/**
 		 * @brief See documentation of return type.
 		 */
-		WallTime get_start_wall() const { return start_wall - process_start; }
+		WallTime get_stop_wall() const { return stop_wall == WallTime{0} ? WallTime{0} : stop_wall - process_start; }
 
 		/**
 		 * @brief See documentation of return type.
@@ -116,14 +149,14 @@ namespace detail {
 		CpuTime get_start_cpu() const { return start_cpu; }
 
 		/**
-		 * @brief An index according to the order that StackFrames started (AKA pre-order).
+		 * @brief An index (0..n) according to the order that Frames started (AKA pre-order).
 		 */
-		size_t get_start_index() const { return start_index; }
+		size_t get_index() const { return index; }
 
 		/**
 		 * @brief See documentation of return type.
 		 */
-		WallTime get_stop_wall() const { return stop_wall - process_start; }
+		WallTime get_start_wall() const { return start_wall == WallTime{0} ? WallTime{0} : start_wall - process_start; }
 
 		/**
 		 * @brief See documentation of return type.
@@ -131,68 +164,81 @@ namespace detail {
 		CpuTime get_stop_cpu() const { return stop_cpu; }
 
 		/**
-		 * @brief An index according to the order that StackFrames stopped (AKA post-order).
+		 * @brief The index of the youngest child (the last direct callee of this frame).
 		 */
-		size_t get_stop_index() const { return stop_index; }
+		size_t get_youngest_callee_index() const { return youngest_child_index; }
+
+		/**
+		 * @brief If this Frame calls no other frames
+		 */
+		bool is_leaf() const { return youngest_child_index == 0; }
 	};
 
-	CPU_TIMER_UNUSED static std::ostream& operator<<(std::ostream& os, const StackFrame& frame) {
+	CPU_TIMER_UNUSED static std::ostream& operator<<(std::ostream& os, const Frame& frame) {
 		return os
-			<< frame.get_file_name() << ":" << frame.get_line() << ":" << frame.get_function_name() << " called by " << frame.get_caller_start_index() << "\n"
-			<< " cpu   : " << get_ns(frame.get_start_cpu  ()) << " + " << get_ns(frame.get_stop_cpu  () - frame.get_start_cpu  ()) << "\n"
-			<< " wall  : " << get_ns(frame.get_start_wall ()) << " + " << get_ns(frame.get_stop_wall () - frame.get_start_wall ()) << "\n"
-			<< " started: " << frame.get_start_index() << " stopped: " << frame.get_stop_index() << "\n";
+			<< "frame[" << frame.get_index() << "] = "
+			<< null_to_empty(frame.get_file_name()) << ":" << frame.get_line() << ":" << null_to_empty(frame.get_function_name())
+			<< " called by frame[" << frame.get_caller_index() << "]\n"
 			;
 	}
 
-	class Process;
-	class Stack;
-
-	using CallbackType = std::function<void(const Stack&, std::deque<StackFrame>&&, const std::deque<StackFrame>&)>;
+	using CallbackType = std::function<void(const Stack&, std::deque<Frame>&&, const std::deque<Frame>&)>;
 
 	class Stack {
 	private:
 		friend class Process;
+		friend class Frame;
 		friend class StackFrameContext;
 
-		static constexpr const char* const thread_main = "thread_main";
-		const std::thread::id thread_id;
+		Process& process;
+		const std::thread::id id;
+		const std::thread::native_handle_type native_handle;
 		std::string name;
-		const bool is_enabled;
-		const WallTime process_start;
-		const CpuTime log_period;
-		const CallbackType callback;
-		size_t start_index;
-		size_t stop_index;
-		std::deque<StackFrame> stack;
-		std::deque<StackFrame> finished;
+		std::deque<Frame> stack;
+		mutable std::mutex finished_mutex;
+		std::deque<Frame> finished; // locked by finished_mutex
+		size_t index;
 		CpuTime last_log;
-		std::mutex finished_mutex;
 
-		void enter_stack_frame(std::string&& comment, const char* function_name, const char* file_name, size_t line) {
+		void enter_stack_frame(const char* function_name, const char* file_name, size_t line, TypeEraser info) {
+			size_t caller_index = 0;
+			size_t prev_index = 0;
+			size_t this_index = index++;
+
+			if (CPU_TIMER_LIKELY(!stack.empty())) {
+				Frame& caller = stack.back();
+
+				caller_index = caller.index;
+
+				prev_index = caller.youngest_child_index;
+				             caller.youngest_child_index = this_index;
+			}
+
 			stack.emplace_back(
-				std::move(comment),
+				get_process_start(),
 				function_name,
 				file_name,
 				line,
-				(CPU_TIMER_UNLIKELY(stack.empty()) ? 0 : stack.back().get_start_index()),
-				process_start
+				this_index,
+				caller_index,
+				prev_index,
+				std::move(info)
 			);
 
 			// very last:
-			stack.back().start_timer(start_index++);
+			stack.back().start_timers();
 		}
 
 		void exit_stack_frame(CPU_TIMER_UNUSED const char* function_name) {
 			assert(!stack.empty() && "somehow exit_stack_frame was called more times than enter_stack_frame");
 
 			// (almost) very first:
-			stack.back().stop_timer(stop_index++);
+			stack.back().stop_timers();
 
 			assert(function_name == stack.back().get_function_name() && "somehow enter_stack_frame and exit_stack_frame for this frame are misaligned");
 			{
 				// std::lock_guard<std::mutex> finished_lock {finished_mutex};
-				finished.emplace_back(stack.back());
+				finished.emplace_back(std::move(stack.back()));
 			}
 			stack.pop_back();
 
@@ -201,25 +247,52 @@ namespace detail {
 
 	public:
 
-		Stack(std::thread::id thread_id_, std::string&& name_, bool is_enabled_, WallTime process_start_, CpuTime log_period_, CallbackType callback_)
-			: thread_id{thread_id_}
+		const Frame& get_top() const { return stack.back(); }
+		Frame& get_top() { return stack.back(); }
+
+		void record_event(bool wall_time, bool cpu_time, const char* function_name, const char* file_name, size_t line, TypeEraser info) {
+			size_t this_index = index++;
+
+			assert(!stack.empty());
+			Frame& caller = stack.back();
+
+			size_t caller_index = caller.index;
+
+			size_t prev_index = caller.youngest_child_index;
+			                    caller.youngest_child_index = this_index;
+			
+			
+			finished.emplace_back(
+				get_process_start(),
+				function_name,
+				file_name,
+				line,
+				this_index,
+				caller_index,
+				prev_index,
+				std::move(info)
+			);
+			finished.back().start_and_stop_timers(wall_time, cpu_time);
+
+			maybe_flush();
+		}
+
+		Stack(Process& process_, std::thread::id id_, std::thread::native_handle_type native_handle_, std::string&& name_)
+			: process{process_}
+			, id{id_}
+			, native_handle{native_handle_}
 			, name{std::move(name_)}
-			, is_enabled{is_enabled_}
-			, process_start{process_start_}
-			, log_period{log_period_}
-			, callback{std::move(callback_)}
-			, start_index{0}
-			, stop_index{0}
+			, index{0}
 			, last_log{0}
 		{
-			enter_stack_frame("", thread_main, thread_main, 0);
+			enter_stack_frame(nullptr, nullptr, 0, type_eraser_default);
 		}
 
 		~Stack() {
-			exit_stack_frame(thread_main);
+			exit_stack_frame(nullptr);
 			assert(stack.empty() && "somewhow enter_stack_frame was called more times than exit_stack_frame");
 			flush();
-			assert(finished.empty() && "flush() should drain this buffer, and nobody should be adding to it now. Somehow unflushed StackFrames are still present");
+			assert(finished.empty() && "flush() should drain this buffer, and nobody should be adding to it now. Somehow unflushed Frames are still present");
 		}
 
 		// I do stuff in the destructor that should only happen once per constructor-call.
@@ -227,15 +300,13 @@ namespace detail {
 		Stack& operator=(const Stack& other) = delete;
 
 		Stack(Stack&& other) noexcept
-			: thread_id{({std::cerr << "Stack::Stack(Stack&&)" << std::endl; other.thread_id;})}
-			, is_enabled{other.is_enabled}
-			, process_start{other.process_start}
-			, log_period{other.log_period}
-			, callback{other.callback}
-			, start_index{other.start_index}
-			, stop_index{other.stop_index}
+			: process{other.process}
+			, id{other.id}
+			, native_handle{other.native_handle}
+			, name{std::move(other.name)}
 			, stack{std::move(other.stack)}
 			, finished{std::move(other.finished)}
+			, index{other.index}
 			, last_log{other.last_log}
 		{ }
 		Stack& operator=(Stack&& other) = delete;
@@ -245,65 +316,118 @@ namespace detail {
 		 */
 		void flush() {
 			std::lock_guard<std::mutex> finished_lock {finished_mutex};
-			flush_with_lock();
+			if (!finished.empty()) {
+				// std::lock_guard<std::mutex> config_lock {process.config_mutex};
+				CallbackType process_callback = get_callback();
+				flush_with_locks();
+			}
 		}
 
-		std::thread::id get_thread_id() const { return thread_id; }
+		std::thread::id get_id() const {
+			return id;
+		}
 
-		std::string get_name() const { return name; }
+		std::thread::native_handle_type get_native_handle() const {
+			return native_handle;
+		}
 
-		void set_name(std::string&& name_) { name = std::move(name_); }
+		std::string get_name() const {
+			return name;
+		}
+		void set_name(std::string&& name_) {
+			name = std::move(name_);
+		}
 
 	private:
 		void maybe_flush() {
-			if (get_ns(log_period) != 0) {
-				std::lock_guard<std::mutex> finished_lock {finished_mutex};
-				if (finished.back().get_stop_cpu() > last_log + log_period) {
-					flush_with_lock();
+			std::lock_guard<std::mutex> finished_lock {finished_mutex};
+			// get CPU time is expensive. Instead we look at the last frame
+			if (!finished.empty()) {
+				CpuTime now = finished.back().get_stop_cpu();
+
+				// std::lock_guard<std::mutex> config_lock {process.config_mutex};
+				CpuTime process_log_period = get_log_period();
+				CallbackType process_callback = get_callback();
+
+				if (get_ns(process_log_period) != 0) {
+					if (get_ns(now) == 0 || now > last_log + process_log_period) {
+						flush_with_locks();
+					}
 				}
 			}
 		}
 
-		void flush_with_lock() {
+		void flush_with_locks() {
+			std::deque<Frame> finished_buffer;
+			finished.swap(finished_buffer);
+			CallbackType callback = get_callback();
 			if (callback) {
-				if (!finished.empty()) {
-					std::deque<StackFrame> finished_buffer;
-					finished.swap(finished_buffer);
-					callback(*this, std::move(finished_buffer), stack);
-				}
+				callback(*this, std::move(finished_buffer), stack);
 			}
 		}
+
+		CallbackType get_callback() const;
+		CpuTime get_log_period() const;
+		WallTime get_process_start() const;
 	};
 
 	/**
 	 * @brief All stacks in the current process.
 	 *
-	 * This calls callback with one thread's batches of StackFrames, periodically not sooner than log_period, in the thread whose functions are in the batch.
+	 * This calls callback with one thread's batches of Frames, periodically not sooner than log_period, in the thread whose functions are in the batch.
 	 */
 	class Process {
 	private:
-		bool is_enabled;
-		WallTime start;
-		CpuTime log_period;
-		CallbackType callback;
-		std::unordered_map<std::thread::id, Stack> thread_to_stack;
+		friend class Stack;
+		friend class StackFrameContext;
+
+		// std::atomic<bool> enabled;
+		bool enabled;
+		// std::mutex config_mutex;
+		const WallTime start;
+		CpuTime log_period; // locked by config_mutex
+		CallbackType callback; // locked by config_mutex
+		// Actually, I don't need to lock the config
+		// If two threads race to modify the config, the "winner" is already non-deterministic
+		// The callers should synchronize themselves.
+		// If this thread writes while someone else reads, there is no guarantee they hadn't "already read" the values.
+		// The caller should synchronize with the readers.
+		std::unordered_map<std::thread::id, Stack> thread_to_stack; // locked by thread_to_stack_mutex
+		std::unordered_map<std::thread::id, size_t> thread_use_count; // locked by thread_to_stack_mutex
 		mutable std::mutex thread_to_stack_mutex;
+
 	public:
 
-		explicit Process(bool is_enabled_, CpuTime log_period_, CallbackType callback_)
-			: is_enabled{is_enabled_}
+		explicit Process()
+			: enabled{false}
 			, start{wall_now()}
-			, log_period{log_period_}
-			, callback{std::move(callback_)}
+			, log_period{0}
 		{ }
 
-		Stack& create_stack(std::thread::id id, std::string&& thread_name) {
+		WallTime get_start() { return start; }
+
+		/**
+		 * @brief Create or get the stack.
+		 *
+		 * For efficiency, the caller should cache this in thread_local storage.
+		 */
+		Stack& create_stack(
+				std::thread::id thread,
+				std::thread::native_handle_type native_handle,
+				std::string&& thread_name
+		) {
 			std::lock_guard<std::mutex> thread_to_stack_lock {thread_to_stack_mutex};
 			// This could be the same thread, just a different static context (i.e. different obj-file or lib)
-			if (thread_to_stack.count(id) == 0) {
-				thread_to_stack.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(id, std::move(thread_name), is_enabled, start, log_period, callback));
+			// Could have also been set up by the caller.
+			if (thread_to_stack.count(thread) == 0) {
+				thread_to_stack.emplace(
+					std::piecewise_construct,
+					std::forward_as_tuple(thread),
+					std::forward_as_tuple(*this, thread, native_handle, std::move(thread_name))
+				);
 			}
-			return thread_to_stack.at(id);
+			thread_use_count[thread]++;
+			return thread_to_stack.at(thread);
 		}
 
 		/**
@@ -311,21 +435,24 @@ namespace detail {
 		 *
 		 * This is neccessary because the OS can reuse old thread IDs.
 		 */
-		void remove_stack(std::thread::id id) {
+		void delete_stack(std::thread::id thread) {
 			std::lock_guard<std::mutex> thread_to_stack_lock {thread_to_stack_mutex};
 			// This could be the same thread, just a different static context (i.e. different obj-file or lib)
-			if (thread_to_stack.count(id) != 0) {
-				thread_to_stack.erase(id);
+			if (thread_to_stack.count(thread) != 0) {
+				thread_use_count[thread]--;
+				if (thread_use_count.at(thread) == 0) {
+					thread_to_stack.erase(thread);
+				}
 			}
 		}
 
 		/**
-		 * @brief Sets @p is_enabled for future threads.
+		 * @brief Sets @p enabled for future threads.
 		 *
 		 * All in-progress threads will complete with the prior value.
 		 */
-		void set_is_enabled(bool is_enabled_) {
-			is_enabled = is_enabled_;
+		void set_enabled(bool enabled_) {
+			enabled = enabled_;
 		}
 
 		/**
@@ -334,7 +461,12 @@ namespace detail {
 		 * All in-progress threads will complete with the prior value.
 		 */
 		void set_log_period(CpuTime log_period_) {
+			// std::lock_guard<std::mutex> config_lock {config_mutex};
 			log_period = log_period_;
+		}
+
+		bool is_enabled() {
+			return enabled;
 		}
 
 		/**
@@ -343,6 +475,7 @@ namespace detail {
 		 * All in-progress threads will complete with the prior value.
 		 */
 		void set_callback(CallbackType callback_) {
+			// std::lock_guard<std::mutex> config_lock {config_mutex};
 			callback = std::move(callback_);
 		}
 
@@ -365,40 +498,28 @@ namespace detail {
 	};
 
 	/**
-	 * @brief An RAII context for creating, stopping, and storing StackFrames.
+	 * @brief An RAII context for creating, stopping, and storing Frames.
 	 */
 	class StackFrameContext {
 	private:
+		Process& process;
 		Stack& stack;
 		const char* function_name;
+		bool enabled;
 	public:
 		/**
 		 * @brief Begins a new RAII context for a StackFrame in Stack, if enabled.
 		 */
-		StackFrameContext(Stack& stack_, std::string&& comment, const char* function_name_, const char* file_name, size_t line)
-			: stack{stack_}
+		StackFrameContext(Process& process_, Stack& stack_, const char* function_name_, const char* file_name, size_t line, TypeEraser info)
+			: process{process_}
+			, stack{stack_}
 			, function_name{function_name_}
+			, enabled{process.is_enabled()}
 		{
-#if !defined(CPU_TIMER_USE_UNIQUE_PTR)
-			if (stack.is_enabled)
-#endif
-			{
-				stack.enter_stack_frame(std::move(comment), function_name, file_name, line);
+			if (enabled) {
+				stack.enter_stack_frame(function_name, file_name, line, std::move(info));
 			}
 		}
-
-#if defined(CPU_TIMER_USE_UNIQUE_PTR)
-		/**
-		 * @brief Begins a new RAII context for a StackFrame in Stack, if enabled.
-		 */
-		static std::unique_ptr<const StackFrameContext> create(Stack& stack, std::string&& comment, const char* function_name, const char* file_name, size_t line) {
-			if (stack.is_enabled) {
-				return std::unique_ptr<const StackFrameContext>{new StackFrameContext{stack, std::move(comment), function_name, file_name, line}};
-			} else {
-				return std::unique_ptr<const StackFrameContext>{nullptr};
-			}
-		}
-#endif
 
 		/*
 		 * I have a custom destructor, and should there be a copy, the destructor will run twice, and double-count the frame.
@@ -415,14 +536,17 @@ namespace detail {
 		 * @brief Completes the StackFrame in Stack.
 		 */
 		~StackFrameContext() {
-#if !defined(CPU_TIMER_USE_UNIQUE_PTR)
-			if (stack.is_enabled)
-#endif
-			{
+			if (enabled) {
 				stack.exit_stack_frame(function_name);
 			}
 		}
 	};
+
+	inline CallbackType Stack::get_callback() const { return process.callback; }
+
+	inline CpuTime Stack::get_log_period() const { return process.log_period; }
+
+	inline WallTime Stack::get_process_start() const { return process.start; }
 
 } // namespace detail
 } // namespace cpu_timer

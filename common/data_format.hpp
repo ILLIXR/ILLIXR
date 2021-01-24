@@ -218,26 +218,11 @@ namespace ILLIXR {
         float   metersPerTanAngleAtCenter;
     };
 
-	typedef size_t plugin_id_t;
-
-	class switchboard_thread_marker {
+	class gpu_log {
 	public:
-		size_t _m_plugin_id;
-		std::string _m_topic_name;
-
-		switchboard_thread_marker(size_t plugin_id, std::string topic_name)
-			: _m_plugin_id{plugin_id}
-			, _m_topic_name{std::move(topic_name)}
+		GLuint64 elapsed_time;
+		gpu_log(GLuint64 elapsed_time_)
+			: elapsed_time{elapsed_time_}
 		{ }
 	};
-
-	class switchboard_data_marker {
-		size_t _m_serial_no;
-
-		switchboard_data_marker(size_t serial_no)
-			: _m_serial_no{serial_no}
-		{ }
-	}
-
-
 }

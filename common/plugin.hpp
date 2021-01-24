@@ -1,8 +1,11 @@
 #pragma once
 
+#include "gen_guid.hpp"
 #include "phonebook.hpp"
 
 namespace ILLIXR {
+
+	using plugin_id_t = size_t;
 
 	/**
 	 * @brief A dynamically-loadable plugin for Spindle.
@@ -42,7 +45,7 @@ namespace ILLIXR {
 		std::string name;
 		const phonebook* pb;
 		const std::shared_ptr<gen_guid> gen_guid_;
-		const std::size_t id;
+		const plugin_id_t id;
 	};
 
 #define PLUGIN_MAIN(plugin_class)                                   \
