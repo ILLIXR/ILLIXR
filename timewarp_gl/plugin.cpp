@@ -608,7 +608,7 @@ public:
 
 #ifndef NDEBUG
 		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
-		if (log_count > LOG_PERIOD) {
+		if (log_count > LOG_START_ITER) {
 			printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
 			// We have always been warping from the correct swap, so I will disable this.
 			// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
@@ -670,7 +670,7 @@ public:
 		}
 
 #ifndef NDEBUG
-		if (log_count > LOG_PERIOD) {
+		if (log_count > LOG_START_ITER) {
 			printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
 			printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
 			printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
@@ -698,7 +698,7 @@ public:
 		}});
 
 #ifndef NDEBUG
-		if (log_count > LOG_PERIOD) {
+		if (log_count > LOG_START_ITER) {
 			log_count = 0;
 		} else {
 			log_count++;
@@ -708,7 +708,8 @@ public:
 
 #ifndef NDEBUG
 	size_t log_count = 0;
-	size_t LOG_PERIOD = 20;
+	// TODO: When #198 is merged, consider using that.
+	constexpr size_t LOG_START_ITER = 20;
 #endif
 
 	virtual ~timewarp_gl() override {
