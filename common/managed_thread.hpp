@@ -4,6 +4,7 @@
 #include <thread>
 #include <functional>
 #include <atomic>
+#include "cpu_timer/cpu_timer.hpp"
 
 namespace ILLIXR {
 
@@ -17,8 +18,10 @@ private:
 	std::function<void()> _m_body;
 	std::function<void()> _m_on_start;
 	std::function<void()> _m_on_stop;
+	cpu_timer::TypeEraser _m_info;
 
 	void thread_main() {
+		CPU_TIMER_TIME_FUNCTION_INFO(_m_info);
 		assert(_m_body);
 		if (_m_on_start) {
 			_m_on_start();
@@ -45,10 +48,16 @@ public:
 	 * @p on_start is called as the thread is joining
 	 * @p body is called in a tight loop
 	 */
-	managed_thread(std::function<void()> body, std::function<void()> on_start = std::function<void()>{}, std::function<void()> on_stop = std::function<void()>{}) noexcept
+	managed_thread(
+		std::function<void()> body,
+		std::function<void()> on_start = std::function<void()>{},
+		std::function<void()> on_stop = std::function<void()>{},
+		cpu_timer::TypeEraser info = cpu_timer::type_eraser_default
+	) noexcept
 		: _m_body{body}
 		, _m_on_start{on_start}
 		, _m_on_stop{on_stop}
+		, _m_info{std::move(info)}
 	{ }
 
 	/**

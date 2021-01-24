@@ -217,4 +217,12 @@ namespace ILLIXR {
         float   lensSeparationInMeters;
         float   metersPerTanAngleAtCenter;
     };
+
+	class gpu_log {
+	public:
+		GLuint64 elapsed_time;
+		gpu_log(GLuint64 elapsed_time_)
+			: elapsed_time{elapsed_time_}
+		{ }
+	};
 }

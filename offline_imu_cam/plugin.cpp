@@ -6,14 +6,6 @@
 
 using namespace ILLIXR;
 
-const record_header imu_cam_record {
-	"imu_cam",
-	{
-		{"iteration_no", typeid(std::size_t)},
-		{"has_camera", typeid(bool)},
-	},
-};
-
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
 	offline_imu_cam(std::string name_, phonebook* pb_)
@@ -23,8 +15,6 @@ public:
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
 		, dataset_first_time{_m_sensor_data_it->first}
-		, imu_cam_log{record_logger_}
-		, camera_cvtfmt_log{record_logger_}
 	{ }
 
 protected:
@@ -57,20 +47,14 @@ protected:
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
 
-		imu_cam_log.log(record{imu_cam_record, {
-			{iteration_no},
-			{bool(sensor_datum.cam0)},
-		}});
-
-
-		std::optional<cv::Mat> cam0 = sensor_datum.cam0
-			? std::make_optional<cv::Mat>(sensor_datum.cam0.value().load())
-			: std::nullopt
-			;
-		std::optional<cv::Mat> cam1 = sensor_datum.cam1
-			? std::make_optional<cv::Mat>(sensor_datum.cam1.value().load())
-			: std::nullopt
-			;
+		std::optional<cv::Mat> cam0 = std::nullopt;
+		std::optional<cv::Mat> cam1 = std::nullopt;
+		if (sensor_datum.cam0) {
+			CPU_TIMER_TIME_BLOCK("load_camera_data");
+			assert(sensor_datum.cam1);
+			cam0 = sensor_datum.cam0.value().load();
+			cam1 = sensor_datum.cam1.value().load();
+		}
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
@@ -102,9 +86,6 @@ private:
 	time_type real_first_time;
 	// Current IMU timestamp
 	ullong dataset_now;
-
-	record_coalescer imu_cam_log;
-	record_coalescer camera_cvtfmt_log;
 };
 
 PLUGIN_MAIN(offline_imu_cam)

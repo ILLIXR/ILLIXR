@@ -129,7 +129,7 @@ public:
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		switchboard::ptr<const imu_raw_type> raw_imu = _m_fast_pose.get();
+		switchboard::ptr<const imu_raw_type> raw_imu = _m_fast_pose.get_ro_nullable();
 		if (raw_imu) {
 			pose_type raw_pose;
 			raw_pose.position = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
@@ -146,7 +146,7 @@ public:
 		ImGui::Text("Slow pose topic:");
 		ImGui::SameLine();
 
-		switchboard::ptr<const pose_type> slow_pose_ptr = _m_slow_pose.get_nullable();
+		switchboard::ptr<const pose_type> slow_pose_ptr = _m_slow_pose.get_ro_nullable();
 		if(slow_pose_ptr) {
 			pose_type swapped_pose = pp->correct_pose(*slow_pose_ptr);
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
@@ -198,8 +198,7 @@ public:
 		}
 		if(last_datum_with_images->img0.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			cv::Mat img0;
-			cv::cvtColor(last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
+			cv::Mat img0 = last_datum_with_images->img0.value();
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
 			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -214,8 +213,7 @@ public:
 		
 		if(last_datum_with_images->img1.has_value()){
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			cv::Mat img1;
-			cv::cvtColor(last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
+			cv::Mat img1 = last_datum_with_images->img1.value();
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
 			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};

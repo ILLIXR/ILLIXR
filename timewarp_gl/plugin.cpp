@@ -19,21 +19,6 @@ using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
-const record_header timewarp_gpu_record {"timewarp_gpu", {
-	{"iteration_no", typeid(std::size_t)},
-	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-	{"gpu_time_duration", typeid(std::chrono::nanoseconds)},
-}};
-
-const record_header mtp_record {"mtp_record", {
-	{"iteration_no", typeid(std::size_t)},
-	{"vsync", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"imu_to_display", typeid(std::chrono::nanoseconds)},
-	{"predict_to_display", typeid(std::chrono::nanoseconds)},
-	{"render_to_display", typeid(std::chrono::nanoseconds)},
-}};
-
 class timewarp_gl : public threadloop {
 
 public:
@@ -49,10 +34,6 @@ public:
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->get_writer<switchboard::event_wrapper<std::size_t>>("hologram_in")}
 		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
-		, _m_mtp{sb->get_writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>>("mtp")}
-		, _m_frame_age{sb->get_writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>>("warp_frame_age")}
-		, timewarp_gpu_logger{record_logger_}
-		, mtp_logger{record_logger_}
 	{ }
 
 private:
@@ -83,15 +64,6 @@ private:
 
 	// Switchboard plug for publishing vsync estimates
 	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
-
-	// Switchboard plug for publishing MTP metrics
-	switchboard::writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>> _m_mtp;
-
-	// Switchboard plug for publishing frame stale-ness metrics
-	switchboard::writer<switchboard::event_wrapper<std::chrono::duration<double, std::nano>>> _m_frame_age;
-
-	record_coalescer timewarp_gpu_logger;
-	record_coalescer mtp_logger;
 
 	GLuint timewarpShaderProgram;
 
@@ -458,8 +430,6 @@ public:
 
 		glBindVertexArray(tw_vao);
 
-		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
-
 		GLuint query;
 		GLuint64 elapsed_time = 0;
 		glGenQueries(1, &query);
@@ -537,18 +507,6 @@ public:
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_type>{GetNextSwapTimeEstimate()});
 
-		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
-		std::chrono::nanoseconds predict_to_display = lastSwapTime - latest_pose.predict_computed_time;
-		std::chrono::nanoseconds render_to_display = lastSwapTime - most_recent_frame->render_time;
-
-		mtp_logger.log(record{mtp_record, {
-			{iteration_no},
-			{lastSwapTime},
-			{imu_to_display},
-			{predict_to_display},
-			{render_to_display},
-		}});
-
 #ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
@@ -569,12 +527,7 @@ public:
 
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
-			{iteration_no},
-			{gpu_start_wall_time},
-			{std::chrono::high_resolution_clock::now()},
-			{std::chrono::nanoseconds(elapsed_time)},
-		}});
+		CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<gpu_log>(elapsed_time));
 	}
 
 	virtual ~timewarp_gl() override {

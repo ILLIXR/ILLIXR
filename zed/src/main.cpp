@@ -13,11 +13,6 @@ using namespace ILLIXR;
 
 cv::Mat slMat2cvMat(Mat& input);
 
-const record_header __imu_cam_record {"imu_cam", {
-    {"iteration_no", typeid(std::size_t)},
-    {"has_camera", typeid(bool)},
-}};
-
 struct cam_type : switchboard::event {
     cv::Mat img0;
     cv::Mat img1;
@@ -137,7 +132,6 @@ public:
         , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
-        , it_log{record_logger_}
     {
         camera_thread_.start();
     }
@@ -179,17 +173,13 @@ protected:
 
         const switchboard::ptr<cam_type> c = _m_cam_type.get_nullable();
         if (c && c->serial_no != last_serial_no) {
+			CPU_TIMER_TIME_BLOCK("load_camera");
             last_serial_no = c->serial_no;
             img0 = c->img0;
             img1 = c->img1;
             depth = c->depth;
             rgb = c->rgb;
         }
-
-        it_log.log(record{__imu_cam_record, {
-            {iteration_no},
-            {bool(img0)},
-        }});
 
         _m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type {
             imu_time_point,
@@ -201,6 +191,7 @@ protected:
         });
 
         if (rgb && depth) {
+			CPU_TIMER_TIME_BLOCK("publish_depth");
             _m_rgb_depth.put(new (_m_rgb_depth.allocate()) rgb_depth_type{
                     rgb,
                     depth,
@@ -230,9 +221,6 @@ private:
     ullong imu_time;
 
     std::size_t last_serial_no {0};
-
-    // Logger
-    record_coalescer it_log;
 };
 
 // This line makes the plugin importable by Spindle
