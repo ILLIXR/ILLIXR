@@ -1,5 +1,6 @@
 #include <signal.h>
 #include "runtime_impl.hpp"
+#include "common/cpu_timer/cpu_timer.hpp"
 
 constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
 
@@ -29,6 +30,8 @@ private:
 };
 
 int main(int argc, char* const* argv) {
+	CPU_TIMER_TIME_FUNCTION();
+
 	r = ILLIXR::runtime_factory(nullptr);
 
 	std::vector<std::string> lib_paths;

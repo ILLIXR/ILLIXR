@@ -217,4 +217,27 @@ namespace ILLIXR {
         float   lensSeparationInMeters;
         float   metersPerTanAngleAtCenter;
     };
+
+	typedef size_t plugin_id_t;
+
+	class switchboard_thread_marker {
+	public:
+		size_t _m_plugin_id;
+		std::string _m_topic_name;
+
+		switchboard_thread_marker(size_t plugin_id, std::string topic_name)
+			: _m_plugin_id{plugin_id}
+			, _m_topic_name{std::move(topic_name)}
+		{ }
+	};
+
+	class switchboard_data_marker {
+		size_t _m_serial_no;
+
+		switchboard_data_marker(size_t serial_no)
+			: _m_serial_no{serial_no}
+		{ }
+	}
+
+
 }

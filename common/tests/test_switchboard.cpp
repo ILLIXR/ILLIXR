@@ -58,7 +58,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 
 	// I need to start a block here, so the destructor of switchboard gets called
 	{
-		// Run switchboard without phonebook (and logging)
+		// Run switchboard without phonebook
 		switchboard sb {nullptr};
 
 		std::atomic<uint64_t> last_datum_0 = 0;

@@ -9,16 +9,6 @@
 
 namespace ILLIXR {
 
-const record_header __threadloop_iteration_header {"threadloop_iteration", {
-	{"plugin_id", typeid(std::size_t)},
-	{"iteration_no", typeid(std::size_t)},
-	{"skips", typeid(std::size_t)},
-	{"cpu_time_start", typeid(std::chrono::nanoseconds)},
-	{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-}};
-
 /**
  * @brief A reusable threadloop for plugins.
  *
@@ -28,37 +18,30 @@ const record_header __threadloop_iteration_header {"threadloop_iteration", {
  */
 class threadloop : public plugin {
 public:
-	threadloop(std::string name_, phonebook* pb_) : plugin(name_, pb_) { }
+	threadloop(std::string name_, phonebook* pb_)
+		: plugin{name_, pb_}
+		, _m_thread{
+			[this]{this->thread_main();},
+			[this]{this->thread_setup();},
+			nullptr,
+			cpu_timer::make_type_eraser<threadloop_marker>(_m_plugin_id)
+		}
+	{ }
 
 	/**
 	 * @brief Starts the thread.
 	 */
 	virtual void start() override {
 		plugin::start();
-		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
+		_m_thread.start();
 	}
 
 	/**
 	 * @brief Stops the thread.
 	 */
 	virtual void stop() override {
-		if (! _m_terminate.load()) {
-			_m_terminate.store(true);
-			if (_m_thread.joinable()) {
-				_m_thread.join();
-				std::cerr << "Joined " << name << std::endl;
-			}
-			plugin::stop();
-		} else {
-			std::cerr << "You called stop() on this plugin twice." << std::endl;
-		}
-	}
-
-	virtual ~threadloop() override {
-		if (!_m_terminate.load()) {
-			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
-			abort();
-		}
+		_m_thread.stop();
+		plugin::stop();
 	}
 
 protected:
@@ -67,44 +50,35 @@ protected:
 
 private:
 
-	void thread_main() {
-		record_coalescer it_log {record_logger_};
-		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
-
+	void thread_setup() {
 		_p_thread_setup();
+	}
 
-		while (!should_terminate()) {
-			skip_option s = _p_should_skip();
+	void thread_main() {
+		skip_option s;
+		{
+			CPU_TIMER_TIME_BLOCK_INFO("_p_should_skip");
+			s = _p_should_skip();
+		}
 
-			switch (s) {
-			case skip_option::skip_and_yield:
-				std::this_thread::yield();
-				++skip_no;
-				break;
-			case skip_option::skip_and_spin:
-				++skip_no;
-				break;
-			case skip_option::run: {
-				auto iteration_start_cpu_time  = thread_cpu_time();
-				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
-				_p_one_iteration();
-				it_log.log(record{__threadloop_iteration_header, {
-					{id},
-					{iteration_no},
-					{skip_no},
-					{iteration_start_cpu_time},
-					{thread_cpu_time()},
-					{iteration_start_wall_time},
-					{std::chrono::high_resolution_clock::now()},
-				}});
-				++iteration_no;
-				skip_no = 0;
-				break;
-			}
-			case skip_option::stop:
-				stop();
-				break;
-			}
+		switch (s) {
+		case skip_option::skip_and_yield:
+			std::this_thread::yield();
+			++skip_no;
+			break;
+		case skip_option::skip_and_spin:
+			++skip_no;
+			break;
+		case skip_option::run: {
+			CPU_TIMER_TIME_BLOCK_INFO("_p_one_iteration");
+			_p_one_iteration();
+			++iteration_no;
+			skip_no = 0;
+			break;
+		}
+		case skip_option::stop:
+			stop();
+			break;
 		}
 	}
 
