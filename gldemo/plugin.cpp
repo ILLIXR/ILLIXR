@@ -64,7 +64,7 @@ public:
 		}
 
 #ifndef NDEBUG
-		if (log_count > LOG_START_ITER) {
+		if (log_count > LOG_PERIOD) {
 			std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
 			printf("\033[1;32m[GL DEMO APP]\033[0m First vsync is in %4fms\n", vsync_in.count());
 		}
@@ -87,7 +87,7 @@ public:
 			}
 
 #ifndef NDEBUG
-			if (log_count > LOG_START_ITER) {
+			if (log_count > LOG_PERIOD) {
 				std::chrono::duration<double, std::milli> wait_in = wait_time - now;
 				printf("\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in %4fms\n", wait_in.count());
 			}
@@ -98,7 +98,7 @@ public:
 			std::this_thread::sleep_until(wait_time);
 		} else {
 #ifndef NDEBUG
-			if (log_count > LOG_START_ITER) {
+			if (log_count > LOG_PERIOD) {
 				printf("\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately.");
 			}
 #endif
@@ -185,7 +185,7 @@ public:
 			}
 
 #ifndef NDEBUG
-			if (log_count > LOG_START_ITER) {
+			if (log_count > LOG_PERIOD) {
 				printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 			}
 #endif
@@ -207,7 +207,7 @@ public:
 		}
 
 #ifndef NDEBUG
-		if (log_count > LOG_START_ITER) {
+		if (log_count > LOG_PERIOD) {
 			log_count = 0;
 		} else {
 			log_count++;
@@ -217,8 +217,7 @@ public:
 
 #ifndef NDEBUG
 	size_t log_count = 0;
-	// TODO: When #198 is merged, consider using that.
-	size_t LOG_START_ITER = 20;
+	size_t LOG_PERIOD = 20;
 #endif
 
 private:
