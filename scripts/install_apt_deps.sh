@@ -132,6 +132,8 @@ pkg_dep_list_image=(
 
 pkg_dep_list_sound=(
     libpulse-dev
+    libportaudio2
+    libportaudiocpp0
 ) # End list
 
 pkg_dep_list_usb=(
