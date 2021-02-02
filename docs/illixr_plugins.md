@@ -8,29 +8,29 @@
         (feeds the application input measurements with timing similar to an actual IMU).
 
 -   [`ground_truth_slam`][3]:
-    Reads the [_Ground Truth_][34] from the same dataset as the `offline_imu_cam` plugin.
+    Reads the [_ground truth_][34] from the same dataset as the `offline_imu_cam` plugin.
     This data can be compared against the measurements from `offline_imu_cam` for accuracy.
     Timing information is taken from the `offline_imu_cam` measurements/data.
 
 -   [`kimera_vio`][10]:
     Runs Kimera-VIO ([upstream][1]) on the input, and outputs the headset's pose.
-    In practice, this publishes a fairly [_Slow Pose_][37], so [_IMU_][36] integration
-        and pose prediction is required to infer a [_Fast Pose_][37].
+    In practice, this publishes a fairly [_slow pose_][37], so [_IMU_][36] integration
+        and pose prediction is required to infer a [_fast pose_][37].
 
 -   [`gtsam_integrator`][12]:
     Integrates over all [_IMU_][36] samples since the last published SLAM pose to provide a
-        [_Fast Pose_][37] every time a new IMU sample arrives using
+        [_fast pose_][37] every time a new IMU sample arrives using
         the GTSAM library ([upstream][11]).
 
 -   [`pose_prediction`][17]:
     Uses the latest IMU value to predict a pose for a future point in time.
 
 -   [`gldemo`][5]:
-    Renders a static scene (into left and right [_Eye Buffers_][34]) given the pose
+    Renders a static scene (into left and right [_eye buffers_][34]) given the pose
         from `pose_prediction`.
 
 -   [`timewarp_gl`][6]:
-    [Asynchronous reprojection][34] of the [_Eye Buffers_][34].
+    [Asynchronous reprojection][34] of the [_eye buffers_][34].
 
 -   [`debugview`][7]: Renders a frame for debug information.
 

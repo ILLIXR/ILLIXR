@@ -14,7 +14,7 @@ In order to support OpenXR, we modified [Monado][20], an existing, open-source i
 -   When running from Monado, however, as mandated by OpenXR specifications,
         the application is the entry point.
     As a result, the ILLIXR runtime system is loaded at a later point as a shared library.
-    This article documents the changes to the ILLIXR runtime when an OpenXR application is used.
+    This page documents the changes to the ILLIXR runtime when an OpenXR application is used.
 
 
 ## OpenXR Application Launch
@@ -29,9 +29,9 @@ Consult the OpenXR specifications and the OpenXR-SDK from Khronous Group for mor
 
 During initialization, [_Monado_][20] asks all drivers to probe for and initialize [_HMDs_][25]
     and controllers, internally known as `xdev`s.
-We have an ILLIXR driver, which will always respond to Monado with one discovered HMD that
+Our ILLIXR driver will always respond to Monado with one discovered HMD that
     will be used to capture OpenXR queries and events from Monado's state tracker.
-The ILLIXR driver obtains the path to the ILLIXR runtime `.so` file and a list of plugins from
+The driver obtains the path to the ILLIXR runtime `.so` file and a list of plugins from
     environment variables.
 
 After probing is finished, the application will start to create an OpenXR session.
@@ -72,7 +72,7 @@ However, Monado and ILLIXR are running in different threads in the same address 
 The translation plugin is the interface of these two parallel systems.
 
 The translation plugin handles two types of events at the moment:
-    [_Pose_][29] requests and [_Frame_][29] submissions.
+    [_pose_][29] requests and [_frame_][29] submissions.
 From the view of Monado, the translation plugin is the destination of all requests:
     from the application,
     to Monado's state trackers,

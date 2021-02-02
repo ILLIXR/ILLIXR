@@ -9,14 +9,15 @@ The ILLIXR project supports several ways for an ILLIXR application to log and re
 ILLIXR implements a modular logging system that enables users to capture and record key statistics
 	in real-time.
 
--	**`noop_logger`**:
-	***TODO***
-
 -	**`record_logger`**:
-	***TODO***
+	The base class describing ILLIXR's logging interface.
+
+-	**`noop_logger`**:
+	Implements a trivially empty implementation of `record_logger`.
+	Can be used for debugging or performance if runtime statistics are not needed.
 
 -	**`sqlite_record_logger`**:
-	Extends the `record_logger` to store records in a local [_SQLite Database_][20]. ***TODO***
+	Extends the `record_logger` to store records in a local [_SQLite database_][20].
 
 
 ## Metrics

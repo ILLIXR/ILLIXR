@@ -9,7 +9,7 @@ The Runner tool is responsible for
     and
     launching the ILLIXR application.
 Runner is necessary for our project, since ILLIXR manages plugins and data that span
-    many locations and launch [_Configurations_][11].
+    many locations and launch [_configurations_][11].
 A configuration (defined via a [_YAML_][13] file in `ILLIXR/configs/`) specifies parameters
     and plugins required to launch ILLIXR for a specific design/evaluation scenario.
 
@@ -22,7 +22,7 @@ To run ILLIXR (from the root directory of the project) using
 <!--- language: lang-shell -->
     ./runner.sh configs/native.yaml
 
-To drop into `gdb`, add `command: gdb -q --args %a` in the `action` block of
+To drop into `gdb`, add `command: gdb -q --args $cmd` in the `action` block of
     `configs/native.yaml`, and use the same command.
 
 To run ILLIXR with Monado,
@@ -78,17 +78,19 @@ Each action has a name, and can contain a number of member fields beyond this.
 <!--- language: lang-yaml -->
     action:
       name: native
-      command: gdb -q --args %a
+      command: gdb -q --args $cmd
 
 The `native` action supports an optional `command` argument.
-In that argument `%a` is replaced with the separated command-line arguments to run ILLIXR,
-    while `%b` is replaced with the stringified command-line arguments.
-See the [_Configuration_ glossary entry][11] for more details about supported actions.
+In that argument `$cmd` is replaced with the separated command-line arguments to run ILLIXR,
+    while `$quoted_cmd` is replaced with a single string comprising all command-line arguments.
+The `command` argument also supports `$env_cmd`, which interpret command-line argument
+    assignments in the form of `VARNAME=VALUE` as environment variable mappings.
+See the [_configuration_ glossary entry][11] for more details about supported actions.
 
-Finally, we support two compilation [_Profiles_][11]:
-    `opt`, which compiles with `-O3` and disables debug prints,
+Finally, we support two compilation [_profiles_][11]:
+    `opt`, which compiles with `-O3` and disables debug prints and assertions,
     and
-    `dbg`, which compiles with debug flags and enables debug prints.
+    `dbg`, which compiles with debug flags and enables debug prints and assertions.
 
 <!--- language: lang-yaml -->
     profile: opt
