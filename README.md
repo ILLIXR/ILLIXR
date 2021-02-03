@@ -84,7 +84,7 @@ We would also appreciate it if you send us a citation once your work has been pu
 
 ## Getting Started and Documentation
 
-For more information, see our [Getting Started page][30].
+For more information, see our [Getting Started page][50].
 
 
 ## Acknowledgements
@@ -149,8 +149,8 @@ Wesley Darvin came up with the name for ILLIXR.
 
 ## Licensing Structure
 
-ILLIXR is available as open-source software under the
-    [University of Illinois/NCSA Open Source License][31].
+ILLIXR is available as open-source software under the permissive
+    [University of Illinois/NCSA Open Source License][51].
 As mentioned above, ILLIXR largely consists of components developed by domain experts and
     modified for the purposes of inclusion in ILLIXR.
 However, ILLIXR does contain software developed solely by us.
@@ -169,6 +169,17 @@ The external libraries and softwares included in ILLIXR each have their own lice
 -   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
 
 -   [Monado][22] \ [Boost Software License 1.0][23]
+
+-   [GTSAM][27] \ [Simplified BSD License][28]
+
+-   [Kimera-VIO][29] \ [Simplified BSD License][30]
+
+-   [moodycamel::ConcurrentQueue][31] \ [Simplified BSD License][32]
+
+Note that ILLIXR's extensibility allows the source to be configured and compiled using only
+    permissively licensed software.
+For more details on configuring ILLIXR, see the [ILLIXR Plugins][52] and
+    [Writing your Plugin][53] pages.
 
 
 ## Get in Touch
@@ -211,8 +222,16 @@ If you would like to be a part of this effort, please contact us at
 [24]:   https://gitter.im/ILLIXR/community
 [25]:   https://github.com/ILLIXR/ILLIXR/releases
 [26]:   https://www.khronos.org/openxr
+[27]:   https://github.com/ILLIXR/gtsam
+[28]:   https://github.com/borglab/gtsam/blob/develop/LICENSE.BSD
+[29]:   https://github.com/ILLIXR/Kimera-VIO
+[30]:   https://github.com/MIT-SPARK/Kimera-VIO/blob/master/LICENSE.BSD
+[31]:   https://github.com/cameron314/concurrentqueue
+[32]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
 
 [//]: # (- Internal -)
 
-[30]:   getting_started.md
-[31]:   LICENSE.md
+[50]:   getting_started.md
+[51]:   LICENSE.md
+[52]:   illixr_plugins.md
+[53]:   writing_your_plugin.md
