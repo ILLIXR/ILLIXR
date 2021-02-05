@@ -97,7 +97,9 @@ namespace ILLIXR {
 	// This more closely matches the format used by Monado
 	struct rendered_frame {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
+		GLuint depth_handles[2];
 		GLuint swap_indices[2]; // Which element of the swapchain
+		Eigen::Matrix4f render_projection; // Projection matrix used when rendering.
 		fast_pose_type render_pose; // The pose used when rendering this frame.
 		std::chrono::time_point<std::chrono::system_clock> sample_time;
 		std::chrono::time_point<std::chrono::system_clock> render_time;

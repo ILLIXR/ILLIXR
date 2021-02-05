@@ -117,8 +117,7 @@ private:
 	HMD::body_info_t body_info;
 
 	// Eye sampler array
-	GLuint eye_sampler_0;
-	GLuint eye_sampler_1;
+	GLuint eye_sampler;
 
 	// Eye index uniform
 	GLuint tw_eye_index_unif;
@@ -127,10 +126,10 @@ private:
 	GLuint tw_vao;
 
 	// Position and UV attribute locations
-	GLuint distortion_pos_attr;
-	GLuint distortion_uv0_attr;
-	GLuint distortion_uv1_attr;
-	GLuint distortion_uv2_attr;
+	GLint distortion_pos_attr;
+	GLint distortion_uv0_attr;
+	GLint distortion_uv1_attr;
+	GLint distortion_uv2_attr;
 
 	// Distortion mesh information
 	GLuint num_distortion_vertices;
@@ -150,8 +149,9 @@ private:
 
 	// Handles to the start and end timewarp
 	// transform matrices (3x4 uniforms)
-	GLuint tw_start_transform_unif;
-	GLuint tw_end_transform_unif;
+	GLint tw_start_transform_unif;
+	GLint tw_end_transform_unif;
+
 	// Basic perspective projection matrix
 	Eigen::Matrix4f basicProjection;
 
@@ -348,11 +348,7 @@ public:
 		glGenVertexArrays(1, &tw_vao);
     	glBindVertexArray(tw_vao);
 
-    	#ifdef USE_ALT_EYE_FORMAT
-    	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
-    	#else
-		timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
-		#endif
+    	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
 		// Acquire attribute and uniform locations from the compiled and linked shader program
 
     	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
@@ -362,48 +358,57 @@ public:
     	tw_start_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpStartTransform");
     	tw_end_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpEndTransform");
     	tw_eye_index_unif = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
-    	eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
-    	eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
+    	eye_sampler = glGetUniformLocation(timewarpShaderProgram, "Texture");
 
+		if(glGetError())
+		{
+			std::cerr << "[TIMEWARP] Uniforms/attribs error" << std::endl;
+			abort();
+		}
+		
+		if(distortion_pos_attr != -1){
+			// Config distortion mesh position vbo
+			glGenBuffers(1, &distortion_positions_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+			glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
+			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		}
 
+		if(distortion_uv0_attr != -1) {
+			// Config distortion uv0 vbo
+			glGenBuffers(1, &distortion_uv0_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
+			glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
+			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		}
 
-		// Config distortion mesh position vbo
-		glGenBuffers(1, &distortion_positions_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_pos_attr);
+		if(distortion_uv1_attr != -1) {
+			// Config distortion uv1 vbo
+			glGenBuffers(1, &distortion_uv1_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
+			glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
+			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		}
 
-
-
-		// Config distortion uv0 vbo
-		glGenBuffers(1, &distortion_uv0_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv0_attr);
-
-
-		// Config distortion uv1 vbo
-		glGenBuffers(1, &distortion_uv1_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv1_attr);
-
-
-		// Config distortion uv2 vbo
-		glGenBuffers(1, &distortion_uv2_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv2_attr);
-
+		if(distortion_uv2_attr != -1) {
+			// Config distortion uv2 vbo
+			glGenBuffers(1, &distortion_uv2_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
+			glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
+			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		}
 
 		// Config distortion mesh indices vbo
 		glGenBuffers(1, &distortion_indices_vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
+
+
+		if(glGetError())
+		{
+			std::cerr << "[TIMEWARP] Error configuring VBOs" << std::endl;
+			abort();
+		}
 
 		glXMakeCurrent(xwin->dpy, None, NULL);
 	}
@@ -463,18 +468,15 @@ public:
 		CalculateTimeWarpTransform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
 		CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-		glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)(timeWarpStartTransform4x4.data()));
-		glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)(timeWarpEndTransform4x4.data()));
+		if(tw_start_transform_unif != -1)
+			glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)(timeWarpStartTransform4x4.data()));
+		if(tw_end_transform_unif != -1)
+			glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)(timeWarpEndTransform4x4.data()));
 
-		// Debugging aid, toggle switch for rendering in the fragment shader
-		glUniform1i(glGetUniformLocation(timewarpShaderProgram, "ArrayIndex"), 0);
+		glUniform1i(eye_sampler, 0);
 
-		glUniform1i(eye_sampler_0, 0);
+		
 
-		#ifndef USE_ALT_EYE_FORMAT
-		// Bind the shared texture handle
-		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
-		#endif
 
 		glBindVertexArray(tw_vao);
 
@@ -487,10 +489,9 @@ public:
 
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
-
-			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
+			
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
-			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
 			// the distortion mesh for both eyes! They are contiguously
@@ -499,31 +500,38 @@ public:
 			// eye's distortion mesh size, rendering the correct eye mesh
 			// to that region of the screen. This prevents re-uploading
 			// GPU data for each eye.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
-			glEnableVertexAttribArray(distortion_pos_attr);
+			if(distortion_pos_attr != -1) {
+				glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+				glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+				glEnableVertexAttribArray(distortion_pos_attr);
+			}
 
 			// We do the exact same thing for the UV GPU memory.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv0_attr);
+			if(distortion_uv0_attr != -1) {
+				glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
+				glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+				glEnableVertexAttribArray(distortion_uv0_attr);
+			}
 
 			// We do the exact same thing for the UV GPU memory.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv1_attr);
+			if(distortion_uv1_attr != -1) {
+				glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
+				glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+				glEnableVertexAttribArray(distortion_uv1_attr);
+			}
 
 			// We do the exact same thing for the UV GPU memory.
-			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv2_attr);
+			if(distortion_uv2_attr != -1) {
+				glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
+				glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+				glEnableVertexAttribArray(distortion_uv2_attr);
+			}
 
-
-			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
-			// Specify which layer of the eye texture we're going to be using.
-			// Each eye has its own layer.
-			glUniform1i(tw_eye_index_unif, eye);
-			#endif
+			if(glGetError())
+			{
+				std::cerr << "[TIMEWARP] Error after binding attributes." << std::endl;
+				abort();
+			}
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
 			// reused for both eyes. Therefore glDrawElements can be immediately called,
