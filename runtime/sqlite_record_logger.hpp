@@ -31,8 +31,10 @@ public:
 	}
 
 	std::string prep_insert_str() {
+		assert(errno == 0);
 		std::string drop_table_string = std::string{"DROP TABLE IF EXISTS "} + table_name + std::string{";"};
 		db.execute(drop_table_string.c_str());
+		errno = 0;
 
 		std::string create_table_string = std::string{"CREATE TABLE "} + table_name + std::string{"("};
 		for (unsigned i = 0; i < rh.get_columns(); ++i) {
@@ -57,7 +59,9 @@ public:
 		}
 		create_table_string.erase(create_table_string.size() - 2);
 		create_table_string += std::string{");"};
+		assert(errno == 0);
 		db.execute(create_table_string.c_str());
+		errno = 0;
 
 		std::string insert_string = std::string{"INSERT INTO "} + table_name + std::string{" VALUES ("};
 		for (unsigned i = 0; i < rh.get_columns(); ++i) {
@@ -141,7 +145,9 @@ public:
 					throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(i).name()} + std::string{" not implemented"}};
 				}
 			}
+			assert(errno == 0);
 			cmd.execute();
+			errno = 0;
 		}
 		xct.commit();
 	}

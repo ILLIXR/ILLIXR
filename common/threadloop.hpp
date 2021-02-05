@@ -87,7 +87,11 @@ private:
 			case skip_option::run: {
 				auto iteration_start_cpu_time  = thread_cpu_time();
 				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
+				
+				assert(errno == 0);
 				_p_one_iteration();
+				assert(errno == 0);
+				
 				it_log.log(record{__threadloop_iteration_header, {
 					{id},
 					{iteration_no},

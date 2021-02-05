@@ -25,9 +25,11 @@ cpp_clock_gettime(clockid_t clock_id) {
 				  : /* InputOperands */
 				  : "memory" /* Clobbers */);
     struct timespec ts;
+    assert(errno == 0);
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};
     }
+    errno = 0;
 	asm volatile (""
 				  : /* OutputOperands */
 				  : /* InputOperands */

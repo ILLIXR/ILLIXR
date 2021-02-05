@@ -306,6 +306,10 @@ private:
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.1f, 0.0f );
 		// This was just temporary.
 		free(tw_mesh_base_ptr);
+		std::cout << "BUILD TIMEWARP: " << errno << std::endl;
+        if (errno == 2) {
+			asm("int $3");
+		}
 
 		return;
 	}
@@ -382,28 +386,37 @@ public:
 		HMD::GetDefaultBodyInfo(&body_info);
 
 		// Initialize the GLFW library, still need it to get time
+		assert(errno == 0);
 		if(!glfwInit()){
 			printf("Failed to initialize glfw\n");
 		}
+		errno = 0;
 
     	// Construct timewarp meshes and other data
     	BuildTimewarp(&hmd_info);
 
 		// includes setting swap interval
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
 
 		// set swap interval for 1
-		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
-		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");
+		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;		
+		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");		
 		glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
 
 		// Init and verify GLEW
+		assert(errno == 0);
 		glewExperimental = GL_TRUE;
 		if(glewInit() != GLEW_OK){
 			printf("Failed to init GLEW\n");
 			// clean up ?
 			exit(0);
 		}
+		errno = 0;
 
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
@@ -472,17 +485,27 @@ public:
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
 
 
-                // Config PBO for texture image collection
-                glGenBuffers(1, &PBO_buffer);
-                glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-                glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
+        // Config PBO for texture image collection
+        glGenBuffers(1, &PBO_buffer);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+        glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
 
 
-		glXMakeCurrent(xwin->dpy, None, NULL);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
 	}
 
 	virtual void warp([[maybe_unused]] float time) {
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
 
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -713,7 +736,13 @@ public:
 
 	virtual ~timewarp_gl() override {
 		// TODO: Need to cleanup resources here!
-		glXMakeCurrent(xwin->dpy, None, NULL);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
+
  		glXDestroyContext(xwin->dpy, xwin->glc);
  		XDestroyWindow(xwin->dpy, xwin->win);
  		XCloseDisplay(xwin->dpy);

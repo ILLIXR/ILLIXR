@@ -3,6 +3,7 @@
 #include "data_loading.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include <cassert>
 
 using namespace ILLIXR;
 
@@ -63,20 +64,26 @@ protected:
 			{bool(sensor_datum.cam0)},
 		}});
 
-
+		assert(errno == 0);
 		std::optional<cv::Mat*> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
 			: std::nullopt
 			;
+		errno = 0;
+
+		assert(errno == 0);
 		std::optional<cv::Mat*> cam1 = sensor_datum.cam1
 			? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
 			: std::nullopt
 			;
+		errno = 0;
 
+		assert(errno == 0);
 		if (cam0 && cam1) {
 			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
 			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
 		}
+		errno = 0;
 
 		auto datum = new imu_cam_type{
 			real_now,

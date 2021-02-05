@@ -27,6 +27,8 @@ namespace ILLIXR{
 #ifndef NDEBUG
             printf("Opening display\n");
 #endif
+            assert(errno == 0);
+
             dpy = XOpenDisplay(NULL);
             if (!dpy) {
                 printf("\n\tcannot connect to X server\n\n");
@@ -41,7 +43,6 @@ namespace ILLIXR{
             }
 
             Window root = DefaultRootWindow(dpy);
-
             // Get a matching FB config
             static int visual_attribs[] =
             {
@@ -62,12 +63,17 @@ namespace ILLIXR{
 #ifndef NDEBUG
             printf("Getting matching framebuffer configs\n");
 #endif
+            assert(errno == 0);
+
             int fbcount;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
             if (!fbc) {
                 printf("\n\tFailed to retrieve a framebuffer config\n\n");
                 exit(1);
             }
+            // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
+            errno = 0;
+
 #ifndef NDEBUG
             printf("Found %d matching FB configs\n", fbcount);
 
@@ -140,7 +146,12 @@ namespace ILLIXR{
                 GLX_CONTEXT_MINOR_VERSION_ARB, 3,
                 None
             };
+            
+            assert(errno == 0);
+
             glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
+            // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
+            errno = 0;
 
             // Sync to process errors
             XSync(dpy, false);

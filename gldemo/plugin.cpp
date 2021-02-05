@@ -107,7 +107,12 @@ public:
 
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
 	}
 
 	void _p_one_iteration() override {
@@ -320,17 +325,27 @@ public:
 	// This may be changed later, but it really doesn't matter for this purpose because
 	// it will be replaced by a real, Monado-interfaced application.
 	virtual void start() override {
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
 
 		// Initialize the GLFW library, still need it to get time
+		assert(errno == 0);
 		if(!glfwInit()){
 			printf("Failed to initialize glfw\n");
 		}
+		errno = 0;
+
 		// Init and verify GLEW
+		assert(errno == 0);
 		if(glewInit()){
 			printf("Failed to init GLEW\n");
 			exit(0);
 		}
+		errno = 0;
 
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
@@ -349,10 +364,12 @@ public:
 		glGenVertexArrays(1, &demo_vao);
     	glBindVertexArray(demo_vao);
 
+		assert(errno == 0);
 		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
 		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 #endif
+		errno = 0;
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
@@ -368,11 +385,16 @@ public:
 			abort();
 		}
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
-		
+
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
-		glXMakeCurrent(xwin->dpy, None, NULL);
+		assert(errno == 0);
+		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
+			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
+		}
+		errno = 0;
 
 		lastTime = glfwGetTime();
 

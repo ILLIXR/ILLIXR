@@ -72,7 +72,14 @@ public:
 	void draw_GUI() {
 		// Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
+
+		// Calls glfw within source code which sets errno
         ImGui_ImplGlfw_NewFrame();
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in glfwPollEvents " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
+
         ImGui::NewFrame();
 
 		// Init the window docked to the bottom left corner.
@@ -248,15 +255,25 @@ public:
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glfwMakeContextCurrent(gui_window);
+		// https://www.glfw.org/docs/latest/intro_guide.html#error_handling
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
 	}
 
 	void _p_one_iteration() override {
 		{
+			assert(errno == 0);
 			glfwPollEvents();
+			if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+				std::cerr << "Error in glfwPollEvents " << __FILE__ << ":" << __LINE__ << std::endl;
+			}
+			errno = 0;
 
 			if (glfwGetMouseButton(gui_window, GLFW_MOUSE_BUTTON_LEFT)) 
 			{
-				
+
 				double xpos, ypos;
 				glfwGetCursorPos(gui_window, &xpos, &ypos);
 				Eigen::Vector2d new_pos = Eigen::Vector2d{xpos, ypos};
@@ -324,7 +341,7 @@ public:
 			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 
 			glBindVertexArray(demo_vao);
-			
+
 			// Draw things
 			glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -408,32 +425,53 @@ public:
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+		assert(errno == 0);
 		gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", NULL, NULL);
-		glfwSetWindowSize(gui_window, 1600, 1000);
-
-		if(gui_window == NULL){
-			std::cerr << "Debug view couldn't create window." << std::endl;
+		if (gui_window == NULL) {
+			std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(1);
 		}
+		errno = 0;
 
+		assert(errno == 0);
+		glfwSetWindowSize(gui_window, 1600, 1000);
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
+
+		assert(errno == 0);
 		glfwMakeContextCurrent(gui_window);
+		// https://www.glfw.org/docs/latest/intro_guide.html#error_handling
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
+
 		glfwSwapInterval(1); // Enable vsync!
 
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
-		
+
 		// Init and verify GLEW
+		assert(errno == 0);
 		if(glewInit()){
 			std::cerr << "Failed to init GLEW" << std::endl;
 			glfwDestroyWindow(gui_window);
 		}
+		errno = 0;
 
 		// Initialize IMGUI context.
 		IMGUI_CHECKVERSION();
     	ImGui::CreateContext();
 		// Dark theme, of course.
 		ImGui::StyleColorsDark();
+
 		// Init IMGUI for OpenGL
+		assert(errno == 0);
 		ImGui_ImplGlfw_InitForOpenGL(gui_window, true);
+		errno = 0;
+
     	ImGui_ImplOpenGL3_Init(glsl_version);
 
 		// Create and bind global VAO object
@@ -483,6 +521,12 @@ public:
 
 		glfwMakeContextCurrent(NULL);
 
+		// https://www.glfw.org/docs/latest/intro_guide.html#error_handling
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
+
 		lastTime = glfwGetTime();
 
 		threadloop::start();
@@ -490,11 +534,29 @@ public:
 
 	virtual ~debugview() override {
 		ImGui_ImplOpenGL3_Shutdown();
+
+		assert(errno == 0);
 		ImGui_ImplGlfw_Shutdown();
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in ImGui_ImplGlfw_Shutdown " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
+
 		ImGui::DestroyContext();
 
+		assert(errno == 0);
 		glfwDestroyWindow(gui_window);
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in glfwDestroyWindow " << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
+
+		assert(errno == 0);
 		glfwTerminate();
+		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
+			std::cerr << "Error in glfwTerminate" << __FILE__ << ":" << __LINE__ << std::endl;
+		}
+		errno = 0;
 	}
 };
 

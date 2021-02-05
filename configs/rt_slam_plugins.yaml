@@ -4,7 +4,7 @@ plugin_group:
   - name: Kimera-VIO/
     path:
       git_repo: https://github.com/ILLIXR/Kimera-VIO
-      version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
+      version: 3f69ea19e063b0b399cba005067b875bd7373deb
   # - name: OpenVINS
   #   path:
   #     git_repo: https://github.com/ILLIXR/open_vins.git

@@ -209,7 +209,11 @@ namespace ILLIXR {
 			for (const auto& pair : _m_callbacks) {
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
+				
+				assert(errno == 0);
 				pair.second(event);
+				assert(errno == 0);
+
 				_m_cb_log.log(record{__switchboard_callback_header, {
 					{pair.first},
 					{_m_iteration_no},
@@ -292,12 +296,16 @@ namespace ILLIXR {
 
 			record_coalescer check_queues {_m_record_logger};
 			std::pair<std::string, const void*> t;
-
 			auto check_queues_start_cpu_time  = thread_cpu_time();
 			auto check_queues_start_wall_time = std::chrono::high_resolution_clock::now();
 			while (!_m_terminate.load()) {
 				const std::chrono::milliseconds max_wait_time {50};
-				if (_m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count())) {
+				
+				assert(errno == 0);
+				bool has_data = _m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count());
+				errno = 0;
+				
+				if (has_data) {
 					const std::shared_lock lock{_m_registry_lock};
 					check_queues.log(record{__switchboard_check_queues_header, {
 						{iteration_no},

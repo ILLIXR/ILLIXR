@@ -42,14 +42,22 @@ public:
 
 	static dynamic_lib create(const std::string_view& path) {
 		char* error;
+
+		// dlopen man page says that it can set errno sp
+		assert(errno == 0);
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
+
 		if ((error = dlerror()) || !handle)
 			throw std::runtime_error{
 				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+		errno = 0;
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
+			assert(errno == 0);
+			
 			char* error;
 			int ret = dlclose(handle);
+			errno = 0;
 			if ((error = dlerror()) || ret)
 				throw std::runtime_error{
 					"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
@@ -57,11 +65,14 @@ public:
 	}
 
 	const void* operator[](const std::string& symbol_name) const {
-		char* error;
+		assert(errno == 0);
+
+		char* error;		
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
 		if ((error = dlerror()))
 			throw std::runtime_error{
 				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+		errno = 0;
 		return symbol;
 	}
 
