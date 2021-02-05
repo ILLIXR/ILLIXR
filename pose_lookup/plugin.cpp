@@ -1,3 +1,4 @@
+#include <cmath>
 #include <shared_mutex>
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
@@ -13,18 +14,23 @@ class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
-	, _m_sensor_data{load_data()}
-	, _m_sensor_data_it{_m_sensor_data.cbegin()}
-	, dataset_first_time{_m_sensor_data_it->first}
-	, _m_start_of_time{std::chrono::high_resolution_clock::now()}
-	, _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
+		, _m_sensor_data{load_data()}
+		, dataset_first_time{_m_sensor_data.cbegin()->first}
+		, _m_start_of_time{std::chrono::high_resolution_clock::now()}
+		, _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
     {
-    	auto newoffset = correct_pose(_m_sensor_data_it->second).orientation;
+    	auto newoffset = correct_pose(_m_sensor_data.begin()->second).orientation;
     	set_offset(newoffset);
     }
 
     virtual fast_pose_type get_fast_pose() const override {
-		return get_fast_pose( std::chrono::system_clock::now() );
+		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
+		if(estimated_vsync == nullptr) {
+			std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
+			return get_fast_pose(std::chrono::system_clock::now());
+		} else {
+			return get_fast_pose(*estimated_vsync);
+		}
     }
 
     virtual pose_type get_true_pose() const override {
@@ -75,59 +81,33 @@ public:
 		return orientation * offset;
     }
 
-    virtual fast_pose_type get_fast_pose([[maybe_unused]] time_type time) const override {
-		const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
-		time_type vsync;
-		if(estimated_vsync == nullptr) {
-			std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
-			vsync = std::chrono::system_clock::now();
+    virtual fast_pose_type get_fast_pose(time_type time) const override {
+		ullong lookup_time = std::chrono::nanoseconds(time - _m_start_of_time).count() + dataset_first_time;
+		
+		auto nearest_row = _m_sensor_data.upper_bound(lookup_time);
+
+		if (nearest_row == _m_sensor_data.cend()) {
+#ifndef NDEBUG
+			std::cerr << "Time " << lookup_time << " (" << std::chrono::nanoseconds(time - _m_start_of_time).count() << " + " << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
+#endif
+			nearest_row--;
+		} else if (nearest_row == _m_sensor_data.cbegin()) {
+#ifndef NDEBUG
+			std::cerr << "Time " << lookup_time << " (" << std::chrono::nanoseconds(time - _m_start_of_time).count() << " + " << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
+#endif
 		} else {
-			vsync = *estimated_vsync;
+			// "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
+			// I already know we aren't at the begin()
+			// So I will decrement nearest_row here.
+			nearest_row--;
 		}
 
-		ullong lookup_time = std::chrono::nanoseconds(vsync - _m_start_of_time ).count() + dataset_first_time;
-		ullong  nearest_timestamp = 0;
-
-		if(lookup_time <= _m_sensor_data.begin()->first){
-			std::cerr << "Lookup time before first datum" << std::endl;
-			nearest_timestamp=_m_sensor_data.begin()->first;
-		}
-		else if (lookup_time >= _m_sensor_data.rbegin()->first){
-			std::cerr << "Lookup time after last datum" << std::endl;
-			nearest_timestamp=_m_sensor_data.rbegin()->first;
-		}
-		else{
-			std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it_local;
-			_m_sensor_data_it_local = _m_sensor_data.cbegin();
-			ullong prev_timestamp = _m_sensor_data_it_local->first;
-			while ( _m_sensor_data_it_local != _m_sensor_data.end() ){
-				ullong cur_timestamp = _m_sensor_data_it_local->first;
-				if(lookup_time > cur_timestamp){
-					prev_timestamp = cur_timestamp;
-					++_m_sensor_data_it_local;
-				}
-				else{
-					if((lookup_time - prev_timestamp) >= (cur_timestamp - lookup_time) ){
-						nearest_timestamp = cur_timestamp;
-						break;
-					}
-					else{
-						nearest_timestamp = prev_timestamp;
-						break;
-					}
-				}
-			}
-			// Assert while loop "break"ed out (not normal exit)
-			assert(nearest_timestamp);
-		}
-
-
-		auto looked_up_pose = _m_sensor_data.find(nearest_timestamp)->second;
-		looked_up_pose.sensor_time = _m_start_of_time + std::chrono::nanoseconds{nearest_timestamp - dataset_first_time};
+		auto looked_up_pose = nearest_row->second;
+		looked_up_pose.sensor_time = _m_start_of_time + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
 		return fast_pose_type{
 			.pose = correct_pose(looked_up_pose),
 			.predict_computed_time = std::chrono::system_clock::now(),
-			.predict_target_time = vsync
+			.predict_target_time = time
 		};
 
 	}
@@ -141,7 +121,6 @@ private:
 
 	/*pyh: reusing data_loading from ground_truth_slam*/
 	const std::map<ullong, sensor_types> _m_sensor_data;
-	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	ullong dataset_first_time;
 	time_type _m_start_of_time;
 	std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;

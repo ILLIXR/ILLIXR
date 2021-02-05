@@ -92,10 +92,6 @@ namespace ILLIXR {
 		time_type predict_target_time; // Time that prediction targeted.
 	} fast_pose_type;
 
-	typedef struct {
-		int pixel[1];
-	} camera_frame;
-
 	// Using arrays as a swapchain
 	// Array of left eyes, array of right eyes
 	// This more closely matches the format used by Monado
