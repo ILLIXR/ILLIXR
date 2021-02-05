@@ -73,7 +73,8 @@ public:
 			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
 			abort();
 		}
-		assert(errno == 0 && "errno was set during run. Maybe spurious?");
+		// This will be re-enabled in #225
+		// assert(errno == 0 && "errno was set during run. Maybe spurious?");
 		/*
 		  Note that this assertion can have false positives AND false negatives!
 		  - False positive because the contract of some functions specifies that errno is only meaningful if the return code was an error [1].
