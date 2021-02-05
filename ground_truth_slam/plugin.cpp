@@ -29,16 +29,16 @@ public:
 
 	void feed_ground_truth(const imu_cam_type *datum) {
 		ullong rounded_time = datum->dataset_time;
-		_m_sensor_data_it = _m_sensor_data.find(rounded_time);
+		auto it = _m_sensor_data.find(rounded_time);
 
-		if (_m_sensor_data_it == _m_sensor_data.end()) {
+		if (it == _m_sensor_data.end()) {
 #ifndef NDEBUG
 				std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
 #endif
 			return;
 		}
 
-		pose_type* true_pose = new pose_type{_m_sensor_data_it->second};
+		pose_type* true_pose = new pose_type{it->second};
 		true_pose->sensor_time = datum->time;
 		// Ground truth position offset is the first ground truth position
 		if (first_time) {
@@ -70,8 +70,6 @@ private:
 	std::unique_ptr<writer<Eigen::Vector3f>> _m_ground_truth_offset;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;
-	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
-
 	bool first_time;
 };
 
