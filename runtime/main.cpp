@@ -66,7 +66,7 @@ private:
 
 
 int main(int argc, char* const* argv) {
-	r = ILLIXR::runtime_factory(nullptr);
+	r = ILLIXR::runtime_factory();
 
 #ifndef NDEBUG
     /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info

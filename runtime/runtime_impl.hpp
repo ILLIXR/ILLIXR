@@ -18,12 +18,12 @@ using namespace ILLIXR;
 
 class runtime_impl : public runtime {
 public:
-	runtime_impl(GLXContext appGLCtx) {
+	runtime_impl() {
 		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
-		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, appGLCtx));
 		pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
+		// pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, appGLCtx));
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
@@ -118,7 +118,7 @@ private:
 	std::vector<std::unique_ptr<plugin>> plugins;
 };
 
-extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
+extern "C" runtime* runtime_factory() {
     RAC_ERRNO_MSG("runtime_impl before creating the runtime");
-	return new runtime_impl{appGLCtx};
+	return new runtime_impl{};
 }

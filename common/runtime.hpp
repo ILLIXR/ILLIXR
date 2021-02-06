@@ -31,6 +31,6 @@ namespace ILLIXR {
 
 	};
 
-	extern "C" runtime* runtime_factory(GLXContext appGLCtx);
+	extern "C" runtime* runtime_factory();
 
 }
