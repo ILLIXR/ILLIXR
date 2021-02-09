@@ -8,7 +8,7 @@ The Runner tool is responsible for
     compiling each plugin,
     and
     launching the ILLIXR application.
-Runner is necessary for our project, since ILLIXR manages plugins and data that span
+Runner is necessary for our project since ILLIXR manages plugins and data that span
     many locations and launch [_configurations_][11].
 A configuration (defined via a [_YAML_][13] file in `ILLIXR/configs/`) specifies parameters
     and plugins required to launch ILLIXR for a specific design/evaluation scenario.
@@ -38,7 +38,7 @@ The [_OpenXR_][14] application to run is defined in the `action.openxr_app`
 
 As introduced in the [introduction to the ILLIXR build process][12], a [_Configuration_][11]
     (or _config_) describes the key information needed to launch an ILLIXR application.
-In this section follows a detailed breakdown of the structure of a configuration file.
+This section provides a detailed breakdown of the structure of a configuration file.
 The default `ILLIXR/configs/native.yaml` for the `native` action will be used as
     the running example.
 
@@ -148,7 +148,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
         or passed as parsed/unparsed as strings in env-vars on a per-component basis.
     This gives us a consistent way to deal with all configurations.
 
--   Currently, plugins are specificed by a path to the directory containing their source code
+-   Currently, plugins are specified by a path to the directory containing their source code
         and build system.
 
 
@@ -163,7 +163,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
 
 -   It should be easy to build in parallel.
 
--   Always rebuild every time, so the binary is always "fresh".
+-   Always rebuild every time, so the binary is always "fresh."
     This is a great convenience when experimenting.
     However, this implies that rebuilding must be fast when not much has changed.
 

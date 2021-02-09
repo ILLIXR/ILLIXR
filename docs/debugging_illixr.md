@@ -4,7 +4,7 @@
 ## Debugging Locally
 The config described in [Building ILLIXR][10] supports running the runtime with
     arbitrary commands like `gdb`.
-When debugging locally we recommend using either `gdb` or `valgrind` in this way.
+When debugging locally, we recommend using either `gdb` or `valgrind` in this way.
 
 ## Debugging Pull Requests or with a Clean Environment
 ### 1. Get a Docker Image

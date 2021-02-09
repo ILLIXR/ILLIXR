@@ -24,23 +24,20 @@ We use the term _components_ and not _kernels_ or _computations_ because
 At the moment, ILLIXR interfaces the following state-of-the-art components,
     with periodic ILLIXR source snapshots hosted on our [releases page][25]:
 
-1.  [Simultaneous Localization and Mapping][1] **
+-   Perceptual
+    1.  [Eye tracking][3] **
+    1.  [Scene reconstruction][2] **
+    1.  [Simultaneous Localization and Mapping][1] **
 
-1.  [Scene reconstruction][2] **
+-   Visual
+    1.  [Chromatic aberration correction][5]
+    1.  [Computational holography for adaptive multi-focal displays][6] **
+    1.  [Lens distortion correction][5]
+    1.  [Time warp][5]
 
-1.  [Eye tracking][3] **
-
-1.  [Ambisonic encoding][4]
-
-1.  [Ambisonic manipulation and binauralization][4]
-
-1.  [Lens distortion correction][5]
-
-1.  [Chromatic aberration correction][5]
-
-1.  [Time warp][5]
-
-1.  [Computational holography for adaptive multi-focal displays][6] **
+-   Aural
+    1.  [Ambisonic encoding][4]
+    1.  [Ambisonic manipulation and binauralization][4]
 
 (** Source is hosted in an external repository under the [ILLIXR project][7].)
 
@@ -98,8 +95,10 @@ Other major contributors include
     Ying Jing,
     Jae Lee,
     Fang Lu,
+    Yihan Pang,
     Joseph Ravichandran,
     Finn Sinclair,
+    Boyuan Tian,
     Henghzhi Yuan,
     and
     Jeffrey Zhang.
@@ -158,23 +157,23 @@ However, ILLIXR does contain software developed solely by us.
 The external libraries and softwares included in ILLIXR each have their own licenses and
     must be used according to those licenses:
 
--   [Open-VINS][12] \ [GNU General Public License v3.0][13]
-
 -   [ElasticFusion][14] \ [ElasticFusion license][15]
-
--   [RITnet][16] \ [MIT License][17]
-
--   [libspatialaudio][18] \ [GNU Lesser General Public License v2.1][19]
-
--   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
-
--   [Monado][22] \ [Boost Software License 1.0][23]
 
 -   [GTSAM][27] \ [Simplified BSD License][28]
 
+-   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
+
 -   [Kimera-VIO][29] \ [Simplified BSD License][30]
 
+-   [libspatialaudio][18] \ [GNU Lesser General Public License v2.1][19]
+
+-   [Monado][22] \ [Boost Software License 1.0][23]
+
 -   [moodycamel::ConcurrentQueue][31] \ [Simplified BSD License][32]
+
+-   [Open-VINS][12] \ [GNU General Public License v3.0][13]
+
+-   [RITnet][16] \ [MIT License][17]
 
 Note that ILLIXR's extensibility allows the source to be configured and compiled using only
     permissively licensed software.

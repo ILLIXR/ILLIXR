@@ -23,6 +23,20 @@ Please follow these steps when making pull requests (PRs):
 1.  Open a PR, and link it to the issue that the PR aims to resolve.
     Please give the PR a descriptive name.
 
+1.  As you make progress on your PR, keep your branch up-to-date with the `master` branch which
+        may have been updated after starting your PR.
+    Your PR **MUST** be updated to reflect changes to `master` in order to be merged.
+    Use the following procedure for updating your branch:
+
+    <!--- language: lang-shell -->
+        # While on your PR branch <issue-branch>
+        git commit
+        git checkout master
+        git pull origin --rebase
+        git checkout <issue-branch>
+        git rebase master
+        git push origin <issue-branch> --force-with-lease
+
 Why are the above steps necessary?
 
 1.  Assigning the issue to yourself ensures that multiple people don't work on the same thing
@@ -32,6 +46,14 @@ Why are the above steps necessary?
 
 1.  Linking the issue to the PR ensures that we know which issue is being resolved,
         and also automatically closes the issue when the PR gets merged.
+
+1.  Using rebases keeps the `master` and feature branch histories streamlined (minimizing branching),
+        thus making it easier to compose feature branches for integration testing.
+
+If your PR has not seen activity from the ILLIXR team after a long period of time (e.g., 2 weeks),
+    feel free to contact the team directly on the GitHub Issue Conversation tab or at
+    the Gitter forum linked below.
+
 
 # Getting Help
 
