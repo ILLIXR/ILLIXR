@@ -461,7 +461,7 @@ public:
 
 		glBindVertexArray(tw_vao);
 
-		auto gpu_start_wall_time = _m_rtc->now();
+		[[maybe_unused]]auto gpu_start_wall_time = _m_rtc->now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
@@ -540,19 +540,19 @@ public:
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_point>{GetNextSwapTimeEstimate()});
 
+#ifndef NDEBUG
 		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
 		std::chrono::nanoseconds predict_to_display = lastSwapTime - latest_pose.predict_computed_time;
 		std::chrono::nanoseconds render_to_display = lastSwapTime - most_recent_frame->render_time;
 
-		mtp_logger.log(record{mtp_record, {
-			{iteration_no},
-			{lastSwapTime},
-			{imu_to_display},
-			{predict_to_display},
-			{render_to_display},
-		}});
+		// mtp_logger.log(record{mtp_record, {
+		// 	{iteration_no},
+		// 	{lastSwapTime},
+		// 	{imu_to_display},
+		// 	{predict_to_display},
+		// 	{render_to_display},
+		// }});
 
-#ifndef NDEBUG
 		auto afterSwap = glfwGetTime();
 		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
@@ -572,12 +572,12 @@ public:
 
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
-			{iteration_no},
-			{gpu_start_wall_time},
-			{_m_rtc->now()},
-			{std::chrono::nanoseconds(elapsed_time)},
-		}});
+		// timewarp_gpu_logger.log(record{timewarp_gpu_record, {
+		// 	{iteration_no},
+		// 	{gpu_start_wall_time},
+		// 	{_m_rtc->now()},
+		// 	{std::chrono::nanoseconds(elapsed_time)},
+		// }});
 	}
 
 	virtual ~timewarp_gl() override {

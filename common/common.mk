@@ -2,7 +2,7 @@
 # Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
-DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -fsanitize=thread
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror
 #-fsanitize=thread
 # Unfortunately, we have what I believe to be a false-positive TSan datarace in Switchboard.
 # Therefore, I will not enable TSan.

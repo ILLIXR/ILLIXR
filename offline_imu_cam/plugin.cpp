@@ -51,6 +51,10 @@ protected:
 		}
 	}
 
+	virtual void _p_thread_setup() override {
+		// std::this_thread::sleep_for(std::chrono::seconds{5});
+	}
+
 	virtual void _p_one_iteration() override {
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 		time_point real_now = _m_rtc->get_start() + std::chrono::nanoseconds{dataset_now - dataset_first_time};

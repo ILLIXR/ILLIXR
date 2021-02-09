@@ -69,6 +69,7 @@ namespace ILLIXR{
             }
 #ifndef NDEBUG
             printf("Found %d matching FB configs\n", fbcount);
+			fflush(stdout);
 
             // Pick the FB config/visual with the most samples per pixel
             printf("Getting XVisualInfos\n");
