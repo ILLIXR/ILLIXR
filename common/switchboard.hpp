@@ -140,7 +140,7 @@ private:
      *
      * Each topic can have 0 or more topic_subscriptions.
      */
-    class topic_subscription {
+    class TopicSubscription : public ManagedThread {
     private:
         const std::string& _m_topic_name;
         plugin_id_t _m_plugin_id;
@@ -154,17 +154,7 @@ private:
         std::size_t _m_dequeued {0};
         std::size_t _m_idle_cycles {0};
 
-        // This needs to be last,
-        // so it is destructed before the data it uses.
-        managed_thread _m_thread;
-
-        void thread_on_start() {
-#ifndef NDEBUG
-            // std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
-#endif
-        }
-
-        void thread_body() {
+        void body() {
             // Try to pull event off of queue
             ptr<const event> this_event;
             std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
@@ -194,7 +184,7 @@ private:
             }
         }
 
-        void thread_on_stop() {
+        void on_stop() {
             // Drain queue
             std::size_t unprocessed = _m_enqueued - _m_dequeued;
             {
@@ -219,16 +209,13 @@ private:
         }
 
     public:
-        topic_subscription(const std::string& topic_name, plugin_id_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
+        TopicSubscription(const std::string& topic_name, plugin_id_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
             : _m_topic_name{topic_name}
             , _m_plugin_id{plugin_id}
             , _m_callback{callback}
             , _m_record_logger{record_logger_}
             , _m_cb_log{record_logger_}
-            , _m_thread{[this]{this->thread_body();}, [this]{this->thread_on_start();}, [this]{this->thread_on_stop();}}
-        {
-            _m_thread.start();
-        }
+        { }
 
         /**
          * @brief Tells the subscriber about @p this_event
@@ -236,11 +223,9 @@ private:
          * Thread-safe
          */
         void enqueue(ptr<const event>&& this_event) {
-            if (_m_thread.get_state() == managed_thread::state::running) {
-                [[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
-                assert(ret);
-                _m_enqueued++;
-            }
+			[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
+			assert(ret);
+			_m_enqueued++;
         }
     };
 
@@ -266,7 +251,7 @@ private:
         std::atomic<size_t> _m_latest_index;
         static constexpr std::size_t _m_latest_buffer_size = 256;
         std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
-        std::list<topic_subscription> _m_subscriptions;
+        std::list<ChildCallParent<TopicSubscription>> _m_subscriptions;
         std::shared_mutex _m_subscriptions_lock;
 
     public:
@@ -310,10 +295,10 @@ private:
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
             std::unique_lock lock{_m_subscriptions_lock};
-            for (topic_subscription& ts : _m_subscriptions) {
+            for (auto& ts : _m_subscriptions) {
                 // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
                 ptr<const event> event_ptr_copy {this_event};
-                ts.enqueue(std::move(event_ptr_copy));
+                ts.child().enqueue(std::move(event_ptr_copy));
             }
             // std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1 + len(sub)) \n";
         }
@@ -471,7 +456,6 @@ public:
             ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
             assert(this_event.unique());
             _m_topic.put(std::move(this_event));
-        }
     };
 
 private:

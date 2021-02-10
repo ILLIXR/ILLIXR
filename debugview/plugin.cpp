@@ -11,7 +11,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "common/threadloop.hpp"
+#include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/shader_util.hpp"
@@ -47,29 +47,22 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
 
 }
 
-class debugview : public threadloop {
+class DebugviewThread : public ManagedThread {
 public:
 
 	// Public constructor, Spindle passes the phonebook to this
 	// constructor. In turn, the constructor fills in the private
 	// references to the switchboard plugs, so the plugin can read
 	// the data whenever it needs to.
-	debugview(std::string name_, phonebook *pb_)
-		: threadloop{name_, pb_}
-		, sb{pb->lookup_impl<switchboard>()}
+	DebugviewThread(phonebook *pb)
+		: sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
 		, _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")}
+		, _m_imu_cam_with_img{sb->get_reader<imu_cam_type>("imu_cam_with_img")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-	{}
-
-	void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
-		if (datum == nullptr) {
-		    return;
-		}
-		if(datum->img0.has_value() && datum->img1.has_value()) {
-			last_datum_with_images = datum;
-        }
+	{
+		start();
 	}
 
 	void draw_GUI() {
@@ -239,6 +232,7 @@ public:
 	}
 
 	bool load_camera_images() {
+		switchboard::ptr<const imu_cam_type> last_datum_with_images = _m_imu_cam_with_img.get_ro_nullable();
 		if (last_datum_with_images == NULL) {
 			return false;
 		}
@@ -290,12 +284,12 @@ public:
 		return headsetPosition * rotationMatrixHomogeneous; 
 	}
 
-	void _p_thread_setup() override {
+	virtual void on_start() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glfwMakeContextCurrent(gui_window);
 	}
 
-	void _p_one_iteration() override {
+	virtual void body() override {
 		{
 			glfwPollEvents();
 
@@ -394,7 +388,7 @@ private:
 
 	switchboard::reader<pose_type> _m_slow_pose;
     switchboard::reader<imu_raw_type> _m_fast_pose;
-	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
+	switchboard::reader<imu_cam_type> _m_imu_cam_with_img;
 	GLFWwindow* gui_window;
 
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
@@ -413,7 +407,6 @@ private:
 	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
 
-	switchboard::ptr<const imu_cam_type> last_datum_with_images;
 	// std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
 	GLuint camera_textures[2];
 	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
@@ -436,15 +429,11 @@ private:
 public:
 	/* compatibility interface */
 
-	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
-	virtual void start() override {
+	void start() {
 		// The "imu_cam" topic is not really a topic, in the current implementation.
 		// It serves more as an event stream. Camera frames are only available on this topic
 		// the very split second they are made available. Subsequently published packets to this
 		// topic do not contain the camera frames.
-   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-        	this->imu_cam_handler(datum);
-    	});
 
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		const char* glsl_version = "#version 430 core";
@@ -529,11 +518,9 @@ public:
 		glfwMakeContextCurrent(NULL);
 
 		lastTime = glfwGetTime();
-
-		threadloop::start();
 	}
 
-	virtual ~debugview() override {
+	virtual void on_stop() override {
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -541,6 +528,30 @@ public:
 		glfwDestroyWindow(gui_window);
 		glfwTerminate();
 	}
+};
+
+class debugview : public plugin {
+public:
+	debugview(const std::string& name_, phonebook* pb_)
+		: plugin{name_, pb_}
+		, _m_debugview_thread{pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+		, _m_imu_cam_writer{sb->get_writer<imu_cam_type>("imu_cam_with_img")}
+	{
+		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+			if(datum != NULL && datum->img0.has_value() && datum->img1.has_value()) {
+				// I have to do a copy here, because Switchboard expects a writabel ptr with ref-count of 1.
+				// Avoid this in the future.
+				// The underlying image is not copied because cv::Mat has reference-semantics.
+				_m_imu_cam_writer.put(_m_imu_cam_writer.allocate(*datum));
+			}
+		});
+	}
+
+private:
+	ChildCallParent<DebugviewThread> _m_debugview_thread;
+	const std::shared_ptr<switchboard> sb;
+	switchboard::writer<imu_cam_type> _m_imu_cam_writer;
 };
 
 PLUGIN_MAIN(debugview);
