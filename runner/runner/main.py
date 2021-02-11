@@ -84,6 +84,8 @@ def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
+    enable_offload_flag = config["enable_offload"]
+    enable_alignment_flag = config["enable_alignment"]
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [
@@ -98,6 +100,8 @@ def load_native(config: Mapping[str, Any]) -> None:
     env_override = dict(
         ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
+        ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+        ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         KIMERA_ROOT=config["action"]["kimera_path"],
     )
     env_list = [

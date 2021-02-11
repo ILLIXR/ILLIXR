@@ -125,6 +125,12 @@ properties:
   demo_data:
     $ref: '#/definitions/path'
     description: URL to OBJs to render in gldemo.
+  enable_offload:
+    type: number
+    description: Flag to activate data collection at runtime.
+  enable_alignment:
+    type: number
+    description: Flag to activate the ground-truth alignment.
   profile:
     default: dbg
     type: string
