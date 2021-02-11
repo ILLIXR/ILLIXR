@@ -63,12 +63,14 @@ public:
 		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
+		, _m_offload_data{sb->publish<texture_pose>("texture_pose")}
 		  // TODO: Use #198 to configure this. Delete getenv_or.
 		  // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
 		  // Timewarp poses a "second channel" by which pose data can correct the video stream,
 		  // which results in a "multipath" between the pose and the video stream.
 		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
 		, disable_warp{bool(std::stoi(getenv_or("ILLIXR_TIMEWARP_DISABLE", "0")))}
+		, enable_offload{bool(std::stoi(getenv_or("ILLIXR_OFFLOAD_ENABLE", "0")))}
 	{ }
 
 private:
@@ -106,12 +108,18 @@ private:
 	// Switchboard plug for publishing frame stale-ness metrics
 	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_frame_age;
 
+	// Switchboard plug for publishing offloaded data
+	std::unique_ptr<writer<texture_pose>> _m_offload_data;
+
 	record_coalescer timewarp_gpu_logger;
 	record_coalescer mtp_logger;
 
 	GLuint timewarpShaderProgram;
 
 	time_type lastSwapTime;
+
+	time_type startGetTexTime;
+	time_type endGetTexTime;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -158,7 +166,54 @@ private:
 	// Hologram call data
 	long long _hologram_seq{0};
 
+        // Sequence number of offload data
+        long long _offload_seq{0};
+
 	bool disable_warp;
+
+	bool enable_offload;
+
+        // PBO buffer for reading texture image
+        GLuint PBO_buffer;
+
+        // Time of reading and transferring texture image
+	int offload_time;
+
+        GLubyte* readTextureImage(){
+
+                GLubyte* pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+
+                // Start timer
+                startGetTexTime = std::chrono::high_resolution_clock::now();
+
+                // Enable PBO buffer
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+
+                // Read texture image to PBO buffer
+                glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+                // Transfer texture image from GPU to Pinned Memory(CPU)
+                GLubyte *ptr = (GLubyte*)glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
+
+                // Copy texture to CPU memory
+                memcpy(pixels, ptr, SCREEN_WIDTH * SCREEN_HEIGHT * 3);
+
+                // Unmap the buffer
+                glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+
+                // Unbind the buffer
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+                // Terminate timer
+                endGetTexTime = std::chrono::high_resolution_clock::now();
+
+                // Record the image collection time
+                offload_time = std::chrono::duration_cast<std::chrono::milliseconds>(endGetTexTime - startGetTexTime).count();
+
+                std::cout << "Texture image collecting time: " << offload_time << "\t";
+
+                return pixels;
+        }
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 
@@ -405,6 +460,13 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
 
+
+                // Config PBO for texture image collection
+                glGenBuffers(1, &PBO_buffer);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+                glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
+
+
 		glXMakeCurrent(xwin->dpy, None, NULL);
 	}
 
@@ -575,6 +637,24 @@ public:
 			{predict_to_display},
 			{render_to_display},
 		}});
+
+		if (enable_offload)
+		{
+			// Read texture image from texture buffer
+			GLubyte* image = readTextureImage();
+
+			// Publish image and pose
+			auto offload_data = new texture_pose;
+			offload_data->seq = ++_offload_seq;
+			offload_data->image = image;
+			offload_data->pose_time = lastSwapTime;
+			offload_data->offload_time = offload_time;
+			offload_data->position = latest_pose.pose.position;
+			offload_data->latest_quaternion = latest_pose.pose.orientation;
+			offload_data->render_quaternion = most_recent_frame->render_pose.pose.orientation;
+
+			_m_offload_data->put(offload_data);
+		}
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {

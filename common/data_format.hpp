@@ -135,4 +135,14 @@ namespace ILLIXR {
 		float	lensSeparationInMeters;
 		float	metersPerTanAngleAtCenter;
 	};
+
+        typedef struct {
+                int seq;
+		int offload_time;
+                unsigned char *image;
+                time_type pose_time;
+                Eigen::Vector3f position;
+                Eigen::Quaternionf latest_quaternion;
+                Eigen::Quaternionf render_quaternion;
+        } texture_pose;
 }
