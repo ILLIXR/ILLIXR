@@ -302,8 +302,8 @@ private:
          * Thread-safe
          */
         void put(ptr<const event>&& this_event) {
-			assert(this_event);
-			assert(this_event.unique());
+			assert(this_event != nullptr);
+			// assert(this_event.unique());  /// <-- TODO: Revisit for solution that guarantees uniqueness
 
 			/* The pointer that this gets exchanged with needs to get dropped. */
 			size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
@@ -366,7 +366,8 @@ public:
         {
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
-                std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name() << ", but caller used type" << typeid(specific_event).name() << std::endl;
+                std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name()
+                          << ", but caller used type" << typeid(specific_event).name() << std::endl;
                 abort();
             }
 #endif
@@ -468,26 +469,18 @@ public:
          */
 		void put(ptr<specific_event>&& this_specific_event) {
 			assert(typeid(specific_event) == _m_topic.ty());
-			assert(this_specific_event);
+			assert(this_specific_event != nullptr);
 			assert(this_specific_event.unique());
-			ptr<event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<specific_event>(std::move(this_specific_event)));
-			assert(this_event.unique());
+			ptr<const event> this_event{nullptr};
+            {
+                /// New scope for temporary pointer type conversion
+                ptr<specific_event> se_ptr{std::static_pointer_cast<specific_event>(std::move(this_specific_event))};
+                ptr<event> e_ptr{std::dynamic_pointer_cast<event>(std::move(se_ptr))};
+                this_event = std::const_pointer_cast<const event>(std::move(e_ptr));
+            }
+            assert(this_event != nullptr);
+			// assert(this_event.unique());  /// <-- TODO: Revisit for solution that guarantees uniqueness
 			_m_topic.put(std::move(this_event));
-        }
-
-        /**
-         * @brief Like `new`/`malloc` but more efficient for this specific case.
-         *
-         * There is an optimization available which has not yet been implemented: switchboard can reuse memory
-         * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
-         * B. B's deallocation through the destructor, and A's allocation through this method completes
-         * the cycle in a [double-buffer (AKA swap-chain)][2].
-         *
-         * [1]: https://en.wikipedia.org/wiki/Slab_allocation
-         * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
-         */
-        specific_event* allocate() {
-            return reinterpret_cast<specific_event*>(new std::array<std::byte, sizeof(specific_event)>);
         }
     };
 
@@ -505,7 +498,9 @@ private:
                 topic& topic_ = found->second;
 #ifndef NDEBUG
                 if (typeid(specific_event) != topic_.ty()) {
-                    std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name() << ", but caller used type" << typeid(specific_event).name() << std::endl;
+                    std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name()
+                              << ", but caller used type" << typeid(specific_event).name()
+                              << std::endl;
                     abort();
                 }
 #endif

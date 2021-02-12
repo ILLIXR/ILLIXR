@@ -286,24 +286,6 @@ private:
 
 public:
 
-	virtual skip_option _p_should_skip() override {
-		using namespace std::chrono_literals;
-		// Sleep for approximately 90% of the time until the next vsync.
-		// Scheduling granularity can't be assumed to be super accurate here,
-		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
-		// MTP here. More you wait, closer to the display sync you sample the pose.
-
-		// TODO: poll GLX window events
-		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		if(_m_eyebuffer.get_ro_nullable()) {
-			return skip_option::run;
-		} else {
-			// Null means system is nothing has been pushed yet
-			// because not all components are initialized yet
-			return skip_option::skip_and_yield;
-		}
-	}
-
 	virtual void _p_one_iteration() override {
 		warp(glfwGetTime());
 	}
@@ -498,24 +480,51 @@ public:
 			// to that region of the screen. This prevents re-uploading
 			// GPU data for each eye.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+			glVertexAttribPointer(
+			    distortion_pos_attr,
+			    3,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t))
+			);
 			glEnableVertexAttribArray(distortion_pos_attr);
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			glVertexAttribPointer(
+			    distortion_uv0_attr,
+			    2,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t))
+			);
 			glEnableVertexAttribArray(distortion_uv0_attr);
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			glVertexAttribPointer(
+			    distortion_uv1_attr,
+			    2,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t))
+			);
 			glEnableVertexAttribArray(distortion_uv1_attr);
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			glVertexAttribPointer(
+			    distortion_uv2_attr,
+			    2,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t))
+			);
 			glEnableVertexAttribArray(distortion_uv2_attr);
-
 
 			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
 			// Specify which layer of the eye texture we're going to be using.
@@ -534,20 +543,23 @@ public:
 #ifndef NDEBUG
 		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
 		if (log_count > LOG_PERIOD) {
-			printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+			printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n",
+			      (float)(delta.count() / 1000000.0));
 			// We have always been warping from the correct swap, so I will disable this.
 			// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
 		}
 
-		if(delta > vsync_period)
-		{
+		if (delta > vsync_period) {
 			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
 		}
 #endif
 		// Call Hologram
-		_m_hologram.put(new (_m_hologram.allocate()) switchboard::event_wrapper<std::size_t>{++_hologram_seq});
+        switchboard::ptr<switchboard::event_wrapper<std::size_t>> datum_hologram_seq =
+            _m_hologram.allocate<switchboard::event_wrapper<std::size_t>>(++_hologram_seq);
+		_m_hologram.put(std::move(datum_hologram_seq));
 
-		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
+		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once
+		//     the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
 		[[maybe_unused]] auto beforeSwap = glfwGetTime();
 
@@ -558,7 +570,10 @@ public:
 		[[maybe_unused]] auto afterSwap = glfwGetTime();
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_type>{GetNextSwapTimeEstimate()});
+		time_type time_estimate = GetNextSwapTimeEstimate();
+        switchboard::ptr<switchboard::event_wrapper<time_type>> datum_time_estimate =
+            _m_vsync_estimate.allocate<switchboard::event_wrapper<time_type>>(std::move(time_estimate));
+		_m_vsync_estimate.put(std::move(datum_time_estimate));
 
 		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
 		std::chrono::nanoseconds predict_to_display = lastSwapTime - latest_pose.predict_computed_time;
@@ -574,11 +589,18 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-			printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
-			printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
-			printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
-			printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);
-			std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+			printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n",
+			      (float)(afterSwap - beforeSwap) * 1000);
+			printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n",
+			      float(imu_to_display.count()) / 1e6);
+			printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n",
+			      float(predict_to_display.count()) / 1e6);
+			printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n",
+			      float(render_to_display.count()) / 1e6);
+			std::cout << "Timewarp estimating: "
+			          << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count()
+			          << "ms in the future"
+			          << std::endl;
 		}
 #endif
 

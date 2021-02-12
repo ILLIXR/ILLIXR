@@ -14,7 +14,7 @@ public:
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
-        , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<<Eigen::Vector3f>>("ground_truth_offset")}
+        , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
     { }
 
@@ -33,41 +33,32 @@ public:
 
     virtual pose_type get_true_pose() const override {
         switchboard::ptr<const pose_type> pose_ptr = _m_true_pose.get_ro_nullable();
-        return correct_pose(
-            pose_ptr ? *pose_ptr : pose_type{
-                std::chrono::system_clock::now(),
-                Eigen::Vector3f{0, 0, 0},
-                Eigen::Quaternionf{1, 0, 0, 0},
-            }
-        );
-    }
+        switchboard::ptr<const pose_type> offset_ptr = _m_true_pose.get_ro_nullable();
 
-	virtual pose_type get_true_pose() const override {
-		const auto * const pose = _m_true_pose->get_latest_ro();
-		const auto * const offset = _m_ground_truth_offset->get_latest_ro();
-		pose_type offset_pose;
+        pose_type offset_pose;
 
 		// Subtract offset if valid pose and offset, otherwise use zero pose.
 		// Checking that pose and offset are both valid is safer than just
 		// checking one or the other because it assumes nothing about the
 		// ordering of writes on the producer's end or about the producer
 		// actually writing to both streams.
-		if (pose && offset) {
-			offset_pose = *pose;
-			offset_pose.position -= *offset;
+		if (pose_ptr != nullptr && offset_ptr != nullptr) {
+			offset_pose             = *pose_ptr;
+			offset_pose.position   -= offset_ptr->position;
 		} else {
 			offset_pose.sensor_time = std::chrono::system_clock::now();
-			offset_pose.position = Eigen::Vector3f{0, 0, 0};
+			offset_pose.position    = Eigen::Vector3f{0, 0, 0};
 			offset_pose.orientation = Eigen::Quaternionf{1, 0, 0, 0};
 		}
 
 		return correct_pose(offset_pose);
-	}
+    }
+
 
     // future_time: An absolute timepoint in the future
     virtual fast_pose_type get_fast_pose(time_type future_timestamp) const override {
         switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_ro_nullable();
-        if (!slow_pose) {
+        if (slow_pose == nullptr) {
             // No slow pose, return 0
             return fast_pose_type{
                 correct_pose(pose_type{}),
@@ -77,7 +68,7 @@ public:
         }
 
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
-        if (!imu_raw) {
+        if (imu_raw == nullptr) {
 #ifndef NDEBUG
             printf("FAST POSE IS SLOW POSE!");
 #endif
@@ -101,8 +92,17 @@ public:
         
         pose_type predicted_pose = correct_pose({
             predictor_imu_time,
-            Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)), static_cast<float>(state_plus(6))}, 
-            Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}
+            Eigen::Vector3f{
+                static_cast<float>(state_plus(4)),
+                static_cast<float>(state_plus(5)),
+                static_cast<float>(state_plus(6))
+            },
+            Eigen::Quaternionf{
+                static_cast<float>(state_plus(3)),
+                static_cast<float>(state_plus(0)),
+                static_cast<float>(state_plus(1)),
+                static_cast<float>(state_plus(2))
+            }
         });
 
         // Make the first valid fast pose be straight ahead.

@@ -64,9 +64,12 @@ public:
 	{}
 
 	void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
-		if(datum == NULL){ return; }
-		if(datum->img0.has_value() && datum->img1.has_value())
+		if (datum == nullptr) {
+		    return;
+		}
+		if(datum->img0.has_value() && datum->img1.has_value()) {
 			last_datum_with_images = datum;
+        }
 	}
 
 	void draw_GUI() {
@@ -120,8 +123,15 @@ public:
 		if (pp->fast_pose_reliable()) {
 			const pose_type predicted_pose = pp->get_fast_pose().pose;
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid predicted pose pointer");
-			ImGui::Text("Prediced pose position (XYZ):\n  (%f, %f, %f)", predicted_pose.position.x(), predicted_pose.position.y(), predicted_pose.position.z());
-			ImGui::Text("Predicted pose quaternion (XYZW):\n  (%f, %f, %f, %f)", predicted_pose.orientation.x(), predicted_pose.orientation.y(), predicted_pose.orientation.z(), predicted_pose.orientation.w());
+			ImGui::Text("Prediced pose position (XYZ):\n  (%f, %f, %f)",
+			            predicted_pose.position.x(),
+			            predicted_pose.position.y(),
+			            predicted_pose.position.z());
+			ImGui::Text("Predicted pose quaternion (XYZW):\n  (%f, %f, %f, %f)",
+			            predicted_pose.orientation.x(),
+			            predicted_pose.orientation.y(),
+			            predicted_pose.orientation.z(),
+			            predicted_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid predicted pose pointer");
 		}
@@ -129,16 +139,32 @@ public:
 		ImGui::Text("Fast pose topic:");
 		ImGui::SameLine();
 
-		switchboard::ptr<const imu_raw_type> raw_imu = _m_fast_pose.get();
+		switchboard::ptr<const imu_raw_type> raw_imu = _m_fast_pose.get_ro_nullable();
 		if (raw_imu) {
 			pose_type raw_pose;
-			raw_pose.position = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
-            raw_pose.orientation = Eigen::Quaternionf{float(raw_imu->quat.w()), float(raw_imu->quat.x()), float(raw_imu->quat.y()), float(raw_imu->quat.z())};
+			raw_pose.position = Eigen::Vector3f{
+                float(raw_imu->pos(0)),
+                float(raw_imu->pos(1)),
+                float(raw_imu->pos(2))
+            };
+            raw_pose.orientation = Eigen::Quaternionf{
+                float(raw_imu->quat.w()),
+                float(raw_imu->quat.x()),
+                float(raw_imu->quat.y()),
+                float(raw_imu->quat.z())
+            };
 			pose_type swapped_pose = pp->correct_pose(raw_pose);
 
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
-			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
-			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)", swapped_pose.orientation.x(), swapped_pose.orientation.y(), swapped_pose.orientation.z(), swapped_pose.orientation.w());
+			ImGui::Text("Fast pose position (XYZ):\n  (%f, %f, %f)",
+			            swapped_pose.position.x(),
+			            swapped_pose.position.y(),
+			            swapped_pose.position.z());
+			ImGui::Text("Fast pose quaternion (XYZW):\n  (%f, %f, %f, %f)",
+			            swapped_pose.orientation.x(),
+			            swapped_pose.orientation.y(),
+			            swapped_pose.orientation.z(),
+			            swapped_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid fast pose pointer");
 		}
@@ -146,12 +172,19 @@ public:
 		ImGui::Text("Slow pose topic:");
 		ImGui::SameLine();
 
-		switchboard::ptr<const pose_type> slow_pose_ptr = _m_slow_pose.get_nullable();
-		if(slow_pose_ptr) {
+		switchboard::ptr<const pose_type> slow_pose_ptr = _m_slow_pose.get_ro_nullable();
+		if (slow_pose_ptr) {
 			pose_type swapped_pose = pp->correct_pose(*slow_pose_ptr);
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid slow pose pointer");
-			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)", swapped_pose.position.x(), swapped_pose.position.y(), swapped_pose.position.z());
-			ImGui::Text("Slow pose quaternion (XYZW):\n  (%f, %f, %f, %f)", swapped_pose.orientation.x(), swapped_pose.orientation.y(), swapped_pose.orientation.z(), swapped_pose.orientation.w());
+			ImGui::Text("Slow pose position (XYZ):\n  (%f, %f, %f)",
+			            swapped_pose.position.x(),
+			            swapped_pose.position.y(),
+			            swapped_pose.position.z());
+			ImGui::Text("Slow pose quaternion (XYZW):\n  (%f, %f, %f, %f)",
+			            swapped_pose.orientation.x(),
+			            swapped_pose.orientation.y(),
+			            swapped_pose.orientation.z(),
+			            swapped_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid slow pose pointer");
 		}
@@ -162,8 +195,15 @@ public:
 		if (pp->true_pose_reliable()) {
 			const pose_type true_pose = pp->get_true_pose();
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
-			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose.position.x(), true_pose.position.y(), true_pose.position.z());
-			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose.orientation.x(), true_pose.orientation.y(), true_pose.orientation.z(), true_pose.orientation.w());
+			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)",
+			            true_pose.position.x(),
+			            true_pose.position.y(),
+			            true_pose.position.z());
+			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)",
+			            true_pose.orientation.x(),
+			            true_pose.orientation.y(),
+			            true_pose.orientation.z(),
+			            true_pose.orientation.w());
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
 		}
@@ -175,8 +215,14 @@ public:
 
 		ImGui::Begin("Camera + IMU");
 		ImGui::Text("Camera view buffers: ");
-		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[0].x(), camera_texture_sizes[0].y(), camera_textures[0]);
-		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(), camera_texture_sizes[1].y(), camera_textures[1]);
+		ImGui::Text("	Camera0: (%d, %d) \n		GL texture handle: %d",
+		            camera_texture_sizes[0].x(),
+		            camera_texture_sizes[0].y(),
+		            camera_textures[0]);
+		ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d",
+		            camera_texture_sizes[1].x(),
+		            camera_texture_sizes[1].y(),
+		            camera_textures[1]);
 		ImGui::End();
 
 		ImGui::SetNextWindowSize(ImVec2(700,350), ImGuiCond_Once);
@@ -192,14 +238,13 @@ public:
 		ImGui::Render();
 	}
 
-	bool load_camera_images(){
-		if(last_datum_with_images == NULL){
+	bool load_camera_images() {
+		if (last_datum_with_images == NULL) {
 			return false;
 		}
-		if(last_datum_with_images->img0.has_value()){
+		if(last_datum_with_images->img0.has_value()) {
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			cv::Mat img0;
-			cv::cvtColor(last_datum_with_images->img0.value(), img0, cv::COLOR_BGR2GRAY);
+			cv::Mat img0{last_datum_with_images->img0.value().clone()};
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
 			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -212,10 +257,9 @@ public:
 			camera_texture_sizes[0] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
 		}
 		
-		if(last_datum_with_images->img1.has_value()){
+		if (last_datum_with_images->img1.has_value()) {
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			cv::Mat img1;
-			cv::cvtColor(last_datum_with_images->img1.value(), img1, cv::COLOR_BGR2GRAY);
+			cv::Mat img1{last_datum_with_images->img1.value().clone()};    /// <- Adding this here to simulate the copy
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
 			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -230,7 +274,7 @@ public:
 		return true;
 	}
 
-	Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation, const Eigen::Vector3f& positionOffset){
+	Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation, const Eigen::Vector3f& positionOffset) {
 		Eigen::Matrix4f headsetPosition;
 		headsetPosition << 1, 0, 0, position.x() + positionOffset.x(),
 						   0, 1, 0, position.y() + positionOffset.y(),
