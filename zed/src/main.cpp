@@ -202,21 +202,23 @@ protected:
             {bool(img0)},
         }});
 
-        _m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type {
+        ptr<imu_cam_type> datum0 = _m_imu_cam.allocate<imu_cam_type>(
             imu_time_point,
             av,
             la,
             img0,
             img1,
             imu_time,
-        });
+        );
+        _m_imu_cam.put(datum0);
 
         if (rgb && depth) {
-            _m_rgb_depth.put(new (_m_rgb_depth.allocate()) rgb_depth_type{
-                    rgb,
-                    depth,
-                    imu_time
-                });
+            ptr<rgb_depth_type> datum1 = _m_rgb_depth.allocate<rgb_depth_type>(
+                rgb,
+                depth,
+                imu_time
+            );
+            _m_rgb_depth.put(datum1);
         }
 
         auto imu_integrator_params = new imu_integrator_seq{

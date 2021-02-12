@@ -56,7 +56,7 @@ public:
 
 		time_type wait_time;
 
-		if(!next_vsync) {
+		if (next_vsync == nullptr) {
 			// If no vsync data available, just sleep for roughly a vsync period.
 			// We'll get synced back up later.
 			std::this_thread::sleep_for(vsync_period);
@@ -73,7 +73,7 @@ public:
 		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
 
 		// If less than one frame interval has passed since we last rendered...
-		if(hasRenderedThisInterval)
+		if (hasRenderedThisInterval)
 		{
 			// We'll wait until the next vsync, plus a small delay time.
 			// Delay time helps with some inaccuracies in scheduling.
@@ -210,16 +210,22 @@ public:
 
 			glFlush();
 
-			// Publish our submitted frame handle to Switchboard!
-			rendered_frame* frame = new (_m_eyebuffer.allocate()) rendered_frame;
-			frame->texture_handles[0] = eyeTextures[0];
-			frame->texture_handles[1] = eyeTextures[1];
-			frame->swap_indices[0] = buffer_to_use;
-			frame->swap_indices[1] = buffer_to_use;
+			/// Publish our submitted frame handle to Switchboard!
+			rendered_frame rf;
+			rf.texture_handles[0] = eyeTextures[0];
+			rf.texture_handles[1] = eyeTextures[1];
+			rf.swap_indices[0] = buffer_to_use;
+			rf.swap_indices[1] = buffer_to_use;
+			rf.render_pose = fast_pose;
+            /// Guessing sample_time should be set to now() (was not set previously)
+            rf.sample_time = std::chrono::high_resolution_clock::now();
+			rf.render_time = std::chrono::high_resolution_clock::now();
 
-			frame->render_pose = fast_pose;
+            switchboard::ptr<rendered_frame> frame = _m_eyebuffer.allocate<rendered_frame>(std::move(rf));
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-			_m_eyebuffer.put(frame);
+
+			_m_eyebuffer.put(std::move(frame));
+
 			lastFrameTime = std::chrono::system_clock::now();
 		}
 

@@ -24,13 +24,14 @@ public:
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
-		, _m_imu_integrator{_m_sb->get_writer<imu_integrator_seq>("imu_integrator_seq")}
+		, _m_imu_integrator{_m_sb->get_writer<switchboard::event_wrapper<imu_integrator_seq>>("imu_integrator_seq")}
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
 	{ }
 
 protected:
+
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
 			dataset_now = _m_sensor_data_it->first;
@@ -56,8 +57,10 @@ protected:
 	virtual void _p_one_iteration() override {
 	    assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
-
-		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
+#ifndef NDEBUG
+        std::chrono::time_point<std::chrono::nanoseconds> tp_dataset_now{std::chrono::nanoseconds{dataset_now}};
+		std::cerr << " IMU time: " << tp_dataset_now.time_since_epoch().count() << std::endl;
+#endif /// NDEBUG
 		time_type real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
@@ -89,20 +92,23 @@ protected:
 		}
 #endif /// NDEBUG
 
-		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
+        imu_cam_type datum_imu_cam_tmp {
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
 			cam0,
 			cam1,
 			dataset_now,
-		};
-		_m_imu_cam->put(datum);
+        };
+        switchboard::ptr<imu_cam_type> datum_imu_cam = _m_imu_cam.allocate<imu_cam_type>(std::move(datum_imu_cam_tmp));
+		_m_imu_cam.put(std::move(datum_imu_cam));
 
-		auto imu_integrator_params = new imu_integrator_seq{
-			.seq = static_cast<int>(++_imu_integrator_seq),
-		};
-		_m_imu_integrator->put(imu_integrator_params);
+        imu_integrator_seq datum_imu_int_tmp {
+			static_cast<int>(++_imu_integrator_seq),
+        };
+        switchboard::ptr<switchboard::event_wrapper<imu_integrator_seq>> datum_imu_int =
+            _m_imu_integrator.allocate<switchboard::event_wrapper<imu_integrator_seq>>(std::move(datum_imu_int_tmp));
+		_m_imu_integrator.put(std::move(datum_imu_int));
 
 		RAC_ERRNO_MSG("offline_imu_cam at bottom of iteration");
 	}
@@ -120,7 +126,7 @@ private:
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	const std::shared_ptr<switchboard> _m_sb;
 	switchboard::writer<imu_cam_type> _m_imu_cam;
-    switchboard::writer<imu_integrator_seq> _m_imu_integrator;
+    switchboard::writer<switchboard::event_wrapper<imu_integrator_seq>> _m_imu_integrator;
 
 	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;

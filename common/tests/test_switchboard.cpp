@@ -116,7 +116,7 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 		std::thread writer {[&sb] {
 			auto writer = sb.get_writer<uint64_wrapper>("multiples_of_six");
 			for (uint64_t i = 1; i < MAX_ITERATIONS; ++i) {
-				uint64_wrapper* datum = new (writer.allocate()) uint64_wrapper {6*i};
+				ptr<uint64_wrapper> datum = writer.allocate<uint64_wrapper>(6*i);
 				// std::cerr << "writer-0: " << *datum << std::endl;
 				writer.put(datum);
 				long_delay();

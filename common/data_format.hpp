@@ -158,6 +158,21 @@ namespace ILLIXR {
 		fast_pose_type render_pose; // The pose used when rendering this frame.
 		time_type sample_time;
 		time_type render_time;
+		rendered_frame() { }
+		rendered_frame(GLuint texture_handles_[2],
+		               GLuint swap_indices_[2],
+		               fast_pose_type render_pose_,
+                       time_type sample_time_,
+                       time_type render_time_)
+            : render_pose(render_pose_)
+            , sample_time(sample_time_)
+            , render_time(render_time_)
+        {
+            texture_handles[0]  = texture_handles_[0];
+            texture_handles[1]  = texture_handles_[1];
+            swap_indices[0]     = swap_indices_[0];
+            swap_indices[1]     = swap_indices_[1];
+        }
 	};
 
 	typedef struct {

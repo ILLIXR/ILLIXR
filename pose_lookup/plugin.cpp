@@ -41,9 +41,8 @@ public:
     }
 
     virtual fast_pose_type get_fast_pose() const override {
-        const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
-		switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_nullable();
-        if(estimated_vsync == nullptr) {
+		const switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_nullable();
+        if (estimated_vsync == nullptr) {
             std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
             return get_fast_pose(std::chrono::system_clock::now());
         } else {
@@ -134,12 +133,28 @@ public:
 
         if (nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << std::chrono::nanoseconds(time - _m_start_of_time).count() << " + " << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
+			std::cerr << "Time "
+			          << lookup_time
+                      << " ("
+			          << std::chrono::nanoseconds(time - _m_start_of_time).count()
+			          << " + "
+			          << dataset_first_time
+			          << ") after last datum "
+			          << _m_sensor_data.rbegin()->first
+			          << std::endl;
 #endif
             nearest_row--;
         } else if (nearest_row == _m_sensor_data.cbegin()) {
 #ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << std::chrono::nanoseconds(time - _m_start_of_time).count() << " + " << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
+			std::cerr << "Time "
+			          << lookup_time
+			          << " ("
+			          << std::chrono::nanoseconds(time - _m_start_of_time).count()
+			          << " + "
+			          << dataset_first_time
+			          << ") before first datum "
+			          << _m_sensor_data.cbegin()->first
+			          << std::endl;
 #endif
         } else {
             // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.

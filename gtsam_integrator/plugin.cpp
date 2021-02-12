@@ -37,7 +37,7 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
-		, _m_in{sb->get_reader<imu_integrator_seq>("imu_integrator_seq")}
+		, _m_in{sb->get_reader<switchboard::event_wrapper<imu_integrator_seq>>("imu_integrator_seq")}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
@@ -65,8 +65,8 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	// IMU Data, Sequence Flag, and State Vars Needed
-	switchboard::reader<imu_cam_type>> _m_imu_cam;
-	switchboard::reader<imu_integrator_seq>> _m_in;
+	switchboard::reader<imu_cam_type> _m_imu_cam;
+	switchboard::reader<switchboard::event_wrapper<imu_integrator_seq>> _m_in;
 	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
 	// Write IMU Biases for PP
@@ -166,16 +166,18 @@ private:
 				<< out_pose.z() << std::endl;
 #endif
 
-		_m_imu_raw.put(new (_m_imu_raw.allocate()) imu_raw_type{
+        imu_raw_type datum{
 			prev_bias.gyroscope(),
 			prev_bias.accelerometer(),
 			bias.gyroscope(),
 			bias.accelerometer(),
-			out_pose.translation(), // Position
-			navstate_k.velocity(), // Velocity
-			out_pose.rotation().toQuaternion(), // Eigen Quat
+			out_pose.translation(),             /// Position
+			navstate_k.velocity(),              /// Velocity
+			out_pose.rotation().toQuaternion(), /// Eigen Quat
 			real_time
-		});
+        };
+        switchboard::ptr<imu_raw_type> datum_ptr = _m_imu_raw.allocate<imu_raw_type>(std::move(datum));
+		_m_imu_raw.put(std::move(datum_ptr));
 	}
 
 	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
