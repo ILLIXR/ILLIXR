@@ -24,7 +24,7 @@ We use the term _components_ and not _kernels_ or _computations_ because
 At the moment, ILLIXR interfaces the following state-of-the-art components,
     with periodic ILLIXR source snapshots hosted on our [releases page][25]:
 
--   Perceptual
+-   Perception
     1.  [Eye tracking][3] **
     1.  [Scene reconstruction][2] **
     1.  [Simultaneous Localization and Mapping][1] **
@@ -33,11 +33,11 @@ At the moment, ILLIXR interfaces the following state-of-the-art components,
     1.  [Chromatic aberration correction][5]
     1.  [Computational holography for adaptive multi-focal displays][6] **
     1.  [Lens distortion correction][5]
-    1.  [Time warp][5]
+    1.  [Reprojection][5]
 
 -   Aural
-    1.  [Ambisonic encoding][4]
-    1.  [Ambisonic manipulation and binauralization][4]
+    1.  [Audio encoding][4]
+    1.  [Audio playback][4]
 
 (** Source is hosted in an external repository under the [ILLIXR project][7].)
 
