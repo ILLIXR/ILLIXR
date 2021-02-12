@@ -43,16 +43,20 @@ public:
 		} else {
 			// "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
 			// I already know we aren't at the begin()
-			after_row--;
-			nearest_row = after_row /* after_row - 1 */;
 
-			// auto after_row2 = after_row;
-			// auto prev_row = after_row; prev_row--;
-			// if (after_row2->first - lookup_time < lookup_time - prev_row->first) {
-			// 	nearest_row = after_row2;
-			// } else {
-			// 	nearest_row = prev_row;
-			// }
+			// Most recent row
+			// after_row--;
+			// nearest_row = after_row /* after_row - 1 */;
+
+			// Nearest row
+			auto after_row2 = after_row;
+			auto prev_row = after_row; prev_row--;
+			// stop using after_row
+			if (after_row2->first - lookup_time < lookup_time - prev_row->first) {
+				nearest_row = after_row2;
+			} else {
+				nearest_row = prev_row;
+			}
 		}
 
 		
@@ -77,7 +81,9 @@ public:
 			// 	;
 			// abort();
 		}
-		// std::this_thread::sleep_for(std::chrono::milliseconds{5});
+		std::this_thread::sleep_for(
+			_m_rtc->time_since_start() - std::chrono::nanoseconds{nearest_row->first} + std::chrono::milliseconds{30}
+		);
 	}
 
 	size_t good = 0, bad = 0;

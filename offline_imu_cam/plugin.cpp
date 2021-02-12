@@ -26,6 +26,7 @@ public:
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
+		, _m_log{"imu_cam.csv"}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
@@ -67,6 +68,8 @@ protected:
 		}});
 
 
+		_m_log << (_m_rtc->time_since_start() + std::chrono::nanoseconds{dataset_first_time}).count() << ',' << dataset_now << ',' << dataset_now << "\n";
+
 		std::optional<cv::Mat> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat>(sensor_datum.cam0.value().load())
 			: std::nullopt
@@ -100,6 +103,7 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
+	std::ofstream _m_log;
 	std::shared_ptr<realtime_clock> _m_rtc;
 };
 

@@ -62,7 +62,7 @@ protected:
 		std::optional<cv::Mat> cam1 = std::nullopt;
 		time_point cam_time;
 
-		_m_log << "0," << dataset_now << ",";
+		_m_log << (_m_rtc->time_since_start() + std::chrono::nanoseconds{dataset_first_time}).count() << ',' << dataset_now << ',';
 
 		switchboard::ptr<const cam_type> cam = _m_cam.get_ro_nullable();
 		if (cam && last_cam_ts != cam->dataset_time) {

@@ -12,7 +12,7 @@
 
 typedef unsigned long long ullong;
 
-// #define LAZY
+#define LAZY
 
 class lazy_load_image {
 public:
