@@ -2,6 +2,7 @@
 #include <sl/Camera.hpp>
 #include <opencv2/opencv.hpp>
 #include <cmath>
+#include <fstream>
 #include <zed_opencv.hpp>
 
 //ILLIXR includes
@@ -24,13 +25,15 @@ struct cam_type : public switchboard::event {
 			 cv::Mat _img1,
 			 cv::Mat _rgb,
 			 cv::Mat _depth,
-			 std::size_t _serial_no
+			 std::size_t _serial_no,
+			 ullong _timestamp
 			 )
 		: img0{_img0}
 		, img1{_img1}
 		, rgb{_rgb}
 		, depth{_depth}
 		, serial_no{_serial_no}
+		, timestamp{_timestamp}
 	{ }
 
     cv::Mat img0;
@@ -38,6 +41,7 @@ struct cam_type : public switchboard::event {
 	cv::Mat rgb;
 	cv::Mat depth;
     std::size_t serial_no;
+	ullong timestamp;
 };
 
 std::shared_ptr<Camera> start_camera() {
@@ -121,13 +125,16 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
+		std::this_thread::sleep_for(std::chrono::milliseconds{100});
+
         _m_cam_type.put(_m_cam_type.allocate(
             // Make a copy, so that we don't have race
             cv::Mat{imageL_ocv},
             cv::Mat{imageR_ocv},
 			cv::Mat{rgb_ocv},
             cv::Mat{depth_ocv},
-            iteration_no
+            iteration_no,
+			zedm->getTimestamp(sl::TIME_REFERENCE::IMAGE)
 		));
     }
 };
@@ -148,8 +155,9 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
-        , it_log{record_logger_}
-    {
+		, output{"imu_cam.csv"}
+	{
+		output << "rt,imu_t,cam_t\n";
         camera_thread_.start();
     }
 
@@ -170,6 +178,7 @@ protected:
     }
 
     virtual void _p_one_iteration() override {
+		std::this_thread::sleep_for(std::chrono::milliseconds{10});
         // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
         // Time as ullong (nanoseconds)
@@ -188,6 +197,10 @@ protected:
 		std::optional<cv::Mat> depth = std::nullopt;
 		std::optional<cv::Mat> rgb = std::nullopt;
 
+		output
+			<< std::chrono::nanoseconds{std::chrono::system_clock::now().time_since_epoch()}.count() << ','
+			<< imu_time << ',';
+
         switchboard::ptr<const cam_type> c = _m_cam_type.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
@@ -195,12 +208,9 @@ protected:
             img1 = c->img1;
             depth = c->depth;
             rgb = c->rgb;
+			output << c->timestamp;
         }
-
-        it_log.log(record{__imu_cam_record, {
-            {iteration_no},
-            {bool(img0)},
-        }});
+		output << std::endl;
 
         _m_imu_cam.put(_m_imu_cam.allocate(
             imu_time_point,
@@ -244,7 +254,7 @@ private:
     std::size_t last_serial_no {0};
 
     // Logger
-    record_coalescer it_log;
+	std::ofstream output;
 };
 
 // This line makes the plugin importable by Spindle
