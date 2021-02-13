@@ -21,7 +21,21 @@ const record_header __imu_cam_record {"imu_cam", {
     {"has_camera", typeid(bool)},
 }};
 
-struct cam_type : switchboard::event {
+struct cam_type : public switchboard::event {
+	cam_type(
+			 cv::Mat _img0,
+			 cv::Mat _img1,
+			 cv::Mat _rgb,
+			 cv::Mat _depth,
+			 std::size_t _serial_no
+			 )
+		: img0{_img0}
+		, img1{_img1}
+		, rgb{_rgb}
+		, depth{_depth}
+		, serial_no{_serial_no}
+	{ }
+
     cv::Mat img0;
     cv::Mat img1;
 	cv::Mat rgb;
@@ -112,10 +126,7 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        auto start_cpu_time  = thread_cpu_time();
-        auto start_wall_time = std::chrono::high_resolution_clock::now();
-
-        _m_cam_type.put(new (_m_cam_type.allocate()) cam_type{
+        _m_cam_type.put(_m_cam_type.allocate(
             // Make a copy, so that we don't have race
             cv::Mat{imageL_ocv},
             cv::Mat{imageR_ocv},
@@ -142,9 +153,7 @@ public:
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , _m_imu_integrator{sb->get_writer<imu_integrator_seq>("imu_integrator_seq")}
         , zedm{start_camera()}
-        , _m_rgb_depth{sb->publish<rgb_depth_type>("rgb_depth")}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_}
     {
@@ -188,7 +197,7 @@ protected:
 		std::optional<cv::Mat> depth = std::nullopt;
 		std::optional<cv::Mat> rgb = std::nullopt;
 
-        const switchboard::ptr<cam_type> c = _m_cam_type.get_nullable();
+        switchboard::ptr<const cam_type> c = _m_cam_type.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
@@ -202,29 +211,22 @@ protected:
             {bool(img0)},
         }});
 
-        ptr<imu_cam_type> datum0 = _m_imu_cam.allocate<imu_cam_type>(
+        _m_imu_cam.put(_m_imu_cam.allocate(
             imu_time_point,
             av,
             la,
             img0,
             img1,
-            imu_time,
-        );
-        _m_imu_cam.put(datum0);
+            imu_time
+		));
 
         if (rgb && depth) {
-            ptr<rgb_depth_type> datum1 = _m_rgb_depth.allocate<rgb_depth_type>(
-                rgb,
-                depth,
-                imu_time
-            );
-            _m_rgb_depth.put(datum1);
+            _m_rgb_depth.put(_m_rgb_depth.allocate(
+                    rgb,
+                    depth,
+                    imu_time
+			));
         }
-
-        auto imu_integrator_params = new imu_integrator_seq{
-			.seq = static_cast<int>(++_imu_integrator_seq),
-		};
-		_m_imu_integrator->put(imu_integrator_params);
 
         last_imu_ts = sensors_data.imu.timestamp;
 
@@ -239,7 +241,6 @@ private:
 	switchboard::writer<imu_cam_type> _m_imu_cam;
 	switchboard::reader<cam_type> _m_cam_type;
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
-    switchboard::writer<imu_integrator_seq> _m_imu_integrator;
 
     // IMU
     SensorsData sensors_data;
@@ -252,7 +253,6 @@ private:
     ullong imu_time;
 
     std::size_t last_serial_no {0};
-    int64_t _imu_integrator_seq{0};
 
     // Logger
     record_coalescer it_log;

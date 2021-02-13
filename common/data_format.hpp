@@ -26,7 +26,7 @@ namespace ILLIXR {
 	// Data type that combines the IMU and camera data at a certain timestamp.
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
-	struct imu_cam_type : switchboard::event {
+	struct imu_cam_type : public switchboard::event {
 		time_type time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
@@ -48,11 +48,21 @@ namespace ILLIXR {
 		{ }
 	};
 
-    typedef struct {
-        std::optional<cv::Mat*> rgb;
-        std::optional<cv::Mat*> depth;
-        ullong timestamp;
-    } rgb_depth_type;
+    class rgb_depth_type : public switchboard::event {
+        std::optional<cv::Mat> rgb;
+        std::optional<cv::Mat> depth;
+        [[maybe_unused]] ullong timestamp;
+	public:
+		rgb_depth_type(
+					   std::optional<cv::Mat> _rgb,
+					   std::optional<cv::Mat> _depth,
+					   ullong _timestamp
+					   )
+			: rgb{_rgb}
+			, depth{_depth}
+			, timestamp{_timestamp}
+		{ }
+    };
 
 	// Values needed to initialize the IMU integrator
 	typedef struct {

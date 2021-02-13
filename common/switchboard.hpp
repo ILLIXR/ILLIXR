@@ -472,15 +472,8 @@ public:
 			assert(typeid(specific_event) == _m_topic.ty());
 			assert(this_specific_event != nullptr);
 			assert(this_specific_event.unique());
-			ptr<const event> this_event{nullptr};
-            {
-                /// New scope for temporary pointer type conversion
-                ptr<specific_event> se_ptr{std::static_pointer_cast<specific_event>(std::move(this_specific_event))};
-                ptr<event> e_ptr{std::dynamic_pointer_cast<event>(std::move(se_ptr))};
-                this_event = std::const_pointer_cast<const event>(std::move(e_ptr));
-            }
-            assert(this_event != nullptr);
-			// assert(this_event.unique());  /// <-- TODO: Revisit for solution that guarantees uniqueness
+			ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
+			assert(this_event.unique());
 			_m_topic.put(std::move(this_event));
         }
     };

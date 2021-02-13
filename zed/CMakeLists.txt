@@ -1,4 +1,6 @@
 SET(libName ZED_with_OpenCV.so)
+# SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+# SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 PROJECT(${libName})
 
