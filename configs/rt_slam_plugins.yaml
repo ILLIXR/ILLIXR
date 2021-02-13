@@ -1,13 +1,13 @@
 plugin_group:
   - path: offline_imu_cam/
   # - path: zed/
-  - name: Kimera-VIO/
-    path:
-      git_repo: https://github.com/ILLIXR/Kimera-VIO
-      version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
-  # - name: OpenVINS
+  # - name: Kimera-VIO/
   #   path:
-  #     git_repo: https://github.com/ILLIXR/open_vins.git
-  #     version: c6a4f8835851d21f87add38260e73df63c6354a1
+  #     git_repo: https://github.com/ILLIXR/Kimera-VIO
+  #     version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
+  - name: OpenVINS
+    path:
+      git_repo: https://github.com/ILLIXR/open_vins.git
+      version: issue-32-fix-mem-leak
   - path: gtsam_integrator/
   - path: pose_prediction/
