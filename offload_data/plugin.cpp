@@ -31,7 +31,8 @@ public:
 		, _seq_expect(1)
 		, _stat_processed(0)
 		, _stat_missed(0)
-		, enable_offload{bool(std::stoi(getenv_or("ILLIXR_OFFLOAD_ENABLE", "0")))}
+		, enable_offload{ILLIXR::str_to_bool(getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+		/// TODO: Set with #198
 		// , obj_dir{getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
 		{
 			// Remove existing file and create folder for offloading
