@@ -10,21 +10,22 @@ plugin_groups:
     - name: audio
       path:
         git_repo: https://github.com/ILLIXR/audio_pipeline.git
-        version: 3433bb452b2ec661c9d3ef65d9cf3a2805e94cdc
+        version: "1.0"
     - name: hologram
       path:
         git_repo: https://github.com/ILLIXR/HOTlab.git
-        version: 51b8ef86cb1efa1204cb4a33dfaf15bb09d66903
+        version: "1.0"
     ## Real-Time SLAM Plugins
     - path: offline_imu_cam
     - path: zed
     - name: Kimera-VIO
       path:
         git_repo: https://github.com/ILLIXR/Kimera-VIO
-        version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
+        version: "1.0"
     - name: OpenVINS
       path:
         git_repo: https://github.com/ILLIXR/open_vins.git
+        #version: "1.0"
         version: c6a4f8835851d21f87add38260e73df63c6354a1
     - path: gtsam_integrator
     - path: pose_prediction
