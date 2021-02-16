@@ -43,6 +43,6 @@ loader:
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
   # command: taskset -a -c 0 env ILLIXR_RUN_DURATION=100 $env_cmd
-  command: env ILLIXR_RUN_DURATION=100 $env_cmd
+  command: sudo env ILLIXR_RUN_DURATION=100 $env_cmd
 
 profile: opt

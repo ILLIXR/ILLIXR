@@ -1,5 +1,5 @@
 plugin_group:
-  - path: offline_imu/
+  # - path: offline_imu/
   # - path: zed/
   # - name: Kimera-VIO/
   #   path:

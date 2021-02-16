@@ -85,20 +85,20 @@ private:
 				++skip_no;
 				break;
 			case skip_option::run: {
-				auto iteration_start_cpu_time  = thread_cpu_time();
-				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
+				// auto iteration_start_cpu_time  = thread_cpu_time();
+				// auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
-				it_log.log(record{__threadloop_iteration_header, {
-					{id},
-					{iteration_no},
-					{skip_no},
-					{iteration_start_cpu_time},
-					{thread_cpu_time()},
-					{iteration_start_wall_time},
-					{std::chrono::high_resolution_clock::now()},
-				}});
-				++iteration_no;
-				skip_no = 0;
+				// it_log.log(record{__threadloop_iteration_header, {
+				// 	{id},
+				// 	{iteration_no},
+				// 	{skip_no},
+				// 	{iteration_start_cpu_time},
+				// 	{thread_cpu_time()},
+				// 	{iteration_start_wall_time},
+				// 	{std::chrono::high_resolution_clock::now()},
+				// }});
+				// ++iteration_no;
+				// skip_no = 0;
 				break;
 			}
 			case skip_option::stop:
