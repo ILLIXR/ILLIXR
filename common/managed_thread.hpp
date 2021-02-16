@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <sched.h>
+#include "init_protocol.hpp"
 
 namespace ILLIXR {
 
@@ -132,7 +133,7 @@ public:
  * // Here
  * \endcode
  */
-class ManagedThread {
+class ManagedThread : public RequiresInitProtocol<ManagedThread> {
 private:
 	std::atomic<bool> _m_stop {false};
 	size_t _m_iterations;
@@ -180,25 +181,21 @@ private:
 		}
 	}
 
+	/*
+	  virtual methods should be private; they can still be overriden by the derived class.
+	  http://www.gotw.ca/publications/mill18.htm
+	 */
+
 	/**
 	 * @brief Called on thread start.
-	 *
-	 * virtual methods should be private; they can still be overriden by the derived class.
-	 * http://www.gotw.ca/publications/mill18.htm
 	 */
 	virtual void on_start() { }
 	/**
 	 * @brief Called in the thread's loop
-	 *
-	 * virtual methods should be private; they can still be overriden by the derived class.
-	 * http://www.gotw.ca/publications/mill18.htm
 	 */
 	virtual void body() { }
 	/**
 	 * @brief Called on thread stop.
-	 *
-	 * virtual methods should be private; they can still be overriden by the derived class.
-	 * http://www.gotw.ca/publications/mill18.htm
 	 */
 	virtual void on_stop() { }
 
@@ -308,7 +305,7 @@ public:
 	 * The thread needs to be launched AFTER derived class's constructor, so that it can call its
 	 * virtual methods. Calling in the last line of constructor works.
 	 */
-	void __after_child_constructor() {
+	void init() {
 		_m_thread = std::thread{[this] {this->thread_main(); }};
 	}
 
@@ -318,67 +315,10 @@ public:
 	 * line of destructor), because the thread might touch managed_thread_impl's private
 	 * methods.
 	 */
-	void __before_child_destructor() {
+	void deinit() {
 		_m_stop.store(true);
 		_m_thread.join();
 	}
-
-	/**
-	 * Your constructor must call __after_derived_constructor after everything else, and your
-	 * destructor must call __before_derived_destructor before everything else.
-	 *
-	 * Override this with a no-op, if-and-only-if you fulfill this contract.
-	 *
-	 * Since failure to override this indicates you don't fulfill this contract, and the compiler
-	 * will tell you your class cannot be constructed until you do (it's a type tag).
-	 *
-	 * You can do this by hand, or just wrap your class in ChildCallParent.
-	 *
-	 */
-	virtual void __i_promise_to_call_after_constructor_and_before_destructor() = 0;
-};
-
-/**
- * Say you want to call a derived class's virtual method in a base class's constructor.
- *
- * Normal C++ can't natively do this, because the derived class has not yet been constructed.
- *
- * The famous ISOCPP FAQ recommends calling "init()" immediately after construction.
- * https://isocpp.org/wiki/faq/strange-inheritance#calling-virtuals-from-ctors
- *
- * That's the beginning of a solution, but you have to remember to do it. This class automates that
- * (no need to remember anything special).
- *
- * It does this by being a "mixin" class.
- * https://www.fluentcpp.com/2017/12/12/mixin-classes-yang-crtp/
- *
- * If TWO parents need this functionality (suppose C inherits B and B inherits A, where A and B want to call
- * virtual methods in C), they can be "chained." B::__after_child_constructor should override and
- * call A::__after_child_constructor, and likewise for the destructor.
- *
- * This class is final, so it can't be subclassed.
- */
-template <typename Child>
-class ChildCallParent final : Child {
-public:
-	template <class... T>
-	ChildCallParent(T... t)
-		: Child(t...)
-	{
-		// Last constructor to run.
-		child().__after_child_constructor();
-	}
-
-	~ChildCallParent() {
-		// First destructor to run.
-		child().__before_child_destructor();
-	}
-
-	const Child& child() const { return static_cast<Child&>(*this); }
-	Child& child() { return static_cast<Child&>(*this); }
-
-protected:
-	virtual void __i_promise_to_call_after_constructor_and_before_destructor() override { }
 };
 
 /**

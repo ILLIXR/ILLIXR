@@ -2,6 +2,7 @@
 
 #include "phonebook.hpp"
 #include "record_logger.hpp"
+#include "init_protocol.hpp"
 
 namespace ILLIXR {
 
@@ -64,9 +65,11 @@ namespace ILLIXR {
 		const std::size_t id;
 	};
 
-#define PLUGIN_MAIN(plugin_class)                                   \
-    extern "C" plugin* this_plugin_factory(phonebook* pb) {         \
-        plugin_class* obj = new plugin_class {#plugin_class, pb};   \
-        return obj;                                                 \
+#define PLUGIN_MAIN(PluginClass)										\
+    extern "C" plugin* this_plugin_factory(phonebook* pb) {				\
+		/* Threadloop might need InitProtocol. It doesn't hurt to add. */ \
+		/* ProvidesInitProtocol<PluginClass> inherits PluginClass which eventually inherits plugin. */ \
+        auto* obj =	new ProvidesInitProtocol<PluginClass> {#PluginClass, pb}; \
+        return obj;														\
     }
 }

@@ -13,6 +13,7 @@
 #include <exception>
 #include "phonebook.hpp"
 #include "cpu_timer.hpp"
+#include "init_protocol.hpp"
 #include "record_logger.hpp"
 #include "managed_thread.hpp"
 #include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
@@ -251,7 +252,7 @@ private:
         std::atomic<size_t> _m_latest_index;
         static constexpr std::size_t _m_latest_buffer_size = 256;
         std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
-        std::list<ChildCallParent<TopicSubscription>> _m_subscriptions;
+        std::list<ProvidesInitProtocol<TopicSubscription>> _m_subscriptions;
         std::shared_mutex _m_subscriptions_lock;
 
     public:
@@ -298,7 +299,7 @@ private:
             for (auto& ts : _m_subscriptions) {
                 // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
                 ptr<const event> event_ptr_copy {this_event};
-                ts.child().enqueue(std::move(event_ptr_copy));
+                ts->enqueue(std::move(event_ptr_copy));
             }
             // std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1 + len(sub)) \n";
         }

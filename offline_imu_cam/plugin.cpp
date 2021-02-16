@@ -63,7 +63,7 @@ protected:
 		++_m_sensor_data_it;
 
 		imu_cam_log.log(record{imu_cam_record, {
-			{iteration_no},
+			{get_iterations()},
 			{bool(sensor_datum.cam0)},
 		}});
 
