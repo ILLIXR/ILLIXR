@@ -26,7 +26,16 @@ static constexpr int FB_HEIGHT = 1440; //Pixels
 bool str_to_bool(std::string var) {
     return (var == "True")  ? true  :
            (var == "False") ? false :
-           throw new std::runtime_error("Invalid conversion from std::string to bool");
+           throw std::runtime_error("Invalid conversion from std::string to bool");
+}
+
+/// Temporary environment variable getter. Not needed once #198 is merged.
+std::string getenv_or(std::string var, std::string default_) {
+    if (std::getenv(var.c_str())) {
+        return {std::getenv(var.c_str())};
+    } else {
+        return default_;
+    }
 }
 
 }

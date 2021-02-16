@@ -13,14 +13,6 @@
 
 using namespace ILLIXR;
 
-std::string
-getenv_or(std::string var, std::string default_) {
-        if (std::getenv(var.c_str())) {
-                return {std::getenv(var.c_str())};
-        } else {
-                return default_;
-        }
-}
 
 class offload_data : public threadloop {
 public:
@@ -31,11 +23,15 @@ public:
 		, _seq_expect(1)
 		, _stat_processed(0)
 		, _stat_missed(0)
-		, enable_offload{ILLIXR::str_to_bool(getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+		, percent{0}
+		, img_idx{0}
+		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+		, is_success{true}
 		/// TODO: Set with #198
-		// , obj_dir{getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
+		, obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
 		{
-			// Remove existing file and create folder for offloading
+			/// Remove existing file and create folder for offloading
+			/// TODO: Not portable
 			system(("rm -r " + obj_dir).c_str());
 			system(("mkdir -p " + obj_dir).c_str());
 		}
@@ -76,11 +72,11 @@ private:
 	std::vector<int> _time_seq;
 	std::vector<const texture_pose*> _offload_data_container;
 
-	int percent = 0;
-	int img_idx = 0;
+	int percent;
+	int img_idx;
 	bool enable_offload;
-	bool is_success = false;
-	std::string obj_dir = "metrics/offloaded_data/";
+	bool is_success;
+	std::string obj_dir;
 
 	void writeMetadata(std::vector<int> _time_seq)
 	{

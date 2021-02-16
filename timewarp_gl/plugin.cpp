@@ -35,15 +35,6 @@ const record_header mtp_record {"mtp_record", {
 	{"render_to_display", typeid(std::chrono::nanoseconds)},
 }};
 
-static std::string
-getenv_or(std::string var, std::string default_) {
-	if (std::getenv(var.c_str())) {
-		return {std::getenv(var.c_str())};
-	} else {
-		return default_;
-	}
-}
-
 
 class timewarp_gl : public threadloop {
 
@@ -70,10 +61,8 @@ public:
 		  // Timewarp poses a "second channel" by which pose data can correct the video stream,
 		  // which results in a "multipath" between the pose and the video stream.
 		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-		//, disable_warp{bool(std::stoi(getenv_or("ILLIXR_TIMEWARP_DISABLE", "False")))}
-		//, enable_offload{bool(std::stoi(getenv_or("ILLIXR_OFFLOAD_ENABLE", "False")))}
-		, disable_warp{ILLIXR::str_to_bool(getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-		, enable_offload{ILLIXR::str_to_bool(getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
+		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 	{ }
 
 private:
