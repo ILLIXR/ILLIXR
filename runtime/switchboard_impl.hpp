@@ -1,5 +1,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/global_module_defs.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
@@ -303,7 +304,7 @@ namespace ILLIXR {
 				
 				assert(errno == 0);
 				bool has_data = _m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count());
-				errno = 0;
+				RAC_ERRNO();
 				
 				if (has_data) {
 					const std::shared_lock lock{_m_registry_lock};

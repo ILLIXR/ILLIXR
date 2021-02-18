@@ -18,6 +18,7 @@
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/gl_util/obj.hpp"
+#include "common/global_module_defs.hpp"
 #include "shaders/demo_shader.hpp"
 #include <opencv2/opencv.hpp>
 #include <cmath>
@@ -70,15 +71,19 @@ public:
 	}
 
 	void draw_GUI() {
+        assert(errno == 0 && "Errno should not be set at start of draw_GUI");
+
 		// Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
+
+        RAC_ERRNO_MSG("debugview after ImGui_ImplOpenGL3_NewFrame");
 
 		// Calls glfw within source code which sets errno
         ImGui_ImplGlfw_NewFrame();
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in glfwPollEvents " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after ImGui_ImplGlfw_NewFrame");
 
         ImGui::NewFrame();
 
@@ -198,6 +203,8 @@ public:
 		ImGui::End();
 
 		ImGui::Render();
+
+		RAC_ERRNO_MSG("debugview after ImGui render");
 	}
 
 	bool load_camera_images(){
@@ -259,7 +266,7 @@ public:
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO();
 	}
 
 	void _p_one_iteration() override {
@@ -269,7 +276,7 @@ public:
 			if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 				std::cerr << "Error in glfwPollEvents " << __FILE__ << ":" << __LINE__ << std::endl;
 			}
-			errno = 0;
+			RAC_ERRNO_MSG("debugview after glfwPollEvents");
 
 			if (glfwGetMouseButton(gui_window, GLFW_MOUSE_BUTTON_LEFT)) 
 			{
@@ -321,41 +328,78 @@ public:
 
 			Eigen::Matrix4f modelView = userView * modelMatrix;
 
+            RAC_ERRNO_MSG("debugview before glUseProgram");
 
 			glUseProgram(demoShaderProgram);
+
+			RAC_ERRNO_MSG("debugview after glUseProgram");
 
 			// Size viewport to window size.
 			int display_w, display_h;
         	glfwGetFramebufferSize(gui_window, &display_w, &display_h);
+
+            RAC_ERRNO_MSG("debugview after glfwGetFramebufferSize");
+
 			glViewport(0, 0, display_w, display_h);
+
+            RAC_ERRNO_MSG("debugview after glViewport");
+
 			float ratio = (float)display_h / (float)display_w;
 
 			// Construct a basic perspective projection
 			math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f * ratio, 40.0f * ratio, 0.03f, 20.0f );
+
+			RAC_ERRNO_MSG("debugview after projection_fov");
 			
 			glEnable(GL_CULL_FACE);
+
+            RAC_ERRNO_MSG("debugview after enabling GL_CULL_FACE");
+
 			glEnable(GL_DEPTH_TEST);
+
+            RAC_ERRNO_MSG("debugview after enabling GL_DEPTH_TEST");
+
 			glClearDepth(1);
+
+			RAC_ERRNO_MSG("debugview after glClearDepth");
 
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
 			glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
 
 			glBindVertexArray(demo_vao);
 
+			RAC_ERRNO_MSG("debugview after glBindVertexArray");
+
 			// Draw things
 			glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+
+            RAC_ERRNO_MSG("debugview after glClearColor");
+
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			RAC_ERRNO_MSG("debugview after glClear");
+
 			demoscene.Draw();
+
+			RAC_ERRNO_MSG("debugview after demoscene draw");
 
 			modelView = userView * headsetPose;
 			glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
 			headset.Draw();
+
+			RAC_ERRNO_MSG("debugview after headset draw");
 			
 			draw_GUI();
+
+            RAC_ERRNO_MSG("debugview after draw_GUI");
+
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+            RAC_ERRNO_MSG("debugview after imgui GetDrawData");
+
 			glfwSwapBuffers(gui_window);
+
+			RAC_ERRNO_MSG("debugview after glfwSwapBuffers");
 		}
 	}
 private:
@@ -431,14 +475,14 @@ public:
 			std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after glfwCreateWindow");
 
 		assert(errno == 0);
 		glfwSetWindowSize(gui_window, 1600, 1000);
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after glfwSetWindowSize");
 
 		assert(errno == 0);
 		glfwMakeContextCurrent(gui_window);
@@ -446,20 +490,26 @@ public:
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after glfwMakeContextCurrent");
 
 		glfwSwapInterval(1); // Enable vsync!
 
+		RAC_ERRNO_MSG("debugview after vysnc recover block");
+
 		glEnable              ( GL_DEBUG_OUTPUT );
+
+		assert(errno == 0 && "Errno should not be set after enabling GL");
+
 		glDebugMessageCallback( MessageCallback, 0 );
 
 		// Init and verify GLEW
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set after setting the debug callback");
+
 		if(glewInit()){
 			std::cerr << "Failed to init GLEW" << std::endl;
 			glfwDestroyWindow(gui_window);
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after glewInit");
 
 		// Initialize IMGUI context.
 		IMGUI_CHECKVERSION();
@@ -470,7 +520,7 @@ public:
 		// Init IMGUI for OpenGL
 		assert(errno == 0);
 		ImGui_ImplGlfw_InitForOpenGL(gui_window, true);
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after ImGui_ImplGlfw_InitForOpenGL");
 
     	ImGui_ImplOpenGL3_Init(glsl_version);
 
@@ -525,7 +575,7 @@ public:
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("debugview after glfwMakeContextCurrent");
 
 		lastTime = glfwGetTime();
 
@@ -540,7 +590,7 @@ public:
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in ImGui_ImplGlfw_Shutdown " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO();
 
 		ImGui::DestroyContext();
 
@@ -549,14 +599,14 @@ public:
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in glfwDestroyWindow " << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO();
 
 		assert(errno == 0);
 		glfwTerminate();
 		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
 			std::cerr << "Error in glfwTerminate" << __FILE__ << ":" << __LINE__ << std::endl;
 		}
-		errno = 0;
+		RAC_ERRNO();
 	}
 };
 

@@ -31,10 +31,13 @@ private:
 int main(int argc, char* const* argv) {
 	r = ILLIXR::runtime_factory(nullptr);
 
+	assert(errno == 0 && "Errno should not be set after creating runtime");
+
 	std::vector<std::string> lib_paths;
 	std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
 		return std::string{arg};
 	});
+	assert(errno == 0 && "Errno should not be set before loading dynamic libraries");
 	r->load_so(lib_paths);
 
 	// Two ways of shutting down:

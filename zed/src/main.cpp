@@ -118,6 +118,8 @@ protected:
             new cv::Mat{depth_ocv},
             iteration_no,
         });
+
+        RAC_ERRNO_MSG("zed");
     }
 };
 

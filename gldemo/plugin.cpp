@@ -29,6 +29,18 @@ static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 // represnts a swapchain. eyeTextures[0] is a swapchain of
 // left eyes, and eyeTextures[1] is a swapchain of right eyes
 
+
+
+/**
+ * @brief Callback function to handle glfw errors
+ */
+static void error_callback(int error, const char* description)
+{
+    std::cerr << "|| glfw error_callback: " << error << std::endl
+              << "|>" << description << std::endl;
+}
+
+
 class gldemo : public threadloop {
 public:
 	// Public constructor, create_component passes Switchboard handles ("plugs")
@@ -112,7 +124,7 @@ public:
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
-		errno = 0;
+		RAC_ERRNO();
 	}
 
 	void _p_one_iteration() override {
@@ -218,6 +230,8 @@ public:
 			log_count++;
 		}
 #endif
+
+        RAC_ERRNO_MSG("gldemo");
 	}
 
 #ifndef NDEBUG
@@ -290,32 +304,62 @@ private:
 	}
 
 	void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_target){
+        assert(errno == 0 && "Errno should not be set at the start of createFBO");
+
 		// Create a framebuffer to draw some things to the eye texture
 		glGenFramebuffers(1, fbo);
+
+        assert(errno == 0 && "Errno should not be set after generating framebuffers");
+
 		// Bind the FBO as the active framebuffer.
     	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
 
+        assert(errno == 0 && "Errno should not be set after binding the framebuffers");
+
 		glGenRenderbuffers(1, depth_target);
+
+        assert(errno == 0 && "Errno should not be set after generating the render buffers");
+
     	glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
+
+        assert(errno == 0 && "Errno should not be set after binding the render buffer");
+
     	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
     	//glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
     	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        assert(errno == 0 && "Errno should not be set after binding the render buffer");
 
 		// Bind eyebuffer texture
 		printf("About to bind eyebuffer texture, texture handle: %d\n", *texture_handle);
 
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
+
+        assert(errno == 0 && "Errno should not be set after binding the textures");
+
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
+        RAC_ERRNO("gldemo after glFramebufferTexture");
+        assert(errno == 0 && "Errno should not be set after framebuffer texture");
+
     	glBindTexture(GL_TEXTURE_2D, 0);
+
+        assert(errno == 0 && "Errno should not be set after binding the textures");
+
 		// attach a renderbuffer to depth attachment point
     	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
+
+	    assert(errno == 0 && "Errno should not be set after attaching the render buffer to depth target");
 
 		if(glGetError()){
         	printf("displayCB, error after creating fbo\n");
     	}
 
+        assert(errno == 0 && "Errno should not be set after calling glGetError");
+
 		// Unbind FBO.
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	    assert(errno == 0 && "Errno should not be set after binding the framebuffer");
 	}
 
 public:
@@ -325,30 +369,35 @@ public:
 	// This may be changed later, but it really doesn't matter for this purpose because
 	// it will be replaced by a real, Monado-interfaced application.
 	virtual void start() override {
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set at start of gldemo start function");
 		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
 		// Initialize the GLFW library, still need it to get time
-		assert(errno == 0);
-		if(!glfwInit()){
+		assert(errno == 0 && "Errno should not be set before glfwInit");
+		if (!glfwInit()) {
 			printf("Failed to initialize glfw\n");
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("gldemo after glfwInit");
+
+        /// Registering error callback for additional debug infp
+		glfwSetErrorCallback(error_callback);
 
 		// Init and verify GLEW
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set before glewInit");
 		if(glewInit()){
 			printf("Failed to init GLEW\n");
 			exit(0);
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("gldemo after glewInit");
 
 		glEnable              ( GL_DEBUG_OUTPUT );
 		glDebugMessageCallback( MessageCallback, 0 );
+
+        assert(errno == 0 && "Errno should not be set after enabling GL");
 
 		// Create two shared eye textures.
 		// Note; each "eye texture" actually contains two eyes.
@@ -357,19 +406,27 @@ public:
 		createSharedEyebuffer(&(eyeTextures[0]));
 		createSharedEyebuffer(&(eyeTextures[1]));
 
+        assert(errno == 0 && "Errno should not be set after creating eye buffers");
+
 		// Initialize FBO and depth targets, attaching to the frame handle
 		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
 
+        assert(errno == 0 && "Errno should not be set after creating FBO");
+
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);
+
+        assert(errno == 0 && "Errno should not be set after creating global VAO object");
+
     	glBindVertexArray(demo_vao);
 
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not bet set after binding VAO object");
+
 		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
 		std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
 #endif
-		errno = 0;
+		RAC_ERRNO();
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
@@ -389,16 +446,20 @@ public:
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set before glXMakeCurrent");
 		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
 		lastTime = glfwGetTime();
 
+		RAC_ERRNO();
+
 		threadloop::start();
+
+		RAC_ERRNO();
 	}
 };
 

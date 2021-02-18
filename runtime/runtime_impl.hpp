@@ -24,18 +24,28 @@ public:
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
+        assert(errno == 0 && "Errno should not be set before creating any dynamic library");
+
 		std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
+		    assert(errno == 0 && "Errno should not be set before creating the dynamic library");
 			return dynamic_lib::create(so_path);
 		});
+
+        assert(errno == 0 && "Errno should not be set after creating the dynamic library");
 
 		std::vector<plugin_factory> plugin_factories;
 		std::transform(libs.cbegin(), libs.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
 			return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
 		});
 
+        assert(errno == 0 && "Errno should not be set after generatring plugin factories");
+
 		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
+		    assert(errno == 0 && "Errno should not be set before building the plugin");
 			return std::unique_ptr<plugin>{plugin_factory(&pb)};
 		});
+
+        RAC_ERRNO_MSG("runtime_impl after transform of plugin_factories");
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start();
@@ -97,5 +107,6 @@ private:
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
+    assert(errno == 0 && "Errno should not be set before creating the runtime");
 	return new runtime_impl{appGLCtx};
 }

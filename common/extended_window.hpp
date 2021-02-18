@@ -6,6 +6,7 @@
 #include <GL/glx.h>
 #include <GL/glu.h>
 #include "phonebook.hpp"
+#include "global_module_defs.hpp"
 
 //GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
@@ -27,7 +28,7 @@ namespace ILLIXR{
 #ifndef NDEBUG
             printf("Opening display\n");
 #endif
-            assert(errno == 0);
+            assert(errno == 0 && "Errno should not be set at start of xlib_gl_extended_window constructor");
 
             dpy = XOpenDisplay(NULL);
             if (!dpy) {
@@ -39,7 +40,7 @@ namespace ILLIXR{
 				// if (errno != 0) {
 				// 	std::cerr << "XOpenDisplay succeeded, but errno = " << errno << "; This is benign, so I'm clearing it now.\n";
 				// }
-				errno = 0;
+				RAC_ERRNO();
             }
 
             Window root = DefaultRootWindow(dpy);
@@ -63,7 +64,7 @@ namespace ILLIXR{
 #ifndef NDEBUG
             printf("Getting matching framebuffer configs\n");
 #endif
-            assert(errno == 0);
+            assert(errno == 0 && "Errno should not be set before glXChooseFBConfig");
 
             int fbcount;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
@@ -72,7 +73,7 @@ namespace ILLIXR{
                 exit(1);
             }
             // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
-            errno = 0;
+            RAC_ERRNO_MSG("extended_window after glXChooseFBConfig");
 
 #ifndef NDEBUG
             printf("Found %d matching FB configs\n", fbcount);
@@ -147,14 +148,15 @@ namespace ILLIXR{
                 None
             };
             
-            assert(errno == 0);
+            assert(errno == 0 && "Errno should not be set before glXCreateContextAttribsARB");
 
             glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
             // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
-            errno = 0;
+            RAC_ERRNO_MSG("extended_window after glXCreateContextAttribsARB");
 
             // Sync to process errors
             XSync(dpy, false);
+            RAC_ERRNO_MSG("extended_window after XSync");
 
 #ifndef NDEBUG
             // Doing glXMakeCurrent here makes a third thread, the runtime one, enter the mix, and

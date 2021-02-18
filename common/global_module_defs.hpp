@@ -4,6 +4,42 @@ This is the file where default values are defined
 
 #pragma once
 
+#include <cerrno>
+#include <string>
+
+
+#ifndef RAC_ERRNO
+#define RAC_ERRNO() report_and_clear_errno(__FILE__, __LINE__, __func__)
+#endif /// RAC_ERRNO
+
+#ifndef RAC_ERRNO_MSG
+#define RAC_ERRNO_MSG(msg) report_and_clear_errno(__FILE__, __LINE__, __func__, msg)
+#endif /// RAC_ERRNO
+
+
+inline void report_and_clear_errno(
+    const std::string& file,
+    const int& line,
+    const std::string function,
+    const std::string& msg = ""
+) {
+#ifndef NDEBUG
+    if (errno > 0) {
+        std::cerr << "|| Errno was set: " << errno << " @ " << file << ":" << line << "[" << function << "]" << std::endl;
+        if (!msg.empty()) {
+            std::cerr << "|> Message: " << msg << std::endl;
+        }
+        errno = 0;
+    }
+#else /// NDEBUG
+    /// Silence unused parameter warning when compiling with opt
+    (void) file;
+    (void) line;
+    (void) function;
+    (void) msg;
+#endif /// NDEBUG
+}
+
 namespace ILLIXR{
 	
 #ifndef FB_WIDTH

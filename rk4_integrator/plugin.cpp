@@ -63,6 +63,8 @@ public:
 
 		clean_imu_vec(timestamp_in_seconds);
         propagate_imu_values(timestamp_in_seconds, datum->time);
+
+        RAC_ERRNO_MSG("rk4_integrator");
 	}
 
 private:

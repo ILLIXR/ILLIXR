@@ -3,6 +3,7 @@
 #include "data_loading.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include "common/global_module_defs.hpp"
 #include <cassert>
 
 using namespace ILLIXR;
@@ -69,21 +70,21 @@ protected:
 			? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
 			: std::nullopt
 			;
-		errno = 0;
+		RAC_ERRNO_MSG("offline_imu_cam after cam0");
 
 		assert(errno == 0);
 		std::optional<cv::Mat*> cam1 = sensor_datum.cam1
 			? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
 			: std::nullopt
 			;
-		errno = 0;
+		RAC_ERRNO_MSG("offline_imu_cam after cam1");
 
 		assert(errno == 0);
 		if (cam0 && cam1) {
 			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
 			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
 		}
-		errno = 0;
+		RAC_ERRNO_MSG("offline_imu_cam after cvtColor");
 
 		auto datum = new imu_cam_type{
 			real_now,
@@ -99,6 +100,8 @@ protected:
 			.seq = static_cast<int>(++_imu_integrator_seq),
 		};
 		_m_imu_integrator->put(imu_integrator_params);
+
+		RAC_ERRNO_MSG("offline_imu_cam");
 	}
 
 public:

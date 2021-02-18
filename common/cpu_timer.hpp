@@ -11,6 +11,8 @@
 #include <functional>
 #include <thread>
 
+#include "global_module_defs.hpp"
+
 /**
  * @brief A C++ translation of [clock_gettime][1]
  *
@@ -29,7 +31,7 @@ cpp_clock_gettime(clockid_t clock_id) {
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};
     }
-    errno = 0;
+    RAC_ERRNO();
 	asm volatile (""
 				  : /* OutputOperands */
 				  : /* InputOperands */

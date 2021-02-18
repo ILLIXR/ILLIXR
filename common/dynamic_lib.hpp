@@ -6,6 +6,8 @@
 #include <string>
 #include <functional>
 
+#include "global_module_defs.hpp"
+
 namespace ILLIXR {
 
 using void_ptr = std::unique_ptr<void, std::function<void(void*)>>;
@@ -44,20 +46,20 @@ public:
 		char* error;
 
 		// dlopen man page says that it can set errno sp
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set before dlopen");
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
 
 		if ((error = dlerror()) || !handle)
 			throw std::runtime_error{
 				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
-		errno = 0;
+		RAC_ERRNO();
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
 			assert(errno == 0);
 			
 			char* error;
 			int ret = dlclose(handle);
-			errno = 0;
+			RAC_ERRNO_MSG("dynamic_lib after dlclose");
 			if ((error = dlerror()) || ret)
 				throw std::runtime_error{
 					"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
@@ -65,14 +67,14 @@ public:
 	}
 
 	const void* operator[](const std::string& symbol_name) const {
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set at start of operator[]");
 
 		char* error;		
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
 		if ((error = dlerror()))
 			throw std::runtime_error{
 				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
-		errno = 0;
+		RAC_ERRNO();
 		return symbol;
 	}
 
