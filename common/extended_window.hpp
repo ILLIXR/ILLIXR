@@ -147,8 +147,7 @@ namespace ILLIXR{
                 GLX_CONTEXT_MINOR_VERSION_ARB, 3,
                 None
             };
-            
-            assert(errno == 0 && "Errno should not be set before glXCreateContextAttribsARB");
+            RAC_ERRNO_MSG("extended window after glXCreateContextAttribsARB");
 
             glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
             // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
