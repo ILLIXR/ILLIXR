@@ -37,7 +37,7 @@ static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 static void error_callback(int error, const char* description)
 {
     std::cerr << "|| glfw error_callback: " << error << std::endl
-              << "|>" << description << std::endl;
+              << "|> " << description << std::endl;
 }
 
 
@@ -338,7 +338,7 @@ private:
         assert(errno == 0 && "Errno should not be set after binding the textures");
 
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
-        RAC_ERRNO("gldemo after glFramebufferTexture");
+        RAC_ERRNO_MSG("gldemo after glFramebufferTexture");
         assert(errno == 0 && "Errno should not be set after framebuffer texture");
 
     	glBindTexture(GL_TEXTURE_2D, 0);

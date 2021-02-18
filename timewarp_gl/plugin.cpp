@@ -42,7 +42,7 @@ const record_header mtp_record {"mtp_record", {
 static void error_callback(int error, const char* description)
 {
     std::cerr << "|| glfw error_callback: " << error << std::endl
-              << "|>" << description << std::endl;
+              << "|> " << description << std::endl;
 }
 
 class timewarp_gl : public threadloop {

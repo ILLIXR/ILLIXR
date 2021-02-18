@@ -30,7 +30,7 @@ This is the file where default values are defined
 inline void report_and_clear_errno(
     const std::string& file,
     const int& line,
-    const std::string function,
+    const std::string& function,
     const std::string& msg = ""
 ) {
 #ifndef NDEBUG

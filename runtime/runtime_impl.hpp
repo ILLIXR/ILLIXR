@@ -31,7 +31,7 @@ public:
 			return dynamic_lib::create(so_path);
 		});
 
-        assert(errno == 0 && "Errno should not be set after creating the dynamic library");
+        assert(errno == 0 && "Errno should not be set after creating the dynamic libraries");
 
 		std::vector<plugin_factory> plugin_factories;
 		std::transform(libs.cbegin(), libs.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
@@ -44,8 +44,6 @@ public:
 		    assert(errno == 0 && "Errno should not be set before building the plugin");
 			return std::unique_ptr<plugin>{plugin_factory(&pb)};
 		});
-
-        RAC_ERRNO_MSG("runtime_impl after transform of plugin_factories");
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start();

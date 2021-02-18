@@ -48,11 +48,13 @@ public:
 		// dlopen man page says that it can set errno sp
 		assert(errno == 0 && "Errno should not be set before dlopen");
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
+		RAC_ERRNO_MSG("dynamic_lib after dlopen");
 
-		if ((error = dlerror()) || !handle)
+		if ((error = dlerror()) || !handle) {
 			throw std::runtime_error{
 				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
-		RAC_ERRNO();
+        }
+        RAC_ERRNO_MSG("dynamic_lib after dlerror");
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
 			assert(errno == 0);
