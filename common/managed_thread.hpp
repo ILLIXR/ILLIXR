@@ -71,7 +71,7 @@ public:
 	 *
 	 * Returns whether the event was actually set.
 	 */
-	template <class Clock, class Rep, class Period>
+	template <class Rep, class Period, class Clock = std::chrono::steady_clock>
 	bool wait_timeout(const std::chrono::duration<Rep, Period>& duration) const {
 		auto timeout_time = Clock::now() + duration;
 		std::unique_lock<std::mutex> lock {_m_mutex};
@@ -159,7 +159,7 @@ private:
 
 	template <class Rep, class Period>
 	bool actual_sleep(const std::chrono::duration<Rep, Period>& duration) const {
-		if (duration > 0) {
+		if (duration > std::chrono::duration<Rep, Period>::zero()) {
 			auto seconds = std::chrono::seconds{duration};
 			auto remaining_duration = duration - seconds;
 			auto nanoseconds = std::chrono::nanoseconds{remaining_duration};
@@ -207,7 +207,7 @@ protected:
 	 *
 	 * Will be overriden by managed_thread.
 	 */
-	template <class Clock, class Rep, class Period>
+	template <class Rep, class Period, class Clock = std::chrono::steady_clock>
 	bool sleep(const std::chrono::duration<Rep, Period>& duration) const {
 		auto start = Clock::now();
 		auto period = std::chrono::milliseconds{10};

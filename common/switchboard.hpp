@@ -457,6 +457,7 @@ public:
             ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
             assert(this_event.unique());
             _m_topic.put(std::move(this_event));
+		}
     };
 
 private:
