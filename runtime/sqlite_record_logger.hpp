@@ -7,6 +7,7 @@
 #include <thread>
 #include <shared_mutex>
 #include <experimental/filesystem>
+#include <cerrno>
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "sqlite3pp/sqlite3pp.hpp"
 #include "common/record_logger.hpp"
@@ -23,16 +24,22 @@ namespace ILLIXR {
 class sqlite_thread {
 public:
 	sqlite3pp::database prep_db() {
+        assert(errno == 0 && "Errno should not be set at start of prep_db");
+
 		if (!std::experimental::filesystem::exists(dir)) {
 			std::experimental::filesystem::create_directory(dir);
 		}
+		RAC_ERRNO();
 
 		std::string path = dir / (table_name + std::string{".sqlite"});
+		RAC_ERRNO();
+
 		return sqlite3pp::database{path.c_str()};
 	}
 
 	std::string prep_insert_str() {
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set at start of prep_insert_str");
+
 		std::string drop_table_string = std::string{"DROP TABLE IF EXISTS "} + table_name + std::string{";"};
 		db.execute(drop_table_string.c_str());
 		RAC_ERRNO();
