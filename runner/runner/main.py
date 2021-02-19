@@ -9,6 +9,8 @@ from typing import Any, List, Mapping, Optional, ContextManager, BinaryIO, cast
 import click
 import jsonschema
 import yaml
+from yamlinclude import YamlIncludeConstructor
+
 from util import (
     fill_defaults,
     flatten1,
@@ -22,7 +24,6 @@ from util import (
     make,
     cmake,
 )
-from yamlinclude import YamlIncludeConstructor
 
 # isort main.py
 # black -l 90 main.py
@@ -34,8 +35,23 @@ cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
 
 
+def clean_one_plugin(
+    config: Mapping[str, Any], plugin_config: Mapping[str, Any]
+) -> Path:
+    profile = config["profile"]
+    path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+    path_str: str = str(path)
+    name: str = plugin_config["name"] if plugin_config["name"] else os.path.basename(path_str)
+    targets: List[str] = ["clean"]
+    print(f"[Clean] Plugin '{name}' @ '{path_str}/'")
+    make(path, targets, plugin_config["config"])
+    return path
+
+
 def build_one_plugin(
-    config: Mapping[str, Any], plugin_config: Mapping[str, Any], test: bool = False,
+    config: Mapping[str, Any],
+    plugin_config: Mapping[str, Any],
+    test: bool = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -49,7 +65,11 @@ def build_one_plugin(
     return path / plugin_so_name
 
 
-def build_runtime(config: Mapping[str, Any], suffix: str, test: bool = False,) -> Path:
+def build_runtime(
+    config: Mapping[str, Any],
+    suffix: str,
+    test: bool = False,
+) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
     runtime_name = f"{name}.{profile}.{suffix}"
@@ -75,14 +95,14 @@ def load_native(config: Mapping[str, Any]) -> None:
         ],
         desc="Building plugins",
     )
-    actual_cmd_str = config["loader"].get("command", "$cmd")
+    actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(
         ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-        KIMERA_ROOT=config["loader"]["kimera_path"],
+        KIMERA_ROOT=config["action"]["kimera_path"],
     )
     env_list = [
         f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()
@@ -106,7 +126,7 @@ def load_native(config: Mapping[str, Any]) -> None:
             )
         )
     )
-    log_stdout_str = config["loader"].get("log_stdout", None)
+    log_stdout_str = config["action"].get("log_stdout", None)
     log_stdout_ctx = cast(
         ContextManager[Optional[BinaryIO]],
         (
@@ -125,6 +145,8 @@ def load_tests(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe", test=True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
+    enable_offload_flag = config["enable_offload"]
+    enable_alignment_flag = config["enable_alignment"]
     make(Path("common"), ["tests/run"])
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
@@ -140,8 +162,10 @@ def load_tests(config: Mapping[str, Any]) -> None:
         env_override=dict(
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_RUN_DURATION=str(config["loader"].get("ILLIXR_RUN_DURATION", 10)),
-            KIMERA_ROOT=config["loader"]["kimera_path"],
+            ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
+            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+            KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
     )
@@ -150,15 +174,13 @@ def load_tests(config: Mapping[str, Any]) -> None:
 def load_monado(config: Mapping[str, Any]) -> None:
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "Release"
-    openxr_app_config = config["loader"]["openxr_app"].get("config", {})
-    monado_config = config["loader"]["monado"].get("config", {})
+    openxr_app_config = config["action"]["openxr_app"].get("config", {})
+    monado_config = config["action"]["monado"].get("config", {})
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
-    monado_path = pathify(
-        config["loader"]["monado"]["path"], root_dir, cache_path, True, True
-    )
+    monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
     openxr_app_path = pathify(
-        config["loader"]["openxr_app"]["path"], root_dir, cache_path, True, True
+        config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True
     )
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
@@ -209,17 +231,53 @@ def load_monado(config: Mapping[str, Any]) -> None:
     )
 
 
-loaders = {
+def clean_project(config: Mapping[str, Any]) -> None:
+    plugin_paths = threading_map(
+        lambda plugin_config: clean_one_plugin(config, plugin_config),
+        [
+            plugin_config
+            for plugin_group in config["plugin_groups"]
+            for plugin_config in plugin_group["plugin_group"]
+        ],
+        desc="Cleaning plugins",
+    )
+
+
+def make_docs(config: Mapping[str, Any]) -> None:
+    dir_api = "site/api"
+    dir_docs = "site/docs"
+    cmd_doxygen = ["doxygen", "doxygen.conf"]
+    cmd_mkdocs = ["python3", "-m", "mkdocs", "build"]
+    if not os.path.exists(dir_api):
+        os.makedirs(dir_api)
+    if not os.path.exists(dir_docs):
+        os.makedirs(dir_docs)
+    subprocess_run(
+        cmd_doxygen,
+        check=True,
+        capture_output=False,
+    )
+    subprocess_run(
+        cmd_mkdocs,
+        check=True,
+        capture_output=False,
+    )
+
+
+actions = {
     "native": load_native,
     "monado": load_monado,
     "tests": load_tests,
+    "clean": clean_project,
+    "docs": make_docs,
 }
 
 
 def run_config(config_path: Path) -> None:
     """Parse a YAML config file, returning the validated ILLIXR system config."""
     YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader, base_dir=config_path.parent,
+        loader_class=yaml.FullLoader,
+        base_dir=config_path.parent,
     )
 
     with config_path.open() as f:
@@ -231,11 +289,11 @@ def run_config(config_path: Path) -> None:
     jsonschema.validate(instance=config, schema=config_schema)
     fill_defaults(config, config_schema)
 
-    loader = config["loader"]["name"]
+    action = config["action"]["name"]
 
-    if loader not in loaders:
-        raise RuntimeError(f"No such loader: {loader}")
-    loaders[loader](config)
+    if action not in actions:
+        raise RuntimeError(f"No such action: {action}")
+    actions[action](config)
 
 
 if __name__ == "__main__":

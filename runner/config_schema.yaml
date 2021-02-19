@@ -98,7 +98,7 @@ properties:
         additionalProperties:
           type: string
         description: Vars that get passed to the build system
-  loader:
+  action:
     type: object
     additionalProperties: true
     default: {}
@@ -108,17 +108,17 @@ properties:
       name:
         default: native
         type: string
-        description: "Currently supports: 'native', 'monado', or 'tests'"
+        description: "Currently supports: 'native', 'monado', 'tests', or 'clean'"
         properties:
           path:
             $ref: '#/definitions/path'
-            description: Path to loader
+            description: Path to action
       config:
         default: {}
         type: object
         additionalProperties:
           type: string
-        description: Interpretation of these vars is loader-dependent
+        description: Interpretation of these vars is action-dependent
   data:
     $ref: '#/definitions/path'
     description: URL to offline IMU/cam data. Omit if not applicable.
@@ -126,10 +126,10 @@ properties:
     $ref: '#/definitions/path'
     description: URL to OBJs to render in gldemo.
   enable_offload:
-    type: number
+    type: boolean
     description: Flag to activate data collection at runtime.
   enable_alignment:
-    type: number
+    type: boolean
     description: Flag to activate the ground-truth alignment.
   profile:
     default: dbg

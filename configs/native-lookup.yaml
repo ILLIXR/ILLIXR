@@ -14,10 +14,10 @@ data:
       download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 demo_data: demo_data/
 
-enable_offload: 0
-enable_alignment: 0
+enable_offload:   False
+enable_alignment: False
 
-loader:
+action:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   name: native
   # command: gdb -q --args %a
