@@ -43,7 +43,7 @@ public:
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start();
 		});
-		// pb.lookup_impl<realtime_clock>()->reset();
+		pb.lookup_impl<realtime_clock>()->reset();
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start2();
 		});

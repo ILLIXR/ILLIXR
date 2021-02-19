@@ -37,6 +37,7 @@ public:
 protected:
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
+			assert(dataset_now < _m_sensor_data_it->first);
 			dataset_now = _m_sensor_data_it->first;
 			// Sleep for the difference between the current IMU vs 1st IMU and current UNIX time vs UNIX time the component was init
 			std::this_thread::sleep_for(
