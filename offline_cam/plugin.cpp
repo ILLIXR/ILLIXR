@@ -116,7 +116,7 @@ public:
 			std::cout << "Took " << s << std::endl;
 		}
 		std::this_thread::sleep_for(
-std::chrono::nanoseconds{nearest_row->first} + std::chrono::milliseconds{50} - std::chrono::nanoseconds{dataset_first_time} - _m_rtc->time_since_start()
+			std::chrono::nanoseconds{nearest_row->first} + std::chrono::milliseconds{50} - std::chrono::nanoseconds{dataset_first_time} - _m_rtc->time_since_start() - std::chrono::milliseconds{8}
 		);
 	}
 

@@ -36,6 +36,7 @@ public:
 	 */
 	virtual void start() override {
 		plugin::start();
+		paused.set();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
 	}
 

@@ -11,20 +11,7 @@
 
 namespace ILLIXR {
 
-#pragma once
-
-#include <cassert>
-#include <thread>
-#include <cerrno>
-#include <functional>
-#include <atomic>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <sched.h>
-
-namespace ILLIXR {
-
-pid_t gettid() { return syscall(SYS_gettid); }
+[[maybe_unused]] static pid_t gettid() { return syscall(SYS_gettid); }
 
 /**
  * @brief A boolean condition-variable.

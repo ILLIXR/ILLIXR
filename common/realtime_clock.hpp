@@ -12,6 +12,9 @@ public:
 	realtime_clock()
 		: start{now()}
 	{ }
+	void reset() {
+		start = now();
+	}
 	duration time_since_start() const {
 		return duration(now() - start);
 	}
