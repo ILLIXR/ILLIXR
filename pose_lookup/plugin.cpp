@@ -178,9 +178,10 @@ private:
     mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex offset_mutex;
 
-    const std::map<ullong, sensor_types> _m_sensor_data;
-    ullong dataset_first_time;
-    time_type _m_start_of_time;
+	const std::map<ullong, sensor_types> _m_sensor_data;
+    std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
+	ullong dataset_first_time;
+	time_type _m_start_of_time;
 	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
     bool enable_alignment;

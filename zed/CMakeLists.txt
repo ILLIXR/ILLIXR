@@ -19,7 +19,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 
 find_package(ZED 3 REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
+find_package(CUDA ${ZED_CUDA_VERSION} REQUIRED)
 
 IF(NOT WIN32)
     add_definitions(-Wno-format-extra-args -std=c++17 -g -O3)

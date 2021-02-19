@@ -21,16 +21,6 @@ typedef struct {
 
 #define IMU_SAMPLE_LIFETIME 5
 
-class imu_integrator : public threadloop {
-public:
-	imu_integrator(std::string name_, phonebook* pb_)
-		: threadloop{name_, pb_}
-		, sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{sb->subscribe_latest<imu_cam_type>("imu_cam")}
-		, _m_in{sb->subscribe_latest<imu_integrator_seq>("imu_integrator_seq")}
-		, _m_imu_integrator_input{sb->subscribe_latest<imu_integrator_input>("imu_integrator_input")}
-		, _m_imu_raw{sb->publish<imu_raw_type>("imu_raw")}
-	{}
 
 class imu_integrator : public plugin {
 public:
@@ -38,11 +28,10 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
-		, _m_in{sb->get_reader<imu_integrator_seq>("imu_integrator_seq")}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
-		sb.schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
 			callback(datum);
 		});
 	}
@@ -66,8 +55,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	// IMU Data, Sequence Flag, and State Vars Needed
-	switchboard::reader<imu_cam_type>> _m_imu_cam;
-	switchboard::reader<imu_integrator_seq>> _m_in;
+	switchboard::reader<imu_cam_type> _m_imu_cam;
 	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
 	// IMU Biases
@@ -95,7 +83,7 @@ private:
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
-        auto input_values = _m_imu_integrator_input.get_nullable();
+        auto input_values = _m_imu_integrator_input.get_ro_nullable();
         if (!input_values) {
             return;
         }
@@ -159,16 +147,16 @@ private:
 			}
 		}
 
-		_m_imu_raw->put(new imu_raw_type{
-			.w_hat = w_hat,
-			.a_hat = a_hat,
-			.w_hat2 = w_hat2,
-			.a_hat2 = a_hat2,
-			.pos = curr_pos,
-			.vel = curr_vel,
-			.quat = Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
-			.imu_time = real_time,
-		});
+		_m_imu_raw.put(_m_imu_raw.allocate(
+			w_hat,
+			a_hat,
+			w_hat2,
+			a_hat2,
+			curr_pos,
+			curr_vel,
+			Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
+			real_time
+		));
     }
 
 	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

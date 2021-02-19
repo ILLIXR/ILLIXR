@@ -37,7 +37,6 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
-		, _m_in{sb->get_reader<switchboard::event_wrapper<imu_integrator_seq>>("imu_integrator_seq")}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
@@ -66,7 +65,6 @@ private:
 
 	// IMU Data, Sequence Flag, and State Vars Needed
 	switchboard::reader<imu_cam_type> _m_imu_cam;
-	switchboard::reader<switchboard::event_wrapper<imu_integrator_seq>> _m_in;
 	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
 	// Write IMU Biases for PP

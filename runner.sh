@@ -7,4 +7,6 @@ cd "$(dirname ${0})/"
 conda deactivate
 conda activate illixr-runner
 
+export ILLIXR_INTEGRATION=yes
+
 python runner/runner/main.py "${@}"

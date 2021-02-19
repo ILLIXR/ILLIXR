@@ -46,6 +46,8 @@ struct cam_type : public switchboard::event {
 std::shared_ptr<Camera> start_camera() {
     std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
 
+    assert(zedm != nullptr && "Zed camera should be initialized");
+
     // Cam setup
     InitParameters init_params;
     init_params.camera_resolution = RESOLUTION::VGA;

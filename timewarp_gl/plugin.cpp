@@ -653,9 +653,9 @@ public:
 		}
 #endif
 		// Call Hologram
-        switchboard::ptr<switchboard::event_wrapper<std::size_t>> datum_hologram_seq =
-            _m_hologram.allocate<switchboard::event_wrapper<std::size_t>>(++_hologram_seq);
-		_m_hologram.put(std::move(datum_hologram_seq));
+		_m_hologram.put(_m_hologram.allocate<switchboard::event_wrapper<std::size_t>>(
+            ++_hologram_seq
+        ));
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once
 		//     the buffers have been successfully swapped.
@@ -671,10 +671,9 @@ public:
 		[[maybe_unused]] time_type time_after_swap = time_last_swap;
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		time_type time_estimate = GetNextSwapTimeEstimate();
-        switchboard::ptr<switchboard::event_wrapper<time_type>> datum_time_estimate =
-            _m_vsync_estimate.allocate<switchboard::event_wrapper<time_type>>(std::move(time_estimate));
-		_m_vsync_estimate.put(std::move(datum_time_estimate));
+		_m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_type>>(
+            GetNextSwapTimeEstimate()
+        ));
 
 		std::chrono::nanoseconds imu_to_display = time_last_swap - latest_pose.pose.sensor_time;
 		std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;

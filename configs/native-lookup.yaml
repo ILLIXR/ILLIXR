@@ -21,5 +21,14 @@ enable_verbose_errors: False
 action:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   name: native
-  # command: gdb -q --args %a
+
+  # run in GDB:
+  # command: gdb -q --args $cmd
+
+  # Print cmd for external use:
+  # command: printf %s\n $env_cmd
+
+  # Capture stdout for metrics
+  # log_stdout: metrics/output.log
+
 profile: opt

@@ -304,7 +304,7 @@ private:
          */
         void put(ptr<const event>&& this_event) {
 			assert(this_event != nullptr);
-			// assert(this_event.unique());  /// <-- TODO: Revisit for solution that guarantees uniqueness
+			assert(this_event.unique() || this_event.use_count() <= 2);  /// <-- TODO: Revisit for solution that guarantees uniqueness
 
 			/* The pointer that this gets exchanged with needs to get dropped. */
 			size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
@@ -439,17 +439,6 @@ public:
         { }
 
         /**
-         * @brief Publish @p ev to this topic.
-         */
-         void put(const specific_event* this_specific_event) {
-			assert(typeid(specific_event) == _m_topic.ty());
-			assert(this_specific_event);
-			ptr<const event> this_event {static_cast<const event*>(this_specific_event)};
-			assert(this_event.unique());
-			_m_topic.put(std::move(this_event));
-        }
-
-        /**
          * @brief Like `new`/`malloc` but more efficient for this specific case.
          *
          * There is an optimization available which has not yet been implemented: switchboard can reuse memory
@@ -473,7 +462,7 @@ public:
 			assert(this_specific_event != nullptr);
 			assert(this_specific_event.unique());
 			ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-			assert(this_event.unique());
+			assert(this_event.unique() || this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
 			_m_topic.put(std::move(this_event));
         }
     };
