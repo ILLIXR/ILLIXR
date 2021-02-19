@@ -9,9 +9,95 @@
 #include <sys/syscall.h>
 #include <sched.h>
 
-#define gettid() syscall(SYS_gettid)
+namespace ILLIXR {
+
+#pragma once
+
+#include <cassert>
+#include <thread>
+#include <cerrno>
+#include <functional>
+#include <atomic>
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <sched.h>
 
 namespace ILLIXR {
+
+pid_t gettid() { return syscall(SYS_gettid); }
+
+/**
+ * @brief A boolean condition-variable.
+ *
+ * Inspired by https://docs.python.org/3/library/threading.html#event-objects
+ */
+class Event {
+private:
+	mutable std::mutex _m_mutex;
+	mutable std::condition_variable _m_cv;
+	bool _m_value;
+
+public:
+	/**
+	 * @brief Sets the condition-variable to new_value.
+	 *
+	 * Defaults to true, so that set() sets the bool.
+	 */
+	void set(bool new_value = true) {
+		{
+			std::lock_guard lock {_m_mutex};
+			_m_value = new_value;
+		}
+		if (new_value) {
+			_m_cv.notify_all();
+		}
+	}
+
+	/**
+	 * @brief Clears the condition-variable.
+	 */
+	void clear() { set(false); }
+
+	/**
+	 * @brief Test if is set without blocking.
+	 */
+	bool is_set() const {
+		std::unique_lock<std::mutex> lock {_m_mutex};
+		return _m_value;
+	}
+
+	/**
+	 * @brief Wait indefinitely for the event to be set.
+	 */
+	void wait() const {
+		std::unique_lock<std::mutex> lock {_m_mutex};
+		// Check if we even need to wait
+		if (_m_value) {
+			return;
+		}
+		_m_cv.wait(lock, [this] { return _m_value; });
+	}
+
+	/**
+	 * @brief Wait for the event to be set with a timeout.
+	 *
+	 * Returns whether the event was actually set.
+	 */
+	template <class Clock, class Rep, class Period>
+	bool wait_timeout(const std::chrono::duration<Rep, Period>& duration) const {
+		auto timeout_time = Clock::now() + duration;
+		std::unique_lock<std::mutex> lock {_m_mutex};
+		if (_m_value) {
+			return true;
+		}
+		while (_m_cv.wait_until(lock, timeout_time) != std::cv_status::timeout) {
+			if (_m_value) {
+				return true;
+			}
+		}
+		return false;
+	}
+};
 
 /**
  * @brief An object that manages a std::thread; it joins and exits when the object gets destructed.

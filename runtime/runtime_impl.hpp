@@ -43,6 +43,10 @@ public:
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start();
 		});
+
+		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			plugin->start2();
+		});
 	}
 
 	virtual void load_so(const std::string_view so) override {

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "plugin.hpp"
 #include "cpu_timer.hpp"
+#include "managed_thread.hpp"
 
 namespace ILLIXR {
 
@@ -36,6 +37,10 @@ public:
 	virtual void start() override {
 		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
+	}
+
+	virtual void start2() override {
+		paused.set();
 	}
 
 	/**
@@ -85,6 +90,7 @@ private:
 				++skip_no;
 				break;
 			case skip_option::run: {
+				paused.wait();
 				// auto iteration_start_cpu_time  = thread_cpu_time();
 				// auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
@@ -155,6 +161,7 @@ private:
 	std::atomic<bool> _m_terminate {false};
 
 	std::thread _m_thread;
+	Event paused;
 };
 
 }

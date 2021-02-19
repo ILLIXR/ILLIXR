@@ -32,6 +32,8 @@ namespace ILLIXR {
 			}});
 		}
 
+		virtual void start2() { }
+
 		/**
 		 * @brief A method which Spindle calls when it starts the component.
 		 *
