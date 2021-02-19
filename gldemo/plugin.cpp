@@ -135,18 +135,26 @@ public:
 			wait_vsync();
 
 			glUseProgram(demoShaderProgram);
+			RAC_ERRNO();
 
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
+			RAC_ERRNO();
 
 			// Determine which set of eye textures to be using.
 			int buffer_to_use = which_buffer.load();
 
 			glUseProgram(demoShaderProgram);
+			RAC_ERRNO();
 			glBindVertexArray(demo_vao);
+			RAC_ERRNO();
 			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+			RAC_ERRNO();
 			glEnable(GL_CULL_FACE);
+			RAC_ERRNO();
 			glEnable(GL_DEPTH_TEST);
+			RAC_ERRNO();
 			glClearDepth(1);
+			RAC_ERRNO();
 
 			// We'll calculate this model view matrix
 			// using fresh pose data, if we have any.
@@ -190,15 +198,23 @@ public:
 
 				Eigen::Matrix4f modelViewMatrix = modelMatrix * view_matrix;
 				glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)(modelViewMatrix.data()));
+                RAC_ERRNO();
 				glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
+                RAC_ERRNO();
 				
 				glBindTexture(GL_TEXTURE_2D, eyeTextures[eye_idx]);
+                RAC_ERRNO();
 				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
+                RAC_ERRNO();
 				glBindTexture(GL_TEXTURE_2D, 0);
+                RAC_ERRNO();
 				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+                RAC_ERRNO();
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                RAC_ERRNO();
 				
 				demoscene.Draw();
+                RAC_ERRNO_MSG("gldemo after demoscene draw");
 			}
 
 #ifndef NDEBUG
@@ -207,7 +223,9 @@ public:
 			}
 #endif
 			lastTime = glfwGetTime();
+			RAC_ERRNO();
 			glFlush();
+			RAC_ERRNO();
 
 			// Publish our submitted frame handle to Switchboard!
 			auto frame = new rendered_frame;
@@ -283,22 +301,33 @@ private:
 
 		// Create the shared eye texture handle.
 		glGenTextures(1, texture_handle);
+        RAC_ERRNO();
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
+        RAC_ERRNO();
 
 		// Set the texture parameters for the texture that the FBO will be
 		// mapped into.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+        RAC_ERRNO();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        RAC_ERRNO();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        RAC_ERRNO();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        RAC_ERRNO();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        RAC_ERRNO();
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        RAC_ERRNO();
 
 		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
+        RAC_ERRNO();
 
 		if(glGetError()){
+			RAC_ERRNO();
 			return 0;
 		} else {
+			RAC_ERRNO();
 			return 1;
 		}
 	}
@@ -308,58 +337,50 @@ private:
 
 		// Create a framebuffer to draw some things to the eye texture
 		glGenFramebuffers(1, fbo);
-
-        assert(errno == 0 && "Errno should not be set after generating framebuffers");
+        RAC_ERRNO_MSG("gldemo after generating framebuffers");
 
 		// Bind the FBO as the active framebuffer.
     	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
-
-        assert(errno == 0 && "Errno should not be set after binding the framebuffers");
+        RAC_ERRNO_MSG("gldemo after binding the framebuffers");
 
 		glGenRenderbuffers(1, depth_target);
-
-        assert(errno == 0 && "Errno should not be set after generating the render buffers");
+        RAC_ERRNO_MSG("gldemo after generating the render buffers");
 
     	glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
-
-        assert(errno == 0 && "Errno should not be set after binding the render buffer");
+        RAC_ERRNO_MSG("gldemo after binding the render buffer");
 
     	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+    	RAC_ERRNO();
     	//glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-    	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-        assert(errno == 0 && "Errno should not be set after binding the render buffer");
+    	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        RAC_ERRNO_MSG("gldemo after binding the render buffer");
 
 		// Bind eyebuffer texture
 		printf("About to bind eyebuffer texture, texture handle: %d\n", *texture_handle);
 
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
-
-        assert(errno == 0 && "Errno should not be set after binding the textures");
+		RAC_ERRNO_MSG("gldemo after binding the textures");
 
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
         RAC_ERRNO_MSG("gldemo after glFramebufferTexture");
-        assert(errno == 0 && "Errno should not be set after framebuffer texture");
 
     	glBindTexture(GL_TEXTURE_2D, 0);
-
-        assert(errno == 0 && "Errno should not be set after binding the textures");
+        RAC_ERRNO_MSG("gldemo after binding the textures");
 
 		// attach a renderbuffer to depth attachment point
     	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
+	    RAC_ERRNO_MSG("gldemo after attaching the render buffer to depth target");
 
-	    assert(errno == 0 && "Errno should not be set after attaching the render buffer to depth target");
-
-		if(glGetError()){
+		if (glGetError()){
         	printf("displayCB, error after creating fbo\n");
     	}
 
-        assert(errno == 0 && "Errno should not be set after calling glGetError");
+        RAC_ERRNO_MSG("gldemo after calling glGetError");
 
 		// Unbind FBO.
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	    assert(errno == 0 && "Errno should not be set after binding the framebuffer");
+	    RAC_ERRNO_MSG("gldemo after binding the framebuffer");
 	}
 
 public:
@@ -385,19 +406,20 @@ public:
 
         /// Registering error callback for additional debug infp
 		glfwSetErrorCallback(error_callback);
+		RAC_ERRNO();
 
 		// Init and verify GLEW
-		assert(errno == 0 && "Errno should not be set before glewInit");
-		if(glewInit()){
+		if (glewInit()) {
 			printf("Failed to init GLEW\n");
 			exit(0);
 		}
 		RAC_ERRNO_MSG("gldemo after glewInit");
 
-		glEnable              ( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( MessageCallback, 0 );
+		glEnable(GL_DEBUG_OUTPUT);
+        RAC_ERRNO();
 
-        assert(errno == 0 && "Errno should not be set after enabling GL");
+		glDebugMessageCallback(MessageCallback, 0);
+		RAC_ERRNO();
 
 		// Create two shared eye textures.
 		// Note; each "eye texture" actually contains two eyes.
@@ -415,12 +437,10 @@ public:
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);
-
-        assert(errno == 0 && "Errno should not be set after creating global VAO object");
+        RAC_ERRNO_MSG("gldemo after creating global VAO object");
 
     	glBindVertexArray(demo_vao);
-
-		assert(errno == 0 && "Errno should not bet set after binding VAO object");
+    	RAC_ERRNO_MSG("gldemo after binding VAO object");
 
 		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
@@ -429,15 +449,20 @@ public:
 		RAC_ERRNO();
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
+		RAC_ERRNO();
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
+		RAC_ERRNO();
 		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
+		RAC_ERRNO();
 		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
+		RAC_ERRNO();
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
+		RAC_ERRNO();
 
 		// Load/initialize the demo scene.
 
 		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-		if(obj_dir == NULL) {
+		if (obj_dir == NULL) {
 			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
 			abort();
 		}
@@ -454,11 +479,9 @@ public:
 		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
 		lastTime = glfwGetTime();
-
 		RAC_ERRNO();
 
 		threadloop::start();
-
 		RAC_ERRNO();
 	}
 };

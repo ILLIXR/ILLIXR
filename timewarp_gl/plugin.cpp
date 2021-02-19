@@ -235,7 +235,7 @@ private:
 		return pixels;
 	}
 
-	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
+	void BuildTimewarp(HMD::hmd_info_t* hmdInfo) {
 
 		// Calculate the number of vertices+indices in the distortion mesh.
 		num_distortion_vertices = ( hmdInfo->eyeTilesHigh + 1 ) * ( hmdInfo->eyeTilesWide + 1 );
@@ -243,6 +243,7 @@ private:
 
 		// Allocate memory for the elements/indices array.
 		distortion_indices = (GLuint*) malloc(num_distortion_indices * sizeof(GLuint));
+		assert(distortion_indices != nullptr && "Build timewarp allocation should not fail");
 
 		// This is just a simple grid/plane index array, nothing fancy.
 		// Same for both eye distortions, too!
@@ -313,12 +314,13 @@ private:
 		}
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.1f, 0.0f );
+
 		// This was just temporary.
 		free(tw_mesh_base_ptr);
+		tw_mesh_base_ptr = nullptr;
+
 		std::cout << "BUILD TIMEWARP: " << errno << std::endl;
-        if (errno == 2) {
-			asm("int $3");
-		}
+		RAC_ERRNO_MSG("timewarp_gl at bottom of build timewarp");
 
 		return;
 	}
@@ -390,6 +392,8 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
+        assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
+
 		lastSwapTime = std::chrono::high_resolution_clock::now();
 
 		// Generate reference HMD and physical body dimensions
@@ -397,21 +401,22 @@ public:
 		HMD::GetDefaultBodyInfo(&body_info);
 
 		// Initialize the GLFW library, still need it to get time
-		assert(errno == 0);
-		if(!glfwInit()){
+		if (!glfwInit()) {
 			printf("Failed to initialize glfw\n");
 		}
 		RAC_ERRNO_MSG("timewarp_gl after glfwInit");
 
         /// Registering error callback for additional debug infp
 		glfwSetErrorCallback(error_callback);
+		RAC_ERRNO();
 
     	// Construct timewarp meshes and other data
     	BuildTimewarp(&hmd_info);
+    	RAC_ERRNO();
 
 		// includes setting swap interval
-		assert(errno == 0);
 		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
+		    RAC_ERRNO();
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
@@ -419,29 +424,38 @@ public:
 
 		// set swap interval for 1
 		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;		
-		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");		
-		glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
+		RAC_ERRNO();
 
+		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");		
+		RAC_ERRNO();
+
+		glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
 		RAC_ERRNO_MSG("timewarp_gl after vsync swap interval set");
 
 		// Init and verify GLEW
-		assert(errno == 0);
 		glewExperimental = GL_TRUE;
-		if(glewInit() != GLEW_OK){
+		if (glewInit() != GLEW_OK) {
+		    RAC_ERRNO();
 			printf("Failed to init GLEW\n");
 			// clean up ?
 			exit(0);
 		}
 		RAC_ERRNO();
 
-		glEnable              ( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( MessageCallback, 0 );
+		glEnable(GL_DEBUG_OUTPUT);
+        RAC_ERRNO();
+
+		glDebugMessageCallback(MessageCallback, 0);
+		RAC_ERRNO();
 
 		// TODO: X window v-synch
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &tw_vao);
+		RAC_ERRNO();
+
     	glBindVertexArray(tw_vao);
+    	RAC_ERRNO();
 
     	#ifdef USE_ALT_EYE_FORMAT
     	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
@@ -451,55 +465,101 @@ public:
 		// Acquire attribute and uniform locations from the compiled and linked shader program
 
     	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
+    	RAC_ERRNO();
+
     	distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
+    	RAC_ERRNO();
+
     	distortion_uv1_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv1");
+    	RAC_ERRNO();
+
     	distortion_uv2_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv2");
+    	RAC_ERRNO();
+
     	tw_start_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpStartTransform");
+    	RAC_ERRNO();
+
     	tw_end_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpEndTransform");
+    	RAC_ERRNO();
+
     	tw_eye_index_unif = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
+    	RAC_ERRNO();
+
     	eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
+    	RAC_ERRNO();
+
     	eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
-
-
+    	RAC_ERRNO();
 
 		// Config distortion mesh position vbo
 		glGenBuffers(1, &distortion_positions_vbo);
+    	RAC_ERRNO();
+
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+    	RAC_ERRNO();
+
 		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
+    	RAC_ERRNO();
+
 		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    	RAC_ERRNO();
+
 		//glEnableVertexAttribArray(distortion_pos_attr);
-
-
 
 		// Config distortion uv0 vbo
 		glGenBuffers(1, &distortion_uv0_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv0_attr);
+    	RAC_ERRNO();
 
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
+    	RAC_ERRNO();
+
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
+    	RAC_ERRNO();
+
+		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    	RAC_ERRNO();
+
+		//glEnableVertexAttribArray(distortion_uv0_attr);
 
 		// Config distortion uv1 vbo
 		glGenBuffers(1, &distortion_uv1_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv1_attr);
+    	RAC_ERRNO();
 
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
+    	RAC_ERRNO();
+
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
+    	RAC_ERRNO();
+
+		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    	RAC_ERRNO();
+
+		//glEnableVertexAttribArray(distortion_uv1_attr);
 
 		// Config distortion uv2 vbo
 		glGenBuffers(1, &distortion_uv2_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
-		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		//glEnableVertexAttribArray(distortion_uv2_attr);
+    	RAC_ERRNO();
 
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
+    	RAC_ERRNO();
+
+		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
+    	RAC_ERRNO();
+
+		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    	RAC_ERRNO();
+
+		//glEnableVertexAttribArray(distortion_uv2_attr);
 
 		// Config distortion mesh indices vbo
 		glGenBuffers(1, &distortion_indices_vbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
+    	RAC_ERRNO();
 
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
+    	RAC_ERRNO();
+
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
+    	RAC_ERRNO();
 
         // Config PBO for texture image collection
         glGenBuffers(1, &PBO_buffer);
@@ -509,6 +569,7 @@ public:
 
 		assert(errno == 0);
 		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
+		    RAC_ERRNO();
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
@@ -518,16 +579,26 @@ public:
 	virtual void warp([[maybe_unused]] float time) {
 		assert(errno == 0);
 		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
+		    RAC_ERRNO();
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
 		RAC_ERRNO();
 
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		RAC_ERRNO();
+
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		RAC_ERRNO();
+
 		glClearColor(0, 0, 0, 0);
+		RAC_ERRNO();
+
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		RAC_ERRNO();
+
 		glDepthFunc(GL_LEQUAL);
+		RAC_ERRNO();
 
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
 		// This should be null-checked in _p_should_skip
@@ -535,6 +606,7 @@ public:
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
+		RAC_ERRNO();
 
 		//double cursor_x, cursor_y;
 		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
@@ -576,32 +648,43 @@ public:
 		CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
 		glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)(timeWarpStartTransform4x4.data()));
+		RAC_ERRNO();
+
 		glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)(timeWarpEndTransform4x4.data()));
+		RAC_ERRNO();
 
 		// Debugging aid, toggle switch for rendering in the fragment shader
 		glUniform1i(glGetUniformLocation(timewarpShaderProgram, "ArrayIndex"), 0);
+		RAC_ERRNO();
 
 		glUniform1i(eye_sampler_0, 0);
+		RAC_ERRNO();
 
 		#ifndef USE_ALT_EYE_FORMAT
 		// Bind the shared texture handle
 		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
+		RAC_ERRNO();
 		#endif
 
 		glBindVertexArray(tw_vao);
+		RAC_ERRNO();
 
 		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
+
 		glGenQueries(1, &query);
+		RAC_ERRNO();
+
 		glBeginQuery(GL_TIME_ELAPSED, query);
+		RAC_ERRNO();
 
 		// Loop over each eye.
-		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
-
+		for (int eye = 0; eye < HMD::NUM_EYES; eye++ ){
 			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
 			glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
+			RAC_ERRNO();
 			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
@@ -612,38 +695,60 @@ public:
 			// to that region of the screen. This prevents re-uploading
 			// GPU data for each eye.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+			RAC_ERRNO();
+
 			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+			RAC_ERRNO();
+
 			glEnableVertexAttribArray(distortion_pos_attr);
+			RAC_ERRNO();
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
+			RAC_ERRNO();
+
 			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			RAC_ERRNO();
+
 			glEnableVertexAttribArray(distortion_uv0_attr);
+			RAC_ERRNO();
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
+			RAC_ERRNO();
+
 			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			RAC_ERRNO();
+
 			glEnableVertexAttribArray(distortion_uv1_attr);
+			RAC_ERRNO();
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			glEnableVertexAttribArray(distortion_uv2_attr);
+			RAC_ERRNO();
 
+			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			RAC_ERRNO();
+
+			glEnableVertexAttribArray(distortion_uv2_attr);
+			RAC_ERRNO();
 
 			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
 			// Specify which layer of the eye texture we're going to be using.
 			// Each eye has its own layer.
 			glUniform1i(tw_eye_index_unif, eye);
+			RAC_ERRNO();
 			#endif
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
 			// reused for both eyes. Therefore glDrawElements can be immediately called,
 			// with the UV and position buffers correctly offset.
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
+			RAC_ERRNO();
 		}
 
 		glEndQuery(GL_TIME_ELAPSED);
+		RAC_ERRNO();
 
 #ifndef NDEBUG
 		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
@@ -724,13 +829,18 @@ public:
 		// wait until the query result is available
 		int done = 0;
 		glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		RAC_ERRNO();
+
 		while (!done) {
 			std::this_thread::yield();
 			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+			RAC_ERRNO();
 		}
 
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+		RAC_ERRNO();
+
 		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
 			{iteration_no},
 			{gpu_start_wall_time},
@@ -754,16 +864,48 @@ public:
 
 	virtual ~timewarp_gl() override {
 		// TODO: Need to cleanup resources here!
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set at start of destructor");
+
 		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
+		    RAC_ERRNO();
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
 		RAC_ERRNO();
 
  		glXDestroyContext(xwin->dpy, xwin->glc);
+ 		RAC_ERRNO();
+
  		XDestroyWindow(xwin->dpy, xwin->win);
+ 		RAC_ERRNO();
+
  		XCloseDisplay(xwin->dpy);
+ 		RAC_ERRNO();
+
+	    if (distortion_indices != nullptr) {
+	        free(distortion_indices);
+	        distortion_indices = nullptr;
+        }
+
+        if (distortion_positions != nullptr) {
+            free(distortion_positions);
+            distortion_positions = nullptr;
+        }
+
+        if (distortion_uv0 != nullptr) {
+            free(distortion_uv0);
+            distortion_uv0 = nullptr;
+        }
+
+        if (distortion_uv1 != nullptr) {
+            free(distortion_uv1);
+            distortion_uv1 = nullptr;
+        }
+
+        if (distortion_uv2 != nullptr) {
+            free(distortion_uv2);
+            distortion_uv2 = nullptr;
+        }
 	}
 };
 
