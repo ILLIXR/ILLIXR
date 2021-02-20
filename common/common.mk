@@ -3,8 +3,8 @@
 CXX := clang++-10
 STDCXX ?= c++17
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
-DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -Wno-missing-field-initializers
-OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror -Wno-missing-field-initializers
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror
+OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)
 HPP_FILES ?= $(shell find -L . -name '*.hpp')

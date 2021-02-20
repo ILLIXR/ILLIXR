@@ -8,7 +8,11 @@
 #include <iomanip>
 #include <fstream>
 #include <numeric>
+#include <boost/filesystem.hpp>
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #include "common/gl_util/lib/stb_image_write.h"
 
 using namespace ILLIXR;
@@ -29,12 +33,7 @@ public:
 		, is_success{true}
 		/// TODO: Set with #198
 		, obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
-		{
-			/// Remove existing file and create folder for offloading
-			/// TODO: Not portable
-			system(("rm -r " + obj_dir).c_str());
-			system(("mkdir -p " + obj_dir).c_str());
-		}
+		{ }
 
 		virtual skip_option _p_should_skip() override {
 			auto in = _offload_data_reader->get_latest_ro();
@@ -62,7 +61,13 @@ public:
 		virtual ~offload_data() override {
 			// Write offloaded data from memory to disk
 			if (enable_offload)
+			{
+				boost::filesystem::path p(obj_dir);
+				boost::filesystem::remove_all(p);
+				boost::filesystem::create_directories(p);
+
 				writeDataToDisk(_offload_data_container);
+			}
 		}
 
 private:

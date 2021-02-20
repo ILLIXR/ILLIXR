@@ -158,54 +158,79 @@ private:
 	// Hologram call data
 	long long _hologram_seq{0};
 
-        // Sequence number of offload data
-        long long _offload_seq{0};
+	// Sequence number of offload data
+	long long _offload_seq{0};
 
 	bool disable_warp;
 
 	bool enable_offload;
 
-        // PBO buffer for reading texture image
-        GLuint PBO_buffer;
+	// PBO buffer for reading texture image
+	GLuint PBO_buffer;
 
-        // Time of reading and transferring texture image
+    // Time of reading and transferring texture image
 	int offload_time;
 
-        GLubyte* readTextureImage(){
+	// Error code of OpenGL calls
+	// No other errors are recorded until glGetError is called
+	// The flag is reset to GL_NO_ERROR after a glGetError call
+	GLenum err;
 
-                GLubyte* pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+	GLubyte* readTextureImage(){
 
-                // Start timer
-                startGetTexTime = std::chrono::high_resolution_clock::now();
+			GLubyte* pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 
-                // Enable PBO buffer
-                glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+			// Start timer
+			startGetTexTime = std::chrono::high_resolution_clock::now();
 
-                // Read texture image to PBO buffer
-                glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)0);
+			// Enable PBO buffer
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+			err = glGetError();
+			if (err){
+				std::cerr << "Timewarp: glBindBuffer to PBO_buffer failed" << std::endl;
+			}
 
-                // Transfer texture image from GPU to Pinned Memory(CPU)
-                GLubyte *ptr = (GLubyte*)glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
+			// Read texture image to PBO buffer
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)0);
+			err = glGetError();
+			if (err){
+				std::cerr << "Timewarp: glGetTexImage failed" << std::endl;
+			}
 
-                // Copy texture to CPU memory
-                memcpy(pixels, ptr, SCREEN_WIDTH * SCREEN_HEIGHT * 3);
+			// Transfer texture image from GPU to Pinned Memory(CPU)
+			GLubyte *ptr = (GLubyte*)glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
+			err = glGetError();
+			if (err){
+				std::cerr << "Timewarp: glMapNamedBuffer failed" << std::endl;
+			}
 
-                // Unmap the buffer
-                glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+			// Copy texture to CPU memory
+			memcpy(pixels, ptr, SCREEN_WIDTH * SCREEN_HEIGHT * 3);
 
-                // Unbind the buffer
-                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+			// Unmap the buffer
+			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+			err = glGetError();
+			if (err){
+				std::cerr << "Timewarp: glUnmapBuffer failed" << std::endl;
+			}
 
-                // Terminate timer
-                endGetTexTime = std::chrono::high_resolution_clock::now();
+			// Unbind the buffer
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+			err = glGetError();
+			if (err){
+				std::cerr << "Timewarp: glBindBuffer to 0 failed" << std::endl;
+			}
 
-                // Record the image collection time
-                offload_time = std::chrono::duration_cast<std::chrono::milliseconds>(endGetTexTime - startGetTexTime).count();
+			// Terminate timer
+			endGetTexTime = std::chrono::high_resolution_clock::now();
 
-                std::cout << "Texture image collecting time: " << offload_time << "\t";
+			// Record the image collection time
+			offload_time = std::chrono::duration_cast<std::chrono::milliseconds>(endGetTexTime - startGetTexTime).count();
 
-                return pixels;
-        }
+			std::cout << "Texture image collecting time: " << offload_time << "\t";
+
+			return pixels;
+	}
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo){
 

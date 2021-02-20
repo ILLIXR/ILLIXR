@@ -4,6 +4,8 @@
 #include "common/pose_prediction.hpp"
 #include "common/data_format.hpp"
 #include "common/plugin.hpp"
+#include "common/global_module_defs.hpp"
+
 
 #include "utils.hpp"
 #include "data_loading.hpp"
@@ -22,7 +24,7 @@ public:
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
         , init_pos_offset{0}
-        , align_rot{0}
+        , align_rot{Eigen::Matrix3f::Zero()}
         , align_trans{0}
         , align_quat{0}
         , align_scale{0.0}
@@ -65,16 +67,17 @@ public:
 
     virtual pose_type correct_pose(const pose_type pose) const override {
         pose_type swapped_pose;
-        pose_type input_pose;
 
         // Step 1: Compensate starting point to (0, 0, 0), pos only
-        input_pose.position(0) = pose.position(0) - init_pos_offset(0);
-        input_pose.position(1) = pose.position(1) - init_pos_offset(1);
-        input_pose.position(2) = pose.position(2) - init_pos_offset(2);
-        input_pose.orientation.x() = pose.orientation.x();
-        input_pose.orientation.y() = pose.orientation.y();
-        input_pose.orientation.z() = pose.orientation.z();
-        input_pose.orientation.w() = pose.orientation.w();
+        auto input_pose = pose_type{
+            .sensor_time = pose.sensor_time,
+            .position = Eigen::Vector3f{
+                pose.position(0) - init_pos_offset(0),
+                pose.position(1) - init_pos_offset(1),
+                pose.position(2) - init_pos_offset(2),
+            },
+            .orientation = pose.orientation,
+        };
 
         if (enable_alignment)
         {
