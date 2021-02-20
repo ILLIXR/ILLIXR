@@ -580,7 +580,7 @@ public:
 		std::chrono::nanoseconds render_to_display = lastSwapTime - most_recent_frame->render_time;
 
 		mtp_logger.log(record{mtp_record, {
-			{iteration_no},
+			{get_iterations()},
 			{lastSwapTime},
 			{imu_to_display},
 			{predict_to_display},
@@ -616,7 +616,7 @@ public:
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
-			{iteration_no},
+			{get_iterations()},
 			{gpu_start_wall_time},
 			{std::chrono::high_resolution_clock::now()},
 			{std::chrono::nanoseconds(elapsed_time)},

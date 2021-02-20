@@ -25,4 +25,5 @@ action:
   # Capture stdout for metrics
   # log_stdout: metrics/output.log
 
-profile: opt
+profile: dbg
+

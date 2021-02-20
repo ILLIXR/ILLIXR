@@ -115,6 +115,11 @@
  * destructor has to handle the case where the client forgot to call deinit() and the case where
  * they do call deinit().
  *
+ * This makes it much easier to implement safe [RAII] patterns, because it allows one to specify
+ * extra constructor-time actions.
+ *
+ * [1]: https://www.fluentcpp.com/2018/02/13/to-raii-or-not-to-raii/
+ *
  * # Init Protocol
  *
  * This class protocol attempts to automate that solution, reducing user-burden as much as
@@ -305,7 +310,7 @@ template <typename ThisClass>
 class ProvidesInitProtocol final : public ThisClass {
 public:
 	template <class... T>
-	ProvidesInitProtocol(T... t)
+	ProvidesInitProtocol(T&&... t)
 		: ThisClass(t...)
 	{
 		// Last constructor to run.
@@ -358,7 +363,7 @@ namespace InitProtocolTest {
 		void deinit();
 	};
 	
-	static void test() {
+	[[maybe_unused]] static void test() {
 		ProvidesInitProtocol<C> obj;
 	}
 	static std::size_t test_counter = 0;

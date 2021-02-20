@@ -12,7 +12,7 @@
 
 namespace ILLIXR {
 
-pid_t gettid() { return syscall(SYS_gettid); }
+[[maybe_unused]] static pid_t gettid() { return syscall(SYS_gettid); }
 
 /**
  * @brief A boolean condition-variable.
@@ -90,12 +90,16 @@ public:
 /**
  * @brief Base class for threads.
  *
- * This has the advantage that it naturally isolates the thread-local data. Most of the time,
+ * It takes care of being responsive to the shutdown signal. When the thread goes out of scope
+ * (perhaps by deleting a pointer), it gets joined. This idea of having the underlying resource
+ * allocated in the constructor (or init) and deallocated in the destructor makes it more difficult
+ * for the client to write wrong code (no need to call stop()). It is called [RAII][1].
+ *
+ * [1]: https://www.fluentcpp.com/2018/02/13/to-raii-or-not-to-raii/
+ *
+ * This also has the advantage that it naturally isolates the thread-local data. Most of the time,
  * private/protected data and methods can only be accessed from INSIDE the thread, while public
  * methods can be called from any thread.
- *
- * It also takes care of being responsive to the shutdown signal. When the thread goes out of scope
- * (perhaps by deleting a pointer), it gets joined.
  *
  * \code{.cpp}
  * class InnerThread : public ManagedThread {
@@ -158,9 +162,9 @@ private:
 	}
 
 	template <class Rep, class Period>
-	bool actual_sleep(const std::chrono::duration<Rep, Period>& duration) const {
+	void actual_sleep(const std::chrono::duration<Rep, Period>& duration) const {
 		if (duration > std::chrono::duration<Rep, Period>::zero()) {
-			auto seconds = std::chrono::seconds{duration};
+			auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
 			auto remaining_duration = duration - seconds;
 			auto nanoseconds = std::chrono::nanoseconds{remaining_duration};
 			struct timespec duration_timespec {

@@ -1,4 +1,5 @@
 #include "plugin.hpp"
+#include "cpu_timer.hpp"
 #include "managed_thread.hpp"
 
 namespace ILLIXR {

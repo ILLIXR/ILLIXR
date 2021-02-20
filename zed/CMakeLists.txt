@@ -1,7 +1,8 @@
 SET(libName ZED_with_OpenCV.so)
-# SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-# SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+
 PROJECT(${libName})
 
 option(LINK_SHARED_ZED "Link with the ZED SDK shared executable" ON)
@@ -38,15 +39,14 @@ link_directories(${CUDA_LIBRARY_DIRS})
 FILE(GLOB_RECURSE SRC_FILES src/main.cpp)
 FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
 
-ADD_EXECUTABLE(${libName} ${HDR_FILES} ${SRC_FILES})
+# ADD_EXECUTABLE(${libName} ${HDR_FILES} ${SRC_FILES})
+#TARGET_LINK_LIBRARIES(${libName} ${ZED_LIBS} ${OpenCV_LIBRARIES})
 
 if (LINK_SHARED_ZED)
     SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 else()
     SET(ZED_LIBS ${ZED_STATIC_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_LIBRARY})
 endif()
-
-TARGET_LINK_LIBRARIES(${libName} ${ZED_LIBS} ${OpenCV_LIBRARIES})
 
 add_library(plugin SHARED src/main.cpp ${HDR_FILES} ${SRC_FILES})
 target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES})
