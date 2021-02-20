@@ -33,42 +33,42 @@ public:
 		, is_success{true}
 		/// TODO: Set with #198
 		, obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
-		{ }
+	{ }
 
-		virtual skip_option _p_should_skip() override {
-			auto in = _offload_data_reader->get_latest_ro();
-			if (!in || in->seq == _seq_expect-1) {
-				// No new data, sleep
-				std::this_thread::sleep_for(std::chrono::milliseconds{1});
-				return skip_option::skip_and_yield;
+	virtual skip_option _p_should_skip() override {
+		auto in = _offload_data_reader->get_latest_ro();
+		if (!in || in->seq == _seq_expect-1) {
+			// No new data, sleep
+			std::this_thread::sleep_for(std::chrono::milliseconds{1});
+			return skip_option::skip_and_yield;
+		} else {
+			if (in->seq != _seq_expect) {
+				_stat_missed = in->seq - _seq_expect;
 			} else {
-				if (in->seq != _seq_expect) {
-					_stat_missed = in->seq - _seq_expect;
-				} else {
-					_stat_missed = 0;
-				}
-				_stat_processed++;
-				_seq_expect = in->seq+1;
-				return skip_option::run;
+				_stat_missed = 0;
 			}
+			_stat_processed++;
+			_seq_expect = in->seq+1;
+			return skip_option::run;
 		}
+	}
 
-		void _p_one_iteration() override {
-			std::cout << "Image index: " << img_idx++ << std::endl;
-			_offload_data_container.push_back(_offload_data_reader->get_latest_ro());
+	void _p_one_iteration() override {
+		std::cout << "Image index: " << img_idx++ << std::endl;
+		_offload_data_container.push_back(_offload_data_reader->get_latest_ro());
+	}
+
+	virtual ~offload_data() override {
+		// Write offloaded data from memory to disk
+		if (enable_offload)
+		{
+			boost::filesystem::path p(obj_dir);
+			boost::filesystem::remove_all(p);
+			boost::filesystem::create_directories(p);
+
+			writeDataToDisk(_offload_data_container);
 		}
-
-		virtual ~offload_data() override {
-			// Write offloaded data from memory to disk
-			if (enable_offload)
-			{
-				boost::filesystem::path p(obj_dir);
-				boost::filesystem::remove_all(p);
-				boost::filesystem::create_directories(p);
-
-				writeDataToDisk(_offload_data_container);
-			}
-		}
+	}
 
 private:
 	const std::shared_ptr<switchboard> sb;
