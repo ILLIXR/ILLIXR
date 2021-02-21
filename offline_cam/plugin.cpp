@@ -26,27 +26,6 @@ public:
 		, next_row{_m_sensor_data.cbegin()}
     { }
 
-	virtual void _p_thread_setup() override {
-		{
-			cpu_set_t set;
-			CPU_ZERO(&set);
-            CPU_SET(8, &set);
-			int rc = sched_setaffinity(gettid(), sizeof(set), &set );
-			if (rc != 0) {
-				std::system_error err (std::make_error_code(std::errc(errno)), "sched_affinity");
-				throw err;
-			}
-		}
-		{
-			struct sched_param sp = { .sched_priority = 1,};
-			int rc = sched_setscheduler(gettid(), SCHED_FIFO, &sp);
-			if (rc != 0) {
-				std::system_error err (std::make_error_code(std::errc(errno)), "sched_setscheduler");
-				throw err;
-			}
-		}
-	}
-
 	virtual skip_option _p_should_skip() override {
 		if (next_row != _m_sensor_data.end() && next_row->second.cam0 && next_row->second.cam1) {
 			return skip_option::run;
@@ -103,14 +82,17 @@ public:
 			total++;
 			last_ts = nearest_row->first;
 
+			auto img0 = nearest_row->second.cam0.value().load();
+			auto img1 = nearest_row->second.cam1.value().load();
+
 			std::this_thread::sleep_for(
 				std::chrono::nanoseconds{nearest_row->first} - std::chrono::nanoseconds{dataset_first_time} - _m_rtc->time_since_start() - std::chrono::milliseconds{4}
 			);
 
 			_m_cam_publisher.put(new (_m_cam_publisher.allocate()) cam_type {
 				time_since_start + _m_rtc->get_start(),
-				nearest_row->second.cam0.value().load(),
-				nearest_row->second.cam1.value().load(),
+				img0,
+				img1,
 				nearest_row->first
 			});
 		} else {
