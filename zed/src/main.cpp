@@ -191,12 +191,19 @@ private:
 		std::cerr << "===============================================" << std::endl;
 		enum sl::ERROR_CODE err = camera.open(init_params);
 
-		std::cerr << (err != sl::ERROR_CODE::SUCCESS) << " // " << err << " != " << sl::ERROR_CODE::SUCCESS << std::endl;
-		std::cerr << (err == sl::ERROR_CODE::SUCCESS) << " // " << err << " == " << sl::ERROR_CODE::SUCCESS << std::endl;
-		std::cerr << (((int)err) != ((int)sl::ERROR_CODE::SUCCESS)) << " // " << ((int)err) << " != " << ((int)sl::ERROR_CODE::SUCCESS) << std::endl;
-		std::cerr << (((int)err) == ((int)sl::ERROR_CODE::SUCCESS)) << " // " << ((int)err) << " == " << ((int)sl::ERROR_CODE::SUCCESS) << std::endl;
+		std::cerr << "err                     = " << ((int) err                    ) << " (" << err                     << ")\n";
+		std::cerr << "sl::ERROR_CODE::SUCCESS = " << ((int) sl::ERROR_CODE::SUCCESS) << " (" << sl::ERROR_CODE::SUCCESS << ")\n";
+
+		std::cerr << "err         == sl::ERROR_CODE::SUCCESS        ? " << (err == sl::ERROR_CODE::SUCCESS) << ".\n";
+		std::cerr << "err         != sl::ERROR_CODE::SUCCESS        ? " << (err != sl::ERROR_CODE::SUCCESS) << ".\n";
+		std::cerr << "((int) err) == ((int) sl::ERROR_CODE::SUCCESS)? " << (err == sl::ERROR_CODE::SUCCESS) << ".\n";
+		std::cerr << "((int) err) != ((int) sl::ERROR_CODE::SUCCESS)? " << (err != sl::ERROR_CODE::SUCCESS) << ".\n";
+		assert(1);
+		assert(err == sl::ERROR_CODE::SUCCESS);
+
 
 		if (err != sl::ERROR_CODE::SUCCESS) {
+			assert(err != sl::ERROR_CODE::SUCCESS);
 			std::cout << err << std::endl; // Display the error
 			assert(0 && "ZED couldn't open.");
 		}
