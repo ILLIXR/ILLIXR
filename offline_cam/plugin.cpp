@@ -47,6 +47,14 @@ public:
 		}
 	}
 
+	virtual skip_option _p_should_skip() override {
+		if (next_row != _m_sensor_data.end() && next_row->second.cam0 && next_row->second.cam1) {
+			return skip_option::run;
+		} else {
+			return skip_option::stop;
+		}
+	}
+
 	virtual void _p_one_iteration() override {
 		duration time_since_start = _m_rtc->time_since_start();
 // 		ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
@@ -87,13 +95,18 @@ public:
 		auto nearest_row = next_row;
 		next_row++;
 
-		if (last_ts != nearest_row->first) {
+		if (nearest_row->second.cam0 && nearest_row->second.cam1 && last_ts != nearest_row->first) {
 			if (nearest_row->first - last_ts > 75 * 1000 * 1000) {
 				dropped++;
 				std::cout << "Frames have been dropped: " << dropped << " / " << total << std::endl;
 			}
 			total++;
 			last_ts = nearest_row->first;
+
+			std::this_thread::sleep_for(
+				std::chrono::nanoseconds{nearest_row->first} - std::chrono::nanoseconds{dataset_first_time} - _m_rtc->time_since_start() - std::chrono::milliseconds{4}
+			);
+
 			_m_cam_publisher.put(new (_m_cam_publisher.allocate()) cam_type {
 				time_since_start + _m_rtc->get_start(),
 				nearest_row->second.cam0.value().load(),
@@ -111,13 +124,10 @@ public:
 			// 	;
 			// abort();
 		}
-		auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
-		if (s > 5.0f) {
-			std::cout << "Took " << s << std::endl;
-		}
-		std::this_thread::sleep_for(
-			std::chrono::nanoseconds{nearest_row->first} + std::chrono::milliseconds{50} - std::chrono::nanoseconds{dataset_first_time} - _m_rtc->time_since_start() - std::chrono::milliseconds{8}
-		);
+		// auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
+		// if (s > 5.0f) {
+		// 	std::cout << "Took " << s << std::endl;
+		// }
 	}
 
 	size_t total = 0, bad = 0, dropped = 0;

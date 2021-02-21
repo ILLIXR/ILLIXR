@@ -109,7 +109,7 @@ private:
 				break;
 			}
 			case skip_option::stop:
-				stop();
+				_m_terminate.store(true);
 				break;
 			}
 		}

@@ -12,7 +12,7 @@ plugin_groups:
     - path: gldemo/
     - path: timewarp_gl/
     - path: debugview/
-    - path: offline_imu_cam/ # -> imu_cam
+    # - path: offline_imu_cam/ # -> imu_cam
       # starts the timer when it loads, it sends the very first frame first
 
     - path: offline_imu/ # cam -> imu_cam
@@ -43,6 +43,6 @@ loader:
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
   # command: taskset -a -c 0 env ILLIXR_RUN_DURATION=100 $env_cmd
-  command: sudo env ILLIXR_RUN_DURATION=100 $env_cmd
+  command: sudo env ILLIXR_RUN_DURATION=100 gdb -q --args $env_cmd
 
-profile: opt
+profile: dbg

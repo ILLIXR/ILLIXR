@@ -105,7 +105,6 @@ private:
 	void thread_main() {
 		assert(_m_body);
 		pid = ::gettid();
-
 		{
 			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
 			thread_is_started = true;
@@ -187,12 +186,17 @@ public:
 	void start() {
 		assert(get_state() == state::startable);
 		_m_thread = std::thread{&managed_thread::thread_main, this};
+		thread_is_started = false;
 		{
 			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
 			thread_is_started_cv.wait(lock, [this]{return thread_is_started;});
 		}
-		std::cerr << int(get_state()) << "\n";
+#ifndef NDEBUG
+		std::cerr << "thread_is_started = " << thread_is_started << "\n";
+		std::cerr << "PID = " << pid << "\n";
+		std::cerr << "state = " << int(get_state()) << "\n";
 		assert(get_state() == state::running);
+#endif
 	}
 
 	/**

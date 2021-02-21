@@ -48,8 +48,7 @@ protected:
 			return skip_option::run;
 
 		} else {
-			stop();
-			return skip_option::skip_and_yield;
+			return skip_option::stop;
 		}
 	}
 
