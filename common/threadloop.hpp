@@ -106,7 +106,7 @@ protected:
 				auto iteration_start_cpu_time  = thread_cpu_time();
 				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
-				std::cout << "threadloop for plugin " << id << " finished."
+				std::cout << "threadloop for plugin " << id << " finished.\n";
 				it_log.log(record{__threadloop_iteration_header, {
 					{id},
 					{iteration_no},
