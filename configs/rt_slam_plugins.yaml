@@ -1,15 +1,14 @@
 plugin_group:
-  - path: offline_imu/
+  # - path: offline_imu/
   # - path: zed/
   # - name: Kimera-VIO/
   #   path:
   #     git_repo: https://github.com/ILLIXR/Kimera-VIO
   #     version: 6ea99d33fc2435a8c514049416dcb2f8a0e31692
-  - path: ../open_vins
-    # switchboard sync subscribe
-  # - path: gtsam_integrator/
-  # - path: gtsam_integrator/
-    # switchboard sync subscribe
+  - name: OpenVINS
+    path:
+      git_repo: https://github.com/ILLIXR/open_vins.git
+      version: 065a964087622126ed4c1911aeb18d253b034208
+  - path: gtsam_integrator/
   - path: pose_prediction/
-    # service, gets called
   # - path: pose_lookup/

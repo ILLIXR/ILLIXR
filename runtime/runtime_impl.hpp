@@ -9,14 +9,16 @@
 #include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
 #include "common/realtime_clock.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/core/utility.hpp>
 
 using namespace ILLIXR;
 
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
+#ifndef MULTICORE
 		cv::setNumThreads(0);
+#endif
 		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
@@ -40,6 +42,10 @@ public:
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
 			plugin->start();
+		});
+		pb.lookup_impl<realtime_clock>()->reset();
+		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			plugin->start2();
 		});
 	}
 

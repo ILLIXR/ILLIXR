@@ -1,12 +1,12 @@
 #include <signal.h>
+#include <cerrno>
 #include "runtime_impl.hpp"
-#include "stacktrace.hpp"
 
 constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {100};
 
 ILLIXR::runtime* r;
 
-static void signal_handler(int) {
+[[maybe_unused]] static void signal_handler(int) {
 	if (r) {
 		r->stop();
 	}
@@ -34,7 +34,7 @@ private:
 int main(int argc, char* const* argv) {
 	assert(errno == 0);
 	r = ILLIXR::runtime_factory(nullptr);
-	assert(errno == 0);
+	// assert(errno == 0);
 
 	[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), "main");
 	assert(!ret);
@@ -44,11 +44,11 @@ int main(int argc, char* const* argv) {
 		return std::string{arg};
 	});
 	r->load_so(lib_paths);
-	assert(errno == 0);
+	// assert(errno == 0);
 
 	// Two ways of shutting down:
 	// Ctrl+C
-	signal(SIGINT, signal_handler);
+	// signal(SIGINT, signal_handler);
 
 	// And timer
 	std::chrono::seconds run_duration = 

@@ -15,7 +15,7 @@ const record_header __threadloop_iteration_header {"threadloop_iteration", {
 	{"plugin_id", typeid(std::size_t)},
 	{"iteration_no", typeid(std::size_t)},
 	{"skips", typeid(std::size_t)},
-	{"cpu_time_start", typeid(std::chrono::nanoseconds)},
+	{"cpu_time_strat", typeid(std::chrono::nanoseconds)},
 	{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
 	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
 	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
@@ -48,15 +48,12 @@ public:
 				id,
 				std::to_string(id) + "_trigger",
 				[this](switchboard::ptr<const switchboard::event_wrapper<bool>>, size_t) {
-					thread_main();
+					thread_main(true);
 				},
 				true
 			);
-			// std::cerr << "\e[0;31m";
-			// std::cerr << "threadloop::start, is_scheduled, id = " << id << "\n";
-			// std::cerr << "\e[0m";
-			// thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{thread.get_pid(), std::to_string(id)});
 		} else {
+			paused.clear();
 			thread = std::make_unique<managed_thread>([this]{
 				char* name = new char[100];
 				snprintf(name, 100, "tl_%zu", id);
@@ -64,14 +61,20 @@ public:
 				[[maybe_unused]]int ret = pthread_setname_np(pthread_self(), name);
 				assert(!ret);
 
-				thread_main();
+				thread_main(false);
+				
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 			});
 			thread->start();
-			thread->set_cpu(3);
 			auto pid = thread->get_pid();
 			assert(pid != 0);
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{pid, std::to_string(id)});
+		}
+	}
+
+	virtual void start2() override {
+		if (!is_scheduled) {
+			paused.set();
 		}
 	}
 
@@ -80,14 +83,17 @@ protected:
 	std::size_t skip_no = 0;
 	std::unique_ptr<managed_thread> thread {nullptr};
 
-	void thread_main() {
+	void thread_main(bool from_switchboard) {
 			iteration_no++;
 			if (first_time) {
 				_p_thread_setup();
+				if (!from_switchboard) {
+					std::cerr << "Plugin " << id << " waiting on pause.\n";
+					paused.wait();
+					std::cerr << "Plugin " << id << " passed pause.\n";
+				}
 				first_time = false;
 			}
-
-			// PAUSE
 
 			skip_option s = _p_should_skip();
 
@@ -116,6 +122,9 @@ protected:
 				// completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 				break;
 			}
+			case skip_option::stop:
+				thread->request_stop();
+				break;
 			}
 		}
 
@@ -136,7 +145,12 @@ protected:
 		/// AKA "busy wait". Skip but try again very quickly.
 		skip_and_spin,
 
+		/// Yielding gives up a scheduling quantum, which is determined by the OS, but usually on
+		/// the order of 1-10ms. This is nicer to the other threads in the system.
 		skip_and_yield,
+
+		/// Calls stop.
+		stop,
 	};
 
 	/**
@@ -156,17 +170,8 @@ protected:
 	 */
 	virtual void _p_one_iteration() = 0;
 
-	/**
-	 * @brief Whether the thread has been asked to terminate.
-	 *
-	 * Check this before doing long-running computation; it makes termination more responsive.
-	 */
-	bool should_terminate() {
-		return _m_terminate.load();
-	}
-
 private:
-	std::atomic<bool> _m_terminate {false};
+	Event paused;
 };
 
 }

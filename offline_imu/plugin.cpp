@@ -24,17 +24,21 @@ public:
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
 		, dataset_first_time{_m_sensor_data_it->first}
+		, dataset_now{0}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
 		, _m_cam{_m_sb->get_reader<cam_type>("cam")}
 		, last_cam_ts{0}
 		, _m_log{"imu_cam.csv"}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-	{ }
+	{
+		_m_log << "imu_rt,imu_dt,cam_dt\n";
+	}
 
 protected:
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
+			assert(dataset_now < _m_sensor_data_it->first);
 			dataset_now = _m_sensor_data_it->first;
 			// Sleep for the difference between the current IMU vs 1st IMU and current UNIX time vs UNIX time the component was init
 			std::this_thread::sleep_for(
@@ -45,8 +49,7 @@ protected:
 			return skip_option::run;
 
 		} else {
-			stop();
-			return skip_option::skip_and_yield;
+			return skip_option::stop;
 		}
 	}
 
@@ -58,14 +61,16 @@ protected:
 
 		std::optional<cv::Mat> cam0 = std::nullopt;
 		std::optional<cv::Mat> cam1 = std::nullopt;
+		time_point cam_time;
 
-		_m_log << dataset_now << ",";
+		_m_log << (_m_rtc->time_since_start() + std::chrono::nanoseconds{dataset_first_time}).count() << ',' << dataset_now << ',';
 
 		switchboard::ptr<const cam_type> cam = _m_cam.get_ro_nullable();
 		if (cam && last_cam_ts != cam->dataset_time) {
 			last_cam_ts = cam->dataset_time;
 			cam0 = cam->img0;
 			cam1 = cam->img1;
+			cam_time = cam->time;
 			_m_log << cam->dataset_time;
 		}
 		_m_log << "\n";
@@ -77,6 +82,7 @@ protected:
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
+			cam_time,
 			(sensor_datum.imu0.angular_v).cast<float>(),
 			(sensor_datum.imu0.linear_a).cast<float>(),
 			cam0,

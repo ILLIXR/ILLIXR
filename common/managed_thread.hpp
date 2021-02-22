@@ -9,9 +9,82 @@
 #include <sys/syscall.h>
 #include <sched.h>
 
-#define gettid() syscall(SYS_gettid)
-
 namespace ILLIXR {
+
+[[maybe_unused]] static pid_t get_tid() { return syscall(SYS_gettid); }
+
+/**
+ * @brief A boolean condition-variable.
+ *
+ * Inspired by https://docs.python.org/3/library/threading.html#event-objects
+ */
+class Event {
+private:
+	mutable std::mutex _m_mutex;
+	mutable std::condition_variable _m_cv;
+	bool _m_value;
+
+public:
+	/**
+	 * @brief Sets the condition-variable to new_value.
+	 *
+	 * Defaults to true, so that set() sets the bool.
+	 */
+	void set(bool new_value = true) {
+		{
+			std::lock_guard lock {_m_mutex};
+			_m_value = new_value;
+		}
+		if (new_value) {
+			_m_cv.notify_all();
+		}
+	}
+
+	/**
+	 * @brief Clears the condition-variable.
+	 */
+	void clear() { set(false); }
+
+	/**
+	 * @brief Test if is set without blocking.
+	 */
+	bool is_set() const {
+		std::unique_lock<std::mutex> lock {_m_mutex};
+		return _m_value;
+	}
+
+	/**
+	 * @brief Wait indefinitely for the event to be set.
+	 */
+	void wait() const {
+		std::unique_lock<std::mutex> lock {_m_mutex};
+		// Check if we even need to wait
+		if (_m_value) {
+			return;
+		}
+		_m_cv.wait(lock, [this] { return _m_value; });
+	}
+
+	/**
+	 * @brief Wait for the event to be set with a timeout.
+	 *
+	 * Returns whether the event was actually set.
+	 */
+	template <class Clock, class Rep, class Period>
+	bool wait_timeout(const std::chrono::duration<Rep, Period>& duration) const {
+		auto timeout_time = Clock::now() + duration;
+		std::unique_lock<std::mutex> lock {_m_mutex};
+		if (_m_value) {
+			return true;
+		}
+		while (_m_cv.wait_until(lock, timeout_time) != std::cv_status::timeout) {
+			if (_m_value) {
+				return true;
+			}
+		}
+		return false;
+	}
+};
 
 /**
  * @brief An object that manages a std::thread; it joins and exits when the object gets destructed.
@@ -31,8 +104,7 @@ private:
 
 	void thread_main() {
 		assert(_m_body);
-		pid = ::gettid();
-
+		pid = get_tid();
 		{
 			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
 			thread_is_started = true;
@@ -41,7 +113,6 @@ private:
 		if (_m_on_start) {
 			_m_on_start();
 		}
-
 		while (!this->_m_stop.load()) {
 			_m_body();
 		}
@@ -113,13 +184,25 @@ public:
 	 */
 	void start() {
 		assert(get_state() == state::startable);
+		thread_is_started = false;
 		_m_thread = std::thread{&managed_thread::thread_main, this};
+
 		{
 			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
-			thread_is_started_cv.wait(lock, [this]{return thread_is_started;});
+			if (!thread_is_started) {
+				thread_is_started_cv.wait(lock, [this]{	return thread_is_started;});
+			}
 		}
-		std::cerr << int(get_state()) << "\n";
+#ifndef NDEBUG
+		std::cerr << "thread_is_started = " << thread_is_started << "\n";
+		std::cerr << "PID = " << pid << "\n";
+		std::cerr << "state = " << int(get_state()) << "\n";
 		assert(get_state() == state::running);
+#endif
+	}
+
+	void request_stop() {
+		_m_stop.store(true);
 	}
 
 	/**

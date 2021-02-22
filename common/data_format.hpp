@@ -47,18 +47,21 @@ namespace ILLIXR {
 	// time is the current UNIX time where dataset_time is the time read from the csv
 	struct imu_cam_type : switchboard::event {
 		time_point time;
+		time_point cam_time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
 		ullong dataset_time;
 		imu_cam_type(time_point time_,
+					 time_point cam_time_,
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
 					 std::optional<cv::Mat> img0_,
 					 std::optional<cv::Mat> img1_,
 					 ullong dataset_time_)
 			: time{time_}
+			, cam_time{cam_time_}
 			, angular_v{angular_v_}
 			, linear_a{linear_a_}
 			, img0{img0_}
@@ -72,13 +75,6 @@ namespace ILLIXR {
         std::optional<cv::Mat*> depth;
         ullong timestamp;
     } rgb_depth_type;
-
-
-	typedef struct {
-	  int64_t time;
-	  const unsigned char* rgb;
-	  const unsigned short* depth;
-	} rgb_depth_type2;
 
 	// Values needed to initialize the IMU integrator
 	typedef struct {
@@ -250,6 +246,7 @@ namespace ILLIXR {
 	void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb) {
 		auto sb = pb->lookup_impl<switchboard>();
 		auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
+		std::cerr << "Thread of plugin " << _m_plugin_id << " publish" << std::endl;
 		thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});
 
 		char* name = new char[100];

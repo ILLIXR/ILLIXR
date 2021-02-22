@@ -260,9 +260,6 @@ private:
 				_m_thread.set_priority(2);
 				}*/
 
-			if (_m_plugin_id == 4) {
-				_m_thread.set_cpu(4);
-			}
 		}
 
 		/**
@@ -318,7 +315,7 @@ private:
 			std::string name,
 			const std::type_info& ty,
 			std::shared_ptr<record_logger> record_logger_
-		)   : _m_name{name}
+		)	: _m_name{name}
 			, _m_ty{ty}
 			, _m_record_logger{record_logger_}
 			, _m_latest_index{0}

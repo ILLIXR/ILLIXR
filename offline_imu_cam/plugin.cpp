@@ -26,6 +26,7 @@ public:
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
+		, _m_log{"imu_cam.csv"}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 	{ }
 
@@ -47,8 +48,7 @@ protected:
 			}
 
 		} else {
-			stop();
-			return skip_option::skip_and_yield;
+			return skip_option::stop;
 		}
 	}
 
@@ -68,6 +68,8 @@ protected:
 		}});
 
 
+		_m_log << (_m_rtc->time_since_start() + std::chrono::nanoseconds{dataset_first_time}).count() << ',' << dataset_now << ',' << dataset_now << "\n";
+
 		std::optional<cv::Mat> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat>(sensor_datum.cam0.value().load())
 			: std::nullopt
@@ -79,6 +81,7 @@ protected:
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_cam_type{
 			real_now,
+				cam1 ? real_now : time_point{},
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
 			cam0,
@@ -95,8 +98,6 @@ protected:
 		}
 	}
 
-	size_t slow_count = 0, fast_count = 0;
-
 private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
@@ -110,6 +111,7 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
+	std::ofstream _m_log;
 	std::shared_ptr<realtime_clock> _m_rtc;
 };
 
