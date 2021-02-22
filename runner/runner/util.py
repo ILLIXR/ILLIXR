@@ -151,6 +151,7 @@ def subprocess_run(
     env_override: Optional[Mapping[str, str]] = None,
     capture_output: bool = False,
     stdout: Optional[BinaryIO] = None,
+    stderr: Optional[BinaryIO] = None,
 ) -> subprocess.CompletedProcess[bytes]:
     """Wrapper around of subprocess.run.
 
@@ -169,7 +170,7 @@ def subprocess_run(
     if env_override:
         env.update(env_override)
 
-    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout)
+    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout, stderr=stderr)
 
     if check:
         if proc.returncode != 0:
