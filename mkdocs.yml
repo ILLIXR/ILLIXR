@@ -1,16 +1,28 @@
 site_name: ILLIXR Docs
 theme: readthedocs
 site_dir: site/docs
-site_url: https://illixr.github.io/ILLIXR/docs/
+site_url: https://illixr.github.io/ILLIXR/docs
 nav:
-    - 'ILLIXR': index.md
-    - 'Getting Started': getting_started.md
-    - 'ILLIXR Plugins': illixr_plugins.md
-    - 'Writing Your Plugin': writing_your_plugin.md
-    - 'Modifying A Plugin': modifying_a_plugin.md
-    - 'Building ILLIXR': building_illixr.md
-    - 'ILLIXR Debugging Tips': debugging_illixr.md
-    - 'Monado Integration Overview': monado_illixr_runtime_overview.md
-    - 'Monado Integration Dataflow': monado_integration_dataflow.md
-    - 'Visualizer & Logger': visualizer_logger.md
-    - 'API documentation': https://illixr.github.io/ILLIXR/api/html/annotated.html
+    - 'Latest Documentation':
+        - 'ILLIXR (Version 2)': index.md
+        - 'Getting Started (Version 2)': getting_started.md
+        - 'Building ILLIXR (Version 2)': building_illixr.md
+        - 'ILLIXR Debugging Tips (Version 2)': debugging_illixr.md
+        - 'ILLIXR under Virtualization (Version 2)': virtualization.md
+        - 'ILLIXR Plugins (Version 2)': illixr_plugins.md
+        - 'Modifying a Plugin (Version 2)': modifying_a_plugin.md
+        - 'Writing your Plugin (Version 2)': writing_your_plugin.md
+        - 'Monado Overview (Version 2)': monado_illixr_runtime_overview.md
+        - 'Monado Dataflow (Version 2)': monado_integration_dataflow.md
+        - 'Logging and Metrics (Version 2)': logging_and_metrics.md
+        - 'ILLIXR Glossary (Version 2)': glossary.md
+        - 'ILLIXR API (Version 2)': api/html/annotated.html
+        - 'ILLIXR License (Version 2)': LICENSE.md
+    - 'Legacy Documentation':
+        - 'ILLIXR (Version 1)': legacy/v1/index.md
+        - 'Audio Pipeline (Version 1)': legacy/v1/README-audio.md
+        - 'ElasticFusion (Version 1)': legacy/v1/README-efusion.md
+        - 'HOTlab (Version 1)': legacy/v1/README-hotlab.md
+        - 'OpenVINS (Version 1)': legacy/v1/README-openvins.md
+        - 'RITnet (Version 1)': legacy/v1/README-ritnet.md
+        - 'Visual Post-processing (Version 1)': legacy/v1/README-visualpp.md
