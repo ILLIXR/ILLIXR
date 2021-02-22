@@ -203,6 +203,7 @@ private:
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
+				std::cout << "subscriber for plugin " << id << " finished."
 				if (_m_cb_log) {
 					_m_cb_log.log(record{__switchboard_callback_header, {
 						{_m_plugin_id},

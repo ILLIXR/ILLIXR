@@ -36,7 +36,7 @@ loader:
   # command: gdb -q --args $cmd
   # command: sudo taskset -a -c 0 gdb -q --args $env_cmd
 
-  command: sudo taskset -a -c 0 $env_cmd
+  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 $env_cmd
 
   log_stdout: metrics/output.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd

@@ -88,9 +88,7 @@ protected:
 			if (first_time) {
 				_p_thread_setup();
 				if (!from_switchboard) {
-					std::cerr << "Plugin " << id << " waiting on pause.\n";
 					paused.wait();
-					std::cerr << "Plugin " << id << " passed pause.\n";
 				}
 				first_time = false;
 			}
@@ -108,6 +106,7 @@ protected:
 				auto iteration_start_cpu_time  = thread_cpu_time();
 				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				_p_one_iteration();
+				std::cout << "threadloop for plugin " << id << " finished."
 				it_log.log(record{__threadloop_iteration_header, {
 					{id},
 					{iteration_no},
