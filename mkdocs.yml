@@ -8,7 +8,7 @@ nav:
         - 'Getting Started (Version 2)': getting_started.md
         - 'Building ILLIXR (Version 2)': building_illixr.md
         - 'ILLIXR Debugging Tips (Version 2)': debugging_illixr.md
-        - 'ILLIXR under Virtualization (Version 2)': qemu.md
+        - 'ILLIXR under Virtualization (Version 2)': virtualization.md
         - 'ILLIXR Plugins (Version 2)': illixr_plugins.md
         - 'Modifying a Plugin (Version 2)': modifying_a_plugin.md
         - 'Writing your Plugin (Version 2)': writing_your_plugin.md

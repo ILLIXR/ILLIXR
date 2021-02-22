@@ -104,7 +104,7 @@ Otherwise, proceed to the next section, [Building ILLIXR][12].
 [13]:   glossary.md#spindle
 [14]:   glossary.md#switchboard
 [15]:   glossary.md#phonebook
-[16]:   qemu.md
+[16]:   virtualization.md
 [17]:   glossary.md#xvfb
 [18]:   glossary.md#monado
 [19]:   glossary.md#openxr

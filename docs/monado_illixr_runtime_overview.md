@@ -22,7 +22,7 @@ In order to support OpenXR, we modified [Monado][20], an existing, open-source i
 As specified by [_OpenXR_][21], the OpenXR application initializes the OpenXR runtime by reading a
     configuration JSON file pointed to by an environment variable and loads the OpenXR runtime,
     which is Monado in this case, as a shared library into its address space.
-Consult the OpenXR specifications and the OpenXR-SDK from Khronous Group for more details.
+Consult the OpenXR specifications and the OpenXR-SDK from Khronos Group for more details.
 
 
 ## Monado Device Probe and ILLIXR Initialization

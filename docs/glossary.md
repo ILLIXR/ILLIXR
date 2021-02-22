@@ -428,7 +428,7 @@ For more information, visit the [official Ubuntu site][29].
 [60]:   modifying_a_plugin.md
 [61]:   writing_your_plugin.md
 [62]:   glossary.md#docker
-[63]:   qemu.md
+[63]:   virtualization.md
 [64]:   monado_illixr_runtime_overview.md
 [65]:   monado_integration_dataflow.md
 [66]:   glossary.md#yaml

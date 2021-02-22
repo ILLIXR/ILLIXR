@@ -22,8 +22,8 @@ To get an OpenGL frame and use it without copying pixels, ILLIXR needs to get th
     application GL context.
 This is done at OpenXR session creation time, where ILLIXR is initialized.
 Note that, logically, ILLIXR is initialized during OpenXR instance creation,
-    or is otherwise running at the background all the time.
-Currently, ILLIXR is initilized at session creation time, since ILLIXR only supports single
+    or is otherwise running in the background all the time.
+Currently, ILLIXR is initialized at session creation time, since ILLIXR only supports single
     OpenXR session, and requires a user application GL context upon initialization,
 
 The current ILLIXR integration for Monado is a temporary solution and has some drawbacks caused
@@ -48,7 +48,7 @@ The integration:
 1.  User-space applications cannot acquire more than one [_swap chain_][31] buffer for each eye
         during the the processing of a frame.
 
-1.  Must initialize ILLIXR during the session initilization.
+1.  Must initialize ILLIXR during the session initialization.
 
 
 [//]: # (- References -)

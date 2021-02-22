@@ -22,7 +22,7 @@ ILLIXR implements a modular logging system that enables users to capture and rec
 
 ## Metrics
 
-ILLXR allows users to generate higher order statistics from logged results called _Metrics_.
+ILLIXR allows users to generate higher order statistics from logged results called _Metrics_.
 
 ***TODO***
 
