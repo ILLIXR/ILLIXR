@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/building_illixr/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Building ILLIXR (Version 2) - ILLIXR Docs</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Building ILLIXR (Version 2)";
+    var mkdocs_page_input_path = "building_illixr.md";
+    var mkdocs_page_url = "/ILLIXR/docs/building_illixr/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> ILLIXR Docs</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Building ILLIXR (Version 2)</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#compilation-and-usage">Compilation and Usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#specifying-paths">Specifying Paths</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../virtualization/">ILLIXR under Virtualization (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../writing_your_plugin/">Writing your Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing (Version 1)</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">ILLIXR Docs</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Latest Documentation &raquo;</li>
+        
+      
+    
+    <li>Building ILLIXR (Version 2)</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="building-illixr">Building ILLIXR</h1>
+<p>The ILLIXR application is kick-started through a tool called <a href="../glossary/#runner"><em>Runner</em></a>
+    (found in <code>runner/</code> and <code>runner.sh</code>).
+The Runner tool is responsible for
+    preparing the environment,
+    downloading required assets/code,
+    compiling each plugin,
+    and
+    launching the ILLIXR application.
+Runner is necessary for our project since ILLIXR manages plugins and data that span
+    many locations and launch <a href="../glossary/#configuration"><em>configurations</em></a>.
+A configuration (defined via a <a href="../glossary/#yaml"><em>YAML</em></a> file in <code>ILLIXR/configs/</code>) specifies parameters
+    and plugins required to launch ILLIXR for a specific design/evaluation scenario.</p>
+<h2 id="compilation-and-usage">Compilation and Usage</h2>
+<p>To run ILLIXR (from the root directory of the project) using
+    the default <code>native</code> launch configuration,</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/native.yaml
+</code></pre>
+<p>To drop into <code>gdb</code>, add <code>command: gdb -q --args $cmd</code> in the <code>action</code> block of
+    <code>configs/native.yaml</code>, and use the same command.</p>
+<p>To run ILLIXR with Monado,</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/monado.yaml
+</code></pre>
+<p>The <a href="../glossary/#openxr"><em>OpenXR</em></a> application to run is defined in the <code>action.openxr_app</code>
+    (a <a href="../glossary/#yaml"><em>YAML</em></a> object).</p>
+<h2 id="configuration">Configuration</h2>
+<p>As introduced in the <a href="./#building-illixr">introduction to the ILLIXR build process</a>, a <a href="../glossary/#configuration"><em>Configuration</em></a>
+    (or <em>config</em>) describes the key information needed to launch an ILLIXR application.
+This section provides a detailed breakdown of the structure of a configuration file.
+The default <code>ILLIXR/configs/native.yaml</code> for the <code>native</code> action will be used as
+    the running example.</p>
+<p>The first block in the config file contains a list of <code>plugin_groups</code>,
+    where each <code>plugin_group</code> is a list of plugins.</p>
+<!--- language: lang-yaml -->
+<pre><code>plugin_groups:
+  - plugin_group:
+      - path: plugin1/
+      - path: plugin2/
+      - path: plugin3/
+      - path: plugin4/
+</code></pre>
+<p>This defines a list of plugins by their location, <code>path</code>.
+Allowed paths will be described below.
+The <code>plugin_groups</code> get flattened and those plugins are initialized <em>in order</em> at runtime.
+Several of the default plugins are order-sensitive.</p>
+<p>The next block in the config defines the offline IMU data, camera data, and ground-truth data.</p>
+<!--- language: lang-yaml -->
+<pre><code>data:
+  subpath: mav0
+  relative_to:
+    archive_path:
+      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+</code></pre>
+<p>Next, we define the location of OBJ files for <code>gldemo</code>.</p>
+<!--- language: lang-yaml -->
+<pre><code>demo_data: demo_data/
+</code></pre>
+<p>Then, we define the <em>Action</em> to be taken for the configuration.
+Each action has a name, and can contain a number of member fields beyond this.</p>
+<!--- language: lang-yaml -->
+<pre><code>action:
+  name: native
+  command: gdb -q --args $cmd
+</code></pre>
+<p>The <code>native</code> action supports an optional <code>command</code> argument.
+In that argument <code>$cmd</code> is replaced with the separated command-line arguments to run ILLIXR,
+    while <code>$quoted_cmd</code> is replaced with a single string comprising all command-line arguments.
+The <code>command</code> argument also supports <code>$env_cmd</code>, which interpret command-line argument
+    assignments in the form of <code>VARNAME=VALUE</code> as environment variable mappings.
+See the <a href="../glossary/#configuration"><em>configuration</em> glossary entry</a> for more details about supported actions.</p>
+<p>Finally, we support two compilation <a href="../glossary/#configuration"><em>profiles</em></a>:
+    <code>opt</code>, which compiles with <code>-O3</code> and disables debug prints and assertions,
+    and
+    <code>dbg</code>, which compiles with debug flags and enables debug prints and assertions.</p>
+<!--- language: lang-yaml -->
+<pre><code>profile: opt
+</code></pre>
+<p>You can <code>!include</code> other configuration files via <a href="../glossary/#yaml">pyyaml-include</a>.
+Consider separating the site-specific configuration options into its own file.</p>
+<h2 id="specifying-paths">Specifying Paths</h2>
+<p>A path refers to a location of a resource. There are 5 ways of specifying a path:</p>
+<ul>
+<li>
+<p><strong>Simple path</strong>:
+    Either absolute or relative path in the native filesystem.</p>
+</li>
+<li>
+<p><strong>Git repo</strong>:
+    A git repository.</p>
+<p><!--- language: lang-yaml -->
+    - git_repo: https://github.com/user/repo.git
+      version: master # branch name, SHA-256, or tag</p>
+</li>
+<li>
+<p><strong>Download URL</strong>:
+    A resource downloaded from the internet.</p>
+<p><!--- language: lang-yaml -->
+    - download_url: https://example.com/file.txt</p>
+</li>
+<li>
+<p><strong>Zip archive</strong>:
+    A path that points within the contents of a zip archive.
+    Note that <code>archive_path</code> is itself a path (recursive).</p>
+<p><!--- language: lang-yaml -->
+    - archive_path: path/to/archive.zip
+    - archive_path:
+        download_url: https://example.com/file.zip</p>
+</li>
+<li>
+<p><strong>Complex path</strong>:
+    A hard-coded path relative to another path (recursive).
+    This is useful to specify a <em>subdirectory</em> of a git repository or zip archive.</p>
+<p><!--- language: lang-yaml -->
+    - subpath: path/within/git_repo
+      relative_to:
+        git_repo: ...
+        version: ...</p>
+</li>
+</ul>
+<h2 id="rationale">Rationale</h2>
+<ul>
+<li>
+<p>Previously, we would have to specify which plugins to build and which to run separately,
+        violating <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY principle</a>.</p>
+</li>
+<li>
+<p>Previously, configuration had to be hard-coded into the component source code,
+        or passed as parsed/unparsed as strings in env-vars on a per-component basis.
+    This gives us a consistent way to deal with all configurations.</p>
+</li>
+<li>
+<p>Currently, plugins are specified by a path to the directory containing their source code
+        and build system.</p>
+</li>
+</ul>
+<h2 id="philosophy">Philosophy</h2>
+<ul>
+<li>
+<p>Each plugin should not have to know or care how the others are compiled.
+    In the future, they may even be distributed separately, just as SOs.
+    Therefore, each plugin needs its own build system.</p>
+</li>
+<li>
+<p>Despite this per-plugin flexibility, building the 'default' set of ILLIXR plugins
+        should be extremely easy.</p>
+</li>
+<li>
+<p>It should be easy to build in parallel.</p>
+</li>
+<li>
+<p>Always rebuild every time, so the binary is always "fresh."
+    This is a great convenience when experimenting.
+    However, this implies that rebuilding must be fast when not much has changed.</p>
+</li>
+<li>
+<p>Make is the de facto standard for building C/C++ programs.
+    GNU Make, and the makefile language begets no shortage of problems
+        [<a href="https://www.conifersystems.com/whitepapers/gnu-make">1</a>,<a href="https://www.gnu.org/software/cons/stable/cons.html#why%20cons%20why%20not%20make">2</a>,<a href="https://interrupt.memfault.com/blog/gnu-make-guidelines#when-to-choose-make">3</a>,<a href="https://grosskurth.ca/bib/1997/miller.pdf" title="Recursive Make Considered Harmful (AUUGN Journal of AUUG Inc. 1998)">4</a>,<a href="https://doi.org/10.1145/3241625.2976011" title="Non-recursive make considered harmful: build systems at scale (SIGPLAN 2016)">5</a>], but we choose
+    Make for its tradeoff of between simplicity and functionality.
+    What it lacks in functionality (compared to CMake, Ninja, scons, Bazel, Meson)
+        it makes up for in simplicity.
+    It's still the build system in which it is the easiest to invoke arbitrary commands in
+        shell and the easiest to have a <code>common.mk</code> included in each plugin.
+    This decision to use Make should be revisited, when this project outgrows its ability,
+        but for now, Make remains, in our judgement, <em>the best tool for the job</em>.</p>
+</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../debugging_illixr/" class="btn btn-neutral float-right" title="ILLIXR Debugging Tips (Version 2)">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../getting_started/" class="btn btn-neutral" title="Getting Started (Version 2)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../getting_started/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../debugging_illixr/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
