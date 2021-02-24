@@ -84,6 +84,8 @@ def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
+    enable_offload_flag = config["enable_offload"]
+    enable_alignment_flag = config["enable_alignment"]
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [
@@ -98,6 +100,8 @@ def load_native(config: Mapping[str, Any]) -> None:
     env_override = dict(
         ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
+        ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+        ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         KIMERA_ROOT=config["action"]["kimera_path"],
     )
     env_list = [
@@ -141,6 +145,8 @@ def load_tests(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe", test=True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
+    enable_offload_flag = config["enable_offload"]
+    enable_alignment_flag = config["enable_alignment"]
     make(Path("common"), ["tests/run"])
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
@@ -157,6 +163,8 @@ def load_tests(config: Mapping[str, Any]) -> None:
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
+            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
             KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
