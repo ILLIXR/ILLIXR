@@ -3,7 +3,7 @@
 CXX := clang++-10
 STDCXX ?= c++17
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
-DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)

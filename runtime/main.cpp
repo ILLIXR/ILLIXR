@@ -1,4 +1,4 @@
-#include <signal.h>
+#include <csignal>
 #include "runtime_impl.hpp"
 
 
@@ -7,11 +7,21 @@ constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
 ILLIXR::runtime* r;
 
 
-static void signal_handler(int) {
+static void sigint_handler(int sig) {
+    assert(sig == SIGINT && "sigint_handler is for SIGINT");
 	if (r) {
 		r->stop();
 	}
 }
+
+#ifndef NDEBUG
+static void sigill_handler(int sig) {
+    /// Forward SIGILL from illegal instructions to catchsegv in ci.yaml
+    /// Provides additional debugging information via -rdynamic
+    assert(sig == SIGILL && "sigill_handler is for SIGILL");
+    std::raise(SIGSEGV);
+}
+#endif /// NDEBUG
 
 
 class cancellable_sleep {
@@ -35,16 +45,19 @@ private:
 int main(int argc, char* const* argv) {
 	r = ILLIXR::runtime_factory(nullptr);
 
-	// Two ways of shutting down:
-	// Ctrl+C
-	signal(SIGINT, signal_handler);
+#ifndef NDEBUG
+    /// When debugging, register the SIGILL handler for capturing more info
+    std::signal(SIGILL, sigill_handler);
+#endif /// NDEBUG
 
-	// And timer
+	/// Shutting down method 1: Ctrl+C
+    std::signal(SIGINT, sigint_handler);
+
+	/// Shutting down method 2: Run timer
 	std::chrono::seconds run_duration = 
 		getenv("ILLIXR_RUN_DURATION")
 		? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
-		: ILLIXR_RUN_DURATION_DEFAULT
-	;
+		: ILLIXR_RUN_DURATION_DEFAULT;
 
 	assert(errno == 0 && "Errno should not be set after creating runtime");
 

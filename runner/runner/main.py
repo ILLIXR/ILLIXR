@@ -159,7 +159,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
         desc="Building plugins",
     )
     subprocess_run(
-        ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
+        ["catchsegv", "xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
         env_override=dict(
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),

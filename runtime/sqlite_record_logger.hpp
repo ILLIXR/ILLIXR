@@ -30,11 +30,13 @@ public:
 			std::experimental::filesystem::create_directory(dir);
 		}
 
-		std::string path = dir / (table_name + std::string{".sqlite"});
+		const std::string path = dir / (table_name + std::string{".sqlite"});
 
-		RAC_ERRNO_MSG("sqlite_record_logger at end of prep_db");
+		RAC_ERRNO_MSG("sqlite_record_logger before sqlite3pp::database");
+        sqlite3pp::database db{path.c_str()};
+        RAC_ERRNO_MSG("sqlite_record_logger after sqlite3pp::database");
 
-		return sqlite3pp::database{path.c_str()};
+		return db;
 	}
 
 	std::string prep_insert_str() {
