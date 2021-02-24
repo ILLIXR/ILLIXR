@@ -3,7 +3,6 @@
 #include <iostream>
 #include <thread>
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
@@ -36,14 +35,6 @@ const record_header mtp_record {"mtp_record", {
 }};
 
 
-/**
- * @brief Callback function to handle glfw errors
- */
-static void error_callback(int error, const char* description)
-{
-    std::cerr << "|| glfw error_callback: " << error << std::endl
-              << "|> " << description << std::endl;
-}
 
 class timewarp_gl : public threadloop {
 
@@ -109,7 +100,7 @@ private:
 
 	GLuint timewarpShaderProgram;
 
-	time_type lastSwapTime;
+	time_type time_last_swap;
 
 	time_type startGetTexTime;
 	time_type endGetTexTime;
@@ -319,10 +310,7 @@ private:
 		free(tw_mesh_base_ptr);
 		tw_mesh_base_ptr = nullptr;
 
-		std::cout << "BUILD TIMEWARP: " << errno << std::endl;
 		RAC_ERRNO_MSG("timewarp_gl at bottom of build timewarp");
-
-		return;
 	}
 
 	/* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -355,13 +343,13 @@ private:
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
 	time_type GetNextSwapTimeEstimate() {
-		return lastSwapTime + vsync_period;
+		return time_last_swap + vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
 	// given a specified percentage of the total Vsync period to delay.
 	std::chrono::duration<double, std::nano> EstimateTimeToSleep(double framePercentage){
-		return (GetNextSwapTimeEstimate() - std::chrono::high_resolution_clock::now()) * framePercentage;
+		return (GetNextSwapTimeEstimate() - std::chrono::system_clock::now()) * framePercentage;
 	}
 
 
@@ -376,7 +364,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		if(_m_eyebuffer->get_latest_ro()) {
+		if (_m_eyebuffer->get_latest_ro()) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
@@ -387,75 +375,52 @@ public:
 
 	virtual void _p_one_iteration() override {
 	    assert(errno == 0 && "Errno should not be set at start of iteration");
-		warp(glfwGetTime());
-		RAC_ERRNO_MSG("timewarl_gl after warp");
+	    const std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+		warp(time_now);
 	}
 
 	virtual void _p_thread_setup() override {
         assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
 
-		lastSwapTime = std::chrono::high_resolution_clock::now();
+		time_last_swap = std::chrono::system_clock::now();
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
 		HMD::GetDefaultBodyInfo(&body_info);
 
-		// Initialize the GLFW library, still need it to get time
-		if (!glfwInit()) {
-			printf("Failed to initialize glfw\n");
-		}
-		RAC_ERRNO_MSG("timewarp_gl after glfwInit");
-
-        /// Registering error callback for additional debug infp
-		glfwSetErrorCallback(error_callback);
-		RAC_ERRNO();
-
     	// Construct timewarp meshes and other data
     	BuildTimewarp(&hmd_info);
-    	RAC_ERRNO();
 
 		// includes setting swap interval
 		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
-		    RAC_ERRNO();
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-			exit(1);
+            std::exit(1);
 		}
-		RAC_ERRNO_MSG("timewarp_gl after glXMakeCurrent");
 
 		// set swap interval for 1
+		RAC_ERRNO_MSG("timewarp_gl before vsync swap interval set");
 		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;		
-		RAC_ERRNO();
-
 		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");		
-		RAC_ERRNO();
-
 		glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
 		RAC_ERRNO_MSG("timewarp_gl after vsync swap interval set");
 
 		// Init and verify GLEW
 		glewExperimental = GL_TRUE;
 		if (glewInit() != GLEW_OK) {
-		    RAC_ERRNO();
-			printf("Failed to init GLEW\n");
+            std::cerr << "Failed to init GLEW" << std::endl;
 			// clean up ?
-			exit(0);
+            std::exit(1);
 		}
-		RAC_ERRNO();
 
 		glEnable(GL_DEBUG_OUTPUT);
-        RAC_ERRNO();
 
 		glDebugMessageCallback(MessageCallback, 0);
-		RAC_ERRNO();
 
 		// TODO: X window v-synch
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &tw_vao);
-		RAC_ERRNO();
-
     	glBindVertexArray(tw_vao);
-    	RAC_ERRNO();
 
     	#ifdef USE_ALT_EYE_FORMAT
     	timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
@@ -465,101 +430,49 @@ public:
 		// Acquire attribute and uniform locations from the compiled and linked shader program
 
     	distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
-    	RAC_ERRNO();
-
     	distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
-    	RAC_ERRNO();
-
     	distortion_uv1_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv1");
-    	RAC_ERRNO();
-
     	distortion_uv2_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv2");
-    	RAC_ERRNO();
 
     	tw_start_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpStartTransform");
-    	RAC_ERRNO();
-
     	tw_end_transform_unif = glGetUniformLocation(timewarpShaderProgram, "TimeWarpEndTransform");
-    	RAC_ERRNO();
-
     	tw_eye_index_unif = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
-    	RAC_ERRNO();
 
     	eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
-    	RAC_ERRNO();
-
     	eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
-    	RAC_ERRNO();
 
 		// Config distortion mesh position vbo
 		glGenBuffers(1, &distortion_positions_vbo);
-    	RAC_ERRNO();
-
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-    	RAC_ERRNO();
-
 		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
-    	RAC_ERRNO();
-
 		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    	RAC_ERRNO();
-
 		//glEnableVertexAttribArray(distortion_pos_attr);
 
 		// Config distortion uv0 vbo
 		glGenBuffers(1, &distortion_uv0_vbo);
-    	RAC_ERRNO();
-
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-    	RAC_ERRNO();
-
 		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
-    	RAC_ERRNO();
-
 		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    	RAC_ERRNO();
-
 		//glEnableVertexAttribArray(distortion_uv0_attr);
 
 		// Config distortion uv1 vbo
 		glGenBuffers(1, &distortion_uv1_vbo);
-    	RAC_ERRNO();
-
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-    	RAC_ERRNO();
-
 		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
-    	RAC_ERRNO();
-
 		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    	RAC_ERRNO();
-
 		//glEnableVertexAttribArray(distortion_uv1_attr);
 
 		// Config distortion uv2 vbo
 		glGenBuffers(1, &distortion_uv2_vbo);
-    	RAC_ERRNO();
-
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-    	RAC_ERRNO();
-
 		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
-    	RAC_ERRNO();
-
 		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    	RAC_ERRNO();
-
 		//glEnableVertexAttribArray(distortion_uv2_attr);
 
 		// Config distortion mesh indices vbo
 		glGenBuffers(1, &distortion_indices_vbo);
-    	RAC_ERRNO();
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
-    	RAC_ERRNO();
-
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
-    	RAC_ERRNO();
 
         // Config PBO for texture image collection
         glGenBuffers(1, &PBO_buffer);
@@ -568,37 +481,45 @@ public:
 
 
 		assert(errno == 0);
-		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
-		    RAC_ERRNO();
+		if (!glXMakeCurrent(xwin->dpy, None, nullptr)) {
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-			exit(1);
+            std::exit(1);
 		}
-		RAC_ERRNO();
 	}
 
-	virtual void warp([[maybe_unused]] float time) {
-		assert(errno == 0);
+	virtual void warp([[maybe_unused]] std::chrono::system_clock::time_point time) {
+		assert(errno == 0 && "Errno should not be set at start of warp");
+
 		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
-		    RAC_ERRNO();
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-			exit(1);
+            std::exit(1);
 		}
-		RAC_ERRNO();
 
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
-		RAC_ERRNO();
-
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		RAC_ERRNO();
-
 		glClearColor(0, 0, 0, 0);
-		RAC_ERRNO();
 
-    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		RAC_ERRNO();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        RAC_ERRNO_MSG("timewarp_gl after glClear");
+        /// RAC is triggered by glClear consistently. Checking for errors here to be safe.
+        const GLenum glClearError = glGetError();
+        switch (glClearError) {
+            case GL_NO_ERROR:
+                break;
+            case GL_INVALID_VALUE:
+                std::cerr << "GL_INVALID_VALUE after glClear" << std::endl;
+                goto GL_CLEAR_ERROR_BLOCK;
+            case GL_INVALID_OPERATION:
+                std::cerr << "GL_INVALID_OPERATION after glClear" << std::endl;
+                goto GL_CLEAR_ERROR_BLOCK;
+            default:
+                std::cerr << "Unexpected GL error " << glClearError << " after glClear" << std::endl;
+            GL_CLEAR_ERROR_BLOCK:
+                std::exit(1);
+        }
+		RAC_ERRNO_MSG("timewarp_gl after glGetError");
 
 		glDepthFunc(GL_LEQUAL);
-		RAC_ERRNO();
 
 		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
 		// This should be null-checked in _p_should_skip
@@ -606,10 +527,6 @@ public:
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
-		RAC_ERRNO();
-
-		//double cursor_x, cursor_y;
-		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
 
 		// Generate "starting" view matrix, from the pose
 		// sampled at the time of rendering the frame.
@@ -648,43 +565,31 @@ public:
 		CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
 		glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*)(timeWarpStartTransform4x4.data()));
-		RAC_ERRNO();
-
 		glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE,  (GLfloat*)(timeWarpEndTransform4x4.data()));
-		RAC_ERRNO();
 
 		// Debugging aid, toggle switch for rendering in the fragment shader
 		glUniform1i(glGetUniformLocation(timewarpShaderProgram, "ArrayIndex"), 0);
-		RAC_ERRNO();
-
 		glUniform1i(eye_sampler_0, 0);
-		RAC_ERRNO();
 
 		#ifndef USE_ALT_EYE_FORMAT
 		// Bind the shared texture handle
 		glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
-		RAC_ERRNO();
 		#endif
 
 		glBindVertexArray(tw_vao);
-		RAC_ERRNO();
 
-		auto gpu_start_wall_time = std::chrono::high_resolution_clock::now();
+		auto gpu_start_wall_time = std::chrono::system_clock::now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
 
 		glGenQueries(1, &query);
-		RAC_ERRNO();
-
 		glBeginQuery(GL_TIME_ELAPSED, query);
-		RAC_ERRNO();
 
 		// Loop over each eye.
 		for (int eye = 0; eye < HMD::NUM_EYES; eye++ ){
 			#ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
 			glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
-			RAC_ERRNO();
 			#endif
 
 			// The distortion_positions_vbo GPU buffer already contains
@@ -695,75 +600,55 @@ public:
 			// to that region of the screen. This prevents re-uploading
 			// GPU data for each eye.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-			RAC_ERRNO();
-
 			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
-			RAC_ERRNO();
-
 			glEnableVertexAttribArray(distortion_pos_attr);
-			RAC_ERRNO();
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-			RAC_ERRNO();
-
 			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			RAC_ERRNO();
-
 			glEnableVertexAttribArray(distortion_uv0_attr);
-			RAC_ERRNO();
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-			RAC_ERRNO();
-
 			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			RAC_ERRNO();
-
 			glEnableVertexAttribArray(distortion_uv1_attr);
-			RAC_ERRNO();
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-			RAC_ERRNO();
-
 			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
-			RAC_ERRNO();
-
 			glEnableVertexAttribArray(distortion_uv2_attr);
-			RAC_ERRNO();
 
 			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
 			// Specify which layer of the eye texture we're going to be using.
 			// Each eye has its own layer.
 			glUniform1i(tw_eye_index_unif, eye);
-			RAC_ERRNO();
 			#endif
 
 			// Interestingly, the element index buffer is identical for both eyes, and is
 			// reused for both eyes. Therefore glDrawElements can be immediately called,
 			// with the UV and position buffers correctly offset.
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
-			RAC_ERRNO();
 		}
 
 		glEndQuery(GL_TIME_ELAPSED);
-		RAC_ERRNO();
 
 #ifndef NDEBUG
-		auto delta = std::chrono::high_resolution_clock::now() - most_recent_frame->render_time;
+        const std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+		const std::chrono::nanoseconds time_since_render = time_now - most_recent_frame->render_time;
+
 		if (log_count > LOG_PERIOD) {
-			printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
+            const double time_since_render_ms_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_since_render).count();
+            std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
 			// We have always been warping from the correct swap, so I will disable this.
-			// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
+			// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
 		}
 
-		if (delta > vsync_period) {
-			printf("\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!\n");
+		if (time_since_render > vsync_period) {
+            std::cout << "\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!" << std::endl;
 		}
 
 		// Even in debug builds, this is quite verbose
-		// printf("\033[1;36m[TIMEWARP]\033[0m Warping from swap %d\n", most_recent_frame->swap_indices[0]);
+		// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
 #endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;
@@ -772,26 +657,26 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
-		[[maybe_unused]] auto beforeSwap = glfwGetTime();
+		[[maybe_unused]] std::chrono::system_clock::time_point time_before_swap = std::chrono::system_clock::now();
 
+        RAC_ERRNO_MSG("timewarp_gl before glXSwapBuffers");
 		glXSwapBuffers(xwin->dpy, xwin->win);
-
 		RAC_ERRNO_MSG("timewarp_gl after glXSwapBuffers");
 
 		// The swap time needs to be obtained and published as soon as possible
-		lastSwapTime = std::chrono::high_resolution_clock::now();
-		[[maybe_unused]] auto afterSwap = glfwGetTime();
+		time_last_swap = std::chrono::system_clock::now();
+		[[maybe_unused]] const std::chrono::system_clock::time_point time_after_swap = time_last_swap;
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
 
-		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
-		std::chrono::nanoseconds predict_to_display = lastSwapTime - latest_pose.predict_computed_time;
-		std::chrono::nanoseconds render_to_display = lastSwapTime - most_recent_frame->render_time;
+		std::chrono::nanoseconds imu_to_display = time_last_swap - latest_pose.pose.sensor_time;
+		std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
+		std::chrono::nanoseconds render_to_display = time_last_swap - most_recent_frame->render_time;
 
 		mtp_logger.log(record{mtp_record, {
 			{iteration_no},
-			{lastSwapTime},
+			{static_cast<std::chrono::high_resolution_clock::time_point>(time_last_swap)},
 			{imu_to_display},
 			{predict_to_display},
 			{render_to_display},
@@ -817,11 +702,18 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-			printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
-			printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
-			printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
-			printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);
-			std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+            const double time_swap = std::chrono::duration_cast<std::chrono::milliseconds>(time_after_swap - time_before_swap).count();
+            const double latency_mtd = imu_to_display.count()/1e6;
+            const double latency_ptd = predict_to_display.count()/1e6;
+            const double latency_rtd = render_to_display.count()/1e6;
+            const time_type time_next_swap = GetNextSwapTimeEstimate();
+            const double timewarp_estimate = std::chrono::duration_cast<std::chrono::milliseconds>(time_next_swap - time_last_swap).count();
+
+            std::cout << "\033[1;36m[TIMEWARP]\033[0m Swap time: " << time_swap << "ms" << std::endl
+			          << "\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: " << latency_mtd << "ms" << std::endl
+			          << "\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: " << latency_ptd << "ms" << std::endl
+		              << "\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: " << latency_rtd << "ms" << std::endl
+			          << "Timewarp estimating: " << timewarp_estimate << "ms in the future" << std::endl;
 		}
 #endif
 
@@ -829,21 +721,18 @@ public:
 		// wait until the query result is available
 		int done = 0;
 		glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-		RAC_ERRNO();
 
 		while (!done) {
 			std::this_thread::yield();
 			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-			RAC_ERRNO();
 		}
 
 		// get the query result
 		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		RAC_ERRNO();
 
 		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
 			{iteration_no},
-			{gpu_start_wall_time},
+			{static_cast<std::chrono::high_resolution_clock::time_point>(gpu_start_wall_time)},
 			{std::chrono::high_resolution_clock::now()},
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
@@ -866,21 +755,16 @@ public:
 		// TODO: Need to cleanup resources here!
 		assert(errno == 0 && "Errno should not be set at start of destructor");
 
-		if (!glXMakeCurrent(xwin->dpy, None, NULL)) {
-		    RAC_ERRNO();
+		if (!glXMakeCurrent(xwin->dpy, None, nullptr)) {
 			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-			exit(1);
+            std::exit(1);
 		}
-		RAC_ERRNO();
 
+        RAC_ERRNO_MSG("timewarp_gl before closing X");
  		glXDestroyContext(xwin->dpy, xwin->glc);
- 		RAC_ERRNO();
-
  		XDestroyWindow(xwin->dpy, xwin->win);
- 		RAC_ERRNO();
-
  		XCloseDisplay(xwin->dpy);
- 		RAC_ERRNO();
+        RAC_ERRNO_MSG("timewarp_gl after closing X");
 
 	    if (distortion_indices != nullptr) {
 	        free(distortion_indices);

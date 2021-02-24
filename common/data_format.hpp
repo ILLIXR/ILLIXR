@@ -20,7 +20,7 @@
 
 namespace ILLIXR {
 
-	typedef std::chrono::time_point<std::chrono::system_clock> time_type;
+	typedef std::chrono::system_clock::time_point time_type;
 	typedef unsigned long long ullong;
 
 	// Data type that combines the IMU and camera data at a certain timestamp.
@@ -99,8 +99,8 @@ namespace ILLIXR {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
-		std::chrono::time_point<std::chrono::system_clock> sample_time;
-		std::chrono::time_point<std::chrono::system_clock> render_time;
+		std::chrono::system_clock::time_point sample_time;
+		std::chrono::system_clock::time_point render_time;
 	};
 
 	typedef struct {

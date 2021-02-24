@@ -31,7 +31,7 @@ constexpr size_t TEST_PATTERN_HEIGHT = 256;
 // Loosely inspired by
 // http://spointeau.blogspot.com/2013/12/hello-i-am-looking-at-opengl-3.html
 
-Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vector3f up){
+Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vector3f up) {
 	using namespace Eigen;
 	Vector3f lookDir = (target - eye).normalized();
 	Vector3f upDir = up.normalized();
@@ -47,6 +47,16 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
 	return result;
 
 }
+
+
+/**
+ * @brief Callback function to handle glfw errors
+ */
+static void glfw_error_callback(int error, const char* description) {
+    std::cerr << "|| glfw error_callback: " << error << std::endl
+              << "|> " << description << std::endl;
+}
+
 
 class debugview : public threadloop {
 public:
@@ -75,14 +85,9 @@ public:
 
 		// Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
-        RAC_ERRNO_MSG("debugview after ImGui_ImplOpenGL3_NewFrame");
 
 		// Calls glfw within source code which sets errno
         ImGui_ImplGlfw_NewFrame();
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in glfwPollEvents " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO_MSG("debugview after ImGui_ImplGlfw_NewFrame");
 
         ImGui::NewFrame();
 
@@ -215,59 +220,30 @@ public:
 
 		if (last_datum_with_images->img0.has_value()) {
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-            RAC_ERRNO();
-
 			cv::Mat img0 = *last_datum_with_images->img0.value();
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
-			RAC_ERRNO();
-
 			camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
-
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
-			RAC_ERRNO();
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
-			RAC_ERRNO();
 		} else {
 			std::cerr << "img0 has no value!" << std::endl;
-
 			glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-			RAC_ERRNO();
-
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
-			RAC_ERRNO();
-
 			glFlush();
-			RAC_ERRNO();
-
 			camera_texture_sizes[0] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
 		}
 		
 		if (last_datum_with_images->img1.has_value()) {
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			RAC_ERRNO();
-
 			cv::Mat img1 = *last_datum_with_images->img1.value();
-
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
-			RAC_ERRNO();
-
 			camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
-
 			GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
-			RAC_ERRNO();
-
 			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
-			RAC_ERRNO();
 		} else {
 			glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-			RAC_ERRNO();
-
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, &(test_pattern[0][0]));
-			RAC_ERRNO();
-
 			glFlush();
-			RAC_ERRNO();
-
 			camera_texture_sizes[1] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
 		}
 
@@ -296,34 +272,19 @@ public:
 
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glfwMakeContextCurrent(gui_window);
-        RAC_ERRNO();
-
-		// https://www.glfw.org/docs/latest/intro_guide.html#error_handling
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO();
 	}
 
 	void _p_one_iteration() override {
         assert(errno == 0 && "Errno should not be set at stat of _p_one_iteration");
 
+        RAC_ERRNO_MSG("debugview before glfwPollEvents");
         glfwPollEvents();
         RAC_ERRNO_MSG("debugview after glfwPollEvents");
 
-        if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-            std::cerr << "Error in glfwPollEvents " << __FILE__ << ":" << __LINE__ << std::endl;
-        }
-        RAC_ERRNO();
-
         if (glfwGetMouseButton(gui_window, GLFW_MOUSE_BUTTON_LEFT)) {
-            RAC_ERRNO();
-
             double xpos, ypos;
 
             glfwGetCursorPos(gui_window, &xpos, &ypos);
-            RAC_ERRNO();
-
 
             Eigen::Vector2d new_pos = Eigen::Vector2d{xpos, ypos};
             if (beingDragged == false) {
@@ -335,7 +296,6 @@ public:
         } else {
             beingDragged = false;
         }
-        RAC_ERRNO();
 
         view_euler.y() += mouse_velocity.x() * 0.002f;
         view_euler.x() += mouse_velocity.y() * 0.002f;
@@ -345,7 +305,6 @@ public:
         load_camera_images();
 
         glUseProgram(demoShaderProgram);
-        RAC_ERRNO();
 
         Eigen::Matrix4f headsetPose = Eigen::Matrix4f::Identity();
 
@@ -372,67 +331,50 @@ public:
 
         Eigen::Matrix4f modelView = userView * modelMatrix;
 
-        RAC_ERRNO_MSG("debugview before glUseProgram");
         glUseProgram(demoShaderProgram);
-        RAC_ERRNO_MSG("debugview after glUseProgram");
 
         // Size viewport to window size.
         int display_w, display_h;
 
         glfwGetFramebufferSize(gui_window, &display_w, &display_h);
-        RAC_ERRNO_MSG("debugview after glfwGetFramebufferSize");
-
         glViewport(0, 0, display_w, display_h);
-        RAC_ERRNO_MSG("debugview after glViewport");
 
         float ratio = (float)display_h / (float)display_w;
 
         // Construct a basic perspective projection
+        RAC_ERRNO_MSG("debugview before projection_fov");
         math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f * ratio, 40.0f * ratio, 0.03f, 20.0f );
         RAC_ERRNO_MSG("debugview after projection_fov");
 
         glEnable(GL_CULL_FACE);
-        RAC_ERRNO_MSG("debugview after enabling GL_CULL_FACE");
-
         glEnable(GL_DEPTH_TEST);
-        RAC_ERRNO_MSG("debugview after enabling GL_DEPTH_TEST");
 
         glClearDepth(1);
-        RAC_ERRNO_MSG("debugview after glClearDepth");
 
         glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-        RAC_ERRNO();
-
         glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*)(basicProjection.data()));
-        RAC_ERRNO();
-
         glBindVertexArray(demo_vao);
-        RAC_ERRNO_MSG("debugview after glBindVertexArray");
 
         // Draw things
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-        RAC_ERRNO_MSG("debugview after glClearColor");
 
+        RAC_ERRNO_MSG("debugview before glClear");
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         RAC_ERRNO_MSG("debugview after glClear");
 
         demoscene.Draw();
-        RAC_ERRNO_MSG("debugview after demoscene draw");
 
         modelView = userView * headsetPose;
 
         glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*)modelView.data());
-        RAC_ERRNO();
 
         headset.Draw();
-        RAC_ERRNO_MSG("debugview after headset draw");
 
         draw_GUI();
-        RAC_ERRNO_MSG("debugview after draw_GUI");
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        RAC_ERRNO_MSG("debugview after imgui GetDrawData");
 
+        RAC_ERRNO_MSG("debugview before glfwSwapBuffers");
         glfwSwapBuffers(gui_window);
         RAC_ERRNO_MSG("debugview after glfwSwapBuffers");
 	}
@@ -463,7 +405,7 @@ private:
 	Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
 
-	const imu_cam_type* last_datum_with_images = NULL;
+	const imu_cam_type* last_datum_with_images = nullptr;
 	// std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
 	GLuint camera_textures[2];
 	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
@@ -498,89 +440,66 @@ public:
         	this->imu_cam_handler(datum);
     	});
 
+        if (!glfwInit()) {
+            std::cerr << "[debugview] Failed to initalize glfw" << std::endl;
+            std::exit(1);
+        }
+        RAC_ERRNO_MSG("debugview after glfwInit");
+
+        /// Registering error callback for additional debug info
+        glfwSetErrorCallback(glfw_error_callback);
+
+        /// Enable debug context for glDebugMessageCallback to work
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
-		RAC_ERRNO();
 
         /// TODO: This does not match the glsl version flag in `common/common.mk` (330 core)
 		const char* glsl_version = "#version 430 core";
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		RAC_ERRNO();
-
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		RAC_ERRNO();
-
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		RAC_ERRNO();
-
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		RAC_ERRNO();
 
-		gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", NULL, NULL);
-		RAC_ERRNO();
-
+		gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
 		if (gui_window == nullptr) {
 			std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
 			exit(1);
 		}
-		RAC_ERRNO_MSG("debugview after glfwCreateWindow");
 
 		glfwSetWindowSize(gui_window, 1600, 1000);
-		RAC_ERRNO();
-
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO_MSG("debugview after glfwSetWindowSize");
 
 		glfwMakeContextCurrent(gui_window);
-        RAC_ERRNO();
 
-		// https://www.glfw.org/docs/latest/intro_guide.html#error_handling
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO_MSG("debugview after glfwMakeContextCurrent");
-
+        RAC_ERRNO_MSG("debuview before vsync");
 		glfwSwapInterval(1); // Enable vsync!
-		RAC_ERRNO_MSG("debugview after vysnc recover block");
+		RAC_ERRNO_MSG("debugview after vysnc");
 
 		glEnable(GL_DEBUG_OUTPUT);
-		RAC_ERRNO_MSG("debugview after enabling GL");
-
 		glDebugMessageCallback(MessageCallback, 0);
-		RAC_ERRNO_MSG("debugview after setting the debug callback");
 
 		// Init and verify GLEW
 		if (glewInit()) {
-		    RAC_ERRNO();
-
 			std::cerr << "Failed to init GLEW" << std::endl;
-
 			glfwDestroyWindow(gui_window);
-			RAC_ERRNO();
 		}
 		RAC_ERRNO_MSG("debugview after glewInit");
 
 		// Initialize IMGUI context.
 		IMGUI_CHECKVERSION();
     	ImGui::CreateContext();
+
 		// Dark theme, of course.
 		ImGui::StyleColorsDark();
 
 		// Init IMGUI for OpenGL
 		assert(errno == 0);
 		ImGui_ImplGlfw_InitForOpenGL(gui_window, true);
-		RAC_ERRNO_MSG("debugview after ImGui_ImplGlfw_InitForOpenGL");
-
     	ImGui_ImplOpenGL3_Init(glsl_version);
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);
-		RAC_ERRNO();
-
     	glBindVertexArray(demo_vao);
-		RAC_ERRNO();
 
 		demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 		#ifndef NDEBUG
@@ -588,24 +507,16 @@ public:
 		#endif
 
 		vertexPosAttr = glGetAttribLocation(demoShaderProgram, "vertexPosition");
-		RAC_ERRNO();
-
 		vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");
-		RAC_ERRNO();
-
 		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
-		RAC_ERRNO();
-
 		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
-		RAC_ERRNO();
-
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
 
 		// Load/initialize the demo scene.
 		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-		if (obj_dir == NULL) {
+		if (obj_dir == nullptr) {
 			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
-			abort();
+            std::exit(1);
 		}
 
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
@@ -619,42 +530,20 @@ public:
 		}
 
 		glGenTextures(2, &(camera_textures[0]));
-        RAC_ERRNO();
-
 		glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-        RAC_ERRNO();
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        RAC_ERRNO();
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        RAC_ERRNO();
-
 		glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-        RAC_ERRNO();
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        RAC_ERRNO();
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        RAC_ERRNO();
 
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
-		glfwMakeContextCurrent(NULL);
-		RAC_ERRNO();
-
-		// https://www.glfw.org/docs/latest/intro_guide.html#error_handling
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in creating glfw context " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO_MSG("debugview after glfwMakeContextCurrent");
-
+		glfwMakeContextCurrent(nullptr);
 		lastTime = glfwGetTime();
-		RAC_ERRNO();
-
 		threadloop::start();
+
 		RAC_ERRNO_MSG("debuview at bottom of start()");
 	}
 
@@ -662,31 +551,14 @@ public:
 		assert(errno == 0 && "Errno should not be set at start of destructor");
 
 		ImGui_ImplOpenGL3_Shutdown();
-
 		ImGui_ImplGlfw_Shutdown();
-
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in ImGui_ImplGlfw_Shutdown " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO();
-
 		ImGui::DestroyContext();
-		RAC_ERRNO();
 
 		glfwDestroyWindow(gui_window);
-		RAC_ERRNO();
 
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in glfwDestroyWindow " << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO();
+		assert(errno == 0 && "Errno should not be set during destructor");
 
-		assert(errno == 0);
 		glfwTerminate();
-		if (glfwGetError(NULL) != GLFW_NO_ERROR) {
-			std::cerr << "Error in glfwTerminate" << __FILE__ << ":" << __LINE__ << std::endl;
-		}
-		RAC_ERRNO();
 	}
 };
 

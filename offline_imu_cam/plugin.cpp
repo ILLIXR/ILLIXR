@@ -65,24 +65,40 @@ protected:
 			{bool(sensor_datum.cam0)},
 		}});
 
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set before cam0");
 		std::optional<cv::Mat*> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
 			: std::nullopt
 			;
 		RAC_ERRNO_MSG("offline_imu_cam after cam0");
 
-		assert(errno == 0);
+		assert(errno == 0 && "Errno should not be set before cam1");
 		std::optional<cv::Mat*> cam1 = sensor_datum.cam1
 			? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
 			: std::nullopt
 			;
 		RAC_ERRNO_MSG("offline_imu_cam after cam1");
 
-		assert(errno == 0);
-		if (cam0 && cam1) {
-			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
-			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
+		assert(errno == 0 && "Errno should not be set before cvtColor");
+		if (cam0.has_value() && cam1.has_value()) {
+		    const int num_ch0 = cam0.value()->channels();
+		    const int num_ch1 = cam1.value()->channels();
+
+		    switch (num_ch0) {
+                case 3:
+                    cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
+                    break;
+                case 1:
+                default:
+                    break;
+            }
+            switch (num_ch1) {
+                case 3:
+                    cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
+                case 1:
+                default:
+                    break;
+            }
 		}
 		RAC_ERRNO_MSG("offline_imu_cam after cvtColor");
 
@@ -101,7 +117,7 @@ protected:
 		};
 		_m_imu_integrator->put(imu_integrator_params);
 
-		RAC_ERRNO_MSG("offline_imu_cam");
+		RAC_ERRNO_MSG("offline_imu_cam at bottom of iteration");
 	}
 
 public:

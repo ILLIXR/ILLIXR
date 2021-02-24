@@ -54,14 +54,12 @@ public:
 			throw std::runtime_error{
 				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
         }
-        RAC_ERRNO_MSG("dynamic_lib after dlerror");
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
 			assert(errno == 0);
 			
 			char* error;
 			int ret = dlclose(handle);
-			RAC_ERRNO_MSG("dynamic_lib after dlclose");
 			if ((error = dlerror()) || ret)
 				throw std::runtime_error{
 					"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
@@ -76,7 +74,6 @@ public:
 		if ((error = dlerror()))
 			throw std::runtime_error{
 				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
-		RAC_ERRNO();
 		return symbol;
 	}
 

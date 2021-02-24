@@ -302,9 +302,9 @@ namespace ILLIXR {
 			while (!_m_terminate.load()) {
 				const std::chrono::milliseconds max_wait_time {50};
 				
-				assert(errno == 0);
+				assert(errno == 0 && "Errno should not be set before wait_dequeue_timed");
 				bool has_data = _m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count());
-				RAC_ERRNO();
+				RAC_ERRNO_MSG("switchboard_impl after wait_dequeue_timed");
 				
 				if (has_data) {
 					const std::shared_lock lock{_m_registry_lock};
@@ -332,7 +332,8 @@ namespace ILLIXR {
 			while (_m_queue.try_dequeue(t)) {
 				_m_registry.at(t.first).mark_unprocessed(t.second);
 			}
-			std::cerr << "Drained switchboard" << std::endl;
+
+			std::cout << "Drained switchboard" << std::endl;
 		}
 
 		topic& try_emplace(const std::string& topic_name, std::size_t ty) {

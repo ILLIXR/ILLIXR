@@ -1,2 +1,2 @@
-LDFLAGS = $(shell pkg-config glfw3 glew --libs)
+LDFLAGS = $(shell pkg-config glew --libs)
 include common/common.mk

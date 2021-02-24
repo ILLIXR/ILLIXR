@@ -28,10 +28,10 @@ This is the file where default values are defined
  * Otherwise, this function does nothing.
  */
 inline void report_and_clear_errno(
-    const std::string& file,
-    const int& line,
-    const std::string& function,
-    const std::string& msg = ""
+    [[maybe_unused]] const std::string& file,
+    [[maybe_unused]] const int& line,
+    [[maybe_unused]] const std::string& function,
+    [[maybe_unused]] const std::string& msg = ""
 ) {
 #ifndef NDEBUG
     if (errno > 0) {
@@ -41,12 +41,6 @@ inline void report_and_clear_errno(
         }
         errno = 0;
     }
-#else /// NDEBUG
-    /// Silence unused parameter warning when compiling with opt
-    (void) file;
-    (void) line;
-    (void) function;
-    (void) msg;
 #endif /// NDEBUG
 }
 

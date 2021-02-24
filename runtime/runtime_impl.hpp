@@ -27,21 +27,21 @@ public:
         assert(errno == 0 && "Errno should not be set before creating any dynamic library");
 
 		std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
-		    assert(errno == 0 && "Errno should not be set before creating the dynamic library");
+		    RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
 			return dynamic_lib::create(so_path);
 		});
 
-        assert(errno == 0 && "Errno should not be set after creating the dynamic libraries");
+        RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
 		std::vector<plugin_factory> plugin_factories;
 		std::transform(libs.cbegin(), libs.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
 			return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
 		});
 
-        assert(errno == 0 && "Errno should not be set after generatring plugin factories");
+        RAC_ERRNO_MSG("runtime_impl after generatring plugin factories");
 
 		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
-		    assert(errno == 0 && "Errno should not be set before building the plugin");
+		    RAC_ERRNO_MSG("runtime_impl before building the plugin");
 			return std::unique_ptr<plugin>{plugin_factory(&pb)};
 		});
 
