@@ -1,6 +1,6 @@
 plugin_group:
-  # - path: offline_imu_cam/
-  - path: zed/
+  - path: offline_imu_cam/
+  # - path: zed/
   # - name: Kimera-VIO/
   #   path:
   #     git_repo: https://github.com/ILLIXR/Kimera-VIO

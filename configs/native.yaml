@@ -3,8 +3,8 @@ plugin_groups:
   - plugin_group:
       # - path: ground_truth_slam/
       - path: gldemo/
+      - path: timewarp_gl/
       - path: debugview/
-  - !include "core_plugins.yaml"
 
 data:
   subpath: mav0
@@ -17,7 +17,7 @@ action:
   name: native
 
   # run in GDB:
-  command: gdb -q --args $cmd
+  command: gdb -q -ex r --args $cmd
 
   # Print cmd for external use:
   #command: printf %s\n $env_cmd

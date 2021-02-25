@@ -329,11 +329,15 @@ public:
 		// Initialize the GLFW library, still need it to get time
 		if(!glfwInit()){
 			printf("Failed to initialize glfw\n");
+			abort();
 		}
+
 		// Init and verify GLEW
-		if(glewInit()){
-			printf("Failed to init GLEW\n");
-			exit(0);
+		GLenum err = glewInit();
+		if (GLEW_OK != err) {
+			/* Problem: glewInit failed, something is seriously wrong. */
+			fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+			abort();
 		}
 
 		glEnable              ( GL_DEBUG_OUTPUT );
@@ -379,6 +383,8 @@ public:
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		lastTime = glfwGetTime();
+
+		assert(0);
 
 		threadloop::start();
 	}

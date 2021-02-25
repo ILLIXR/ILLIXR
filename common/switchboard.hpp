@@ -201,7 +201,8 @@ private:
             // Log stats
             if (_m_record_logger) {
                 _m_record_logger->log(record{__switchboard_topic_stop_header, {
-                    {_m_topic_name},
+                    {_m_plugin_id},
+					{_m_topic_name},
                     {_m_dequeued},
                     {unprocessed},
                     {_m_idle_cycles},
@@ -427,7 +428,7 @@ public:
             assert(typeid(specific_event) == _m_topic.ty());
             assert(this_specific_event);
             ptr<const event> this_event {static_cast<const event*>(this_specific_event)};
-            assert(this_event.unique());
+            // assert(this_event.unique());
             _m_topic.put(std::move(this_event));
         }
 
@@ -453,9 +454,9 @@ public:
         void put(ptr<specific_event>&& this_specific_event) {
             assert(typeid(specific_event) == _m_topic.ty());
             assert(this_specific_event != nullptr);
-            assert(this_specific_event.unique());
+            // assert(this_specific_event.unique());
             ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-            assert(this_event.unique());
+            // assert(this_event.unique());
             _m_topic.put(std::move(this_event));
 		}
     };

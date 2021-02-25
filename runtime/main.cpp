@@ -1,7 +1,7 @@
 #include <signal.h>
 #include "runtime_impl.hpp"
 
-constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
+constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {10};
 
 ILLIXR::runtime* r;
 

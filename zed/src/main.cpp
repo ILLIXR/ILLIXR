@@ -13,6 +13,10 @@
 using namespace ILLIXR;
 using namespace sl;
 
+#define DEBUG2(x1, x2) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x1 << "=" << (x1) << ", " << #x2 << "=" << (x2) << std::endl;
+#define DEBUG(x) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x << "=" << (x) << std::endl;
+
+
 /**
 * Conversion function between sl::Mat and cv::Mat
 **/
@@ -189,27 +193,22 @@ private:
 
 	    // Open the camera
 		std::cerr << "===============================================" << std::endl;
-		enum sl::ERROR_CODE err = camera.open(init_params);
+		sl::ERROR_CODE err = camera.open(init_params);
+		DEBUG2(err, ((int) err));
+		DEBUG2(sl::ERROR_CODE::SUCCESS, ((int) sl::ERROR_CODE::SUCCESS));
+		DEBUG2(err == sl::ERROR_CODE::SUCCESS, ((int)err) == ((int)sl::ERROR_CODE::SUCCESS));
+		bool value = err != sl::ERROR_CODE::SUCCESS;
+		DEBUG(value);
+		DEBUG2(err != sl::ERROR_CODE::SUCCESS, ((int)err) != ((int)sl::ERROR_CODE::SUCCESS));
+		if (value) {
 
-		std::cerr << "err                     = " << ((int) err                    ) << " (" << err                     << ")\n";
-		std::cerr << "sl::ERROR_CODE::SUCCESS = " << ((int) sl::ERROR_CODE::SUCCESS) << " (" << sl::ERROR_CODE::SUCCESS << ")\n";
-
-		std::cerr << "err         == sl::ERROR_CODE::SUCCESS        ? " << (err == sl::ERROR_CODE::SUCCESS) << ".\n";
-		std::cerr << "err         != sl::ERROR_CODE::SUCCESS        ? " << (err != sl::ERROR_CODE::SUCCESS) << ".\n";
-		std::cerr << "((int) err) == ((int) sl::ERROR_CODE::SUCCESS)? " << (err == sl::ERROR_CODE::SUCCESS) << ".\n";
-		std::cerr << "((int) err) != ((int) sl::ERROR_CODE::SUCCESS)? " << (err != sl::ERROR_CODE::SUCCESS) << ".\n";
-		assert(1);
-		assert(err == sl::ERROR_CODE::SUCCESS);
-
-
-		if (err != sl::ERROR_CODE::SUCCESS) {
-			assert(err != sl::ERROR_CODE::SUCCESS);
-			std::cout << err << std::endl; // Display the error
 			assert(0 && "ZED couldn't open.");
 		}
 	
 	    // This is 4% of camera frame time, not 4 ms
 	    camera.setCameraSettings(VIDEO_SETTINGS::EXPOSURE, 4);
+
+		return 0;
 	}
 
 public:

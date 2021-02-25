@@ -118,7 +118,7 @@ namespace ILLIXR {
 				if (values[column].type() != rh->get().get_column_type(column)) {
 					std::cerr << "Caller got wrong type for column " << column << " of " << rh->get().get_name() << ". "
 							  << "Caller passed: " << values[column].type().name() << "; "
-							  << "recod_header for specifies: " << rh->get().get_column_type(column).name() << ". "
+							  << "recod_header specifies: " << rh->get().get_column_type(column).name() << ". "
 							  << std::endl;
 					abort();
 				}
