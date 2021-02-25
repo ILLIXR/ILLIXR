@@ -6,6 +6,7 @@
 #include <cstring>
 #include <vector>
 #include "global_module_defs.hpp"
+#include "error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -18,7 +19,7 @@ static void GLAPIENTRY
 					[[maybe_unused]] GLsizei length,
 					[[maybe_unused]] const GLchar* message,
 					[[maybe_unused]] const void* userParam )
-	{
+{
 #ifndef NDEBUG
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
         return; // Don't show notification-severity messages.
@@ -28,8 +29,9 @@ static void GLAPIENTRY
               << ", severity = 0x" << std::hex << severity << std::dec
               << ", message = " << message
               << std::endl;
+    ILLIXR::abort();
 #endif
-	}
+}
 
 static GLuint init_and_link (const char* vertex_shader, const char* fragment_shader){
 

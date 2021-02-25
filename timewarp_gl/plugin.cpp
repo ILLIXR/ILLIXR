@@ -2,6 +2,7 @@
 #include <future>
 #include <iostream>
 #include <thread>
+#include <vector>
 #include <GL/glew.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
@@ -129,15 +130,15 @@ private:
 	GLuint num_distortion_indices;
 
 	// Distortion mesh CPU buffers and GPU VBO handles
-	HMD::mesh_coord3d_t* distortion_positions;
+    std::vector<HMD::mesh_coord3d_t> distortion_positions;
 	GLuint distortion_positions_vbo;
-	GLuint* distortion_indices;
+    std::vector<GLuint> distortion_indices;
 	GLuint distortion_indices_vbo;
-	HMD::uv_coord_t* distortion_uv0;
+    std::vector<HMD::uv_coord_t> distortion_uv0;
 	GLuint distortion_uv0_vbo;
-	HMD::uv_coord_t* distortion_uv1;
+    std::vector<HMD::uv_coord_t> distortion_uv1;
 	GLuint distortion_uv1_vbo;
-	HMD::uv_coord_t* distortion_uv2;
+    std::vector<HMD::uv_coord_t> distortion_uv2;
 	GLuint distortion_uv2_vbo;
 
 	// Handles to the start and end timewarp
@@ -233,8 +234,7 @@ private:
 		num_distortion_indices = hmdInfo->eyeTilesHigh * hmdInfo->eyeTilesWide * 6;
 
 		// Allocate memory for the elements/indices array.
-		distortion_indices = (GLuint*) malloc(num_distortion_indices * sizeof(GLuint));
-		assert(distortion_indices != nullptr && "Build timewarp allocation should not fail");
+		distortion_indices.resize(num_distortion_indices);
 
 		// This is just a simple grid/plane index array, nothing fancy.
 		// Same for both eye distortions, too!
@@ -258,7 +258,10 @@ private:
 		// These are NOT the actual distortion mesh's vertices,
 		// they are calculated distortion grid coefficients
 		// that will be used to set the actual distortion mesh's UV space.
-		HMD::mesh_coord2d_t* tw_mesh_base_ptr = (HMD::mesh_coord2d_t *) malloc( HMD::NUM_EYES * HMD::NUM_COLOR_CHANNELS * num_distortion_vertices * sizeof( HMD::mesh_coord2d_t ) );
+        std::vector<HMD::mesh_coord2d_t> tw_mesh_base_vec;
+        tw_mesh_base_vec.resize(HMD::NUM_EYES * HMD::NUM_COLOR_CHANNELS * num_distortion_vertices);
+        HMD::mesh_coord2d_t* const tw_mesh_base_ptr = tw_mesh_base_vec.data();
+        assert(tw_mesh_base_ptr != nullptr && "Timewarp allocation should not fail");
 
 		// Set the distortion coordinates as a series of arrays
 		// that will be written into by the BuildDistortionMeshes() function.
@@ -270,12 +273,11 @@ private:
 		HMD::BuildDistortionMeshes( distort_coords, hmdInfo );
 
 		// Allocate memory for position and UV CPU buffers.
-		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
-			distortion_positions = (HMD::mesh_coord3d_t *) malloc(HMD::NUM_EYES * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t));
-			distortion_uv0 = (HMD::uv_coord_t *) malloc(HMD::NUM_EYES * num_distortion_vertices * sizeof(HMD::uv_coord_t));
-			distortion_uv1 = (HMD::uv_coord_t *) malloc(HMD::NUM_EYES * num_distortion_vertices * sizeof(HMD::uv_coord_t));
-			distortion_uv2 = (HMD::uv_coord_t *) malloc(HMD::NUM_EYES * num_distortion_vertices * sizeof(HMD::uv_coord_t));
-		}
+		const std::size_t num_elems_pos_uv = HMD::NUM_EYES*num_distortion_vertices;
+		distortion_positions.resize(num_elems_pos_uv);
+		distortion_uv0.resize(num_elems_pos_uv);
+		distortion_uv1.resize(num_elems_pos_uv);
+		distortion_uv2.resize(num_elems_pos_uv);
 
 		for ( int eye = 0; eye < HMD::NUM_EYES; eye++ )
 		{
@@ -305,10 +307,6 @@ private:
 		}
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.1f, 0.0f );
-
-		// This was just temporary.
-		free(tw_mesh_base_ptr);
-		tw_mesh_base_ptr = nullptr;
 
 		RAC_ERRNO_MSG("timewarp_gl at bottom of build timewarp");
 	}
@@ -392,10 +390,8 @@ public:
     	BuildTimewarp(&hmd_info);
 
 		// includes setting swap interval
-		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result_0 && "glXMakeCurrent should not fail");
 
 		// set swap interval for 1
 		RAC_ERRNO_MSG("timewarp_gl before vsync swap interval set");
@@ -406,10 +402,10 @@ public:
 
 		// Init and verify GLEW
 		glewExperimental = GL_TRUE;
-		if (glewInit() != GLEW_OK) {
-            std::cerr << "Failed to init GLEW" << std::endl;
+		const GLenum glew_err = glewInit();
+		if (glew_err != GLEW_OK) {
 			// clean up ?
-            std::exit(1);
+            ILLIXR::abort("Failed to init GLEW");
 		}
 
 		glEnable(GL_DEBUG_OUTPUT);
@@ -444,56 +440,73 @@ public:
 		// Config distortion mesh position vbo
 		glGenBuffers(1, &distortion_positions_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 3) * sizeof(GLfloat), distortion_positions, GL_STATIC_DRAW);
+
+		const std::size_t num_elems_pos_uv = HMD::NUM_EYES*num_distortion_vertices;
+
+        HMD::mesh_coord3d_t* const distortion_positions_data = distortion_positions.data();
+		assert(distortion_positions_data != nullptr && "Timewarp allocation should not fail");
+		glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::mesh_coord3d_t), distortion_positions_data, GL_STATIC_DRAW);
+
 		glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_pos_attr);
 
 		// Config distortion uv0 vbo
 		glGenBuffers(1, &distortion_uv0_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv0, GL_STATIC_DRAW);
+
+        HMD::uv_coord_t* const distortion_uv0_data = distortion_uv0.data();
+        assert(distortion_uv0_data != nullptr && "Timewarp allocation should not fail");
+		glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::uv_coord_t), distortion_uv0_data, GL_STATIC_DRAW);
+
 		glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_uv0_attr);
 
 		// Config distortion uv1 vbo
 		glGenBuffers(1, &distortion_uv1_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv1, GL_STATIC_DRAW);
+
+        HMD::uv_coord_t* const distortion_uv1_data = distortion_uv1.data();
+        assert(distortion_uv1_data != nullptr && "Timewarp allocation should not fail");
+		glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::uv_coord_t), distortion_uv1_data, GL_STATIC_DRAW);
+
 		glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_uv1_attr);
 
 		// Config distortion uv2 vbo
 		glGenBuffers(1, &distortion_uv2_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-		glBufferData(GL_ARRAY_BUFFER, HMD::NUM_EYES * (num_distortion_vertices * 2) * sizeof(GLfloat), distortion_uv2, GL_STATIC_DRAW);
+
+        HMD::uv_coord_t* const distortion_uv2_data = distortion_uv2.data();
+        assert(distortion_uv2_data != nullptr && "Timewarp allocation should not fail");
+		glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::uv_coord_t), distortion_uv2_data, GL_STATIC_DRAW);
+
 		glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		//glEnableVertexAttribArray(distortion_uv2_attr);
 
 		// Config distortion mesh indices vbo
 		glGenBuffers(1, &distortion_indices_vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, distortion_indices_vbo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices, GL_STATIC_DRAW);
+
+        GLuint* const distortion_indices_data = distortion_indices.data();
+		assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
 
         // Config PBO for texture image collection
         glGenBuffers(1, &PBO_buffer);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
         glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
 
+        RAC_ERRNO_MSG("timewarp_gl before glXMakeCurrent");
 
-		assert(errno == 0);
-		if (!glXMakeCurrent(xwin->dpy, None, nullptr)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
+		assert(gl_result_1 && "glXMakeCurrent should not fail");
 	}
 
 	virtual void warp([[maybe_unused]] std::chrono::system_clock::time_point time) {
 		assert(errno == 0 && "Errno should not be set at start of warp");
 
-		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result && "glXMakeCurrent should not fail");
 
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -515,7 +528,7 @@ public:
             default:
                 std::cerr << "Unexpected GL error " << glClearError << " after glClear" << std::endl;
             GL_CLEAR_ERROR_BLOCK:
-                std::exit(1);
+                ILLIXR::abort();
         }
 		RAC_ERRNO_MSG("timewarp_gl after glGetError");
 
@@ -691,7 +704,7 @@ public:
 			auto offload_data = new texture_pose;
 			offload_data->seq = ++_offload_seq;
 			offload_data->image = image;
-			offload_data->pose_time = lastSwapTime;
+			offload_data->pose_time = time_last_swap;
 			offload_data->offload_time = offload_time;
 			offload_data->position = latest_pose.pose.position;
 			offload_data->latest_quaternion = latest_pose.pose.orientation;
@@ -755,41 +768,14 @@ public:
 		// TODO: Need to cleanup resources here!
 		assert(errno == 0 && "Errno should not be set at start of destructor");
 
-		if (!glXMakeCurrent(xwin->dpy, None, nullptr)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
+		assert(gl_result && "glXMakeCurrent should not fail");
 
         RAC_ERRNO_MSG("timewarp_gl before closing X");
  		glXDestroyContext(xwin->dpy, xwin->glc);
  		XDestroyWindow(xwin->dpy, xwin->win);
  		XCloseDisplay(xwin->dpy);
         RAC_ERRNO_MSG("timewarp_gl after closing X");
-
-	    if (distortion_indices != nullptr) {
-	        free(distortion_indices);
-	        distortion_indices = nullptr;
-        }
-
-        if (distortion_positions != nullptr) {
-            free(distortion_positions);
-            distortion_positions = nullptr;
-        }
-
-        if (distortion_uv0 != nullptr) {
-            free(distortion_uv0);
-            distortion_uv0 = nullptr;
-        }
-
-        if (distortion_uv1 != nullptr) {
-            free(distortion_uv1);
-            distortion_uv1 = nullptr;
-        }
-
-        if (distortion_uv2 != nullptr) {
-            free(distortion_uv2);
-            distortion_uv2 = nullptr;
-        }
 	}
 };
 

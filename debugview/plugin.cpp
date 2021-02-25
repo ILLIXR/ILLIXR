@@ -19,6 +19,7 @@
 #include "common/pose_prediction.hpp"
 #include "common/gl_util/obj.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 #include "shaders/demo_shader.hpp"
 #include <opencv2/opencv.hpp>
 #include <cmath>
@@ -55,6 +56,7 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
 static void glfw_error_callback(int error, const char* description) {
     std::cerr << "|| glfw error_callback: " << error << std::endl
               << "|> " << description << std::endl;
+    ILLIXR::abort();
 }
 
 
@@ -441,8 +443,7 @@ public:
     	});
 
         if (!glfwInit()) {
-            std::cerr << "[debugview] Failed to initalize glfw" << std::endl;
-            std::exit(1);
+            ILLIXR::abort("[debugview] Failed to initalize glfw");
         }
         RAC_ERRNO_MSG("debugview after glfwInit");
 
@@ -464,7 +465,7 @@ public:
 		gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
 		if (gui_window == nullptr) {
 			std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
-			exit(1);
+            ILLIXR::abort();
 		}
 
 		glfwSetWindowSize(gui_window, 1600, 1000);
@@ -479,9 +480,10 @@ public:
 		glDebugMessageCallback(MessageCallback, 0);
 
 		// Init and verify GLEW
-		if (glewInit()) {
-			std::cerr << "Failed to init GLEW" << std::endl;
+		const GLenum glew_err = glewInit();
+		if (glew_err != GLEW_OK) {
 			glfwDestroyWindow(gui_window);
+            ILLIXR::abort("Failed to init GLEW");
 		}
 		RAC_ERRNO_MSG("debugview after glewInit");
 
@@ -493,7 +495,6 @@ public:
 		ImGui::StyleColorsDark();
 
 		// Init IMGUI for OpenGL
-		assert(errno == 0);
 		ImGui_ImplGlfw_InitForOpenGL(gui_window, true);
     	ImGui_ImplOpenGL3_Init(glsl_version);
 
@@ -515,8 +516,7 @@ public:
 		// Load/initialize the demo scene.
 		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
 		if (obj_dir == nullptr) {
-			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
-            std::exit(1);
+            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
 		}
 
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");

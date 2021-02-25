@@ -11,6 +11,7 @@
 #include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -78,8 +79,7 @@ public:
 
 	virtual ~runtime_impl() override {
 		if (!terminate.load()) {
-			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
-			abort();
+            ILLIXR::abort("You didn't call stop() before destructing this plugin.");
 		}
 		// This will be re-enabled in #225
 		// assert(errno == 0 && "errno was set during run. Maybe spurious?");

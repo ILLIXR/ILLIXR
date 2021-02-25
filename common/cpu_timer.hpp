@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "global_module_defs.hpp"
+#include "error_util.hpp"
 
 
 /**

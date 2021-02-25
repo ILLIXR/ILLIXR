@@ -109,10 +109,8 @@ public:
 		assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
 
 		// Note: glXMakeContextCurrent must be called from the thread which will be using it.
-		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result && "glXMakeCurrent should not fail");
 
 		RAC_ERRNO_MSG("gldemo at end of _p_thread_setup");
 	}
@@ -350,16 +348,14 @@ public:
 	virtual void start() override {
 		assert(errno == 0 && "Errno should not be set at start of gldemo start function");
 
-		if (!glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result_0 && "glXMakeCurrent should not fail");
 		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
 		// Init and verify GLEW
-		if (glewInit()) {
-            std::cerr << "Failed to init GLEW" << std::endl;
-            std::exit(1);
+		const GLenum glew_err = glewInit();
+		if (glew_err != GLEW_OK) {
+            ILLIXR::abort("Failed to init GLEW");
 		}
 		RAC_ERRNO_MSG("gldemo after glewInit");
 
@@ -399,19 +395,16 @@ public:
 
 		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
 		if (obj_dir == nullptr) {
-			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
-            std::exit(1);
+            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
 		}
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
-		assert(errno == 0 && "Errno should not be set before glXMakeCurrent");
-		if (!glXMakeCurrent(xwin->dpy, None, nullptr)) {
-			std::cerr << "glXMakeCurrent returned false in " << __FILE__ << ":" << __LINE__ << std::endl;
-            std::exit(1);
-		}
+		RAC_ERRNO_MSG("gldemo before glXMakeCurrent");
+        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
+		assert(gl_result_1 && "glXMakeCurrent should not fail");
 		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
         time_last = std::chrono::system_clock::now();

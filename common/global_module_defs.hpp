@@ -4,48 +4,10 @@ This is the file where default values are defined
 
 #pragma once
 
-#include <cerrno>
 #include <string>
 
 
-/// Parameterless macro for report_and_clear_errno.
-#ifndef RAC_ERRNO
-#define RAC_ERRNO() report_and_clear_errno(__FILE__, __LINE__, __func__)
-#endif /// RAC_ERRNO
-
-/// Parameterized macro for report_and_clear_errno.
-/// Prints a message from the calling context for additional info.
-#ifndef RAC_ERRNO_MSG
-#define RAC_ERRNO_MSG(msg) report_and_clear_errno(__FILE__, __LINE__, __func__, msg)
-#endif /// RAC_ERRNO_MSG
-
-
-/**
- * @brief Support function to debug.
- *
- * If errno is set, this function will report errno's value and the calling context.
- * It will subsequently clear errno (reset value to 0).
- * Otherwise, this function does nothing.
- */
-inline void report_and_clear_errno(
-    [[maybe_unused]] const std::string& file,
-    [[maybe_unused]] const int& line,
-    [[maybe_unused]] const std::string& function,
-    [[maybe_unused]] const std::string& msg = ""
-) {
-#ifndef NDEBUG
-    if (errno > 0) {
-        std::cerr << "|| Errno was set: " << errno << " @ " << file << ":" << line << "[" << function << "]" << std::endl;
-        if (!msg.empty()) {
-            std::cerr << "|> Message: " << msg << std::endl;
-        }
-        errno = 0;
-    }
-#endif /// NDEBUG
-}
-
-
-namespace ILLIXR{
+namespace ILLIXR {
 	
 #ifndef FB_WIDTH
 #define FB_WIDTH FB_WIDTH
@@ -79,4 +41,4 @@ std::string getenv_or(std::string var, std::string default_) {
     }
 }
 
-}
+} /// namespace ILLIXR

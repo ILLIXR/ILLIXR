@@ -12,6 +12,7 @@
 #include "sqlite3pp/sqlite3pp.hpp"
 #include "common/record_logger.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 /**
  * There are many SQLite3 wrapper libraries.

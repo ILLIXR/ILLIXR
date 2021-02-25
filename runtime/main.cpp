@@ -7,21 +7,41 @@ constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
 ILLIXR::runtime* r;
 
 
-static void sigint_handler(int sig) {
+#ifndef NDEBUG
+/**
+ * @brief A signal handler for SIGILL.
+ *
+ * Forward SIGILL from illegal instructions to catchsegv in `ci.yaml`.
+ * Provides additional debugging information via `-rdynamic`.
+ */
+static void sigill_handler(int sig) {
+    assert(sig == SIGILL && "sigill_handler is for SIGILL");
+    std::raise(SIGSEGV);
+}
+
+/**
+ * @brief A signal handler for SIGABRT.
+ *
+ * Forward SIGILL from illegal instructions to catchsegv in `ci.yaml`.
+ * Provides additional debugging information via `-rdynamic`.
+ */
+static void sigabrt_handler(int sig) {
+    assert(sig == SIGABRT && "sigabrt_handler is for SIGABRT");
+    std::raise(SIGSEGV);
+}
+#endif /// NDEBUG
+
+/**
+ * @brief A signal handler for SIGINT.
+ *
+ * Stops the execution of the application via the ILLIXR runtime.
+ */
+static void sigint_handler([[maybe_unused]] int sig) {
     assert(sig == SIGINT && "sigint_handler is for SIGINT");
 	if (r) {
 		r->stop();
 	}
 }
-
-#ifndef NDEBUG
-static void sigill_handler(int sig) {
-    /// Forward SIGILL from illegal instructions to catchsegv in ci.yaml
-    /// Provides additional debugging information via -rdynamic
-    assert(sig == SIGILL && "sigill_handler is for SIGILL");
-    std::raise(SIGSEGV);
-}
-#endif /// NDEBUG
 
 
 class cancellable_sleep {
@@ -46,8 +66,9 @@ int main(int argc, char* const* argv) {
 	r = ILLIXR::runtime_factory(nullptr);
 
 #ifndef NDEBUG
-    /// When debugging, register the SIGILL handler for capturing more info
+    /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
     std::signal(SIGILL, sigill_handler);
+    std::signal(SIGABRT, sigabrt_handler);
 #endif /// NDEBUG
 
 	/// Shutting down method 1: Ctrl+C

@@ -7,6 +7,7 @@
 #include <GL/glu.h>
 #include "phonebook.hpp"
 #include "global_module_defs.hpp"
+#include "error_util.hpp"
 
 //GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
@@ -32,8 +33,7 @@ namespace ILLIXR {
 
             dpy = XOpenDisplay(nullptr);
             if (!dpy) {
-                std::cerr << "Cannot connect to X server" << std::endl;
-                std::exit(1);
+                ILLIXR::abort("Cannot connect to X server");
             } else {
 				// Apparently, XOpenDisplay's _true_ error indication is whether dpy is nullptr.
 				// https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
@@ -69,8 +69,7 @@ namespace ILLIXR {
             int fbcount;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
             if (!fbc) {
-                std::cerr << "Failed to retrieve a framebuffer config" << std::endl;
-                std::exit(1);
+                ILLIXR::abort("Failed to retrieve a framebuffer config");
             }
             // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
 
@@ -128,8 +127,7 @@ namespace ILLIXR {
             win = XCreateWindow(dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
                 CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
             if (!win) {
-                std::cerr << "Failed to create window" << std::endl;
-                std::exit(1);
+                ILLIXR::abort("Failed to create window");
             }
             XStoreName(dpy, win, "ILLIXR Extended Window");
             XMapWindow(dpy, win);
@@ -168,7 +166,7 @@ namespace ILLIXR {
             // this is just for debugging and does not affect any functionality.
 
             /*
-            glXMakeCurrent(dpy, win, glc);
+            const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(dpy, win, glc));
             int major = 0, minor = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &major);
             glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -176,7 +174,7 @@ namespace ILLIXR {
                       << "Version " << major << "." << minor << std::endl
                       << "Vender " << glGetString(GL_VENDOR) << std::endl
                       << "Renderer " << glGetString(GL_RENDERER) << std::endl;
-            glXMakeCurrent(dpy, None, nullptr);
+            const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
             */
 #endif
         }
