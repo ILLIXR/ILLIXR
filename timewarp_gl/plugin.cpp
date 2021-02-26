@@ -227,7 +227,9 @@ private:
 		// Record the image collection time
 		offload_time = std::chrono::duration_cast<std::chrono::milliseconds>(endGetTexTime - startGetTexTime).count();
 
-		std::cout << "Texture image collecting time: " << offload_time << "\t";
+#ifndef NDEBUG
+		std::cout << "Texture image collecting time: " << offload_time << std::endl;
+#endif
 
 		return pixels;
 	}
