@@ -54,7 +54,9 @@ public:
 	}
 
 	void _p_one_iteration() override {
+#ifndef NDEBUG
 		std::cout << "Image index: " << img_idx++ << std::endl;
+#endif
 		_offload_data_container.push_back(_offload_data_reader->get_latest_ro());
 	}
 

@@ -184,6 +184,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
     )
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
+    enable_offload_flag = config["enable_offload"]
+    enable_alignment_flag = config["enable_alignment"]
 
     cmake(
         monado_path,
@@ -226,6 +228,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_COMP=":".join(map(str, plugin_paths)),
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
+            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ),
         check=True,
     )
