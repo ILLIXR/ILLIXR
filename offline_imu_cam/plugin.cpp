@@ -79,28 +79,16 @@ protected:
 			;
 		RAC_ERRNO_MSG("offline_imu_cam after cam1");
 
-		assert(errno == 0 && "Errno should not be set before cvtColor");
+#ifndef NDEBUG
+        /// If debugging, assert the image is grayscale
+		assert(errno == 0 && "Errno should not be set before color check");
 		if (cam0.has_value() && cam1.has_value()) {
 		    const int num_ch0 = cam0.value()->channels();
 		    const int num_ch1 = cam1.value()->channels();
-
-		    switch (num_ch0) {
-                case 3:
-                    cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
-                    break;
-                case 1:
-                default:
-                    break;
-            }
-            switch (num_ch1) {
-                case 3:
-                    cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
-                case 1:
-                default:
-                    break;
-            }
+		    assert(num_ch0 == 1 && "Data from lazy_load_image should be grayscale");
+		    assert(num_ch1 == 1 && "Data from lazy_load_image should be grayscale");
 		}
-		RAC_ERRNO_MSG("offline_imu_cam after cvtColor");
+#endif /// NDEBUG
 
 		auto datum = new imu_cam_type{
 			real_now,

@@ -1,10 +1,18 @@
-# Using ?= makes these variables overridable
-# Simply define them before including common.mk
+## Using ?= makes these variables overridable
+## Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
+
+## DBG Notes:
+#> -Og and -g provide additional debugging symbols
+#> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
 DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic
+
+## OPT Notes:
+#> NDEBUG disables debugging output and logic
 OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
+
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2> /dev/null)
 HPP_FILES ?= $(shell find -L . -name '*.hpp')
@@ -13,8 +21,8 @@ LDFLAGS := -ggdb $(LDFLAGS)
 GTEST_LOC := /opt/ILLIXR/googletest
 GTEST_FLAGS := -DGTEST_HAS_PTHREAD=1 -lpthread -DGTEST_HAS_PTHREAD=1 -lpthread -I$(GTEST_LOC)/include -L$(GTEST_LOC)/build/lib -lgtest_main -lpthread -lgtest -lpthread
 
-# In the future, if compilation is slow, we can enable partial compilation of object files with
-#  $(OBJ_FILES:.o=.dbg.o) and  $(OBJ_FILES:.o=.opt.o)
+## In the future, if compilation is slow, we can enable partial compilation of object files with
+##  $(OBJ_FILES:.o=.dbg.o) and  $(OBJ_FILES:.o=.opt.o)
 plugin.dbg.so: plugin.cpp $(CPP_FILES) $(HPP_FILES) Makefile
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) -shared -fpic \
 	-o $@ plugin.cpp $(CPP_FILES) $(LDFLAGS)

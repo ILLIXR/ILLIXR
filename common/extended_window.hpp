@@ -40,7 +40,7 @@ namespace ILLIXR {
 				// if (errno != 0) {
 				// 	std::cerr << "XOpenDisplay succeeded, but errno = " << errno << "; This is benign, so I'm clearing it now.\n";
 				// }
-				RAC_ERRNO_MSG("extended_window after XOpenDisplay : value returned not null");
+				errno = 0;
             }
 
             Window root = DefaultRootWindow(dpy);

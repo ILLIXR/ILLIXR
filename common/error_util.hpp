@@ -26,7 +26,7 @@
 namespace ILLIXR {
 
 /**
- * @brief Support function to debug.
+ * @brief Support function to report errno values when debugging (NDEBUG).
  *
  * If errno is set, this function will report errno's value and the calling context.
  * It will subsequently clear errno (reset value to 0).
