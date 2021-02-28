@@ -2,42 +2,7 @@
 ## Configuration to `make clean` all plugins listed below
 ##
 plugin_groups:
-  - plugin_group:
-    ## Runtime
-    - path: runtime
-    - path: common
-    ## Core Plugins
-    - path: timewarp_gl
-    - name: audio
-      path:
-        git_repo: https://github.com/ILLIXR/audio_pipeline.git
-        version: "3.3"
-    - name: hologram
-      path:
-        git_repo: https://github.com/ILLIXR/HOTlab.git
-        version: "3.1"
-    ## Real-Time SLAM Plugins
-    - path: offline_imu_cam
-    - path: zed
-    - name: Kimera-VIO
-      path:
-        git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-        version: "3.1"
-    - name: OpenVINS
-      path:
-        git_repo: https://github.com/ILLIXR/open_vins.git
-        version: "3.0"
-    - path: gtsam_integrator
-    - path: pose_prediction
-    ## Other Plugins
-    - path: realsense
-    - path: ground_truth_slam
-    - path: gldemo
-    - path: debugview
-    - path: pose_lookup
-    - path: rk4_integrator
-    - path: timewarp_gl
-    - path: depthai
+  - !include "all_plugins.yaml"
 
 action:
   name: clean

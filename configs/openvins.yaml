@@ -1,0 +1,4 @@
+name: OpenVINS
+path:
+  git_repo: https://github.com/ILLIXR/open_vins.git
+  version: "2.0"

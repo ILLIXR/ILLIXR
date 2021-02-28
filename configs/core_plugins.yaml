@@ -1,10 +1,4 @@
 plugin_group:
   - path: timewarp_gl/
-  - name: audio
-    path:
-      git_repo: https://github.com/ILLIXR/audio_pipeline.git
-      version: "3.3"
-  # - name: hologram
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/HOTlab.git
-  #     version: "3.1"
+  - !include "audio.yaml"
+  #- !include "hologram.yaml"

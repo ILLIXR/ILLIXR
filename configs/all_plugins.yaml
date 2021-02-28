@@ -1,0 +1,26 @@
+plugin_group:
+
+## Runtime
+  - path: runtime
+
+## Core Plugins
+  - path: timewarp_gl
+  - !include "audio.yaml"
+  - !include "hologram.yaml"
+
+## Real-Time SLAM Plugins
+  - path: offline_imu_cam
+  - path: zed
+  - !include "kimera-vio.yaml"
+  - !include "openvins.yaml"
+  - path: gtsam_integrator
+  - path: pose_prediction
+
+## Other Plugins
+  - path: realsense
+  - path: ground_truth_slam
+  - path: gldemo
+  - path: debugview
+  - path: pose_lookup
+  - path: rk4_integrator
+  - path: timewarp_gl
