@@ -20,7 +20,7 @@ using namespace ILLIXR;
 static constexpr int   EYE_TEXTURE_WIDTH   = 1024;
 static constexpr int   EYE_TEXTURE_HEIGHT  = 1024;
 
-static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
+static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/120)};
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
 // Monado-style eyebuffers:

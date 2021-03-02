@@ -20,7 +20,7 @@ plugin_groups:
     - path: offline_cam/
     # - path: zed/
 
-    - path: debugview/
+    # - path: debugview/
 
 data:
   subpath: mav0
