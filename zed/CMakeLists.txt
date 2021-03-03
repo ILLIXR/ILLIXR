@@ -40,7 +40,8 @@ FILE(GLOB_RECURSE SRC_FILES src/main.cpp)
 FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
 
 # ADD_EXECUTABLE(${libName} ${HDR_FILES} ${SRC_FILES})
-#TARGET_LINK_LIBRARIES(${libName} ${ZED_LIBS} ${OpenCV_LIBRARIES})
+# TARGET_LINK_LIBRARIES(${libName} ${ZED_LIBS} ${OpenCV_LIBRARIES})
+# These require main.cpp to have a main() function.
 
 if (LINK_SHARED_ZED)
     SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})

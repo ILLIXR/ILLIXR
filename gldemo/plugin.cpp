@@ -331,14 +331,11 @@ public:
 		// Initialize the GLFW library, still need it to get time
 		if(!glfwInit()){
 			printf("Failed to initialize glfw\n");
-			abort();
 		}
 
 		// Init and verify GLEW
-		GLenum err = glewInit();
-		if (GLEW_OK != err) {
+		if (glewInit()) {
 			/* Problem: glewInit failed, something is seriously wrong. */
-			fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 			abort();
 		}
 
