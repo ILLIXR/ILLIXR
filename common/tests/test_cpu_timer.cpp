@@ -1,6 +1,4 @@
 #include <gtest/gtest.h>
-#include <opencv/cv.hpp>
-
 #include "../cpu_timer.hpp"
 
 namespace ILLIXR {

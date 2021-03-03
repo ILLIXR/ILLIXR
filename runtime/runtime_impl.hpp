@@ -37,10 +37,6 @@ public:
 		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
 			return std::unique_ptr<plugin>{plugin_factory(&pb)};
 		});
-
-		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
-			plugin->start();
-		});
 	}
 
 	virtual void load_so(const std::string_view so) override {
@@ -52,7 +48,6 @@ public:
 
 	virtual void load_plugin_factory(plugin_factory plugin_main) override {
 		plugins.emplace_back(plugin_main(&pb));
-		plugins.back()->start();
 	}
 
 	virtual void wait() override {
@@ -63,9 +58,6 @@ public:
 
 	virtual void stop() override {
 		pb.lookup_impl<switchboard>()->stop();
-		for (const std::unique_ptr<plugin>& plugin : plugins) {
-			plugin->stop();
-		}
 		terminate.store(true);
 	}
 

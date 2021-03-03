@@ -115,7 +115,7 @@ namespace ILLIXR {
 				break;
 			}
 			case skip_option::stop:
-				plugin::stop();
+				request_stop();
 				break;
 			}
 		}

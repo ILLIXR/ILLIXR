@@ -4,7 +4,7 @@ plugin_groups:
       # - path: ground_truth_slam/
       - path: gldemo/
       - path: timewarp_gl/
-      - path: debugview/
+      # - path: debugview/
 
 data:
   subpath: mav0

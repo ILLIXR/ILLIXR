@@ -19,31 +19,12 @@ namespace ILLIXR {
 
 	/**
 	 * @brief A dynamically-loadable plugin for Spindle.
+	 *
+	 * plugin RequiresInitProtocol so that threadloop, so that clients can make init/deinit methods
+	 * which run after constructors and before destructors.
 	 */
-	class plugin {
+	class plugin : public RequiresInitProtocol<plugin> {
 	public:
-
-		/**
-		 * @brief A method which Spindle calls when it starts the component.
-		 */
-		virtual void start() {
-			record_logger_->log(record{__plugin_start_header, {
-				{id},
-				{name},
-			}});
-		}
-
-		/**
-		 * @brief A method which Spindle calls when it starts the component.
-		 *
-		 * This is necessary because the parent class might define some actions that need to be
-		 * taken prior to destructing the derived class. For example, threadloop must halt and join
-		 * the thread before the derived class can be safely destructed. However, the derived
-		 * class's destructor is called before its parent (threadloop), so threadloop doesn't get a
-		 * chance to join the thread before the derived class is destroyed, and the thread accesses
-		 * freed memory. Instead, we call plugin->stop manually before destrying anything.
-		 */
-		virtual void stop() { }
 
 		plugin(const std::string& name_, phonebook* pb_)
 			: name{name_}
@@ -51,7 +32,12 @@ namespace ILLIXR {
 			, record_logger_{pb->lookup_impl<record_logger>()}
 			, gen_guid_{pb->lookup_impl<gen_guid>()}
 			, id{gen_guid_->get()}
-		{ }
+		{
+			record_logger_->log(record{__plugin_start_header, {
+				{id},
+				{name},
+			}});
+		}
 
 		virtual ~plugin() { }
 
@@ -67,8 +53,6 @@ namespace ILLIXR {
 
 #define PLUGIN_MAIN(PluginClass)										\
     extern "C" plugin* this_plugin_factory(phonebook* pb) {				\
-		/* Threadloop might need InitProtocol. It doesn't hurt to add. */ \
-		/* ProvidesInitProtocol<PluginClass> inherits PluginClass which eventually inherits plugin. */ \
         auto* obj =	new ProvidesInitProtocol<PluginClass> {#PluginClass, pb}; \
         return obj;														\
     }

@@ -44,7 +44,9 @@ public:
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
 		, _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")}
-	{ }
+	{
+		start();
+	}
 
 	// Essentially, a crude equivalent of XRWaitFrame.
 	void wait_vsync()
@@ -323,7 +325,7 @@ public:
 	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
 	// This may be changed later, but it really doesn't matter for this purpose because
 	// it will be replaced by a real, Monado-interfaced application.
-	virtual void start() override {
+	void start() {
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 
 		// Initialize the GLFW library, still need it to get time
@@ -383,10 +385,6 @@ public:
 		glXMakeCurrent(xwin->dpy, None, NULL);
 
 		lastTime = glfwGetTime();
-
-		assert(0);
-
-		threadloop::start();
 	}
 };
 

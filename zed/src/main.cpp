@@ -13,10 +13,6 @@
 using namespace ILLIXR;
 using namespace sl;
 
-#define DEBUG2(x1, x2) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x1 << "=" << (x1) << ", " << #x2 << "=" << (x2) << std::endl;
-#define DEBUG(x) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x << "=" << (x) << std::endl;
-
-
 /**
 * Conversion function between sl::Mat and cv::Mat
 **/
@@ -192,16 +188,9 @@ private:
 	    // init_params.depth_minimum_distance = 0.1;
 
 	    // Open the camera
-		std::cerr << "===============================================" << std::endl;
 		sl::ERROR_CODE err = camera.open(init_params);
-		DEBUG2(err, ((int) err));
-		DEBUG2(sl::ERROR_CODE::SUCCESS, ((int) sl::ERROR_CODE::SUCCESS));
-		DEBUG2(err == sl::ERROR_CODE::SUCCESS, ((int)err) == ((int)sl::ERROR_CODE::SUCCESS));
-		bool value = err != sl::ERROR_CODE::SUCCESS;
-		DEBUG(value);
-		DEBUG2(err != sl::ERROR_CODE::SUCCESS, ((int)err) != ((int)sl::ERROR_CODE::SUCCESS));
-		if (value) {
-
+		if (err != sl::ERROR_CODE::SUCCESS) {
+			std::cerr << "ZED error: " << err << std::endl;
 			assert(0 && "ZED couldn't open.");
 		}
 	
@@ -216,15 +205,15 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, start_camera_{start_camera()}
-		, imu_thread{*this}
-		, cam_thread{*this}
+		, imu_thread{*this, *this}
+		, cam_thread{*this, *this}
 	{ }
 private:
 	std::shared_ptr<switchboard> sb;
     Camera camera;
 	int start_camera_;
-	ProvidesInitProtocol<ImuThread> imu_thread;
-	ProvidesInitProtocol<CamThread> cam_thread;
+	InitProtocolField<ImuThread, plugin> imu_thread;
+	InitProtocolField<CamThread, plugin> cam_thread;
 };
 
 // This line makes the plugin importable by Spindle

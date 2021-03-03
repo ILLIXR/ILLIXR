@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 #include <iostream>
+#include <iterator>
 #include <cassert>
 
 /**
@@ -82,7 +83,7 @@
  * to run, since the `bar_vector` has not been initialized yet.
  *
  * C++ can't change the con/destructor order, so it says "no downcalls allowed in con/destructors"
- * to get around this problem.
+  * to get around this problem.
  *
  * The famous ISO CPP FAQ [1] recommends a workaround for this limitation: instead of calling
  * virtual methods from the constructor, make an "init()" and calling them from there.
@@ -126,7 +127,15 @@
  * possible. There is only one state of a live object: constructed-and-inited. The destructor can
  * always assume that the object has been deinited.
  *
- * It requires classes to abide by certain contracts. TODO: elaborate
+ * It requires classes to abide by certain contracts:
+ *   1. They must define a `__init_protocol_init()`, which:
+ *     1. calls `init()`
+ *     2. Calls `field.__init_protocol_init()` for each field in `__init_protocol_init_get_fields()`.
+ *     3. `static_cast<parent>(*this).__init_protocol_init()`, if it is defined.
+ *   2. They must define `__init_protocol_deinit()` which is the same as `__init_protocol_init`, but with `init`
+ *      replaced by `deinit`, and the order of calls reversed (including the order of calls to init
+ *      fields).
+ *   3. They must define `__init_protocol_add_field()`.
  *
  * ## Simple Usage: Just one class on the inheritance chain needs init protocol
  *
@@ -139,8 +148,8 @@
  * struct Base : public RequiresInitProtocol<Base> {
  *     Base() { std::cout << "1: Base constructor\n"; foo_vector = initial_value(); }
  *     virtual ~Base(){ std::cout << "7: Base destructor \n"; }
- *     void init() { std::cout << "3: Derived::init()\n"; bar(); }
- *     void deinit() { std::cout << "5: Derived::init()\n"; }
+ *     void init() { std::cout << "3: Base::init()\n"; bar(); }
+ *     void deinit() { std::cout << "5: Base::init()\n"; }
  *     virtual void bar() = 0;
  * };
  * struct Derived : Base {
@@ -156,6 +165,32 @@
  * // No need to explicitly call init() or deinit().
  * \endcode
  *
+ *
+ * ## Less Simple Usage: a field requires initialization after its class.
+ *
+ * \code{.cpp}
+ * struct Field : public RequiresInitProtocol<Field> {
+ *     Field(int n) { std::cout << "1: Field constructor\n"; }
+ *     virtual ~Field(){ std::cout << "8: Field destructor \n"; }
+ *     void init() { std::cout << "4: Field::init()\n"; }
+ *     void deinit() { std::cout << "5: Field::init()\n"; }
+ * };
+ *
+ * struct Aggregate : public RequiresInitProtocol<Base> {
+ *     InitProtocolField<Field, Aggregate> field;
+ *     Aggregate()
+ *         : field(*this, 34) // Note that field's constructor must be called with an initial "*this"
+ *     {
+ *         std::cout << "2: Aggregate constructor\n";
+ *     }
+ *     virtual ~Aggregate(){ std::cout << "7: Aggregate destructor \n"; }
+ *     void init() { std::cout << "3: Aggregate::init()\n"; }
+ *     void deinit() { std::cout << "6: Aggregate::init()\n"; }
+ * };
+ * 
+ * ProvidesInitProtocol<Aggregate> obj;
+ * \endcode
+ *
  * ## Complex Usage: Multiple classes on one inheritance chain need init protocol
  *
  * Suppose C inherits B inherits A, and multiple of those classes need
@@ -165,13 +200,13 @@
  * class A : public RequiresInitProtocol<A> { virtual ~A(); };
  * class B : public A, public RequiresInitProtocol<B, A> {
  *     // I would like to find a way to render these two lines obsolete, but I can't find one.
- *     using RequiresInitProtocol<B, A>::__call_init;
- *     using RequiresInitProtocol<B, A>::__call_deinit;
+ *     using RequiresInitProtocol<B, A>::__init_protocol_init;
+ *     using RequiresInitProtocol<B, A>::__init_protocol_deinit;
  *     virtual ~B();
  * };
  * class C : public B, public RequiresInitProtocol<C, B> {
- *     using RequiresInitProtocol<C, B>::__call_init;
- *     using RequiresInitProtocol<C, B>::__call_deinit;
+ *     using RequiresInitProtocol<C, B>::__init_protocol_init;
+ *     using RequiresInitProtocol<C, B>::__init_protocol_deinit;
  *     virtual ~C();
  * };
  * \end{code}
@@ -189,15 +224,15 @@
  *
  * \code{.cpp}
  * class MyClass_ManuallyRequiresInitProtocol : public BaseClass1, public BaseClass2, ... {
- *     void __call_init() {
+ *     void __init_protocol_init() {
  *         init();
  *         // Propagate to base classes after calling this class's init() in a user-specified order.
  *         static_cast<BaseClass1&>(*this).init();
  *         static_cast<BaseClass2&>(*this).init();
  *         // ...
  *     }
- *     void __call_deinit() {
- *         // like __call_init(), but propagate BEFORE calling this class's deinit().
+ *     void __init_protocol_deinit() {
+ *         // like __init_protocol_init(), but propagate BEFORE calling this class's deinit().
  *         // Unfortunately, the rule of "propagate before deinit" and "propagate after init" have to be painstakingly remembered manually.
  *         // I would like to find a way which eliminates that.
  *     }
@@ -208,11 +243,11 @@
 
 namespace detail {
 	template <typename T>
-	class has_call_init {
+	class has_init {
 		typedef char one;
 		struct two { char x[2]; };
 
-		template <typename C> static one test( decltype(&C::__call_init) );
+		template <typename C> static one test( decltype(&C::__init_protocol_init) );
 		template <typename C> static two test(...);
 
 	public:
@@ -220,11 +255,11 @@ namespace detail {
 	};
 
 	template <typename T>
-	class has_call_deinit {
+	class has_deinit {
 		typedef char one;
 		struct two { char x[2]; };
 
-		template <typename C> static one test( decltype(&C::__call_init) );
+		template <typename C> static one test( decltype(&C::__init_protocol_init) );
 		template <typename C> static two test(...);
 
 	public:
@@ -232,33 +267,33 @@ namespace detail {
 	};
 
 	/**
-	 * @brief Call __call_init(), if BaseClass supports it.
+	 * @brief Call __init_protocol_init(), if BaseClass supports it.
 	 */
 	template<class ThisClass, class BaseClass>
-	typename std::enable_if<has_call_init<BaseClass>::value>::type
-	maybe_call_init(ThisClass& obj) {
-		static_cast<BaseClass&>(obj).__call_init();
+	typename std::enable_if<has_init<BaseClass>::value>::type
+	maybe_init(ThisClass& obj) {
+		static_cast<BaseClass&>(obj).__init_protocol_init();
 	}
 	template<class ThisClass, class BaseClass>
-	typename std::enable_if<!has_call_init<BaseClass>::value>::type
-	maybe_call_init(ThisClass&) { }
+	typename std::enable_if<!has_init<BaseClass>::value>::type
+	maybe_init(ThisClass&) { }
 
 	/**
-	 * @brief Call __call_deinit(), if BaseClass supports it.
+	 * @brief Call __init_protocol_deinit(), if BaseClass supports it.
 	 */
 	template<class ThisClass, class BaseClass>
-	typename std::enable_if<has_call_deinit<BaseClass>::value>::type
-	maybe_call_deinit(ThisClass& obj) {
-		static_cast<BaseClass&>(obj).__call_deinit();
+	typename std::enable_if<has_deinit<BaseClass>::value>::type
+	maybe_deinit(ThisClass& obj) {
+		static_cast<BaseClass&>(obj).__init_protocol_deinit();
 	}
 	template<class ThisClass, class BaseClass>
-	typename std::enable_if<!has_call_deinit<BaseClass>::value>::type
-	maybe_call_deinit(ThisClass&) { }
+	typename std::enable_if<!has_deinit<BaseClass>::value>::type
+	maybe_deinit(ThisClass&) { }
 }
 
 /**
  * This is a helper base class. It automates the following:
- * 1. Propagating the __call_init/deinit to BaseClass
+ * 1. Propagating the __init_protocol_init/deinit to BaseClass
  * 2. Calling init/deinit of ThisClass.
  * 3. Requiring the protocol tag.
  *
@@ -268,23 +303,37 @@ template <typename ThisClass, typename BaseClass = int>
 class RequiresInitProtocol {
 public:
 	/*
-	  I use SFINAE to test if the BaseClass has a __call_init attribute.
+	  I use SFINAE to test if the BaseClass has a __init_protocol_init attribute.
 	  If it does, I need to chain main onto it.
 	 */
-	void __call_init() {
+	void __init_protocol_init() {
 		static_cast<ThisClass&>(*this).init();
-		detail::maybe_call_init<ThisClass, BaseClass>(dynamic_cast<ThisClass&>(*this));
+		for (const std::function<void()>& init : inits) {
+			init();
+		}
+		detail::maybe_init<ThisClass, BaseClass>(dynamic_cast<ThisClass&>(*this));
 	}
 
-	void __call_deinit() {
-		detail::maybe_call_deinit<ThisClass, BaseClass>(dynamic_cast<ThisClass&>(*this));
+	void __init_protocol_deinit() {
+		detail::maybe_deinit<ThisClass, BaseClass>(dynamic_cast<ThisClass&>(*this));
+		for (auto deinit = deinits.crbegin(); deinit != deinits.crend(); deinit++) {
+			(*deinit)();
+		}
 		static_cast<ThisClass&>(*this).deinit();
 	}
 
+	void __init_protocol_add_field(std::function<void()> init, std::function<void()> deinit) {
+		inits.push_back(init);
+		deinits.push_back(deinit);
+	}
+
+	void init() {}
+
+	void deinit() {}
 
 	/**
-	 * Override this with a no-op, only if you fulfill this contract: you call _call_init() after
-	 * the derived class constructor and __call_deinit() before the derived class destructor.
+	 * Override this with a no-op, only if you fulfill this contract: you call _init() after
+	 * the derived class constructor and __init_protocol_deinit() before the derived class destructor.
 	 *
 	 * Since failure to override this indicates you don't fulfill this contract, the compiler will
 	 * tell you your class cannot be constructed until you do (it's like a type tag). Unfortunately,
@@ -293,12 +342,35 @@ public:
 	virtual void satisfies_init_protocol() = 0;
 
 	virtual ~RequiresInitProtocol() { }
+
+private:
+	std::vector<std::function<void()>> inits;
+	std::vector<std::function<void()>> deinits;
 };
 
+template <typename ThisClass, typename AggregateClass>
+class InitProtocolField final : public ThisClass {
+public:
+	template <class... T>
+	InitProtocolField(AggregateClass& othis, T&&... t)
+		: ThisClass(t...)
+	{
+		// Last constructor to run.
+		othis.__init_protocol_add_field([this]{static_cast<ThisClass&>(*this).init();}, [this]{static_cast<ThisClass&>(*this).deinit();});
+	}
+
+	virtual void satisfies_init_protocol() { }
+
+	const ThisClass& operator*() const { return static_cast<ThisClass&>(*this); }
+	ThisClass& operator*() { return static_cast<ThisClass&>(*this); }
+
+	const ThisClass* operator->() const { return &**this; }
+	ThisClass* operator->() { return &**this; }
+};
 
 /*
  * This class provides the init_protocol by being a "mixin" class [1].  It kicks off the
- * "__call_init/deinit" chain at the first level, and the classes themselves take care of
+ * "__init_protocol_init/deinit" chain at the first level, and the classes themselves take care of
  * propagating it upwards.
  *
  * [1]: https://www.fluentcpp.com/2017/12/12/mixin-classes-yang-crtp/
@@ -314,12 +386,12 @@ public:
 		: ThisClass(t...)
 	{
 		// Last constructor to run.
-		detail::maybe_call_init<ProvidesInitProtocol<ThisClass>, ThisClass>(*this);
+		detail::maybe_init<ProvidesInitProtocol<ThisClass>, ThisClass>(*this);
 	}
 
 	~ProvidesInitProtocol() {
 		// First destructor to run.
-		detail::maybe_call_deinit<ProvidesInitProtocol<ThisClass>, ThisClass>(*this);
+		detail::maybe_deinit<ProvidesInitProtocol<ThisClass>, ThisClass>(*this);
 	}
 
 	const ThisClass& operator*() const { return static_cast<ThisClass&>(*this); }
@@ -332,57 +404,22 @@ protected:
 	virtual void satisfies_init_protocol() { }
 };
 
-/**
- * @brief A simple set of classes used as an example and test-case.
- *
- * Call test() with NDEBUG undefined to test.
- */
-namespace InitProtocolTest {
+template <typename ThisClass>
+class ManualInitProtocol final : public ThisClass {
+public:
+	template <class... T>
+	ManualInitProtocol(T&&... t)
+		: ThisClass(t...)
+	{ }
 
-	// Works, even at top-level
-	struct A;
-	struct A : public RequiresInitProtocol<A> {
-		A();
-		virtual ~A();
-		void init();
-		void deinit();
-	};
-	// The propagation "skips a generation;" no problem.
-	struct B : public A {
-		B();
-		virtual ~B();
-	};
+	~ManualInitProtocol() { }
 
-	// Test that the calls "chain" together with A, indirectly.
-	struct C : public RequiresInitProtocol<C, B>, public B  {
-		using RequiresInitProtocol<C, B>::__call_init;
-		using RequiresInitProtocol<C, B>::__call_deinit;
-		C();
-		virtual ~C();
-		void init();
-		void deinit();
-	};
-	
-	[[maybe_unused]] static void test() {
-		ProvidesInitProtocol<C> obj;
-	}
-	static std::size_t test_counter = 0;
+	const ThisClass& operator*() const { return static_cast<ThisClass&>(*this); }
+	ThisClass& operator*() { return static_cast<ThisClass&>(*this); }
 
-	// Here's the moment of truth.
-	// I've initialized an object, and now I'm going to check the order of con/destructors and de/init.
+	const ThisClass* operator->() const { return &**this; }
+	ThisClass* operator->() { return &**this; }
 
-	// vvvv
-	inline A::A() { assert(test_counter++ == 0); }
-	inline B::B() { assert(test_counter++ == 1); }
-	inline C::C() { assert(test_counter++ == 2); }
-	inline void C::init() { assert(test_counter++ == 3); }
-	inline void A::init() { assert(test_counter++ == 4); }
-    // ==== imagine there's a horizontal mirror here
-	inline void A::deinit() { assert(test_counter++ == 5); }
-	inline void C::deinit() { assert(test_counter++ == 6); }
-	inline C::~C() { assert(test_counter++ == 7); }
-	inline B::~B() { assert(test_counter++ == 8); }
-	inline A::~A() { assert(test_counter++ == 9); }
-	// ^^^^^
-
-}
+protected:
+	virtual void satisfies_init_protocol() { }
+};

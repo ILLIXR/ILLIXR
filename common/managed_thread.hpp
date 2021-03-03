@@ -234,6 +234,8 @@ protected:
 	 */
 	size_t get_iterations() const { return _m_iterations; }
 
+	void request_stop() { _m_stop.store(true); }
+
 public:
 	/**
 	 * @returns Tests if a stop is requested.
@@ -320,7 +322,7 @@ public:
 	 * methods.
 	 */
 	void deinit() {
-		_m_stop.store(true);
+		request_stop();
 		_m_thread.join();
 	}
 };

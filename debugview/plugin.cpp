@@ -61,7 +61,9 @@ public:
 		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
 		, _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-	{}
+	{
+		start();
+	}
 
 	void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
 		if (datum == nullptr) {
@@ -437,7 +439,7 @@ public:
 	/* compatibility interface */
 
 	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
-	virtual void start() override {
+	void start() {
 		// The "imu_cam" topic is not really a topic, in the current implementation.
 		// It serves more as an event stream. Camera frames are only available on this topic
 		// the very split second they are made available. Subsequently published packets to this
@@ -529,8 +531,6 @@ public:
 		glfwMakeContextCurrent(NULL);
 
 		lastTime = glfwGetTime();
-
-		threadloop::start();
 	}
 
 	virtual ~debugview() override {
