@@ -24,7 +24,6 @@ public:
 	{ }
 	std::unique_ptr<cv::Mat> load() const {
 		auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_GRAYSCALE)}};
-		/* TODO: make this load in grayscale */
 		assert(!img->empty());
 
 		// Sam's note: I am moving cvtColor into slam2

@@ -43,12 +43,12 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     glShaderSource(vertex_shader_handle, 1, &vertex_shader, &vshader_len);
     glCompileShader(vertex_shader_handle);
     glGetShaderiv(vertex_shader_handle, GL_COMPILE_STATUS, &result);
-    if ( result == GL_FALSE ) {
+    if (result == GL_FALSE) {
         GLchar msg[4096];
         GLsizei length;
         glGetShaderInfoLog( vertex_shader_handle, sizeof( msg ), &length, msg );
         std::cerr << "1 Error: " << msg << std::endl;
-        std::exit(1);
+        ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle");
     }
 
     GLint fragResult = GL_FALSE;
@@ -56,27 +56,26 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     GLint fshader_len = strlen(fragment_shader);
     glShaderSource(fragment_shader_handle, 1, &fragment_shader, &fshader_len);
     glCompileShader(fragment_shader_handle);
-    if (glGetError()) {
-        std::cerr << "Fragment shader compilation failed" << std::endl;
-        std::exit(1);
+    const GLenum gl_err_fragment = glGetError();
+    if (gl_err_fragment != GL_NO_ERROR) {
+        ILLIXR::abort("[shader_util] Fragment shader compilation failed");
     }
     glGetShaderiv(fragment_shader_handle, GL_COMPILE_STATUS, &fragResult);
-    if ( fragResult == GL_FALSE )
-    {
+    if (fragResult == GL_FALSE) {
         GLchar msg[4096];
         GLsizei length;
         glGetShaderInfoLog( fragment_shader_handle, sizeof( msg ), &length, msg );
         std::cerr << "2 Error: " << msg << std::endl;
-        std::exit(1);
+        ILLIXR::abort("[shader_util] Failed to get fragment_shader_handle");
     }
 
     // Create program and link shaders
     shader_program = glCreateProgram();
     glAttachShader(shader_program, vertex_shader_handle);
     glAttachShader(shader_program, fragment_shader_handle);
-    if (glGetError()) {
-        std::cerr << "AttachShader or createProgram failed" << std::endl;
-        std::exit(1);
+    const GLenum gl_err_attach = glGetError();
+    if (gl_err_attach != GL_NO_ERROR) {
+        ILLIXR::abort("[shader_util] AttachShader or createProgram failed");
     }
 
     ///////////////////
@@ -84,19 +83,18 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
 
     glLinkProgram(shader_program);
 
-    if(glGetError()){
-        std::cerr << "Linking failed" << std::endl;
-        std::exit(1);
+    const GLenum gl_err_link = glGetError();
+    if (gl_err_link != GL_NO_ERROR) {
+        ILLIXR::abort("[shader_util] Linking failed");
     }
 
     glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
-    GLenum err = glGetError();
-    if(err){
-        std::cerr << "initGL, error getting link status, " << std::hex << err << std::dec << std::endl;
-        std::exit(1);
+    const GLenum gl_err_get_shader = glGetError();
+    if (gl_err_get_shader != GL_NO_ERROR) {
+        std::cerr << "initGL, error getting link status, " << std::hex << gl_err_get_shader << std::dec << std::endl;
+        ILLIXR::abort("[shader_util] Failed to get shader_program");
     }
-    if ( result == GL_FALSE )
-    {
+    if (result == GL_FALSE) {
         GLsizei length = 0;
 
 	    std::vector<GLchar> infoLog(length);
@@ -106,9 +104,9 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
 		std::cout << error_msg;
     }
 
-    if (glGetError()) {
-        std::cerr << "initGL, error at end of initGL" << std::endl;
-        std::exit(1);
+    const GLenum gl_err_end = glGetError();
+    if (gl_err_end != GL_NO_ERROR) {
+        ILLIXR::abort("[shader_util] Failed at end of init_and_link");
     }
 
     // After successful link, detach shaders from shader program
