@@ -62,7 +62,13 @@ public:
 		, _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")}
 		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
 	{
-		start();
+		// The "imu_cam" topic is not really a topic, in the current implementation.
+		// It serves more as an event stream. Camera frames are only available on this topic
+		// the very split second they are made available. Subsequently published packets to this
+		// topic do not contain the camera frames.
+   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+        	this->imu_cam_handler(datum);
+    	});
 	}
 
 	void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
@@ -294,6 +300,7 @@ public:
 
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
+		start();
 		glfwMakeContextCurrent(gui_window);
 	}
 
@@ -440,14 +447,6 @@ public:
 
 	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
 	void start() {
-		// The "imu_cam" topic is not really a topic, in the current implementation.
-		// It serves more as an event stream. Camera frames are only available on this topic
-		// the very split second they are made available. Subsequently published packets to this
-		// topic do not contain the camera frames.
-   		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-        	this->imu_cam_handler(datum);
-    	});
-
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		const char* glsl_version = "#version 430 core";
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

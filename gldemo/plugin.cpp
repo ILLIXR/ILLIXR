@@ -44,9 +44,7 @@ public:
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
 		, _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")}
-	{
-		start();
-	}
+	{ }
 
 	// Essentially, a crude equivalent of XRWaitFrame.
 	void wait_vsync()
@@ -107,6 +105,7 @@ public:
 	}
 
 	void _p_thread_setup() override {
+		start();
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
 	}
