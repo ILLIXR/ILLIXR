@@ -25,14 +25,6 @@ public:
 	std::unique_ptr<cv::Mat> load() const {
 		auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_GRAYSCALE)}};
 		assert(!img->empty());
-
-		// Sam's note: I am moving cvtColor into slam2
-		// This way, all of the cv calls are being done from the same thread.
-		// This way, I can print an "iteration no" (like a frame number) from inside OpenCV
-		// Otherwise, this could be on it i+1, while slam2 is on it i.
-
-		// cv::cvtColor(*img, *img, cv::COLOR_BGR2GRAY);
-		// assert(!img->empty());
 		return img;
 	}
 
