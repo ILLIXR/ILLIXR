@@ -7,24 +7,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/monado_integration_dataflow/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Monado integration dataflow - ILLIXR Docs</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <title>Monado Dataflow (Version 2) - ILLIXR Docs</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Monado integration dataflow";
+    var mkdocs_page_name = "Monado Dataflow (Version 2)";
     var mkdocs_page_input_path = "monado_integration_dataflow.md";
-    var mkdocs_page_url = "/monado_integration_dataflow/";
+    var mkdocs_page_url = "/ILLIXR/docs/monado_integration_dataflow/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -34,78 +36,69 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../building_illixr/">Building illixr</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../debugging_illixr/">Debugging illixr</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../getting_started/">Getting started</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../illixr_plugins/">Illixr plugins</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../modifying_a_plugin/">Modifying a plugin</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
-	    </li>
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href="./">Monado integration dataflow</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#monado-integration-dataflow">Monado Integration Dataflow</a></li>
-    
-
+                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../virtualization/">ILLIXR under Virtualization (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../writing_your_plugin/">Writing your Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Monado Dataflow (Version 2)</a>
+    <ul class="current">
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../visualizer_logger/">Visualizer logger</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../writing_your_plugin/">Writing your plugin</a>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing (Version 1)</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -124,60 +117,75 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
+        
+          <li>Latest Documentation &raquo;</li>
+        
+      
     
-    <li>Monado integration dataflow</li>
+    <li>Monado Dataflow (Version 2)</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
                 <h2 id="monado-integration-dataflow">Monado Integration Dataflow</h2>
-<p>The integration for monado in terms of dataflow can be divided into two parts, getting pose from
-illixr, and sending user rendered frame to illixr.</p>
-<p>In monado, illixr looks like an HMD for monado, while in illixr, monado looks like a user
-application as <code>gldemo</code>. After illixr is initialized from monado, and monado is registered as a
-plugin for illixr, most recent pose information is easy to get from switchboard.</p>
-<p>The compositor side of monado integration with illixr is done in more subtle way. Original monado
-compositor mostly does distortion correction and aberration correction in a vulkan back-end
-compositor. It also has two client compositor, one for opengl app, the other for vulkan app, which
-pass frame data to the back-end compositor. Illixr integration intercepts the frame at gl client
-compositor and sends it to switchboard of illixr, which is then used by <code>timewarp_gl</code> component.</p>
-<p>In order to get a opengl frame and use it without copying pixels, illixr needs to get the user
-application gl context. It is done at OpenXR session creation time, where illixr is
-initialized. Note that logically illixr is initialized during OpenXR instance creation, or running
-at the background all the time. But, since illixr only supports single session at this time, and
-requires a user application gl context upon initialization, illixr is initialized at session
-creation time.</p>
-<p>Current illixr integration for monado is a temporary solution and has some downsides because of the
-progress from both monado and illixr.</p>
+<p>The dataflow for the ILLIXR <a href="../glossary/#monado"><em>Monado</em></a> integration comprises two steps:
+1.  getting pose data from ILLIXR,
+    and
+1.  sending a user rendered <a href="../glossary/#framebuffer"><em>frame</em></a> back to ILLIXR.</p>
+<p>In Monado, ILLIXR is recognized as an <a href="../glossary/#head-mounted-display"><em>HMD</em></a> for Monado, while in ILLIXR,
+    Monado looks like a user application (such as <a href="../illixr_plugins/"><code>gldemo</code></a>).
+After ILLIXR is initialized from Monado, and Monado is registered as a <a href="../glossary/#plugin"><em>plugin</em></a> for ILLIXR,
+    the most recent <a href="../glossary/#pose"><em>pose</em></a> information can be easily obtained via <a href="../glossary/#switchboard"><em>Switchboard</em></a>.</p>
+<p>The <a href="../glossary/#vulkan"><em>compositor</em></a> side of Monado integration with ILLIXR is implemented more subtly.
+The original Monado compositor primarily performs <a href="../glossary/#distortion-correction"><em>distortion correction</em></a>
+    and <a href="../glossary/#chromatic-abberation-correction"><em>aberration correction</em></a> in a <a href="../glossary/#vulkan"><em>Vulkan</em></a> back-end compositor.
+The compositor also has two client compositors (one for <a href="../glossary/#opengl"><em>OpenGL</em></a> applications and another
+    for Vulkan applications) which pass frame data to the back-end compositor.
+ILLIXR integration intercepts the frame at GL client compositor and sends it to Switchboard
+    of ILLIXR, which is then used by <a href="../illixr_plugins/"><code>timewarp_gl</code> component</a>.</p>
+<p>To get an OpenGL frame and use it without copying pixels, ILLIXR needs to get the user
+    application GL context.
+This is done at OpenXR session creation time, where ILLIXR is initialized.
+Note that, logically, ILLIXR is initialized during OpenXR instance creation,
+    or is otherwise running in the background all the time.
+Currently, ILLIXR is initialized at session creation time, since ILLIXR only supports single
+    OpenXR session, and requires a user application GL context upon initialization,</p>
+<p>The current ILLIXR integration for Monado is a temporary solution and has some drawbacks caused
+    by the concurrent and continued development from both the Monado and ILLIXR projects.
+The integration:</p>
 <ol>
 <li>
-<p>It does not use the pose that user application declares to use at rendering (OpenXR
-   specification) because of monado internal interfaces. The pose difference used by timewarp comes
-   from the last pose query call.</p>
+<p>Does not use the pose that user application declares to use at rendering
+        (using the OpenXR specification).
+    This is due to incongruencies with Monado's internal interfaces and representations.
+    The pose difference used by <a href="../illixr_plugins/">timewarp</a> is computed using the most recent query
+        for a pose update.</p>
 </li>
 <li>
-<p>It cannot submit frame with depth buffer.</p>
+<p>Cannot submit frame data with a depth buffer.</p>
 </li>
 <li>
-<p>The pose from illixr does not vary according to the OpenXR space. It is a raw pose data from slam
-   algorithms.</p>
+<p>Cannot have poses that make use of <a href="https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#spaces">OpenXR Spaces</a>.
+    Raw pose data is instead retrieved from the application's <a href="../glossary/#simultaneous-localization-and-mapping"><em>SLAM</em></a> algorithms.</p>
 </li>
 <li>
-<p>No controller action support at all.</p>
+<p>Does not support controller action.</p>
 </li>
 <li>
-<p>It only supports gl user applications.</p>
+<p>Only supports GL user-space applications.</p>
 </li>
 <li>
-<p>User application cannot acquire more than one swapchain image (for each eye) in one frame.</p>
+<p>User-space applications cannot acquire more than one <a href="../glossary/#swap-chain"><em>swap chain</em></a> buffer for each eye
+        during the the processing of a frame.</p>
 </li>
 <li>
-<p>Illixr is initialized during session creation time.</p>
+<p>Must initialize ILLIXR during the session initialization.</p>
 </li>
 </ol>
               
@@ -187,10 +195,10 @@ progress from both monado and illixr.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../visualizer_logger/" class="btn btn-neutral float-right" title="Visualizer logger">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../logging_and_metrics/" class="btn btn-neutral float-right" title="Logging and Metrics (Version 2)">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../monado_illixr_runtime_overview/" class="btn btn-neutral" title="Monado illixr runtime overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../monado_illixr_runtime_overview/" class="btn btn-neutral" title="Monado Overview (Version 2)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -202,28 +210,35 @@ progress from both monado and illixr.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+      
         </div>
       </div>
 
     </section>
-    
+
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
         <span><a href="../monado_illixr_runtime_overview/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../visualizer_logger/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../logging_and_metrics/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script src="../js/theme.js"></script>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
