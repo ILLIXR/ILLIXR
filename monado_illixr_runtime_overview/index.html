@@ -7,24 +7,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/monado_illixr_runtime_overview/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Monado illixr runtime overview - ILLIXR Docs</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <title>Monado Overview (Version 2) - ILLIXR Docs</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../css/highlight.css">
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Monado illixr runtime overview";
+    var mkdocs_page_name = "Monado Overview (Version 2)";
     var mkdocs_page_input_path = "monado_illixr_runtime_overview.md";
-    var mkdocs_page_url = "/monado_illixr_runtime_overview/";
+    var mkdocs_page_url = "/ILLIXR/docs/monado_illixr_runtime_overview/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js"></script>
-  <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -34,90 +36,77 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../building_illixr/">Building illixr</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../debugging_illixr/">Debugging illixr</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../getting_started/">Getting started</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../illixr_plugins/">Illixr plugins</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../modifying_a_plugin/">Modifying a plugin</a>
-	    </li>
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href="./">Monado illixr runtime overview</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#monado-integration-overview">Monado Integration Overview</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l3" href="#1-app-launches-and-brings-up-monado">1. App launches and brings up Monado</a></li>
-        
-            <li><a class="toctree-l3" href="#2-monado-probes-hmd-devices-and-illixr-initializes">2.  Monado probes HMD devices and Illixr Initializes</a></li>
-        
-            <li><a class="toctree-l3" href="#3-illixr-runtime-launch">3. Illixr Runtime Launch</a></li>
-        
-            <li><a class="toctree-l3" href="#4-the-translation-plugin">4. The translation plugin</a></li>
-        
-        </ul>
-    
-
+                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../virtualization/">ILLIXR under Virtualization (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../writing_your_plugin/">Writing your Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Monado Overview (Version 2)</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#openxr-application-launch">OpenXR Application Launch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#monado-device-probe-and-illixr-initialization">Monado Device Probe and ILLIXR Initialization</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#illixr-runtime-launch">ILLIXR Runtime Launch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#translation-plugin">Translation Plugin</a>
+    </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../visualizer_logger/">Visualizer logger</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../writing_your_plugin/">Writing your plugin</a>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing (Version 1)</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -136,72 +125,93 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
+        
+          <li>Latest Documentation &raquo;</li>
+        
+      
     
-    <li>Monado illixr runtime overview</li>
+    <li>Monado Overview (Version 2)</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
                 <h1 id="monado-integration-overview">Monado Integration Overview</h1>
-<p>ILLIXR's plugins provide XR services, and the runtime ties them together. However, we don't want to
-force developers to write <em>their wohle application</em> specifically for ILLIXR. As such, we want to
-implement a common interface XR runtimes, such as <a href="https://www.khronos.org/openxr/">OpenXR</a>, so one application can work on
-several runtimes (including ours). In order to support OpenXR, we modified <a href="https://monado.dev/">Monado</a>, an existing,
-open-source implementation.</p>
+<p>ILLIXR's <a href="../glossary/#plugin"><em>Plugins</em></a> provide XR services, and the <a href="../glossary/#runtime"><em>Runtime</em></a> ties them together.
+However, we don't want to force developers to write <em>their whole application</em> specifically
+    for ILLIXR.
+As such, we want to implement a common interface XR runtimes, such as <a href="../glossary/#openxr">OpenXR</a>,
+    so one application can work on several runtimes (including ours).
+In order to support OpenXR, we modified <a href="../glossary/#monado">Monado</a>, an existing, open-source implementation
+    of the standard.</p>
 <ul>
 <li>
-<p>When running ILLIXR without Monado, the Illixr runtime is the entry-point. Phonebook and
-  switchboard are initialized and plugins are loaded, among which is the gldemo app.</p>
+<p>When running ILLIXR without Monado, the ILLIXR runtime is the entry-point.
+    Phonebook and switchboard are initialized and plugins are loaded, among which is the gldemo app.</p>
 </li>
 <li>
-<p>When running from Monado, however, as mandated by OpenXR specifications, the application is the
-  entry point. As a result, the Illixr runtime system is loaded at a later point as a shared
-  library. This article documents the changes to the Illixr runtime when an OpenXR application is
-  used.</p>
+<p>When running from Monado, however, as mandated by OpenXR specifications,
+        the application is the entry point.
+    As a result, the ILLIXR runtime system is loaded at a later point as a shared library.
+    This page documents the changes to the ILLIXR runtime when an OpenXR application is used.</p>
 </li>
 </ul>
-<h2 id="1-app-launches-and-brings-up-monado">1. App launches and brings up Monado</h2>
-<p>As specified by OpenXR, the OpenXR application initializes the OpenXR runtime by reading a
-configuration JSON file pointed to by an environment variable and loads the OpenXR runtime, which is
-Monado in this case, as a shared library into its address space. Consult the OpenXR specifications
-and the OpenXR-SDK from Khronous Group for more details.</p>
-<h2 id="2-monado-probes-hmd-devices-and-illixr-initializes">2.  Monado probes HMD devices and Illixr Initializes</h2>
-<p>During initialization, Monado asks all drivers to probe for and initialize HMDs and controllers,
-internally known as <code>xdev</code>s.  We have an Illixr driver, which will always respond to Monado with one
-discovered HMD that will be used to capture OpenXR queries and events from Monado's state
-tracker. The Illixr driver obtains the path to the Illixr runtime so file and a list of plugins from
-environment variables.</p>
-<p>After probing is finished, the application will start to create an OpenXR session. At some point in
-this process, the application will send its rendering context to the runtime, which we capture and
-send to the Illixr driver. At this moment, all necessary data is ready and Illixr will be launched.</p>
-<h2 id="3-illixr-runtime-launch">3. Illixr Runtime Launch</h2>
-<p>When used with Monado, the Illixr runtime is compiled into a shared library instead of an
-executable. The library exports its two major functionalities: initializing switchboard and
-phonebook, and load plugins.</p>
-<p>The drivers starts to load the runtime by loading the shared library into the current (the app's)
-address space and calls the switchboard and phonebook initialization. Then, it calls the plugin
-loading for each Illixr plugin (except gldemo, which is replaced by the OpenXR app). Finally, it
-calls a special plugin loading which takes a function address instead of a file path to load a
-translation plugin into Illixr as the application. The translation plugin will be in the next
-section. Each plugin should either not block or start its own thread, so the driver will be able to
-reacquire control and return to Monado and the app shortly.</p>
-<h2 id="4-the-translation-plugin">4. The translation plugin</h2>
-<p>When the app and all Illixr plugins are up and running, the translation plugin handles the
-connection between Monado and Illixr. It might be confusing to see that this plugin is part of the
-Illixr driver which is part of Monado while at the same time also part of Illixr as a plugin. But
-Monado and Illixr are running in different threads in the same address space. The translation plugin
-is the intersection of these two parallel systems serving as a bridge between the two.</p>
-<p>The translation plugin handles two types of events at the moment: pose requests and frame
-submissions. From the view of Monado, it is the destination of all requests: from the application,
-to Monado's state trackers, to the xdev interface who is responsible for servicing the request. From
-the view of Illixr, it behaves the same as the gldemo app: reading pose and submitting frames.</p>
-<p>For implementation details regarding the representation of poses and frames in Monado and in Illixr,
-please see Monado Integration Dataflow.</p>
+<h2 id="openxr-application-launch">OpenXR Application Launch</h2>
+<p>As specified by <a href="../glossary/#openxr"><em>OpenXR</em></a>, the OpenXR application initializes the OpenXR runtime by reading a
+    configuration JSON file pointed to by an environment variable and loads the OpenXR runtime,
+    which is Monado in this case, as a shared library into its address space.
+Consult the OpenXR specifications and the OpenXR-SDK from Khronos Group for more details.</p>
+<h2 id="monado-device-probe-and-illixr-initialization">Monado Device Probe and ILLIXR Initialization</h2>
+<p>During initialization, <a href="../glossary/#monado"><em>Monado</em></a> asks all drivers to probe for and initialize <a href="../glossary/#head-mounted-display"><em>HMDs</em></a>
+    and controllers, internally known as <code>xdev</code>s.
+Our ILLIXR driver will always respond to Monado with one discovered HMD that
+    will be used to capture OpenXR queries and events from Monado's state tracker.
+The driver obtains the path to the ILLIXR runtime <code>.so</code> file and a list of plugins from
+    environment variables.</p>
+<p>After probing is finished, the application will start to create an OpenXR session.
+At some point in this process, the application will send its rendering context to the runtime,
+    which we capture and send to the ILLIXR driver.
+At this moment, all necessary data is ready and ILLIXR will be launched.</p>
+<h2 id="illixr-runtime-launch">ILLIXR Runtime Launch</h2>
+<p>When used with <a href="../glossary/#monado"><em>Monado</em></a>, the ILLIXR <a href="../glossary/#runtime"><em>Runtime</em></a> is compiled into
+    a shared library instead of an executable.
+The library exports its two major functionalities:
+    initializing <a href="../glossary/#switchboard"><em>Switchboard</em></a> and <a href="../glossary/#phonebook"><em>Phonebook</em></a>,
+    and
+    loading <a href="../glossary/#plugin"><em>Plugins</em></a>.</p>
+<p>The driver starts to load the runtime by loading the shared library into the current
+    (application's) address space and calls the Switchboard and Phonebook initialization.
+Then, it calls the plugin loading for each ILLIXR plugin
+    (except <a href="../illixr_plugins/"><code>gldemo</code></a>, which is replaced by the OpenXR app).
+Finally, it calls a special plugin loading which takes a function address instead of a file path
+    to load a <a href="../glossary/#translation-plugin"><em>Translation Plugin</em></a> into ILLIXR as the application.
+If the plugin implements a long running computation, it may block the main ILLIXR thread
+    which drives the entire application.
+To remedy this, a plugin should implement long running processing in its own thread.
+This way, the driver will be able to reacquire control and return to Monado
+    and the application efficiently.</p>
+<h2 id="translation-plugin">Translation Plugin</h2>
+<p>When the application and all <a href="../illixr_plugins/">ILLIXR plugins</a> are up and running,
+    the translation plugin handles the connection between <a href="../glossary/#monado"><em>Monado</em></a> and ILLIXR.
+It might be confusing to see that this plugin is part of the ILLIXR driver which is part of
+    Monado while at the same time also part of ILLIXR as a plugin.
+However, Monado and ILLIXR are running in different threads in the same address space.
+The translation plugin is the interface of these two parallel systems.</p>
+<p>The translation plugin handles two types of events at the moment:
+    <a href="../glossary/#framebuffer"><em>pose</em></a> requests and <a href="../glossary/#framebuffer"><em>frame</em></a> submissions.
+From the view of Monado, the translation plugin is the destination of all requests:
+    from the application,
+    to Monado's state trackers,
+    to the xdev interface who is responsible for servicing the request.
+From the view of ILLIXR, the translation plugin behaves the same as the <a href="../illixr_plugins/"><code>gldemo</code> application</a>:
+    reading pose and submitting frames.</p>
+<p>For implementation details regarding the representation of poses and frames in Monado
+    and in ILLIXR, please see ILLIXR's <a href="../monado_integration_dataflow/">Monado Integration Dataflow</a>.</p>
               
             </div>
           </div>
@@ -209,10 +219,10 @@ please see Monado Integration Dataflow.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../monado_integration_dataflow/" class="btn btn-neutral float-right" title="Monado integration dataflow">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../monado_integration_dataflow/" class="btn btn-neutral float-right" title="Monado Dataflow (Version 2)">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../modifying_a_plugin/" class="btn btn-neutral" title="Modifying a plugin"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../writing_your_plugin/" class="btn btn-neutral" title="Writing your Plugin (Version 2)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -224,28 +234,35 @@ please see Monado Integration Dataflow.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+      
         </div>
       </div>
 
     </section>
-    
+
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../modifying_a_plugin/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../writing_your_plugin/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../monado_integration_dataflow/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script src="../js/theme.js"></script>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
