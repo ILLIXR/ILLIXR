@@ -81,7 +81,7 @@ We would also appreciate it if you send us a citation once your work has been pu
 
 ## Getting Started and Documentation
 
-For more information, see our [Getting Started page][50].
+For more information, see our [Getting Started page][33].
 
 
 ## Acknowledgements
@@ -227,10 +227,10 @@ If you would like to be a part of this effort, please contact us at
 [30]:   https://github.com/MIT-SPARK/Kimera-VIO/blob/master/LICENSE.BSD
 [31]:   https://github.com/cameron314/concurrentqueue
 [32]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
+[33]:   https://illixr.github.io/ILLIXR/getting_started/
 
 [//]: # (- Internal -)
 
-[50]:   getting_started.md
 [51]:   LICENSE.md
 [52]:   illixr_plugins.md
 [53]:   writing_your_plugin.md
