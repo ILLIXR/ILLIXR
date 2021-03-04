@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../error_util.hpp"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "lib/tiny_obj_loader.h"
 
@@ -80,20 +82,20 @@ namespace ILLIXR {
 			// We pass obj_dir as the last argument to LoadObj to let us load
 			// any material (.mtl) files associated with the .obj in the same directory.
 			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_dir_term.c_str());
-			if(!warn.empty()){
+			if (!warn.empty()) {
 #ifndef NDEBUG
 				std::cout << "[OBJ WARN] " << warn << std::endl;
 #endif
 			}
-			if(!err.empty()){
+			if (!err.empty()) {
 				std::cerr << "[OBJ ERROR] " << err << std::endl;
 				successfully_loaded_model = false;
-                std::exit(1);
+                ILLIXR::abort();
 			}
-			if(!success){
+			if (!success) {
 				std::cerr << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
 				successfully_loaded_model = false;
-                std::exit(1);
+                ILLIXR::abort();
 			} else {
 				
 				// OBJ file successfully loaded.

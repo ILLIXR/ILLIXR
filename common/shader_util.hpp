@@ -5,10 +5,11 @@
 #include <string>
 #include <cstring>
 #include <vector>
-#include "global_module_defs.hpp"
 #include "error_util.hpp"
 
 using namespace ILLIXR;
+
+static constexpr std::size_t GL_MAX_LOG_LENGTH = 4096U;
 
 
 static void GLAPIENTRY
@@ -44,11 +45,14 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     glCompileShader(vertex_shader_handle);
     glGetShaderiv(vertex_shader_handle, GL_COMPILE_STATUS, &result);
     if (result == GL_FALSE) {
-        GLchar msg[4096];
-        GLsizei length;
-        glGetShaderInfoLog( vertex_shader_handle, sizeof( msg ), &length, msg );
-        std::cerr << "1 Error: " << msg << std::endl;
-        ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle");
+        GLsizei length = 0;
+        std::vector<GLchar> gl_buf_log;
+        gl_buf_log.resize(GL_MAX_LOG_LENGTH);
+
+        glGetShaderInfoLog(vertex_shader_handle, GL_MAX_LOG_LENGTH*sizeof(GLchar), &length, gl_buf_log.data());
+        const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
+        assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
+        ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle: " + msg);
     }
 
     GLint fragResult = GL_FALSE;
@@ -56,17 +60,16 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     GLint fshader_len = strlen(fragment_shader);
     glShaderSource(fragment_shader_handle, 1, &fragment_shader, &fshader_len);
     glCompileShader(fragment_shader_handle);
-    const GLenum gl_err_fragment = glGetError();
-    if (gl_err_fragment != GL_NO_ERROR) {
-        ILLIXR::abort("[shader_util] Fragment shader compilation failed");
-    }
     glGetShaderiv(fragment_shader_handle, GL_COMPILE_STATUS, &fragResult);
     if (fragResult == GL_FALSE) {
-        GLchar msg[4096];
-        GLsizei length;
-        glGetShaderInfoLog( fragment_shader_handle, sizeof( msg ), &length, msg );
-        std::cerr << "2 Error: " << msg << std::endl;
-        ILLIXR::abort("[shader_util] Failed to get fragment_shader_handle");
+        GLsizei length = 0;
+        std::vector<GLchar> gl_buf_log;
+        gl_buf_log.resize(GL_MAX_LOG_LENGTH);
+
+        glGetShaderInfoLog(fragment_shader_handle, GL_MAX_LOG_LENGTH*sizeof(GLchar), &length, gl_buf_log.data());
+        const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
+        assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
+        ILLIXR::abort("[shader_util] Failed to get fragment_shader_handle: " + msg);
     }
 
     // Create program and link shaders
@@ -89,24 +92,15 @@ static GLuint init_and_link (const char* vertex_shader, const char* fragment_sha
     }
 
     glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
-    const GLenum gl_err_get_shader = glGetError();
-    if (gl_err_get_shader != GL_NO_ERROR) {
-        std::cerr << "initGL, error getting link status, " << std::hex << gl_err_get_shader << std::dec << std::endl;
-        ILLIXR::abort("[shader_util] Failed to get shader_program");
-    }
     if (result == GL_FALSE) {
         GLsizei length = 0;
+	    std::vector<GLchar> gl_buf_log;
+        gl_buf_log.resize(GL_MAX_LOG_LENGTH);
 
-	    std::vector<GLchar> infoLog(length);
-	    glGetProgramInfoLog(shader_program, length, &length, &infoLog[0]);
-
-        std::string error_msg(infoLog.begin(), infoLog.end());
-		std::cout << error_msg;
-    }
-
-    const GLenum gl_err_end = glGetError();
-    if (gl_err_end != GL_NO_ERROR) {
-        ILLIXR::abort("[shader_util] Failed at end of init_and_link");
+	    glGetProgramInfoLog(shader_program, GL_MAX_LOG_LENGTH*sizeof(GLchar), &length, gl_buf_log.data());
+        const std::string msg{gl_buf_log.begin(), gl_buf_log.end()};
+        assert(length == static_cast<GLsizei>(msg.size()) && "Length of log should match GLchar vector contents");
+        ILLIXR::abort("[shader_util] Failed to get shader program: " + msg);
     }
 
     // After successful link, detach shaders from shader program

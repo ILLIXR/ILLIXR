@@ -15,6 +15,7 @@
 #include "shaders/timewarp_shader.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -279,12 +280,9 @@ private:
 		distortion_uv1.resize(num_elems_pos_uv);
 		distortion_uv2.resize(num_elems_pos_uv);
 
-		for ( int eye = 0; eye < HMD::NUM_EYES; eye++ )
-		{
-			for ( int y = 0; y <= hmdInfo->eyeTilesHigh; y++ )
-			{
-				for ( int x = 0; x <= hmdInfo->eyeTilesWide; x++ )
-				{
+		for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
+			for (int y = 0; y <= hmdInfo->eyeTilesHigh; y++) {
+				for (int x = 0; x <= hmdInfo->eyeTilesWide; x++) {
 					const int index = y * ( hmdInfo->eyeTilesWide + 1 ) + x;
 
 					// Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
@@ -373,7 +371,7 @@ public:
 
 	virtual void _p_one_iteration() override {
 	    assert(errno == 0 && "Errno should not be set at start of iteration");
-	    const std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+	    const time_type time_now = std::chrono::system_clock::now();
 		warp(time_now);
 	}
 
@@ -492,10 +490,12 @@ public:
 		assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
 
-        // Config PBO for texture image collection
-        glGenBuffers(1, &PBO_buffer);
-        glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-        glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
+		if (enable_offload) {
+            // Config PBO for texture image collection
+            glGenBuffers(1, &PBO_buffer);
+            glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+            glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
+        }
 
         RAC_ERRNO_MSG("timewarp_gl before glXMakeCurrent");
 
@@ -503,7 +503,7 @@ public:
 		assert(gl_result_1 && "glXMakeCurrent should not fail");
 	}
 
-	virtual void warp([[maybe_unused]] std::chrono::system_clock::time_point time) {
+	virtual void warp([[maybe_unused]] time_type time) {
 		assert(errno == 0 && "Errno should not be set at start of warp");
 
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
@@ -515,23 +515,6 @@ public:
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         RAC_ERRNO_MSG("timewarp_gl after glClear");
-        /// RAC is triggered by glClear consistently. Checking for errors here to be safe.
-        const GLenum glClearError = glGetError();
-        switch (glClearError) {
-            case GL_NO_ERROR:
-                break;
-            case GL_INVALID_VALUE:
-                std::cerr << "GL_INVALID_VALUE after glClear" << std::endl;
-                goto GL_CLEAR_ERROR_BLOCK;
-            case GL_INVALID_OPERATION:
-                std::cerr << "GL_INVALID_OPERATION after glClear" << std::endl;
-                goto GL_CLEAR_ERROR_BLOCK;
-            default:
-                std::cerr << "Unexpected GL error " << glClearError << " after glClear" << std::endl;
-            GL_CLEAR_ERROR_BLOCK:
-                ILLIXR::abort();
-        }
-		RAC_ERRNO_MSG("timewarp_gl after glGetError");
 
 		glDepthFunc(GL_LEQUAL);
 
@@ -647,7 +630,7 @@ public:
 		glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
-        const std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+        const time_type time_now = std::chrono::system_clock::now();
 		const std::chrono::nanoseconds time_since_render = time_now - most_recent_frame->render_time;
 
 		if (log_count > LOG_PERIOD) {
@@ -660,9 +643,6 @@ public:
 		if (time_since_render > vsync_period) {
             std::cout << "\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!" << std::endl;
 		}
-
-		// Even in debug builds, this is quite verbose
-		// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
 #endif
 		// Call Hologram
 		auto hologram_params = new hologram_input;
@@ -671,7 +651,7 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
-		[[maybe_unused]] std::chrono::system_clock::time_point time_before_swap = std::chrono::system_clock::now();
+		[[maybe_unused]] time_type time_before_swap = std::chrono::system_clock::now();
 
         RAC_ERRNO_MSG("timewarp_gl before glXSwapBuffers");
 		glXSwapBuffers(xwin->dpy, xwin->win);
@@ -679,7 +659,7 @@ public:
 
 		// The swap time needs to be obtained and published as soon as possible
 		time_last_swap = std::chrono::system_clock::now();
-		[[maybe_unused]] const std::chrono::system_clock::time_point time_after_swap = time_last_swap;
+		[[maybe_unused]] time_type time_after_swap = time_last_swap;
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
@@ -696,8 +676,7 @@ public:
 			{render_to_display},
 		}});
 
-		if (enable_offload)
-		{
+		if (enable_offload) {
 			// Read texture image from texture buffer
 			GLubyte* image = readTextureImage();
 
@@ -727,7 +706,7 @@ public:
 			          << "\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: " << latency_mtd << "ms" << std::endl
 			          << "\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: " << latency_ptd << "ms" << std::endl
 		              << "\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: " << latency_rtd << "ms" << std::endl
-			          << "Timewarp estimating: " << timewarp_estimate << "ms in the future" << std::endl;
+			          << "Next swap in: " << timewarp_estimate << "ms in the future" << std::endl;
 		}
 #endif
 
@@ -766,7 +745,6 @@ public:
 #endif
 
 	virtual ~timewarp_gl() override {
-		// TODO: Need to cleanup resources here!
 		assert(errno == 0 && "Errno should not be set at start of destructor");
 
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));

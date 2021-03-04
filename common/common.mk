@@ -8,7 +8,6 @@ CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
 DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic
-# -rdynamic is needed for backtrace
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic

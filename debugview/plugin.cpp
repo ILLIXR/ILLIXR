@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <functional>
+#include <string_view>
 
 // IMGUI Immediate-mode GUI library
 #include "imgui/imgui.h"
@@ -454,8 +455,7 @@ public:
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 
-        /// TODO: This does not match the glsl version flag in `common/common.mk` (330 core)
-		const char* glsl_version = "#version 430 core";
+		constexpr std::string_view glsl_version{"#version 330 core"};
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -497,7 +497,7 @@ public:
 
 		// Init IMGUI for OpenGL
 		ImGui_ImplGlfw_InitForOpenGL(gui_window, true);
-    	ImGui_ImplOpenGL3_Init(glsl_version);
+    	ImGui_ImplOpenGL3_Init(glsl_version.data());
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);

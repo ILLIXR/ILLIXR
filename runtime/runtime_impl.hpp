@@ -39,7 +39,7 @@ public:
 			return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
 		});
 
-        RAC_ERRNO_MSG("runtime_impl after generatring plugin factories");
+        RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
 
 		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
 		    RAC_ERRNO_MSG("runtime_impl before building the plugin");

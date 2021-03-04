@@ -1,6 +1,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
-#include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>

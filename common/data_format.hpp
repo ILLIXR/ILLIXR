@@ -99,8 +99,8 @@ namespace ILLIXR {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
-		std::chrono::system_clock::time_point sample_time;
-		std::chrono::system_clock::time_point render_time;
+		time_type sample_time;
+		time_type render_time;
 	};
 
 	typedef struct {

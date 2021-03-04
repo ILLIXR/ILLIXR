@@ -61,41 +61,6 @@ public:
         return false;
     }
 
-	virtual Eigen::Quaternionf get_offset() override {
-        return offset;
-    }
-
-	virtual pose_type correct_pose(const pose_type pose) const override {
-		pose_type swapped_pose;
-
-		// This uses the OpenVINS standard output coordinate system.
-		// This is a mapping between the OV coordinate system and the OpenGL system.
-		swapped_pose.position.x() = -pose.position.y();
-		swapped_pose.position.y() = pose.position.z();
-		swapped_pose.position.z() = -pose.position.x();
-
-		// There is a slight issue with the orientations: basically,
-		// the output orientation acts as though the "top of the head" is the
-		// forward direction, and the "eye direction" is the up direction.
-		Eigen::Quaternionf raw_o (pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
-
-		swapped_pose.orientation = apply_offset(raw_o);
-
-		return swapped_pose;
-	}
-
-    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override{
-		std::unique_lock lock {offset_mutex};
-		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-		//std::cout << "pose_prediction: set_offset" << std::endl;
-		offset = raw_o.inverse();
-    }
-
-    Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-		std::shared_lock lock {offset_mutex};
-		return orientation * offset;
-    }
-
     virtual Eigen::Quaternionf get_offset() override {
         return offset;
     }

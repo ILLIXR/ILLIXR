@@ -14,6 +14,7 @@
 #include "common/gl_util/obj.hpp"
 #include "shaders/demo_shader.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -296,12 +297,13 @@ private:
 
 		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
 
-		if (glGetError()) {
-			RAC_ERRNO_MSG("gldemo failed error check");
-			return 0;
-		} else {
-			RAC_ERRNO_MSG("gldemo passed error check");
+        const GLenum gl_err = glGetError();
+		if (gl_err != GL_NO_ERROR) {
+			RAC_ERRNO_MSG("[gldemo] failed error check in createSharedEyebuffer");
 			return 1;
+		} else {
+			RAC_ERRNO();
+			return 0;
 		}
 	}
 
@@ -343,8 +345,6 @@ public:
 	/* compatibility interface */
 
 	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
-	// This may be changed later, but it really doesn't matter for this purpose because
-	// it will be replaced by a real, Monado-interfaced application.
 	virtual void start() override {
 		assert(errno == 0 && "Errno should not be set at start of gldemo start function");
 

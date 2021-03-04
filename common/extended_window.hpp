@@ -71,7 +71,6 @@ namespace ILLIXR {
             if (!fbc) {
                 ILLIXR::abort("Failed to retrieve a framebuffer config");
             }
-            // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
 
 #ifndef NDEBUG
             std::cout << "Found " << fbcount << " matching FB configs" << std::endl;
@@ -148,7 +147,6 @@ namespace ILLIXR {
             };
 
             glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
-            // Were setting errno to 0 here for the same reasoning as when we ser errno = 0 for XOpenDisplay
 
             // Sync to process errors
             RAC_ERRNO_MSG("extended_window before XSync");

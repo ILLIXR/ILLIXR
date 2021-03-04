@@ -22,7 +22,7 @@ static void sigill_handler(int sig) {
 /**
  * @brief A signal handler for SIGABRT.
  *
- * Forward SIGILL from illegal instructions to catchsegv in `ci.yaml`.
+ * Forward SIGABRT from `std::abort` and `assert` to catchsegv in `ci.yaml`.
  * Provides additional debugging information via `-rdynamic`.
  */
 static void sigabrt_handler(int sig) {
