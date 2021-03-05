@@ -110,6 +110,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
     A git repository.
 
     <!--- language: lang-yaml -->
+
         - git_repo: https://github.com/user/repo.git
           version: master # branch name, SHA-256, or tag
 
@@ -117,6 +118,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
     A resource downloaded from the internet.
 
     <!--- language: lang-yaml -->
+
         - download_url: https://example.com/file.txt
 
 -   **Zip archive**:
@@ -124,6 +126,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
     Note that `archive_path` is itself a path (recursive).
 
     <!--- language: lang-yaml -->
+
         - archive_path: path/to/archive.zip
         - archive_path:
             download_url: https://example.com/file.zip
@@ -133,6 +136,7 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
     This is useful to specify a _subdirectory_ of a git repository or zip archive.
 
     <!--- language: lang-yaml -->
+
         - subpath: path/within/git_repo
           relative_to:
             git_repo: ...
