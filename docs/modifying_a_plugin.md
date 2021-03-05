@@ -8,6 +8,7 @@ This is how you can modify an existing ILLIXR plugin
     For example:
 
     <!--- language: lang-shell -->
+
         git clone https://github.com/ILLIXR/audio_pipeline.git
 
 1.  Modify the config file like this:
@@ -15,6 +16,7 @@ This is how you can modify an existing ILLIXR plugin
     **Original Config**
 
     <!--- language: lang-yaml -->
+
         plugin_group:
           - path: timewarp_gl/
           - name: audio
@@ -25,6 +27,7 @@ This is how you can modify an existing ILLIXR plugin
     **New Config**
 
     <!--- language: lang-yaml -->
+
         plugin_group:
           - path: timewarp_gl/
           - name: /PATH/TO/LOCAL/AUDIO-PLUGIN

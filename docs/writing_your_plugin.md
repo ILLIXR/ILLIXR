@@ -18,6 +18,7 @@ This provides the necessary targets and uses the compiler `$(CXX)`,
 -   Libraries can be added by appending to `LDFLAGS` and `CFLAGS`, for example
 
     <!--- language: lang-makefile -->
+
         LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
         CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
 
@@ -52,6 +53,7 @@ You can also replace any existing functionality this way.
         See [Building ILLIXR][10] for more details and alternative setups.
 
         <!--- language: lang-makefile -->
+
             include common.mk
 
 1.  You must decide if your plugin should inherit the standardized [`threadloop`][12]
@@ -67,6 +69,7 @@ You can also replace any existing functionality this way.
 1.  Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
 
     <!--- language: lang-cpp -->
+
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
         #include "common/threadloop.hpp"
@@ -95,6 +98,7 @@ You can also replace any existing functionality this way.
     See [Building ILLIXR][10] for more details on the config file.
 
     <!--- language: lang-yaml -->
+
         plugin_groups:
           - !include "rt_slam_plugins.yaml"
           - !include "core_plugins.yaml"
@@ -118,6 +122,7 @@ You can also replace any existing functionality this way.
 1.  Finally, run ILLIXR with your new plugin with the following command:
 
     <!--- language: lang-shell -->
+
         ./runner.sh configs/native.yaml
 
 1.  This is all that is required to be a plugin which can be loaded by Spindle in
@@ -133,6 +138,7 @@ You can also replace any existing functionality this way.
     See the API documentation for `phonebook` and `switchboard` for more details.
 
     <!--- language: lang-cpp -->
+
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
         #include "common/threadloop.hpp"

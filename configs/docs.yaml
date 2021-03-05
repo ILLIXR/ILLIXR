@@ -8,3 +8,5 @@ action:
 profile: opt
 data: data
 demo_data: demo_data
+enable_offload: False
+enable_alignment: False

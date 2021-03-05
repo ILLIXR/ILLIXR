@@ -8,6 +8,7 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
 1.  **Clone the repository**:
 
     <!--- language: lang-shell -->
+
         git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
 
     ***Note for ILLIXR versions older than `v2.2.0`***:
@@ -16,11 +17,13 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
     Submodules are git repositories inside a git repository that need to be pulled down separately:
 
     <!--- language: lang-shell -->
+
         git submodule update --init --recursive
 
 1.  **Install dependencies**:
 
     <!--- language: lang-shell -->
+
         ./install_deps.sh
 
     This script installs some Ubuntu/Debian packages and builds several dependencies from source:
@@ -33,22 +36,26 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
 1.  **Build and run ILLIXR without Monado**:
 
     <!--- language: lang-shell -->
+
         ./runner.sh configs/native.yaml
 
     If you are running ILLIXR without a graphical environment,
         try ILLIXR headlessly using [Xvfb][17]:
 
     <!--- language: lang-shell -->
+
         ./runner.sh configs/headless.yaml
 
 1.  **To clean up after building, run**:
 
     <!--- language: lang-shell -->
+
         ./runner.sh configs/clean.yaml
 
     Or simply:
 
     <!--- language: lang-shell -->
+
         ./clean.sh
 
 
@@ -61,6 +68,7 @@ Because of a low-level driver issue, Monado only supports Ubuntu 18.04+.
 1.  Compile and run:
 
     <!--- language: lang-shell -->
+
         ./runner.sh configs/monado.yaml
 
 

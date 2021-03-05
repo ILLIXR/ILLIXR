@@ -29,6 +29,7 @@ Please follow these steps when making pull requests (PRs):
     Use the following procedure for updating your branch:
 
     <!--- language: lang-shell -->
+
         # While on your PR branch <issue-branch>
         git commit
         git checkout master
