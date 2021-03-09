@@ -16,6 +16,7 @@ from util import (
     pathify,
     relative_to,
     replace_all,
+    set_cpu_freq,
     subprocess_run,
     threading_map,
     unflatten,
@@ -141,13 +142,16 @@ def load_native(config: Mapping[str, Any]) -> None:
         if log_stdout_str is not None
         else noop_context(None)
     )
+    cpu_freq = config["loader"].get("cpu_freq_ghz", None)
+    cpu_freq_ctx: ContextManager[None] = set_cpu_freq(cpu_freq) if cpu_freq is not None else noop_context()
     with log_stdout_ctx as log_stdout:
-        subprocess_run(
-            actual_cmd_list,
-            env_override=env_override,
-            stdout=log_stdout,
-            stderr=subprocess.STDOUT,
-        )
+        with cpu_freq_ctx:
+            subprocess_run(
+                actual_cmd_list,
+                env_override=env_override,
+                stdout=log_stdout,
+                stderr=subprocess.STDOUT,
+            )
 
 
 def load_tests(config: Mapping[str, Any]) -> None:

@@ -38,6 +38,8 @@ loader:
 
   command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 $env_cmd
 
+  # cpu_freq_ghz: 1.1
+
   # log_stdout: scheduled.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 

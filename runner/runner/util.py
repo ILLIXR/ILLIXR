@@ -149,6 +149,8 @@ def subprocess_run(
     check: bool = False,
     env: Optional[Mapping[str, str]] = None,
     env_override: Optional[Mapping[str, str]] = None,
+    input: Union[None, bytes, str] = None,
+    text: Optional[bool] = None,
     capture_output: bool = False,
     stdout: Optional[BinaryIO] = None,
     stderr: Optional[BinaryIO] = None,
@@ -170,7 +172,7 @@ def subprocess_run(
     if env_override:
         env.update(env_override)
 
-    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout, stderr=stderr)
+    proc = subprocess.run(args, env=env, cwd=cwd, capture_output=capture_output, stdout=stdout, stderr=stderr, input=input, text=text)
 
     if check:
         if proc.returncode != 0:
@@ -504,5 +506,43 @@ Returns:
 
 
 @contextlib.contextmanager
-def noop_context(x: Any) -> Iterator[Any]:
+def noop_context(x: T = None) -> Iterator[T]:
     yield x
+
+
+T = TypeVar("T")
+def identity(x: T) -> T:
+    return x
+
+
+@contextlib.contextmanager
+def set_cpu_freq(freq_ghz: float) -> None:
+    num_cpus = int(subprocess_run(["getconf", "_NPROCESSORS_ONLN"], check=True, capture_output=True).stdout.strip())
+
+    def all_cpu_get(path: str, parser: Callable[[str], T] = identity) -> List[T]:
+        return [
+            parser(Path(f"/sys/devices/system/cpu/cpu{cpu}/{path}").read_text().strip())
+            for cpu in range(num_cpus)
+        ]
+
+    def all_cpu_set(path: str, values: Iterable[T], stringer: Callable[[T], str] = str) -> None:
+        for cpu, value in zip(range(num_cpus), values):
+            subprocess_run(["sudo", "tee", f"/sys/devices/system/cpu/cpu{cpu}/{path}"], check=True, input=stringer(value), text=True, capture_output=True)
+
+    limit_min_freqs = all_cpu_get("cpufreq/cpuinfo_min_freq", int)
+    limit_max_freqs = all_cpu_get("cpufreq/cpuinfo_max_freq", int)
+
+    freq = int(freq_ghz * 1e6)
+    if not (max(limit_min_freqs) <= freq <= min(limit_max_freqs)):
+        raise ValueError(f"{freq} out of range ({max(limit_min_freqs)} to {min(limit_max_freqs)})")
+
+    old_min_freqs = all_cpu_get("cpufreq/scaling_min_freq", int)
+    old_max_freqs = all_cpu_get("cpufreq/scaling_max_freq", int)
+
+    all_cpu_set("cpufreq/scaling_min_freq", [freq] * num_cpus)
+    all_cpu_set("cpufreq/scaling_max_freq", [freq] * num_cpus)
+
+    yield
+
+    all_cpu_set("cpufreq/scaling_min_freq", old_min_freqs)
+    all_cpu_set("cpufreq/scaling_max_freq", old_max_freqs)
