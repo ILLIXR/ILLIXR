@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <cerrno>
 #include "runtime_impl.hpp"
+#include "frame_logger2.hpp"
 
 constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
 
@@ -32,6 +33,7 @@ private:
 
 
 int main(int argc, char* const* argv) {
+	setup_frame_logger();
 	assert(errno == 0);
 	r = ILLIXR::runtime_factory(nullptr);
 	// assert(errno == 0);

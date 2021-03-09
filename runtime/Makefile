@@ -1,3 +1,2 @@
-CFLAGS = $(shell pkg-config opencv --cflags)
-LDFLAGS = -ldl -pthread -lstdc++fs $(shell pkg-config glfw3 glew sqlite3 x11 --libs) $(shell pkg-config opencv --libs)
+LDFLAGS = -ldl -pthread -lboost_filesystem $(shell pkg-config opencv glfw3 glew sqlite3 x11 --libs)
 include common/common.mk

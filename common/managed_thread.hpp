@@ -104,8 +104,8 @@ private:
 	std::mutex thread_is_started_mutex;
 
 	void thread_main() {
-		assert(_m_body);
 		CPU_TIMER_TIME_FUNCTION_INFO(_m_info);
+		assert(_m_body);
 		pid = get_tid();
 		{
 			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
@@ -116,6 +116,7 @@ private:
 			_m_on_start();
 		}
 		while (!this->_m_stop.load()) {
+			CPU_TIMER_TIME_BLOCK("body");
 			_m_body();
 		}
 		if (_m_on_stop) {
