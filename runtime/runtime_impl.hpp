@@ -15,9 +15,9 @@ using namespace ILLIXR;
 class runtime_impl : public runtime {
 public:
 	runtime_impl(GLXContext appGLCtx) {
-#ifndef MULTICORE
+// #ifndef MULTICORE
 		cv::setNumThreads(0);
-#endif
+// #endif
 		pb.register_impl<record_logger>(std::make_shared<noop_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));

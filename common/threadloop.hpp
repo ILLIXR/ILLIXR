@@ -53,20 +53,30 @@ public:
 			);
 		} else {
 			paused.clear();
+			assert(id == 7);
 			thread = std::make_unique<managed_thread>([this]{
-				char* name = new char[100];
-				snprintf(name, 100, "tl_%zu", id);
-				name[15] = '\0';
-				[[maybe_unused]]int ret = pthread_setname_np(pthread_self(), name);
-				assert(!ret);
-
 				thread_main(false);
-				
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
-			});
+				},
+				[this]{
+					char* name = new char[100];
+					snprintf(name, 100, "tl_%zu", id);
+					name[15] = '\0';
+					[[maybe_unused]]int ret = pthread_setname_np(pthread_self(), name);
+					assert(!ret);
+				},
+				[]{},
+				cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id))
+			);
+
 			thread->start();
 			auto pid = thread->get_pid();
 			assert(pid != 0);
+			{
+				std::ofstream file {"self_scheduled_pid"};
+				// file.open();
+				file << pid << std::endl;;
+			}
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{pid, std::to_string(id)});
 		}
 	}
@@ -140,6 +150,14 @@ protected:
 		/// Calls stop.
 		stop,
 	};
+
+	virtual void stop() override {
+		if (!is_scheduled) {
+			thread->stop();
+			// joins thread here.
+			// returns only after thread is dead.
+		}
+	}
 
 	/**
 	 * @brief Gets called in a tight loop, to gate the invocation of `_p_one_iteration()`

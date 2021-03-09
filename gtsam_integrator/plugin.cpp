@@ -28,7 +28,7 @@ typedef struct {
 	double timestamp;
 	Eigen::Matrix<double, 3, 1> wm;
 	Eigen::Matrix<double, 3, 1> am;
-} imu_type;
+} imu_type2;
 
 class imu_integrator : public plugin {
 public:
@@ -38,15 +38,15 @@ public:
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
-		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+		sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
 			callback(datum);
 		});
 	}
 
-	void callback(switchboard::ptr<const imu_cam_type> datum) {
+	void callback(switchboard::ptr<const imu_type> datum) {
 		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
 
-		imu_type data;
+		imu_type2 data;
         data.timestamp = timestamp_in_seconds;
         data.wm = (datum->angular_v).cast<double>();
         data.am = (datum->linear_a).cast<double>();
@@ -65,7 +65,7 @@ private:
 	// Write IMU Biases for PP
 	switchboard::writer<imu_raw_type> _m_imu_raw;
 
-	std::vector<imu_type> _imu_vec;
+	std::vector<imu_type2> _imu_vec;
   	PimUniquePtr pim_ = NULL;
 
 	[[maybe_unused]] double last_cam_time = 0;
@@ -119,7 +119,7 @@ private:
 		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
 		double time_end = timestamp + input_values->t_offset;
 
-		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
+		std::vector<imu_type2> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 		if (prop_data.size() < 2) {
 			return;
 		}
@@ -172,8 +172,8 @@ private:
 	}
 
 	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
-		std::vector<imu_type> prop_data;
+	std::vector<imu_type2> select_imu_readings(const std::vector<imu_type2>& imu_data, double time_begin, double time_end) {
+		std::vector<imu_type2> prop_data;
 		if (imu_data.size() < 2) {
 			return prop_data;
 		}
@@ -182,7 +182,7 @@ private:
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
 			if (imu_data.at(i+1).timestamp > time_begin && imu_data.at(i).timestamp < time_begin) {
-				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_begin);
+				imu_type2 data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_begin);
 				prop_data.push_back(data);
 				continue;
 			}
@@ -195,7 +195,7 @@ private:
 
 			// IMU is past time_end
 			if (imu_data.at(i+1).timestamp > time_end) {
-				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
+				imu_type2 data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
 				prop_data.push_back(data);
 				break;
 			}
@@ -214,8 +214,8 @@ private:
 	}
 
 	// For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, double timestamp) {
-		imu_type data;
+	static imu_type2 interpolate_imu(const imu_type2 imu_1, imu_type2 imu_2, double timestamp) {
+		imu_type2 data;
 		data.timestamp = timestamp;
 
 		double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
