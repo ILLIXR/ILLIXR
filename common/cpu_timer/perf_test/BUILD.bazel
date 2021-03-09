@@ -1,0 +1,8 @@
+cc_test(
+    name = "cpu_timer_perf_test",
+    srcs = glob(["*.cpp"]),
+    deps = [
+        "//include:cpu_timer",
+    ],
+    linkopts = ["-pthread"],
+)

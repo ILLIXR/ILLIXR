@@ -15,6 +15,8 @@ const record_header imu_cam_record {
 	},
 };
 
+
+
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
 	offline_imu_cam(std::string name_, phonebook* pb_)
@@ -56,7 +58,7 @@ protected:
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 
 		auto start = std::chrono::steady_clock::now();
-		auto start_comptime = thread_cpu_time();
+		auto start_comptime = cpu_timer::detail::cpu_now();
 
 		time_point real_now = _m_rtc->get_start() + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
@@ -89,7 +91,7 @@ protected:
 			dataset_now,
 		});
 		auto stop = std::chrono::steady_clock::now();
-		auto stop_comptime = thread_cpu_time();
+		auto stop_comptime = cpu_timer::detail::cpu_now();
 		if (stop - start > std::chrono::milliseconds{10}) {
 			std::cerr << "\e[1;34moffline_imu_cam is slow. Ratio = " << slow_count << ":" << fast_count << ", wall time = " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() << "ms, comp time = " << std::chrono::duration_cast<std::chrono::milliseconds>(stop_comptime - start_comptime).count() << "ms, timestamp = epoch+" << std::chrono::duration_cast<std::chrono::milliseconds>(start.time_since_epoch()).count() << "ms\e[0m\n";
 			slow_count++;
@@ -113,6 +115,7 @@ private:
 	record_coalescer camera_cvtfmt_log;
 	std::ofstream _m_log;
 	std::shared_ptr<realtime_clock> _m_rtc;
+	size_t slow_count = 0, fast_count = 0;
 };
 
 PLUGIN_MAIN(offline_imu_cam)

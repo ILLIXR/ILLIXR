@@ -12,9 +12,10 @@
 #include <chrono>
 #include <exception>
 #include "phonebook.hpp"
-#include "cpu_timer.hpp"
 #include "record_logger.hpp"
+#include "cpu_timer/cpu_timer.hpp"
 #include "managed_thread.hpp"
+#include "frame_info.hpp"
 #include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
 
 namespace ILLIXR {
@@ -25,24 +26,24 @@ using plugin_id_t = std::size_t;
  * @Should be private to Switchboard.
  */
 const record_header __switchboard_callback_header {"switchboard_callback", {
-	{"plugin_id", typeid(plugin_id_t)},
-	{"topic_name", typeid(std::string)},
-	{"iteration_no", typeid(std::size_t)},
-	{"cpu_time_start", typeid(std::chrono::nanoseconds)},
-	{"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+       {"plugin_id", typeid(plugin_id_t)},
+       {"topic_name", typeid(std::string)},
+       {"iteration_no", typeid(std::size_t)},
+       {"cpu_time_start", typeid(std::chrono::nanoseconds)},
+       {"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
+       {"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+       {"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
 }};
 
 /**
  * @Should be private to Switchboard.
  */
 const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
-	{"plugin_id", typeid(plugin_id_t)},
-	{"topic_name", typeid(std::string)},
-	{"enqueued", typeid(std::size_t)},
-	{"dequeued", typeid(std::size_t)},
-	{"idle_cycles", typeid(std::size_t)},
+       {"plugin_id", typeid(plugin_id_t)},
+       {"topic_name", typeid(std::string)},
+       {"enqueued", typeid(std::size_t)},
+       {"dequeued", typeid(std::size_t)},
+       {"idle_cycles", typeid(std::size_t)},
 }};
 
 	static void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb);
@@ -188,6 +189,7 @@ private:
 			std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
 			// Note the use of timed blocking wait
 			if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
+				CPU_TIMER_TIME_BLOCK("callback");
 				// Process event
 				// Also, record and log the time
 				_m_dequeued++;
@@ -197,24 +199,11 @@ private:
 					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " flush." << std::endl;
 				}
 
-				auto cb_start_cpu_time  = thread_cpu_time();
-				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
 				_m_queue_size--;
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
 				std::cout << "subscriber for plugin " << _m_plugin_id << " finished.\n";
-				if (_m_cb_log) {
-					_m_cb_log.log(record{__switchboard_callback_header, {
-						{_m_plugin_id},
-						{_m_topic_name},
-						{_m_dequeued},
-						{cb_start_cpu_time},
-						{thread_cpu_time()},
-						{cb_start_wall_time},
-						{std::chrono::high_resolution_clock::now()},
-					}});
-				}
 			} else {
 				// Nothing to do.
 				_m_idle_cycles++;
@@ -247,7 +236,12 @@ private:
 			, _m_record_logger{record_logger}
 			, _m_cb_log{record_logger}
 			, _m_flush_on_read{flush_on_read}
-			, _m_thread{[this]{this->thread_body();}, [this]{thread_on_start(_m_thread, _m_plugin_id, pb);}, [this]{this->thread_on_stop();}}
+			, _m_thread{
+						[this]{this->thread_body();},
+						[]{},
+						[this]{this->thread_on_stop();},
+						cpu_timer::make_type_eraser<FrameInfo>(std::to_string(_m_plugin_id), _m_topic_name, 0)
+		}
 		{
 			std::cerr << "topic_subscription, topic_name: " << topic_name << ", plugin_id: " << plugin_id << "\n";
 			_m_thread.start();

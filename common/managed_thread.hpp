@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstring>
 #include <thread>
 #include <cerrno>
 #include <functional>
@@ -96,14 +97,15 @@ private:
 	std::function<void()> _m_body;
 	std::function<void()> _m_on_start;
 	std::function<void()> _m_on_stop;
+	cpu_timer::TypeEraser _m_info;
 	pid_t pid;
 	bool thread_is_started;
 	std::condition_variable thread_is_started_cv;
 	std::mutex thread_is_started_mutex;
 
-
 	void thread_main() {
 		assert(_m_body);
+		CPU_TIMER_TIME_FUNCTION_INFO(_m_info);
 		pid = get_tid();
 		{
 			std::unique_lock<std::mutex> lock {thread_is_started_mutex};
@@ -135,12 +137,18 @@ public:
 	 * @p on_start is called as the thread is joining
 	 * @p body is called in a tight loop
 	 */
-	managed_thread(std::function<void()> body, std::function<void()> on_start = std::function<void()>{}, std::function<void()> on_stop = std::function<void()>{}) noexcept
-		: _m_body{body}
-		, _m_on_start{on_start}
-		, _m_on_stop{on_stop}
-		, pid{0}
-	{ }
+       managed_thread(
+               std::function<void()> body,
+               std::function<void()> on_start = std::function<void()>{},
+               std::function<void()> on_stop = std::function<void()>{},
+               cpu_timer::TypeEraser info = cpu_timer::type_eraser_default
+       ) noexcept
+                : _m_body{body}
+                , _m_on_start{on_start}
+                , _m_on_stop{on_stop}
+				, _m_info{std::move(info)}
+				, pid{0}
+        { }
 
 	/**
 	 * @brief Stops a thread, if necessary

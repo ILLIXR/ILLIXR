@@ -1,0 +1,15 @@
+cc_library(
+    name = "cpu_timer",
+    hdrs = glob(["*.hpp"]),
+    visibility = ["//visibility:public"],
+)
+
+# bazel run //include:cpu_timer_minimal_test --cxxopt='-std=c++11' --copt='-Wall' --copt='-Wextra' --copt='-pthread' --linkopt='-pthread'
+
+cc_binary(
+    name = "cpu_timer_minimal_test",
+    srcs = glob(["*.cpp"]),
+    deps = [
+        "//include:cpu_timer",
+    ],
+)

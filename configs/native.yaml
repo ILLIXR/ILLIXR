@@ -38,7 +38,7 @@ loader:
 
   command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 $env_cmd
 
-  log_stdout: scheduled.log
+  # log_stdout: scheduled.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
 profile: opt
