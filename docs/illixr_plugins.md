@@ -1,5 +1,7 @@
 # ILLIXR plugins
 
+This page details the structure of ILLIXR's [_plugins_][41] and how they interact with each other.
+
 ## Default Plugins
 
 -   [`offline_imu_cam`][2]:
@@ -62,6 +64,7 @@
 
     Topic details:
 
+    -   *Calls* `pose_prediction`.
     -   *Publishes* `rendered_frame` on `eyebuffer` topic.
     -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
 
@@ -85,13 +88,15 @@
     Topic details:
 
     -   *Calls* `pose_prediction`.
-    -   Asynchronously *reads* `imu_raw` on `imu_raw` topic.
+    -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
+    -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
+    -   Synchronously *reads* `imu_cam` on `imu_cam` topic.
 
 -   [`audio_pipeline`][8]:
     Launches a thread for [binaural][19] recording and one for binaural playback.
     Audio output is not yet routed to the system's speakers or microphone,
         but the plugin's compute workload is still representative of a real system.
-    By default this plugin is disabled.
+    By default this plugin is enabled (see `native` [_configuration_][40]).
 
     Topic details:
 
@@ -101,12 +106,12 @@ Below this point, we will use Switchboard terminology.
 Read the [API documentation on _Switchboard_][32] for more information.
 
 <img
-    src="../dataflow.png"
+    src="../images/dataflow.dot.png"
     alt ="ILLIXR dataflow graph, showing switchboard communication"
     style="width: 400px;"
 />
 
--   In the above figure, rectangles are plugins, and cylinders are topics.
+-   In the above figure, rectangles are plugins.
     The graph is bipartitioned between these two groups.
 
 -   Solid arrows from plugins to topics represent publishing.
@@ -114,7 +119,7 @@ Read the [API documentation on _Switchboard_][32] for more information.
 -   Solid arrows from topics to plugins represent synchronous reading.
     Some action is taken for _every_ event which gets published on the topic.
 
--   Solid arrows from topics to plugins represent asynchronous reading.
+-   Dashed arrows from topics to plugins represent asynchronous reading.
     Plugin readers only need the _latest_ event on their topic.
 
 -   Imagine the topic as a trough filling with events from its publisher.
@@ -136,7 +141,6 @@ ILLIXR supports additional plugins to replace some of the default plugins.
     -   Asynchronously *reads* `hologram_input` on `hologram_in` topic.
         Hologram is too slow to run for every input,
             so the plugin implements an asynchronous reader which can drop inputs.
-    -   *Publishes* `hologram_output` on `hologram_out` topic.
 
 -   [`open_vins`][4]:
     An alternate [_SLAM_][39] ([upstream][18]) implementation that uses a MSCKF
@@ -148,7 +152,7 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
 -   [`rk4_integrator`][16]:
     Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] [_pose_][37] to
-        provide a [_fast-pose_][37] every time a new IMU sample arrives using RK4 integration.
+        provide a [_fast pose_][37] every time a new IMU sample arrives using RK4 integration.
 
     Topic details:
 
@@ -164,7 +168,7 @@ ILLIXR supports additional plugins to replace some of the default plugins.
         This tells `pose_lookup` what time to lookup.
 
 -   [`offload_data`][21]:
-    Writes [_frames_][34] output from the [_asynchronous reprojection_][35] plugin to disk for analysis.
+    Writes [_frames_][34] and [_poses_][37] output from the [_asynchronous reprojection_][35] plugin to disk for analysis.
 
     Topic details:
 
@@ -228,3 +232,4 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [38]:   glossary.md#head-mounted-display
 [39]:   glossary.md#simulataneous-localization-and-mapping
 [40]:   glossary.md#configuration
+[41]:   glossary.md#plugin

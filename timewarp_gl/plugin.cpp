@@ -51,8 +51,6 @@ public:
 		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
-		, _m_mtp{sb->publish<std::chrono::duration<double, std::nano>>("mtp")}
-		, _m_frame_age{sb->publish<std::chrono::duration<double, std::nano>>("warp_frame_age")}
 		, _m_offload_data{sb->publish<texture_pose>("texture_pose")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
@@ -93,12 +91,6 @@ private:
 
 	// Switchboard plug for publishing vsync estimates
 	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
-
-	// Switchboard plug for publishing MTP metrics
-	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_mtp;
-
-	// Switchboard plug for publishing frame stale-ness metrics
-	std::unique_ptr<writer<std::chrono::duration<double, std::nano>>> _m_frame_age;
 
 	// Switchboard plug for publishing offloaded data
 	std::unique_ptr<writer<texture_pose>> _m_offload_data;
