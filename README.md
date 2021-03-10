@@ -81,7 +81,7 @@ We would also appreciate it if you send us a citation once your work has been pu
 
 ## Getting Started and Documentation
 
-For more information, see our [Getting Started page][50].
+For more information, see our [Getting Started page][33].
 
 
 ## Acknowledgements
@@ -149,7 +149,7 @@ Wesley Darvin came up with the name for ILLIXR.
 ## Licensing Structure
 
 ILLIXR is available as open-source software under the permissive
-    [University of Illinois/NCSA Open Source License][51].
+    [University of Illinois/NCSA Open Source License][34].
 As mentioned above, ILLIXR largely consists of components developed by domain experts and
     modified for the purposes of inclusion in ILLIXR.
 However, ILLIXR does contain software developed solely by us.
@@ -177,8 +177,8 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 Note that ILLIXR's extensibility allows the source to be configured and compiled using only
     permissively licensed software.
-For more details on configuring ILLIXR, see the [ILLIXR Plugins][52] and
-    [Writing your Plugin][53] pages.
+For more details on configuring ILLIXR, see the [ILLIXR Plugins][35] and
+    [Writing your Plugin][36] pages.
 
 
 ## Get in Touch
@@ -227,10 +227,7 @@ If you would like to be a part of this effort, please contact us at
 [30]:   https://github.com/MIT-SPARK/Kimera-VIO/blob/master/LICENSE.BSD
 [31]:   https://github.com/cameron314/concurrentqueue
 [32]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
-
-[//]: # (- Internal -)
-
-[50]:   getting_started.md
-[51]:   LICENSE.md
-[52]:   illixr_plugins.md
-[53]:   writing_your_plugin.md
+[33]:   https://illixr.github.io/ILLIXR/getting_started/
+[34]:   https://illixr.github.io/ILLIXR/LICENSE/
+[35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
+[36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
