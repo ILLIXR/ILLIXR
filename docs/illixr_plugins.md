@@ -112,7 +112,6 @@ Read the [API documentation on _Switchboard_][32] for more information.
 />
 
 -   In the above figure, rectangles are plugins.
-    The graph is bipartitioned between these two groups.
 
 -   Solid arrows from plugins to topics represent publishing.
 
