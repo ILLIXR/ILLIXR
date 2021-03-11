@@ -38,10 +38,10 @@ esac
 
 ### Fetch, build and install ###
 
-# Fetch
+## Fetch
 git clone --branch "${branch_tag_name}" "${repo_url}" "${gtsam_dir}"
 
-# Build
+## Build
 cmake \
 	-S "${gtsam_dir}" \
 	-B "${gtsam_dir}/build" \
@@ -51,10 +51,9 @@ cmake \
 	-D GTSAM_USE_SYSTEM_EIGEN=OFF \
 	-D GTSAM_POSE3_EXPMAP=ON \
 	-D GTSAM_ROT3_EXPMAP=ON
+make -C "${gtsam_dir}/build" "-j${illixr_nproc}"
 
-# Install
-sudo make -C "${gtsam_dir}/build" "-j${illixr_nproc}" install
-
+## Install
 # Fix suffixed symlinks for the generated shared libaries
 if [ "${build_type}" != "Release" ]; then
     cd "${gtsam_dir}/build/gtsam"
@@ -66,3 +65,4 @@ if [ "${build_type}" != "Release" ]; then
     fi
     cd -
 fi
+sudo make -C "${gtsam_dir}/build" "-j${illixr_nproc}" install
