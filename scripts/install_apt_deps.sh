@@ -153,7 +153,6 @@ pkg_dep_list_thread=(
 
 pkg_dep_list_math=(
     gfortran
-    libeigen3-dev
     libblas-dev
     libsuitesparse-dev
     libparmetis-dev

@@ -9,8 +9,16 @@ if [ -z "${opt_dir}" ]; then
     opt_dir="/opt/ILLIXR"
 fi
 
+if [ -z "${prefix_dir}" ]; then
+    prefix_dir="/usr/local"
+fi
+
 if [ -z "${illixr_nproc}" ]; then
     illixr_nproc="1"
+fi
+
+if [ -z "${build_type}" ]; then
+    build_type="Release"
 fi
 
 
@@ -25,8 +33,6 @@ fi
 branch_tag_name="kimera-gtsam"
 repo_url="https://github.com/ILLIXR/gtsam.git"
 gtsam_dir="${opt_dir}/gtsam"
-prefix_dir="/usr/local"
-build_type="Release"
 
 case "${build_type}" in
     Release)          so_file="libgtsam.so" ;;
