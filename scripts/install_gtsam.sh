@@ -25,7 +25,7 @@ fi
 ### Helper functions ###
 
 # Source the global helper functions
-. scripts/bash_utils.sh
+. bash_utils.sh
 
 
 ### Package metadata setup ###

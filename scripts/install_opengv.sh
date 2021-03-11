@@ -25,7 +25,7 @@ fi
 ### Helper functions ###
 
 ## Source the global helper functions
-. scripts/bash_utils.sh
+. bash_utils.sh
 
 
 ### Package metadata setup ###
@@ -42,7 +42,7 @@ git clone "${repo_url}" "${opengv_dir}"
 
 ## Build
 cmake \
-	-S "${opengv_dir}"
+	-S "${opengv_dir}" \
 	-B "${opengv_dir}/build" \
 	-D CMAKE_BUILD_TYPE="${build_type}" \
 	-D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
