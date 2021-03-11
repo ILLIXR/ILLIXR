@@ -49,14 +49,14 @@ git clone --branch "${branch_tag_name}" "${repo_url}" "${gtsam_dir}"
 
 ## Build
 cmake \
-	-S "${gtsam_dir}" \
-	-B "${gtsam_dir}/build" \
-	-D CMAKE_BUILD_TYPE="${build_type}" \
-	-D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
-	-D GTSAM_WITH_TBB=OFF \
-	-D GTSAM_USE_SYSTEM_EIGEN=OFF \
-	-D GTSAM_POSE3_EXPMAP=ON \
-	-D GTSAM_ROT3_EXPMAP=ON
+    -S "${gtsam_dir}" \
+    -B "${gtsam_dir}/build" \
+    -D CMAKE_BUILD_TYPE="${build_type}" \
+    -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
+    -D GTSAM_WITH_TBB=OFF \
+    -D GTSAM_USE_SYSTEM_EIGEN=OFF \
+    -D GTSAM_POSE3_EXPMAP=ON \
+    -D GTSAM_ROT3_EXPMAP=ON
 make -C "${gtsam_dir}/build" "-j${illixr_nproc}"
 
 ## Install

@@ -42,10 +42,10 @@ git clone "${repo_url}" "${opengv_dir}"
 
 ## Build
 cmake \
-	-S "${opengv_dir}" \
-	-B "${opengv_dir}/build" \
-	-D CMAKE_BUILD_TYPE="${build_type}" \
-	-D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
+    -S "${opengv_dir}" \
+    -B "${opengv_dir}/build" \
+    -D CMAKE_BUILD_TYPE="${build_type}" \
+    -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
     -D EIGEN_INCLUDE_DIR="${eigen_include_dir}" \
     -D EIGEN_INCLUDE_DIRS="${eigen_include_dir}"
 make -C "${opengv_dir}/build" "-j${illixr_nproc}"
