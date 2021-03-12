@@ -16,6 +16,8 @@ RUN mkdir -p ${opt_dir}
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && apt-get install -y sudo
 
+COPY ./scripts/bash_utils.sh $HOME/scripts/bash_utils.sh
+
 COPY ./scripts/install_apt_deps.sh $HOME/scripts/install_apt_deps.sh
 RUN ./scripts/install_apt_deps.sh
 

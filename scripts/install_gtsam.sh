@@ -25,7 +25,7 @@ fi
 ### Helper functions ###
 
 # Source the global helper functions
-. bash_utils.sh
+. scripts/bash_utils.sh
 
 
 ### Package metadata setup ###
@@ -56,7 +56,8 @@ cmake \
     -D GTSAM_WITH_TBB=OFF \
     -D GTSAM_USE_SYSTEM_EIGEN=OFF \
     -D GTSAM_POSE3_EXPMAP=ON \
-    -D GTSAM_ROT3_EXPMAP=ON
+    -D GTSAM_ROT3_EXPMAP=ON \
+    -D GTSAM_WITH_EIGEN_UNSUPPORTED=ON
 make -C "${gtsam_dir}/build" "-j${illixr_nproc}"
 
 ## Install
