@@ -196,14 +196,12 @@ private:
 
 				if (_m_flush_on_read) {
 					_m_skipped += flush();
-					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " flush." << std::endl;
 				}
 
 				_m_queue_size--;
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
-				std::cout << "subscriber for plugin " << _m_plugin_id << " finished.\n";
 			} else {
 				// Nothing to do.
 				_m_idle_cycles++;
@@ -250,6 +248,8 @@ private:
 			if (_m_plugin_id == 1) {
 				std::cerr << "scheduler_thread.set_priority(4)\n";
 				_m_thread.set_priority(4);
+			} else if (_m_plugin_id == 3 || _m_plugin_id == 7) {
+				_m_thread.set_priority(3);
 			}/* else {
 				std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";
 				_m_thread.set_priority(2);
@@ -264,9 +264,10 @@ private:
 		 */
 		void enqueue(ptr<const event>&& this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
-				if (_m_queue_size.load() > 2050) {
-					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " is full." << std::endl;
-					abort();
+				auto r = _m_queue_size.load();
+				if (r % 2000 == 0 && r > 0) {
+					std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " has " << r << std::endl;
+					// abort();
 				}
 				_m_queue_size++;
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));

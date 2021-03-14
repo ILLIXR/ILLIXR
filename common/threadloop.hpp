@@ -114,7 +114,6 @@ protected:
 			case skip_option::run: {
 				CPU_TIMER_TIME_BLOCK("_p_one_iteration");
 				_p_one_iteration();
-				std::cout << "threadloop for plugin " << id << " finished.\n";
 				++iteration_no;
 				skip_no = 0;
 				// completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});

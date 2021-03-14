@@ -542,7 +542,8 @@ def set_cpu_freq(freq_ghz: float) -> None:
     all_cpu_set("cpufreq/scaling_min_freq", [freq] * num_cpus)
     all_cpu_set("cpufreq/scaling_max_freq", [freq] * num_cpus)
 
-    yield
-
-    all_cpu_set("cpufreq/scaling_min_freq", old_min_freqs)
-    all_cpu_set("cpufreq/scaling_max_freq", old_max_freqs)
+    try:
+        yield
+    finally:
+        all_cpu_set("cpufreq/scaling_min_freq", old_min_freqs)
+        all_cpu_set("cpufreq/scaling_max_freq", old_max_freqs)
