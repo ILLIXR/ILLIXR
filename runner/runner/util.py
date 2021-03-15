@@ -511,6 +511,7 @@ def make(
     targets: List[str],
     var_dict: Optional[Mapping[str, str]] = None,
     parallelism: Optional[int] = None,
+    env: Optional[Mapping[str, str]] = None
 ) -> None:
 
     if parallelism is None:
@@ -522,6 +523,7 @@ def make(
 
     subprocess_run(
         ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],
+        env=env,
         check=True,
         capture_output=True,
     )

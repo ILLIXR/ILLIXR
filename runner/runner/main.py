@@ -4,26 +4,25 @@ import os
 import shlex
 import tempfile
 from pathlib import Path
-from typing import Any, List, Mapping, Optional, ContextManager, BinaryIO, cast
+from typing import Any, BinaryIO, ContextManager, List, Mapping, Optional, cast
 
 import click
 import jsonschema
 import yaml
-from yamlinclude import YamlIncludeConstructor
-
 from util import (
+    cmake,
     fill_defaults,
     flatten1,
+    make,
+    noop_context,
     pathify,
     relative_to,
     replace_all,
     subprocess_run,
     threading_map,
     unflatten,
-    noop_context,
-    make,
-    cmake,
 )
+from yamlinclude import YamlIncludeConstructor
 
 # isort main.py
 # black -l 90 main.py
@@ -35,9 +34,7 @@ cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
 
 
-def clean_one_plugin(
-    config: Mapping[str, Any], plugin_config: Mapping[str, Any]
-) -> Path:
+def clean_one_plugin(config: Mapping[str, Any], plugin_config: Mapping[str, Any]) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
     path_str: str = str(path)
@@ -61,7 +58,12 @@ def build_one_plugin(
         os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
     targets = [plugin_so_name] + (["tests/run"] if test else [])
-    make(path, targets, plugin_config["config"])
+
+    ## When building using runner, enable ILLIXR integrated mode (compilation)
+    env = dict(os.environ)
+    env["ILLIXR_INTEGRATION"] = "yes"
+    make(path, targets, plugin_config["config"], env)
+
     return path / plugin_so_name
 
 
@@ -74,7 +76,7 @@ def build_runtime(
     name = "main" if suffix == "exe" else "plugin"
     runtime_name = f"{name}.{profile}.{suffix}"
     runtime_config = config["runtime"]["config"]
-    runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
+    runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
     make(runtime_path, targets, runtime_config)
     return runtime_path / runtime_name
@@ -88,11 +90,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     enable_alignment_flag = config["enable_alignment"]
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
-        [
-            plugin_config
-            for plugin_group in config["plugin_groups"]
-            for plugin_config in plugin_group["plugin_group"]
-        ],
+        [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
     actual_cmd_str = config["action"].get("command", "$cmd")
@@ -105,9 +103,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         KIMERA_ROOT=config["action"]["kimera_path"],
     )
-    env_list = [
-        f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()
-    ]
+    env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
     actual_cmd_list = list(
         flatten1(
             replace_all(
@@ -130,15 +126,14 @@ def load_native(config: Mapping[str, Any]) -> None:
     log_stdout_str = config["action"].get("log_stdout", None)
     log_stdout_ctx = cast(
         ContextManager[Optional[BinaryIO]],
-        (
-            open(log_stdout_str, "wb")
-            if (log_stdout_str is not None)
-            else noop_context(None)
-        ),
+        (open(log_stdout_str, "wb") if (log_stdout_str is not None) else noop_context(None)),
     )
     with log_stdout_ctx as log_stdout:
         subprocess_run(
-            actual_cmd_list, env_override=env_override, stdout=log_stdout, check=True,
+            actual_cmd_list,
+            env_override=env_override,
+            stdout=log_stdout,
+            check=True,
         )
 
 
@@ -151,11 +146,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
     make(Path("common"), ["tests/run"])
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
-        [
-            plugin_config
-            for plugin_group in config["plugin_groups"]
-            for plugin_config in plugin_group["plugin_group"]
-        ],
+        [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
     subprocess_run(
@@ -180,9 +171,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    openxr_app_path = pathify(
-        config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True
-    )
+    openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
@@ -213,11 +202,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     build_runtime(config, "so")
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
-        [
-            plugin_config
-            for plugin_group in config["plugin_groups"]
-            for plugin_config in plugin_group["plugin_group"]
-        ],
+        [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
 
@@ -239,11 +224,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
 def clean_project(config: Mapping[str, Any]) -> None:
     plugin_paths = threading_map(
         lambda plugin_config: clean_one_plugin(config, plugin_config),
-        [
-            plugin_config
-            for plugin_group in config["plugin_groups"]
-            for plugin_config in plugin_group["plugin_group"]
-        ],
+        [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Cleaning plugins",
     )
 
