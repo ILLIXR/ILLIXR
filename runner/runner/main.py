@@ -60,9 +60,8 @@ def build_one_plugin(
     targets = [plugin_so_name] + (["tests/run"] if test else [])
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
-    env = dict(os.environ)
-    env["ILLIXR_INTEGRATION"] = "yes"
-    make(path, targets, plugin_config["config"], env)
+    env_override: Mapping[str, str] = { "ILLIXR_INTEGRATION" : "yes" }
+    make(path, targets, plugin_config["config"], env_override=env_override)
 
     return path / plugin_so_name
 
@@ -100,6 +99,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+        ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
         ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         KIMERA_ROOT=config["action"]["kimera_path"],
     )
@@ -157,6 +157,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
             ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
@@ -216,6 +217,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"])
         ),
         check=True,
     )

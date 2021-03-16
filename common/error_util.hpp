@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 
+#include "global_module_defs.hpp"
+
 
 /**
  * @brief Parameterless macro for report_and_clear_errno.
@@ -25,6 +27,8 @@
 
 namespace ILLIXR {
 
+static const bool ENABLE_VERBOSE_ERRORS {ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_ENABLE_VERBOSE_ERRORS", "False"))};
+
 /**
  * @brief Support function to report errno values when debugging (NDEBUG).
  *
@@ -40,9 +44,11 @@ inline void report_and_clear_errno(
 ) {
 #ifndef NDEBUG
     if (errno > 0) {
-        std::cerr << "|| Errno was set: " << errno << " @ " << file << ":" << line << "[" << function << "]" << std::endl;
-        if (!msg.empty()) {
-            std::cerr << "|> Message: " << msg << std::endl;
+        if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
+            std::cerr << "|| Errno was set: " << errno << " @ " << file << ":" << line << "[" << function << "]" << std::endl;
+            if (!msg.empty()) {
+                std::cerr << "|> Message: " << msg << std::endl;
+            }
         }
         errno = 0;
     }

@@ -11,6 +11,7 @@ demo_data: demo_data/
 
 enable_offload:   False
 enable_alignment: False
+enable_verbose_errors: False
 
 action:
   name: monado
