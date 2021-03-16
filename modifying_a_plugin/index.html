@@ -142,24 +142,27 @@
 <li>
 <p>Clone the repository for the component you want to modify.
     For example:</p>
-<p><!--- language: lang-shell -->
-    git clone https://github.com/ILLIXR/audio_pipeline.git</p>
+<!--- language: lang-shell -->
+<pre><code>git clone https://github.com/ILLIXR/audio_pipeline.git
+</code></pre>
 </li>
 <li>
 <p>Modify the config file like this:</p>
 <p><strong>Original Config</strong></p>
-<p><!--- language: lang-yaml -->
-    plugin_group:
-      - path: timewarp_gl/
-      - name: audio
-        path:
-          git_repo: https://github.com/ILLIXR/audio_pipeline.git
-          version: 3433bb452b2ec661c9d3ef65d9cf3a2805e94cdc</p>
+<!--- language: lang-yaml -->
+<pre><code>plugin_group:
+  - path: timewarp_gl/
+  - name: audio
+    path:
+      git_repo: https://github.com/ILLIXR/audio_pipeline.git
+      version: 3433bb452b2ec661c9d3ef65d9cf3a2805e94cdc
+</code></pre>
 <p><strong>New Config</strong></p>
-<p><!--- language: lang-yaml -->
-    plugin_group:
-      - path: timewarp_gl/
-      - name: /PATH/TO/LOCAL/AUDIO-PLUGIN</p>
+<!--- language: lang-yaml -->
+<pre><code>plugin_group:
+  - path: timewarp_gl/
+  - name: /PATH/TO/LOCAL/AUDIO-PLUGIN
+</code></pre>
 </li>
 <li>
 <p>See the instructions on <a href="../building_illixr/">Building ILLIXR</a> to learn how to run ILLIXR.</p>

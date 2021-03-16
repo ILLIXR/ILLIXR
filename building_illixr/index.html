@@ -234,34 +234,38 @@ Consider separating the site-specific configuration options into its own file.</
 <li>
 <p><strong>Git repo</strong>:
     A git repository.</p>
-<p><!--- language: lang-yaml -->
-    - git_repo: https://github.com/user/repo.git
-      version: master # branch name, SHA-256, or tag</p>
+<!--- language: lang-yaml -->
+<pre><code>- git_repo: https://github.com/user/repo.git
+  version: master # branch name, SHA-256, or tag
+</code></pre>
 </li>
 <li>
 <p><strong>Download URL</strong>:
     A resource downloaded from the internet.</p>
-<p><!--- language: lang-yaml -->
-    - download_url: https://example.com/file.txt</p>
+<!--- language: lang-yaml -->
+<pre><code>- download_url: https://example.com/file.txt
+</code></pre>
 </li>
 <li>
 <p><strong>Zip archive</strong>:
     A path that points within the contents of a zip archive.
     Note that <code>archive_path</code> is itself a path (recursive).</p>
-<p><!--- language: lang-yaml -->
-    - archive_path: path/to/archive.zip
-    - archive_path:
-        download_url: https://example.com/file.zip</p>
+<!--- language: lang-yaml -->
+<pre><code>- archive_path: path/to/archive.zip
+- archive_path:
+    download_url: https://example.com/file.zip
+</code></pre>
 </li>
 <li>
 <p><strong>Complex path</strong>:
     A hard-coded path relative to another path (recursive).
     This is useful to specify a <em>subdirectory</em> of a git repository or zip archive.</p>
-<p><!--- language: lang-yaml -->
-    - subpath: path/within/git_repo
-      relative_to:
-        git_repo: ...
-        version: ...</p>
+<!--- language: lang-yaml -->
+<pre><code>- subpath: path/within/git_repo
+  relative_to:
+    git_repo: ...
+    version: ...
+</code></pre>
 </li>
 </ul>
 <h2 id="rationale">Rationale</h2>
