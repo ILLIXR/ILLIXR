@@ -147,18 +147,21 @@
 <ol>
 <li>
 <p><strong>Clone the repository</strong>:</p>
-<p><!--- language: lang-shell -->
-    git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR</p>
+<!--- language: lang-shell -->
+<pre><code>git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
+</code></pre>
 <p><strong><em>Note for ILLIXR versions older than <code>v2.2.0</code></em></strong>:</p>
 <p>Update the submodules.
 Submodules are git repositories inside a git repository that need to be pulled down separately:</p>
-<p><!--- language: lang-shell -->
-    git submodule update --init --recursive</p>
+<!--- language: lang-shell -->
+<pre><code>git submodule update --init --recursive
+</code></pre>
 </li>
 <li>
 <p><strong>Install dependencies</strong>:</p>
-<p><!--- language: lang-shell -->
-    ./install_deps.sh</p>
+<!--- language: lang-shell -->
+<pre><code>./install_deps.sh
+</code></pre>
 <p>This script installs some Ubuntu/Debian packages and builds several dependencies from source:</p>
 </li>
 <li>
@@ -168,20 +171,24 @@ For more details on the runner and the config files, see <a href="../building_il
 </li>
 <li>
 <p><strong>Build and run ILLIXR without Monado</strong>:</p>
-<p><!--- language: lang-shell -->
-    ./runner.sh configs/native.yaml</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/native.yaml
+</code></pre>
 <p>If you are running ILLIXR without a graphical environment,
     try ILLIXR headlessly using <a href="../glossary/#xvfb">Xvfb</a>:</p>
-<p><!--- language: lang-shell -->
-    ./runner.sh configs/headless.yaml</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/headless.yaml
+</code></pre>
 </li>
 <li>
 <p><strong>To clean up after building, run</strong>:</p>
-<p><!--- language: lang-shell -->
-    ./runner.sh configs/clean.yaml</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/clean.yaml
+</code></pre>
 <p>Or simply:</p>
-<p><!--- language: lang-shell -->
-    ./clean.sh</p>
+<!--- language: lang-shell -->
+<pre><code>./clean.sh
+</code></pre>
 </li>
 </ol>
 <h2 id="illixr-runtime-with-monado">ILLIXR Runtime with Monado</h2>
@@ -191,8 +198,9 @@ Because of a low-level driver issue, Monado only supports Ubuntu 18.04+.</p>
 <ol>
 <li>
 <p>Compile and run:</p>
-<p><!--- language: lang-shell -->
-    ./runner.sh configs/monado.yaml</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/monado.yaml
+</code></pre>
 </li>
 </ol>
 <h2 id="illixr-under-virtualization">ILLIXR under Virtualization</h2>

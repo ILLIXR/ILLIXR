@@ -157,7 +157,7 @@ When debugging locally, we recommend using either <code>gdb</code> or <code>valg
 <h2 id="debugging-pull-requests-or-with-a-clean-environment">Debugging Pull Requests or with a Clean Environment</h2>
 <h3 id="1-get-a-docker-image">1. Get a Docker Image</h3>
 <h4 id="from-your-local-project">From your Local Project</h4>
-<p>From the root directory in your project, run <code>docker build --tag &lt;repository&gt;:&lt;tag&gt;.</code>
+<p>From the root directory in your project, run <code>docker build --tag &lt;repository&gt;:&lt;tag&gt; .</code>.
 For this project's main module, you can use something like <code>illixr-illixr</code> for the <code>&lt;repository&gt;</code> value,
     and your current branch name or release version as the <code>&lt;tag&gt;</code> value.</p>
 <p>Note that building the docker image can take some time (up to 40min on a 4-core desktop machine) and uses somewhere between 2-4GB of RAM.</p>

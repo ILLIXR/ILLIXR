@@ -159,9 +159,10 @@ This provides the necessary targets and uses the compiler <code>$(CXX)</code>,
 </li>
 <li>
 <p>Libraries can be added by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>, for example</p>
-<p><!--- language: lang-makefile -->
-    LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
-    CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)</p>
+<!--- language: lang-makefile -->
+<pre><code>LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
+CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
+</code></pre>
 </li>
 <li>
 <p>See the source for the exact flags.</p>
@@ -197,8 +198,9 @@ You can also replace any existing functionality this way.</p>
 <li>
 <p>Create a <code>Makefile</code> with the following contents.
     See <a href="../building_illixr/">Building ILLIXR</a> for more details and alternative setups.</p>
-<p><!--- language: lang-makefile -->
-    include common.mk</p>
+<!--- language: lang-makefile -->
+<pre><code>include common.mk
+</code></pre>
 </li>
 </ul>
 </li>
@@ -219,11 +221,12 @@ You can also replace any existing functionality this way.</p>
 </li>
 <li>
 <p>Write a file called <code>plugin.cpp</code> with this body, replacing every instance of <code>plugin_name</code>:</p>
-<p><!--- language: lang-cpp -->
-    #include "common/phonebook.hpp"
-    #include "common/plugin.hpp"
-    #include "common/threadloop.hpp"</p>
-<pre><code>using namespace ILLIXR;
+<!--- language: lang-cpp -->
+<pre><code>#include "common/phonebook.hpp"
+#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
+
+using namespace ILLIXR;
 
 /// Inherit from `plugin` if you don't need the threadloop
 class plugin_name : public threadloop {
@@ -247,16 +250,17 @@ PLUGIN_MAIN(plugin_name);
     For example, if the new component is a SLAM then the old SLAM needs to be removed from
         the config.
     See <a href="../building_illixr/">Building ILLIXR</a> for more details on the config file.</p>
-<p><!--- language: lang-yaml -->
-    plugin_groups:
-      - !include "rt_slam_plugins.yaml"
-      - !include "core_plugins.yaml"
-      - plugin_group:
-         - path: /PATH/TO/NEW/PLUGIN
-         - path: ground_truth_slam/
-         - path: gldemo/
-         - path: debugview/</p>
-<pre><code>data:
+<!--- language: lang-yaml -->
+<pre><code>plugin_groups:
+  - !include "rt_slam_plugins.yaml"
+  - !include "core_plugins.yaml"
+  - plugin_group:
+     - path: /PATH/TO/NEW/PLUGIN
+     - path: ground_truth_slam/
+     - path: gldemo/
+     - path: debugview/
+
+data:
   subpath: mav0
   relative_to:
   archive_path:
@@ -270,8 +274,9 @@ PLUGIN_MAIN(plugin_name);
 </li>
 <li>
 <p>Finally, run ILLIXR with your new plugin with the following command:</p>
-<p><!--- language: lang-shell -->
-    ./runner.sh configs/native.yaml</p>
+<!--- language: lang-shell -->
+<pre><code>./runner.sh configs/native.yaml
+</code></pre>
 </li>
 <li>
 <p>This is all that is required to be a plugin which can be loaded by Spindle in
@@ -284,11 +289,12 @@ PLUGIN_MAIN(plugin_name);
 Then we query <a href="../api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics).
 We will read <code>topic1</code>, write to <code>topic2</code>, and schedule computation on <code>topic 3</code>.
 See the API documentation for <code>phonebook</code> and <code>switchboard</code> for more details.</p>
-<p><!--- language: lang-cpp -->
-    #include "common/phonebook.hpp"
-    #include "common/plugin.hpp"
-    #include "common/threadloop.hpp"</p>
-<pre><code>/* When datatypes have to be common across plugins
+<!--- language: lang-cpp -->
+<pre><code>#include "common/phonebook.hpp"
+#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
+
+/* When datatypes have to be common across plugins
  *     (e.g. a phonebook service or switchboard topic),
  *      they are defined in this header,
  *      which is accessible to all plugins.

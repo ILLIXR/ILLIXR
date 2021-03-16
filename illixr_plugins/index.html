@@ -138,99 +138,215 @@
             <div class="section">
               
                 <h1 id="illixr-plugins">ILLIXR plugins</h1>
+<p>This page details the structure of ILLIXR's <a href="../glossary/#plugin"><em>plugins</em></a> and how they interact with each other.</p>
 <h2 id="default-plugins">Default Plugins</h2>
 <ul>
 <li>
 <p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu_cam"><code>offline_imu_cam</code></a>:
-    Reads <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> data and images from files on disk, emulating a real sensor on the headset
+    Reads <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> data and images from files on disk, emulating a real sensor on the <a href="../glossary/#head-mounted-display"><em>headset</em></a>
         (feeds the application input measurements with timing similar to an actual IMU).</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Publishes</em> <code>imu_cam_type</code> on <code>imu_cam</code> topic.</li>
+</ul>
 </li>
 <li>
 <p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/ground_truth_slam"><code>ground_truth_slam</code></a>:
-    Reads the <a href="../glossary/#eye-buffers"><em>ground truth</em></a> from the same dataset as the <code>offline_imu_cam</code> plugin.
-    This data can be compared against the measurements from <code>offline_imu_cam</code> for accuracy.
+    Reads the <a href="../glossary/#framebuffer"><em>ground truth</em></a> from the same dataset as the <code>offline_imu_cam</code> plugin.
+    Ground truth data can be compared against the measurements from <code>offline_imu_cam</code> for accuracy.
     Timing information is taken from the <code>offline_imu_cam</code> measurements/data.</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Publishes</em> <code>pose_type</code> on <code>true_pose</code> topic.</li>
+<li>Asynchronously <em>reads</em> <code>imu_cam_type</code> on <code>imu_cam</code> topic.</li>
+</ul>
 </li>
 <li>
 <p><a href="https://github.com/ILLIXR/Kimera-VIO"><code>kimera_vio</code></a>:
-    Runs Kimera-VIO (<a href="https://github.com/MIT-SPARK/Kimera-VIO">upstream</a>) on the input, and outputs the headset's pose.
-    In practice, this publishes a fairly <a href="../glossary/#pose"><em>slow pose</em></a>, so <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> integration
-        and pose prediction is required to infer a <a href="../glossary/#pose"><em>fast pose</em></a>.</p>
+    Runs Kimera-VIO (<a href="https://github.com/MIT-SPARK/Kimera-VIO">upstream</a>) on the input, and outputs the <a href="../glossary/#head-mounted-display"><em>headset's</em></a> <a href="../glossary/#pose"><em>pose</em></a>.
+    In practice, the Kimera-VIO plugin publishes a fairly <a href="../glossary/#pose"><em>slow pose</em></a>, so <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> integration
+        and <a href="../glossary/#pose"><em>pose prediction</em></a> is required to infer a <a href="../glossary/#pose"><em>fast pose</em></a>.</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Publishes</em> <code>pose_type</code> on <code>slow_pose</code> topic.</li>
+<li><em>Publishes</em> <code>imu_integrator_input</code> on <code>imu_integrator_input</code> topic.</li>
+<li>Synchronously <em>reads</em>/<em>subscribes</em> to <code>imu_cam_type</code> on <code>imu_cam</code> topic.</li>
+</ul>
 </li>
 <li>
 <p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/gtsam_integrator"><code>gtsam_integrator</code></a>:
-    Integrates over all <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> samples since the last published SLAM pose to provide a
-        <a href="../glossary/#pose"><em>fast pose</em></a> every time a new IMU sample arrives using
-        the GTSAM library (<a href="https://gtsam.org/">upstream</a>).</p>
+    Integrates over all <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> samples since the last published <a href="../glossary/#simulataneous-localization-and-mapping"><em>SLAM</em></a> pose to provide a
+        <a href="../glossary/#pose"><em>fast pose</em></a> every time a new IMU sample arrives using the GTSAM library (<a href="https://gtsam.org/">upstream</a>).</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Publishes</em> <code>imu_raw_type</code> on <code>imu_raw</code> topic.</li>
+<li>Synchronously <em>reads/subscribes</em> to <code>imu_cam_type</code> on <code>imu_cam</code> topic.</li>
+<li>Asynchronously <em>reads</em> <code>imu_integrator_input</code> on <code>imu_integrator_input</code> topic.</li>
+</ul>
 </li>
 <li>
 <p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/pose_prediction"><code>pose_prediction</code></a>:
-    Uses the latest IMU value to predict a pose for a future point in time.</p>
+    Uses the latest <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> value to predict a <a href="../glossary/#pose"><em>pose</em></a> for a future point in time.
+    Implements the <code>pose_prediction</code> service (defined in <code>common</code>),
+        so poses can be served directly to other plugins.</p>
+<p>Topic details:</p>
+<ul>
+<li>Asynchronously <em>reads</em> <code>pose_type</code> on <code>slow_pose</code> topic,
+        but it is only used as a fallback.</li>
+<li>Asynchronously <em>reads</em> <code>imu_raw</code> on <code>imu_raw</code> topic.</li>
+<li>Asynchronously <em>reads</em> <code>pose_type</code> on <code>true_pose</code> topic,
+        but it is only used if the client asks for the true pose.</li>
+<li>Asynchronously <em>reads</em> <code>time_type</code> on <code>vsync_estimate</code> topic.
+    This tells <code>pose_predict</code> what time to estimate for.</li>
+</ul>
 </li>
 <li>
 <p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/gldemo"><code>gldemo</code></a>:
-    Renders a static scene (into left and right <a href="../glossary/#eye-buffers"><em>eye buffers</em></a>) given the pose
+    Renders a static scene (into left and right <a href="../glossary/#framebuffer"><em>eye buffers</em></a>) given the <a href="../glossary/#pose"><em>pose</em></a>
         from <code>pose_prediction</code>.</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Calls</em> <code>pose_prediction</code>.</li>
+<li><em>Publishes</em> <code>rendered_frame</code> on <code>eyebuffer</code> topic.</li>
+<li>Asynchronously <em>reads</em> <code>time_type</code> on <code>vsync_estimate</code> topic.</li>
+</ul>
 </li>
 <li>
 <p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/timewarp_gl"><code>timewarp_gl</code></a>:
-    <a href="../glossary/#eye-buffers">Asynchronous reprojection</a> of the <a href="../glossary/#eye-buffers"><em>eye buffers</em></a>.</p>
+    <a href="../glossary/#asynchronous-reprojection">Asynchronous reprojection</a> of the <a href="../glossary/#framebuffer"><em>eye buffers</em></a>.
+    The timewarp ends just after <a href="../glossary/#framebuffer"><em>vsync</em></a>, so it can deduce when the next vsync will be.</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Calls</em> <code>pose_prediction</code>.</li>
+<li>Asynchronously <em>reads</em> <code>rendered_frame</code> on <code>eyebuffer</code> topic.</li>
+<li><em>Publishes</em> <code>type_type</code> on <code>vsync_estimate</code>.</li>
+<li><em>Publishes</em> <code>hologram_input</code> on <code>hologram_in</code> topic.</li>
+<li><em>Publishes</em> <code>texture_pose</code> on <code>texture_pose</code> topic if <code>ILLIXR_OFFLOAD_ENABLE</code> is set in the env.</li>
+</ul>
 </li>
 <li>
-<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/debugview"><code>debugview</code></a>: Renders a frame for debug information.</p>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/debugview"><code>debugview</code></a>:
+    Renders incoming <a href="../glossary/#framebuffer"><em>frames</em></a> from the graphics pipeline for debugging live executions of the application.</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Calls</em> <code>pose_prediction</code>.</li>
+<li>Asynchronously <em>reads</em> <code>fast_pose</code> on <code>imu_raw</code> topic. (<a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> biases are unused).</li>
+<li>Asynchronously <em>reads</em> <code>slow_pose</code> on <code>slow_pose</code> topic.</li>
+<li>Synchronously <em>reads</em> <code>imu_cam</code> on <code>imu_cam</code> topic.</li>
+</ul>
 </li>
 <li>
-<p><a href="https://github.com/ILLIXR/audio_pipeline/tree/illixr-integration"><code>audio</code></a>:
-    <strong><em>TODO.</em></strong>
-    By default this is disabled, since it requires an NVIDIA GPU.</p>
-</li>
-<li>
-<p><a href="https://github.com/ILLIXR/HOTlab/tree/illixr-integration"><code>hologram</code></a>:
-    <strong><em>TODO.</em></strong>
-    By default this is disabled, since it requires an NVIDIA GPU.</p>
+<p><a href="https://github.com/ILLIXR/audio_pipeline/tree/illixr-integration"><code>audio_pipeline</code></a>:
+    Launches a thread for <a href="https://en.wikipedia.org/wiki/Binaural_recording">binaural</a> recording and one for binaural playback.
+    Audio output is not yet routed to the system's speakers or microphone,
+        but the plugin's compute workload is still representative of a real system.
+    By default this plugin is enabled (see <code>native</code> <a href="../glossary/#configuration"><em>configuration</em></a>).</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Calls</em> <code>pose_prediction</code>.</li>
+</ul>
 </li>
 </ul>
 <p>Below this point, we will use Switchboard terminology.
 Read the <a href="../api/html/classILLIXR_1_1switchboard.html">API documentation on <em>Switchboard</em></a> for more information.</p>
 <p><img
-    src="../dataflow.dot.png"
-    alt ="ILLIXR dataflow graph generated by dataflow.dot"
+    src="../images/dataflow.dot.png"
+    alt ="ILLIXR dataflow graph, showing switchboard communication"
     style="width: 400px;"
 /></p>
 <ul>
 <li>
-<p>In the above figure, rectangles are plugins, cylinders are topics
-        (the graph is bipartitioned between these two gorups).</p>
+<p>In the above figure, rectangles are plugins.</p>
 </li>
 <li>
 <p>Solid arrows from plugins to topics represent publishing.</p>
 </li>
 <li>
 <p>Solid arrows from topics to plugins represent synchronous reading.
-    They take some action for <em>every</em> event which gets published on the topic.</p>
+    Some action is taken for <em>every</em> event which gets published on the topic.</p>
 </li>
 <li>
-<p>Solid arrows from topics to plugins represent asynchronous reading.
-    They need to know just the <em>latest</em> event on their topic.</p>
+<p>Dashed arrows from topics to plugins represent asynchronous reading.
+    Plugin readers only need the <em>latest</em> event on their topic.</p>
 </li>
 <li>
-<p>Imagine the topic as a trough filing with events from its publisher,
-        being drained by its synchronous readers (AKA subscribers),
-        while asynchronous readres just skim from the top.</p>
+<p>Imagine the topic as a trough filling with events from its publisher.
+    Synchronous readers (AKA subscribers) drain the trough,
+        while asynchronous readers just skim fresh events off the top of the trough.</p>
 </li>
 </ul>
 <p>See <a href="../writing_your_plugin/">Writing Your Plugin</a> to extend ILLIXR.</p>
 <h2 id="other-supported-plugins">Other Supported Plugins</h2>
 <p>ILLIXR supports additional plugins to replace some of the default plugins.</p>
 <ul>
-<li><a href="https://github.com/ILLIXR/open_vins"><code>open_vins</code></a>:
-    This is an alternate SLAM (<a href="https://docs.openvins.com">upstream</a>) that uses a MSCKF
-        (Multi-State Constrained Kalman Filter) to determine poses via camera/IMU.</li>
-<li><a href="https://github.com/ILLIXR/ILLIXR/tree/master/rk4_integrator"><code>rk4_integrator</code></a>:
-    Integrates over all IMU samples since the last published SLAM pose to
-        provide a fast-pose everytime a new IMU sample arrives using RK4 integration.</li>
+<li>
+<p><a href="https://github.com/ILLIXR/HOTlab/tree/illixr-integration"><code>hologram</code></a>:
+    Adapts the eyebuffer for use on a holographic display.
+    By default, this plugin is disabled, since an NVIDIA GPU is currently required.</p>
+<p>Topic details:</p>
+<ul>
+<li>Asynchronously <em>reads</em> <code>hologram_input</code> on <code>hologram_in</code> topic.
+    Hologram is too slow to run for every input,
+        so the plugin implements an asynchronous reader which can drop inputs.</li>
 </ul>
-<p>See <a href="../building_illixr/">Building ILLIXR</a> for more information on adding plugins to a config file.</p>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/open_vins"><code>open_vins</code></a>:
+    An alternate <a href="../glossary/#simulataneous-localization-and-mapping"><em>SLAM</em></a> (<a href="https://docs.openvins.com">upstream</a>) implementation that uses a MSCKF
+        (Multi-State Constrained Kalman Filter) to determine poses via camera/<a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a>.</p>
+<p>Topic details:</p>
+<ul>
+<li>Same interface as <code>Kimera-VIO</code>.</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/rk4_integrator"><code>rk4_integrator</code></a>:
+    Integrates over all <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> samples since the last published <a href="../glossary/#simulataneous-localization-and-mapping"><em>SLAM</em></a> <a href="../glossary/#pose"><em>pose</em></a> to
+        provide a <a href="../glossary/#pose"><em>fast pose</em></a> every time a new IMU sample arrives using RK4 integration.</p>
+<p>Topic details:</p>
+<ul>
+<li>Same interface as <code>gtsam_integrator</code>.</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/pose_lookup"><code>pose_lookup</code></a>:
+    Implements the <code>pose_predict</code> service, but uses <a href="../glossary/#ground-truth"><em>ground truth</em></a> from the dataset.
+    The plugin peeks "into the future" to determine what the exact <a href="../glossary/#pose"><em>pose</em></a> will be at a certain time.</p>
+<p>Topic details:</p>
+<ul>
+<li>Asynchronously <em>reads</em> <code>time_type</code> on <code>vsync_estimate</code>.
+    This tells <code>pose_lookup</code> what time to lookup.</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/offload_data"><code>offload_data</code></a>:
+    Writes <a href="../glossary/#framebuffer"><em>frames</em></a> and <a href="../glossary/#pose"><em>poses</em></a> output from the <a href="../glossary/#asynchronous-reprojection"><em>asynchronous reprojection</em></a> plugin to disk for analysis.</p>
+<p>Topic details:</p>
+<ul>
+<li>Asynchronously <em>reads</em> <code>texture_image</code> on <code>texture_image</code>.</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/zed"><code>zed</code></a>:
+    Reads images and <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> measurements from the <a href="https://www.stereolabs.com/zed-mini">ZED Mini</a>.
+    Unlike <code>offline_imu_cam</code>, <code>zed</code> additionally has RGB and <a href="../glossary/#framebuffer"><em>depth</em></a> data.
+    Note that this plugin implements two threads: one for the camera, and one for the IMU.</p>
+<p>Topic details:</p>
+<ul>
+<li><em>Publishes</em> <code>imu_cam_type</code> on <code>imu_cam</code>.</li>
+<li><em>Publishes</em> <code>rgb_depth_type</code> on <code>rgb_depth</code>.</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/ILLIXR/ILLIXR/tree/master/realsense"><code>realsense</code></a>:
+    Reads images and <a href="../glossary/#inertial-measurement-unit"><em>IMU</em></a> measurements from the <a href="https://www.intelrealsense.com/depth-camera-d435">Intel Realsense</a>.</p>
+<p>Topic details:</p>
+<ul>
+<li>Same interface as <code>zed</code>.</li>
+</ul>
+</li>
+</ul>
+<p>See <a href="../building_illixr/">Building ILLIXR</a> for more information on adding plugins to a <a href="../glossary/#configuration"><em>config</em></a> file.</p>
               
             </div>
           </div>
