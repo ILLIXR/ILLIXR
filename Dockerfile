@@ -33,6 +33,9 @@ RUN ./scripts/install_gtest.sh
 COPY ./scripts/install_openxr.sh $HOME/scripts/install_openxr.sh
 RUN ./scripts/install_openxr.sh
 
+COPY ./scripts/install_eigen.sh $HOME/scripts/install_eigen.sh
+RUN ./scripts/install_eigen.sh
+
 COPY ./scripts/install_gtsam.sh $HOME/scripts/install_gtsam.sh
 RUN ./scripts/install_gtsam.sh
 

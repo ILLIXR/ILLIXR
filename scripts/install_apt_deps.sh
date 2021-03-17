@@ -3,26 +3,18 @@
 #--- Script for installing binary packages via apt ---#
 
 
-### Default imported variables setup ###
+### Setup ###
 
-if [ -z "${use_realsense}" ]; then
-    use_realsense="no"
-fi
+## Source the default values for imported variables
+. scripts/default_values.sh
 
-if [ -z "${use_docker}" ]; then
-    use_docker="no"
-fi
+## Source the global helper functions
+. scripts/bash_utils.sh
 
-if [ -z "${use_cuda}" ]; then
-    use_cuda="no"
-fi
-
-
-### Initial setup ###
-
-# Source environment variables describing the current OS distribution
+## Source environment variables describing the current OS distribution
 . /etc/os-release
 
+## Collect system and distribution information
 kernel_version="$(uname -r)"
 arch_name="$(uname -m)"
 distro_version="${VERSION_ID}"
@@ -33,9 +25,6 @@ echo "Detected OS: '${PRETTY_NAME}' on kernel version '${kernel_version}' on arc
 
 
 ### Helper functions ###
-
-# Source the global helper functions
-. scripts/bash_utils.sh
 
 # Add a repository and the necessary keys required given a list of key servers,
 # a repository url, and a repository component name
