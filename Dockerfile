@@ -22,11 +22,11 @@ COPY ./scripts/system_utils.sh $HOME/scripts/system_utils.sh
 COPY ./scripts/install_apt_deps.sh $HOME/scripts/install_apt_deps.sh
 RUN ./scripts/install_apt_deps.sh
 
-COPY ./scripts/install_eigen.sh $HOME/scripts/install_eigen.sh
-RUN ./scripts/install_eigen.sh
-
 COPY ./scripts/install_opencv.sh $HOME/scripts/install_opencv.sh
 RUN ./scripts/install_opencv.sh
+
+COPY ./scripts/install_eigen.sh $HOME/scripts/install_eigen.sh
+RUN ./scripts/install_eigen.sh
 
 COPY ./scripts/install_vulkan_headers.sh $HOME/scripts/install_vulkan_headers.sh
 RUN ./scripts/install_vulkan_headers.sh
