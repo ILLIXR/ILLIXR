@@ -84,8 +84,8 @@ then
     sudo chown $USER: "${opt_dir}"
 
     echo "* The user will now be prompted to install the following dependencies and optional features:"
-    echo "  Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan, gtest, qemu, OpenXR-SDK, "
-    echo "  eigen, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)"
+    echo "  Binary packages (via apt-get), Docker, CUDA, eigen, OpenCV, Vulkan, gtest, qemu, OpenXR-SDK, "
+    echo "  gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)"
 
     if y_or_n "Next: Add apt-get sources list/keys and install necessary packages"; then
         if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
@@ -98,6 +98,10 @@ then
             export use_cuda="yes"
         fi
         . ./scripts/install_apt_deps.sh
+    fi
+
+    if [ ! -d "${opt_dir}/eigen" ] && y_or_n "Next: Install eigen (Eigen3) from source"; then
+        . ./scripts/install_eigen.sh
     fi
 
     if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
@@ -130,10 +134,6 @@ then
 
     if [ ! -d "${temp_dir}/OpenXR-SDK" ] && y_or_n "Next: Install OpenXR SDK from source"; then
         . ./scripts/install_openxr.sh
-    fi
-
-    if [ ! -d "${opt_dir}/eigen" ] && y_or_n "Next: Install eigen (Eigen3) from source"; then
-        . ./scripts/install_eigen.sh
     fi
 
     if [ ! -d "${opt_dir}/gtsam" ] && y_or_n "Next: Install gtsam from source"; then
