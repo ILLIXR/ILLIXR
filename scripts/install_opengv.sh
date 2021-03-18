@@ -9,7 +9,7 @@
 . scripts/default_values.sh
 
 ## Source the global helper functions
-. scripts/bash_utils.sh
+. scripts/system_utils.sh
 
 
 ### Package metadata setup ###
@@ -33,7 +33,7 @@ cmake \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" #\
     #-D EIGEN_INCLUDE_DIR="${eigen_include_dir}" \
     #-D EIGEN_INCLUDE_DIRS="${eigen_include_dir}"
-make -C "${build_dir}" "-j${illixr_nproc}"
+make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
-sudo make -C "${build_dir}" "-j${illixr_nproc}" install
+sudo make -C "${build_dir}" -j "${illixr_nproc}" install

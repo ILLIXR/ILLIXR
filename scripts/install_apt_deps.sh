@@ -9,7 +9,7 @@
 . scripts/default_values.sh
 
 ## Source the global helper functions
-. scripts/bash_utils.sh
+. scripts/system_utils.sh
 
 ## Source environment variables describing the current OS distribution
 . /etc/os-release

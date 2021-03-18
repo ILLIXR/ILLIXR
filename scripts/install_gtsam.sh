@@ -9,7 +9,7 @@
 . scripts/default_values.sh
 
 ## Source the global helper functions
-. scripts/bash_utils.sh
+. scripts/system_utils.sh
 
 
 ### Package metadata setup ###
@@ -43,7 +43,7 @@ cmake \
     -D GTSAM_POSE3_EXPMAP=ON \
     -D GTSAM_ROT3_EXPMAP=ON \
     -D GTSAM_WITH_EIGEN_UNSUPPORTED=ON
-make -C "${build_dir}" "-j${illixr_nproc}"
+make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
 # Fix suffixed symlinks for the generated shared libaries
@@ -57,4 +57,4 @@ if [ "${build_type}" != "Release" ]; then
     fi
     cd -
 fi
-sudo make -C "${build_dir}" "-j${illixr_nproc}" install
+sudo make -C "${build_dir}" -j "${illixr_nproc}" install
