@@ -44,7 +44,7 @@ function detect_packages()
                 ## Command successful => Package found
                 local pkg_msg="Removing conflicting system package(s) '${pkg_list}'."
                 echo "${pkg_msg}"
-                sudo apt-get remove "${pkg_list}"
+                sudo apt-get remove -y "${pkg_list}"
             fi
             ;;
         "${PKG_MODE_MISSING_NONFATAL}")
@@ -52,7 +52,7 @@ function detect_packages()
                 ## Command failed => Package missing
                 local pkg_msg="Installing missing system package(s) '${pkg_list}'."
                 echo "${pkg_msg}"
-                sudo apt-get install "${pkg_list}"
+                sudo apt-get install -y "${pkg_list}"
             fi
             ;;
         *)
