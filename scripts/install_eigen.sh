@@ -23,8 +23,9 @@ build_dir="${eigen_dir}/build"
 ### Checks ###
 
 ## Assert no system packages will be overwritten by this install
+## If present, remove the conflicting packages before proceeding
 pkg_list_eigen="libeigen3-dev"
-detect_packages "${pkg_list_eigen}" "${PKG_MODE_FOUND_FATAL}"
+detect_packages "${pkg_list_eigen}" "${PKG_MODE_FOUND_NONFATAL}"
 
 
 ### Fetch, build and install ###
