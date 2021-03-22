@@ -110,7 +110,7 @@ Why are the above steps necessary?
 
 1.  Using rebases keeps the `master` and feature branch histories streamlined (minimizing branching),
         thus making it easier to compose feature branches for integration testing.
-    See this article on [rebasing public brances][3] for more information.
+    See this article on [rebasing public branches][3] for more information.
 
 If your PR has not seen activity from the ILLIXR team after a long period of time (e.g., 2 weeks),
     feel free to contact the team directly on the GitHub Issue Conversation tab or at
