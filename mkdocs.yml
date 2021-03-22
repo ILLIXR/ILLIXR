@@ -18,6 +18,7 @@ nav:
         - 'ILLIXR Glossary (Version 2)': glossary.md
         - 'ILLIXR API (Version 2)': api/html/annotated.html
         - 'ILLIXR License (Version 2)': LICENSE.md
+        - 'Contributing Guidelines (Version 2)': CONTRIBUTING.md
     - 'Legacy Documentation':
         - 'ILLIXR (Version 1)': legacy/v1/index.md
         - 'Audio Pipeline (Version 1)': legacy/v1/README-audio.md
