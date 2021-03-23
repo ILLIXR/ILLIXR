@@ -163,26 +163,23 @@ namespace ILLIXR {
 	// Array of left eyes, array of right eyes
 	// This more closely matches the format used by Monado
 	struct rendered_frame : public switchboard::event {
-		GLuint texture_handles[2]; // Does not change between swaps in swapchain
-		GLuint swap_indices[2]; // Which element of the swapchain
+		std::array<GLuint, 2> texture_handles; // Does not change between swaps in swapchain
+		std::array<GLuint, 2> swap_indices; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
 		RelativeClock::time_point sample_time;
 		RelativeClock::time_point render_time;
 		rendered_frame() { }
-		rendered_frame(GLuint texture_handles_[2],
-		               GLuint swap_indices_[2],
+		rendered_frame(std::array<GLuint, 2>&& texture_handles_,
+		               std::array<GLuint, 2>&& swap_indices_,
 		               fast_pose_type render_pose_,
                        RelativeClock::time_point sample_time_,
                        RelativeClock::time_point render_time_)
-            : render_pose(render_pose_)
+            : texture_handles{std::move(texture_handles_)}
+			, swap_indices{std::move(swap_indices_)}
+			, render_pose(render_pose_)
             , sample_time(sample_time_)
             , render_time(render_time_)
-        {
-            texture_handles[0]  = texture_handles_[0];
-            texture_handles[1]  = texture_handles_[1];
-            swap_indices[0]     = swap_indices_[0];
-            swap_indices[1]     = swap_indices_[1];
-        }
+        { }
 	};
 
 	struct hologram_input : public switchboard::event {
