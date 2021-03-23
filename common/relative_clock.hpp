@@ -47,6 +47,10 @@ private:
 	bool _m_started = false;
 };
 
+constexpr duration freq2period(double fps) {
+	return duration{size_t{std::chrono::nanoseconds{std::chrono::seconds{1}}.count() / fps}}
+}
+
 using time_point = RelativeClock::time_point;
 using duration = RelativeClock::duration;
 
