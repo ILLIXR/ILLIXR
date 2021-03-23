@@ -215,7 +215,7 @@ namespace ILLIXR {
 
     struct texture_pose : public switchboard::event {
         int seq; /// TODO: Should texture_pose.seq be a long long
-        int offload_time;
+		RelativeClock::duration offload_time;
         unsigned char *image;
         RelativeClock::time_point pose_time;
         Eigen::Vector3f position;
@@ -224,7 +224,7 @@ namespace ILLIXR {
         texture_pose() { }
         texture_pose(
             int seq_,
-            int offload_time_,
+            RelativeClock::duration offload_time_,
             unsigned char *image_,
             RelativeClock::time_point pose_time_,
             Eigen::Vector3f position_,
