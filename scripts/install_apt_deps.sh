@@ -93,7 +93,6 @@ pkg_dep_list_gl=(
     glslang-tools
     freeglut3-dev
     libglew-dev
-    libglfw3-dev
     libvirglrenderer-dev
 ) # End list
 
