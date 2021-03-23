@@ -9,6 +9,7 @@
 #include "common/switchboard.hpp"
 #include "stdout_record_logger.hpp"
 #include "noop_record_logger.hpp"
+#include "common/relative_clock.hpp"
 #include "sqlite_record_logger.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/error_util.hpp"
@@ -24,6 +25,7 @@ public:
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, appGLCtx));
 		pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
+		pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
@@ -54,6 +56,7 @@ public:
 		});
 
 		// This actually kicks off the plugins
+		pb.lookup_impl<RelativeClock>()->start();
 		pb.lookup_impl<Stoplight>()->signal_ready();
 	}
 
