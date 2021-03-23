@@ -7,9 +7,12 @@
 #include <thread>
 #include <shared_mutex>
 #include <experimental/filesystem>
+#include <cerrno>
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "sqlite3pp/sqlite3pp.hpp"
 #include "common/record_logger.hpp"
+#include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 /**
  * There are many SQLite3 wrapper libraries.
@@ -22,20 +25,30 @@ namespace ILLIXR {
 class sqlite_thread {
 public:
 	sqlite3pp::database prep_db() {
+        assert(errno == 0 && "Errno should not be set at start of prep_db");
+
 		if (!std::experimental::filesystem::exists(dir)) {
 			std::experimental::filesystem::create_directory(dir);
 		}
 
-		std::string path = dir / (table_name + std::string{".sqlite"});
-		return sqlite3pp::database{path.c_str()};
+		const std::string path = dir / (table_name + std::string{".sqlite"});
+
+		RAC_ERRNO_MSG("sqlite_record_logger before sqlite3pp::database");
+        sqlite3pp::database db{path.c_str()};
+        RAC_ERRNO_MSG("sqlite_record_logger after sqlite3pp::database");
+
+		return db;
 	}
 
 	std::string prep_insert_str() {
+		assert(errno == 0 && "Errno should not be set at start of prep_insert_str");
+
 		std::string drop_table_string = std::string{"DROP TABLE IF EXISTS "} + table_name + std::string{";"};
 		db.execute(drop_table_string.c_str());
+		RAC_ERRNO_MSG("sqlite_record_logger after drop table execute.");
 
 		std::string create_table_string = std::string{"CREATE TABLE "} + table_name + std::string{"("};
-		for (unsigned i = 0; i < rh.get_columns(); ++i) {
+		for (unsigned int i = 0; i < rh.get_columns(); ++i) {
 			create_table_string += rh.get_column_name(i) + std::string{" "};
 			if (false) {
 			} else if (rh.get_column_type(i) == typeid(std::size_t)) {
@@ -57,10 +70,13 @@ public:
 		}
 		create_table_string.erase(create_table_string.size() - 2);
 		create_table_string += std::string{");"};
+
+		assert(errno == 0 && "Errno should not be set before create table execute");
 		db.execute(create_table_string.c_str());
+		RAC_ERRNO_MSG("sqlite_record_logger after create table execute");
 
 		std::string insert_string = std::string{"INSERT INTO "} + table_name + std::string{" VALUES ("};
-		for (unsigned i = 0; i < rh.get_columns(); ++i) {
+		for (unsigned int i = 0; i < rh.get_columns(); ++i) {
 			insert_string += std::string{"?"} + std::to_string(i+1) + std::string{", "};
 		}
 		insert_string.erase(insert_string.size() - 2);
@@ -115,33 +131,35 @@ public:
 			// This currently has to be 'reinterpreted' for every iteration.
 			sqlite3pp::command cmd{db, insert_str.c_str()};
 			const record& r = record_batch[i];
-			for (unsigned i = 0; i < rh.get_columns(); ++i) {
+			for (unsigned int j = 0; j < rh.get_columns(); ++j) {
 				/*
 				  If you get a `std::bad_any_cast` here, make sure the user didn't lie about record.get_record_header().
 				  The types there should be the same as those in record.get_values().
 				*/
 				if (false) {
-				} else if (rh.get_column_type(i) == typeid(std::size_t)) {
-					cmd.bind(i+1, static_cast<long long>(r.get_value<std::size_t>(i)));
-				} else if (rh.get_column_type(i) == typeid(bool)) {
-					cmd.bind(i+1, static_cast<long long>(r.get_value<bool>(i)));
-				} else if (rh.get_column_type(i) == typeid(double)) {
-					cmd.bind(i+1, r.get_value<double>(i));
-				} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
-					cmd.bind(i+1, static_cast<long long>(r.get_value<std::chrono::nanoseconds>(i).count()));
-				} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
-					auto val = r.get_value<std::chrono::high_resolution_clock::time_point>(i).time_since_epoch();
-					cmd.bind(i+1, static_cast<long long>(std::chrono::duration_cast<std::chrono::nanoseconds>(val).count()));
-				} else if (rh.get_column_type(i) == typeid(std::string)) {
-					// r.get_value<std::string>(i) returns a std::string temporary
+				} else if (rh.get_column_type(j) == typeid(std::size_t)) {
+					cmd.bind(j+1, static_cast<long long>(r.get_value<std::size_t>(j)));
+				} else if (rh.get_column_type(j) == typeid(bool)) {
+					cmd.bind(j+1, static_cast<long long>(r.get_value<bool>(j)));
+				} else if (rh.get_column_type(j) == typeid(double)) {
+					cmd.bind(j+1, r.get_value<double>(j));
+				} else if (rh.get_column_type(j) == typeid(std::chrono::nanoseconds)) {
+					cmd.bind(j+1, static_cast<long long>(r.get_value<std::chrono::nanoseconds>(j).count()));
+				} else if (rh.get_column_type(j) == typeid(std::chrono::high_resolution_clock::time_point)) {
+					auto val = r.get_value<std::chrono::high_resolution_clock::time_point>(j).time_since_epoch();
+					cmd.bind(j+1, static_cast<long long>(std::chrono::duration_cast<std::chrono::nanoseconds>(val).count()));
+				} else if (rh.get_column_type(j) == typeid(std::string)) {
+					// r.get_value<std::string>(j) returns a std::string temporary
 					// c_str() returns a pointer into that std::string temporary
 					// Therefore, need to copy.
-					cmd.bind(i+1, r.get_value<std::string>(i).c_str(), sqlite3pp::copy);
+					cmd.bind(j+1, r.get_value<std::string>(j).c_str(), sqlite3pp::copy);
 				} else {
-					throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(i).name()} + std::string{" not implemented"}};
+					throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(j).name()} + std::string{" not implemented"}};
 				}
 			}
+			assert(errno == 0 && "Errno should not be set before process cmd execute");
 			cmd.execute();
+			RAC_ERRNO_MSG("sqlite_record_logger after process cmd execute");
 		}
 		xct.commit();
 	}

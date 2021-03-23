@@ -131,6 +131,9 @@ properties:
   enable_alignment:
     type: boolean
     description: Flag to activate the ground-truth alignment.
+  enable_verbose_errors:
+    type: boolean
+    description: Flag to activate verbose logging in 'common/error_util.hpp'
   profile:
     default: dbg
     type: string

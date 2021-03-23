@@ -4,7 +4,10 @@ This is the file where default values are defined
 
 #pragma once
 
-namespace ILLIXR{
+#include <string>
+
+
+namespace ILLIXR {
 	
 #ifndef FB_WIDTH
 #define FB_WIDTH FB_WIDTH
@@ -38,4 +41,4 @@ std::string getenv_or(std::string var, std::string default_) {
     }
 }
 
-}
+} /// namespace ILLIXR

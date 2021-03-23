@@ -3,11 +3,14 @@
 #include <opencv2/opencv.hpp>
 #include <cmath>
 #include <zed_opencv.hpp>
+#include <cerrno>
+#include <cassert>
 
 //ILLIXR includes
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -101,6 +104,8 @@ protected:
     }
 
     virtual void _p_one_iteration() override {
+        assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
+
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
@@ -118,6 +123,8 @@ protected:
             new cv::Mat{depth_ocv},
             iteration_no,
         });
+
+        RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
 };
 
@@ -160,6 +167,8 @@ protected:
     }
 
     virtual void _p_one_iteration() override {
+        assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
+
         // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
         // Time as ullong (nanoseconds)
@@ -214,6 +223,8 @@ protected:
 		_m_imu_integrator->put(imu_integrator_params);
 
         last_imu_ts = sensors_data.imu.timestamp;
+
+        RAC_ERRNO_MSG("zed_imu at end of _p_one_iteration");
     }
 
 private:

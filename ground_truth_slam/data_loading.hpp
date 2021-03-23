@@ -11,6 +11,8 @@
 
 #include "csv_iterator.hpp"
 
+#include "common/error_util.hpp"
+
 // timestamp
 // p_RS_R_x [m], p_RS_R_y [m], p_RS_R_z [m]
 // q_RS_w [], q_RS_x [], q_RS_y [], q_RS_z []
@@ -27,8 +29,7 @@ std::map<ullong, sensor_types>
 load_data() {
 	const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
 	if (!illixr_data_c_str) {
-		std::cerr << "Please define ILLIXR_DATA" << std::endl;
-		abort();
+        ILLIXR::abort("Please define ILLIXR_DATA");
 	}
 	const std::string subpath = "/state_groundtruth_estimate0/data.csv";
 	std::string illixr_data = std::string{illixr_data_c_str};
@@ -38,8 +39,10 @@ load_data() {
 	std::ifstream gt_file {illixr_data + subpath};
 
 	if (!gt_file.good()) {
-		std::cerr << "${ILLIXR_DATA}" << subpath << " (" << illixr_data << subpath << ") is not a good path" << std::endl;
-		abort();
+		std::cerr << "${ILLIXR_DATA}" << subpath
+		          << " (" << illixr_data << subpath << ") is not a good path"
+		          << std::endl;
+        ILLIXR::abort();
 	}
 
 	for(CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {

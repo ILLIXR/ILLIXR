@@ -156,7 +156,6 @@ public:
 
     }
 
-
 private:
     const std::shared_ptr<switchboard> sb;
     mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};

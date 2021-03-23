@@ -4,6 +4,7 @@
 #include "common/phonebook.hpp"
 #include "common/data_format.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 #include <iomanip>
 #include <fstream>
@@ -137,8 +138,7 @@ private:
 			is_success = stbi_write_png(image_name.c_str(), ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, 3, container_it->image, 0);
 			if (!is_success)
 			{
-				std::cerr << "Image create failed !!! " << std::endl;
-				abort();
+                ILLIXR::abort("Image create failed !!! ");
 			}
 
 			// Write pose

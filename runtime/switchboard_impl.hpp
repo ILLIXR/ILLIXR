@@ -1,5 +1,6 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/error_util.hpp"
 #include <atomic>
 #include <vector>
 #include <iostream>
@@ -209,7 +210,11 @@ namespace ILLIXR {
 			for (const auto& pair : _m_callbacks) {
 				auto cb_start_cpu_time  = thread_cpu_time();
 				auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
+				
+				assert(errno == 0);
 				pair.second(event);
+				assert(errno == 0);
+
 				_m_cb_log.log(record{__switchboard_callback_header, {
 					{pair.first},
 					{_m_iteration_no},
@@ -292,12 +297,16 @@ namespace ILLIXR {
 
 			record_coalescer check_queues {_m_record_logger};
 			std::pair<std::string, const void*> t;
-
 			auto check_queues_start_cpu_time  = thread_cpu_time();
 			auto check_queues_start_wall_time = std::chrono::high_resolution_clock::now();
 			while (!_m_terminate.load()) {
 				const std::chrono::milliseconds max_wait_time {50};
-				if (_m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count())) {
+				
+				assert(errno == 0 && "Errno should not be set before wait_dequeue_timed");
+				bool has_data = _m_queue.wait_dequeue_timed(t, std::chrono::duration_cast<std::chrono::microseconds>(max_wait_time).count());
+				RAC_ERRNO_MSG("switchboard_impl after wait_dequeue_timed");
+				
+				if (has_data) {
 					const std::shared_lock lock{_m_registry_lock};
 					check_queues.log(record{__switchboard_check_queues_header, {
 						{iteration_no},
@@ -323,7 +332,8 @@ namespace ILLIXR {
 			while (_m_queue.try_dequeue(t)) {
 				_m_registry.at(t.first).mark_unprocessed(t.second);
 			}
-			std::cerr << "Drained switchboard" << std::endl;
+
+			std::cout << "Drained switchboard" << std::endl;
 		}
 
 		topic& try_emplace(const std::string& topic_name, std::size_t ty) {

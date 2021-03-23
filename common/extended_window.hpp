@@ -6,31 +6,34 @@
 #include <GL/glx.h>
 #include <GL/glu.h>
 #include "phonebook.hpp"
+#include "global_module_defs.hpp"
+#include "error_util.hpp"
 
 //GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
 #define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
 typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
-namespace ILLIXR{
+namespace ILLIXR {
     class xlib_gl_extended_window : public phonebook::service {
     public:
-        int                     width;
-        int                     height;
-        Display                 *dpy;
-        Window                  win;
-        GLXContext              glc;
+        int        width;
+        int        height;
+        Display    *dpy;
+        Window     win;
+        GLXContext glc;
         xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context){
             width = _width;
             height = _height;
 
 #ifndef NDEBUG
-            printf("Opening display\n");
+            std::cout << "Opening display" << std::endl;
 #endif
-            dpy = XOpenDisplay(NULL);
+            assert(errno == 0 && "Errno should not be set at start of xlib_gl_extended_window constructor");
+
+            dpy = XOpenDisplay(nullptr);
             if (!dpy) {
-                printf("\n\tcannot connect to X server\n\n");
-                exit(1);
+                ILLIXR::abort("Cannot connect to X server");
             } else {
 				// Apparently, XOpenDisplay's _true_ error indication is whether dpy is nullptr.
 				// https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
@@ -41,7 +44,6 @@ namespace ILLIXR{
             }
 
             Window root = DefaultRootWindow(dpy);
-
             // Get a matching FB config
             static int visual_attribs[] =
             {
@@ -60,19 +62,21 @@ namespace ILLIXR{
             };
 
 #ifndef NDEBUG
-            printf("Getting matching framebuffer configs\n");
+            std::cout << "Getting matching framebuffer configs" << std::endl;
 #endif
+            assert(errno == 0 && "Errno should not be set before glXChooseFBConfig");
+
             int fbcount;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
             if (!fbc) {
-                printf("\n\tFailed to retrieve a framebuffer config\n\n");
-                exit(1);
+                ILLIXR::abort("Failed to retrieve a framebuffer config");
             }
+
 #ifndef NDEBUG
-            printf("Found %d matching FB configs\n", fbcount);
+            std::cout << "Found " << fbcount << " matching FB configs" << std::endl;
 
             // Pick the FB config/visual with the most samples per pixel
-            printf("Getting XVisualInfos\n");
+            std::cout << "Getting XVisualInfos" << std::endl;
 #endif
             int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
             int i;
@@ -83,9 +87,11 @@ namespace ILLIXR{
                     glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf);
                     glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLES       , &samples );
 #ifndef NDEBUG
-                    printf("  Matching fbconfig %d, visual ID 0x%2lx: SAMPLE_BUFFERS = %d,"
-                           " SAMPLES = %d\n",
-                           i, vi -> visualid, samp_buf, samples);
+                    std::cout << "Matching fbconfig " << i
+                              << ", visual ID 0x" << std::hex << vi->visualid << std::dec
+                              << ": SAMPLE_BUFFERS = " << samp_buf
+                              << ", SAMPLES = " << samples
+                              << std::endl;
 #endif
                     if (best_fbc < 0 || (samp_buf && samples > best_num_samp))
                       best_fbc = i, best_num_samp = samples;
@@ -103,14 +109,14 @@ namespace ILLIXR{
             // Get a visual
             XVisualInfo *vi = glXGetVisualFromFBConfig(dpy, bestFbc);
 #ifndef NDEBUG
-            printf("Chose visual ID = 0x%lx\n", vi->visualid);
+            std::cout << "Chose visual ID = 0x" << std::hex << vi->visualid << std::dec << std::endl;
 
-            printf("Creating colormap\n");
+            std::cout << "Creating colormap" << std::endl;
 #endif
             Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 
 #ifndef NDEBUG
-            printf("Creating window\n");
+            std::cout << "Creating window" << std::endl;
 #endif
             XSetWindowAttributes attributes;
             attributes.colormap = cmap;
@@ -120,8 +126,7 @@ namespace ILLIXR{
             win = XCreateWindow(dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
                 CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
             if (!win) {
-                printf("\n\tFailed to create window\n\n");
-                exit(1);
+                ILLIXR::abort("Failed to create window");
             }
             XStoreName(dpy, win, "ILLIXR Extended Window");
             XMapWindow(dpy, win);
@@ -130,7 +135,7 @@ namespace ILLIXR{
             XFree(vi);
 
 #ifndef NDEBUG
-            printf("Creating context\n");
+            std::cout << "Creating context" << std::endl;
 #endif
             glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
             glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)
@@ -140,10 +145,13 @@ namespace ILLIXR{
                 GLX_CONTEXT_MINOR_VERSION_ARB, 3,
                 None
             };
+
             glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
 
             // Sync to process errors
+            RAC_ERRNO_MSG("extended_window before XSync");
             XSync(dpy, false);
+            RAC_ERRNO_MSG("extended_window after XSync");
 
 #ifndef NDEBUG
             // Doing glXMakeCurrent here makes a third thread, the runtime one, enter the mix, and
@@ -156,15 +164,15 @@ namespace ILLIXR{
             // this is just for debugging and does not affect any functionality.
 
             /*
-            glXMakeCurrent(dpy, win, glc);
+            const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(dpy, win, glc));
             int major = 0, minor = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &major);
             glGetIntegerv(GL_MINOR_VERSION, &minor);
-            printf("OpenGL context created\nVersion %d.%d\nVendor %s\nRenderer %s\n",
-                major, minor,
-                glGetString(GL_VENDOR),
-                glGetString(GL_RENDERER));
-            glXMakeCurrent(dpy, None, NULL);
+            std::cout << "OpenGL context created" << std::endl
+                      << "Version " << major << "." << minor << std::endl
+                      << "Vender " << glGetString(GL_VENDOR) << std::endl
+                      << "Renderer " << glGetString(GL_RENDERER) << std::endl;
+            const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
             */
 #endif
         }

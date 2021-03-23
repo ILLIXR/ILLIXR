@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <optional>
+#include <cassert>
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -9,6 +10,8 @@
 #include <eigen3/Eigen/Dense>
 
 #include "csv_iterator.hpp"
+#include "common/error_util.hpp"
+
 
 typedef unsigned long long ullong;
 
@@ -23,17 +26,8 @@ public:
 		: _m_path(path)
 	{ }
 	std::unique_ptr<cv::Mat> load() const {
-		auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_COLOR)}};
-		/* TODO: make this load in grayscale */
+		auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_GRAYSCALE)}};
 		assert(!img->empty());
-
-		// Sam's note: I am moving cvtColor into slam2
-		// This way, all of the cv calls are being done from the same thread.
-		// This way, I can print an "iteration no" (like a frame number) from inside OpenCV
-		// Otherwise, this could be on it i+1, while slam2 is on it i.
-
-		// cv::cvtColor(*img, *img, cv::COLOR_BGR2GRAY);
-		// assert(!img->empty());
 		return img;
 	}
 
@@ -53,7 +47,7 @@ load_data() {
 	const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
 	if (!illixr_data_c_str) {
 		std::cerr << "Please define ILLIXR_DATA" << std::endl;
-		abort();
+        ILLIXR::abort();
 	}
 	std::string illixr_data = std::string{illixr_data_c_str};
 
@@ -63,9 +57,9 @@ load_data() {
 	std::ifstream imu0_file {illixr_data + imu0_subpath};
 	if (!imu0_file.good()) {
 		std::cerr << "${ILLIXR_DATA}" << imu0_subpath << " (" << illixr_data << imu0_subpath << ") is not a good path" << std::endl;
-		abort();
+        ILLIXR::abort();
 	}
-	for(CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
+	for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		Eigen::Vector3d av {std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
 		Eigen::Vector3d la {std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
@@ -76,9 +70,9 @@ load_data() {
 	std::ifstream cam0_file {illixr_data + cam0_subpath};
 	if (!cam0_file.good()) {
 		std::cerr << "${ILLIXR_DATA}" << cam0_subpath << " (" << illixr_data << cam0_subpath << ") is not a good path" << std::endl;
-		abort();
+        ILLIXR::abort();
 	}
-	for(CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
+	for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
 	}
@@ -87,9 +81,9 @@ load_data() {
 	std::ifstream cam1_file {illixr_data + cam1_subpath};
 	if (!cam1_file.good()) {
 		std::cerr << "${ILLIXR_DATA}" << cam1_subpath << " (" << illixr_data << cam1_subpath << ") is not a good path" << std::endl;
-		abort();
+        ILLIXR::abort();
 	}
-	for(CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
+	for (CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
 		ullong t = std::stoull(row[0]);
 		std::string fname = row[1];
 		data[t].cam1 = {illixr_data + "/cam1/data/" + row[1]};

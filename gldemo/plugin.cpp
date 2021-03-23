@@ -4,7 +4,6 @@
 #include <thread>
 #include <cmath>
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
@@ -15,6 +14,7 @@
 #include "common/gl_util/obj.hpp"
 #include "shaders/demo_shader.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -28,6 +28,7 @@ static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 // These are two eye textures; however, each eye texture
 // represnts a swapchain. eyeTextures[0] is a swapchain of
 // left eyes, and eyeTextures[1] is a swapchain of right eyes
+
 
 class gldemo : public threadloop {
 public:
@@ -51,7 +52,7 @@ public:
 	{
 		using namespace std::chrono_literals;
 		const time_type* next_vsync = vsync->get_latest_ro();
-		time_type now = std::chrono::high_resolution_clock::now();
+		time_type now = std::chrono::system_clock::now();
 
 		time_type wait_time;
 
@@ -65,8 +66,8 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-			std::chrono::duration<double, std::milli> vsync_in = *next_vsync - now;
-			printf("\033[1;32m[GL DEMO APP]\033[0m First vsync is in %4fms\n", vsync_in.count());
+			const double vsync_in = std::chrono::duration_cast<std::chrono::milliseconds>(*next_vsync - now).count();
+            std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
 		}
 #endif
 		
@@ -88,8 +89,8 @@ public:
 
 #ifndef NDEBUG
 			if (log_count > LOG_PERIOD) {
-				std::chrono::duration<double, std::milli> wait_in = wait_time - now;
-				printf("\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in %4fms\n", wait_in.count());
+                const double wait_in = std::chrono::duration_cast<std::chrono::milliseconds>(wait_time - now).count();
+                std::cout << "\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in " << wait_in << "ms" << std::endl;
 			}
 #endif
 			// Perform the sleep.
@@ -99,15 +100,20 @@ public:
 		} else {
 #ifndef NDEBUG
 			if (log_count > LOG_PERIOD) {
-				printf("\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately.");
+                std::cout << "\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately." << std::endl;
 			}
 #endif
 		}
 	}
 
 	void _p_thread_setup() override {
-		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
+
+		// Note: glXMakeContextCurrent must be called from the thread which will be using it.
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result && "glXMakeCurrent should not fail");
+
+		RAC_ERRNO_MSG("gldemo at end of _p_thread_setup");
 	}
 
 	void _p_one_iteration() override {
@@ -118,7 +124,6 @@ public:
 			wait_vsync();
 
 			glUseProgram(demoShaderProgram);
-
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
 
 			// Determine which set of eye textures to be using.
@@ -127,8 +132,10 @@ public:
 			glUseProgram(demoShaderProgram);
 			glBindVertexArray(demo_vao);
 			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
+
 			glClearDepth(1);
 
 			// We'll calculate this model view matrix
@@ -179,17 +186,29 @@ public:
 				glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
 				glBindTexture(GL_TEXTURE_2D, 0);
 				glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+
+				RAC_ERRNO_MSG("gldemo before glClear");
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                RAC_ERRNO_MSG("gldemo after glClear");
 				
 				demoscene.Draw();
 			}
 
 #ifndef NDEBUG
+            const std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+            const std::chrono::nanoseconds time_since_last = time_now - time_last;
+            const double time_since_last_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_since_last).count();
+            const double fps = 1000.0 / time_since_last_d;
+
 			if (log_count > LOG_PERIOD) {
-				printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
+                std::cout << "\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer " << buffer_to_use
+                          << ", frametime: " << time_since_last_d
+                          << ", FPS: " << fps
+                          << std::endl;
 			}
 #endif
-			lastTime = glfwGetTime();
+            time_last = std::chrono::system_clock::now();
+
 			glFlush();
 
 			// Publish our submitted frame handle to Switchboard!
@@ -201,9 +220,9 @@ public:
 
 			frame->render_pose = fast_pose;
 			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-			frame->render_time = std::chrono::high_resolution_clock::now();
+			frame->render_time = std::chrono::system_clock::now();
 			_m_eyebuffer->put(frame);
-			lastFrameTime = std::chrono::high_resolution_clock::now();
+			lastFrameTime = std::chrono::system_clock::now();
 		}
 
 #ifndef NDEBUG
@@ -213,6 +232,8 @@ public:
 			log_count++;
 		}
 #endif
+
+        RAC_ERRNO_MSG("gldemo at end of _p_one_iteration");
 	}
 
 #ifndef NDEBUG
@@ -243,7 +264,6 @@ private:
 	// we'll keep it atomic just in case for now!
 	std::atomic<int> which_buffer = 0;
 
-
 	GLuint demo_vao;
 	GLuint demoShaderProgram;
 
@@ -258,7 +278,7 @@ private:
 
 	Eigen::Matrix4f basicProjection;
 
-	double lastTime;
+    std::chrono::system_clock::time_point time_last;
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 
@@ -277,37 +297,45 @@ private:
 
 		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
 
-		if(glGetError()){
-			return 0;
-		} else {
+        const GLenum gl_err = glGetError();
+		if (gl_err != GL_NO_ERROR) {
+			RAC_ERRNO_MSG("[gldemo] failed error check in createSharedEyebuffer");
 			return 1;
+		} else {
+			RAC_ERRNO();
+			return 0;
 		}
 	}
 
 	void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_target){
+        assert(errno == 0 && "Errno should not be set at the start of createFBO");
+
 		// Create a framebuffer to draw some things to the eye texture
 		glGenFramebuffers(1, fbo);
+
 		// Bind the FBO as the active framebuffer.
     	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
-
 		glGenRenderbuffers(1, depth_target);
     	glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
     	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
     	//glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+
     	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		// Bind eyebuffer texture
-		printf("About to bind eyebuffer texture, texture handle: %d\n", *texture_handle);
+        std::cout << "About to bind eyebuffer texture, texture handle: " << *texture_handle << std::endl;
 
 		glBindTexture(GL_TEXTURE_2D, *texture_handle);
 		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
     	glBindTexture(GL_TEXTURE_2D, 0);
+
 		// attach a renderbuffer to depth attachment point
     	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *depth_target);
 
-		if(glGetError()){
-        	printf("displayCB, error after creating fbo\n");
+		if (glGetError()) {
+            std::cerr << "displayCB, error after creating fbo" << std::endl;
     	}
+        RAC_ERRNO_MSG("gldemo after calling glGetError");
 
 		// Unbind FBO.
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -317,23 +345,23 @@ public:
 	/* compatibility interface */
 
 	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
-	// This may be changed later, but it really doesn't matter for this purpose because
-	// it will be replaced by a real, Monado-interfaced application.
 	virtual void start() override {
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		assert(errno == 0 && "Errno should not be set at start of gldemo start function");
 
-		// Initialize the GLFW library, still need it to get time
-		if(!glfwInit()){
-			printf("Failed to initialize glfw\n");
-		}
+        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result_0 && "glXMakeCurrent should not fail");
+		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
+
 		// Init and verify GLEW
-		if(glewInit()){
-			printf("Failed to init GLEW\n");
-			exit(0);
+		const GLenum glew_err = glewInit();
+		if (glew_err != GLEW_OK) {
+            std::cerr << "[gldemo] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
+            ILLIXR::abort("[gldemo] Failed to initialize GLEW");
 		}
+		RAC_ERRNO_MSG("gldemo after glewInit");
 
-		glEnable              ( GL_DEBUG_OUTPUT );
-		glDebugMessageCallback( MessageCallback, 0 );
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback(MessageCallback, 0);
 
 		// Create two shared eye textures.
 		// Note; each "eye texture" actually contains two eyes.
@@ -342,8 +370,12 @@ public:
 		createSharedEyebuffer(&(eyeTextures[0]));
 		createSharedEyebuffer(&(eyeTextures[1]));
 
+        assert(errno == 0 && "Errno should not be set after creating eye buffers");
+
 		// Initialize FBO and depth targets, attaching to the frame handle
 		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
+
+        assert(errno == 0 && "Errno should not be set after creating FBO");
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);
@@ -363,20 +395,23 @@ public:
 		// Load/initialize the demo scene.
 
 		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-		if(obj_dir == NULL) {
-			std::cerr << "Please define ILLIXR_DEMO_DATA." << std::endl;
-			abort();
+		if (obj_dir == nullptr) {
+            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
 		}
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
-		
+
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 
-		glXMakeCurrent(xwin->dpy, None, NULL);
+		RAC_ERRNO_MSG("gldemo before glXMakeCurrent");
+        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
+		assert(gl_result_1 && "glXMakeCurrent should not fail");
+		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
-		lastTime = glfwGetTime();
-
+        time_last = std::chrono::system_clock::now();
 		threadloop::start();
+
+		RAC_ERRNO_MSG("gldemo at end of start()");
 	}
 };
 

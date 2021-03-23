@@ -11,6 +11,7 @@
 #include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
 #include "common/global_module_defs.hpp"
+#include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
@@ -24,16 +25,24 @@ public:
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
+        assert(errno == 0 && "Errno should not be set before creating any dynamic library");
+
 		std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
+		    RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
 			return dynamic_lib::create(so_path);
 		});
+
+        RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
 		std::vector<plugin_factory> plugin_factories;
 		std::transform(libs.cbegin(), libs.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
 			return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
 		});
 
+        RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
+
 		std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins), [this](const auto& plugin_factory) {
+		    RAC_ERRNO_MSG("runtime_impl before building the plugin");
 			return std::unique_ptr<plugin>{plugin_factory(&pb)};
 		});
 
@@ -70,8 +79,7 @@ public:
 
 	virtual ~runtime_impl() override {
 		if (!terminate.load()) {
-			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
-			abort();
+            ILLIXR::abort("You didn't call stop() before destructing this plugin.");
 		}
 		// This will be re-enabled in #225
 		// assert(errno == 0 && "errno was set during run. Maybe spurious?");
@@ -97,5 +105,6 @@ private:
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
+    assert(errno == 0 && "Errno should not be set before creating the runtime");
 	return new runtime_impl{appGLCtx};
 }

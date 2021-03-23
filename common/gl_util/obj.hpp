@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../error_util.hpp"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "lib/tiny_obj_loader.h"
 
@@ -24,6 +26,8 @@ namespace ILLIXR {
 		bool has_texture;
 
 		void Draw() {
+            assert(errno == 0 && "Errno should not be set at start of Draw");
+
 			glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*)offsetof(vertex_t, position));
@@ -39,6 +43,8 @@ namespace ILLIXR {
 			if(has_texture){
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
+
+            RAC_ERRNO_MSG("gl_util/obj at end of Draw");
 		}
 	};
 
@@ -60,7 +66,8 @@ namespace ILLIXR {
 		// the OBJ file, along with any material files and textures.
 		//
 		// obj_filename is the actual .obj file to be loaded.
-		ObjScene(std::string obj_dir, std::string obj_filename) {
+		ObjScene(const std::string& obj_dir, const std::string& obj_filename) {
+		    assert(errno == 0 && "Errno should not be set at start of ObjScene");
 
 			// If any of the following procedures fail to correctly load,
 			// we'll set this flag false (for the relevant operation)
@@ -69,29 +76,26 @@ namespace ILLIXR {
 
 			std::string warn, err;
 
-			if(obj_dir.back() != '/') {
-				obj_dir += '/';
-			}
-
-			std::string obj_file = obj_dir + obj_filename;
+			const std::string obj_dir_term = (obj_dir.back() == '/') ? obj_dir : obj_dir + "/";
+			const std::string obj_file = obj_dir_term + obj_filename;
 
 			// We pass obj_dir as the last argument to LoadObj to let us load
 			// any material (.mtl) files associated with the .obj in the same directory.
-			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_dir.c_str());
-			if(!warn.empty()){
+			bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_dir_term.c_str());
+			if (!warn.empty()) {
 #ifndef NDEBUG
 				std::cout << "[OBJ WARN] " << warn << std::endl;
 #endif
 			}
-			if(!err.empty()){
-				std::cout << "[OBJ ERROR] " << err << std::endl;
+			if (!err.empty()) {
+				std::cerr << "[OBJ ERROR] " << err << std::endl;
 				successfully_loaded_model = false;
-				abort();
+                ILLIXR::abort();
 			}
-			if(!success){
-				std::cout << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
+			if (!success) {
+				std::cerr << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
 				successfully_loaded_model = false;
-				abort();
+                ILLIXR::abort();
 			} else {
 				
 				// OBJ file successfully loaded.
@@ -106,12 +110,12 @@ namespace ILLIXR {
 						// If we haven't loaded the texture yet...
 						if(textures.find(mp->diffuse_texname) == textures.end()){
 							
-							std::string filename = obj_dir + mp->diffuse_texname;
+							const std::string filename = obj_dir_term + mp->diffuse_texname;
 
 							int x,y,n;
 							unsigned char* texture_data = stbi_load(filename.c_str(), &x, &y, &n, 0);
 
-							if(texture_data == NULL){
+							if(texture_data == nullptr){
 #ifndef NDEBUG								
 								std::cout << "[OBJ TEXTURE ERROR] Loading of " << filename << "failed." << std::endl;
 #endif								
@@ -237,6 +241,7 @@ namespace ILLIXR {
 				}
 			}
 			
+			RAC_ERRNO_MSG("gl_util/obj at bottom of ObjScene constructor");
 		}
 
 		void Draw() {

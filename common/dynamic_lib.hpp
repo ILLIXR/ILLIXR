@@ -6,6 +6,9 @@
 #include <string>
 #include <functional>
 
+#include "global_module_defs.hpp"
+#include "error_util.hpp"
+
 namespace ILLIXR {
 
 using void_ptr = std::unique_ptr<void, std::function<void(void*)>>;
@@ -42,12 +45,20 @@ public:
 
 	static dynamic_lib create(const std::string_view& path) {
 		char* error;
+
+		// dlopen man page says that it can set errno sp
+		assert(errno == 0 && "Errno should not be set before dlopen");
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
-		if ((error = dlerror()) || !handle)
+		RAC_ERRNO_MSG("dynamic_lib after dlopen");
+
+		if ((error = dlerror()) || !handle) {
 			throw std::runtime_error{
 				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+        }
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
+			assert(errno == 0);
+			
 			char* error;
 			int ret = dlclose(handle);
 			if ((error = dlerror()) || ret)
@@ -57,7 +68,9 @@ public:
 	}
 
 	const void* operator[](const std::string& symbol_name) const {
-		char* error;
+		assert(errno == 0 && "Errno should not be set at start of operator[]");
+
+		char* error;		
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
 		if ((error = dlerror()))
 			throw std::runtime_error{

@@ -11,6 +11,9 @@
 #include <functional>
 #include <thread>
 
+#include "error_util.hpp"
+
+
 /**
  * @brief A C++ translation of [clock_gettime][1]
  *
@@ -25,9 +28,14 @@ cpp_clock_gettime(clockid_t clock_id) {
 				  : /* InputOperands */
 				  : "memory" /* Clobbers */);
     struct timespec ts;
+
+    assert(errno == 0 && "Errno should not be set before clock_gettime");
+
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};
     }
+    RAC_ERRNO_MSG("cpu_timer after clock_gettime");
+
 	asm volatile (""
 				  : /* OutputOperands */
 				  : /* InputOperands */
@@ -40,6 +48,7 @@ cpp_clock_gettime(clockid_t clock_id) {
  */
 static inline std::chrono::nanoseconds
 thread_cpu_time() {
+    RAC_ERRNO_MSG("cpu_timer before cpp_clock_gettime");
     return cpp_clock_gettime(CLOCK_THREAD_CPUTIME_ID);
 }
 

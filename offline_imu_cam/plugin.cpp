@@ -3,6 +3,8 @@
 #include "data_loading.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include "common/global_module_defs.hpp"
+#include <cassert>
 
 using namespace ILLIXR;
 
@@ -52,7 +54,9 @@ protected:
 	}
 
 	virtual void _p_one_iteration() override {
+	    assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
+
 		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
 		time_type real_now = real_first_time + std::chrono::nanoseconds{dataset_now - dataset_first_time};
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
@@ -63,20 +67,27 @@ protected:
 			{bool(sensor_datum.cam0)},
 		}});
 
-
 		std::optional<cv::Mat*> cam0 = sensor_datum.cam0
 			? std::make_optional<cv::Mat*>(sensor_datum.cam0.value().load().release())
 			: std::nullopt
 			;
+		RAC_ERRNO_MSG("offline_imu_cam after cam0");
+
 		std::optional<cv::Mat*> cam1 = sensor_datum.cam1
 			? std::make_optional<cv::Mat*>(sensor_datum.cam1.value().load().release())
 			: std::nullopt
 			;
+		RAC_ERRNO_MSG("offline_imu_cam after cam1");
 
-		if (cam0 && cam1) {
-			cv::cvtColor(*cam0.value(), *cam0.value(), cv::COLOR_BGR2GRAY);
-			cv::cvtColor(*cam1.value(), *cam1.value(), cv::COLOR_BGR2GRAY);
+#ifndef NDEBUG
+        /// If debugging, assert the image is grayscale
+		if (cam0.has_value() && cam1.has_value()) {
+		    const int num_ch0 = cam0.value()->channels();
+		    const int num_ch1 = cam1.value()->channels();
+		    assert(num_ch0 == 1 && "Data from lazy_load_image should be grayscale");
+		    assert(num_ch1 == 1 && "Data from lazy_load_image should be grayscale");
 		}
+#endif /// NDEBUG
 
 		auto datum = new imu_cam_type{
 			real_now,
@@ -92,6 +103,8 @@ protected:
 			.seq = static_cast<int>(++_imu_integrator_seq),
 		};
 		_m_imu_integrator->put(imu_integrator_params);
+
+		RAC_ERRNO_MSG("offline_imu_cam at bottom of iteration");
 	}
 
 public:

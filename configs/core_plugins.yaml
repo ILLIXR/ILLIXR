@@ -3,8 +3,8 @@ plugin_group:
   - name: audio
     path:
       git_repo: https://github.com/ILLIXR/audio_pipeline.git
-      version: 3433bb452b2ec661c9d3ef65d9cf3a2805e94cdc
+      version: "2.0"
   # - name: hologram
   #   path:
   #     git_repo: https://github.com/ILLIXR/HOTlab.git
-  #     version: 51b8ef86cb1efa1204cb4a33dfaf15bb09d66903
+  #     version: "2.0"
