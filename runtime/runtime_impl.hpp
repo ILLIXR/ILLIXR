@@ -57,7 +57,6 @@ public:
 		});
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
-			// Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
 			plugin->start();
 		});
 
@@ -79,31 +78,22 @@ public:
 	}
 
 	virtual void wait() override {
-		// We don't want wait() returning before all the plugin threads have been joined.
-		// That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
-		pb.lookup_impl<Stoplight>()->wait_for_shutdown_complete();
+		while (!pb.lookup_impl<Stoplight>()->should_stop()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{10});
+		}
 	}
 
 	virtual void stop() override {
-		pb.lookup_impl<Stoplight>()->signal_should_stop();
-		// After this point, threads may exit their main loops
-		// They still have destructors and still have to be joined.
-
+		pb.lookup_impl<Stoplight>()->stop();
 		pb.lookup_impl<switchboard>()->stop();
-		// After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
-
 		for (const std::unique_ptr<plugin>& plugin : plugins) {
 			plugin->stop();
-			// Each plugin gets joined in its stop
 		}
-
-		// Tell runtime::wait() that it can return
-		pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
 	}
 
 	virtual ~runtime_impl() override {
-		if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
-			stop();
+		if (!pb.lookup_impl<Stoplight>()->should_stop()) {
+            ILLIXR::abort("You didn't call stop() before destructing this plugin.");
 		}
 		// This will be re-enabled in #225
 		// assert(errno == 0 && "errno was set during run. Maybe spurious?");
