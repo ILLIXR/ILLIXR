@@ -84,7 +84,7 @@ then
     sudo chown $USER: "${opt_dir}"
 
     echo "* The user will now be prompted to install the following dependencies and optional features:"
-    echo "  Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan, gtest, qemu, OpenXR-SDK, "
+    echo "  Binary packages (via apt-get), Docker, CUDA, OpenCV, eigen, Vulkan, gtest, qemu, OpenXR-SDK, "
     echo "  gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)"
 
     if y_or_n "Next: Add apt-get sources list/keys and install necessary packages"; then
@@ -102,6 +102,10 @@ then
 
     if [ ! -d "${temp_dir}/opencv" ] && y_or_n "Next: Install OpenCV from source"; then
         . ./scripts/install_opencv.sh
+    fi
+
+    if [ ! -d "${opt_dir}/eigen" ] && y_or_n "Next: Install eigen (Eigen3) from source"; then
+        . ./scripts/install_eigen.sh
     fi
 
     if [ ! -d "${temp_dir}/Vulkan-Headers" ] && y_or_n "Next: Install Vulkan Headers from source"; then
