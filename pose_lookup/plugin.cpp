@@ -17,11 +17,11 @@ class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_sensor_data{load_data()}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , dataset_first_time{_m_sensor_data_it->first}
-        , _m_start_of_time{std::chrono::high_resolution_clock::now()}
-        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
         , init_pos_offset{Eigen::Vector3f::Zero()}
@@ -41,10 +41,10 @@ public:
     }
 
     virtual fast_pose_type get_fast_pose() const override {
-		const switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_ro_nullable();
+		const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync = _m_vsync_estimate.get_ro_nullable();
         if (estimated_vsync == nullptr) {
             std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
-            return get_fast_pose(std::chrono::system_clock::now());
+            return get_fast_pose(_m_clock->now());
         } else {
             return get_fast_pose(**estimated_vsync);
         }
@@ -126,8 +126,8 @@ public:
         return orientation * offset;
     }
 
-    virtual fast_pose_type get_fast_pose(time_type time) const override {
-        ullong lookup_time = std::chrono::nanoseconds(time - _m_start_of_time).count() + dataset_first_time;
+    virtual fast_pose_type get_fast_pose(time_point time) const override {
+        ullong lookup_time = time.time_since_epoch().count() + dataset_first_time;
 
         auto nearest_row = _m_sensor_data.upper_bound(lookup_time);
 
@@ -136,7 +136,7 @@ public:
 			std::cerr << "Time "
 			          << lookup_time
                       << " ("
-			          << std::chrono::nanoseconds(time - _m_start_of_time).count()
+			          << std::chrono::nanoseconds(time.time_since_epoch()).count()
 			          << " + "
 			          << dataset_first_time
 			          << ") after last datum "
@@ -149,7 +149,7 @@ public:
 			std::cerr << "Time "
 			          << lookup_time
 			          << " ("
-			          << std::chrono::nanoseconds(time - _m_start_of_time).count()
+			          << std::chrono::nanoseconds(time.time_since_epoch()).count()
 			          << " + "
 			          << dataset_first_time
 			          << ") before first datum "
@@ -164,10 +164,10 @@ public:
         }
 
         auto looked_up_pose = nearest_row->second;
-        looked_up_pose.sensor_time = _m_start_of_time + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
+        looked_up_pose.sensor_time = time_point{std::chrono::nanoseconds{nearest_row->first - dataset_first_time}};
         return fast_pose_type{
             .pose = correct_pose(looked_up_pose),
-            .predict_computed_time = std::chrono::system_clock::now(),
+			.predict_computed_time = _m_clock->now(),
             .predict_target_time = time
         };
 
@@ -175,14 +175,14 @@ public:
 
 private:
     const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<const RelativeClock> _m_clock;
     mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex offset_mutex;
 
 	const std::map<ullong, sensor_types> _m_sensor_data;
     std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	ullong dataset_first_time;
-	time_type _m_start_of_time;
-	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
+	switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 
     bool enable_alignment;
     Eigen::Vector3f init_pos_offset;
