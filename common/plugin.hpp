@@ -26,6 +26,9 @@ namespace ILLIXR {
 
 		/**
 		 * @brief A method which Spindle calls when it starts the component.
+		 *
+		 * This is necessary because a constructor can't call derived virtual methods (due to
+		 * structure of C++).
 		 */
 		virtual void start() {
 			record_logger_->log(record{__plugin_start_header, {
@@ -35,7 +38,7 @@ namespace ILLIXR {
 		}
 
 		/**
-		 * @brief A method which Spindle calls when it starts the component.
+		 * @brief A method which Spindle calls when it stops the component.
 		 *
 		 * This is necessary because the parent class might define some actions that need to be
 		 * taken prior to destructing the derived class. For example, threadloop must halt and join

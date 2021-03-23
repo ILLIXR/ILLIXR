@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "plugin.hpp"
 #include "cpu_timer.hpp"
+#include "stoplight.hpp"
 
 namespace ILLIXR {
 
@@ -28,7 +29,10 @@ const record_header __threadloop_iteration_header {"threadloop_iteration", {
  */
 class threadloop : public plugin {
 public:
-	threadloop(std::string name_, phonebook* pb_) : plugin(name_, pb_) { }
+	threadloop(std::string name_, phonebook* pb_)
+		: plugin{name_, pb_}
+		, _m_stoplight{pb->lookup_impl<Stoplight>()}
+	{ }
 
 	/**
 	 * @brief Starts the thread.
@@ -36,29 +40,24 @@ public:
 	virtual void start() override {
 		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
+		assert(!_m_stoplight->should_stop());
+		assert(_m_thread.joinable());
 	}
 
 	/**
-	 * @brief Stops the thread.
+	 * @brief Joins the thread.
+	 *
+	 * Must have already stopped the stoplight.
 	 */
 	virtual void stop() override {
-		if (! _m_terminate.load()) {
-			_m_terminate.store(true);
-			if (_m_thread.joinable()) {
-				_m_thread.join();
-				std::cerr << "Joined " << name << std::endl;
-			}
-			plugin::stop();
-		} else {
-			std::cerr << "You called stop() on this plugin twice." << std::endl;
-		}
+		assert(_m_stoplight->should_stop());
+		assert(_m_thread.joinable());
+		_m_thread.join();
 	}
 
 	virtual ~threadloop() override {
-		if (!_m_terminate.load()) {
-			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
-			abort();
-		}
+		assert(_m_stoplight->should_stop());
+		assert(!_m_thread.joinable());
 	}
 
 protected:
@@ -73,7 +72,8 @@ private:
 
 		_p_thread_setup();
 
-		while (!should_terminate()) {
+		while (!_m_stoplight->should_stop()) {
+			_m_stoplight->wait_for_ready();
 			skip_option s = _p_should_skip();
 
 			switch (s) {
@@ -106,10 +106,11 @@ private:
 				break;
 			}
 			case skip_option::stop:
-				stop();
-				break;
+				goto break_loop;
 			}
 		}
+	break_loop:
+		[[maybe_unused]] int cpp_requires_a_statement_after_a_label_plz_optimize_me_away;
 	}
 
 protected:
@@ -157,8 +158,8 @@ protected:
 
 private:
 	std::atomic<bool> _m_terminate {false};
-
 	std::thread _m_thread;
+	std::shared_ptr<const Stoplight> _m_stoplight;
 };
 
 }
