@@ -30,9 +30,7 @@ cmake \
     -S "${opengv_dir}" \
     -B "${build_dir}" \
     -D CMAKE_BUILD_TYPE="${build_type}" \
-    -D CMAKE_INSTALL_PREFIX="${prefix_dir}" #\
-    #-D EIGEN_INCLUDE_DIR="${eigen_include_dir}" \
-    #-D EIGEN_INCLUDE_DIRS="${eigen_include_dir}"
+    -D CMAKE_INSTALL_PREFIX="${prefix_dir}"
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
