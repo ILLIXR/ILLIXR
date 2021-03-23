@@ -34,7 +34,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, thread_id_publisher{sb->get_writer<thread_info>(std::to_string(id) + "_thread_id")}
 		, completion_publisher{sb->get_writer<switchboard::event_wrapper<bool>>(std::to_string(id) + "_completion")}
-		, is_scheduled{is_scheduled_}
+		, is_scheduled{is_scheduled_ && false}
 	{ }
 
 	/**
@@ -53,7 +53,6 @@ public:
 			);
 		} else {
 			paused.clear();
-			assert(id == 7);
 			thread = std::make_unique<managed_thread>([this]{
 				thread_main(false);
 				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
@@ -87,13 +86,20 @@ public:
 		}
 	}
 
+	virtual void stop() override {
+		if (!is_scheduled) {
+			thread->stop();
+			// joins thread here.
+			// returns only after thread is dead.
+		}
+	}
+
 protected:
 	std::size_t iteration_no = 0;
 	std::size_t skip_no = 0;
 	std::unique_ptr<managed_thread> thread {nullptr};
 
 	void thread_main(bool from_switchboard) {
-			iteration_no++;
 			if (first_time) {
 				_p_thread_setup();
 				if (!from_switchboard) {
@@ -149,14 +155,6 @@ protected:
 		/// Calls stop.
 		stop,
 	};
-
-	virtual void stop() override {
-		if (!is_scheduled) {
-			thread->stop();
-			// joins thread here.
-			// returns only after thread is dead.
-		}
-	}
 
 	/**
 	 * @brief Gets called in a tight loop, to gate the invocation of `_p_one_iteration()`

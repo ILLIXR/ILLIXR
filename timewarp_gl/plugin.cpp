@@ -54,7 +54,10 @@ public:
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-	{ }
+		, log{"timewarp.csv"}
+	{
+		log << "iteration,vsync,start,stop,sleep\n";
+	}
 
 private:
 	const std::shared_ptr<switchboard> sb;
@@ -63,15 +66,14 @@ private:
 	static constexpr int   SCREEN_WIDTH    = 550*2;
 	static constexpr int   SCREEN_HEIGHT   = 320*2;
 
-	static constexpr double DISPLAY_REFRESH_RATE = 120.0;
+	static constexpr int DISPLAY_REFRESH_RATE = 120;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
 
-	// Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
-	static constexpr double DELAY_FRACTION = 0.8;
+	static constexpr double DELAY_FRACTION = 0.91;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
+	static constexpr std::chrono::nanoseconds vsync_period {NANO_SEC/DISPLAY_REFRESH_RATE};
 
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	rendered_frame frame;
@@ -259,13 +261,20 @@ private:
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
 	time_point GetNextSwapTimeEstimate() {
+		if (lastSwapTime > _m_rtc->now()) abort();
 		return lastSwapTime + vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
 	// given a specified percentage of the total Vsync period to delay.
-	std::chrono::duration<double, std::nano> EstimateTimeToSleep(double framePercentage){
-		return (GetNextSwapTimeEstimate() - _m_rtc->now()) * framePercentage;
+	std::chrono::nanoseconds EstimateTimeToSleep(double framePercentage){
+		return std::chrono::duration_cast<std::chrono::nanoseconds>((GetNextSwapTimeEstimate() - _m_rtc->now()) * framePercentage);
+		// (lastSwapTime + vsync_period - now) * framePercentage
+		// now = lastSwapTime + delta
+		// (vsync_period - delta) * frame_percentage
+		// If delta -> 0, it's close to right.
+
+		// lastSwapTime + vsync_period * framePercentage - now()
 	}
 
 
@@ -279,10 +288,25 @@ public:
 		// MTP here. More you wait, closer to the display sync you sample the pose.
 
 		// TODO: poll GLX window events
-		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
+		if (GetNextSwapTimeEstimate() > _m_rtc->now()) {
+			// log << iteration_no << std::endl;
+		}
+		auto start = _m_rtc->now();
+		auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
+		std::this_thread::sleep_for(sleep_duration);
+		auto stop = _m_rtc->now();
+
+		log
+			<< iteration_no << ','
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(GetNextSwapTimeEstimate().time_since_epoch()).count() << ','
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch()).count() << ','
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(stop.time_since_epoch()).count() << ','
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count() << '\n';
+
 		if(_m_eyebuffer.get_ro_nullable()) {
 			return skip_option::run;
 		} else {
+			std::this_thread::sleep_for(std::chrono::milliseconds{50});
 			// Null means system is nothing has been pushed yet
 			// because not all components are initialized yet
 			return skip_option::skip_and_yield;
@@ -586,6 +610,9 @@ public:
  		XDestroyWindow(xwin->dpy, xwin->win);
  		XCloseDisplay(xwin->dpy);
 	}
+
+private:
+	std::ofstream log;
 };
 
 PLUGIN_MAIN(timewarp_gl)

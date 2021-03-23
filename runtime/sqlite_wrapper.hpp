@@ -18,8 +18,8 @@ namespace ILLIXR {
 
 		static void sqlite_error_to_exception(int rc, const char* activity, std::string info = std::string{}) {
 			if (rc != SQLITE_OK && rc != SQLITE_ROW && rc != SQLITE_DONE) {
-				std::cerr << activity << ": " << sqlite3_errstr(rc) << ": " << info << std::endl;
-				assert(0);
+				std::cerr << "sqlite error: " << activity << ": " << sqlite3_errstr(rc) << ": " << info << std::endl;	
+				abort();
 			}
 		}
 
@@ -107,16 +107,19 @@ namespace ILLIXR {
 
 		class value {
 		public:
-			using value_variant = std::variant<uint64_t, double, std::string_view, std::vector<char>, std::nullptr_t, bool>;
+			using value_variant = std::variant<int64_t, double, std::string_view, std::vector<char>, std::nullptr_t, bool>;
 		private:
 			std::reference_wrapper<const type> _m_type;
 			value_variant _m_data;
 			size_t _m_id;
 			static constexpr const size_t no_id = 1 << 31;
 		public:
+			value(uint64_t data, size_t id = no_id)
+				: value{value_variant{static_cast<int64_t>(data)}, id}
+			{ }
 			value(value_variant&& data, size_t id = no_id)
 				: _m_type{
-					std::holds_alternative<uint64_t>(data) ? std::cref(type_INTEGER) :
+					std::holds_alternative<int64_t>(data) ? std::cref(type_INTEGER) :
 					std::holds_alternative<double>(data) ? std::cref(type_REAL) :
 					std::holds_alternative<std::string_view>(data) ? std::cref(type_TEXT) :
 					std::holds_alternative<std::vector<char>>(data) ? std::cref(type_BLOB) :
@@ -152,7 +155,7 @@ namespace ILLIXR {
 				assert(!slot_filled());
 				if (false) {
 				} else if (_m_type.get() == type_INTEGER) {
-					assert(std::holds_alternative<uint64_t>(data));
+					assert(std::holds_alternative<int64_t>(data));
 				} else if (_m_type.get() == type_REAL) {
 					assert(std::holds_alternative<double>(data));
 				} else if (_m_type.get() == type_TEXT) {
@@ -196,8 +199,8 @@ namespace ILLIXR {
 			void bind(value var) {
 				int rc = 0;
 				if (false) {
-				} else if (&var.get_type() == &type_INTEGER) {
-					auto data = std::get<uint64_t>(var.get_data());
+				} else if (&var.get_type() == &type_INTEGER) {	
+				auto data = std::get<int64_t>(var.get_data());
 					rc = sqlite3_bind_int64(_m_stmt, var.get_id() + 1, data);
 				} else if (&var.get_type() == &type_REAL) {
 					auto data = std::get<double>(var.get_data());

@@ -1,8 +1,10 @@
 #include <thread>
 #include <random>
+#include <algorithm>
 #include <cstdint>
 #include "gtest/gtest.h"
 #include "../switchboard.hpp"
+#include "../managed_thread.hpp"
 
 namespace ILLIXR {
 
@@ -186,6 +188,90 @@ TEST_F(SwitchboardTest, TestSyncAsync) {
 
 	// Assert destructors get called
 	ASSERT_EQ(uint64_wrapper::get_destructed_count(), MAX_ITERATIONS - 1);
+}
+
+void sieve(int n) {
+		    // Create a boolean array 
+		    // "prime[0..n]" and initialize
+		    // all entries it as true. 
+		    // A value in prime[i] will
+		    // finally be false if i is 
+		    // Not a prime, else true.
+		    bool prime[n + 1];
+		    memset(prime, true, sizeof(prime));
+		 
+		    for (int p = 2; p * p <= n; p++)
+		    {
+		        // If prime[p] is not changed, 
+		        // then it is a prime
+		        if (prime[p] == true) 
+		        {
+		            // Update all multiples 
+		            // of p greater than or
+		            // equal to the square of it
+		            // numbers which are multiple 
+		            // of p and are less than p^2 
+		            // are already been marked.
+		            for (int i = p * p; i <= n; i += p)
+		                prime[i] = false;
+		        }
+		    }
+		 
+		    // Print all prime numbers
+		    for (int p = 2; p <= n; p++)
+		        if (prime[p])
+					(void)p;
+}
+
+TEST_F(SwitchboardTest, TestLatency) {
+	// Run switchboard without phonebook (and logging)
+
+	using event = switchboard::event_wrapper<std::chrono::system_clock::time_point>;
+	using ns = std::chrono::nanoseconds;
+	using ms = std::chrono::milliseconds;
+	constexpr size_t N_PERIODS = 8;
+	constexpr auto MAX_PERIOD = ns{ms{512}};
+
+	auto csv = std::ofstream{"latency.csv"};
+	csv << "period,latency\n";
+
+	for (size_t i = 0; i < N_PERIODS; ++i) {
+		switchboard sb {nullptr};
+
+		auto period = MAX_PERIOD / (2 << i);
+		auto iters = std::max(size_t(ns{ms{200}} / period), size_t(5));
+
+		std::array<managed_thread*, 20> busy_threads;
+		for (int j = 0; j < 20; ++j) {
+			busy_threads.at(j) = new managed_thread{[] {
+				sieve(1000);
+			}};
+			busy_threads.at(j)->start();
+		}
+
+		const managed_thread& reader = sb.schedule<event>(0, "data", [&](switchboard::ptr<const event>&& datum, std::size_t) {
+			csv << ns{period}.count() << ',' << ns{std::chrono::system_clock::now() - **datum}.count() << '\n';
+		});
+		reader.set_priority(4);
+
+		Event writer_done;
+		managed_thread writer {[&] {
+			auto writer = sb.get_writer<event>("data");
+			for (uint64_t i = 1; i < iters; ++i) {
+				writer.put(writer.allocate(std::chrono::system_clock::now()));
+				std::this_thread::sleep_for(period);
+			}
+			writer_done.set();
+		}};
+		writer.start();
+		writer.set_priority(4);
+		writer_done.wait();
+
+		for (managed_thread* thread : busy_threads) {
+			thread->stop();
+			delete thread;
+		}
+	}
 }
 
 }

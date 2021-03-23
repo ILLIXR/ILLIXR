@@ -38,7 +38,6 @@ public:
 		std::map<ullong, sensor_types>::const_iterator nearest_row;
 
 #ifndef INFINITE_QUEUE
-
 		auto after_row = _m_sensor_data.upper_bound(lookup_time);
 
 		if (after_row == _m_sensor_data.cend() || !(after_row->second.cam0 && after_row->second.cam1)) {
@@ -74,6 +73,7 @@ public:
 			// }
 		}
 #else
+#error
 		nearest_row = next_row;
 		next_row++;
 #endif
@@ -96,6 +96,7 @@ public:
 			);
 #endif
 
+			CPU_TIMER_TIME_EVENT_INFO(true, false, "cam_in", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "", 0, 0));
 			_m_cam_publisher.put(new (_m_cam_publisher.allocate()) cam_type {
 				time_since_start + _m_rtc->get_start(),
 				img0,
@@ -105,6 +106,7 @@ public:
 			// good++;
 		} else {
 			bad++;
+			// std::this_thread::sleep_for(std::chrono::milliseconds{5});
 			// std::cerr
 			// 	<< "Last image published at: " << last_ts - dataset_first_time << "\n"
 			// 	<< "Now is: " << std::chrono::nanoseconds(time_since_start).count() << "\n"
@@ -114,6 +116,7 @@ public:
 			// 	;
 			// abort();
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds{5});
 		// auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
 		// if (s > 5.0f) {
 		// 	std::cout << "Took " << s << std::endl;

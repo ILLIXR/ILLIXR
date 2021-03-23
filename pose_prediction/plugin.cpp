@@ -69,8 +69,8 @@ public:
 
         // slow_pose and imu_raw, do pose prediction
 
-        double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - _m_rtc->now()).count();
-        std::pair<Eigen::Matrix<double,13,1>, time_point> predictor_result = predict_mean_rk4(dt/NANO_SEC);
+        double dt = std::chrono::duration_cast<std::chrono::duration<double>>(future_timestamp - _m_rtc->now()).count();
+        std::pair<Eigen::Matrix<double,13,1>, time_point> predictor_result = predict_mean_rk4(dt);
 
         auto state_plus = predictor_result.first;
 

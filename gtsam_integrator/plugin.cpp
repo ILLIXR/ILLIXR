@@ -7,6 +7,7 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 
 #include <gtsam/base/Matrix.h>
 #include <gtsam/base/Vector.h>
@@ -20,7 +21,7 @@
 // IMU sample time to live in seconds
 #define IMU_TTL 5
 
-using PimUniquePtr = std::unique_ptr<gtsam::PreintegrationType>;
+using PimUniquePtr = gtsam::PreintegrationType*;
 using ImuBias = gtsam::imuBias::ConstantBias;
 using namespace ILLIXR;
 
@@ -35,6 +36,7 @@ public:
 	imu_integrator(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
+		, _m_imu{sb->get_reader<imu_type>("imu")}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
@@ -43,8 +45,17 @@ public:
 		});
 	}
 
+	// virtual void _p_one_iteration() override {
+	// 	auto datum = _m_imu.get_ro_nullable();
+	// 	if (datum && (last_time == time_point{} || datum->time > last_time)) {
+	// 		callback(datum);
+	// 		last_time = datum->time;
+	// 	}
+	// 	std::this_thread::sleep_for(std::chrono::microseconds{500});
+	// }
+
 	void callback(switchboard::ptr<const imu_type> datum) {
-		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
+		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC.count());
 
 		imu_type2 data;
         data.timestamp = timestamp_in_seconds;
@@ -59,6 +70,9 @@ public:
 private:
 	const std::shared_ptr<switchboard> sb;
 
+	switchboard::reader<imu_type> _m_imu;
+	time_point last_time;
+
 	// IMU Data, Sequence Flag, and State Vars Needed
 	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
@@ -66,7 +80,7 @@ private:
 	switchboard::writer<imu_raw_type> _m_imu_raw;
 
 	std::vector<imu_type2> _imu_vec;
-  	PimUniquePtr pim_ = NULL;
+	PimUniquePtr pim_ = NULL;
 
 	[[maybe_unused]] double last_cam_time = 0;
 	double last_imu_offset = 0;
@@ -104,7 +118,7 @@ private:
 			params->biasAccCovariance = std::pow(input_values->params.acc_walk, 2.0) * Eigen::Matrix3d::Identity();
 			params->biasOmegaCovariance = std::pow(input_values->params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity();
 
-			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias);
+			pim_ = std::make_unique<gtsam::PreintegratedCombinedMeasurements>(params, imu_bias).release();
 			last_imu_offset = input_values->t_offset;
 		}
 

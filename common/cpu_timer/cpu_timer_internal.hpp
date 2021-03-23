@@ -301,10 +301,11 @@ namespace detail {
 		}
 
 		~Stack() {
+			std::cerr << "Stack::~Stack: " << id << std::endl;
 			exit_stack_frame(blank);
 			assert(stack.empty() && "somewhow enter_stack_frame was called more times than exit_stack_frame");
 			get_callback().thread_stop(*this);
-			assert(finished.empty() && "flush() should drain this buffer, and nobody should be adding to it now. Somehow unflushed Frames are still present");
+			// assert(finished.empty() && "flush() should drain this buffer, and nobody should be adding to it now. Somehow unflushed Frames are still present");
 		}
 
 		// I do stuff in the destructor that should only happen once per constructor-call.
@@ -426,6 +427,7 @@ namespace detail {
 		 * This is neccessary because the OS can reuse old thread IDs.
 		 */
 		void delete_stack(std::thread::id thread) {
+			std::cerr << "Process::delete_stack: " << thread << std::endl;
 			std::lock_guard<std::recursive_mutex> thread_to_stack_lock {thread_to_stack_mutex};
 			// This could be the same thread, just a different static context (i.e. different obj-file or lib)
 			if (thread_to_stack.count(thread) != 0) {
@@ -474,6 +476,8 @@ namespace detail {
 		Process(const Process&&) = delete;
 		Process& operator=(const Process&&) = delete;
 		~Process() {
+			std::cerr << "Process::~Process" << std::endl;
+			std::cout << "Process::~Process" << std::endl;
 			for (const auto& pair : thread_to_stack) {
 				std::cerr << pair.first << " is still around. Going to kick their logs out.\n";
 			}

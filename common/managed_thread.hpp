@@ -23,9 +23,10 @@ class Event {
 private:
 	mutable std::mutex _m_mutex;
 	mutable std::condition_variable _m_cv;
-	bool _m_value;
+	bool _m_value = false;
 
 public:
+
 	/**
 	 * @brief Sets the condition-variable to new_value.
 	 *

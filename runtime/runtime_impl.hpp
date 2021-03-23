@@ -67,6 +67,7 @@ public:
 	}
 
 	virtual void stop() override {
+		std::cout << "runtime_impl::stop" << std::endl;
 		pb.lookup_impl<switchboard>()->stop();
 		for (const std::unique_ptr<plugin>& plugin : plugins) {
 			plugin->stop();
@@ -75,6 +76,7 @@ public:
 	}
 
 	virtual ~runtime_impl() override {
+		std::cout << "runtime_impl::~runtime_impl" << std::endl;
 		if (!terminate.load()) {
 			std::cerr << "You didn't call stop() before destructing this plugin." << std::endl;
 			abort();

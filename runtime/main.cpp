@@ -34,9 +34,7 @@ private:
 
 int main(int argc, char* const* argv) {
 	setup_frame_logger();
-	assert(errno == 0);
 	r = ILLIXR::runtime_factory(nullptr);
-	// assert(errno == 0);
 
 	[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), "main");
 	assert(!ret);
@@ -46,7 +44,6 @@ int main(int argc, char* const* argv) {
 		return std::string{arg};
 	});
 	r->load_so(lib_paths);
-	// assert(errno == 0);
 
 	// Two ways of shutting down:
 	// Ctrl+C

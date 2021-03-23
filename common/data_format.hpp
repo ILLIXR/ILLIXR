@@ -16,7 +16,7 @@
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
-#define NANO_SEC 1000000000.0
+[[maybe_unused]] static constexpr std::chrono::nanoseconds NANO_SEC {std::chrono::seconds{1}};
 
 namespace ILLIXR {
 
