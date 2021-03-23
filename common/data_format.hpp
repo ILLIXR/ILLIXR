@@ -241,7 +241,7 @@ namespace ILLIXR {
             int seq_,
             duration offload_duration_,
             unsigned char *image_,
-            time_point pose_time_,
+			time_point pose_time_,
             Eigen::Vector3f position_,
 			Eigen::Quaternionf latest_quaternion_,
             Eigen::Quaternionf render_quaternion_
