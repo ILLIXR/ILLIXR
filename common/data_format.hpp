@@ -31,8 +31,15 @@ namespace ILLIXR {
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
 		imu_cam_type(time_point time_,
-		ullong dataset_time;
+					 Eigen::Vector3f angular_v_,
+					 Eigen::Vector3f linear_a_,
+					 std::optional<cv::Mat> img0_,
+					 std::optional<cv::Mat> img1_)
 			: time{time_}
+			, angular_v{angular_v_}
+			, linear_a{linear_a_}
+			, img0{img0_}
+			, img1{img1_}
 		{ }
 	};
 
@@ -180,6 +187,11 @@ namespace ILLIXR {
                        time_point render_time_)
             : texture_handles{std::move(texture_handles_)}
 			, swap_indices{std::move(swap_indices_)}
+			, render_pose(render_pose_)
+            , sample_time(sample_time_)
+            , render_time(render_time_)
+        { }
+	};
 	struct hologram_input : public switchboard::event {
 		int seq;
 		hologram_input() { }
@@ -227,6 +239,9 @@ namespace ILLIXR {
             time_point pose_time_,
             RelativeClock::time_point pose_time_,
             Eigen::Vector3f position_,
+			Eigen::Quaternionf latest_quaternion_,
+            Eigen::Quaternionf render_quaternion_
+        ) : seq{seq_}
           , offload_duration{offload_duration_}
           , image{image_}
           , pose_time{pose_time_}
