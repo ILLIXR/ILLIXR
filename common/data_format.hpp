@@ -13,6 +13,7 @@
 //#undef Complex // For 'Complex' conflict
 #include "phonebook.hpp" 
 #include "switchboard.hpp"
+#include "relative_clock.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
@@ -20,20 +21,19 @@
 
 namespace ILLIXR {
 
-	typedef std::chrono::system_clock::time_point time_type;
-	typedef unsigned long long ullong;
+	using ullong = unsigned long long;
 
 	// Data type that combines the IMU and camera data at a certain timestamp.
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
 	struct imu_cam_type : public switchboard::event {
-		time_type time;
+		RelativeClock::time_point time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
 		ullong dataset_time;
-		imu_cam_type(time_type time_,
+		imu_cam_type(RelativeClock::time_point time_,
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
 					 std::optional<cv::Mat> img0_,
@@ -119,7 +119,7 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> pos;
 		Eigen::Matrix<double,3,1> vel;
 		Eigen::Quaterniond quat;
-		time_type imu_time;
+		RelativeClock::time_point imu_time;
 		imu_raw_type(Eigen::Matrix<double,3,1> w_hat_,
 					 Eigen::Matrix<double,3,1> a_hat_,
 					 Eigen::Matrix<double,3,1> w_hat2_,
@@ -127,7 +127,7 @@ namespace ILLIXR {
 					 Eigen::Matrix<double,3,1> pos_,
 					 Eigen::Matrix<double,3,1> vel_,
 					 Eigen::Quaterniond quat_,
-					 time_type imu_time_)
+					 RelativeClock::time_point imu_time_)
 			: w_hat{w_hat_}
 			, a_hat{a_hat_}
 			, w_hat2{w_hat2_}
@@ -140,11 +140,11 @@ namespace ILLIXR {
 	};
 
 	struct pose_type : public switchboard::event {
-		time_type sensor_time; // Recorded time of sensor data ingestion
+		RelativeClock::time_point sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
 		pose_type() { }
-		pose_type(time_type sensor_time_,
+		pose_type(RelativeClock::time_point sensor_time_,
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
 			: sensor_time{sensor_time_}
@@ -155,8 +155,8 @@ namespace ILLIXR {
 
 	typedef struct {
 		pose_type pose;
-		time_type predict_computed_time; // Time at which the prediction was computed
-		time_type predict_target_time; // Time that prediction targeted.
+		RelativeClock::time_point predict_computed_time; // Time at which the prediction was computed
+		RelativeClock::time_point predict_target_time; // Time that prediction targeted.
 	} fast_pose_type;
 
 	// Using arrays as a swapchain
@@ -166,14 +166,14 @@ namespace ILLIXR {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
-		time_type sample_time;
-		time_type render_time;
+		RelativeClock::time_point sample_time;
+		RelativeClock::time_point render_time;
 		rendered_frame() { }
 		rendered_frame(GLuint texture_handles_[2],
 		               GLuint swap_indices_[2],
 		               fast_pose_type render_pose_,
-                       time_type sample_time_,
-                       time_type render_time_)
+                       RelativeClock::time_point sample_time_,
+                       RelativeClock::time_point render_time_)
             : render_pose(render_pose_)
             , sample_time(sample_time_)
             , render_time(render_time_)
@@ -220,7 +220,7 @@ namespace ILLIXR {
         int seq; /// TODO: Should texture_pose.seq be a long long
         int offload_time;
         unsigned char *image;
-        time_type pose_time;
+        RelativeClock::time_point pose_time;
         Eigen::Vector3f position;
         Eigen::Quaternionf latest_quaternion;
         Eigen::Quaternionf render_quaternion;
@@ -229,7 +229,7 @@ namespace ILLIXR {
             int seq_,
             int offload_time_,
             unsigned char *image_,
-            time_type pose_time_,
+            RelativeClock::time_point pose_time_,
             Eigen::Vector3f position_,
             Eigen::Quaternionf latest_quaternion_,
             Eigen::Quaternionf render_quaternion_
