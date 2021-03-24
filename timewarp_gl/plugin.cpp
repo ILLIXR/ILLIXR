@@ -81,7 +81,7 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
+	static constexpr std::chrono::nanoseconds vsync_period {freq2period(DISPLAY_REFRESH_RATE)};
 
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
 
@@ -369,7 +369,10 @@ public:
 	virtual void _p_thread_setup() override {
         RAC_ERRNO_MSG("timewarp_gl at start of _p_thread_setup");
 
-		time_last_swap = _m_clock->now();
+		// Wait a vsync for gldemo to go first.
+		// This first time_last_swap will be "out of phase" with actual vsync.
+		// The second one should be on the dot, since we don't exit the first until actual vsync.
+		time_last_swap = _m_clock->now() + vsync_period;
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
