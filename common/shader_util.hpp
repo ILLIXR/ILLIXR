@@ -35,7 +35,7 @@ static void GLAPIENTRY
     if (severity == GL_DEBUG_SEVERITY_HIGH) {
         /// Fatal error if severity level is medium or high.
         ILLIXR::abort();
-    } /// else => severity level low is non-fatal.
+    } /// else => severity level low and medium are non-fatal.
 #endif
 }
 
