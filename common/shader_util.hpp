@@ -31,7 +31,8 @@ static void GLAPIENTRY
               << ", severity = 0x" << std::hex << severity << std::dec
               << ", message = " << message
               << std::endl;
-    if (severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_HIGH) {
+	// https://www.khronos.org/opengl/wiki/Debug_Output#Message_Components
+    if (severity == GL_DEBUG_SEVERITY_HIGH) {
         /// Fatal error if severity level is medium or high.
         ILLIXR::abort();
     } /// else => severity level low is non-fatal.

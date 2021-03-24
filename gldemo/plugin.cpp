@@ -391,6 +391,7 @@ public:
 		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
 		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
+		RAC_ERRNO_MSG("gldemo after glGetUniformLocation");
 
 		// Load/initialize the demo scene.
 
