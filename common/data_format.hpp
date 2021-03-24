@@ -218,13 +218,30 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 
-    typedef struct {
-        int seq;
+    struct texture_pose : switchboard::event {
+        int seq; /// TODO: Should texture_pose.seq be a long long
         int offload_time;
         unsigned char *image;
         time_type pose_time;
         Eigen::Vector3f position;
         Eigen::Quaternionf latest_quaternion;
         Eigen::Quaternionf render_quaternion;
-    } texture_pose;
+        texture_pose() { }
+        texture_pose(
+            int seq_,
+            int offload_time_,
+            unsigned char *image_,
+            time_type pose_time_,
+            Eigen::Vector3f position_,
+            Eigen::Quaternionf latest_quaternion_,
+            Eigen::Quaternionf render_quaternion_
+        ) : seq{seq_}
+          , offload_time{offload_time_}
+          , image{image_}
+          , pose_time{pose_time_}
+          , position{position_}
+          , latest_quaternion{latest_quaternion_}
+          , render_quaternion{render_quaternion_}
+        { }
+    };
 }

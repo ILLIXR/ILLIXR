@@ -24,7 +24,7 @@ public:
 	offload_data(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _offload_data_reader{sb->subscribe_latest<texture_pose>("texture_pose")}
+		, _offload_data_reader{sb->get_reader<texture_pose>("texture_pose")}
 		, _seq_expect(1)
 		, _stat_processed(0)
 		, _stat_missed(0)
@@ -37,8 +37,8 @@ public:
 	{ }
 
 	virtual skip_option _p_should_skip() override {
-		auto in = _offload_data_reader->get_latest_ro();
-		if (!in || in->seq == _seq_expect-1) {
+		auto in = _offload_data_reader.get_ro_nullable();
+		if (in != nullptr || in->seq == _seq_expect - 1) {
 			// No new data, sleep
 			std::this_thread::sleep_for(std::chrono::milliseconds{1});
 			return skip_option::skip_and_yield;
@@ -58,7 +58,11 @@ public:
 #ifndef NDEBUG
 		std::cout << "Image index: " << img_idx++ << std::endl;
 #endif
-		_offload_data_container.push_back(_offload_data_reader->get_latest_ro());
+        auto datum_texture_pose = _offload_data_reader.get_ro_nullable();
+        if (datum_texture_pose != nullptr) {
+            /// A texture pose is present. Store it back to our container.
+            _offload_data_container.push_back(datum_texture_pose);
+        }
 	}
 
 	virtual ~offload_data() override {
@@ -75,10 +79,10 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	std::unique_ptr<reader_latest<texture_pose>> _offload_data_reader;
+    switchboard::reader<texture_pose> _offload_data_reader;
 	long long _seq_expect, _stat_processed, _stat_missed;
 	std::vector<int> _time_seq;
-	std::vector<const texture_pose*> _offload_data_container;
+	std::vector<switchboard::ptr<const texture_pose>> _offload_data_container;
 
 	int percent;
 	int img_idx;
@@ -120,7 +124,7 @@ private:
 		meta_file.close();
 	}
 
-	void writeDataToDisk(std::vector<const texture_pose*> _offload_data_container)
+	void writeDataToDisk(std::vector<switchboard::ptr<const texture_pose>> _offload_data_container)
 	{
 		stbi_flip_vertically_on_write(true);
 
