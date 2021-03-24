@@ -71,7 +71,7 @@ public:
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (imu_raw == nullptr) {
 #ifndef NDEBUG
-            printf("FAST POSE IS SLOW POSE!");
+            printf("FAST POSE IS SLOW POSE!\n");
 #endif
             // No imu_raw, return slow_pose
             return fast_pose_type{
