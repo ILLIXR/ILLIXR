@@ -40,10 +40,10 @@ public:
 
     void callback(switchboard::ptr<const imu_cam_type> datum) {
 		_imu_vec.emplace_back(
-							  datum->time,
-							  datum->angular_v.cast<double>(),
-							  datum->linear_a.cast<double>()
-							  );
+            datum->time,
+            datum->angular_v.cast<double>(),
+            datum->linear_a.cast<double>()
+        );
 
         clean_imu_vec(datum->time);
         propagate_imu_values(datum->time);
@@ -305,7 +305,7 @@ private:
 			(1 - lambda) * imu_1.am + lambda * imu_2.am,
 			(1 - lambda) * imu_1.wm + lambda * imu_2.wm
 		};
-	}
+    }
 };
 
 PLUGIN_MAIN(gtsam_integrator)
