@@ -111,7 +111,7 @@ private:
 		for (auto& container_it : _offload_data_container)
 		{
 			// Get collecting time for each frame
-			_time_seq.push_back(container_it->offload_time);
+			_time_seq.push_back(std::chrono::duration_cast<std::chrono::duration<long, std::milli>>(container_it->offload_time).count());
 
 			std::string image_name = obj_dir + std::to_string(img_idx) + ".png";
 			std::string pose_name = obj_dir + std::to_string(img_idx) + ".txt";
@@ -127,13 +127,10 @@ private:
 			std::ofstream pose_file (pose_name);
 			if (pose_file.is_open())
 			{
-				std::time_t pose_time = std::chrono::system_clock::to_time_t(container_it->pose_time);
-
 				// Transfer timestamp to duration
 				auto duration = (container_it->pose_time).time_since_epoch().count();
 
 				// Write time data
-				pose_file << "cTime: " << std::ctime(&pose_time);
 				pose_file << "strTime: " << duration << std::endl;
 
 				// Write position coordinates in x y z
