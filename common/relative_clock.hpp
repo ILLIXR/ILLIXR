@@ -22,7 +22,7 @@ namespace ILLIXR {
  */
 class RelativeClock : public phonebook::service {
 public:
-	using rep = size_t;
+	using rep = long;
 	using period = std::nano;
 	using duration = std::chrono::duration<rep, period>;
 	using time_point = std::chrono::time_point<RelativeClock>;
