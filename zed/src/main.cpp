@@ -159,6 +159,7 @@ public:
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
     {
         camera_thread_.start();
     }
