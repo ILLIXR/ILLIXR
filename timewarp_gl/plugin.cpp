@@ -218,7 +218,7 @@ private:
 
 
 #ifndef NDEBUG
-		double time = std::chrono::duration<double, std::milli>{offload_time}.count();
+		double time = duration2double<std::milli>(offload_time);
 		std::cout << "Texture image collecting time: " << time << "ms" << std::endl;
 #endif
 
@@ -567,7 +567,7 @@ public:
 
 		glBindVertexArray(tw_vao);
 
-		auto gpu_start_wall_time = std::chrono::system_clock::now();
+		auto gpu_start_wall_time = _m_clock->now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
@@ -654,7 +654,7 @@ public:
 		const duration time_since_render = time_now - most_recent_frame->render_time;
 
 		if (log_count > LOG_PERIOD) {
-            const double time_since_render_ms_d = std::chrono::duration<double, std::milli>{time_since_render}.count();
+            const double time_since_render_ms_d = duration2double<std::milli>(time_since_render);
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
 			// We have always been warping from the correct swap, so I will disable this.
 			// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
@@ -719,12 +719,12 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-            const double time_swap = std::chrono::duration<double, std::milli>{time_after_swap - time_before_swap}.count();
-            const double latency_mtd = std::chrono::duration<double, std::milli>{imu_to_display}.count();
-            const double latency_ptd = std::chrono::duration<double, std::milli>{predict_to_display}.count();
-            const double latency_rtd = std::chrono::duration<double, std::milli>{render_to_display}.count();
+            const double time_swap = duration2double<std::milli>(time_after_swap - time_before_swap);
+            const double latency_mtd = duration2double<std::milli>(imu_to_display);
+            const double latency_ptd = duration2double<std::milli>(predict_to_display);
+            const double latency_rtd = duration2double<std::milli>(render_to_display);
             const time_point time_next_swap = GetNextSwapTimeEstimate();
-            const double timewarp_estimate = std::chrono::duration<double, std::milli>{time_next_swap - time_last_swap}.count();
+            const double timewarp_estimate = duration2double<std::milli>(time_next_swap - time_last_swap);
 
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Swap time: " << time_swap << "ms" << std::endl
 			          << "\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: " << latency_mtd << "ms" << std::endl
