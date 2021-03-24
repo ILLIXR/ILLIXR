@@ -91,6 +91,7 @@ public:
 			auto img1 = nearest_row->second.cam1.value().load();
 
 #ifdef INFINITE_QUEUE
+			#error
 			std::this_thread::sleep_for(
 				std::chrono::nanoseconds{nearest_row->first} - std::chrono::nanoseconds{dataset_first_time} - _m_rtc->time_since_start() - std::chrono::milliseconds{4}
 			);
@@ -116,7 +117,8 @@ public:
 			// 	;
 			// abort();
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds{5});
+		// std::this_thread::sleep_for(std::chrono::milliseconds{5});
+
 		// auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
 		// if (s > 5.0f) {
 		// 	std::cout << "Took " << s << std::endl;

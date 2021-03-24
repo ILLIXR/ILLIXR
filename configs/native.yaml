@@ -34,7 +34,7 @@ loader:
   name: native
 
   # run in GDB:
-  # command: sudo gdb -q --args env ASAN_OPTIONS=new_delete_type_mismatch=0 ILLIXR_RUN_DURATION=10 $env_cmd
+  # command: sudo gdb -q --args env ILLIXR_RUN_DURATION=10 $env_cmd
 
   # command: printf "%s " $env_cmd
   command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=20 $env_cmd
@@ -42,7 +42,7 @@ loader:
 
   cpu_freq_ghz: 5.3
 
-  log_stdout: scheduled.log
+  # log_stdout: scheduled.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
 profile: opt

@@ -3,7 +3,7 @@
 CXX := clang++-10
 STDCXX ?= c++17
 WARNINGS ?= -Wall -Wextra -Werror
-DBG_FLAGS ?= -Og -g -fsanitize=address,undefined
+DBG_FLAGS ?= -Og -g -fsanitize=undefined
 #-fsanitize=thread
 # Unfortunately, we have what I believe to be a false-positive TSan datarace in Switchboard.
 # Therefore, I will not enable TSan.

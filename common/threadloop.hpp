@@ -34,7 +34,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, thread_id_publisher{sb->get_writer<thread_info>(std::to_string(id) + "_thread_id")}
 		, completion_publisher{sb->get_writer<switchboard::event_wrapper<bool>>(std::to_string(id) + "_completion")}
-		, is_scheduled{is_scheduled_ && false}
+		, is_scheduled{is_scheduled_}
 	{ }
 
 	/**

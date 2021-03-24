@@ -56,7 +56,7 @@ public:
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 		, log{"timewarp.csv"}
 	{
-		log << "iteration,vsync,start,stop,sleep\n";
+		log << "iteration,last_vsync,start,stop,sleep_duration,vsync,completion,next_vsync\n";
 	}
 
 private:
@@ -298,15 +298,15 @@ public:
 
 		log
 			<< iteration_no << ','
-			<< std::chrono::duration_cast<std::chrono::nanoseconds>(GetNextSwapTimeEstimate().time_since_epoch()).count() << ','
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(stop.time_since_epoch()).count() << ','
-			<< std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count() << '\n';
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count() << ',';
 
 		if(_m_eyebuffer.get_ro_nullable()) {
 			return skip_option::run;
 		} else {
-			std::this_thread::sleep_for(std::chrono::milliseconds{50});
+			std::this_thread::sleep_for(std::chrono::milliseconds{5});
 			// Null means system is nothing has been pushed yet
 			// because not all components are initialized yet
 			return skip_option::skip_and_yield;
@@ -560,6 +560,8 @@ public:
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();
+		log
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ',';
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
 		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_point>{GetNextSwapTimeEstimate()});
@@ -601,6 +603,10 @@ public:
 		// 	{_m_rtc->now()},
 		// 	{std::chrono::nanoseconds(elapsed_time)},
 		// }});
+
+		log
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() << ','
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(GetNextSwapTimeEstimate().time_since_epoch()).count() << '\n';
 	}
 
 	virtual ~timewarp_gl() override {

@@ -46,7 +46,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
        {"idle_cycles", typeid(std::size_t)},
 }};
 
-	static void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb);
+static void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb);
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -241,9 +241,9 @@ private:
 			, _m_flush_on_read{flush_on_read}
 			, _m_thread{
 						[this]{this->thread_body();},
-						[&]{
+						[this]{
 
-							std::string name = "s_" + std::to_string(plugin_id) + "_" + topic_name;
+							std::string name = "s_" + std::to_string(_m_plugin_id) + "_" + _m_topic_name;
 							name = name.substr(0, 14);
 							errno = 0;
 							[[maybe_unused]] int rc = pthread_setname_np(pthread_self(), name.c_str());
@@ -251,6 +251,7 @@ private:
 								std::cerr << strerror(errno) << std::endl;
 							}
 							assert(!rc);
+							thread_on_start(_m_thread, _m_plugin_id, pb);
 						},
 						[this]{this->thread_on_stop();},
 						cpu_timer::make_type_eraser<FrameInfo>(std::to_string(_m_plugin_id), _m_topic_name, 0)
@@ -263,7 +264,7 @@ private:
 			if (_m_plugin_id == 1) {
 				std::cerr << "scheduler_thread.set_priority(4)\n";
 				_m_thread.set_priority(4);
-			} else if (_m_plugin_id == 1 || _m_plugin_id == 3) {
+			} else if (_m_plugin_id == 3 || _m_plugin_id == 7) {
 				_m_thread.set_priority(3);
 			}/* else {
 				std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";

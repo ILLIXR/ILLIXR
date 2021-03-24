@@ -6,7 +6,7 @@ namespace ILLIXR {
 
 	static const sqlite::schema site_info_schema {{
 		{"plugin", sqlite::type_TEXT},
-		{"topic_name", sqlite::type_INTEGER},
+		{"topic_name", sqlite::type_TEXT},
 		{"serial_no", sqlite::type_INTEGER},
 		{"time", sqlite::type_INTEGER},
 	}};
