@@ -482,9 +482,9 @@ public:
 		// Init and verify GLEW
 		const GLenum glew_err = glewInit();
 		if (glew_err != GLEW_OK) {
-            std::cerr << "[gldemo] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
+            std::cerr << "[debugview] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
 			glfwDestroyWindow(gui_window);
-            ILLIXR::abort("[gldemo] Failed to initialize GLEW");
+            ILLIXR::abort("[debugview] Failed to initialize GLEW");
 		}
 		RAC_ERRNO_MSG("debugview after glewInit");
 
@@ -513,7 +513,7 @@ public:
 		modelViewAttr = glGetUniformLocation(demoShaderProgram, "u_modelview");
 		projectionAttr = glGetUniformLocation(demoShaderProgram, "u_projection");
 		colorUniform = glGetUniformLocation(demoShaderProgram, "u_color");
-		RAC_ERRNO_MSG("gldemo after glGetUniformLocation");
+		RAC_ERRNO_MSG("debugview after glGetUniformLocation");
 
 		// Load/initialize the demo scene.
 		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");

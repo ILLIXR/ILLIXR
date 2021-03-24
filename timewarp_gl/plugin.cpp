@@ -403,8 +403,8 @@ public:
 		const GLenum glew_err = glewInit();
 		if (glew_err != GLEW_OK) {
 			/// TODO: Clean up?
-            std::cerr << "[gldemo] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
-            ILLIXR::abort("[gldemo] Failed to initialize GLEW");
+            std::cerr << "[timewarp_gl] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
+            ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
 		}
 
 		glEnable(GL_DEBUG_OUTPUT);
