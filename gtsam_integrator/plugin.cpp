@@ -23,11 +23,22 @@
 using ImuBias = gtsam::imuBias::ConstantBias;
 using namespace ILLIXR;
 
-typedef struct {
+struct imu_type {
     double timestamp;
     Eigen::Matrix<double, 3, 1> wm;
     Eigen::Matrix<double, 3, 1> am;
-} imu_type;
+
+
+	imu_type(
+			 double timestamp_,
+			 Eigen::Matrix<double, 3, 1> wm_,
+			 Eigen::Matrix<double, 3, 1> am_
+			 )
+		: timestamp{timestamp_}
+		, wm{wm_}
+		, am{am_}
+	{ }
+};
 
 
 class imu_integrator : public plugin {
@@ -45,13 +56,14 @@ public:
     }
 
     void callback(switchboard::ptr<const imu_cam_type> datum) {
-        double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
+		double timestamp_in_seconds = std::chrono::duration<double, std::chrono::seconds::period>{datum->dataset_time}.count();
 
-        imu_type data;
-        data.timestamp = timestamp_in_seconds;
-        data.wm = (datum->angular_v).cast<double>();
-        data.am = (datum->linear_a).cast<double>();
-        _imu_vec.emplace_back(data);
+        _imu_vec.emplace_back(
+			// emplace_back forwards these arguments to the constructor of imu_type
+			timestamp_in_seconds,
+			(datum->angular_v).cast<double>(),
+			(datum->linear_a).cast<double>()
+		);
 
         clean_imu_vec(timestamp_in_seconds);
         propagate_imu_values(timestamp_in_seconds, datum->time);
@@ -161,7 +173,7 @@ private:
 
 
     // Remove IMU values older than 'IMU_TTL' from the imu buffer
-    void clean_imu_vec(const double& timestamp) {
+    void clean_imu_vec(double timestamp) {
         auto imu_iterator = _imu_vec.begin();
 
         // Since the vector is ordered oldest to latest, keep deleting until you
@@ -176,7 +188,7 @@ private:
     }
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-    void propagate_imu_values(const double& timestamp, const time_type& real_time) {
+    void propagate_imu_values(double timestamp, const time_point& real_time) {
         auto input_values = _m_imu_integrator_input.get_ro_nullable();
         if (input_values == nullptr) {
             return;
@@ -308,14 +320,12 @@ private:
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
     static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, const double& timestamp) {
-        imu_type data;
-        data.timestamp = timestamp;
-
         const double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
-        data.am = (1 - lambda) * imu_1.am + lambda * imu_2.am;
-        data.wm = (1 - lambda) * imu_1.wm + lambda * imu_2.wm;
-
-        return data;
+        return {
+			timestamp,
+			(1 - lambda) * imu_1.am + lambda * imu_2.am,
+			(1 - lambda) * imu_1.wm + lambda * imu_2.wm
+		};
     }
 };
 
