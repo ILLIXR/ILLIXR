@@ -32,6 +32,7 @@ public:
         , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
     {
         sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
             callback(datum);
@@ -61,6 +62,8 @@ private:
 
     // Write IMU Biases for PP
     switchboard::writer<imu_raw_type> _m_imu_raw;
+
+	const std::shared_ptr<RelativeClock> _m_clock;
 
     std::vector<imu_type> _imu_vec;
 
