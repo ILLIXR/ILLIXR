@@ -28,6 +28,8 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
         {
+            cam_data.iteration = -1;
+            accel_data.iteration = -1;
             cfg.disable_all_streams();
             configure_camera();
         }
@@ -308,4 +310,3 @@ private:
 };
 
 PLUGIN_MAIN(realsense);
-
