@@ -36,7 +36,7 @@ public:
 	}
 
 	void callback(switchboard::ptr<const imu_cam_type> datum) {
-		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
+		double timestamp_in_seconds = std::chrono::duration<double, std::chrono::seconds::period>{datum->dataset_time}.count();
 
 		imu_type data;
         data.timestamp = timestamp_in_seconds;
@@ -80,11 +80,11 @@ private:
 	}
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
-	void propagate_imu_values(double timestamp, time_type real_time) {
-        auto input_values = _m_imu_integrator_input.get_ro_nullable();
-        if (!input_values) {
-            return;
-        }
+	void propagate_imu_values(double timestamp, time_point real_time) {
+		auto input_values = _m_imu_integrator_input.get_ro();
+		if (input_values == NULL) {
+			return;
+		}
 
 		if (!has_last_offset) {
             /// TODO: Should be set and tested at the end of this function to avoid staleness from VIO.
