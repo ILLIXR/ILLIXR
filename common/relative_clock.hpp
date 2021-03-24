@@ -48,6 +48,10 @@ private:
 using time_point = RelativeClock::time_point;
 using duration = RelativeClock::duration;
 
+template <typename unit = std::ratio<1>> double duration2double(duration dur) {
+	return std::chrono::duration<double, unit>{dur}.count();
+}
+
 constexpr duration freq2period(double fps) {
 	return duration{static_cast<size_t>(std::chrono::nanoseconds{std::chrono::seconds{1}}.count() / fps)};
 }

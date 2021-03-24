@@ -67,7 +67,7 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-			double vsync_in = std::chrono::duration<double, std::milli>{*next_vsync - now}.count();
+			double vsync_in = duration2double<std::milli>(*next_vsync - now);
             std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
 		}
 #endif
@@ -90,7 +90,7 @@ public:
 
 #ifndef NDEBUG
 			if (log_count > LOG_PERIOD) {
-				double wait_in = std::chrono::duration<double, std::milli>{wait_time - now}.count();
+				double wait_in = duration2double<std::milli>(wait_time - now);
                 std::cout << "\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in " << wait_in << "ms" << std::endl;
 			}
 #endif
@@ -197,7 +197,7 @@ public:
 			}
 
 #ifndef NDEBUG
-			const double frame_duration_s = std::chrono::duration<double, std::chrono::seconds::period>{_m_clock->now() - lastTime}.count();
+			const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
             const double fps = 1.0 / frame_duration_s;
 
 			if (log_count > LOG_PERIOD) {
