@@ -158,6 +158,7 @@ public:
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
     {
         camera_thread_.start();
     }
@@ -184,15 +185,18 @@ protected:
         // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
         // Time as ullong (nanoseconds)
-        imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
+        ullong imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
 
         // Time as time_point
-        using time_point = std::chrono::system_clock::time_point;
-        time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(sensors_data.imu.timestamp.getNanoseconds()))};
+		if (!_m_first_imu_time) {
+			_m_first_imu_time = imu_time;
+			_m_first_real_time = _m_clock->now();
+		}
+		time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
-        la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
-        av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
+		Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x , sensors_data.imu.linear_acceleration_uncalibrated.y, sensors_data.imu.linear_acceleration_uncalibrated.z };
+        Eigen::Vector3f av = {sensors_data.imu.angular_velocity_uncalibrated.x  * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI/180), sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI/180)};
 
         std::optional<cv::Mat> img0 = std::nullopt;
         std::optional<cv::Mat> img1 = std::nullopt;
@@ -247,17 +251,15 @@ private:
     // IMU
     SensorsData sensors_data;
     Timestamp last_imu_ts = 0;
-    Eigen::Vector3f la;
-    Eigen::Vector3f av;
-
-    // Timestamps
-    time_type t;
-    ullong imu_time;
 
     std::size_t last_serial_no {0};
 
     // Logger
     record_coalescer it_log;
+
+	std::optional<ullong> _m_first_imu_time;
+	std::optional<time_point> _m_first_real_time;
+	const std::shared_ptr<const RelativeClock> _m_clock;
 };
 
 // This line makes the plugin importable by Spindle

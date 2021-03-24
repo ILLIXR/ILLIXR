@@ -30,7 +30,7 @@ public:
 	static_assert(std::chrono::steady_clock::is_steady);
 
 	time_point now() const {
-		assert(_m_started && "Can't call now() before this clock has been start()ed.");
+		assert(_m_start > std::chrono::steady_clock::time_point{} && "Can't call now() before this clock has been start()ed.");
 		return time_point{std::chrono::steady_clock::now() - _m_start};
 	}
 
@@ -39,12 +39,10 @@ public:
 	 */
 	void start() {
 		_m_start = std::chrono::steady_clock::now();
-		_m_started = true;
 	}
 
 private:
 	std::chrono::steady_clock::time_point _m_start;
-	bool _m_started = false;
 };
 
 using time_point = RelativeClock::time_point;
