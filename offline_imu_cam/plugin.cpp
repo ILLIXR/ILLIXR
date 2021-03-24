@@ -36,6 +36,7 @@ protected:
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
 			dataset_now = _m_sensor_data_it->first;
+
 			std::this_thread::sleep_for(
 				RelativeClock::time_point{std::chrono::nanoseconds{dataset_now - dataset_first_time}} - _m_clock->now()
 			);

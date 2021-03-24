@@ -16,11 +16,18 @@ namespace ILLIXR {
 					std::cout << std::boolalpha << r.get_value<bool>(i);
 				} else if (rh.get_column_type(i) == typeid(double)) {
 					std::cout << r.get_value<double>(i);
+				} else if (rh.get_column_type(i) == typeid(duration)) {
+					auto val = r.get_value<duration>(i);
+					std::cout << static_cast<long long>(std::chrono::nanoseconds{val}.count());
+				} else if (rh.get_column_type(i) == typeid(time_point)) {
+					auto val = r.get_value<time_point>(i).time_since_epoch();
+					std::cout << static_cast<long long>(std::chrono::nanoseconds{val}.count());
 				} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
-					std::cout << static_cast<long long>(r.get_value<std::chrono::nanoseconds>(i).count());
+					auto val = r.get_value<std::chrono::nanoseconds>(i);
+					std::cout << static_cast<long long>(std::chrono::nanoseconds{val}.count());
 				} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
 					auto val = r.get_value<std::chrono::high_resolution_clock::time_point>(i).time_since_epoch();
-					std::cout << static_cast<long long>(std::chrono::duration_cast<std::chrono::nanoseconds>(val).count());
+					std::cout << static_cast<long long>(std::chrono::nanoseconds{val}.count());
 				} else if (rh.get_column_type(i) == typeid(std::string)) {
 					std::cout << r.get_value<std::string>(i);
 				} else {
