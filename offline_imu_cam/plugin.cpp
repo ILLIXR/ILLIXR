@@ -96,8 +96,8 @@ protected:
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
 			(sensor_datum.imu0.value().linear_a).cast<float>(),
-			cam0,
-			cam1,
+			*(cam0.value()),
+			*(cam1.value()),
 			dataset_now,
         };
         switchboard::ptr<imu_cam_type> datum_imu_cam = _m_imu_cam.allocate<imu_cam_type>(std::move(datum_imu_cam_tmp));

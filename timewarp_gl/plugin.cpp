@@ -697,7 +697,7 @@ public:
                     static_cast<int>(++_offload_seq), /// TODO: Should texture_pose.seq be a long long too?
                     offload_time,
                     image,
-                    lastSwapTime,
+                    time_last_swap,
                     latest_pose.pose.position,
                     latest_pose.pose.orientation,
                     most_recent_frame->render_pose.pose.orientation
