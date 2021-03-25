@@ -97,9 +97,10 @@ public:
 			);
 #endif
 
-			CPU_TIMER_TIME_EVENT_INFO(true, false, "cam_in", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "", 0, 0));
+			auto real_now = _m_rtc->get_start() + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
+			CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "cam", 0, real_now));
 			_m_cam_publisher.put(new (_m_cam_publisher.allocate()) cam_type {
-				time_since_start + _m_rtc->get_start(),
+				real_now,
 				img0,
 				img1,
 				nearest_row->first

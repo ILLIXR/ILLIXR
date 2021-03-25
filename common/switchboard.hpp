@@ -350,7 +350,7 @@ private:
 			// if (this_event) {
 			// 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
 			// }
-			CPU_TIMER_TIME_EVENT_INFO(true, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no));
+			CPU_TIMER_TIME_EVENT_INFO(true, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no-1));
 			return this_event;
 		}
 
@@ -364,7 +364,7 @@ private:
 
 			/* The pointer that this gets exchanged with needs to get dropped. */
 			size_t serial_no = _m_latest_index.load() + 1;
-			CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no));
+			CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no-1));
 			size_t index = serial_no % _m_latest_buffer_size;
 			_m_latest_buffer[index] = this_event;
 			_m_latest_index++;

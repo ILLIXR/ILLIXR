@@ -556,10 +556,15 @@ public:
 		// TODO: GLX V SYNCH SWAP BUFFER
 		[[maybe_unused]] auto beforeSwap = glfwGetTime();
 
+		CPU_TIMER_TIME_EVENT_INFO(true, false, "exit", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "frame_ready", 0));
+
 		glXSwapBuffers(xwin->dpy, xwin->win);
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();
+
+		CPU_TIMER_TIME_EVENT_INFO(false, false, "exit", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "vsync", 0, lastSwapTime));
+
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ',';
 

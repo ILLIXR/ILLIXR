@@ -19,7 +19,10 @@ public:
 		, dataset_now{0}
 		, imu_cam_log{record_logger_}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-	{ }
+		, _m_log{"offline_imu.csv"}
+	{
+		_m_log << "offline_imu_put\n";
+	}
 
 protected:
 	virtual skip_option _p_should_skip() override {
@@ -43,15 +46,16 @@ protected:
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
 		time_point real_now = _m_rtc->get_start() + std::chrono::nanoseconds{dataset_now - dataset_first_time};
+		CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "imu", 0, real_now));
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
+		_m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_type{
 			real_now,
 			(sensor_datum.imu0.angular_v).cast<float>(),
 			(sensor_datum.imu0.linear_a).cast<float>(),
 			dataset_now,
 		});
-
 		++_m_sensor_data_it;
 	}
 
@@ -69,6 +73,8 @@ private:
 	record_coalescer imu_cam_log;
 
 	std::shared_ptr<realtime_clock> _m_rtc;
+
+	std::ofstream _m_log;
 };
 
 PLUGIN_MAIN(offline_imu)

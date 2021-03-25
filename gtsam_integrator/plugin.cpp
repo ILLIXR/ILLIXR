@@ -39,7 +39,9 @@ public:
 		, _m_imu{sb->get_reader<imu_type>("imu")}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+		, _m_log{"gtsam_wakeup.csv"}
 	{
+		_m_log << "gtsam_wakeup\n";
 		sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
 			callback(datum);
 		});
@@ -55,6 +57,7 @@ public:
 	// }
 
 	void callback(switchboard::ptr<const imu_type> datum) {
+		_m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
 		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC.count());
 
 		imu_type2 data;
@@ -84,6 +87,8 @@ private:
 
 	[[maybe_unused]] double last_cam_time = 0;
 	double last_imu_offset = 0;
+
+	std::ofstream _m_log;
 
 	// Remove IMU values older than 'IMU_TTL' from the imu buffer
 	void clean_imu_vec(double timestamp) {
