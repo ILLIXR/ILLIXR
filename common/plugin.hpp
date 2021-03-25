@@ -5,13 +5,15 @@
 
 namespace ILLIXR {
 
+    using plugin_id_t = std::size_t;
+
 	/*
 	 * This gets included, but it is functionally 'private'. Hence the double-underscores.
 	 */
 	const record_header __plugin_start_header {
 		"plugin_name",
 		{
-			{"plugin_id", typeid(std::size_t)},
+			{"plugin_id", typeid(plugin_id_t)},
 			{"plugin_name", typeid(std::string)},
 		},
 	};

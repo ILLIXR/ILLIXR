@@ -1,8 +1,11 @@
 #include <csignal>
+#include <unistd.h> /// Not portable
 #include "runtime_impl.hpp"
+#include "common/global_module_defs.hpp"
 
 
 constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
+constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION {10};
 
 ILLIXR::runtime* r;
 
@@ -73,6 +76,18 @@ int main(int argc, char* const* argv) {
 
 	/// Shutting down method 1: Ctrl+C
     std::signal(SIGINT, sigint_handler);
+
+#ifndef NDEBUG
+    const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
+    if (enable_pre_sleep) {
+        const pid_t pid = getpid();
+        std::cout << "[main] Pre-sleep enabled." << std::endl
+                  << "[main] PID: " << pid << std::endl
+                  << "[main] Sleeping for " << ILLIXR_PRE_SLEEP_DURATION << " seconds ..." << std::endl;
+        sleep(ILLIXR_PRE_SLEEP_DURATION);
+        std::cout << "[main] Resuming ..." << std::endl;
+    }
+#endif /// NDEBUG
 
 	/// Shutting down method 2: Run timer
 	std::chrono::seconds run_duration = 
