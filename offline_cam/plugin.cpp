@@ -117,7 +117,7 @@ public:
 			// 	;
 			// abort();
 		}
-		// std::this_thread::sleep_for(std::chrono::milliseconds{5});
+		std::this_thread::sleep_for(std::chrono::milliseconds{5});
 
 		// auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
 		// if (s > 5.0f) {

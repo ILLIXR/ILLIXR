@@ -241,8 +241,8 @@ TEST_F(SwitchboardTest, TestLatency) {
 		auto period = MAX_PERIOD / (2 << i);
 		auto iters = std::max(size_t(ns{ms{200}} / period), size_t(5));
 
-		std::array<managed_thread*, 20> busy_threads;
-		for (int j = 0; j < 20; ++j) {
+		std::array<managed_thread*, 10> busy_threads;
+		for (size_t j = 0; j < busy_threads.size(); ++j) {
 			busy_threads.at(j) = new managed_thread{[] {
 				sieve(1000);
 			}};
@@ -253,6 +253,15 @@ TEST_F(SwitchboardTest, TestLatency) {
 			csv << ns{period}.count() << ',' << ns{std::chrono::system_clock::now() - **datum}.count() << '\n';
 		});
 		reader.set_priority(4);
+
+		for (size_t i = 0; i < 10; ++i) {
+		sb.schedule<event>(0, "data", [&](switchboard::ptr<const event>&&, std::size_t) {
+			auto start = std::chrono::system_clock::now();
+			while (std::chrono::system_clock::now() < start + ms{100}) {
+				sieve(2000);
+			}
+		});
+		}
 
 		Event writer_done;
 		managed_thread writer {[&] {
