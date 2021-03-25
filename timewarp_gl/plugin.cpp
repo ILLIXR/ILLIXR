@@ -500,7 +500,12 @@ public:
 
 		glDepthFunc(GL_LEQUAL);
 
-		auto most_recent_frame = _m_eyebuffer.get();
+        switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro_nullable();
+        
+        if (most_recent_frame == nullptr) {
+            /// No eye buffer received
+            return;
+        }
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
