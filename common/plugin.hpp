@@ -54,9 +54,9 @@ namespace ILLIXR {
 			, id{gen_guid_->get()}
 		{ }
 
-		virtual ~plugin() { }
+		virtual ~plugin() = default;
 
-		std::string get_name() { return name; }
+		std::string get_name() const noexcept { return name; }
 
 	protected:
 		std::string name;

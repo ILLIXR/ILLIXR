@@ -158,7 +158,8 @@ public:
 					throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(j).name()} + std::string{" not implemented"}};
 				}
 			}
-			assert(errno == 0 && "Errno should not be set before process cmd execute");
+			RAC_ERRNO_MSG("sqlite_record_logger set errno before process cmd execute");
+
 			cmd.execute();
 			RAC_ERRNO_MSG("sqlite_record_logger after process cmd execute");
 		}

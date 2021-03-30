@@ -108,7 +108,7 @@ namespace ILLIXR {
 	};
 
 	// Output of the IMU integrator to be used by pose prediction
-	struct imu_raw_type : switchboard::event{
+	struct imu_raw_type : public switchboard::event {
 		// Biases from the last two IMU integration iterations used by RK4 for pose predict
 		Eigen::Matrix<double,3,1> w_hat;
 		Eigen::Matrix<double,3,1> a_hat;
@@ -139,7 +139,7 @@ namespace ILLIXR {
 		{ }
 	};
 
-	struct pose_type : switchboard::event {
+	struct pose_type : public switchboard::event {
 		time_type sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
@@ -162,7 +162,7 @@ namespace ILLIXR {
 	// Using arrays as a swapchain
 	// Array of left eyes, array of right eyes
 	// This more closely matches the format used by Monado
-	struct rendered_frame : switchboard::event {
+	struct rendered_frame : public switchboard::event {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
@@ -218,7 +218,7 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 
-    struct texture_pose : switchboard::event {
+    struct texture_pose : public switchboard::event {
         int seq; /// TODO: Should texture_pose.seq be a long long
         int offload_time;
         unsigned char *image;
