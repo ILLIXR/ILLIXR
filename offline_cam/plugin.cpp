@@ -58,7 +58,7 @@ public:
 			// Earliest after
 			// nearest_row = after_row;
 
-			// Most recent row
+			// Latest before
 			after_row--;
 			nearest_row = after_row /* after_row - 1 */;
 
@@ -97,6 +97,8 @@ public:
 			);
 #endif
 
+
+			// 1970s
 			auto real_now = _m_rtc->get_start() + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
 			CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "cam", 0, real_now));
 			_m_cam_publisher.put(new (_m_cam_publisher.allocate()) cam_type {
@@ -118,7 +120,7 @@ public:
 			// 	;
 			// abort();
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds{5});
+		// std::this_thread::sleep_for(std::chrono::milliseconds{5});
 
 		// auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
 		// if (s > 5.0f) {

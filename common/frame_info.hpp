@@ -28,7 +28,15 @@ namespace ILLIXR {
 			row.emplace_back(plugin);
 			row.emplace_back(std::string_view{topic});
 			row.emplace_back(serial_no);
-			row.emplace_back(int64_t(time.time_since_epoch().count()));
+			if (time != std::chrono::steady_clock::time_point{}) {
+				static std::optional<std::chrono::nanoseconds> process_start;
+				if (!process_start) {
+					process_start = cpu_timer::get_process().get_start();
+				}
+				row.emplace_back(int64_t((time.time_since_epoch() - *process_start).count()));
+			} else {
+				row.emplace_back(int64_t(0));
+			}
 		}
 	};
 
