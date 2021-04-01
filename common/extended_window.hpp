@@ -66,7 +66,7 @@ namespace ILLIXR {
 #endif
             assert(errno == 0 && "Errno should not be set before glXChooseFBConfig");
 
-            int fbcount;
+            int fbcount = 0;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
             if (!fbc) {
                 ILLIXR::abort("Failed to retrieve a framebuffer config");

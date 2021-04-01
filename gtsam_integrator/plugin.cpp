@@ -80,13 +80,14 @@ private:
     class PimObject
     {
     public:
-        using in_t      = ILLIXR::imu_integrator_input;
+        using imu_int_t = ILLIXR::imu_integrator_input;
+        using imu_t     = imu_type;
         using bias_t    = ImuBias;
         using nav_t     = gtsam::NavState;
         using pim_t     = gtsam::PreintegratedCombinedMeasurements;
         using pim_ptr_t = gtsam::PreintegrationType*;
 
-        PimObject(const in_t& imu_int_input)
+        PimObject(const imu_int_t& imu_int_input)
             : _imu_bias{imu_int_input.biasAcc, imu_int_input.biasGyro}
             , _pim{nullptr}
         {
@@ -97,7 +98,7 @@ private:
             _params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
             _params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-            auto _params_ptr = boost::make_shared<pim_t::Params>(_params);
+            auto _params_ptr = boost::make_shared<pim_t::Params>(std::move(_params));
             _pim = new pim_t{_params_ptr, _imu_bias};
             _params_ptr.reset();
             resetIntegrationAndSetBias(imu_int_input);
@@ -111,7 +112,7 @@ private:
             /// delete _pim;
         };
 
-        void resetIntegrationAndSetBias(const in_t& imu_int_input) noexcept
+        void resetIntegrationAndSetBias(const imu_int_t& imu_int_input) noexcept
         {
             assert(_pim != nullptr && "_pim should not be null");
 
@@ -124,7 +125,7 @@ private:
             };
         }
 
-        void integrateMeasurement(const imu_type& imu_input, const imu_type& imu_input_next) noexcept
+        void integrateMeasurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept
         {
             assert(_pim != nullptr && "_pim shuold not be null");
 
@@ -159,7 +160,7 @@ private:
 
 
     // Remove IMU values older than 'IMU_TTL' from the imu buffer
-    void clean_imu_vec(double timestamp) {
+    void clean_imu_vec(const double& timestamp) {
         auto imu_iterator = _imu_vec.begin();
 
         // Since the vector is ordered oldest to latest, keep deleting until you
@@ -174,7 +175,7 @@ private:
     }
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-    void propagate_imu_values(double timestamp, time_type real_time) {
+    void propagate_imu_values(const double& timestamp, const time_type& real_time) {
         auto input_values = _m_imu_integrator_input.get_ro_nullable();
         if (input_values == nullptr) {
             return;
@@ -256,30 +257,34 @@ private:
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-    std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
+    std::vector<imu_type> select_imu_readings(
+        const std::vector<imu_type>& imu_data,
+        const double& time_begin,
+        const double& time_end)
+    {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {
             return prop_data;
         }
 
-        for (unsigned i = 0; i < imu_data.size()-1; i++) {
+        for (std::size_t i = 0; i < imu_data.size() - 1; i++) {
 
             // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
-            if (imu_data.at(i+1).timestamp > time_begin && imu_data.at(i).timestamp < time_begin) {
-                imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_begin);
+            if (imu_data[i + 1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
+                imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_begin);
                 prop_data.push_back(data);
                 continue;
             }
 
             // IMU is within time_begin and time_end
-            if (imu_data.at(i).timestamp >= time_begin && imu_data.at(i+1).timestamp <= time_end) {
+            if (imu_data[i].timestamp >= time_begin && imu_data[i + 1].timestamp <= time_end) {
                 prop_data.push_back(imu_data.at(i));
                 continue;
             }
 
             // IMU is past time_end
-            if (imu_data.at(i+1).timestamp > time_end) {
-                imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
+            if (imu_data[i + 1].timestamp > time_end) {
+                imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_end);
                 prop_data.push_back(data);
                 break;
             }
@@ -287,9 +292,9 @@ private:
 
         // Loop through and ensure we do not have an zero dt values
         // This would cause the noise covariance to be Infinity
-        for (size_t i = 0; i < prop_data.size()-1; i++) {
-            if (std::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < 1e-12) {
-                prop_data.erase(prop_data.begin()+i);
+        for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
+            if (std::abs(prop_data[i + 1].timestamp - prop_data[i].timestamp) < 1e-12) {
+                prop_data.erase(prop_data.begin() + i);
                 i--;
             }
         }
@@ -298,11 +303,11 @@ private:
     }
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-    static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, double timestamp) {
+    static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, const double& timestamp) {
         imu_type data;
         data.timestamp = timestamp;
 
-        double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
+        const double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
         data.am = (1 - lambda) * imu_1.am + lambda * imu_2.am;
         data.wm = (1 - lambda) * imu_1.wm + lambda * imu_2.wm;
 
