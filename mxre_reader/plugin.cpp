@@ -76,4 +76,5 @@ class mxre_reader : public threadloop {
     std::unique_ptr<writer<pose_type>> _m_pose;
 	  std::unique_ptr<writer<imu_integrator_input>> _m_imu_integrator_input;
 
-    mxre::types::ILLIXRSink<cv::Mat> illixrSink;
+    mxre::kernels::ILLIXRSink<cv::Mat> illixrSink;
+};
