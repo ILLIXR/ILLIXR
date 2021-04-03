@@ -89,6 +89,10 @@ protected:
 		}
 #endif /// NDEBUG
 
+		// TODO: NEED TO CONSTRUCT THE TYPE TO BE SENT TO MXRE
+		cv::Mat img0{*datum->img0.value()};
+    	illixrSource.send(&img0);
+
 		auto datum = new imu_cam_type{
 			real_now,
 			(sensor_datum.imu0.value().angular_v).cast<float>(),
@@ -113,6 +117,7 @@ public:
 		// be done at thread-launch time, not load-time.
 		auto now = std::chrono::system_clock::now();
 		real_first_time = std::chrono::time_point_cast<std::chrono::seconds>(now);
+		illixrSource.setup("source", MX_DTYPE_CVMAT);
 	}
 
 private:
@@ -121,6 +126,7 @@ private:
 	const std::shared_ptr<switchboard> _m_sb;
 	std::unique_ptr<writer<imu_cam_type>> _m_imu_cam;
 	std::unique_ptr<writer<imu_integrator_seq>> _m_imu_integrator;
+	mxre::types::ILLIXRSource<cv::Mat> illixrSource;
 
 	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;
