@@ -146,6 +146,7 @@ pkg_dep_list_math=(
     libsuitesparse-dev
     libparmetis-dev
     libatlas-base-dev
+    libeigen3-dev
 ) # End list
 
 pkg_dep_list_nogroup=(
@@ -202,7 +203,7 @@ pkg_dep_groups="common gl mesa display image sound usb thread math nogroup"
 ## Docker ##
 
 # If prompted to use docker, add the docker's package groups to our lists
-if [ "${use_docker}" == "yes" ]; then
+if [ "${use_docker}" = "yes" ]; then
     pkg_dep_groups_prereq+=" prereq_docker"
     pkg_dep_groups+=" docker"
 fi
@@ -211,7 +212,7 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${distro_name}" == "ubuntu" ] && [ "${distro_name}" == "18.04" ]; then
+if [ "${distro_name}" = "ubuntu" ] && [ "${distro_name}" = "18.04" ]; then
     case "${arch_name}" in
         x86_64)     use_realsense="yes"
                     pkg_dep_groups+=" realsense_anyarch"
@@ -238,15 +239,15 @@ fi
 ## CUDA ##
 
 # If CUDA is prompted for installation, check for a CUDA compatible NVIDIA GPU
-# Disable installation if not supported (only Ubuntu 18 for now) or no hardware is detected
+# Disable installation if not supported (only Ubuntu 18 and 20 for now) or no hardware is detected
 # CUDA will not be reinstalled if an existing installation is detected
-if [ "${use_cuda}" == "yes" ]; then
+if [ "${use_cuda}" = "yes" ]; then
     is_atleast_ubuntu1804="$(echo "${distro_version} >= 18.04" | bc -l)"
 
-    if [ "${distro_name}" == "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" == "x86_64" ]; then
+    if [ "${distro_name}" = "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" = "x86_64" ]; then
         case "${distro_version}" in
-            #20.04)  distro_name_cuda="ubuntu2004"
-            #        ;;
+            20.04)  distro_name_cuda="ubuntu2004"
+                    ;;
             18.04)  distro_name_cuda="ubuntu1804"
                     ;;
             *)      print_warning "Bad distribution version '${distro_version}' for CUDA."
@@ -263,14 +264,27 @@ if [ "${use_cuda}" == "yes" ]; then
                         ;;
         esac
 
-        supported_hw_cuda=$(lspci | egrep -i "\<VGA\>.*\<NVIDIA\>")
+        supported_hw_cuda=$(lspci | egrep -i "\<NVIDIA\>")
 
         if [ ! -z "${supported_hw_cuda}" ]; then
+            # Check for CUDA support in the installed drivers
             driver_path_cuda="/proc/driver/nvidia/version"
-            check_compiler_cuda=$(nvcc -V)
+            if [ -e "${driver_path_cuda}" ]; then
+                check_driver_cuda=$(grep -i cuda "${driver_path_cuda}" 2>/dev/null)
+                if [ "$?" -ne 0 ] && [ ! -z "${check_driver_cuda}" ]; then
+                    driver_found_cuda="yes"
+                else
+                    driver_found_cuda="no"
+                fi
+            else
+                driver_found_cuda="no"
+            fi
+
+            # Check for CUDA compiler
+            check_compiler_cuda=$(nvcc -V 2>/dev/null)
 
             # Check if CUDA is already installed. If so, skip CUDA
-            if [ "$?" -eq 0 ] || [ -e "${driver_path_cuda}" ]; then
+            if [ "$?" -eq 0 ] || [ "${driver_found_cuda}" = "yes" ]; then
                 use_cuda="no"
                 driver_info_cuda=$(cat "${driver_path_cuda}")
                 pkg_warn_msg_cuda="Detected components of an existing CUDA installation.\n"
@@ -314,19 +328,20 @@ sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
 sudo add-apt-repository -u -y ppa:deadsnakes/ppa
 
 # Add Kitware repository (for third party Ubuntu dependencies)
-key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-latest.asc"
+dep_ver_kitware="latest"
+key_srv_url_kitware="https://apt.kitware.com/keys/kitware-archive-${dep_ver_kitware}.asc"
 repo_url_kitware="https://apt.kitware.com/ubuntu"
 add_repo "${key_srv_url_kitware}" "${repo_url_kitware}" "${distro_codename} main"
 
 # If prompted, add Docker repository (for local CI/CD debugging)
-if [ "${use_docker}" == "yes" ]; then
+if [ "${use_docker}" = "yes" ]; then
     key_srv_url_docker="https://download.docker.com/linux/ubuntu/gpg"
     repo_url_docker="https://download.docker.com/linux/ubuntu"
     add_repo "${key_srv_url_docker}" "${repo_url_docker}" "${distro_codename} stable"
 fi
 
 # If supported, add the gpg keys and repository for Intel RealSense
-if [ "${use_realsense}" == "yes" ]; then
+if [ "${use_realsense}" = "yes" ]; then
     key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
     repo_url_realsense="http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo"
     key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
@@ -334,13 +349,13 @@ if [ "${use_realsense}" == "yes" ]; then
 fi
 
 # If supported, add the keys and repository for CUDA (for GPU plugin support)
-if [ "${use_cuda}" == "yes" ]; then
+if [ "${use_cuda}" = "yes" ]; then
     repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_name_cuda}/${arch_name_cuda}"
     key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
     add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
 
-    path_cmd_cuda='export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}'
-    lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
+    path_cmd_cuda='export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}'
+    lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
     pkg_warn_msg_cuda="Before running ILLIXR with plugins using CUDA, "
     pkg_warn_msg_cuda+="make sure to update the following environment variables:\n"
     pkg_warn_msg_cuda+="> ${path_cmd_cuda}\n> ${lib64_cmd_cuda}"

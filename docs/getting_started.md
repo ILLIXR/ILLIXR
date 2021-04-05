@@ -24,9 +24,12 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
 
     <!--- language: lang-shell -->
 
-        ./install_deps.sh
+        ./install_deps.sh [--jobs <integer>]
 
-    This script installs some Ubuntu/Debian packages and builds several dependencies from source:
+    This script installs some Ubuntu/Debian packages and builds several dependencies from source.
+    Without any arguments, the script will print the help message, and proceed using default values.
+    To change the number of threads/tasks to use for building, specify using the `--jobs` argument.
+    Other available options can be inspected using the `--help` flag.
 
 1.  **Inspect `configs/native.yaml`**.
 

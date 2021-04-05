@@ -18,7 +18,15 @@ if [ -z "${illixr_nproc}" ]; then
 fi
 
 if [ -z "${build_type}" ]; then
-    export build_type="Release"
+    export build_type="RelWithDebInfo"
+fi
+
+if [ -z "${deps_log_dir}" ]; then
+    export deps_log_dir=".deps"
+fi
+
+if [ -z "${env_config_path}" ]; then
+    export env_config_path="runner/environment.yml"
 fi
 
 
