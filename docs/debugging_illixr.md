@@ -30,7 +30,7 @@ Follow these steps when a CI/CD build fails on a PR:
 -   In the build view go to the Push Docker Image tab and copy the `docker push ghcr.io/illixr/illixr-tests:<branch-name>` command.
 
 -   Then in your terminal, run:
-        
+
     <!--- language: lang-shell -->
 
         docker pull ghcr.io/illixr/illixr-tests:<branch-name>
