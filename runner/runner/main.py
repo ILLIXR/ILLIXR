@@ -217,7 +217,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"])
+            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+            KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
     )

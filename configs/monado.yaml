@@ -24,4 +24,7 @@ action:
       git_repo: https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
       version: master
     config: {}
+  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
+  
+
 profile: opt
