@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-. $HOME/miniconda3/etc/profile.d/conda.sh
+. $HOME/anaconda3/etc/profile.d/conda.sh
 
 cd "$(dirname ${0})/"
 
