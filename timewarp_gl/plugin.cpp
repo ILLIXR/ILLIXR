@@ -56,7 +56,7 @@ public:
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 		, log{"timewarp.csv"}
 	{
-		log << "iteration,last_vsync,start,stop,sleep_duration,vsync,completion,next_vsync\n";
+		log << "iteration,last_vsync,start,stop,sleep_duration,work_complete,vsync,completion,next_vsync\n";
 	}
 
 private:
@@ -557,6 +557,9 @@ public:
 		[[maybe_unused]] auto beforeSwap = glfwGetTime();
 
 		CPU_TIMER_TIME_EVENT_INFO(true, false, "exit", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "frame_ready", 0));
+
+		log
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(_m_rtc->now().time_since_epoch()).count() << ',';
 
 		glXSwapBuffers(xwin->dpy, xwin->win);
 
