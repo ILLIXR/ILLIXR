@@ -5,6 +5,7 @@ plugin_groups:
   - plugin_group:
     ## Runtime
     - path: runtime
+    - path: common
     ## Core Plugins
     - path: timewarp_gl
     - name: audio

@@ -3,6 +3,7 @@
 CXX := clang++-10
 STDCXX ?= c++17
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
+RM := rm -f
 
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
