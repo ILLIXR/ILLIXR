@@ -49,8 +49,11 @@ public:
 		});
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			// Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
 			plugin->start();
 		});
+
+		// This actually kicks off the plugins
 		pb.lookup_impl<Stoplight>()->ready();
 	}
 
@@ -82,7 +85,7 @@ public:
 
 	virtual ~runtime_impl() override {
 		if (!pb.lookup_impl<Stoplight>()->should_stop()) {
-            ILLIXR::abort("You didn't call stop() before destructing this plugin.");
+            ILLIXR::abort("You didn't call stop() before destructing the runtime.");
 		}
 		// This will be re-enabled in #225
 		// assert(errno == 0 && "errno was set during run. Maybe spurious?");
