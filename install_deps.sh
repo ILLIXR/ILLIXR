@@ -353,13 +353,20 @@ if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]; then
     else
         dep_log_path_conda="${dep_log_path}"
         src_dir_conda="${parent_dir_conda}/${dep_name_conda}"
-        print_warning "Installation log for conda not found at '${dep_log_path_conda}'."
+
+        dep_missing_msg_conda="Installation log for conda not found at '${dep_log_path_conda}'."
+        dep_missing_msg_conda+="\n  Conda may have been installed without this script (or an older version)."
+
+        print_warning "${dep_missing_msg_conda}"
+
+        if ! y_or_n "Try to create a Python environment configuration anyway?"; then
+            echo "This was the last step. Exiting early."
+            exit 0
+        fi
+
+        ## Conda may have been installed without this script
         echo "Assuming : dir <- '${src_dir_conda}'"
     fi
-
-    ## Prompt for path to conda environment configuration
-    prompt_value env_config_path "${env_config_path}"
-    env_config_path="${value_out}"
 
     cmd_conda="${src_dir_conda}/bin/conda"
     if [ -f "${cmd_conda}" ]; then
