@@ -44,7 +44,7 @@ public:
 	 * @brief Test if is set without blocking.
 	 */
 	bool is_set() const {
-		std::unique_lock<std::mutex> lock {_m_mutex};
+		std::lock_guard<std::mutex> lock {_m_mutex};
 		return _m_value;
 	}
 
