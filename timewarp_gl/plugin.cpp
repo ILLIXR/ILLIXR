@@ -51,7 +51,7 @@ public:
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
-		, _m_hologram{sb->get_writer<switchboard::event_wrapper<std::size_t>>("hologram_in")}
+		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
 		, _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
 		, timewarp_gpu_logger{record_logger_}
@@ -89,7 +89,7 @@ private:
 	switchboard::reader<rendered_frame> _m_eyebuffer;
 
 	// Switchboard plug for sending hologram calls
-	switchboard::writer<switchboard::event_wrapper<std::size_t>> _m_hologram;
+	switchboard::writer<hologram_input> _m_hologram;
 
 	// Switchboard plug for publishing vsync estimates
 	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
@@ -658,7 +658,7 @@ public:
 		}
 #endif
 		// Call Hologram
-		_m_hologram.put(_m_hologram.allocate<switchboard::event_wrapper<std::size_t>>(
+		_m_hologram.put(_m_hologram.allocate<hologram_input>(
             ++_hologram_seq
         ));
 

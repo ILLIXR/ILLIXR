@@ -5,6 +5,7 @@ This is the file where default values are defined
 #pragma once
 
 #include <string>
+#include <stdexcept>
 
 
 namespace ILLIXR {

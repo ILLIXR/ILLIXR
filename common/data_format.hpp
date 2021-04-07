@@ -185,13 +185,11 @@ namespace ILLIXR {
         }
 	};
 
-	typedef struct {
+	struct hologram_input : public switchboard::event {
 		int seq;
-	} hologram_input;
-
-	typedef struct {
-		int dummy;
-	} hologram_output;
+		hologram_input() { }
+		hologram_input(int seq_) : seq{seq_} { }
+	};
 
 	typedef struct {
 		int seq;		
