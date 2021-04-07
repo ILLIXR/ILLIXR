@@ -98,8 +98,17 @@ public:
 	void stop() {
 		_m_stop.store(true);
 	}
+
+	void wait_for_shutdown() const {
+		_m_shutdown.wait();
+	}
+
+	void shutdown_done() {
+		_m_shutdown.set();
+	}
 private:
 	Event _m_ready;
+	Event _m_shutdown;
 
 	/*
 	  I use an atomic instead of an event for this one, since it is being "checked" not "waited on."
