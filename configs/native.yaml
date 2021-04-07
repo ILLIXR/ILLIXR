@@ -1,8 +1,8 @@
 plugin_groups:
   - plugin_group:
 
-    - path: dummy/
-    # - path: ../robotics_project/scheduler_plugin/
+    # - path: dummy/
+    - path: ../robotics_project/scheduler_plugin/
       # This has to go first because the n_thread_start queue needs to be listening
       # when the other plugins actually start up
 
@@ -37,7 +37,7 @@ loader:
   # command: sudo gdb -q --args env ILLIXR_RUN_DURATION=10 $env_cmd
 
   # command: printf "%s " $env_cmd
-  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 $env_cmd
+  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 __GL_SYNC_TO_VBLANK=1 __GL_MaxFramesAllowed=1 $env_cmd
   # command: env ILLIXR_RUN_DURATION=40 $env_cmd
 
   cpu_freq_ghz: 5.3
