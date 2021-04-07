@@ -134,8 +134,8 @@ protected:
             cv::Mat{imageR_ocv},
 			cv::Mat{rgb_ocv},
             cv::Mat{depth_ocv},
-            iteration_no,
-        });
+            iteration_no
+        ));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }

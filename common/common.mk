@@ -8,7 +8,7 @@ RM := rm -f
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
-DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic -fsanitize=thread #-fsanitize=cfi -flto -fvisibility=hidden
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic

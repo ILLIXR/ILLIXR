@@ -38,7 +38,7 @@ public:
 
 	virtual skip_option _p_should_skip() override {
 		auto in = _offload_data_reader.get_ro_nullable();
-		if (in != nullptr || in->seq == _seq_expect - 1) {
+		if (in == nullptr || in->seq == _seq_expect - 1) {
 			// No new data, sleep
 			std::this_thread::sleep_for(std::chrono::milliseconds{1});
 			return skip_option::skip_and_yield;
