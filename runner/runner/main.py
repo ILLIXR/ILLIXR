@@ -41,7 +41,8 @@ def clean_one_plugin(config: Mapping[str, Any], plugin_config: Mapping[str, Any]
     name: str = plugin_config["name"] if plugin_config["name"] else os.path.basename(path_str)
     targets: List[str] = ["clean"]
     print(f"[Clean] Plugin '{name}' @ '{path_str}/'")
-    make(path, targets, plugin_config["config"])
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    make(path, targets, plugin_config["config"], env_override=env_override)
     return path
 
 
@@ -60,7 +61,7 @@ def build_one_plugin(
     targets = [plugin_so_name] + (["tests/run"] if test else [])
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
-    env_override: Mapping[str, str] = { "ILLIXR_INTEGRATION" : "yes" }
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
     make(path, targets, plugin_config["config"], env_override=env_override)
 
     return path / plugin_so_name
@@ -77,7 +78,8 @@ def build_runtime(
     runtime_config = config["runtime"]["config"]
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
-    make(runtime_path, targets, runtime_config)
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
 
@@ -144,7 +146,8 @@ def load_tests(config: Mapping[str, Any]) -> None:
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
-    make(Path("common"), ["tests/run"])
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    make(Path("common"), ["tests/run"], env_override=env_override)
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
