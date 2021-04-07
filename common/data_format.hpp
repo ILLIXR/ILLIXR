@@ -255,4 +255,9 @@ namespace ILLIXR {
 
 		std::cerr << "Thread of plugin " << _m_plugin_id << " start" << std::endl;
 	}
+
+	[[maybe_unused]] static bool is_scheduler() {
+		const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
+		return ILLIXR_SCHEDULER_str && (std::string{ILLIXR_SCHEDULER_str} == "y");
+	}
 }

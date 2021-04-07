@@ -293,7 +293,9 @@ public:
 		}
 		auto start = _m_rtc->now();
 		auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
-		std::this_thread::sleep_for(sleep_duration);
+		if (!is_scheduler()) {
+			std::this_thread::sleep_for(sleep_duration);
+		}
 		auto stop = _m_rtc->now();
 
 		log

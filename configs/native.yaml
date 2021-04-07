@@ -34,10 +34,10 @@ loader:
   name: native
 
   # run in GDB:
-  # command: sudo gdb -q --args env ILLIXR_RUN_DURATION=10 $env_cmd
+  # command: sudo gdb -q --args env ILLIXR_RUN_DURATION=10 ILLIXR_SCHEDULER=y $env_cmd
 
   # command: printf "%s " $env_cmd
-  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 __GL_SYNC_TO_VBLANK=1 __GL_MaxFramesAllowed=1 $env_cmd
+  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 ILLIXR_SCHEDULER=y __GL_SYNC_TO_VBLANK=1 __GL_MaxFramesAllowed=1 $env_cmd
   # command: env ILLIXR_RUN_DURATION=40 $env_cmd
 
   cpu_freq_ghz: 5.3

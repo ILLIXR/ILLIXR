@@ -109,7 +109,9 @@ public:
 			using namespace std::chrono_literals;
 
 			// Essentially, XRWaitFrame.
-			wait_vsync();
+			if (!is_scheduler()) {
+				wait_vsync();
+			}
 
 			glUseProgram(demoShaderProgram);
 
