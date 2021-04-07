@@ -36,6 +36,16 @@ public:
 
 	/**
 	 * @brief Starts the thread.
+	 *
+	 * This cannot go into the constructor because it starts a thread which calls
+	 * `_p_one_iteration()` which is virtual in the child class.
+	 *
+	 * Calling a virtual child method from the parent constructor will not work as expected
+	 * [1]. Instead, the ISO CPP FAQ recommends calling a `start()` method immediately after
+	 * construction [2].
+	 *
+	 * [1]: https://stackoverflow.com/questions/962132/calling-virtual-functions-inside-constructors
+	 * [2]: https://isocpp.org/wiki/faq/strange-inheritance#calling-virtuals-from-ctor-idiom
 	 */
 	virtual void start() override {
 		plugin::start();
@@ -106,6 +116,8 @@ private:
 				break;
 			}
 			case skip_option::stop:
+				// Break out of the switch AND the loop
+				// See https://stackoverflow.com/questions/27788326/breaking-out-of-nested-loop-c
 				goto break_loop;
 			}
 		}

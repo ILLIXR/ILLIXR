@@ -65,6 +65,14 @@ You can also replace any existing functionality this way.
     -   If you need custom concurrency (more complicated than a loop),
             triggered concurrency (by events fired in other plugins),
             or no concurrency then your plugin class should extend [`plugin`][13].
+			
+        - If you spin your own threads, they **must** wait for
+          `pb->lookup_impl<Stoplight>()->wait_for_ready()` the first time they
+          run. This allows the start of all threads in ILLIXR to be
+          synchronized.
+
+        - They **must** be joined-or-disowned at-or-before
+          `plugin::stop()`. This allows ILLIXR to shutdown cleanly.
 
 1.  Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
 
