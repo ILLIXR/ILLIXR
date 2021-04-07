@@ -27,8 +27,7 @@ namespace ILLIXR {
 		 */
 		virtual void stop() = 0;
 
-		virtual ~runtime() = default;
-
+		virtual ~runtime() {}
 	};
 
 #ifdef ILLIXR_MONADO_MAINLINE
