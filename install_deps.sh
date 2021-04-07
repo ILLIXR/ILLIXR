@@ -120,10 +120,10 @@ function prompt_install()
         if [ -d "${src_dir}" ]; then
             echo "Source directory '${src_dir}' already exists."
             if y_or_n "Clear directory and proceed with installation?"; then
-                rm -rf --preserve-root=all "${src_dir}"
+                rm -rf --preserve-root "${src_dir}"
                 if [ "$?" -eq 1 ]; then
                     echo "Failed to clear '${src_dir}. Trying with sudo (if interactive, Ctrl+c to abort)."
-                    sudo rm -rf --preserve-root=all "${src_dir}"
+                    sudo rm -rf --preserve-root "${src_dir}"
                 fi
             else
                 return 1
