@@ -98,7 +98,6 @@ protected:
 			dataset_now,
 		};
 		//assert((datum->img0.has_value() && datum->img1.has_value()) || (!datum->img0.has_value() && !datum->img1.has_value()));
-		illixrSource.send(datum);
 		_m_imu_cam->put(datum);
 
 		auto imu_integrator_params = new imu_integrator_seq{
