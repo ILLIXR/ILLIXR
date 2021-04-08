@@ -11,8 +11,12 @@ data:
     archive_path:
       download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 demo_data: demo_data/
-loader:
-  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
+
+enable_offload:   False
+enable_alignment: False
+enable_verbose_errors: False
+
+action:
   name: native
   command: xvfb-run %a
 profile: opt
