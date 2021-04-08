@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <cmath>
+#include <array>
 #include <GL/glew.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
@@ -126,7 +127,7 @@ public:
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
 
 			// Determine which set of eye textures to be using.
-			int buffer_to_use = which_buffer.load();
+			unsigned int buffer_to_use = which_buffer.load();
 
 			glUseProgram(demoShaderProgram);
 			glBindVertexArray(demo_vao);
@@ -145,6 +146,7 @@ public:
 
 			const fast_pose_type fast_pose = pp->get_fast_pose();
 			pose_type pose = fast_pose.pose;
+            auto fast_pose_sample_time = std::chrono::high_resolution_clock::now();
 
 			Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
@@ -211,20 +213,17 @@ public:
 			glFlush();
 
 			/// Publish our submitted frame handle to Switchboard!
-			rendered_frame rf;
-			rf.texture_handles[0] = eyeTextures[0];
-			rf.texture_handles[1] = eyeTextures[1];
-			rf.swap_indices[0] = buffer_to_use;
-			rf.swap_indices[1] = buffer_to_use;
-			rf.render_pose = fast_pose;
-            /// Guessing sample_time should be set to now() (was not set previously)
-            rf.sample_time = std::chrono::high_resolution_clock::now();
-			rf.render_time = std::chrono::high_resolution_clock::now();
+            _m_eyebuffer.put(_m_eyebuffer.allocate<rendered_frame>(
+                rendered_frame {
+                    std::array<GLuint, 2>{ eyeTextures[0], eyeTextures[1] }.data(),
+                    std::array<GLuint, 2>{ buffer_to_use, buffer_to_use }.data(),
+                    fast_pose,
+                    fast_pose_sample_time,
+                    std::chrono::high_resolution_clock::now()
+                }
+            ));
 
-            switchboard::ptr<rendered_frame> frame = _m_eyebuffer.allocate<rendered_frame>(std::move(rf));
-			which_buffer.store(buffer_to_use == 1 ? 0 : 1);
-
-			_m_eyebuffer.put(std::move(frame));
+			which_buffer.store(buffer_to_use == 1U ? 0U : 1U);
 
 			lastFrameTime = std::chrono::system_clock::now();
 		}

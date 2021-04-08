@@ -98,9 +98,10 @@ private:
             _params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
             _params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-            auto _params_ptr = boost::make_shared<pim_t::Params>(std::move(_params));
-            _pim = new pim_t{_params_ptr, _imu_bias};
-            _params_ptr.reset();
+            _pim = new pim_t {
+                boost::make_shared<pim_t::Params>(std::move(_params)),
+                _imu_bias
+            };
             resetIntegrationAndSetBias(imu_int_input);
         }
 
@@ -191,6 +192,9 @@ private:
         if (_pim_obj == nullptr) {
             /// We don't have a PimObject -> make and set given the current input
             _pim_obj = std::make_unique<PimObject>(*input_values);
+
+            /// Setting 'last_imu_offset' here to stay consistent with previous integrator version.
+            /// TODO: Should be set and tested at the end of this function to avoid staleness from VIO.
             last_imu_offset = input_values->t_offset;
         } else {
             /// We already have a PimObject -> set the values given the current input
@@ -242,18 +246,18 @@ private:
                   << out_pose.z() << std::endl;
 #endif
 
-        imu_raw_type datum {
-            prev_bias.gyroscope(),
-            prev_bias.accelerometer(),
-            bias.gyroscope(),
-            bias.accelerometer(),
-            out_pose.translation(),             /// Position
-            navstate_k.velocity(),              /// Velocity
-            out_pose.rotation().toQuaternion(), /// Eigen Quat
-            real_time
-        };
-        switchboard::ptr<imu_raw_type> datum_ptr = _m_imu_raw.allocate<imu_raw_type>(std::move(datum));
-        _m_imu_raw.put(std::move(datum_ptr));
+        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+            imu_raw_type {
+                prev_bias.gyroscope(),
+                prev_bias.accelerometer(),
+                bias.gyroscope(),
+                bias.accelerometer(),
+                out_pose.translation(),             /// Position
+                navstate_k.velocity(),              /// Velocity
+                out_pose.rotation().toQuaternion(), /// Eigen Quat
+                real_time
+            }
+        ));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

@@ -24,7 +24,6 @@ public:
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
-		, _m_imu_integrator{_m_sb->get_writer<switchboard::event_wrapper<imu_integrator_seq>>("imu_integrator_seq")}
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
@@ -92,23 +91,16 @@ protected:
 		}
 #endif /// NDEBUG
 
-        imu_cam_type datum_imu_cam_tmp {
-			real_now,
-			(sensor_datum.imu0.value().angular_v).cast<float>(),
-			(sensor_datum.imu0.value().linear_a).cast<float>(),
-			cam0,
-			cam1,
-			dataset_now,
-        };
-        switchboard::ptr<imu_cam_type> datum_imu_cam = _m_imu_cam.allocate<imu_cam_type>(std::move(datum_imu_cam_tmp));
-		_m_imu_cam.put(std::move(datum_imu_cam));
-
-        imu_integrator_seq datum_imu_int_tmp {
-			static_cast<int>(++_imu_integrator_seq),
-        };
-        switchboard::ptr<switchboard::event_wrapper<imu_integrator_seq>> datum_imu_int =
-            _m_imu_integrator.allocate<switchboard::event_wrapper<imu_integrator_seq>>(std::move(datum_imu_int_tmp));
-		_m_imu_integrator.put(std::move(datum_imu_int));
+        _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+            imu_cam_type {
+                real_now,
+                (sensor_datum.imu0.value().angular_v).cast<float>(),
+                (sensor_datum.imu0.value().linear_a).cast<float>(),
+                cam0,
+                cam1,
+                dataset_now
+            }
+        ));
 
 		RAC_ERRNO_MSG("offline_imu_cam at bottom of iteration");
 	}
@@ -126,7 +118,6 @@ private:
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	const std::shared_ptr<switchboard> _m_sb;
 	switchboard::writer<imu_cam_type> _m_imu_cam;
-    switchboard::writer<switchboard::event_wrapper<imu_integrator_seq>> _m_imu_integrator;
 
 	// Timestamp of the first IMU value from the dataset
 	ullong dataset_first_time;
@@ -137,7 +128,6 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
-	int64_t _imu_integrator_seq{0};
 };
 
 PLUGIN_MAIN(offline_imu_cam)

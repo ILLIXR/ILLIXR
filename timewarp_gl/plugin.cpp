@@ -357,6 +357,24 @@ public:
 		warp(time_now);
 	}
 
+    virtual skip_option _p_should_skip() override {
+		using namespace std::chrono_literals;
+		// Sleep for approximately 90% of the time until the next vsync.
+		// Scheduling granularity can't be assumed to be super accurate here,
+		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
+		// MTP here. More you wait, closer to the display sync you sample the pose.
+
+		// TODO: poll GLX window events
+		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
+		if (_m_eyebuffer.get_ro_nullable() != nullptr) {
+			return skip_option::run;
+		} else {
+			// Null means system is nothing has been pushed yet
+			// because not all components are initialized yet
+			return skip_option::skip_and_yield;
+		}
+	}
+
 	virtual void _p_thread_setup() override {
         assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
 
@@ -500,12 +518,8 @@ public:
 
 		glDepthFunc(GL_LEQUAL);
 
-        switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro_nullable();
-        
-        if (most_recent_frame == nullptr) {
-            /// No eye buffer received
-            return;
-        }
+        switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
+        assert(most_recent_frame != nullptr && "most_recent_frame should not be null");
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
@@ -697,8 +711,8 @@ public:
 			GLubyte* image = readTextureImage();
 
 			// Publish image and pose
-            switchboard::ptr<texture_pose> datum_texture_pose = _m_offload_data.allocate<texture_pose>(
-                texture_pose{
+            _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
+                texture_pose {
                     static_cast<int>(++_offload_seq), /// TODO: Should texture_pose.seq be a long long too?
                     offload_time,
                     image,
@@ -707,8 +721,7 @@ public:
                     latest_pose.pose.orientation,
                     most_recent_frame->render_pose.pose.orientation
                 }
-            );
-		    _m_offload_data.put(std::move(datum_texture_pose));
+            ));
 		}
 
 #ifndef NDEBUG

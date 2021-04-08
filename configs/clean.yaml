@@ -15,14 +15,14 @@ plugin_groups:
     - name: hologram
       path:
         git_repo: https://github.com/ILLIXR/HOTlab.git
-        version: "3.0"
+        version: "3.1"
     ## Real-Time SLAM Plugins
     - path: offline_imu_cam
     - path: zed
     - name: Kimera-VIO
       path:
         git_repo: https://github.com/ILLIXR/Kimera-VIO
-        version: "3.0"
+        version: "3.1"
     - name: OpenVINS
       path:
         git_repo: https://github.com/ILLIXR/open_vins.git

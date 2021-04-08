@@ -78,6 +78,8 @@ int main(int argc, char* const* argv) {
     std::signal(SIGINT, sigint_handler);
 
 #ifndef NDEBUG
+    /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
+    /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
     const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();

@@ -33,7 +33,7 @@ public:
 
     virtual pose_type get_true_pose() const override {
         switchboard::ptr<const pose_type> pose_ptr = _m_true_pose.get_ro_nullable();
-        switchboard::ptr<const pose_type> offset_ptr = _m_true_pose.get_ro_nullable();
+        switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr = _m_ground_truth_offset.get_ro_nullable();
 
         pose_type offset_pose;
 
@@ -44,7 +44,7 @@ public:
 		// actually writing to both streams.
 		if (pose_ptr != nullptr && offset_ptr != nullptr) {
 			offset_pose             = *pose_ptr;
-			offset_pose.position   -= offset_ptr->position;
+			offset_pose.position   -= **offset_ptr;
 		} else {
 			offset_pose.sensor_time = std::chrono::system_clock::now();
 			offset_pose.position    = Eigen::Vector3f{0, 0, 0};
@@ -74,9 +74,9 @@ public:
 #endif
             // No imu_raw, return slow_pose
             return fast_pose_type{
-                .pose = correct_pose(*slow_pose),
-                .predict_computed_time = std::chrono::system_clock::now(),
-                .predict_target_time = future_timestamp,
+                correct_pose(*slow_pose),
+                std::chrono::system_clock::now(),
+                future_timestamp,
             };
         }
 
@@ -119,9 +119,9 @@ public:
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
         //       - the prediction target (the time that was requested for this pose.)
         return fast_pose_type {
-            .pose = predicted_pose,
-            .predict_computed_time = std::chrono::high_resolution_clock::now(),
-            .predict_target_time = future_timestamp
+            predicted_pose,
+            std::chrono::high_resolution_clock::now(),
+            future_timestamp
         };
     }
 
@@ -216,7 +216,7 @@ private:
     std::pair<Eigen::Matrix<double,13,1>,time_type> predict_mean_rk4(double dt) const {
 
         // Pre-compute things
-        switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get();
+        switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro();
 
         Eigen::Vector3d w_hat =imu_raw->w_hat;
         Eigen::Vector3d a_hat = imu_raw->a_hat;

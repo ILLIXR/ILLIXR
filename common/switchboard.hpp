@@ -72,13 +72,10 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  *
  * while (true) {
  *     // Read topic 1
- *     switchboard::ptr<topic1_type> event1 = topic1.get();
+ *     switchboard::ptr<topic1_type> event1 = topic1.get_rw();
  *
- *     // Write to topic 2
- *     topic2_type* event2 = topic2.allocate();
- *     // Populate the event
- *     event2->foo = 3;
- *     topic2.put(event2);
+ *     // Write to topic 2 using topic 1 input
+ *     topic2.put(topic2.allocate<topic2_type>( do_something(event1->foo) ));
  * }
  * 
  * // Read topic 3 synchronously
@@ -175,7 +172,7 @@ private:
                 _m_dequeued++;
                 auto cb_start_cpu_time  = thread_cpu_time();
                 auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
-                // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
+                // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " << this_event.use_count() << " v\n";
                 _m_callback(std::move(this_event), _m_dequeued);
                 if (_m_cb_log) {
                     _m_cb_log.log(record{__switchboard_callback_header, {
@@ -203,7 +200,7 @@ private:
                 for (std::size_t i = 0; i < unprocessed; ++i) {
                     [[maybe_unused]] bool ret = _m_queue.try_dequeue(_m_ctok, this_event);
                     assert(ret);
-                    // std::cerr << "deq (stopping) " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
+                    // std::cerr << "deq (stopping) " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " << this_event.use_count() << " v\n";
                     this_event.reset();
                 }
             }
@@ -417,12 +414,9 @@ public:
              This method is currently not more efficient than calling get_ro() and making a copy,
              but in the future it could be.
             */
-           ptr<const specific_event> this_specific_event = get();
+           ptr<const specific_event> this_specific_event = get_ro();
            return std::make_shared<specific_event>(*this_specific_event);
         }
-
-        /// Member function alias for common case `get_ro`
-        const std::function< ptr<const specific_event>() > get = [this]() { return get_ro(); };
     };
 
     /**

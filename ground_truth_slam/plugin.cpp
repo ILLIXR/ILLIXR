@@ -17,6 +17,7 @@ public:
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
+		, _m_first_time{true}
 	{ }
 
 	virtual void start() override {
@@ -37,12 +38,13 @@ public:
 			return;
 		}
 
-        pose_type true_pose_tmp{
-            datum->time,
-            it->second.position,
-            it->second.orientation,
-        };
-        switchboard::ptr<pose_type> true_pose = _m_true_pose.allocate<pose_type>(std::move(true_pose_tmp));
+        switchboard::ptr<pose_type> true_pose = _m_true_pose.allocate<pose_type>(
+            pose_type {
+                time_type{datum->time},
+                it->second.position,
+                it->second.orientation
+            }
+        );
 
 #ifndef NDEBUG
 		std::cout << "Ground truth pose was found at T: " << rounded_time
@@ -60,6 +62,14 @@ public:
 				  << std::endl;
 #endif
 
+        /// Ground truth position offset is the first ground truth position
+		if (_m_first_time) {
+			_m_first_time = false;
+			_m_ground_truth_offset.put(_m_ground_truth_offset.allocate<switchboard::event_wrapper<Eigen::Vector3f>>(
+			    true_pose->position
+			));
+		}
+
 		_m_true_pose.put(std::move(true_pose));
 	}
 
@@ -67,8 +77,8 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	switchboard::writer<pose_type> _m_true_pose;
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
-
 	const std::map<ullong, sensor_types> _m_sensor_data;
+    bool _m_first_time;
 };
 
 PLUGIN_MAIN(ground_truth_slam);

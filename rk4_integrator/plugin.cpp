@@ -89,6 +89,7 @@ private:
         }
 
 		if (!has_last_offset) {
+            /// TODO: Should be set and tested at the end of this function to avoid staleness from VIO.
 			last_imu_offset = input_values->t_offset;
 			has_last_offset = true;
 		}

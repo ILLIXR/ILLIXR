@@ -41,7 +41,7 @@ public:
     }
 
     virtual fast_pose_type get_fast_pose() const override {
-		const switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_nullable();
+		const switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_ro_nullable();
         if (estimated_vsync == nullptr) {
             std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
             return get_fast_pose(std::chrono::system_clock::now());
