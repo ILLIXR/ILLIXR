@@ -6,6 +6,7 @@ plugin_groups:
       - path: debugview/
       - path: offload_data/
       - path: mxre_reader/
+      - path: mxre_writer/
   - !include "core_plugins.yaml"
 
 data:
