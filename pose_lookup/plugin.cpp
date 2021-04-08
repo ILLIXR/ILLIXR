@@ -70,14 +70,14 @@ public:
         pose_type swapped_pose;
 
         // Step 1: Compensate starting point to (0, 0, 0), pos only
-        auto input_pose = pose_type{
-            .sensor_time = pose.sensor_time,
-            .position = Eigen::Vector3f{
+        auto input_pose = pose_type {
+            pose.sensor_time,
+            Eigen::Vector3f{
                 pose.position(0) - init_pos_offset(0),
                 pose.position(1) - init_pos_offset(1),
                 pose.position(2) - init_pos_offset(2),
             },
-            .orientation = pose.orientation,
+            pose.orientation
         };
 
         if (enable_alignment)

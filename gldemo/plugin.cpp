@@ -196,7 +196,7 @@ public:
 			}
 
 #ifndef NDEBUG
-            const std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
+            const time_type time_now = std::chrono::system_clock::now();
             const std::chrono::nanoseconds time_since_last = time_now - time_last;
             const double time_since_last_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_since_last).count();
             const double fps = 1000.0 / time_since_last_d;
@@ -219,7 +219,7 @@ public:
                     std::array<GLuint, 2>{ buffer_to_use, buffer_to_use }.data(),
                     fast_pose,
                     fast_pose_sample_time,
-                    std::chrono::high_resolution_clock::now()
+                    std::chrono::system_clock::now()
                 }
             ));
 
@@ -281,7 +281,7 @@ private:
 
 	Eigen::Matrix4f basicProjection;
 
-    std::chrono::system_clock::time_point time_last;
+    time_type time_last;
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 

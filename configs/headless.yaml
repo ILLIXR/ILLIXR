@@ -20,4 +20,5 @@ enable_pre_sleep: False
 action:
   name: native
   command: xvfb-run %a
+  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
 profile: opt
