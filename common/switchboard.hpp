@@ -98,9 +98,14 @@ public:
     template <typename specific_event>
     using ptr = std::shared_ptr<specific_event>;
 
+    /**
+     * @brief Virtual class for event types.
+     *
+     * Minimum requirement: Events must be desctructable.
+     */
     class event {
     public:
-        virtual ~event() { }
+        virtual ~event() = default;
     };
 
     /**
@@ -157,7 +162,7 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-            // std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
+            std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
 #endif
         }
 
@@ -299,6 +304,18 @@ private:
          * @brief Publishes @p this_event to the topic
          *
          * Thread-safe
+         * - Caveat:
+         *
+         *   This (circular) queue based solution may race if >= N writers attempt
+         *       to write to the N-sized queue, interrupting a concurrent reader (using 'get').
+         *
+         *   The reader's critical section is as follows:
+         *   1. Read the latest serial number
+         *   2. Compute the serial's modulus
+         *   3. Dereference and access the position in the queue/array
+         *
+         *   The critical section is extremely small, so a race is unlikely, albeit possible.
+         *   The probability of a data race decreases geometrically with N.
          */
         void put(ptr<const event>&& this_event) {
 			assert(this_event != nullptr);

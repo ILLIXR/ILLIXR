@@ -75,7 +75,7 @@ private:
     double last_imu_offset = 0;
 
     /**
-     * @class Wrapper object protecting the lifetime of IMU integration inputs and biases
+     * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
      */
     class PimObject
     {
