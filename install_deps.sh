@@ -246,14 +246,6 @@ if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]; then
         "${dep_ver_opencv}"
 
     prompt_install \
-        "${dep_name_eigen}" \
-        "${deps_log_dir}" \
-        "${script_path_eigen}" \
-        "${parent_dir_eigen}" \
-        "${dep_prompt_eigen}" \
-        "${dep_ver_eigen}"
-
-    prompt_install \
         "${dep_name_vulkan}" \
         "${deps_log_dir}" \
         "${script_path_vulkan}" \

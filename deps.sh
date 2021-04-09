@@ -28,7 +28,7 @@ export dep_name_eigen="eigen"
 export script_path_eigen="scripts/install_eigen.sh"
 export parent_dir_eigen="${opt_dir}"
 export dep_prompt_eigen="Install eigen (Eigen3) from source"
-export dep_ver_eigen="3.3.9"
+export dep_ver_eigen="3.3.7"
 
 ## Vulkan (Headers)
 export dep_name_vulkan="Vulkan-Headers"
