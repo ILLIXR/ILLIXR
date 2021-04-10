@@ -7,7 +7,7 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
 
 1.  **Clone the repository**:
 
-    <!--- language: lang-shell -->
+    <!--- language: lang-none -->
 
         git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
 
@@ -16,7 +16,7 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
     Update the submodules.
     Submodules are git repositories inside a git repository that need to be pulled down separately:
 
-    <!--- language: lang-shell -->
+    <!--- language: lang-none -->
 
         git submodule update --init --recursive
 

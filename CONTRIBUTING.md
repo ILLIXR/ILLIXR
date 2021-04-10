@@ -28,52 +28,49 @@ Please follow these steps when making pull requests (PRs):
     Your PR **MUST** be updated to reflect changes to `master` in order to be merged.
     Use the following procedure for updating your branch and are ready to commit your changes:
 
-    <!--- language: lang-shell -->
+    <!--- language: lang-none -->
 
         ## While on your PR branch <issue-branch> hosted at <your-remote> repository:
-        git commit
+        git commit # or git stash                                               ## Line A
         git checkout master
-        git pull <illixr-remote> --rebase                           ## Line A
+
+        git pull <illixr-remote> master --rebase                                ## Line B
+
         git checkout <issue-branch>
-        git rebase master                                           ## Line B
-        git push <your-remote> <issue-branch> --force-with-lease    ## Line C
+        git rebase master                                                       ## Line C
 
-    If you want to update your branch while you are still making changes to your branch:
+        ## If you stashed your changes on 'Line A':
+        git stash apply <stash-number> && git commit
 
-    <!--- language: lang-shell -->
-
-        ## While on your PR branch <issue-branch> hosted at <your-remote> repository:
-        git stash
-        git checkout master
-        git pull <illixr-remote> --rebase                           ## Line A
-        git checkout <issue-branch>
-        git rebase master                                           ## Line B
-        git stash apply <stash-number>
-        ## Finish your changes
-        git commit
-        git push <your-remote> <issue-branch> --force-with-lease    ## Line C
+        git push <your-remote> <issue-branch> --force-with-lease                ## Line D
 
     For ILLIXR team members:
 
-    -   In the examples above, `<illixr-remote>` and `<your-remote>` are the same.
+    -   In the example above, `<illixr-remote>` and `<your-remote>` are the same.
 
-    -   When collaborating on branches in our repository, `Line A` may pull in changes that overwrite
-            the git commit history when performing `Line B`.
-        Subsequently, performing `Line C` will rewrite the history in the public branch.
+    -   When collaborating on branches in our repository, `Line B` may pull in changes that overwrite
+            the git commit history when performing `Line C`.
+        Subsequently, performing `Line D` will rewrite the history in the public branch.
         To preserve branch commit histories in the case that a rollback is needed, we will employ
             a checkpointing process for force updated branches.
         This process will be manually performed, but may be automated in the future.
 
-        If `Line A` shows an update to master, the following example illustates your local repository
-            just after performing `Line A`:
+        If `Line B` shows an update to master, the following example illustates your local repository
+            just after performing `Line B`:
 
-            A -- B -- C -- P -- Q -- R                  ## master
+        <!--- language: lang-none -->
+
+            A -- B -- C -- P -- Q -- R                                          ## master
                        \
-                        D -- E -- F                     ## issue-123-fixing-bug
+                        D -- E -- F                                             ## issue-123-fixing-bug
+
+        In this example, commits `P`, `Q`, and `R` have been merged to `master`
+            (from feature branches not shown) after feature branch `issue-123-fixing-bug` was
+            forked from `master`.
 
         To checkpoint the `issue-123-fixing-bug` while it is checked out:
 
-        <!--- language: lang-shell -->
+        <!--- language: lang-none -->
 
             git branch issue-123.0-fixing-bug                                   ## Make alias for old issue-123-fixing-bug
             git checkout -b issue-123.1-fixing-bug                              ## Make new branch to rebase with master
@@ -83,19 +80,77 @@ Please follow these steps when making pull requests (PRs):
             git push <illixr-remote> issue-123.{0,1}-fixing-bug                 ## Push new checkpointed branches to remote
             git push <illixr-remote> issue-123-fixing-bug --force-with-lease    ## Force update issue-123-fixing-bug
 
+        Note: The term _alias_ here is used to refer to branches which point to the same commit.
+        This usage is different from standard [Git Aliases][4] used for git command shortcuts.
+
         After checkpointing, your local repository should look as follows:
 
-                                       D' -- E' -- F'   ## issue-123.1-fixing-bug, issue-123-fixing-bug
+        <!--- language: lang-none -->
+
+                                       D' -- E' -- F'                           ## issue-123.1-fixing-bug, issue-123-fixing-bug
                                       /
-            A -- B -- C -- P -- Q -- R                  ## master
+            A -- B -- C -- P -- Q -- R                                          ## master
                        \
-                        D -- E -- F                     ## issue-123.0-fixing-bug
+                        D -- E -- F                                             ## issue-123.0-fixing-bug
+
+        Commits `D`, `E`, and `F` have been added to a new branch starting from `R`,
+            but now have been given new hashes.
+        This new branch is our up-to-date copy of the feature branch `issue-123-fixing-bug`.
 
         While working on a checkpointed branch, keep aliases up-to-date using `git rebase`:
 
-            git commit                          ## Add changes to issue-123.1-fixing-bug
-            git checkout issue-123-fixing-bug   ## Switch to main issue-123-fixing-bug branch
-            git rebase issue-123.1-fixing-bug   ## Fast-forward issue-123-fixing-bug to issue-123.1-fixing-bug
+        <!--- language: lang-none -->
+
+            git commit                                                          ## Add changes to issue-123.1-fixing-bug
+            git checkout issue-123-fixing-bug                                   ## Switch to main issue-123-fixing-bug branch
+            git rebase issue-123.1-fixing-bug                                   ## Fast-forward issue-123-fixing-bug to issue-123.1-fixing-bug
+
+        Conflicts are possible when two or more collaborators push changes concurrently to
+            the same branch.
+        As long as each collaborator ensures that the branch update process starts at `Line A`,
+            conflicts can be detected and handled locally.
+        In other words, _every_ call to `git-push` should be preceeded by a call to `git-pull`,
+            following the process from `Line A` to `Line D` (or equivalent; git's CLI allows many
+            ways to achieve the same results).
+
+        The output of `Line A` for a collaborator after the checkpointing example will contain
+            something like this:
+
+        <!--- language: lang-none -->
+
+            From github.com:ILLIXR/ILLIXR
+              A..R          master                  -> <illixr-remote>/master
+            + A..F'         issue-123-fixing-bug    -> <illixr-remote>/issue-123-fixing-bug  (forced update)
+            * [new branch]  issue-123.0-fixing-bug  -> <illixr-remote>/issue-123.0-fixing-bug
+            * [new branch]  issue-123.1-fixing-bug  -> <illixr-remote>/issue-123.1-fixing-bug
+
+        Conflicts which do not involve updates to the `master` branch can be resolved simply
+            by rebasing the current feature branch with the updated feature branch,
+            applying new changes on top of the updated feature branch:
+
+        <!--- language: lang-none -->
+
+            ## For the latest checkpoint X (local) and Y (remote), let Z := Y + 1 in
+            git checkout issue-123.X-fixing-bug -b issue-123.Z-fixing-bug       ## Make new branch issue-123.Z-fixing-bug
+            git rebase issue-123.Y-fixing-bug                                   ## Replay updates from issue-123.X-fixing-bug
+            git push <illixr-remote> issue-123.Z-fixing-bug                     ## Make sure to update issue-123-fixing-bug after
+
+        `Line D` should be safe to perform after the replaying our commits on top of the
+            updated feature branch.
+        The `--force-with-lease` argument in `Line D` is _not_ required for this case,
+            since a new branch should not conflict with a non-existing remote branch.
+        If the push fails, another conflict has occurred, and checkpointing should be repeated.
+
+        In the case of a conflict with updates to `master`, `Line A` should show updates to
+            both the `master` branch _and_ the feature branch to be pushed in `Line D`.
+        A checkpointed version of the feature branch should also appear.
+        This is because a feature branch should only be checkpointed in the presence of a
+            change to the `master` branch.
+        Forced pushes should generally _not_ be used for any other purpose.
+        If multiple updates to `master` and the feature branch have occured, additional
+            checkpointed versions of the feature branch may also appear.
+        In this scenario, we need to rebase our latest version of the feature branch with
+            the latest version of the feature branch pulled from `<illixr-remote>`.
 
 
 Why are the above steps necessary?
@@ -117,6 +172,30 @@ If your PR has not seen activity from the ILLIXR team after a long period of tim
     the Gitter forum linked below.
 
 
+Other procedures:
+
+1.  Branch Management:
+
+    The branch rebasing and checkpointing process detailed above is tedious, and may be automated in
+        the future.
+    Check back in with this document occasionally for improvements to the branch management process.
+
+1.  Code Formatting:
+
+    As ILLIXR grows, contributions will need to be standardized to accomodate multiple collaborators
+        with different coding styles.
+    During code review of a PR, you may be asked to reformat your code to match the standards set for
+        ILLIXR code base.
+    This process may be manually triggered by a comment from a review, or automated via Git and GitHub
+        in the future.
+
+1.  Issue Templates:
+
+    To make collaboration easier, templates for Issues and Pull Requests will be added to
+        the GitHub web interface.
+    If an appropriate template exists for your task, please ensure to select it before submitting.
+
+
 # Getting Help
 
 You can get seek help from our development community in three places:
@@ -133,6 +212,7 @@ You can get seek help from our development community in three places:
 [1]:    https://gitter.im/ILLIXR/community
 [2]:    https://github.com/ILLIXR/ILLIXR/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [3]:    https://redfin.engineering/git-rebasing-public-branches-works-much-better-than-youd-think-ecc9a115aea9
+[4]:    https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
 
 [//]: # (- Internal -)
 
