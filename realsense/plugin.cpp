@@ -42,13 +42,47 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "D4XX")}
+        , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
         {      
             cfg.disable_all_streams();
             configure_camera();
         }
+    void auto_select_cam(){
+        rs2::context ctx;
+        rs2::device_list devices = ctx.query_devices();
+        for (rs2::device device : devices) {
+            std::string name = "Unknown Device";
+            if (device.supports(RS2_CAMERA_INFO_NAME)) {
+                name = device.get_info(RS2_CAMERA_INFO_NAME);
+                if (name.find("D4") != std::string::npos){
+                    std::cout << "Found D4XX Device, Checking for supported sensors" << std::endl;
+                    std::vector<rs2::sensor> sensors = device.query_sensors();
+                    for (rs2::sensor sensor : sensors){
+                        if (sensor.supports(RS2_CAMERA_INFO_NAME)){
+                            std::string sensor_name = sensor.get_info(RS2_CAMERA_INFO_NAME);
+                            if (sensor_name.find("Motion Module") != std::string::npos){
+                                std::cout << "Setting realsense_cam: D4XX" << std::endl;
+                                realsense_cam = "D4XX";
+                                break;
+                            }
+                        }
+                    }
+                    if (realsense_cam.compare("D4XX") == 0){
+                        break;
+                    }
+                } 
+                else if (name.find("T26") != std::string::npos){
+                    realsense_cam = "T26X";
+                    std::cout << "Setting realsense_cam: T26X" << std::endl;
+                }
+            }
+        }
+    }
     void configure_camera()
     {
+        if (realsense_cam.compare("auto") == 0) {
+            auto_select_cam();
+        }
         if (realsense_cam.compare("T26X") == 0){
             cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // adjustable to 0, 63 (default), 250 hz
             cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // adjustable set to 0, 200 (default), 400 hz
