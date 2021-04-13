@@ -89,6 +89,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
+    realsense_cam_string = config["realsense_cam"]
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
@@ -105,6 +106,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
+        REALSENSE_CAM=str(realsense_cam_string),
     )
     env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
     actual_cmd_list = list(
@@ -148,6 +150,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
     enable_alignment_flag = config["enable_alignment"]
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
     make(Path("common"), ["tests/run"], env_override=env_override)
+    realsense_cam_string = config["realsense_cam"]
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
@@ -171,6 +174,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
             ILLIXR_ENABLE_PRE_SLEEP=str(enable_pre_sleep),
             KIMERA_ROOT=config["action"]["kimera_path"],
+            REALSENSE_CAM=str(realsense_cam_string),
         ),
         check=True,
     )
@@ -189,6 +193,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
+    realsense_cam_string = config["realsense_cam"]
 
     cmake(
         monado_path,
@@ -232,6 +237,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
             ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
+            REALSENSE_CAM=str(realsense_cam_string),
         ),
         check=True,
     )
