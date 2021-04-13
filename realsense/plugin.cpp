@@ -9,42 +9,27 @@
 
 using namespace ILLIXR;
 
-#define T26X
+static constexpr int IMAGE_WIDTH_D4XX = 640;
+static constexpr int IMAGE_HEIGHT_D4XX = 480;
+static constexpr int FPS_D4XX = 30;
+static constexpr int GYRO_RATE_D4XX = 400; // 200 or 400
+static constexpr int ACCEL_RATE_D4XX = 250; // 63 or 250
 
-#ifdef D435I
-static constexpr int IMAGE_WIDTH = 640;
-static constexpr int IMAGE_HEIGHT = 480;
-static constexpr int FPS = 30;
-static constexpr int GYRO_RATE = 400; // 200 or 400
-static constexpr int ACCEL_RATE = 250; // 63 or 250
-#endif
-
-#ifdef T26X
-static constexpr int IMAGE_WIDTH = 848;
-static constexpr int IMAGE_HEIGHT = 800;
-//T26X has fixed values for these
-// static constexpr int FPS = 30;
-// static constexpr int GYRO_RATE = 200; // 200 or 400
-// static constexpr int ACCEL_RATE = 62; // 63 or 250
-#endif
-
-#ifdef D435I
+static constexpr int IMAGE_WIDTH_T26X = 848;
+static constexpr int IMAGE_HEIGHT_T26X = 800;
 typedef struct {
-	cv::Mat* img0;
-	cv::Mat* img1;
-	cv::Mat* rgb;
-	cv::Mat* depth;
-	int iteration;
-} cam_type;
-#endif
+    cv::Mat* img0;
+    cv::Mat* img1;
+    cv::Mat* rgb;
+    cv::Mat* depth;
+    int iteration;
+} cam_type_D4XX;
 
-#ifdef T26X
 typedef struct {
-	cv::Mat* img0;
-	cv::Mat* img1;
-	int iteration;
-} cam_type;
-#endif
+    cv::Mat* img0;
+    cv::Mat* img1;
+    int iteration;
+} cam_type_T26X;
 typedef struct {
 	rs2_vector* accel_data;
 	int iteration;
@@ -57,31 +42,31 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        {
-            
+        , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "D4XX")}
+        {      
             cfg.disable_all_streams();
-
-            #ifdef D435I
-            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE); // adjustable to 0, 63 (default), 250 hz
-            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, GYRO_RATE); // adjustable set to 0, 200 (default), 400 hz
-            cfg.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Y8, FPS);
-            cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Y8, FPS);
-            cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_BGR8, FPS);
-            cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH, IMAGE_HEIGHT, RS2_FORMAT_Z16, FPS);
-            profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
-            profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter
-            #endif
-
-            #ifdef T26X
+            configure_camera();
+        }
+    void configure_camera()
+    {
+        if (realsense_cam.compare("T26X") == 0){
             cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // adjustable to 0, 63 (default), 250 hz
             cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // adjustable set to 0, 200 (default), 400 hz
             cfg.enable_stream(RS2_STREAM_FISHEYE, 1, RS2_FORMAT_Y8);
             cfg.enable_stream(RS2_STREAM_FISHEYE, 2, RS2_FORMAT_Y8);
             profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
-            #endif
-            
-            
         }
+        else if (realsense_cam.compare("D4XX") == 0){
+            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE_D4XX); // adjustable to 0, 63 (default), 250 hz
+            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, GYRO_RATE_D4XX); // adjustable set to 0, 200 (default), 400 hz
+            cfg.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
+            cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
+            cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_BGR8, FPS_D4XX);
+            cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Z16, FPS_D4XX);
+            profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
+            profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter
+        }
+    }
 
 	void callback(const rs2::frame& frame)
         {
@@ -90,45 +75,44 @@ public:
             // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
             // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
 
-            #ifdef D435I
-            if (auto fs = frame.as<rs2::frameset>()) {
-                rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
-                rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
-                rs2::video_frame depth_frame = fs.get_depth_frame();
-                rs2::video_frame rgb_frame = fs.get_color_frame();
-                cv::Mat ir_left = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC1, (void*)ir_frame_left.get_data());
-                cv::Mat ir_right = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC1, (void *)ir_frame_right.get_data());
-                cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC3, (void *)rgb_frame.get_data());
-                cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16UC1, (void *)depth_frame.get_data());
-                cv::Mat converted_depth;
-                float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
-                depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                cam_type_ = cam_type{
-                    new cv::Mat{ir_left},
-                    new cv::Mat{ir_right},
-                    new cv::Mat{rgb},
-                    new cv::Mat{converted_depth},
-                    iteration_cam,
-                };
-                iteration_cam++;
+            if (realsense_cam.compare("D4XX") == 0){
+                if (auto fs = frame.as<rs2::frameset>()) {
+                    rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
+                    rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
+                    rs2::video_frame depth_frame = fs.get_depth_frame();
+                    rs2::video_frame rgb_frame = fs.get_color_frame();
+                    cv::Mat ir_left = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*)ir_frame_left.get_data());
+                    cv::Mat ir_right = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void *)ir_frame_right.get_data());
+                    cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void *)rgb_frame.get_data());
+                    cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void *)depth_frame.get_data());
+                    cv::Mat converted_depth;
+                    float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
+                    depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
+                    cam_D4XX_ = cam_type_D4XX{
+                        new cv::Mat{ir_left},
+                        new cv::Mat{ir_right},
+                        new cv::Mat{rgb},
+                        new cv::Mat{converted_depth},
+                        iteration_cam,
+                    };
+                    iteration_cam++;
+                }
             }
-            #endif
 
-            #ifdef T26X
-            if (auto fs = frame.as<rs2::frameset>()) {
-                rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
-                rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
-                cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC1, (void*)fisheye_frame_left.get_data());
-                cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC1, (void *)fisheye_frame_right.get_data());
-                cv::Mat converted_depth;
-                cam_type_ = cam_type{
-                    new cv::Mat{fisheye_left},
-                    new cv::Mat{fisheye_right},
-                    iteration_cam,
-                };
-                iteration_cam++;
+            else if (realsense_cam.compare("T26X") == 0){
+                if (auto fs = frame.as<rs2::frameset>()) {
+                    rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
+                    rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
+                    cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
+                    cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
+                    cam_T26X_ = cam_type_T26X{
+                        new cv::Mat{fisheye_left},
+                        new cv::Mat{fisheye_right},
+                        iteration_cam,
+                    };
+                    iteration_cam++;
+                }
             }
-            #endif
 
             if (auto mf = frame.as<rs2::motion_frame>()) {
                 std::string s = mf.get_profile().stream_name();
@@ -163,58 +147,67 @@ public:
                     using time_point = std::chrono::system_clock::time_point;
                     time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
 
-                    // Images
-                    #ifdef D435I
-                    std::optional<cv::Mat *> img0 = std::nullopt;
-                    std::optional<cv::Mat *> img1 = std::nullopt;
-                    std::optional<cv::Mat *> rgb = std::nullopt;
-                    std::optional<cv::Mat *> depth = std::nullopt;
-                    if (last_iteration_cam != cam_type_.iteration)
-                    {
-                        last_iteration_cam = cam_type_.iteration;
-                        img0 = cam_type_.img0;
-                        img1 = cam_type_.img1;
-                        rgb = cam_type_.rgb;
-                        depth = cam_type_.depth;
+                     // Images
+                    if (realsense_cam.compare("D4XX") == 0){
+                        std::optional<cv::Mat *> img0 = std::nullopt;
+                        std::optional<cv::Mat *> img1 = std::nullopt;
+                        std::optional<cv::Mat *> rgb = std::nullopt;
+                        std::optional<cv::Mat *> depth = std::nullopt;
+                        if (last_iteration_cam != cam_D4XX_.iteration)
+                        {
+                            last_iteration_cam = cam_D4XX_.iteration;
+                            img0 = cam_D4XX_.img0;
+                            img1 = cam_D4XX_.img1;
+                            rgb = cam_D4XX_.rgb;
+                            depth = cam_D4XX_.depth;
+                        }
+                        
+                        // Submit to switchboard
+                        _m_imu_cam->put(new imu_cam_type{
+                                imu_time_point,
+                                av,
+                                la,
+                                img0,
+                                img1,
+                                imu_time,
+                            });
+                        
+                        if (rgb && depth)
+                        {
+                            _m_rgb_depth->put(new rgb_depth_type{
+                                    rgb,
+                                    depth,
+                                    imu_time,
+                                });
+                        }
+            
+                        auto imu_integrator_params = new imu_integrator_seq{
+                            .seq = static_cast<int>(++_imu_integrator_seq),
+                        };
+                        _m_imu_integrator->put(imu_integrator_params);
                     }
-                    #endif
 
-                    #ifdef T26X
-                    std::optional<cv::Mat *> img0 = std::nullopt;
-                    std::optional<cv::Mat *> img1 = std::nullopt;
+                    else if (realsense_cam.compare("T26X") == 0){
+                        std::optional<cv::Mat *> img0 = std::nullopt;
+                        std::optional<cv::Mat *> img1 = std::nullopt;
 
-                    if (last_iteration_cam != cam_type_.iteration)
-                    {
-                        last_iteration_cam = cam_type_.iteration;
-                        img0 = cam_type_.img0;
-                        img1 = cam_type_.img1;
-                    }
-                    #endif
-
-
-                    // Submit to switchboard
-                    _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-                        imu_time_point,
-                        av,
-                        la,
-                        img0,
-                        img1,
-                        imu_time,
-                    ));
-                    #ifdef D435I
-                    if (rgb && depth)
-                    {
-                        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-                            rgb,
-                            depth,
-                            imu_time,
+                        if (last_iteration_cam != cam_T26X_.iteration)
+                        {
+                            last_iteration_cam = cam_T26X_.iteration;
+                            img0 = cam_T26X_.img0;
+                            img1 = cam_T26X_.img1;
+                        }
+                
+                        // Submit to switchboard
+                        _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+                                imu_time_point,
+                                av,
+                                la,
+                                img0,
+                                img1,
+                                imu_time,
                         ));
                     }
-                    #endif
-                    auto imu_integrator_params = new imu_integrator_seq{
-                        .seq = static_cast<int>(++_imu_integrator_seq),
-                    };
-                    _m_imu_integrator->put(imu_integrator_params);
                 }
             }
 			
@@ -234,12 +227,17 @@ private:
 	rs2_vector gyro_data;
 	rs2_vector accel_data;
 
-	cam_type cam_type_;
+    
+	cam_type_T26X cam_T26X_;
+    cam_type_D4XX cam_D4XX_;
+    
 	accel_type accel_type_;
 	int iteration_cam = 0;
 	int iteration_accel = 0;
 	int last_iteration_cam;
 	int last_iteration_accel;
+    std::string realsense_cam;
+
 };
 
 PLUGIN_MAIN(realsense);
