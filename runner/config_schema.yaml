@@ -141,3 +141,9 @@ properties:
     default: dbg
     type: string
     description: "Currently supports 'dbg' and 'opt'"
+  realsense_cam:
+    default: D4XX
+    type: string
+    description: "Currently supports 'D4XX' and 'T26X'"
+
+
