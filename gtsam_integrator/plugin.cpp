@@ -18,7 +18,7 @@
 #include <boost/smart_ptr/make_shared.hpp>
 
 // IMU sample time to live in seconds
-#define IMU_TTL 5
+#define IMU_TTL 1
 
 // using PimUniquePtr = std::unique_ptr<gtsam::PreintegrationType>;
 using PimUniquePtr = gtsam::PreintegrationType*;
@@ -133,12 +133,12 @@ private:
 			last_imu_offset = input_values->t_offset;
 		}
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 		if (input_values->last_cam_integration_time > last_cam_time) {
 			std::cout << "New slow pose has arrived!\n";
 			last_cam_time = input_values->last_cam_integration_time;
 		}
-#endif
+// #endif
 		pim_->resetIntegrationAndSetBias(imu_bias);
 
 		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
@@ -152,9 +152,9 @@ private:
    		ImuBias prev_bias = pim_->biasHat();
 		ImuBias bias = pim_->biasHat();
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 		std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
-#endif
+// #endif
 
 		for (unsigned i = 0; i < prop_data.size()-1; i++) {
 			const gtsam::Vector3& measured_acc = prop_data.at(i).am;

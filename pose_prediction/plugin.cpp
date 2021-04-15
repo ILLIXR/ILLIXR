@@ -64,65 +64,56 @@ public:
             };
 		}
 
-// 		const imu_raw_type* imu_raw = _m_imu_raw->get_latest_ro();
-//         if (!imu_raw) {
-// #ifndef NDEBUG
-//             printf("FAST POSE IS SLOW POSE!");
-// #endif
+		const imu_raw_type* imu_raw = _m_imu_raw->get_latest_ro();
+        if (!imu_raw) {
+#ifndef NDEBUG
+            printf("FAST POSE IS SLOW POSE!");
+#endif
 
-        auto predicted_pose = fast_pose_type {
-            .pose = correct_pose(*slow_pose),
-            .predict_computed_time = std::chrono::system_clock::now(),
-            .predict_target_time = future_timestamp,
-        };
+            auto predicted_pose = fast_pose_type {
+                .pose = correct_pose(*slow_pose),
+                .predict_computed_time = std::chrono::system_clock::now(),
+                .predict_target_time = future_timestamp,
+            };
 
+            // No imu_raw, return slow_pose
+            return predicted_pose;
+        }
+
+		// slow_pose and imu_raw, do pose prediction
+
+        double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
+        std::pair<Eigen::Matrix<double,13,1>, time_type> predictor_result = predict_mean_rk4(dt/NANO_SEC);
+
+        auto state_plus = predictor_result.first;
+
+        // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
+        auto predictor_imu_time = predictor_result.second;
+        
+        pose_type predicted_pose = correct_pose({
+            .sensor_time = predictor_imu_time,
+            .position = Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)), static_cast<float>(state_plus(6))}, 
+            .orientation = Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}
+		});
+
+		// Make the first valid fast pose be straight ahead.
 		if (first_time) {
 			std::unique_lock lock {offset_mutex};
 			// check again, now that we have mutual exclusion
 			if (first_time) {
 				first_time = false;
-				offset = predicted_pose.pose.orientation.inverse();
+				offset = predicted_pose.orientation.inverse();
 			}
 		}
 
-        // No imu_raw, return slow_pose
-        return predicted_pose;
-        // }
-
-		// slow_pose and imu_raw, do pose prediction
-
-        // double dt = std::chrono::duration_cast<std::chrono::nanoseconds>(future_timestamp - std::chrono::system_clock::now()).count();
-        // std::pair<Eigen::Matrix<double,13,1>, time_type> predictor_result = predict_mean_rk4(dt/NANO_SEC);
-
-        // auto state_plus = predictor_result.first;
-
-        // // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
-        // auto predictor_imu_time = predictor_result.second;
-        
-        // pose_type predicted_pose = correct_pose({
-        //     .sensor_time = predictor_imu_time,
-        //     .position = Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)), static_cast<float>(state_plus(6))}, 
-        //     .orientation = Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}
-		// });
-
-		// // Make the first valid fast pose be straight ahead.
-		// if (first_time) {
-		// 	std::unique_lock lock {offset_mutex};
-		// 	// check again, now that we have mutual exclusion
-		// 	if (first_time) {
-		// 		first_time = false;
-		// 		offset = predicted_pose.orientation.inverse();
-		// 	}
-		// }
-
-        // // Several timestamps are logged:
-        // //       - the prediction compute time (time when this prediction was computed, i.e., now)
-        // //       - the prediction target (the time that was requested for this pose.)
-        // return fast_pose_type {
-        //     .pose = predicted_pose,
-        //     .predict_computed_time = std::chrono::high_resolution_clock::now(),
-        //     .predict_target_time = future_timestamp
-        // };
+        // Several timestamps are logged:
+        //       - the prediction compute time (time when this prediction was computed, i.e., now)
+        //       - the prediction target (the time that was requested for this pose.)
+        return fast_pose_type {
+            .pose = predicted_pose,
+            .predict_computed_time = std::chrono::high_resolution_clock::now(),
+            .predict_target_time = future_timestamp
+        };
     }
 
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {

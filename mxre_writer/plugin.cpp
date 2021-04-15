@@ -45,7 +45,6 @@ class mxre_writer : public plugin {
 			  return;
 		  }
 
-
       if (currentBlock == NULL) {
         currentBlock = new mxre::kimera_type::imu_cam_type{
           .time = datum->time,
