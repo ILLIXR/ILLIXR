@@ -4,80 +4,97 @@
 [![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/ILLIXR/community)
 
-<a href="https://www.youtube.com/watch?v=5GXsUP9_34U">
+<a href="https://youtu.be/GVcCW8WgEDY">
     <img
         alt="ILLIXR Simple Demo"
-        src="https://img.youtube.com/vi/5GXsUP9_34U/0.jpg"
-        style="width: 480px"
+        src="https://img.youtube.com/vi/GVcCW8WgEDY/0.jpg"
+        style="width: 320px"
+        class="center"
     >
 </a>
 
 Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is
-    the first open-source full-system Extended Reality (XR) testbed.
-It contains standalone state-of-the-art components representative of a generic XR workflow,
-    as well as a runtime framework that integrates these components into an XR system.
-ILLIXR's runtime integration framework is modular, extensible, and [OpenXR][26]-compatible.
+    the first fully open-source Extended Reality (XR) system and testbed.
+The modular, extensible, and [OpenXR][26]-compatible ILLIXR runtime
+    integrates state-of-the-art XR components into a complete XR system.
+The testbed is part of the broader [ILLIXR consortium][37],
+    an industry-supported community effort to democratize XR systems
+    research, development, and benchmarking.
 
-We use the term _components_ and not _kernels_ or _computations_ because
-    each component of ILLIXR is an entire application in itself,
-    and consists of many kernels and computations.
-At the moment, ILLIXR interfaces the following state-of-the-art components,
-    with periodic ILLIXR source snapshots hosted on our [releases page][25]:
+You can find the complete ILLIXR system [here][38].
 
--   Perception
-    1.  [Eye tracking][3] **
-    1.  [Scene reconstruction][2] **
-    1.  [Simultaneous Localization and Mapping][1] **
+ILLIXR also provides its components in standalone configurations to enable architects and
+    system designers to research each component in isolation.
+The standalone components are packaged together in the [v1-latest release][39] of ILLIXR. 
 
--   Visual
-    1.  [Chromatic aberration correction][5]
-    1.  [Computational holography for adaptive multi-focal displays][6] **
-    1.  [Lens distortion correction][5]
-    1.  [Reprojection][5]
+ILLIXR's modular and extensible runtime allows adding new components and swapping different
+    implementations of a given component.
+ILLIXR currently contains the following components: 
 
--   Aural
-    1.  [Audio encoding][4]
-    1.  [Audio playback][4]
+-   *Perception*
+    -   Eye Tracking
+        1.  [RITNet][3] **
+    -   Scene Reconstruction
+        1.  [ElasticFusion][2] **
+        1.  [KinectFusion][40] **
+    -   Simultaneous Localization and Mapping
+        1.  [OpenVINS][1] **
+        1.  [Kimera-VIO][29] **
+    -   Cameras and IMUs
+        1.  [ZED Mini][42]
+        1.  [Intel RealSense][41]
+
+-   *Visual*
+    -   [Chromatic aberration correction][5]
+    -   [Computational holography for adaptive multi-focal displays][6] **
+    -   [Lens distortion correction][5]
+    -   [Asynchronous Reprojection (TimeWarp)][5]
+
+-   *Aural*
+    -   [Audio encoding][4] **
+    -   [Audio playback][4] **
 
 (** Source is hosted in an external repository under the [ILLIXR project][7].)
 
-We plan on adding more components (e.g., graphics and multiple versions for individual components)
-    and extending the runtime in the future.
-Our goal is not to create a commercial quality XR product for current hardware.
-Instead, the goal for ILLIXR is to advance computer architecture, systems, and
-    hardware-software co-design research for XR by making available a full system and
-    key state-of-the-art components of both modern and future XR applications.
+We continue to add more components (new components and new implementations). 
 
-Many of the current components of ILLIXR were developed by domain experts and
-    obtained from publicly available repositories.
-They were modified for one or more of the following reasons:
-    fixing compilation,
-    adding features,
-    removing extraneous code/dependencies.
+Many of the current components of ILLIXR were developed by domain experts and obtained from
+    publicly available repositories.
+They were modified for one or more of the following reasons: fixing compilation, adding features,
+    or removing extraneous code or dependencies.
 Each component not developed by us is available as a forked github repository for
     proper attribution to its authors.
 
-Detailed descriptions of each component and our runtime,
-    including performance and energy profiles, can be found in
-    our [paper][8].
+# Papers, talks, demos, consortium
 
+A [paper][8] with details on ILLIXR, including its components, runtime, telemetry support,
+    and a comprehensive analysis of performance, power, and quality on desktop and embedded systems.
 
-## Publications
+A [talk presented at NVIDIA GTC'21][42] describing ILLIXR and announcing the ILLIXR consortium:
+    [Video][43].
+    [Slides][44]. 
 
-We request that you cite our following paper (new version coming soon) when you
-    use ILLIXR for a publication.
+A [demo][45] of an OpenXR application running with ILLIXR.
+
+The [ILLIXR consortium][37] is an industry-supported community effort to democratize
+    XR systems research, development, and benchmarking.
+Visit our [web site][37] for more information.
+
+# Citation
+
+We request that you cite our following [paper][8] (new version coming soon)
+    when you use ILLIXR for a publication.
 We would also appreciate it if you send us a citation once your work has been published.
 
 ```
 @misc{HuzaifaDesai2020,
     title={Exploring Extended Reality with ILLIXR: A new Playground for Architecture Research},
-    author={Muhammad Huzaifa and Rishi Desai and Xutao Jiang and Joseph Ravichandran and Finn Sinclair and Sarita V. Adve},
-    year={2020},
+    author={Muhammad Huzaifa and Rishi Desai and Samuel Grayson and Xutao Jiang and Ying Jing and Jae Lee and Fang Lu and Yihan Pang and Joseph Ravichandran and Finn Sinclair and Boyuan Tian and Hengzhi Yuan and Jeffrey Zhang and Sarita V. Adve},
+    year={2021},
     eprint={2004.04643},
     primaryClass={cs.DC}
 }
 ```
-
 
 ## Getting Started and Documentation
 
@@ -86,8 +103,8 @@ For more information, see our [Getting Started page][33].
 
 ## Acknowledgements
 
-Muhammad Huzaifa led the development of ILLIXR in [Sarita Adve’s research group][9]
-    at the University of Illinois at Urbana-Champaign.
+The ILLIXR project started in [Sarita Adve’s research group][9],
+    co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
 Other major contributors include
     Rishi Desai,
     Samuel Grayson,
@@ -97,6 +114,7 @@ Other major contributors include
     Fang Lu,
     Yihan Pang,
     Joseph Ravichandran,
+    Giordano Salvador,
     Finn Sinclair,
     Boyuan Tian,
     Henghzhi Yuan,
@@ -145,7 +163,6 @@ Facebook Reality Labs provided the [OpenEDS Semantic Segmentation Dataset][11].
 
 Wesley Darvin came up with the name for ILLIXR.
 
-
 ## Licensing Structure
 
 ILLIXR is available as open-source software under the permissive
@@ -158,6 +175,8 @@ The external libraries and softwares included in ILLIXR each have their own lice
     must be used according to those licenses:
 
 -   [ElasticFusion][14] \ [ElasticFusion license][15]
+
+-   [KinectFusion][40] \ [MIT License][46]
 
 -   [GTSAM][27] \ [Simplified BSD License][28]
 
@@ -177,20 +196,19 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 Note that ILLIXR's extensibility allows the source to be configured and compiled using only
     permissively licensed software.
-For more details on configuring ILLIXR, see the [ILLIXR Plugins][35] and
-    [Writing your Plugin][36] pages.
 
 
 ## Get in Touch
 
-Whether you are a computer architect, a systems person, an XR application developer,
-    or just anyone interested in XR, we would love to hear your feedback on ILLIXR!
-ILLIXR is a living testbed and we would like to both refine existing components and add new ones. 
-We believe ILLIXR has the opportunity to drive future computer architecture and
-    systems research for XR,
-    and can benefit from contributions from other researchers and organizations.
-If you would like to be a part of this effort, please contact us at
-    _illixr at cs dot illinois dot edu_ or visit us on [Gitter][24] or just send us a pull request!
+Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms
+    or applications, or just anyone interested in XR research, development, or products,
+    we would love to hear from you and hope you will contribute!
+You can join
+    the [ILLIXR consortium][37],
+    [Discord][47],
+    or [mailing list][48],
+    or send us an [email][49],
+    or just send us a pull request!
 
 
 [//]: # (- References -)
@@ -231,3 +249,16 @@ If you would like to be a part of this effort, please contact us at
 [34]:   https://illixr.github.io/ILLIXR/LICENSE/
 [35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
 [36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
+[37]:   http://illixr.org
+[38]:   https://github.com/ILLIXR/ILLIXR
+[39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v1-latest
+[40]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
+[41]:   https://github.com/ILLIXR/ILLIXR/tree/master/realsense
+[42]:   https://www.nvidia.com/en-us/gtc/catalog/?search.primarytopic=option_1564595704881&search.sessiontype=option_1614028602338&search.primaryindustrysegment=option_1563402697134&search=An%20Open-Source%20Testbed#/
+[43]:   https://youtu.be/ZY98lWksnpM
+[44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
+[45]:   https://youtu.be/GVcCW8WgEDY
+[46]:   https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt
+[47]:   https://discord.gg/upkvy7x3W4
+[48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
+[49]:   mailto:illixr@cs.illinois.edu
