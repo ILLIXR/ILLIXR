@@ -58,10 +58,9 @@ class mxre_reader : public threadloop {
         .quat = Eigen::Quaterniond{recvKimeraOutput.orientation[0], recvKimeraOutput.orientation[1], recvKimeraOutput.orientation[2], recvKimeraOutput.orientation[3]},
       });
 
-      // std::cerr << "Pose: " << recvKimeraOutput.pose_type_position[1] << ", " << recvKimeraOutput.pose_type_position[1] << ", " << recvKimeraOutput.pose_type_position[2] << std::endl;
-      // std::cerr << "Rot: " << recvKimeraOutput.quat[0] << ", " << recvKimeraOutput.quat[1] << ", " << recvKimeraOutput.quat[2] << ", " << recvKimeraOutput.quat[3] << std::endl;
-      // auto curr_time = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now());
-      // std::cerr << "Latency: " << std::chrono::duration_cast<std::chrono::milliseconds>(curr_time - recvKimeraOutput.sensor_time).count() << std::endl << std::endl;
+      auto curr_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now());
+      auto diff = curr_time - std::chrono::time_point_cast<std::chrono::nanoseconds>(recvKimeraOutput.sensor_time);
+      std::cerr << "Latency: " << std::chrono::duration_cast<std::chrono::nanoseconds>(diff).count() / 1000000.0 << std::endl << std::endl;
     }
 
   private:
