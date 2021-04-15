@@ -15,6 +15,9 @@
 #include "shaders/timewarp_shader.hpp"
 #include "common/pose_prediction.hpp"
 
+#define DEBUG2(x1, x2) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x1 << "=" << x1 << << ", " << #x2 << "=" << x2 << std::endl;
+#define DEBUG(x) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x << "=" << x << std::endl;
+
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
@@ -287,6 +290,7 @@ public:
 		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
 		// MTP here. More you wait, closer to the display sync you sample the pose.
 
+
 		// TODO: poll GLX window events
 		if (GetNextSwapTimeEstimate() > _m_rtc->now()) {
 			// log << iteration_no << std::endl;
@@ -294,9 +298,11 @@ public:
 		auto start = _m_rtc->now();
 		auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
 		if (!is_scheduler()) {
+			abort();
 			std::this_thread::sleep_for(sleep_duration);
 		}
 		auto stop = _m_rtc->now();
+
 
 		log
 			<< iteration_no << ','
@@ -304,6 +310,7 @@ public:
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(stop.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count() << ',';
+		
 
 		if(_m_eyebuffer.get_ro_nullable()) {
 			return skip_option::run;
@@ -563,7 +570,9 @@ public:
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(_m_rtc->now().time_since_epoch()).count() << ',';
 
+		DEBUG(1);
 		glXSwapBuffers(xwin->dpy, xwin->win);
+		DEBUG(1);
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();

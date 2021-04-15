@@ -34,7 +34,8 @@ loader:
   name: native
 
   # run in GDB:
-  command: sudo gdb -q --args env ILLIXR_RUN_DURATION=10 ILLIXR_SCHEDULER=y $env_cmd
+  # command: sudo gdb -q --args taskset -a -c 0 env ILLIXR_RUN_DURATION=40 ILLIXR_SCHEDULER=y $env_cmd
+  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 ILLIXR_SCHEDULER=y $env_cmd
 
   # command: printf "%s " $env_cmd
   # command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 ILLIXR_SCHEDULER=y $env_cmd
@@ -47,4 +48,4 @@ loader:
   # log_stdout: scheduled.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd
 
-profile: dbg
+profile: opt

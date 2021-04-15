@@ -215,19 +215,19 @@ private:
 
 		void thread_on_stop() {
 			// Drain queue
-			std::size_t unprocessed = flush();
+			[[maybe_unused]] std::size_t unprocessed = flush();
 
 			// Log stats
-			if (_m_record_logger) {
-				_m_record_logger->log(record{__switchboard_topic_stop_header, {
-					{_m_plugin_id},
-					{_m_topic_name},
-					{unprocessed + _m_skipped + _m_dequeued},
-					{_m_dequeued},
-					{_m_skipped},
-					{_m_idle_cycles},
-				}});
-			}
+			// if (_m_record_logger) {
+			// 	_m_record_logger->log(record{__switchboard_topic_stop_header, std::vector<std::any>{
+			// 																						std::make_any<plugin_id_t>(_m_plugin_id),
+			// 																						std::make_any<std::string>(_m_topic_name),
+			// 																						std::make_any<size_t>(unprocessed + _m_skipped + _m_dequeued),
+			// 																						std::make_any<size_t>(_m_dequeued),
+			// 																						std::make_any<size_t>(_m_skipped),
+			// 																						std::make_any<size_t>(_m_idle_cycles),
+			// 	}});
+			// }
 		}
 
 	public:
