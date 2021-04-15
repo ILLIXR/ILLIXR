@@ -162,7 +162,6 @@ The development of ILLIXR was also aided by generous hardware and software donat
 Facebook Reality Labs provided the [OpenEDS Semantic Segmentation Dataset][11].
 
 Wesley Darvin came up with the name for ILLIXR.
-Abdulrahman Mahmoud helped with the design of this website.
 
 ## Licensing Structure
 
