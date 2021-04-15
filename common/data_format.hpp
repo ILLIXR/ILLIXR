@@ -258,6 +258,6 @@ namespace ILLIXR {
 
 	[[maybe_unused]] static bool is_scheduler() {
 		const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
-		return ILLIXR_SCHEDULER_str && (std::string{ILLIXR_SCHEDULER_str} == "y");
+		return ILLIXR_SCHEDULER_str && (ILLIXR_SCHEDULER_str[0] == 'y');
 	}
 }
