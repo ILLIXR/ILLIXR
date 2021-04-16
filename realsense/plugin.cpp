@@ -54,55 +54,77 @@ public:
             cfg.disable_all_streams();
             configure_camera();
         }
-    void auto_select_cam(){
-        rs2::context ctx;
-        rs2::device_list devices = ctx.query_devices();
+    
+    void find_supported_devices(rs2::device_list devices){
         for (rs2::device device : devices) {
-            std::string name = "Unknown Device";
-            if (device.supports(RS2_CAMERA_INFO_NAME)) {
-                name = device.get_info(RS2_CAMERA_INFO_NAME);
-                if (name.find("D4") != std::string::npos){
-                    std::cout << "Found D4XX Device, Checking for supported sensors" << std::endl;
+            if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)){
+                std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE); 
+                std::cout << "Found Product Line: " << product_line << std::endl;
+                if (product_line == "D400"){
+                    std::cout << "Checking for supported streams" << std::endl;
                     std::vector<rs2::sensor> sensors = device.query_sensors();
                     for (rs2::sensor sensor : sensors){
-                        if (sensor.supports(RS2_CAMERA_INFO_NAME)){
-                            std::string sensor_name = sensor.get_info(RS2_CAMERA_INFO_NAME);
-                            if (sensor_name.find("Motion Module") != std::string::npos){
-                                cam_select = D4XXI;
-                                std::cout << "Setting cam_select: D4XX" << std::endl;
-                                break;
+                        std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
+                        //Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and gyro
+                        for (auto&& sp : stream_profiles)
+                        {
+                            if (sp.stream_type() == RS2_STREAM_GYRO){
+                                gyro_found = true;
+                            };
+                            if (sp.stream_type() == RS2_STREAM_ACCEL){
+                                accel_found = true;
                             }
                         }
                     }
-                    if (cam_select == D4XXI){
-                        break;
+                    if (accel_found && gyro_found){
+                        D4XXI_found = true;
+                        std::cout << "Supported D4XX found!" << std::endl;
                     }
                 } 
-                else if (name.find("T26") != std::string::npos){
-                    cam_select = T26X;
-                    std::cout << "Setting cam_select: T26X" << std::endl;
+                else if (product_line == "T200"){
+                    T26X_found = true;
+                    std::cout << "T26X found! " << std::endl;
                 }
             }
+            
+        }
+        if (!T26X_found && !D4XXI_found){
+            std::cout << "No supported Realsense device detected!" << std::endl;
         }
     }
+
     void configure_camera()
     {
+        rs2::context ctx;
+        rs2::device_list devices = ctx.query_devices();
+        find_supported_devices(devices);
         if (realsense_cam.compare("auto") == 0) {
-            auto_select_cam();
+            if (D4XXI_found){
+                cam_select = D4XXI;
+                std::cout << "Setting cam_select: D4XX" << std::endl;
+            }
+            else if (T26X_found){
+                cam_select = T26X;
+                std::cout << "Setting cam_select: T26X" << std::endl;
+            }
         }
-        else if (realsense_cam.compare("D4XX") == 0){
+        else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found){
             cam_select = D4XXI;
             std::cout << "Setting cam_select: D4XX" << std::endl;
         }
-        else if (realsense_cam.compare("T26X") == 0){
+        else if ((realsense_cam.compare("T26X") == 0) && T26X_found){
             cam_select = T26X;
             std::cout << "Setting cam_select: T26X" << std::endl;
         }
+        if (cam_select == UNSUPPORTED){
+            std::cout << "Supported device NOT found!" << std::endl;
+        }
         if (cam_select == T26X){
-            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // adjustable to 0, 63 (default), 250 hz
-            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // adjustable set to 0, 200 (default), 400 hz
-            cfg.enable_stream(RS2_STREAM_FISHEYE, 1, RS2_FORMAT_Y8);
-            cfg.enable_stream(RS2_STREAM_FISHEYE, 2, RS2_FORMAT_Y8);
+            //T26X series has fixed options for accel rate, gyro rate, fisheye resolution, and FPS
+            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // 62 Hz
+            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // 200 Hz
+            cfg.enable_stream(RS2_STREAM_FISHEYE, 1, RS2_FORMAT_Y8); //848x800, 30 FPS
+            cfg.enable_stream(RS2_STREAM_FISHEYE, 2, RS2_FORMAT_Y8); //848x800, 30 FPS
             profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
         }
         else if (cam_select == D4XXI){
@@ -280,6 +302,10 @@ private:
 	cam_type_T26X cam_T26X_;
     cam_type_D4XX cam_D4XX_;
     cam_enum cam_select{UNSUPPORTED};
+    bool gyro_found{false};
+    bool accel_found{false};
+    bool D4XXI_found{false};
+    bool T26X_found{false}; 
     
 	accel_type accel_type_;
 	int iteration_cam = 0;
