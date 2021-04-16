@@ -30,6 +30,13 @@ typedef struct {
     cv::Mat* img1;
     int iteration;
 } cam_type_T26X;
+
+typedef enum {
+    UNSUPPORTED,
+    D4XXI,
+    T26X
+} cam_enum;
+
 typedef struct {
 	rs2_vector* accel_data;
 	int iteration;
@@ -61,19 +68,19 @@ public:
                         if (sensor.supports(RS2_CAMERA_INFO_NAME)){
                             std::string sensor_name = sensor.get_info(RS2_CAMERA_INFO_NAME);
                             if (sensor_name.find("Motion Module") != std::string::npos){
-                                std::cout << "Setting realsense_cam: D4XX" << std::endl;
-                                realsense_cam = "D4XX";
+                                cam_select = D4XXI;
+                                std::cout << "Setting cam_select: D4XX" << std::endl;
                                 break;
                             }
                         }
                     }
-                    if (realsense_cam.compare("D4XX") == 0){
+                    if (cam_select == D4XXI){
                         break;
                     }
                 } 
                 else if (name.find("T26") != std::string::npos){
-                    realsense_cam = "T26X";
-                    std::cout << "Setting realsense_cam: T26X" << std::endl;
+                    cam_select = T26X;
+                    std::cout << "Setting cam_select: T26X" << std::endl;
                 }
             }
         }
@@ -83,14 +90,22 @@ public:
         if (realsense_cam.compare("auto") == 0) {
             auto_select_cam();
         }
-        if (realsense_cam.compare("T26X") == 0){
+        else if (realsense_cam.compare("D4XX") == 0){
+            cam_select = D4XXI;
+            std::cout << "Setting cam_select: D4XX" << std::endl;
+        }
+        else if (realsense_cam.compare("T26X") == 0){
+            cam_select = T26X;
+            std::cout << "Setting cam_select: T26X" << std::endl;
+        }
+        if (cam_select == T26X){
             cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // adjustable to 0, 63 (default), 250 hz
             cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // adjustable set to 0, 200 (default), 400 hz
             cfg.enable_stream(RS2_STREAM_FISHEYE, 1, RS2_FORMAT_Y8);
             cfg.enable_stream(RS2_STREAM_FISHEYE, 2, RS2_FORMAT_Y8);
             profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
         }
-        else if (realsense_cam.compare("D4XX") == 0){
+        else if (cam_select == D4XXI){
             cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE_D4XX); // adjustable to 0, 63 (default), 250 hz
             cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, GYRO_RATE_D4XX); // adjustable set to 0, 200 (default), 400 hz
             cfg.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
@@ -109,7 +124,7 @@ public:
             // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
             // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
 
-            if (realsense_cam.compare("D4XX") == 0){
+            if (cam_select == D4XXI){
                 if (auto fs = frame.as<rs2::frameset>()) {
                     rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
                     rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
@@ -133,7 +148,7 @@ public:
                 }
             }
 
-            else if (realsense_cam.compare("T26X") == 0){
+            else if (cam_select == T26X){
                 if (auto fs = frame.as<rs2::frameset>()) {
                     rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
                     rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
@@ -182,7 +197,7 @@ public:
                     time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
 
                      // Images
-                    if (realsense_cam.compare("D4XX") == 0){
+                    if (cam_select == D4XXI){
                         std::optional<cv::Mat *> img0 = std::nullopt;
                         std::optional<cv::Mat *> img1 = std::nullopt;
                         std::optional<cv::Mat *> rgb = std::nullopt;
@@ -221,7 +236,7 @@ public:
                         _m_imu_integrator->put(imu_integrator_params);
                     }
 
-                    else if (realsense_cam.compare("T26X") == 0){
+                    else if (cam_select == T26X){
                         std::optional<cv::Mat *> img0 = std::nullopt;
                         std::optional<cv::Mat *> img1 = std::nullopt;
 
@@ -264,6 +279,7 @@ private:
     
 	cam_type_T26X cam_T26X_;
     cam_type_D4XX cam_D4XX_;
+    cam_enum cam_select{UNSUPPORTED};
     
 	accel_type accel_type_;
 	int iteration_cam = 0;
