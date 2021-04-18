@@ -18,7 +18,7 @@ class mxre_reader : public threadloop {
     {}
 
     virtual void _p_thread_setup() {
-      illixrSink.setup("sink");
+      illixrSink.setup("192.17.102.20");
     }
        
     virtual void _p_one_iteration() {
@@ -68,7 +68,7 @@ class mxre_reader : public threadloop {
     std::unique_ptr<writer<pose_type>> _m_pose;
 	  std::unique_ptr<writer<imu_integrator_input>> _m_imu_integrator_input;
 
-    mxre::kernels::ILLIXRSink<mxre::kimera_type::kimera_output> illixrSink;
+    mxre::kernels::ILLIXRZMQSink<mxre::kimera_type::kimera_output> illixrSink;
 };
 
 PLUGIN_MAIN(mxre_reader)

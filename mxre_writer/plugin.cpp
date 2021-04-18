@@ -18,7 +18,7 @@ class mxre_writer : public plugin {
 
     virtual void start() override {
       plugin::start();
-      illixrSource.setup("source");
+      illixrSource.setup("192.17.102.20");
       sb->schedule<imu_cam_type>(id, "imu_cam", [&](const imu_cam_type *datum) {
         this->send_imu_cam_data(datum);
       });
@@ -70,7 +70,7 @@ class mxre_writer : public plugin {
 
     std::vector<mxre::kimera_type::imu_type> imu_buffer;
     mxre::kimera_type::imu_cam_type *currentBlock = NULL;
-	  mxre::kernels::ILLIXRSource<mxre::kimera_type::imu_cam_type> illixrSource;
+	  mxre::kernels::ILLIXRZMQSource<mxre::kimera_type::imu_cam_type> illixrSource;
 
     double previous_timestamp = 0.0;
 };
