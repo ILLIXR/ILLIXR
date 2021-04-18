@@ -18,7 +18,7 @@ class mxre_writer : public plugin {
 
     virtual void start() override {
       plugin::start();
-      illixrSource.setup("192.17.102.20");
+      illixrSource.setup("10.251.30.191");//mxre machine ip address
       sb->schedule<imu_cam_type>(id, "imu_cam", [&](const imu_cam_type *datum) {
         this->send_imu_cam_data(datum);
       });

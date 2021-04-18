@@ -18,7 +18,7 @@ class mxre_reader : public threadloop {
     {}
 
     virtual void _p_thread_setup() {
-      illixrSink.setup("192.17.102.20");
+      illixrSink.setup("192.17.102.20");//this machine ip address
     }
        
     virtual void _p_one_iteration() {
