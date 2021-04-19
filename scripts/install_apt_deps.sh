@@ -73,6 +73,8 @@ pkg_dep_list_prereq=(
     curl
     gnupg2
     software-properties-common
+    bc
+    pciutils
 ) # End list
 
 pkg_dep_list_common=(
@@ -198,6 +200,19 @@ pkg_dep_groups_prereq="prereq"
 pkg_dep_groups="common gl mesa display image sound usb thread math nogroup"
 
 
+### Package dependencies and repository setup ###
+
+# Generate the list of package dependencies to install based on prerequisite
+# package groups
+pkg_dep_list=$(pkg_dep_list_from "${pkg_dep_groups_prereq}")
+echo "Installing prerequisite packages: ${pkg_dep_list}"
+
+# Refresh package list and grab prerequisite packages needed for package
+# and repository management within this script
+sudo apt-get update
+sudo apt-get install -q -y ${pkg_dep_list}
+
+
 ### Selected and optional package dependencies setup ###
 
 ## Docker ##
@@ -311,17 +326,7 @@ if [ "${use_cuda}" = "yes" ]; then
 fi
 
 
-### Prerequisite package depenencies and repository setup ###
-
-# Generate the list of package dependencies to install based on prerequisite
-# package groups
-pkg_dep_list=$(pkg_dep_list_from "${pkg_dep_groups_prereq}")
-echo "Installing prerequisite packages: ${pkg_dep_list}"
-
-# Refresh package list and grab prerequisite packages needed for package
-# and repository management within this script
-sudo apt-get update
-sudo apt-get install -q -y ${pkg_dep_list}
+### Package dependencies and repository setup ###
 
 # Add repositories needed for drivers and miscellaneous dependencies (python)
 sudo add-apt-repository -u -y ppa:graphics-drivers/ppa
