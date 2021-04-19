@@ -191,7 +191,7 @@ pkg_dep_list_prereq_cuda=(
 ) # End List
 
 pkg_dep_list_cuda=(
-    cuda 
+    cuda-11-1
 ) # End List
 
 # List of package dependency group names (for prerequisites and other
@@ -359,8 +359,8 @@ if [ "${use_cuda}" = "yes" ]; then
     key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
     add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
 
-    path_cmd_cuda='export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}'
-    lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
+    path_cmd_cuda='export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}'
+    lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
     pkg_warn_msg_cuda="Before running ILLIXR with plugins using CUDA, "
     pkg_warn_msg_cuda+="make sure to update the following environment variables:\n"
     pkg_warn_msg_cuda+="> ${path_cmd_cuda}\n> ${lib64_cmd_cuda}"
