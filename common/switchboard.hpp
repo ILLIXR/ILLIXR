@@ -101,7 +101,7 @@ public:
     /**
      * @brief Virtual class for event types.
      *
-     * Minimum requirement: Events must be desctructible.
+     * Minimum requirement: Events must be destructible.
      */
     class event {
     public:
