@@ -101,7 +101,7 @@ public:
     /**
      * @brief Virtual class for event types.
      *
-     * Minimum requirement: Events must be desctructable.
+     * Minimum requirement: Events must be desctructible.
      */
     class event {
     public:
@@ -306,8 +306,8 @@ private:
          * Thread-safe
          * - Caveat:
          *
-         *   This (circular) queue based solution may race if >= N writers attempt
-         *       to write to the N-sized queue, interrupting a concurrent reader (using 'get').
+         *   This (circular) queue based solution may race if >= N write attempts
+         *       to the N-sized queue interrupt a concurrent reader (using 'get').
          *
          *   The reader's critical section is as follows:
          *   1. Read the latest serial number

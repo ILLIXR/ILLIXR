@@ -27,7 +27,6 @@ public:
 	imu_integrator(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
@@ -55,7 +54,6 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	// IMU Data, Sequence Flag, and State Vars Needed
-	switchboard::reader<imu_cam_type> _m_imu_cam;
 	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
 	// IMU Biases
