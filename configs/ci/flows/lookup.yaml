@@ -1,0 +1,5 @@
+flow:
+  - plugin_group:
+    - !include "plugins/pose_lookup.yaml"
+    - !include "plugins/gldemo.yaml"
+  - !include "plugins/groups/core.yaml"

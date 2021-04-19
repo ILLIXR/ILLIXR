@@ -1,4 +1,4 @@
-name: Kimera-VIO/
+name: Kimera-VIO
 path:
   git_repo: https://github.com/ILLIXR/Kimera-VIO.git
   version: "3.1"

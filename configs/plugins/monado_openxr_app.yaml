@@ -1,0 +1,4 @@
+name: monado_openxr_app
+path:
+  git_repo: https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
+  version: "2.0"

@@ -59,41 +59,63 @@ definitions:
             type: string
           relative_to:
             $ref: '#/definitions/path'
+  plugin_group:
+    oneOf:
+      - type: array
+        default: []
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            name:
+              description: An optional name for the plugin
+              default: ""
+              type: string
+            path:
+              $ref: '#/definitions/path'
+              description: Path to the directory containing the SO.
+            config:
+              default: {}
+              type: object
+              additionalProperties:
+                type: string
+              description: Vars that get passed to the build system
+          required:
+            - path
+  flow:
+    oneOf:
+      - type: array
+        default: []
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            plugin_group:
+              $ref: '#/definitions/plugin_group'
 type: object
 additionalProperties: false
 properties:
-  plugin_groups:
+  flows:
     type: array
     default: []
+    description: (Plugin) Flows to launch in runner (flows run independently)
     items:
       type: object
       additionalProperties: false
       properties:
-        plugin_group:
-          type: array
-          default: []
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              name:
-                description: An optional name for the plugin
-                default: ""
-                type: string
-              path:
-                $ref: '#/definitions/path'
-                description: Path to the directory containing the SO.
-              config:
-                default: {}
-                type: object
-                additionalProperties:
-                  type: string
-                description: Vars that get passed to the build system
-            required:
-              - path
-  common:
-    default: {}
+        flow:
+          $ref: '#/definitions/flow'
+  append:
     type: object
+    default: { plugin_group: [] }
+    additionalProperties: false
+    description: Configuration group to append to all included flows
+    properties:
+      plugin_group:
+        $ref: '#/definitions/plugin_group'
+  common:
+    type: object
+    default: {}
     additionalProperties: false
     properties:
       path:
@@ -101,8 +123,8 @@ properties:
         $ref: '#/definitions/path'
         description: Path to https://github.com/ILLIXR/ILLIXR
   runtime:
-    default: {}
     type: object
+    default: {}
     additionalProperties: false
     properties:
       path:
@@ -110,29 +132,29 @@ properties:
         $ref: '#/definitions/path'
         description: Path to https://github.com/ILLIXR/ILLIXR
       config:
-        default: {}
         type: object
+        default: {}
         additionalProperties:
           type: string
         description: Vars that get passed to the build system
   action:
     type: object
-    additionalProperties: true
     default: {}
+    additionalProperties: true
     required:
       - name
     properties:
       name:
-        default: native
         type: string
+        default: native
         description: "Currently supports: 'native', 'monado', 'tests', or 'clean'"
         properties:
           path:
             $ref: '#/definitions/path'
             description: Path to action
       config:
-        default: {}
         type: object
+        default: {}
         additionalProperties:
           type: string
         description: Interpretation of these vars is action-dependent
@@ -159,19 +181,22 @@ properties:
     description: URL to OBJs to render in gldemo.
   enable_offload:
     type: boolean
+    default: False
     description: Flag to activate data collection at runtime.
   enable_alignment:
     type: boolean
+    default: False
     description: Flag to activate the ground-truth alignment.
   enable_verbose_errors:
     type: boolean
+    default: False
     description: Flag to activate verbose logging in 'common/error_util.hpp'
   enable_pre_sleep:
     type: boolean
     description: Flag to activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
   profile:
-    default: dbg
     type: string
+    default: dbg
     description: "Currently supports 'dbg' and 'opt'"
   realsense_cam:
     default: auto

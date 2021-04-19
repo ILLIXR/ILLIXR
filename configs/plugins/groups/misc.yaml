@@ -1,0 +1,3 @@
+plugin_group:
+  - !include "plugins/ground_truth_slam.yaml"
+  - !include "plugins/gldemo.yaml"

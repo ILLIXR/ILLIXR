@@ -1,0 +1,3 @@
+plugin_group:
+  - !include "plugins/openvins.yaml"
+  - !include "plugins/rk4_integrator.yaml"

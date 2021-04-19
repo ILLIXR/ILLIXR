@@ -1,0 +1,3 @@
+plugin_group:
+  - !include "plugins/offline_imu_cam.yaml"
+  - !include "plugins/pose_prediction.yaml"

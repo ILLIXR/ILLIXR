@@ -1,17 +1,16 @@
 ##
 ## Configuration to `make clean` all plugins listed below
 ##
-plugin_groups:
-  - !include "all_plugins.yaml"
 
 action:
   name: clean
 
-## Unused definitions
-profile: opt
-data: data
-demo_data: demo_data
-enable_offload: False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
+common:    !include "plugins/common.yaml"
+runtime:   !include "plugins/runtime.yaml"
+data:      !include "data/data-default.yaml"
+demo_data: !include "data/demo-default.yaml"
+
+flows:
+  - flow:
+    - !include "plugins/groups/all.yaml"
+    - !include "plugins/groups/shared.yaml" ## Runtime + Common

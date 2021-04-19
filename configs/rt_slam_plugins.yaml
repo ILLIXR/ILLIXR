@@ -1,6 +1,0 @@
-plugin_group:
-  - path: offline_imu_cam/
-  # - path: zed/
-  - !include "kimera-vio.yaml"
-  - path: gtsam_integrator/
-  - path: pose_prediction/

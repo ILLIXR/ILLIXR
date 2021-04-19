@@ -1,0 +1,5 @@
+flow:
+  - !include "plugins/groups/rt_slam.yaml"
+  - !include "plugins/groups/kimera-gtsam.yaml"
+  - !include "plugins/groups/misc.yaml"
+  - !include "plugins/groups/core.yaml"

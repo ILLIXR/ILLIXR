@@ -1,24 +1,28 @@
-plugin_groups:
-  - !include "rt_slam_plugins.yaml"
-  - plugin_group:
-    - path: ground_truth_slam/
-    - path: gldemo/
-  - !include "core_plugins.yaml"
-
-data:
-  subpath: mav0
-  relative_to:
-    archive_path:
-      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-demo_data: demo_data/
-
-enable_offload:   False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
+##
+## Configuration to run CI flows (see 'configs/ci')
+##
 
 action:
   name: tests
-  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
-  audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
+
+  kimera_path: !include "data/kimera-default.yaml"
+  audio_path:  !include "data/audio-default.yaml"
+
+  enable_ci:  True
+  run-solo:   !include "ci/run-solo.yaml"
+  build-only: !include "ci/build-only.yaml"
+  no-build:   !include "ci/no-build.yaml"
+
+common:    !include "plugins/common.yaml"
+runtime:   !include "plugins/runtime.yaml"
+data:      !include "data/euroc-default.yaml"
+demo_data: !include "data/demo-default.yaml"
+
 profile: dbg
+
+flows:
+  - !include "ci/flows/lookup.yaml"
+  - !include "ci/flows/openvins-rk4.yaml"
+  - !include "ci/flows/openvins-gtsam.yaml"
+  - !include "ci/flows/kimera-rk4.yaml"
+  - !include "ci/flows/kimera-gtsam.yaml"

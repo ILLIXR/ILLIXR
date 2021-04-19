@@ -1,0 +1,5 @@
+plugin_group:
+
+  ## Shared Plugins
+  - !include "plugins/runtime.yaml"
+  - !include "plugins/common.yaml"

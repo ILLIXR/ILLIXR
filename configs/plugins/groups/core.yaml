@@ -1,0 +1,3 @@
+plugin_group:
+  - !include "plugins/timewarp_gl.yaml"
+  - !include "plugins/audio.yaml"

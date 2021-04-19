@@ -1,0 +1,3 @@
+plugin_group:
+  - !include "plugins/kimera-vio.yaml"
+  - !include "plugins/rk4_integrator.yaml"

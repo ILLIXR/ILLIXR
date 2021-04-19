@@ -1,0 +1,32 @@
+plugin_group:
+
+  ## Excludes 'common'
+  ## Excludes 'runtime'
+  ## Excludes 'monado_integration'
+  ## Excludes 'monado_openxr_app'
+
+  ## Core Plugins
+  - !include "plugins/timewarp_gl.yaml"
+  - !include "plugins/audio.yaml"
+  - !include "plugins/hologram.yaml"
+
+  ## Real-Time SLAM Plugins
+  - !include "plugins/kimera-vio.yaml"
+  - !include "plugins/openvins.yaml"
+  - !include "plugins/ground_truth_slam.yaml"
+
+  ## IMU and Pose Plugins
+  - !include "plugins/gtsam_integrator.yaml"
+  - !include "plugins/rk4_integrator.yaml"
+  - !include "plugins/pose_prediction.yaml"
+  - !include "plugins/pose_lookup.yaml"
+
+  ## Sensor and Input Plugins
+  - !include "plugins/zed.yaml"
+  - !include "plugins/realsense.yaml"
+  - !include "plugins/offline_imu_cam.yaml"
+
+  ## Graphical and Other Plugins
+  - !include "plugins/gldemo.yaml"
+  - !include "plugins/debugview.yaml"
+  - !include "plugins/offload_data.yaml"

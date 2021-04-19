@@ -1,0 +1,5 @@
+## A '#/definitions/path' for the 'data' config
+subpath: mav0
+relative_to:
+  archive_path:
+    download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'

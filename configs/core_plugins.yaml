@@ -1,4 +1,0 @@
-plugin_group:
-  - path: timewarp_gl/
-  - !include "audio.yaml"
-  #- !include "hologram.yaml"
