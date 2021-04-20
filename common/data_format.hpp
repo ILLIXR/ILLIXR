@@ -26,20 +26,43 @@ namespace ILLIXR {
 	// Data type that combines the IMU and camera data at a certain timestamp.
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
-	typedef struct {
+	struct imu_cam_type : public switchboard::event {
 		time_type time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
-		std::optional<cv::Mat*> img0;
-		std::optional<cv::Mat*> img1;
+		std::optional<cv::Mat> img0;
+		std::optional<cv::Mat> img1;
 		ullong dataset_time;
-	} imu_cam_type;
+		imu_cam_type(time_type time_,
+					 Eigen::Vector3f angular_v_,
+					 Eigen::Vector3f linear_a_,
+					 std::optional<cv::Mat> img0_,
+					 std::optional<cv::Mat> img1_,
+					 ullong dataset_time_)
+			: time{time_}
+			, angular_v{angular_v_}
+			, linear_a{linear_a_}
+			, img0{img0_}
+			, img1{img1_}
+			, dataset_time{dataset_time_}
+		{ }
+	};
 
-    typedef struct {
-        std::optional<cv::Mat*> rgb;
-        std::optional<cv::Mat*> depth;
-        ullong timestamp;
-    } rgb_depth_type;
+    class rgb_depth_type : public switchboard::event {
+        std::optional<cv::Mat> rgb;
+        std::optional<cv::Mat> depth;
+        [[maybe_unused]] ullong timestamp;
+	public:
+		rgb_depth_type(
+					   std::optional<cv::Mat> _rgb,
+					   std::optional<cv::Mat> _depth,
+					   ullong _timestamp
+					   )
+			: rgb{_rgb}
+			, depth{_depth}
+			, timestamp{_timestamp}
+		{ }
+    };
 
 	// Values needed to initialize the IMU integrator
 	typedef struct {
@@ -53,7 +76,7 @@ namespace ILLIXR {
 	} imu_params;
 
 	// IMU biases, initialization params, and slow pose needed by the IMU integrator
-	typedef struct {
+	struct imu_integrator_input : public switchboard::event {
 		double last_cam_integration_time;
 		double t_offset;
 		imu_params params;
@@ -63,10 +86,29 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
-	} imu_integrator_input;
+		imu_integrator_input(
+							 double last_cam_integration_time_,
+							 double t_offset_,
+							 imu_params params_,
+							 Eigen::Vector3d biasAcc_,
+							 Eigen::Vector3d biasGyro_,
+							 Eigen::Matrix<double,3,1> position_,
+							 Eigen::Matrix<double,3,1> velocity_,
+							 Eigen::Quaterniond quat_
+							 )
+			: last_cam_integration_time{last_cam_integration_time_}
+			, t_offset{t_offset_}
+			, params{params_}
+			, biasAcc{biasAcc_}
+			, biasGyro{biasGyro_}
+			, position{position_}
+			, velocity{velocity_}
+			, quat{quat_}
+		{ }
+	};
 
 	// Output of the IMU integrator to be used by pose prediction
-	typedef struct {
+	struct imu_raw_type : public switchboard::event {
 		// Biases from the last two IMU integration iterations used by RK4 for pose predict
 		Eigen::Matrix<double,3,1> w_hat;
 		Eigen::Matrix<double,3,1> a_hat;
@@ -78,13 +120,38 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> vel;
 		Eigen::Quaterniond quat;
 		time_type imu_time;
-	} imu_raw_type;
+		imu_raw_type(Eigen::Matrix<double,3,1> w_hat_,
+					 Eigen::Matrix<double,3,1> a_hat_,
+					 Eigen::Matrix<double,3,1> w_hat2_,
+					 Eigen::Matrix<double,3,1> a_hat2_,
+					 Eigen::Matrix<double,3,1> pos_,
+					 Eigen::Matrix<double,3,1> vel_,
+					 Eigen::Quaterniond quat_,
+					 time_type imu_time_)
+			: w_hat{w_hat_}
+			, a_hat{a_hat_}
+			, w_hat2{w_hat2_}
+			, a_hat2{a_hat2_}
+			, pos{pos_}
+			, vel{vel_}
+			, quat{quat_}
+			, imu_time{imu_time_}
+		{ }
+	};
 
-	typedef struct {
+	struct pose_type : public switchboard::event {
 		time_type sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
-	} pose_type;
+		pose_type() { }
+		pose_type(time_type sensor_time_,
+				  Eigen::Vector3f position_,
+				  Eigen::Quaternionf orientation_)
+			: sensor_time{sensor_time_}
+			, position{position_}
+			, orientation{orientation_}
+		{ }
+	};
 
 	typedef struct {
 		pose_type pose;
@@ -95,21 +162,34 @@ namespace ILLIXR {
 	// Using arrays as a swapchain
 	// Array of left eyes, array of right eyes
 	// This more closely matches the format used by Monado
-	struct rendered_frame {
+	struct rendered_frame : public switchboard::event {
 		GLuint texture_handles[2]; // Does not change between swaps in swapchain
 		GLuint swap_indices[2]; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
 		time_type sample_time;
 		time_type render_time;
+		rendered_frame() { }
+		rendered_frame(GLuint texture_handles_[2],
+		               GLuint swap_indices_[2],
+		               fast_pose_type render_pose_,
+                       time_type sample_time_,
+                       time_type render_time_)
+            : render_pose(render_pose_)
+            , sample_time(sample_time_)
+            , render_time(render_time_)
+        {
+            texture_handles[0]  = texture_handles_[0];
+            texture_handles[1]  = texture_handles_[1];
+            swap_indices[0]     = swap_indices_[0];
+            swap_indices[1]     = swap_indices_[1];
+        }
 	};
 
-	typedef struct {
+	struct hologram_input : public switchboard::event {
 		int seq;
-	} hologram_input;
-
-	typedef struct {
-		int dummy;
-	} hologram_output;
+		hologram_input() { }
+		hologram_input(int seq_) : seq{seq_} { }
+	};
 
 	typedef struct {
 		int seq;		
@@ -136,13 +216,30 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 
-        typedef struct {
-                int seq;
-		int offload_time;
-                unsigned char *image;
-                time_type pose_time;
-                Eigen::Vector3f position;
-                Eigen::Quaternionf latest_quaternion;
-                Eigen::Quaternionf render_quaternion;
-        } texture_pose;
+    struct texture_pose : public switchboard::event {
+        int seq; /// TODO: Should texture_pose.seq be a long long
+        int offload_time;
+        unsigned char *image;
+        time_type pose_time;
+        Eigen::Vector3f position;
+        Eigen::Quaternionf latest_quaternion;
+        Eigen::Quaternionf render_quaternion;
+        texture_pose() { }
+        texture_pose(
+            int seq_,
+            int offload_time_,
+            unsigned char *image_,
+            time_type pose_time_,
+            Eigen::Vector3f position_,
+            Eigen::Quaternionf latest_quaternion_,
+            Eigen::Quaternionf render_quaternion_
+        ) : seq{seq_}
+          , offload_time{offload_time_}
+          , image{image_}
+          , pose_time{pose_time_}
+          , position{position_}
+          , latest_quaternion{latest_quaternion_}
+          , render_quaternion{render_quaternion_}
+        { }
+    };
 }

@@ -9,7 +9,7 @@
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
-#include "common/threadloop.hpp"
+#include "common/plugin.hpp"
 
 using namespace ILLIXR;
 
@@ -21,38 +21,21 @@ typedef struct {
 
 #define IMU_SAMPLE_LIFETIME 5
 
-class imu_integrator : public threadloop {
+
+class imu_integrator : public plugin {
 public:
 	imu_integrator(std::string name_, phonebook* pb_)
-		: threadloop{name_, pb_}
+		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{sb->subscribe_latest<imu_cam_type>("imu_cam")}
-		, _m_in{sb->subscribe_latest<imu_integrator_seq>("imu_integrator_seq")}
-		, _m_imu_integrator_input{sb->subscribe_latest<imu_integrator_input>("imu_integrator_input")}
-		, _m_imu_raw{sb->publish<imu_raw_type>("imu_raw")}
-		, _seq_expect(1)
-	{}
-
-	virtual skip_option _p_should_skip() override {
-		auto in = _m_in->get_latest_ro();
-		if (!in || in->seq == _seq_expect-1) {
-			// No new data, sleep to keep CPU utilization low
-			std::this_thread::sleep_for(std::chrono::milliseconds{1});
-			return skip_option::skip_and_yield;
-		} else {
-			if (in->seq != _seq_expect) {
-				_stat_missed = in->seq - _seq_expect;
-			} else {
-				_stat_missed = 0;
-			}
-			_stat_processed++;
-			_seq_expect = in->seq+1;
-			return skip_option::run;
-		}
+		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
+		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+	{
+		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+			callback(datum);
+		});
 	}
 
-	void _p_one_iteration() override {
-		const imu_cam_type *datum = _m_imu_cam->get_latest_ro();
+	void callback(switchboard::ptr<const imu_cam_type> datum) {
 		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
 
 		imu_type data;
@@ -71,16 +54,13 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	// IMU Data, Sequence Flag, and State Vars Needed
-	std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam;
-	std::unique_ptr<reader_latest<imu_integrator_seq>> _m_in;
-	std::unique_ptr<reader_latest<imu_integrator_input>> _m_imu_integrator_input;
+	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
 	// IMU Biases
-	std::unique_ptr<writer<imu_raw_type>> _m_imu_raw;
+	switchboard::writer<imu_raw_type> _m_imu_raw;
 	std::vector<imu_type> _imu_vec;
 	double last_imu_offset;
 	bool has_last_offset = false;
-	int64_t _seq_expect, _stat_processed, _stat_missed;
 
 	[[maybe_unused]] int counter = 0;
 	[[maybe_unused]] int cam_count = 0;
@@ -101,12 +81,13 @@ private:
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_type real_time) {
-		const imu_integrator_input *input_values = _m_imu_integrator_input->get_latest_ro();
-		if (input_values == NULL) {
-			return;
-		}
+        auto input_values = _m_imu_integrator_input.get_ro_nullable();
+        if (!input_values) {
+            return;
+        }
 
 		if (!has_last_offset) {
+            /// TODO: Should be set and tested at the end of this function to avoid staleness from VIO.
 			last_imu_offset = input_values->t_offset;
 			has_last_offset = true;
 		}
@@ -165,16 +146,16 @@ private:
 			}
 		}
 
-		_m_imu_raw->put(new imu_raw_type{
-			.w_hat = w_hat,
-			.a_hat = a_hat,
-			.w_hat2 = w_hat2,
-			.a_hat2 = a_hat2,
-			.pos = curr_pos,
-			.vel = curr_vel,
-			.quat = Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
-			.imu_time = real_time,
-		});
+		_m_imu_raw.put(_m_imu_raw.allocate(
+			w_hat,
+			a_hat,
+			w_hat2,
+			a_hat2,
+			curr_pos,
+			curr_vel,
+			Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
+			real_time
+		));
     }
 
 	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

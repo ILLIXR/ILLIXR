@@ -2,6 +2,9 @@
 #include <fstream>
 #include <eigen3/Eigen/Dense>
 
+#include "common/error_util.hpp"
+
+
 Eigen::Matrix<float, 3, 3> skew_x(const Eigen::Matrix<float, 3, 1> &w)
 {
 	Eigen::Matrix<float, 3, 3> w_x;
@@ -72,8 +75,7 @@ void load_align_parameters(std::string path, Eigen::Matrix3f &align_rot, Eigen::
 	infile.open(path);
 	if (!infile.is_open())
 	{
-		std::cerr << "Open alignment file failed !!!" << std::endl;
-		abort();
+        ILLIXR::abort("Open alignment file failed !!!");
 	}
 
 	std::string in;

@@ -16,11 +16,12 @@ using namespace ILLIXR;
 class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()}
+		: sb{pb->lookup_impl<switchboard>()}
         , _m_sensor_data{load_data()}
-        , dataset_first_time{_m_sensor_data.cbegin()->first}
+        , _m_sensor_data_it{_m_sensor_data.cbegin()}
+        , dataset_first_time{_m_sensor_data_it->first}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
-        , _m_vsync_estimate{sb->subscribe_latest<time_type>("vsync_estimate")}
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
         , init_pos_offset{0}
@@ -40,12 +41,12 @@ public:
     }
 
     virtual fast_pose_type get_fast_pose() const override {
-        const time_type* estimated_vsync = _m_vsync_estimate->get_latest_ro();
-        if(estimated_vsync == nullptr) {
+		const switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_ro_nullable();
+        if (estimated_vsync == nullptr) {
             std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
             return get_fast_pose(std::chrono::system_clock::now());
         } else {
-            return get_fast_pose(*estimated_vsync);
+            return get_fast_pose(**estimated_vsync);
         }
     }
 
@@ -69,14 +70,14 @@ public:
         pose_type swapped_pose;
 
         // Step 1: Compensate starting point to (0, 0, 0), pos only
-        auto input_pose = pose_type{
-            .sensor_time = pose.sensor_time,
-            .position = Eigen::Vector3f{
+        auto input_pose = pose_type {
+            pose.sensor_time,
+            Eigen::Vector3f{
                 pose.position(0) - init_pos_offset(0),
                 pose.position(1) - init_pos_offset(1),
                 pose.position(2) - init_pos_offset(2),
             },
-            .orientation = pose.orientation,
+            pose.orientation
         };
 
         if (enable_alignment)
@@ -132,12 +133,28 @@ public:
 
         if (nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << std::chrono::nanoseconds(time - _m_start_of_time).count() << " + " << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
+			std::cerr << "Time "
+			          << lookup_time
+                      << " ("
+			          << std::chrono::nanoseconds(time - _m_start_of_time).count()
+			          << " + "
+			          << dataset_first_time
+			          << ") after last datum "
+			          << _m_sensor_data.rbegin()->first
+			          << std::endl;
 #endif
             nearest_row--;
         } else if (nearest_row == _m_sensor_data.cbegin()) {
 #ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << std::chrono::nanoseconds(time - _m_start_of_time).count() << " + " << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
+			std::cerr << "Time "
+			          << lookup_time
+			          << " ("
+			          << std::chrono::nanoseconds(time - _m_start_of_time).count()
+			          << " + "
+			          << dataset_first_time
+			          << ") before first datum "
+			          << _m_sensor_data.cbegin()->first
+			          << std::endl;
 #endif
         } else {
             // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
@@ -161,10 +178,11 @@ private:
     mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex offset_mutex;
 
-    const std::map<ullong, sensor_types> _m_sensor_data;
-    ullong dataset_first_time;
-    time_type _m_start_of_time;
-    std::unique_ptr<reader_latest<time_type>> _m_vsync_estimate;
+	const std::map<ullong, sensor_types> _m_sensor_data;
+    std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
+	ullong dataset_first_time;
+	time_type _m_start_of_time;
+	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
     bool enable_alignment;
     Eigen::Vector3f init_pos_offset;
@@ -174,6 +192,7 @@ private:
     double align_scale;
     std::string path_to_alignment;
 };
+
 
 class pose_lookup_plugin : public plugin {
 public:

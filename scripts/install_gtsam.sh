@@ -14,16 +14,24 @@
 
 ### Package metadata setup ###
 
-branch_tag_name="kimera-gtsam"
+branch_tag_name="testing-hotfix-lago"
 repo_url="https://github.com/ILLIXR/gtsam.git"
 gtsam_dir="${opt_dir}/gtsam"
 build_dir="${gtsam_dir}/build"
 
 case "${build_type}" in
-    Release)          so_file="libgtsam.so" ;;
-    RelWithDebInfo)   so_file="libgtsamRelWithDebInfo.so" ;;
-    Debug)            so_file="libgtsamDebug.so" ;;
-    *)                print_warning "Bad cmake build type '${build_type}'" && exit 1 ;;
+    Release)        so_file="libgtsam.so"
+                    so_file_unstable="libgtsam_unstable.so"
+                    ;;
+    RelWithDebInfo) so_file="libgtsamRelWithDebInfo.so"
+                    so_file_unstable="libgtsam_unstableRelWithDebInfo.so"
+                    ;;
+    Debug)          so_file="libgtsamDebug.so"
+                    so_file_unstable="libgtsam_unstableDebug.so"
+                    ;;
+    *)              print_warning "Bad cmake build type '${build_type}'"
+                    exit 1
+                    ;;
 esac
 
 
@@ -48,13 +56,25 @@ make -C "${build_dir}" -j "${illixr_nproc}"
 ## Install
 # Fix suffixed symlinks for the generated shared libaries
 if [ "${build_type}" != "Release" ]; then
+    so_file_release="libgtsam.so"
+    so_file_unstable_release="libgtsam_unstable.so"
+
     cd "${build_dir}/gtsam"
+
     if  [ -f "${so_file}" ]; then
-        if [ -f libgtsam.so ]; then
-            sudo rm -f libgtsam.so
+        if [ -f "${so_file_release}" ]; then
+            sudo rm -f "${so_file_release}"
         fi
-        sudo ln -s "${so_file}" libgtsam.so
+        sudo ln -s "${so_file}" "${so_file_release}"
     fi
+
+    if  [ -f "${so_file_unstable}" ]; then
+        if [ -f "${so_file_unstable_release}" ]; then
+            sudo rm -f "${so_file_unstable_release}"
+        fi
+        sudo ln -s "${so_file_unstable}" "${so_file_unstable_release}"
+    fi
+
     cd -
 fi
 sudo make -C "${build_dir}" -j "${illixr_nproc}" install

@@ -1,4 +1,9 @@
 SET(libName ZED_with_OpenCV.so)
+
+## To add compiler flags for debugging, uncomment the lines below.
+# SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+# SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 PROJECT(${libName})
 
@@ -17,6 +22,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 
 find_package(ZED 3 REQUIRED)
 find_package(OpenCV REQUIRED)
+
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 IF(NOT WIN32)

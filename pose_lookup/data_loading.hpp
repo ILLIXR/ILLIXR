@@ -10,6 +10,8 @@
 #include <eigen3/Eigen/Dense>
 
 #include "csv_iterator.hpp"
+#include "common/error_util.hpp"
+
 
 // timestamp
 // p_RS_R_x [m], p_RS_R_y [m], p_RS_R_z [m]
@@ -27,8 +29,7 @@ std::map<ullong, sensor_types>
 load_data() {
 	const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
 	if (!illixr_data_c_str) {
-		std::cerr << "Please define ILLIXR_DATA" << std::endl;
-		abort();
+        ILLIXR::abort("Please define ILLIXR_DATA");
 	}
 	std::string illixr_data = std::string{illixr_data_c_str};
 
@@ -38,7 +39,7 @@ load_data() {
 
 	if (!gt_file.good()) {
 		std::cerr << "${ILLIXR_DATA}/state_groundtruth_estimate0/data.csv (" << illixr_data <<  "/state_groundtruth_estimate0/data.csv) is not a good path" << std::endl;
-		abort();
+        ILLIXR::abort();
 	}
 
 	for(CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {

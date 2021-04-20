@@ -57,7 +57,7 @@ tests/run: tests/test.exe
 	./tests/test.exe
 
 tests/gdb: tests/test.exe
-	gdb -q ./tests/test.exe -ex r
+	gdb -q ./tests/test.exe -ex run
 
 tests/test.exe: $(CPP_TEST_FILES) $(CPP_FILES) $(HPP_FILES)
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) \
@@ -68,7 +68,7 @@ endif
 .PHONY: clean
 clean:
 	touch _target && \
-	$(RM) _target *.so *.exe *.o
+	$(RM) _target *.so *.exe *.o tests/test.exe
 # if *.so and *.o do not exist, rm will still work, because it still receives an operand (target)
 
 .PHONY: deepclean

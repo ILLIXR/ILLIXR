@@ -12,17 +12,18 @@ demo_data: demo_data/
 enable_offload:   False
 enable_alignment: False
 enable_verbose_errors: False
+enable_pre_sleep: False
 
 action:
   name: monado
   monado:
     path:
       git_repo: https://github.com/ILLIXR/monado_integration.git
-      version: "2.0"
+      version: "3.0"
   openxr_app:
     path:
       git_repo: https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
-      version: "2.0"
+      version: "3.0"
     config: {}
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   

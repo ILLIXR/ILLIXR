@@ -50,10 +50,10 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-		, _m_eyebuffer{sb->subscribe_latest<rendered_frame>("eyebuffer")}
-		, _m_hologram{sb->publish<hologram_input>("hologram_in")}
-		, _m_vsync_estimate{sb->publish<time_type>("vsync_estimate")}
-		, _m_offload_data{sb->publish<texture_pose>("texture_pose")}
+		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
+		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
+		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+		, _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
 		  // TODO: Use #198 to configure this. Delete getenv_or.
@@ -83,19 +83,18 @@ private:
 	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
 
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
-	rendered_frame frame;
 
 	// Switchboard plug for application eye buffer.
-	std::unique_ptr<reader_latest<rendered_frame>> _m_eyebuffer;
+	switchboard::reader<rendered_frame> _m_eyebuffer;
 
 	// Switchboard plug for sending hologram calls
-	std::unique_ptr<writer<hologram_input>> _m_hologram;
+	switchboard::writer<hologram_input> _m_hologram;
 
 	// Switchboard plug for publishing vsync estimates
-	std::unique_ptr<writer<time_type>> _m_vsync_estimate;
+	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
 	// Switchboard plug for publishing offloaded data
-	std::unique_ptr<writer<texture_pose>> _m_offload_data;
+    switchboard::writer<texture_pose> _m_offload_data;
 
 	record_coalescer timewarp_gpu_logger;
 	record_coalescer mtp_logger;
@@ -150,7 +149,7 @@ private:
 	Eigen::Matrix4f basicProjection;
 
 	// Hologram call data
-	long long _hologram_seq{0};
+	std::size_t _hologram_seq{0};
 
 	// Sequence number of offload data
 	long long _offload_seq{0};
@@ -351,7 +350,13 @@ private:
 
 public:
 
-	virtual skip_option _p_should_skip() override {
+	virtual void _p_one_iteration() override {
+	    assert(errno == 0 && "Errno should not be set at start of iteration");
+	    const time_type time_now = std::chrono::system_clock::now();
+		warp(time_now);
+	}
+
+    virtual skip_option _p_should_skip() override {
 		using namespace std::chrono_literals;
 		// Sleep for approximately 90% of the time until the next vsync.
 		// Scheduling granularity can't be assumed to be super accurate here,
@@ -360,19 +365,13 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
-		if (_m_eyebuffer->get_latest_ro()) {
+		if (_m_eyebuffer.get_ro_nullable() != nullptr) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
 			// because not all components are initialized yet
 			return skip_option::skip_and_yield;
 		}
-	}
-
-	virtual void _p_one_iteration() override {
-	    assert(errno == 0 && "Errno should not be set at start of iteration");
-	    const time_type time_now = std::chrono::system_clock::now();
-		warp(time_now);
 	}
 
 	virtual void _p_thread_setup() override {
@@ -518,9 +517,7 @@ public:
 
 		glDepthFunc(GL_LEQUAL);
 
-		auto most_recent_frame = _m_eyebuffer->get_latest_ro();
-		// This should be null-checked in _p_should_skip
-		assert(most_recent_frame);
+        switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
@@ -597,22 +594,50 @@ public:
 			// to that region of the screen. This prevents re-uploading
 			// GPU data for each eye.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
-			glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+			glVertexAttribPointer(
+			    distortion_pos_attr,
+			    3,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t))
+			);
 			glEnableVertexAttribArray(distortion_pos_attr);
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
-			glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			glVertexAttribPointer(
+			    distortion_uv0_attr,
+			    2,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t))
+			);
 			glEnableVertexAttribArray(distortion_uv0_attr);
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
-			glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			glVertexAttribPointer(
+			    distortion_uv1_attr,
+			    2,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t))
+			);
 			glEnableVertexAttribArray(distortion_uv1_attr);
 
 			// We do the exact same thing for the UV GPU memory.
 			glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
-			glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+			glVertexAttribPointer(
+			    distortion_uv2_attr,
+			    2,
+			    GL_FLOAT,
+			    GL_FALSE,
+			    0,
+			    (void*)(eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t))
+			);
 			glEnableVertexAttribArray(distortion_uv2_attr);
 
 			#ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
@@ -645,11 +670,12 @@ public:
 		}
 #endif
 		// Call Hologram
-		auto hologram_params = new hologram_input;
-		hologram_params->seq = ++_hologram_seq;
-		_m_hologram->put(hologram_params);
+		_m_hologram.put(_m_hologram.allocate<hologram_input>(
+            ++_hologram_seq
+        ));
 
-		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
+		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once
+		//     the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
 		[[maybe_unused]] time_type time_before_swap = std::chrono::system_clock::now();
 
@@ -662,7 +688,9 @@ public:
 		[[maybe_unused]] time_type time_after_swap = time_last_swap;
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate->put(new time_type(GetNextSwapTimeEstimate()));
+		_m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_type>>(
+            GetNextSwapTimeEstimate()
+        ));
 
 		std::chrono::nanoseconds imu_to_display = time_last_swap - latest_pose.pose.sensor_time;
 		std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
@@ -681,16 +709,17 @@ public:
 			GLubyte* image = readTextureImage();
 
 			// Publish image and pose
-			auto offload_data = new texture_pose;
-			offload_data->seq = ++_offload_seq;
-			offload_data->image = image;
-			offload_data->pose_time = time_last_swap;
-			offload_data->offload_time = offload_time;
-			offload_data->position = latest_pose.pose.position;
-			offload_data->latest_quaternion = latest_pose.pose.orientation;
-			offload_data->render_quaternion = most_recent_frame->render_pose.pose.orientation;
-
-			_m_offload_data->put(offload_data);
+            _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
+                texture_pose {
+                    static_cast<int>(++_offload_seq), /// TODO: Should texture_pose.seq be a long long too?
+                    offload_time,
+                    image,
+                    time_last_swap,
+                    latest_pose.pose.position,
+                    latest_pose.pose.orientation,
+                    most_recent_frame->render_pose.pose.orientation
+                }
+            ));
 		}
 
 #ifndef NDEBUG

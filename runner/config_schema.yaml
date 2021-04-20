@@ -134,6 +134,9 @@ properties:
   enable_verbose_errors:
     type: boolean
     description: Flag to activate verbose logging in 'common/error_util.hpp'
+  enable_pre_sleep:
+    type: boolean
+    description: Flag to activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
   profile:
     default: dbg
     type: string

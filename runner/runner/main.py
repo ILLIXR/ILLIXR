@@ -41,7 +41,8 @@ def clean_one_plugin(config: Mapping[str, Any], plugin_config: Mapping[str, Any]
     name: str = plugin_config["name"] if plugin_config["name"] else os.path.basename(path_str)
     targets: List[str] = ["clean"]
     print(f"[Clean] Plugin '{name}' @ '{path_str}/'")
-    make(path, targets, plugin_config["config"])
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    make(path, targets, plugin_config["config"], env_override=env_override)
     return path
 
 
@@ -60,7 +61,7 @@ def build_one_plugin(
     targets = [plugin_so_name] + (["tests/run"] if test else [])
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
-    env_override: Mapping[str, str] = { "ILLIXR_INTEGRATION" : "yes" }
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
     make(path, targets, plugin_config["config"], env_override=env_override)
 
     return path / plugin_so_name
@@ -77,7 +78,8 @@ def build_runtime(
     runtime_config = config["runtime"]["config"]
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
-    make(runtime_path, targets, runtime_config)
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
 
@@ -101,6 +103,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
         ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
+        ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
     )
     env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
@@ -143,14 +146,22 @@ def load_tests(config: Mapping[str, Any]) -> None:
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
-    make(Path("common"), ["tests/run"])
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    make(Path("common"), ["tests/run"], env_override=env_override)
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
+
+    ## If pre-sleep is enabled, the application will pause and wait for a gdb process.
+    ## If enabled, disable 'catchsegv' so that gdb can catch segfaults.
+    enable_pre_sleep : bool      = config["enable_pre_sleep"]
+    cmd_list_tail    : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
+    cmd_list         : List[str] = (["catchsegv"] if not enable_pre_sleep else list()) + cmd_list_tail
+
     subprocess_run(
-        ["catchsegv", "xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)],
+        cmd_list,
         env_override=dict(
             ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
@@ -158,6 +169,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+            ILLIXR_ENABLE_PRE_SLEEP=str(enable_pre_sleep),
             KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
@@ -218,6 +230,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
         ),
         check=True,
