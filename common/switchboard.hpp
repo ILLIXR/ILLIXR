@@ -102,6 +102,12 @@ public:
      * @brief Virtual class for event types.
      *
      * Minimum requirement: Events must be destructible.
+     * Casting events from various sources to void* (aka type-punning) breaks [strict-aliasing][1]
+     * and is undefined behavior in modern C++.
+     * Therefore, we require a common supertype for all events.
+     * We will cast them to this common supertype, event* instead.
+
+     * [1] https://cellperformance.beyond3d.com/articles/2006/06/understanding-strict-aliasing.html
      */
     class event {
     public:
