@@ -218,6 +218,8 @@ private:
 
             // Log stats
             if (_m_record_logger) {
+                RAC_ERRNO_MSG("switchboard before record logger put");
+
                 _m_record_logger->log(record{__switchboard_topic_stop_header, {
                     {_m_plugin_id},
                     {_m_topic_name},

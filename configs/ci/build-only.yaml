@@ -1,5 +1,5 @@
 plugin_group:
-  - !include "plugins/audio.yaml"
   - !include "plugins/debugview.yaml"
   - !include "plugins/gldemo.yaml"
   - !include "plugins/timewarp_gl.yaml"
+  - !include "plugins/pose_lookup.yaml"

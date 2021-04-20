@@ -65,10 +65,9 @@ def clean_one_plugin(config: Mapping[str, Any], plugin_config: Mapping[str, Any]
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
 
     if os.path.isfile(plugin_path / "Makefile"):
-        print(f"[{action_name}] Clean plugin '{name}' @ '{path_str}/'")
         make(plugin_path, targets, var_dict, env_override=env_override)
     elif os.path.isfile(plugin_path / "CMakeLists.txt"):
-        print(f"[{action_name}] cmake builds not supported for plugins yet")
+        print(f" >  (Cleaning cmake builds not supported for plugins yet)")
     else:
         raise RuntimeError("Failed to find build recipe file")
 
@@ -243,12 +242,6 @@ def load_tests(config: Mapping[str, Any]) -> None:
     make(common_path, ["clean"], env_override=env_override)
     make(common_path, ["tests/run"], env_override=env_override) # Tests 'common' (don't need 'plugins/common.yaml' for CI)
 
-    ## If pre-sleep is enabled, the application will pause and wait for a gdb process.
-    ## If enabled, disable 'catchsegv' so that gdb can catch segfaults.
-    enable_pre_sleep : bool      = config["enable_pre_sleep"]
-    cmd_list_tail    : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
-    cmd_list         : List[str] = (["catchsegv"] if not enable_pre_sleep else list()) + cmd_list_tail
-
     enable_ci = bool(config["action"]["enable_ci"]) if "enable_ci" in config["action"] else False
 
     if enable_ci:
@@ -264,6 +257,13 @@ def load_tests(config: Mapping[str, Any]) -> None:
             [plugin_config for plugin_group in flow for plugin_config in plugin_group["plugin_group"]],
             desc="Building plugins",
         )
+
+        ## If pre-sleep is enabled, the application will pause and wait for a gdb process.
+        ## If enabled, disable 'catchsegv' so that gdb can catch segfaults.
+        enable_pre_sleep : bool      = config["enable_pre_sleep"]
+        cmd_list_tail    : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
+        cmd_list         : List[str] = (["catchsegv"] if not enable_pre_sleep else list()) + cmd_list_tail
+
         subprocess_run(
             cmd_list,
             env_override=dict(
