@@ -2,29 +2,33 @@
 
 ## Adding a New Plugin (Common Case)
 
-In the common case, one need only define a `Makefile` with the line `include common/common.mk`
+In the common case, you only need to define a `Makefile` with the line `include common/common.mk`
     and symlink common (`ln -s ../common common`).
-This provides the necessary targets and uses the compiler `$(CXX)`,
-    which is defined in Make based on the OS and environment variables.
+The included recipe file provides the necessary targets and uses the compiler `$(CXX)`,
+    which is defined based on the OS and environment variables.
+The included `Makefile`:
 
--   It compiles `plugin.cpp` and any other `*.cpp` files into the plugin.
+-   Compiles `plugin.cpp` and any other `*.cpp` files into the plugin.
 
--   It will invoke a recompile the target any time any `*.hpp` or `*.cpp` file changes.
+-   Will invoke a recompile the target any time any `*.hpp` or `*.cpp` file changes.
 
--   It compiles with C++17. You can change this in your plugin by defining
+-   Compiles with C++17.
+    You can change this in your plugin by defining
         `STDCXX = ...` before the `include`.
     This change will not affect other plugins; just yours.
 
--   Libraries can be added by appending to `LDFLAGS` and `CFLAGS`, for example
+-   Accepts specifying libraries by appending to `LDFLAGS` and `CFLAGS`.
+    For example:
 
     <!--- language: lang-makefile -->
 
         LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
         CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
 
--   See the source for the exact flags.
+    See the source for the other flags and variables that you can set.
 
--   Inserted the path of your directory into the `plugin`-list in `config.yaml`.
+Finally, place the path of your plugin directory in the `plugin_group` list
+    for the configuration you would like to run (e.g. `ILLIXR/configs/native.yaml`).
 
 
 ## Adding a New Plugin (General Case)
@@ -34,16 +38,17 @@ Each plugin can have a completely independent build system, as long as:
 -   It defines a `Makefile` with targets for `plugin.dbg.so`, `plugin.opt.so`, and `clean`.
     Inside this `Makefile`, one can defer to another build system.
 
--   It's compiler maintains _ABI compatibility_ with the compilers used in every other plugin.
+-   Its compiler maintains _ABI compatibility_ with the compilers used in every other plugin.
     Using the same version of Clang or GCC on the same architecture is sufficient for this.
 
--   It's path is inserted in the root `config.yaml`, in the plugin list.
+-   Its path is in the `plugin_group` list for the configuration you would like
+        to run (e.g. `ILLIXR/configs/native.yaml`).
 
 
 ## Tutorial
 
-With this, you can extend ILLIXR for your own purposes.
-You can also replace any existing functionality this way.
+You can extend ILLIXR for your own purposes.
+To add your own functionality via the plugin interface:
 
 1.  Create a new directory anywhere for your new plugin and set it up for ILLIXR.
     We recommend you also push this plugin to a git repository on Github/Gitlab if you want it
@@ -174,38 +179,48 @@ You can also replace any existing functionality this way.
                   /// Find the switchboard in phonebook
                 , sb{pb->lookup_impl<switchboard>()}
                   /// Create a handle to a topic in switchboard for subscribing
-                , topic1{sb->subscribe_latest<topic1_type>("topic1")}
+                , topic1{sb->get_reader<topic1_type>("topic1")}
                   /// Create a handle to a topic in switchboard for publishing
-                , topic2{sb->publish<topic2_type>("topic2")}
+                , topic2{sb->get_writer<topic2_type>("topic2")}
             {
                 /// Read topic 1
-                topic1_type* event1 = topic1.get_latest_ro();
+                switchboard::ptr<const topic1_type> event1 = topic1.get_ro();
     
                 /// Write to topic 2
-                topic2_type* event2 = new topic2_type;
-                topic2.put(event2);
+                topic2.put(
+                    topic2.allocate<topic2_type>(
+                        arg_1, // topic2_type::topic2_type() arg_type_1
+                        ...,   // ...
+                        arg_k  // topic2_type::topic2_type() arg_type_k
+                    )
+                );
     
                 /// Read topic 3 synchronously
-                sb->schedule<topic3_type>(get_name(), "topic3", [&](const topic3_type *event3) {
-                    /* This is a [lambda expression][1]
-                     *
-                     * [1]: https://en.cppreference.com/w/cpp/language/lambda
-                     */
-                    std::cout << "Got a new event on topic3: " << event3 << std::endl;
-                });
+                sb->schedule<topic3_type>(
+                    get_name(),
+                    "topic3",
+                    [&](switchboard::ptr<const topic3_type> event3, std::size_t) {
+                        /* This is a [lambda expression][1]
+                         *
+                         * [1]: https://en.cppreference.com/w/cpp/language/lambda
+                         */
+                        std::cout << "Got a new event on topic3: " << event3 << std::endl;
+                        callback(event3);
+                    }
+                );
             }
     
             virtual void _p_one_iteration override() {
                 std::cout << "Running" << std::endl;
-                auto target = std::chrono::high_resolution_clock::now()
+                auto target = std::chrono::system_clock::now()
                             + std::chrono::milliseconds{10};
                 reliable_sleep(target);
             }
     
         private:
             const std::shared_ptr<switchboard> sb;
-            std::unique_ptr<reader_latest<topic1_type>> topic1;
-            std::unique_ptr<writer<topic2>> topic2;
+            switchboard::reader<topic1_type> topic1;
+            switchboard::writer<topic2> topic2;
         };
     
         /// This line makes the plugin importable by Spindle
