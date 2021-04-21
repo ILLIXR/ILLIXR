@@ -298,7 +298,6 @@ public:
 		auto start = _m_rtc->now();
 		auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
 		if (!is_scheduler()) {
-			abort();
 			std::this_thread::sleep_for(sleep_duration);
 		}
 		auto stop = _m_rtc->now();
@@ -496,11 +495,6 @@ public:
 
 		[[maybe_unused]]auto gpu_start_wall_time = _m_rtc->now();
 
-		GLuint query;
-		GLuint64 elapsed_time = 0;
-		glGenQueries(1, &query);
-		glBeginQuery(GL_TIME_ELAPSED, query);
-
 		// Loop over each eye.
 		for(int eye = 0; eye < HMD::NUM_EYES; eye++){
 
@@ -547,8 +541,6 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
-		glEndQuery(GL_TIME_ELAPSED);
-
 #ifndef NDEBUG
 		auto delta = _m_rtc->now() - most_recent_frame->render_time;
 		printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
@@ -570,9 +562,11 @@ public:
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(_m_rtc->now().time_since_epoch()).count() << ',';
 
-		DEBUG(1);
+		if (iteration_no < 500)
+			DEBUG((((void)"before glXSwapBuffers"),1));
 		glXSwapBuffers(xwin->dpy, xwin->win);
-		DEBUG(1);
+		if (iteration_no < 500)
+			DEBUG((((void)"after glXSwapBuffers"),1));
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();
@@ -604,24 +598,6 @@ public:
 		printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);
 		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
 #endif
-
-		// retrieving the recorded elapsed time
-		// wait until the query result is available
-		int done = 0;
-		glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-		while (!done) {
-			std::this_thread::yield();
-			glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-		}
-
-		// get the query result
-		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-		// timewarp_gpu_logger.log(record{timewarp_gpu_record, {
-		// 	{iteration_no},
-		// 	{gpu_start_wall_time},
-		// 	{_m_rtc->now()},
-		// 	{std::chrono::nanoseconds(elapsed_time)},
-		// }});
 
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() << ','

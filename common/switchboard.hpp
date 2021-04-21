@@ -280,15 +280,10 @@ private:
 		 */
 		void enqueue(ptr<const event>&& this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
-				// auto r = _m_queue_size.load();
-				// if (r >= 2) {
-				// 	std::cerr << "topic " << _m_topic_name << " subscriber " << _m_plugin_id << " has " << r << std::endl;
-				// 	abort();
-				// }
 				_m_queue_size++;
-				// if (_m_queue_size > 1) {
-				// 	std::cout << "topic " << _m_topic_name << ", plugin " << _m_plugin_id << " has " << _m_queue_size << std::endl;
-				// }
+				if (_m_queue_size > 100) {
+					std::cout << "topic " << _m_topic_name << ", plugin " << _m_plugin_id << " has " << _m_queue_size << std::endl;
+				}
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
 				assert(ret);
 				_m_enqueued++;
