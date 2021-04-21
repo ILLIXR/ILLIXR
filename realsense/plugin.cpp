@@ -18,16 +18,16 @@ static constexpr int ACCEL_RATE_D4XX = 250; // 63 or 250
 static constexpr int IMAGE_WIDTH_T26X = 848;
 static constexpr int IMAGE_HEIGHT_T26X = 800;
 typedef struct {
-    cv::Mat* img0;
-    cv::Mat* img1;
-    cv::Mat* rgb;
-    cv::Mat* depth;
+    cv::Mat img0;
+	cv::Mat img1;
+	cv::Mat rgb;
+	cv::Mat depth;
     int iteration;
 } cam_type_D4XX;
 
 typedef struct {
-    cv::Mat* img0;
-    cv::Mat* img1;
+    cv::Mat img0;
+    cv::Mat img1;
     int iteration;
 } cam_type_T26X;
 
@@ -160,10 +160,10 @@ public:
                     float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
                     depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
                     cam_D4XX_ = cam_type_D4XX{
-                        new cv::Mat{ir_left},
-                        new cv::Mat{ir_right},
-                        new cv::Mat{rgb},
-                        new cv::Mat{converted_depth},
+                        cv::Mat{ir_left},
+                        cv::Mat{ir_right},
+                        cv::Mat{rgb},
+                        cv::Mat{converted_depth},
                         iteration_cam,
                     };
                     iteration_cam++;
@@ -177,8 +177,8 @@ public:
                     cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
                     cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
                     cam_T26X_ = cam_type_T26X{
-                        new cv::Mat{fisheye_left},
-                        new cv::Mat{fisheye_right},
+                        cv::Mat{fisheye_left},
+                        cv::Mat{fisheye_right},
                         iteration_cam,
                     };
                     iteration_cam++;
@@ -220,10 +220,10 @@ public:
 
                      // Images
                     if (cam_select == D4XXI){
-                        std::optional<cv::Mat *> img0 = std::nullopt;
-                        std::optional<cv::Mat *> img1 = std::nullopt;
-                        std::optional<cv::Mat *> rgb = std::nullopt;
-                        std::optional<cv::Mat *> depth = std::nullopt;
+                        std::optional<cv::Mat> img0 = std::nullopt;
+                        std::optional<cv::Mat> img1 = std::nullopt;
+                        std::optional<cv::Mat> rgb = std::nullopt;
+                        std::optional<cv::Mat> depth = std::nullopt;
                         if (last_iteration_cam != cam_D4XX_.iteration)
                         {
                             last_iteration_cam = cam_D4XX_.iteration;
@@ -234,33 +234,32 @@ public:
                         }
                         
                         // Submit to switchboard
-                        _m_imu_cam->put(new imu_cam_type{
+                        _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+                            imu_cam_type{
                                 imu_time_point,
                                 av,
                                 la,
                                 img0,
                                 img1,
-                                imu_time,
-                            });
+                                imu_time
+                            }
+                        ));
                         
                         if (rgb && depth)
                         {
-                            _m_rgb_depth->put(new rgb_depth_type{
+                            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
+                                rgb_depth_type{
                                     rgb,
                                     depth,
-                                    imu_time,
-                                });
+                                    imu_time
+                                }
+                            ));
                         }
-            
-                        auto imu_integrator_params = new imu_integrator_seq{
-                            .seq = static_cast<int>(++_imu_integrator_seq),
-                        };
-                        _m_imu_integrator->put(imu_integrator_params);
                     }
 
                     else if (cam_select == T26X){
-                        std::optional<cv::Mat *> img0 = std::nullopt;
-                        std::optional<cv::Mat *> img1 = std::nullopt;
+                        std::optional<cv::Mat> img0 = std::nullopt;
+                        std::optional<cv::Mat> img1 = std::nullopt;
 
                         if (last_iteration_cam != cam_T26X_.iteration)
                         {
@@ -271,12 +270,14 @@ public:
                 
                         // Submit to switchboard
                         _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+                            imu_cam_type{
                                 imu_time_point,
                                 av,
                                 la,
                                 img0,
                                 img1,
-                                imu_time,
+                                imu_time
+                            }
                         ));
                     }
                 }
@@ -288,8 +289,8 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-    switchboard::writer<imu_cam_type>> _m_imu_cam;
-	switchboard::writer<rgb_depth_type>> _m_rgb_depth;
+    switchboard::writer<imu_cam_type> _m_imu_cam;
+	switchboard::writer<rgb_depth_type> _m_rgb_depth;
 
 	std::mutex mutex;
 	rs2::pipeline_profile profiles;
