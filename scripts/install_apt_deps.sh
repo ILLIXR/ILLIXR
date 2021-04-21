@@ -227,7 +227,7 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${distro_name}" = "ubuntu" ] && [ "${distro_name}" = "18.04" ]; then
+if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
     case "${arch_name}" in
         x86_64)     use_realsense="yes"
                     pkg_dep_groups+=" realsense_anyarch"
