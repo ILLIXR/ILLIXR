@@ -118,6 +118,7 @@ public:
         }
         if (cam_select == UNSUPPORTED){
             std::cout << "Supported device NOT found!" << std::endl;
+            abort("Supported Realsense device NOT found!");
         }
         if (cam_select == T26X){
             //T26X series has fixed options for accel rate, gyro rate, fisheye resolution, and FPS
