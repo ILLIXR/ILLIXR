@@ -27,7 +27,8 @@ namespace ILLIXR {
 		 */
 		virtual void stop() = 0;
 
-		virtual ~runtime() {}
+		virtual ~runtime() = default;
+
 	};
 
 	extern "C" runtime* runtime_factory(GLXContext appGLCtx);
