@@ -22,16 +22,14 @@ To run ILLIXR (from the root directory of the project) using
 <!--- language: lang-shell -->
     ./runner.sh configs/native.yaml
 
-To drop into `gdb`, add `command: gdb -q --args $cmd` in the `action` block of
-    `configs/native.yaml`, and use the same command.
-
 To run ILLIXR with Monado,
 
 <!--- language: lang-shell -->
     ./runner.sh configs/monado.yaml
 
-The [_OpenXR_][14] application to run is defined in the `action.openxr_app`
+The [_OpenXR_][14] application to run is defined in `action.openxr_app`
     (a [_YAML_][13] object).
+See the [Configuration][16] section for more details.
 
 
 ## Configuration
@@ -42,66 +40,108 @@ This section provides a detailed breakdown of the structure of a configuration f
 The default `ILLIXR/configs/native.yaml` for the `native` action will be used as
     the running example.
 
-The first block in the config file contains a list of `plugin_groups`,
-    where each `plugin_group` is a list of plugins.
-
-<!--- language: lang-yaml -->
-    plugin_groups:
-      - plugin_group:
-          - path: plugin1/
-          - path: plugin2/
-          - path: plugin3/
-          - path: plugin4/
-
-This defines a list of plugins by their location, `path`.
-Allowed paths will be described below.
-The `plugin_groups` get flattened and those plugins are initialized _in order_ at runtime.
-Several of the default plugins are order-sensitive.
-
-The next block in the config defines the offline IMU data, camera data, and ground-truth data.
-
-<!--- language: lang-yaml -->
-    data:
-      subpath: mav0
-      relative_to:
-        archive_path:
-          download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-
-Next, we define the location of OBJ files for `gldemo`.
-
-<!--- language: lang-yaml -->
-    demo_data: demo_data/
-
-Then, we define the _Action_ to be taken for the configuration.
-Each action has a name, and can contain a number of member fields beyond this.
+The first block in the config file (after any comments or file header) specifies
+    the [_Action_][11] and any context-specific parameters for that action:
 
 <!--- language: lang-yaml -->
     action:
       name: native
-      command: gdb -q --args $cmd
 
+      kimera_path: !include "data/kimera-default.yaml"
+
+      # run in GDB:
+      # command: gdb -q --args $cmd
+
+      # Print cmd for external use:
+      # command: printf %s\n $env_cmd
+
+      # Capture stdout for metrics
+      # log_stdout: metrics/output.log
+
+Each `action` specifies a `name` which has a corresponding function
+    called from Runner (called from `ILLIXR/runner/runner/main.py`).
+For actions that launch ILLIXR (like `native`), `kimera_path` is a [_Path_][15] that
+    points to the root directory to look for Kimera-VIO, if the plugin is enabled.
+In the example above, `kimera_path` is defined in `ILLIXR/configs/data/kimera-default.yaml`.
+You can `!include` other configuration files via [pyyaml-include][13].
+Consider separating the site-specific configuration options into its own file.
+
+Following `kimera_path` are a few commented parameters for debugging and logging.
 The `native` action supports an optional `command` argument.
-In that argument `$cmd` is replaced with the separated command-line arguments to run ILLIXR,
+To drop into `gdb`, uncomment `command: gdb -q --args $cmd` in the `action` definition.
+The `$cmd` variable is replaced with the separated command-line arguments to run ILLIXR,
     while `$quoted_cmd` is replaced with a single string comprising all command-line arguments.
 The `command` argument also supports `$env_cmd`, which interpret command-line argument
     assignments in the form of `VARNAME=VALUE` as environment variable mappings.
 See the [_configuration_ glossary entry][11] for more details about supported actions.
 
-Finally, we support two compilation [_profiles_][11]:
-    `opt`, which compiles with `-O3` and disables debug prints and assertions,
-    and
-    `dbg`, which compiles with debug flags and enables debug prints and assertions.
+<!--- language: lang-yaml -->
+    common:    !include "plugins/common.yaml"
+    runtime:   !include "plugins/runtime.yaml"
+    data:      !include "data/data-default.yaml"
+    demo_data: !include "data/demo-default.yaml"
+
+After the action block, additional paths are specified for various runtime parameters, including:
+
+-   `common`: The ILLIXR common interfaces and utilities.
+
+-   `runtime`: The ILLIXR runtime implementation.
+
+-   `data`: The directory holding ground truth pose data, sensor data, etc.
+
+-   `demo_data`: The directory holding 3D scene environment data.
+
+Pre-defined paths for data assets can be found in `ILLIXR/configs/data/`.
+See the [Specifying Paths][15] section for more information.
+
+Next is the compilation `profile` property (see [_profiles_][11]) which accepts two values:
+
+-   `opt`: Compiles with `-O3` and disables debug prints and assertions,
+
+-   `dbg`: Compiles with debug flags and enables debug prints and assertions.
+
+Finally, configurations that launch the ILLIXR application specify [_Flows_][12]
+    of plugins to execute.
+The `configs/native.yaml` file has this pre-defined flow structure:
 
 <!--- language: lang-yaml -->
-    profile: opt
+    flows:
+      - !include "ci/flows/kimera-gtsam.yaml"
+    append: !include "plugins/groups/misc-native.yaml"
 
-You can `!include` other configuration files via [pyyaml-include][13].
-Consider separating the site-specific configuration options into its own file.
+This example includes the predefined `kimera-gtsam` flow in the `flows` array.
+Pre-defined flows can be found in `ILLIXR/configs/ci/flows/`.
+Each flow specifies an array of [_Plugin Groups_][12] to load.
+Here, `append` is also used to add an extra plugin group to each flow
+    _after_ the plugins in that flow.
+Pre-defined plugin groups can be found in `ILLIXR/configs/plugins/groups/`.
+
+You can also specify a new custom flow composing new or existing plugins:
+
+<!--- language: lang-yaml -->
+    flows:
+      - flow:
+        - plugin_group:          # plugin_group1
+          - path: plugin1/
+          - path: plugin2/
+          - !include "plugins/plugin3.yaml"
+          - path: plugin4/
+        - !include "plugins/groups/plugin_group2.yaml"
+
+A `plugin_group` defines an array of plugins by their `path` YAML object.
+A new `path` can be described in-place as shown,
+    or a pre-existing definition (found in `ILLIXR/configs/plugins`) can be used.
+More than one group can be included in a `flow`,
+    as shown by the included pre-existing `plugin_group2.yaml`.
+
+For more details about adding your own plugin,
+    see the [Writing your Plugin][16] page.
 
 
 ## Specifying Paths
 
-A path refers to a location of a resource. There are 5 ways of specifying a path:
+A path refers to a location of a resource.
+There are 5 ways of specifying a path:
 
 -   **Simple path**:
     Either absolute or relative path in the native filesystem.
@@ -201,3 +241,6 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
 [12]:   building_illixr.md#building-illixr
 [13]:   glossary.md#yaml
 [14]:   glossary.md#openxr
+[15]:   building_illixr.md#specifying-paths
+[15]:   building_illixr.md#configuration
+[16]:   writing_your_plugin.md

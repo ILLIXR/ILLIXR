@@ -19,7 +19,7 @@ action:
 
 common:    !include "plugins/common.yaml"
 runtime:   !include "plugins/runtime.yaml"
-data:      !include "data/euroc-default.yaml"
+data:      !include "data/data-default.yaml"
 demo_data: !include "data/demo-default.yaml"
 
 profile: opt

@@ -24,45 +24,66 @@ A modular component that can be detected and enabled for use by an ILLIXR applic
 A plugin can be internal or external to the [ILLIXR project][4].
 Each plugin is compiled and launched dynamically at runtime based on the
     ILLIXR [_configuration_][20] used.
-ILLIXR also implements a [_Monado_][58] runtime [_translation Plugin_][75].
+ILLIXR also implements a [_Monado_][58] runtime [_translation plugin_][75].
 
 For a list of supported plugins and their details, see the [ILLIXR Plugins][68] page.
 For instructions for how to modify or write your own plugins, see the [Modifying a Plugin][60]
     and [Writing Your Plugin][61] pages.
 
-See the [_Plugin_ API documentation][53].
+-   **Plugin Group**:
+    A _plugin group_ is a collection of plugins to be loaded and executed by a [_flow_][50]
+        launched by from a [_Runner_][55] configuration.
+    Groups are specified using the `plugin_group` identifier defined in our [_schema_][50].
 
-#### Config(uration)
+See the [Plugin API documentation][53].
+
+#### Configuration
 
 A file describing the key information required to launch an ILLIXR application.
 Configurations for ILLIXR are implemented as [_YAML_][66] files.
 Each configuration comprises an _action_, a _profile_, and a list of [_plugins_][67] as
     defined by our configuration specification _Schema_.
 
+-   **Schema**:
+    A _schema_ captures the specification describing the allowable structure of
+        a configuration file.
+    Our schema is implemented using the [json-schema specification][8].
+    Defined in `ILLIXR/runner/config_schema.yaml`.
+
 -   **Action** *(Previously Loader)*:
-    An _action_ encapsulates a task for [_Runner_][2].
+    An _action_ encapsulates a task for [_Runner_][55].
     
     *   `native`:
         The default application launch configuration.
         Does not use our [_Monado_][58] runtime integration.
         Defined in `ILLIXR/configs/native.yaml`.
+        Defines the `command` and `log_stdout` parameters.
+        Depends on the `kimera_path` parameter for ILLIXR application launch.
 
     *   `native-lookup`:
         Same as `native`, but using a [_ground truth_][56] lookup from a file for
             the [_pose_][57] instead of computing it.
         Defined in `ILLIXR/configs/native-lookup.yaml`.
+        Defines the `command` and `log_stdout` parameters.
+        Depends on the `kimera_path` parameter for ILLIXR application launch.
 
     *   `headless`:
         Same as `native`, but using [_Xvfb_][59] to run without a graphical environment.
         Defined in `ILLIXR/configs/headless.yaml`.
+        Defines the `command` and `log_stdout` parameters.
+        Depends on the `kimera_path` parameter for ILLIXR application launch.
 
     *   `ci`:
         Same as `headless`, but using [_Docker_][62] virtualization and debug-enabled compilation.
         Defined in `ILLIXR/configs/ci.yaml`.
+        Defines the `enable_ci`, `run-solo`, `build-only`, and `no-build` parameters.
+        Depends on the `kimera_path` parameter for ILLIXR application launch.
 
     *   `monado`:
         Similar to `native`, but uses our [_Monado_][58] runtime integration.
         Defined in `ILLIXR/configs/monado.yaml`.
+        Defines the `monado` and `openxr_app` parameters.
+        Depends on the `kimera_path` parameter for ILLIXR application launch.
 
     *   `clean`:
         A meta-task that fetches all supported plugins and then cleans up builds across
@@ -82,11 +103,11 @@ Each configuration comprises an _action_, a _profile_, and a list of [_plugins_]
         Sets [_Runner_][55] to compile the ILLIXR application and plugins without optimizations,
             while enabling debug logic and debug logging.
 
--   **Schema**:
-    A _schema_ captures the specification describing the allowable structure of
-        a configuration file.
-    Our schema is implemented using the [json-schema specification][8].
-    Defined in `ILLIXR/runner/config_schema.yaml`.
+-   **Flow**:
+    A _flow_ is a collection of plugins to be executed by [_Runner_][55].
+    Each flow is executed independently of other flows in the `flows` array of the config file.
+    A flow comprises a [_YAML_][66] array of [plugin groups][67],
+        each of which is an array of plugins.
 
 For more details about the structure of a configuration, see the [Building ILLIXR page][69].
 

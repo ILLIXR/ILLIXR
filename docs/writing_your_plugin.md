@@ -103,34 +103,61 @@ To add your own functionality via the plugin interface:
         PLUGIN_MAIN(plugin_name);
 
 1.  At this point, you should be able to build your plugin with ILLIXR.
-    Move to the ILLIXR repo and update `configs/native.yaml`.
-    If the new plugin is the same type as one of the other components you will need to
-        remove that component from the config before running the new component.
+    Move to your copy of ILLIXR repo and update `ILLIXR/configs/native.yaml`.
+    If the new plugin is the same type (i.e., publishes the same topics)
+        as one of the other components you will need to remove that component
+        from the config before running the new component.
     For example, if the new component is a SLAM then the old SLAM needs to be removed from
         the config.
-    See [Building ILLIXR][10] for more details on the config file.
+    This can be accomplished by editing the flows/plugin groups included for the `native`
+    The plugin flow structure for `native` shown here:
 
     <!--- language: lang-yaml -->
 
-        plugin_groups:
-          - !include "rt_slam_plugins.yaml"
-          - !include "core_plugins.yaml"
-          - plugin_group:
-             - path: /PATH/TO/NEW/PLUGIN
-             - path: ground_truth_slam/
-             - path: gldemo/
-             - path: debugview/
-   
-        data:
-          subpath: mav0
-          relative_to:
-          archive_path:
-          download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-          demo_data: demo_data/
-          loader:
-            name: native
-            # command: gdb -q --args %a
-            profile: opt
+        flows:
+          - !include "ci/flows/kimera-gtsam.yaml"
+        append: !include "plugins/groups/misc-native.yaml"
+
+    can be changed to this equivalent expanded flow, containing all the plugin groups specified
+        in `ILLIXR/ci/flows/kimera-gtsam.yaml`, plus the addition of a new plugin group
+        containing your plugin:
+
+    <!--- language: lang-yaml -->
+
+        flows:
+          - flow:
+            - !include "plugins/groups/rt_slam.yaml"
+            - !include "plugins/groups/kimera-gtsam.yaml"
+            - !include "plugins/groups/misc.yaml"
+            - !include "plugins/groups/core.yaml"
+            - plugin_group:
+              - path: /PATH/TO/NEW/PLUGIN
+        append: !include "plugins/groups/misc-native.yaml"
+
+    The groups in the `flow` array get flattened, and the included plugins are initialized
+        _in order_ at runtime.
+    Several of the default plugins are initialization order-sensitive.
+
+    Alternatively, create a new path config file for your plugin in `ILLIXR/configs/plugins/`,
+        and include your plugin:
+
+    <!--- language: lang-yaml -->
+
+        flows:
+          - flow:
+            - !include "plugins/groups/rt_slam.yaml"
+            - !include "plugins/groups/kimera-gtsam.yaml"
+            - !include "plugins/groups/misc.yaml"
+            - !include "plugins/groups/core.yaml"
+            - plugin_group:
+              - !include "plugins/NEW_PLUGIN.yaml"
+        append: !include "plugins/groups/misc-native.yaml"
+
+    Also, don't forget to add your plugin to the `ILLIXR/configs/plugins/groups/all.yaml`
+        config if you would like the `clean` Runner action to include your plugin during
+        clean up.
+
+    See [Building ILLIXR][10] for more details on the configuration file structure.
 
 1.  Finally, run ILLIXR with your new plugin with the following command:
 
@@ -142,7 +169,7 @@ To add your own functionality via the plugin interface:
         the ILLIXR runtime.
     Reading and writing from Phonebook and Switchboard is optional,
         but nearly every plugin does it.
-    See `default_plugins.md` for more details.
+    See [ILLIXR Plugins][16] for more details.
 
     First, we can query the [`phonebook`][11] to get various services
         including [`switchboard`][14].
@@ -235,3 +262,4 @@ To add your own functionality via the plugin interface:
 [13]:   api/html/classILLIXR_1_1plugin.html
 [14]:   api/html/classILLIXR_1_1switchboard.html
 [15]:   glossary.md#plugin
+[16]:   illixr_plugins.md
