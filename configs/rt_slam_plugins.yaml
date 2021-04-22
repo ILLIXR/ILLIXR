@@ -1,6 +1,7 @@
 plugin_group:
   - path: offline_imu_cam/
   # - path: zed/
+  # - path: realsense/
   - name: Kimera-VIO/
     path:
       git_repo: https://github.com/ILLIXR/Kimera-VIO

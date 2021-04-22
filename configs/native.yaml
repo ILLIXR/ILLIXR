@@ -18,6 +18,7 @@ enable_offload:   False
 enable_alignment: False
 enable_verbose_errors: False
 enable_pre_sleep: False
+# realsense_cam: auto
 
 action:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
