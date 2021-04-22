@@ -1,4 +1,4 @@
-# ILLIXR plugins
+# ILLIXR Plugins
 
 This page details the structure of ILLIXR's [_plugins_][41] and how they interact with each other.
 
