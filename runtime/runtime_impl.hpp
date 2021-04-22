@@ -79,17 +79,13 @@ public:
 	}
 
 	virtual void wait() override {
-		while (!pb.lookup_impl<Stoplight>()->should_stop()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{10});
-		}
-
 		// We don't want wait() returning before all the plugin threads have been joined.
 		// That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
-		pb.lookup_impl<Stoplight>()->wait_for_shutdown();
+		pb.lookup_impl<Stoplight>()->shutdown_complete().wait();
 	}
 
 	virtual void stop() override {
-		pb.lookup_impl<Stoplight>()->stop();
+		pb.lookup_impl<Stoplight>()->should_stop().set();
 		// After this point, threads may exit their main loops
 		// They still have destructors and still have to be joined.
 
@@ -102,11 +98,11 @@ public:
 		}
 
 		// Tell runtime::wait() that it can return
-		pb.lookup_impl<Stoplight>()->shutdown_done();
+		pb.lookup_impl<Stoplight>()->shutdown_complete().set();
 	}
 
 	virtual ~runtime_impl() override {
-		if (!pb.lookup_impl<Stoplight>()->should_stop()) {
+		if (!pb.lookup_impl<Stoplight>()->should_stop().is_set()) {
 			stop();
 		}
 		// This will be re-enabled in #225
