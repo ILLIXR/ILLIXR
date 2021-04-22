@@ -60,7 +60,7 @@ public:
 		});
 
 		// This actually kicks off the plugins
-		pb.lookup_impl<Stoplight>()->ready().set();
+		pb.lookup_impl<Stoplight>()->signal_ready();
 	}
 
 	virtual void load_so(const std::string_view so) override {
@@ -78,11 +78,11 @@ public:
 	virtual void wait() override {
 		// We don't want wait() returning before all the plugin threads have been joined.
 		// That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
-		pb.lookup_impl<Stoplight>()->shutdown_complete().wait();
+		pb.lookup_impl<Stoplight>()->wait_for_shutdown_complete();
 	}
 
 	virtual void stop() override {
-		pb.lookup_impl<Stoplight>()->should_stop().set();
+		pb.lookup_impl<Stoplight>()->signal_should_stop();
 		// After this point, threads may exit their main loops
 		// They still have destructors and still have to be joined.
 
@@ -95,11 +95,11 @@ public:
 		}
 
 		// Tell runtime::wait() that it can return
-		pb.lookup_impl<Stoplight>()->shutdown_complete().set();
+		pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
 	}
 
 	virtual ~runtime_impl() override {
-		if (!pb.lookup_impl<Stoplight>()->should_stop().is_set()) {
+		if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
 			stop();
 		}
 		// This will be re-enabled in #225
