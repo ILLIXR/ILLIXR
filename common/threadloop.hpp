@@ -51,7 +51,7 @@ public:
 	virtual void start() override {
 		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
-		assert(!_m_stoplight->should_stop());
+		assert(!_m_stoplight->should_stop().is_set());
 		assert(_m_thread.joinable());
 	}
 
@@ -61,13 +61,13 @@ public:
 	 * Must have already stopped the stoplight.
 	 */
 	virtual void stop() override {
-		assert(_m_stoplight->should_stop());
+		assert(_m_stoplight->should_stop().is_set());
 		assert(_m_thread.joinable());
 		_m_thread.join();
 	}
 
 	virtual ~threadloop() override {
-		assert(_m_stoplight->should_stop());
+		assert(_m_stoplight->should_stop().is_set());
 		assert(!_m_thread.joinable());
 	}
 
@@ -83,8 +83,8 @@ private:
 
 		_p_thread_setup();
 
-		while (!_m_stoplight->should_stop()) {
-			_m_stoplight->wait_for_ready();
+		_m_stoplight->ready().wait();
+		while (!_m_stoplight->should_stop().is_set()) {
 			skip_option s = _p_should_skip();
 
 			switch (s) {

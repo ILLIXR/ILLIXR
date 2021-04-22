@@ -16,7 +16,7 @@ class Event {
 private:
 	mutable std::mutex _m_mutex;
 	mutable std::condition_variable _m_cv;
-	bool _m_value = false;
+	std::atomic<bool> _m_value = false;
 
 public:
 
@@ -44,7 +44,6 @@ public:
 	 * @brief Test if is set without blocking.
 	 */
 	bool is_set() const {
-		std::lock_guard<std::mutex> lock {_m_mutex};
 		return _m_value;
 	}
 
@@ -57,7 +56,7 @@ public:
 		if (_m_value) {
 			return;
 		}
-		_m_cv.wait(lock, [this] { return _m_value; });
+		_m_cv.wait(lock, [this] { return _m_value.load(); });
 	}
 
 	/**
@@ -68,10 +67,10 @@ public:
 	template <class Clock, class Rep, class Period>
 	bool wait_timeout(const std::chrono::duration<Rep, Period>& duration) const {
 		auto timeout_time = Clock::now() + duration;
-		std::unique_lock<std::mutex> lock {_m_mutex};
 		if (_m_value) {
 			return true;
 		}
+		std::unique_lock<std::mutex> lock {_m_mutex};
 		while (_m_cv.wait_until(lock, timeout_time) != std::cv_status::timeout) {
 			if (_m_value) {
 				return true;
@@ -81,43 +80,39 @@ public:
 	}
 };
 
+/**
+ * @brief Start/stop synchronization for the whole application.
+ *
+ * Threads should:
+ * 1. Do intiailization actions.
+ * 2. Wait for ready()
+ * 3. Do their main work in a loop until should_stop().
+ * 4. Do their shutdown actions.
+ *
+ * The main thread should:
+ * 1. Construct and start all plugins and construct all services.
+ * 2. Set ready().
+ * 3. Wait for shutdown_complete().
+ *
+ * The stopping thread should:
+ * 1. Someone should set should_stop().
+ * 2. stop() and destruct each plugin and destruct each service.
+ * 3. Set shutdown_complete().
+ */
 class Stoplight : public phonebook::service {
 public:
-	void wait_for_ready() const {
-		_m_ready.wait();
-	}
+	const Event& ready() const { return _m_ready; }
+	Event& ready() { return _m_ready; }
 
-	void ready() {
-		_m_ready.set();
-	}
+	const Event& should_stop() const { return _m_should_stop; }
+	Event& should_stop() { return _m_should_stop; }
 
-	bool should_stop() const {
-		return _m_stop.load();
-	}
-
-	void stop() {
-		_m_stop.store(true);
-	}
-
-	void wait_for_shutdown() const {
-		_m_shutdown.wait();
-	}
-
-	void shutdown_done() {
-		_m_shutdown.set();
-	}
+	const Event& shutdown_complete() const { return _m_shutdown_complete; }
+	Event& shutdown_complete() { return _m_shutdown_complete; }
 private:
 	Event _m_ready;
-	Event _m_shutdown;
-
-	/*
-	  I use an atomic instead of an event for this one, since it is being "checked" not "waited on."
-
-	  Event uses std::condition_variable, which does not support
-	  std::shared_mutex, so readers would need a std::unique_lock,
-	  which would exclude other readers.
-	*/
-	std::atomic<bool> _m_stop {false};
+	Event _m_should_stop;
+	Event _m_shutdown_complete;
 };
 
 } // namespace ILLIXR
