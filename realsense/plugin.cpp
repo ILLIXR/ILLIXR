@@ -23,13 +23,7 @@ typedef struct {
 	cv::Mat rgb;
 	cv::Mat depth;
     int iteration;
-} cam_type_D4XX;
-
-typedef struct {
-    cv::Mat img0;
-    cv::Mat img1;
-    int iteration;
-} cam_type_T26X;
+} cam_type;
 
 typedef enum {
     UNSUPPORTED,
@@ -160,12 +154,12 @@ public:
                     cv::Mat converted_depth;
                     float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
                     depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                    cam_D4XX_ = cam_type_D4XX{
-                        cv::Mat{ir_left},
-                        cv::Mat{ir_right},
-                        cv::Mat{rgb},
-                        cv::Mat{converted_depth},
-                        iteration_cam,
+                    cam_type_ = cam_type {
+                        .img0 = cv::Mat{ir_left},
+                        .img1 = cv::Mat{ir_right},
+                        .rgb = cv::Mat{rgb},
+                        .depth = cv::Mat{converted_depth},
+                        .iteration = iteration_cam,
                     };
                     iteration_cam++;
                 }
@@ -177,10 +171,10 @@ public:
                     rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
                     cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
                     cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
-                    cam_T26X_ = cam_type_T26X{
-                        cv::Mat{fisheye_left},
-                        cv::Mat{fisheye_right},
-                        iteration_cam,
+                    cam_type_ = cam_type {
+                        .img0 = cv::Mat{fisheye_left},
+                        .img1 = cv::Mat{fisheye_right},
+                        .iteration = iteration_cam,
                     };
                     iteration_cam++;
                 }
@@ -219,64 +213,40 @@ public:
                     using time_point = std::chrono::system_clock::time_point;
                     time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
 
-                     // Images
-                    if (cam_select == D4XXI){
-                        std::optional<cv::Mat> img0 = std::nullopt;
-                        std::optional<cv::Mat> img1 = std::nullopt;
-                        std::optional<cv::Mat> rgb = std::nullopt;
-                        std::optional<cv::Mat> depth = std::nullopt;
-                        if (last_iteration_cam != cam_D4XX_.iteration)
-                        {
-                            last_iteration_cam = cam_D4XX_.iteration;
-                            img0 = cam_D4XX_.img0;
-                            img1 = cam_D4XX_.img1;
-                            rgb = cam_D4XX_.rgb;
-                            depth = cam_D4XX_.depth;
-                        }
+                    // Images
+                    std::optional<cv::Mat> img0 = std::nullopt;
+                    std::optional<cv::Mat> img1 = std::nullopt;
+                    std::optional<cv::Mat> rgb = std::nullopt;
+                    std::optional<cv::Mat> depth = std::nullopt;
+
                         
-                        // Submit to switchboard
-                        _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-                            imu_cam_type{
-                                imu_time_point,
-                                av,
-                                la,
-                                img0,
-                                img1,
-                                imu_time
-                            }
-                        ));
-                        
-                        if (rgb && depth)
-                        {
-                            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-                                rgb_depth_type{
-                                    rgb,
-                                    depth,
-                                    imu_time
-                                }
-                            ));
-                        }
+                    if (last_iteration_cam != cam_type_.iteration)
+                    {
+                        last_iteration_cam = cam_type_.iteration;
+                        img0 = cam_type_.img0;
+                        img1 = cam_type_.img1;
+                        rgb = cam_type_.rgb;
+                        depth = cam_type_.depth;
                     }
-
-                    else if (cam_select == T26X){
-                        std::optional<cv::Mat> img0 = std::nullopt;
-                        std::optional<cv::Mat> img1 = std::nullopt;
-
-                        if (last_iteration_cam != cam_T26X_.iteration)
-                        {
-                            last_iteration_cam = cam_T26X_.iteration;
-                            img0 = cam_T26X_.img0;
-                            img1 = cam_T26X_.img1;
+                    
+                    // Submit to switchboard
+                    _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+                        imu_cam_type{
+                            imu_time_point,
+                            av,
+                            la,
+                            img0,
+                            img1,
+                            imu_time
                         }
-                
-                        // Submit to switchboard
-                        _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-                            imu_cam_type{
-                                imu_time_point,
-                                av,
-                                la,
-                                img0,
-                                img1,
+                    ));
+                    
+                    if (rgb && depth)
+                    {
+                        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
+                            rgb_depth_type{
+                                rgb,
+                                depth,
                                 imu_time
                             }
                         ));
@@ -301,8 +271,7 @@ private:
 	rs2_vector accel_data;
 
     
-	cam_type_T26X cam_T26X_;
-    cam_type_D4XX cam_D4XX_;
+	cam_type cam_type_;
     cam_enum cam_select{UNSUPPORTED};
     bool gyro_found{false};
     bool accel_found{false};
