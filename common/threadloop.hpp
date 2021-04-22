@@ -83,8 +83,8 @@ private:
 
 		_p_thread_setup();
 
-		_m_stoplight->ready().wait();
-		while (!_m_stoplight->should_stop().is_set()) {
+		_m_stoplight->wait_for_ready();
+		while (!_m_stoplight->check_should_stop()) {
 			skip_option s = _p_should_skip();
 
 			switch (s) {

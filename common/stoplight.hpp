@@ -101,14 +101,33 @@ public:
  */
 class Stoplight : public phonebook::service {
 public:
-	const Event& ready() const { return _m_ready; }
-	Event& ready() { return _m_ready; }
+	void wait_for_ready() const {
+		_m_ready.wait();
+	}
 
-	const Event& should_stop() const { return _m_should_stop; }
-	Event& should_stop() { return _m_should_stop; }
+	void signal_ready() {
+		_m_ready.set();
+	}
 
-	const Event& shutdown_complete() const { return _m_shutdown_complete; }
-	Event& shutdown_complete() { return _m_shutdown_complete; }
+	bool check_should_stop() const {
+		return _m_should_stop.is_set();
+	}
+
+	void signal_should_stop() {
+		_m_should_stop.set();
+	}
+
+	void wait_for_shutdown_complete() const {
+		_m_shutdown_complete.wait();
+	}
+
+	bool check_shutdown_complete() const {
+		return _m_shutdown_complete.is_set();
+	}
+
+	void signal_shutdown_complete() {
+		_m_shutdown_complete.set();
+	}
 private:
 	Event _m_ready;
 	Event _m_should_stop;
