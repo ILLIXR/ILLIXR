@@ -51,7 +51,7 @@ public:
 	virtual void start() override {
 		plugin::start();
 		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
-		assert(!_m_stoplight->should_stop().is_set());
+		assert(!_m_stoplight->check_should_stop());
 		assert(_m_thread.joinable());
 	}
 
@@ -61,13 +61,13 @@ public:
 	 * Must have already stopped the stoplight.
 	 */
 	virtual void stop() override {
-		assert(_m_stoplight->should_stop().is_set());
+		assert(_m_stoplight->check_should_stop());
 		assert(_m_thread.joinable());
 		_m_thread.join();
 	}
 
 	virtual ~threadloop() override {
-		assert(_m_stoplight->should_stop().is_set());
+		assert(_m_stoplight->check_should_stop());
 		assert(!_m_thread.joinable());
 	}
 
