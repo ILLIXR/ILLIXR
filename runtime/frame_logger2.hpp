@@ -32,6 +32,8 @@ namespace ILLIXR {
 		{"cpu_stop", sqlite::type_INTEGER},
 	}};
 
+	static boost::filesystem::path frames_root = boost::filesystem::path{"metrics"} / "frames";
+
 	class frame_logger {
 	private:
 		size_t tid;
@@ -41,7 +43,7 @@ namespace ILLIXR {
 		size_t epoch;
 
 		static boost::filesystem::path get_filename(size_t tid) {
-			boost::filesystem::path path = (boost::filesystem::path{"metrics"} / "frames" / std::to_string(tid)).replace_extension(".sqlite");
+			boost::filesystem::path path = (frames_root / std::to_string(tid)).replace_extension(".sqlite");
 			boost::filesystem::create_directory(path.parent_path());
 			std::cerr << path.string() << std::endl;
 			assert(boost::filesystem::is_directory(path.parent_path()));
@@ -121,6 +123,8 @@ namespace ILLIXR {
 	};
 
 	static void setup_frame_logger() {
+		boost::filesystem::remove_all(frames_root);
+		boost::filesystem::create_directory(frames_root);
 		cpu_timer::get_process().set_callback(std::make_unique<frame_logger_container>());
 		// This makes cpu_timer hold all logs until thread_stop (no in situ).
 		// We usually want this behavior for performance reasons.

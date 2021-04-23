@@ -514,15 +514,20 @@ public:
 	template <typename specific_event>
 	class buffered_reader {
 	private:
+		topic& _m_topic;
+		size_t serial_no = 0;
 		topic_buffer& _m_tb;
 	public:
 		buffered_reader(topic& topic)
-			: _m_tb{topic.get_buffer()}
+			: _m_topic{topic}
+			, _m_tb{_m_topic.get_buffer()}
 		{ }
 
 		size_t size() const { return _m_tb.size(); }
 
 		ptr<const specific_event> dequeue() {
+			CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(), serial_no));
+			serial_no++;
 			ptr<const event> this_event = _m_tb.dequeue();
 			ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 			return this_specific_event;
