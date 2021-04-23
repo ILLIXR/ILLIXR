@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include "common/record_logger.hpp"
+#include "common/data_format.hpp"
 
 namespace ILLIXR {
 	class stdout_record_logger : public record_logger {

@@ -40,7 +40,7 @@ public:
 
         switchboard::ptr<pose_type> true_pose = _m_true_pose.allocate<pose_type>(
             pose_type {
-                time_type{datum->time},
+                time_point{datum->time},
                 it->second.position,
                 it->second.orientation
             }
