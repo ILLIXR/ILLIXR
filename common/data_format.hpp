@@ -237,7 +237,6 @@ namespace ILLIXR {
             duration offload_duration_,
             unsigned char *image_,
             time_point pose_time_,
-            RelativeClock::time_point pose_time_,
             Eigen::Vector3f position_,
 			Eigen::Quaternionf latest_quaternion_,
             Eigen::Quaternionf render_quaternion_
