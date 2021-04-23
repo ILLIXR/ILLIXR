@@ -25,10 +25,10 @@ action:
   name: native
 
   # run in GDB:
-  # command: gdb -q --args $cmd
+  command: gdb -q --args $cmd
 
   # Print cmd for external use:
-  # command: printf %s\n $env_cmd
+  # command: echo $env_cmd
 
   # Capture stdout for metrics
   # log_stdout: metrics/output.log
