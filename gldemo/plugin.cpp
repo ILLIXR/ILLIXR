@@ -67,7 +67,7 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-			double vsync_in = duration2double<std::milli>(*next_vsync - now);
+			double vsync_in = duration2double<std::milli>(**next_vsync - now);
             std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
 		}
 #endif

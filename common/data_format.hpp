@@ -26,13 +26,13 @@ namespace ILLIXR {
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
 	struct imu_cam_type : public switchboard::event {
-		RelativeClock::time_point time;
+		time_point time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
 		ullong dataset_time;
-		imu_cam_type(RelativeClock::time_point time_,
+		imu_cam_type(time_point time_,
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
 					 std::optional<cv::Mat> img0_,
@@ -118,7 +118,7 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> pos;
 		Eigen::Matrix<double,3,1> vel;
 		Eigen::Quaterniond quat;
-		RelativeClock::time_point imu_time;
+		time_point imu_time;
 		imu_raw_type(Eigen::Matrix<double,3,1> w_hat_,
 					 Eigen::Matrix<double,3,1> a_hat_,
 					 Eigen::Matrix<double,3,1> w_hat2_,
@@ -126,7 +126,7 @@ namespace ILLIXR {
 					 Eigen::Matrix<double,3,1> pos_,
 					 Eigen::Matrix<double,3,1> vel_,
 					 Eigen::Quaterniond quat_,
-					 RelativeClock::time_point imu_time_)
+					 time_point imu_time_)
 			: w_hat{w_hat_}
 			, a_hat{a_hat_}
 			, w_hat2{w_hat2_}
@@ -139,11 +139,11 @@ namespace ILLIXR {
 	};
 
 	struct pose_type : public switchboard::event {
-		RelativeClock::time_point sensor_time; // Recorded time of sensor data ingestion
+		time_point sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
 		pose_type() { }
-		pose_type(RelativeClock::time_point sensor_time_,
+		pose_type(time_point sensor_time_,
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
 			: sensor_time{sensor_time_}
@@ -154,8 +154,8 @@ namespace ILLIXR {
 
 	typedef struct {
 		pose_type pose;
-		RelativeClock::time_point predict_computed_time; // Time at which the prediction was computed
-		RelativeClock::time_point predict_target_time; // Time that prediction targeted.
+		time_point predict_computed_time; // Time at which the prediction was computed
+		time_point predict_target_time; // Time that prediction targeted.
 	} fast_pose_type;
 
 	// Using arrays as a swapchain
@@ -165,14 +165,14 @@ namespace ILLIXR {
 		std::array<GLuint, 2> texture_handles; // Does not change between swaps in swapchain
 		std::array<GLuint, 2> swap_indices; // Which element of the swapchain
 		fast_pose_type render_pose; // The pose used when rendering this frame.
-		RelativeClock::time_point sample_time;
-		RelativeClock::time_point render_time;
+		time_point sample_time;
+		time_point render_time;
 		rendered_frame() { }
 		rendered_frame(std::array<GLuint, 2>&& texture_handles_,
 		               std::array<GLuint, 2>&& swap_indices_,
 		               fast_pose_type render_pose_,
-                       RelativeClock::time_point sample_time_,
-                       RelativeClock::time_point render_time_)
+                       time_point sample_time_,
+                       time_point render_time_)
             : texture_handles{std::move(texture_handles_)}
 			, swap_indices{std::move(swap_indices_)}
 			, render_pose(render_pose_)
@@ -214,18 +214,18 @@ namespace ILLIXR {
 
     struct texture_pose : public switchboard::event {
         int seq; /// TODO: Should texture_pose.seq be a long long
-		RelativeClock::duration offload_time;
+		duration offload_time;
         unsigned char *image;
-        RelativeClock::time_point pose_time;
+        time_point pose_time;
         Eigen::Vector3f position;
         Eigen::Quaternionf latest_quaternion;
         Eigen::Quaternionf render_quaternion;
         texture_pose() { }
         texture_pose(
             int seq_,
-            RelativeClock::duration offload_time_,
+            duration offload_time_,
             unsigned char *image_,
-            RelativeClock::time_point pose_time_,
+            time_point pose_time_,
             Eigen::Vector3f position_,
             Eigen::Quaternionf latest_quaternion_,
             Eigen::Quaternionf render_quaternion_
