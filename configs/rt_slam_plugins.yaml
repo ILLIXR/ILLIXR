@@ -10,5 +10,5 @@ plugin_group:
   #   path:
   #     git_repo: https://github.com/ILLIXR/open_vins.git
   #     version: "issue-58-standardize-clock"
-  - path: gtsam_integrator/
+  - path: rk4_integrator/
   - path: pose_prediction/
