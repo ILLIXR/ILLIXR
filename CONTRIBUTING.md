@@ -44,7 +44,7 @@ Please follow these steps when making pull requests (PRs):
 
         git push <your-remote> <issue-branch> --force-with-lease                ## Line D
 
-    For ILLIXR team members:
+    For ILLIXR team members (others jump [here][12]):
 
     -   In the example above, `<illixr-remote>` and `<your-remote>` are the same.
 
@@ -55,7 +55,7 @@ Please follow these steps when making pull requests (PRs):
             a checkpointing process for force updated branches.
         This process will be manually performed, but may be automated in the future.
 
-        If `Line B` shows an update to master, the following example illustates your local repository
+        If `Line B` shows an update to master, the following example illustrates your local repository
             just after performing `Line B`:
 
         <!--- language: lang-none -->
@@ -80,6 +80,7 @@ Please follow these steps when making pull requests (PRs):
             git push <illixr-remote> issue-123.{0,1}-fixing-bug                 ## Push new checkpointed branches to remote
             git push <illixr-remote> issue-123-fixing-bug --force-with-lease    ## Force update issue-123-fixing-bug
 
+        >
         Note: The term _alias_ here is used to refer to branches which point to the same commit.
         This usage is different from standard [Git Aliases][4] used for git command shortcuts.
 
@@ -113,7 +114,14 @@ Please follow these steps when making pull requests (PRs):
             following the process from `Line A` to `Line D` (or equivalent; git's CLI allows many
             ways to achieve the same results).
 
-        The output of `Line A` for a collaborator after the checkpointing example will contain
+        >
+        Note: `Line B` rebases the `master` branch assuming that we have checked out `master`.
+        Forgetting to specify `master` in `Line B` may result in a _lossy_ forced update in the
+            example below.
+        Forgetting to checkout `master` will immediately apply your checked out feature branch's
+            changes, possibly also resulting in a _lossy_ forced update.
+
+        The output of `Line B` for a collaborator after the checkpointing process may contain
             something like this:
 
         <!--- language: lang-none -->
@@ -135,15 +143,18 @@ Please follow these steps when making pull requests (PRs):
             git rebase issue-123.Y-fixing-bug                                   ## Replay updates from issue-123.X-fixing-bug
             git push <illixr-remote> issue-123.Z-fixing-bug                     ## Make sure to update issue-123-fixing-bug after
 
-        `Line D` should be safe to perform after the replaying our commits on top of the
-            updated feature branch.
-        The `--force-with-lease` argument in `Line D` is _not_ required for this case,
+        The `--force-with-lease` argument in `Line D` is _not_ required for our new checkpoint branch,
             since a new branch should not conflict with a non-existing remote branch.
-        If the push fails, another conflict has occurred, and checkpointing should be repeated.
+        We _expect_ the subversion number for a new branch resulting from our
+            checkpoint conflict resolution to be new and unique.
+        If the push fails, another conflict has occurred, and checkpoint conflict resolution
+            should be repeated.
+        `Line D` should be safe to perform for the main feature branch now that we have
+            replayed our commits on top of the updated feature branch.
 
         In the case of a conflict with updates to `master`, `Line A` should show updates to
             both the `master` branch _and_ the feature branch to be pushed in `Line D`.
-        A checkpointed version of the feature branch should also appear.
+        A checkpointed version of the feature branch may also appear.
         This is because a feature branch should only be checkpointed in the presence of a
             change to the `master` branch.
         Forced pushes should generally _not_ be used for any other purpose.
@@ -152,6 +163,8 @@ Please follow these steps when making pull requests (PRs):
         In this scenario, we need to rebase our latest version of the feature branch with
             the latest version of the feature branch pulled from `<illixr-remote>`.
 
+
+# Philosophy
 
 Why are the above steps necessary?
 
@@ -172,7 +185,7 @@ If your PR has not seen activity from the ILLIXR team after a long period of tim
     the Gitter forum linked below.
 
 
-Other procedures:
+# Other Procedures
 
 1.  Branch Management:
 
@@ -218,3 +231,4 @@ You can get seek help from our development community in three places:
 
 [10]:   index.md
 [11]:   api/html/annotated.html
+[12]:   CONTRIBUTING.md#philosophy
