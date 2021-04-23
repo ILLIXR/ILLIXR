@@ -35,7 +35,7 @@ loader:
 
   # run in GDB:
   # command: sudo gdb -q --args taskset -a -c 0 env ILLIXR_RUN_DURATION=10 ILLIXR_SCHEDULER=y $env_cmd
-  command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=30 ILLIXR_SCHEDULER=y $env_cmd
+  command: sudo echo taskset -a -c 0 env ILLIXR_RUN_DURATION=20 ILLIXR_SCHEDULER=y $env_cmd
   # command: rm -rf /home/grayson5/ILLIXR-analysis/.cache && taskset -a -c 0 env ILLIXR_RUN_DURATION=30 ILLIXR_SCHEDULER=y $env_cmd
 
   # command: printf "%s " $env_cmd
