@@ -53,9 +53,13 @@ public:
         for (rs2::device device : devices) {
             if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)){
                 std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE); 
-                std::cout << "Found Product Line: " << product_line << std::endl;
+                #ifndef NDEBUG
+                    std::cout << "Found Product Line: " << product_line << std::endl;
+                #endif
                 if (product_line == "D400"){
-                    std::cout << "Checking for supported streams" << std::endl;
+                    #ifndef NDEBUG
+                        std::cout << "Checking for supported streams" << std::endl;
+                    #endif
                     std::vector<rs2::sensor> sensors = device.query_sensors();
                     for (rs2::sensor sensor : sensors){
                         std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
@@ -72,12 +76,16 @@ public:
                     }
                     if (accel_found && gyro_found){
                         D4XXI_found = true;
-                        std::cout << "Supported D4XX found!" << std::endl;
+                        #ifndef NDEBUG
+                            std::cout << "Supported D4XX found!" << std::endl;
+                        #endif
                     }
                 } 
                 else if (product_line == "T200"){
                     T26X_found = true;
-                    std::cout << "T26X found! " << std::endl;
+                    #ifndef NDEBUG
+                        std::cout << "T26X found! " << std::endl;
+                    #endif
                 }
             }
             
@@ -95,24 +103,31 @@ public:
         if (realsense_cam.compare("auto") == 0) {
             if (D4XXI_found){
                 cam_select = D4XXI;
-                std::cout << "Setting cam_select: D4XX" << std::endl;
+                #ifndef NDEBUG
+                    std::cout << "Setting cam_select: D4XX" << std::endl;
+                #endif
             }
             else if (T26X_found){
                 cam_select = T26X;
-                std::cout << "Setting cam_select: T26X" << std::endl;
+                #ifndef NDEBUG
+                    std::cout << "Setting cam_select: T26X" << std::endl;
+                #endif
             }
         }
         else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found){
             cam_select = D4XXI;
-            std::cout << "Setting cam_select: D4XX" << std::endl;
+            #ifndef NDEBUG
+                std::cout << "Setting cam_select: D4XX" << std::endl;
+            #endif
         }
         else if ((realsense_cam.compare("T26X") == 0) && T26X_found){
             cam_select = T26X;
-            std::cout << "Setting cam_select: T26X" << std::endl;
+            #ifndef NDEBUG
+                std::cout << "Setting cam_select: T26X" << std::endl;
+            #endif
         }
         if (cam_select == UNSUPPORTED){
-            std::cout << "Supported device NOT found!" << std::endl;
-            abort("Supported Realsense device NOT found!");
+            ILLIXR::abort("Supported Realsense device NOT found!");
         }
         if (cam_select == T26X){
             //T26X series has fixed options for accel rate, gyro rate, fisheye resolution, and FPS
