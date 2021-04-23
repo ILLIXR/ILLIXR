@@ -34,7 +34,7 @@ Please follow these steps when making pull requests (PRs):
         git commit # or git stash                                               ## Line A
         git checkout master
 
-        git pull <illixr-remote> master --rebase                                ## Line B
+        git pull <illixr-remote> master --rebase && git fetch <illixr-remote>   ## Line B
 
         git checkout <issue-branch>
         git rebase master                                                       ## Line C
@@ -140,7 +140,7 @@ Please follow these steps when making pull requests (PRs):
 
             ## For the latest checkpoint X (local) and Y (remote), let Z := Y + 1 in
             git checkout issue-123.X-fixing-bug -b issue-123.Z-fixing-bug       ## Make new branch issue-123.Z-fixing-bug
-            git rebase issue-123.Y-fixing-bug                                   ## Replay updates from issue-123.X-fixing-bug
+            git rebase <illixr-remote>/issue-123.Y-fixing-bug                   ## Replay updates from issue-123.X-fixing-bug
             git push <illixr-remote> issue-123.Z-fixing-bug                     ## Make sure to update issue-123-fixing-bug after
 
         The `--force-with-lease` argument in `Line D` is _not_ required for our new checkpoint branch,
@@ -151,6 +151,12 @@ Please follow these steps when making pull requests (PRs):
             should be repeated.
         `Line D` should be safe to perform for the main feature branch now that we have
             replayed our commits on top of the updated feature branch.
+
+        >
+        Note: In the above example, the `git-rebase` is performed using the remote copy of
+            the checkpointed branch.
+        We do this because `Line B` will not fast-forward or force update our local branches
+            (with the same subversion number as a conflicting remote branch, if any).
 
         In the case of a conflict with updates to `master`, `Line A` should show updates to
             both the `master` branch _and_ the feature branch to be pushed in `Line D`.
