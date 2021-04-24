@@ -12,6 +12,7 @@
 #include "sqlite_record_logger.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/error_util.hpp"
+#include "common/stoplight.hpp"
 
 using namespace ILLIXR;
 
@@ -22,6 +23,7 @@ public:
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, appGLCtx));
+		pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
@@ -47,8 +49,12 @@ public:
 		});
 
 		std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
+			// Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
 			plugin->start();
 		});
+
+		// This actually kicks off the plugins
+		pb.lookup_impl<Stoplight>()->signal_ready();
 	}
 
 	virtual void load_so(const std::string_view so) override {
@@ -64,22 +70,31 @@ public:
 	}
 
 	virtual void wait() override {
-		while (!terminate.load()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{10});
-		}
+		// We don't want wait() returning before all the plugin threads have been joined.
+		// That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
+		pb.lookup_impl<Stoplight>()->wait_for_shutdown_complete();
 	}
 
 	virtual void stop() override {
+		pb.lookup_impl<Stoplight>()->signal_should_stop();
+		// After this point, threads may exit their main loops
+		// They still have destructors and still have to be joined.
+
 		pb.lookup_impl<switchboard>()->stop();
+		// After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
+
 		for (const std::unique_ptr<plugin>& plugin : plugins) {
 			plugin->stop();
+			// Each plugin gets joined in its stop
 		}
-		terminate.store(true);
+
+		// Tell runtime::wait() that it can return
+		pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
 	}
 
 	virtual ~runtime_impl() override {
-		if (!terminate.load()) {
-            ILLIXR::abort("You didn't call stop() before destructing this plugin.");
+		if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
+			stop();
 		}
 		// This will be re-enabled in #225
 		// assert(errno == 0 && "errno was set during run. Maybe spurious?");
@@ -101,7 +116,6 @@ private:
 	std::vector<dynamic_lib> libs;
 	phonebook pb;
 	std::vector<std::unique_ptr<plugin>> plugins;
-	std::atomic<bool> terminate {false};
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
