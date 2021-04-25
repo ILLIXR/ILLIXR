@@ -2,13 +2,13 @@ plugin_group:
   - path: offline_imu_cam/
   # - path: zed/
   # - path: realsense/
-  - name: Kimera-VIO/
-    path:
-      git_repo: https://github.com/ILLIXR/Kimera-VIO
-      version: "issue-58-standardize-clock"
-  # - name: OpenVINS
+  # - name: Kimera-VIO/
   #   path:
+  #     git_repo: https://github.com/ILLIXR/Kimera-VIO
+  #     version: "issue-58-standardize-clock"
+  - name: OpenVINS
+    path: ../open_vins
   #     git_repo: https://github.com/ILLIXR/open_vins.git
   #     version: "issue-58-standardize-clock"
-  - path: rk4_integrator/
+  - path: gtsam_integrator/
   - path: pose_prediction/
