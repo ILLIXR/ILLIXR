@@ -36,7 +36,7 @@ public:
 	}
 
 	void callback(switchboard::ptr<const imu_cam_type> datum) {
-		double timestamp_in_seconds = std::chrono::duration<double, std::chrono::seconds::period>{datum->dataset_time}.count();
+		double timestamp_in_seconds = (double(datum->dataset_time) * (1/1'000'000'000.));
 
 		imu_type data;
         data.timestamp = timestamp_in_seconds;
