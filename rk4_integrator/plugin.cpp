@@ -33,7 +33,7 @@ public:
 			datum->angular_v.cast<double>(),
 			datum->linear_a.cast<double>()
 		);
-
+		
 		clean_imu_vec(datum->time);
         propagate_imu_values(datum->time);
 
