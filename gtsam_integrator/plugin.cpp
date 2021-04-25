@@ -45,8 +45,8 @@ public:
 							  datum->linear_a.cast<double>()
 							  );
 
-        clean_imu_vec(datum->time);
-        propagate_imu_values(datum->time);
+        clean_imu_vec(t);
+        propagate_imu_values(t, datum->time);
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -154,7 +154,7 @@ private:
 
 
     // Remove IMU values older than 'IMU_TTL' from the imu buffer
-	void clean_imu_vec(time_point timestamp) {
+	void clean_imu_vec(double timestamp) {
 		auto imu_iterator = _imu_vec.begin();
 
 		// Since the vector is ordered oldest to latest, keep deleting until you
