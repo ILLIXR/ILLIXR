@@ -83,6 +83,7 @@ private:
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
+	switchboard::ptr<const rendered_frame> most_recent_frame;
 
 	// Switchboard plug for sending hologram calls
 	switchboard::writer<switchboard::event_wrapper<std::size_t>> _m_hologram;
@@ -311,7 +312,8 @@ public:
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count() << ',';
 		
 
-		if(_m_eyebuffer.get_ro_nullable()) {
+		most_recent_frame = _m_eyebuffer.get_ro_nullable();
+		if(most_recent_frame) {
 			return skip_option::run;
 		} else {
 			std::this_thread::sleep_for(std::chrono::milliseconds{5});
@@ -433,8 +435,6 @@ public:
 		glClearColor(0, 0, 0, 0);
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glDepthFunc(GL_LEQUAL);
-
-		auto most_recent_frame = _m_eyebuffer.get();
 
 		// Use the timewarp program
 		glUseProgram(timewarpShaderProgram);
