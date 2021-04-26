@@ -17,24 +17,6 @@ static constexpr int ACCEL_RATE_D4XX = 250; // 63 or 250
 
 static constexpr int IMAGE_WIDTH_T26X = 848;
 static constexpr int IMAGE_HEIGHT_T26X = 800;
-typedef struct {
-    cv::Mat img0;
-	cv::Mat img1;
-	cv::Mat rgb;
-	cv::Mat depth;
-    int iteration;
-} cam_type;
-
-typedef enum {
-    UNSUPPORTED,
-    D4XXI,
-    T26X
-} cam_enum;
-
-typedef struct {
-	rs2_vector* accel_data;
-	int iteration;
-} accel_type;
 
 class realsense : public plugin {
 public:
@@ -48,106 +30,6 @@ public:
             cfg.disable_all_streams();
             configure_camera();
         }
-    
-    void find_supported_devices(rs2::device_list devices){
-        for (rs2::device device : devices) {
-            if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)){
-                std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE); 
-                #ifndef NDEBUG
-                    std::cout << "Found Product Line: " << product_line << std::endl;
-                #endif
-                if (product_line == "D400"){
-                    #ifndef NDEBUG
-                        std::cout << "Checking for supported streams" << std::endl;
-                    #endif
-                    std::vector<rs2::sensor> sensors = device.query_sensors();
-                    for (rs2::sensor sensor : sensors){
-                        std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
-                        //Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and gyro
-                        for (auto&& sp : stream_profiles)
-                        {
-                            if (sp.stream_type() == RS2_STREAM_GYRO){
-                                gyro_found = true;
-                            };
-                            if (sp.stream_type() == RS2_STREAM_ACCEL){
-                                accel_found = true;
-                            }
-                        }
-                    }
-                    if (accel_found && gyro_found){
-                        D4XXI_found = true;
-                        #ifndef NDEBUG
-                            std::cout << "Supported D4XX found!" << std::endl;
-                        #endif
-                    }
-                } 
-                else if (product_line == "T200"){
-                    T26X_found = true;
-                    #ifndef NDEBUG
-                        std::cout << "T26X found! " << std::endl;
-                    #endif
-                }
-            }
-            
-        }
-        if (!T26X_found && !D4XXI_found){
-            std::cout << "No supported Realsense device detected!" << std::endl;
-        }
-    }
-
-    void configure_camera()
-    {
-        rs2::context ctx;
-        rs2::device_list devices = ctx.query_devices();
-        find_supported_devices(devices);
-        if (realsense_cam.compare("auto") == 0) {
-            if (D4XXI_found){
-                cam_select = D4XXI;
-                #ifndef NDEBUG
-                    std::cout << "Setting cam_select: D4XX" << std::endl;
-                #endif
-            }
-            else if (T26X_found){
-                cam_select = T26X;
-                #ifndef NDEBUG
-                    std::cout << "Setting cam_select: T26X" << std::endl;
-                #endif
-            }
-        }
-        else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found){
-            cam_select = D4XXI;
-            #ifndef NDEBUG
-                std::cout << "Setting cam_select: D4XX" << std::endl;
-            #endif
-        }
-        else if ((realsense_cam.compare("T26X") == 0) && T26X_found){
-            cam_select = T26X;
-            #ifndef NDEBUG
-                std::cout << "Setting cam_select: T26X" << std::endl;
-            #endif
-        }
-        if (cam_select == UNSUPPORTED){
-            ILLIXR::abort("Supported Realsense device NOT found!");
-        }
-        if (cam_select == T26X){
-            //T26X series has fixed options for accel rate, gyro rate, fisheye resolution, and FPS
-            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // 62 Hz
-            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // 200 Hz
-            cfg.enable_stream(RS2_STREAM_FISHEYE, 1, RS2_FORMAT_Y8); //848x800, 30 FPS
-            cfg.enable_stream(RS2_STREAM_FISHEYE, 2, RS2_FORMAT_Y8); //848x800, 30 FPS
-            profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
-        }
-        else if (cam_select == D4XXI){
-            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE_D4XX); // adjustable to 0, 63 (default), 250 hz
-            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, GYRO_RATE_D4XX); // adjustable set to 0, 200 (default), 400 hz
-            cfg.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
-            cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
-            cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_BGR8, FPS_D4XX);
-            cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Z16, FPS_D4XX);
-            profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
-            profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter
-        }
-    }
 
 	void callback(const rs2::frame& frame)
         {
@@ -246,7 +128,7 @@ public:
                     
                     // Submit to switchboard
                     _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-                        imu_cam_type{
+                        {
                             imu_time_point,
                             av,
                             la,
@@ -259,7 +141,7 @@ public:
                     if (rgb && depth)
                     {
                         _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-                            rgb_depth_type{
+                            {
                                 rgb,
                                 depth,
                                 imu_time
@@ -274,22 +156,37 @@ public:
 	virtual ~realsense() override { pipe.stop(); }
 
 private:
+    typedef struct {
+        cv::Mat img0;
+        cv::Mat img1;
+        cv::Mat rgb;
+        cv::Mat depth;
+        int iteration;
+    } cam_type;
+
+    typedef enum {
+        UNSUPPORTED,
+        D4XXI,
+        T26X
+    } cam_enum;
+
+    typedef struct {
+        rs2_vector* accel_data;
+        int iteration;
+    } accel_type;
+
 	const std::shared_ptr<switchboard> sb;
     switchboard::writer<imu_cam_type> _m_imu_cam;
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
-
-	std::mutex mutex;
+    std::mutex mutex;
 	rs2::pipeline_profile profiles;
 	rs2::pipeline pipe;
 	rs2::config cfg;
 	rs2_vector gyro_data;
 	rs2_vector accel_data;
 
-    
 	cam_type cam_type_;
     cam_enum cam_select{UNSUPPORTED};
-    bool gyro_found{false};
-    bool accel_found{false};
     bool D4XXI_found{false};
     bool T26X_found{false}; 
     
@@ -299,6 +196,111 @@ private:
 	int last_iteration_cam;
 	int last_iteration_accel;
     std::string realsense_cam;
+
+    void find_supported_devices(rs2::device_list devices){
+        bool gyro_found{false};
+        bool accel_found{false};    
+        for (rs2::device device : devices) {
+            if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)){
+                std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE); 
+                #ifndef NDEBUG
+                    std::cout << "Found Product Line: " << product_line << std::endl;
+                #endif
+                if (product_line == "D400"){
+                    #ifndef NDEBUG
+                        std::cout << "Checking for supported streams" << std::endl;
+                    #endif
+                    std::vector<rs2::sensor> sensors = device.query_sensors();
+                    for (rs2::sensor sensor : sensors){
+                        std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
+                        //Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and gyro
+                        for (auto&& sp : stream_profiles)
+                        {
+                            if (sp.stream_type() == RS2_STREAM_GYRO){
+                                gyro_found = true;
+                            }
+                            if (sp.stream_type() == RS2_STREAM_ACCEL){
+                                accel_found = true;
+                            }
+                        }
+                    }
+                    if (accel_found && gyro_found){
+                        D4XXI_found = true;
+                        #ifndef NDEBUG
+                            std::cout << "Supported D4XX found!" << std::endl;
+                        #endif
+                    }
+                } 
+                else if (product_line == "T200"){
+                    T26X_found = true;
+                    #ifndef NDEBUG
+                        std::cout << "T26X found! " << std::endl;
+                    #endif
+                }
+            }
+            
+        }
+        if (!T26X_found && !D4XXI_found){
+            #ifndef NDEBUG
+                std::cout << "No supported Realsense device detected!" << std::endl;
+            #endif
+        }
+    }
+
+    void configure_camera()
+    {
+        rs2::context ctx;
+        rs2::device_list devices = ctx.query_devices();
+        //This plugin assumes only one device should be connected to the system. If multiple supported devices are found the preference is to choose D4XX with IMU over T26X systems. 
+        find_supported_devices(devices);
+        if (realsense_cam.compare("auto") == 0) {
+            if (D4XXI_found){
+                cam_select = D4XXI;
+                #ifndef NDEBUG
+                    std::cout << "Setting cam_select: D4XX" << std::endl;
+                #endif
+            }
+            else if (T26X_found){
+                cam_select = T26X;
+                #ifndef NDEBUG
+                    std::cout << "Setting cam_select: T26X" << std::endl;
+                #endif
+            }
+        }
+        else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found){
+            cam_select = D4XXI;
+            #ifndef NDEBUG
+                std::cout << "Setting cam_select: D4XX" << std::endl;
+            #endif
+        }
+        else if ((realsense_cam.compare("T26X") == 0) && T26X_found){
+            cam_select = T26X;
+            #ifndef NDEBUG
+                std::cout << "Setting cam_select: T26X" << std::endl;
+            #endif
+        }
+        if (cam_select == UNSUPPORTED){
+            ILLIXR::abort("Supported Realsense device NOT found!");
+        }
+        if (cam_select == T26X){
+            //T26X series has fixed options for accel rate, gyro rate, fisheye resolution, and FPS
+            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F); // 62 Hz
+            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F); // 200 Hz
+            cfg.enable_stream(RS2_STREAM_FISHEYE, 1, RS2_FORMAT_Y8); //848x800, 30 FPS
+            cfg.enable_stream(RS2_STREAM_FISHEYE, 2, RS2_FORMAT_Y8); //848x800, 30 FPS
+            profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
+        }
+        else if (cam_select == D4XXI){
+            cfg.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F, ACCEL_RATE_D4XX); // adjustable to 0, 63 (default), 250 hz
+            cfg.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F, GYRO_RATE_D4XX); // adjustable set to 0, 200 (default), 400 hz
+            cfg.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
+            cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
+            cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_BGR8, FPS_D4XX);
+            cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Z16, FPS_D4XX);
+            profiles = pipe.start(cfg, [&](const rs2::frame& frame) { this->callback(frame); });
+            profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter to use stereo images for SLAM but degrades depth quality in low texture environments.
+        }
+    }
 
 };
 
