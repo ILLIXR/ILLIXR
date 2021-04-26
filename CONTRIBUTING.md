@@ -26,7 +26,7 @@ Please follow these steps when making pull requests (PRs):
 1.  As you make progress on your PR, keep your branch up-to-date with the `master` branch which
         may have been updated *after* starting your PR.
     Your PR **MUST** be updated to reflect changes to `master` in order to be merged.
-    Use the following procedure for updating your branch and are ready to commit your changes:
+    Use the following procedure for updating your branch and when you are ready to commit your changes:
 
     <!--- language: lang-none -->
 
@@ -68,7 +68,7 @@ Please follow these steps when making pull requests (PRs):
             (from feature branches not shown) after feature branch `issue-123-fixing-bug` was
             forked from `master`.
 
-        To checkpoint the `issue-123-fixing-bug` while it is checked out:
+        To checkpoint the `issue-123-fixing-bug` branch while it is checked out:
 
         <!--- language: lang-none -->
 
@@ -80,8 +80,8 @@ Please follow these steps when making pull requests (PRs):
             git push <illixr-remote> issue-123.{0,1}-fixing-bug                 ## Push new checkpointed branches to remote
             git push <illixr-remote> issue-123-fixing-bug --force-with-lease    ## Force update issue-123-fixing-bug
 
-        >
-        Note: The term _alias_ here is used to refer to branches which point to the same commit.
+        > Note:
+        The term _alias_ here is used to refer to branches which point to the same commit.
         This usage is different from standard [Git Aliases][4] used for git command shortcuts.
 
         After checkpointing, your local repository should look as follows:
@@ -114,8 +114,8 @@ Please follow these steps when making pull requests (PRs):
             following the process from `Line A` to `Line D` (or equivalent; git's CLI allows many
             ways to achieve the same results).
 
-        >
-        Note: `Line B` rebases the `master` branch assuming that we have checked out `master`.
+        > Note:
+        `Line B` rebases the `master` branch assuming that we have checked out `master`.
         Forgetting to specify `master` in `Line B` may result in a _lossy_ forced update in the
             example below.
         Forgetting to checkout `master` will immediately apply your checked out feature branch's
@@ -152,8 +152,8 @@ Please follow these steps when making pull requests (PRs):
         `Line D` should be safe to perform for the main feature branch now that we have
             replayed our commits on top of the updated feature branch.
 
-        >
-        Note: In the above example, the `git-rebase` is performed using the remote copy of
+        > Note:
+        In the above example, the `git-rebase` is performed using the remote copy of
             the checkpointed branch.
         We do this because `Line B` will not fast-forward or force update our local branches
             (with the same subversion number as a conflicting remote branch, if any).
