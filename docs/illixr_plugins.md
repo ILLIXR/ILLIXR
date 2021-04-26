@@ -76,7 +76,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
     -   *Calls* `pose_prediction`.
     -   Asynchronously *reads* `rendered_frame` on `eyebuffer` topic.
-    -   *Publishes* `type_type` on `vsync_estimate` topic.
+    -   *Publishes* `time_type` on `vsync_estimate` topic.
     -   *Publishes* `hologram_input` on `hologram_in` topic.
     -   *Publishes* `texture_pose` on `texture_pose` topic if `ILLIXR_OFFLOAD_ENABLE` is set in the env.
 

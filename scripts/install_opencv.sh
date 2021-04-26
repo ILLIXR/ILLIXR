@@ -34,26 +34,6 @@ opencv_dir_extra="${opt_dir}/opencv_contrib"
 build_dir="${src_dir}/build"
 file_cleanup_list="a.out cmake_hdf5_test.o"
 
-flags_cuda="-allow-unsupported-compiler"
-# -gencode arch=compute_${target_arch_ver_cuda},code=sm_${target_arch_ver_cuda}"
-
-
-### Checks ###
-
-## Append extra cmake arguments if CUDA support is detected
-check_compiler_cuda=$(nvcc -V 2>/dev/null)
-if [ "$?" -eq 0 ]; then
-    echo "nvcc found: Compiling OpenCV with CUDA"
-    extra_cmake_args="
-        -D WITH_CUDA=ON
-        -D WITH_CUBLAS=1
-        -D CUDA_NVCC_FLAGS='${flags_cuda}'
-        -D BUILD_opencv_cudacodec=OFF"
-else
-    echo "nvcc not found: Compiling OpenCV without CUDA"
-    extra_cmake_args=""
-fi
-
 
 ### Fetch, build and install ###
 
@@ -73,8 +53,7 @@ cmake \
     -D BUILD_JAVA=OFF \
     -D WITH_OPENGL=ON \
     -D WITH_VTK=ON \
-    -D OPENCV_EXTRA_MODULES_PATH="${opencv_dir_extra}/modules" \
-    ${extra_cmake_args}
+    -D OPENCV_EXTRA_MODULES_PATH="${opencv_dir_extra}/modules"
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install

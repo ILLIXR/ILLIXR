@@ -31,7 +31,6 @@ fi
 
 repo_url="https://github.com/KhronosGroup/Vulkan-Headers.git"
 build_dir="${src_dir}/build"
-#prefix_dir="install" # Override default
 
 
 ### Fetch, build and install ###

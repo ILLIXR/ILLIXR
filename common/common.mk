@@ -22,7 +22,7 @@ LDFLAGS := -ggdb $(LDFLAGS)
 
 ## Dependency installtion detection notes:
 #> Currently uses the configuration in 'deps.sh' to detect the install location for gtest
-#> Configurations stored in '.deps' (default) will need to be hooked in later
+#> Configurations stored in the deps cache will need to be hooked in later
 GTEST_LOC := $(shell env working_dir='${PWD}' '${PWD}/deps.sh' && echo '${parent_dir_gtest}/${dep_name_gtest}')
 
 GTEST_FLAGS := -DGTEST_HAS_PTHREAD=1 -lpthread -DGTEST_HAS_PTHREAD=1 -lpthread -I$(GTEST_LOC)/include -L$(GTEST_LOC)/build/lib -lgtest_main -lpthread -lgtest -lpthread

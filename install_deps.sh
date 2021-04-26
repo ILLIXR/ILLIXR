@@ -360,6 +360,11 @@ if [ "${ID_LIKE}" = debian ] || [ "${ID}" = debian ]; then
         echo "Assuming : dir <- '${src_dir_conda}'"
     fi
 
+    env_config_parent_dir = $(dirname "${env_config_path}")
+    if [ ! -d "${env_config_parent_dir}" ]; then
+        mkdir -p "${env_config_parent_dir}"
+    fi
+
     cmd_conda="${src_dir_conda}/bin/conda"
     if [ -f "${cmd_conda}" ]; then
         echo "Found a manual conda installation. Creating a project-specific virtual environment."

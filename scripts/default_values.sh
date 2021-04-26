@@ -22,11 +22,11 @@ if [ -z "${build_type}" ]; then
 fi
 
 if [ -z "${deps_log_dir}" ]; then
-    export deps_log_dir=".deps"
+    export deps_log_dir=".cache/deps"
 fi
 
 if [ -z "${env_config_path}" ]; then
-    export env_config_path="runner/environment.yml"
+    export env_config_path=".cache/runner/environment.yml"
 fi
 
 

@@ -12,7 +12,7 @@ ENV illixr_nproc=${JOBS}
 ENV build_type=Release
 
 ENV src_dir_conda=${opt_dir}/miniconda3
-ENV env_config_path=runner/environment.yml
+ENV env_config_path=.cache/runner/environment.yml
 ENV runner_action=configs/${ACTION}.yaml
 
 RUN mkdir -p ${opt_dir}
