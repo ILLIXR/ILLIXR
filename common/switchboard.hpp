@@ -282,7 +282,7 @@ private:
 			if (_m_thread.get_state() == managed_thread::state::running) {
 				_m_queue_size++;
 				if (_m_queue_size > 100) {
-					std::cout << "topic " << _m_topic_name << ", plugin " << _m_plugin_id << " has " << _m_queue_size << std::endl;
+					std::cout << "Queue overflow: topic " << _m_topic_name << ", plugin " << _m_plugin_id << " has " << _m_queue_size << std::endl;
 				}
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
 				assert(ret);
