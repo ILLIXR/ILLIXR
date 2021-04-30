@@ -183,8 +183,8 @@ public:
 #ifndef NDEBUG
 			printf("\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer %d, frametime %f, FPS: %f\n", buffer_to_use, (float)(glfwGetTime() - lastTime),  (float)(1.0/(glfwGetTime() - lastTime)));
 #endif
+			glFinish();
 			lastTime = glfwGetTime();
-			glFlush();
 
 			// Publish our submitted frame handle to Switchboard!
 			rendered_frame* frame = new (_m_eyebuffer.allocate()) rendered_frame;

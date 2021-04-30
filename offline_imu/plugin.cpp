@@ -19,7 +19,7 @@ public:
 		, dataset_now{0}
 		, imu_cam_log{record_logger_}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-		, _m_log{"offline_imu.csv"}
+		, _m_log{"metrics/offline_imu.csv"}
 	{
 		_m_log << "offline_imu_put\n";
 	}
@@ -50,6 +50,17 @@ protected:
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
 		_m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
+
+		struct sched_param param;
+		int rc = sched_getparam(get_tid(), &param);
+		if (rc != 0) {
+			abort();
+		}
+		if (param.sched_priority != 3) {
+			std::cerr << "My priority isn't three." << std::endl;
+			abort();
+		}
+
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_type{
 			real_now,
 			(sensor_datum.imu0.angular_v).cast<float>(),

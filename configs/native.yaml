@@ -35,17 +35,17 @@ loader:
 
   # run in GDB:
   # command: sudo gdb -q --args taskset -a -c 0 env ILLIXR_RUN_DURATION=10 ILLIXR_SCHEDULER=y $env_cmd
-  command: echo taskset -a -c 0 env ILLIXR_RUN_DURATION=20 ILLIXR_SCHEDULER=y $env_cmd
+  command: echo sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=20 ILLIXR_SCHEDULER=y $env_cmd
   # ILLIXR_SCHEDULER=y 
   # command: rm -rf /home/grayson5/ILLIXR-analysis/.cache && taskset -a -c 0 env ILLIXR_RUN_DURATION=30 ILLIXR_SCHEDULER=y $env_cmd
 
   # command: printf "%s " $env_cmd
   # command: sudo taskset -a -c 0 env ILLIXR_RUN_DURATION=40 ILLIXR_SCHEDULER=y $env_cmd
-  # ILLIXR_RUN_DURATION=40 __GL_SYNC_TO_VBLANK=1
+  # __GL_MaxFramesAllowed=1 __GL_SYNC_TO_VBLANK=1
   # ILLIXR_SCHEDULER=y
   # command: env ILLIXR_RUN_DURATION=40 $env_cmd
 
-  cpu_freq_ghz: 2.6
+  cpu_freq_ghz: 5.3
 
   # log_stdout: scheduled.log
   # command: sudo taskset -a -c 0 env ILLIXR_STDOUT_METRICS=y $env_cmd

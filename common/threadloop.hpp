@@ -68,14 +68,15 @@ public:
 				cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id))
 			);
 
+			if (is_scheduler()) {
+				if (id == 7) {
+					thread->set_priority(3);
+				}
+			}
+
 			thread->start();
 			auto pid = thread->get_pid();
 			assert(pid != 0);
-			{
-				std::ofstream file {"self_scheduled_pid"};
-				// file.open();
-				file << pid << std::endl;
-			}
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{pid, std::to_string(id)});
 		}
 	}

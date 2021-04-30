@@ -18,6 +18,11 @@
 #include "frame_info.hpp"
 #include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
 
+	[[maybe_unused]] static bool is_scheduler2() {
+		const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
+		return ILLIXR_SCHEDULER_str && (ILLIXR_SCHEDULER_str[0] == 'y');
+	}
+
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
@@ -155,7 +160,7 @@ private:
 		moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
 		moodycamel::ConsumerToken _m_ctok {_m_queue};
 		std::atomic<size_t> _m_queue_size {0};
-		static constexpr std::chrono::milliseconds _m_queue_timeout {1};
+		static constexpr std::chrono::milliseconds _m_queue_timeout {10};
 		std::size_t _m_enqueued {0};
 		std::size_t _m_dequeued {0};
 		std::size_t _m_skipped {0};
@@ -260,17 +265,18 @@ private:
 			std::cerr << "topic_subscription, topic_name: " << topic_name << ", plugin_id: " << plugin_id << "\n";
 			_m_thread.start();
 
-			// If is scheduler, have highest priority
-			if (_m_plugin_id == 1) {
-				std::cerr << "scheduler_thread.set_priority(4)\n";
-				_m_thread.set_priority(4);
-			} else if (_m_plugin_id == 3 || _m_plugin_id == 7) {
-				_m_thread.set_priority(3);
-			}/* else {
-				std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";
-				_m_thread.set_priority(2);
+			if (is_scheduler2()) {
+				// If is scheduler, have highest priority
+				if (_m_plugin_id == 1) {
+					std::cerr << "scheduler_thread.set_priority(4)\n";
+					_m_thread.set_priority(4);
+				} else if (_m_plugin_id == 3) {
+					_m_thread.set_priority(3);
+				}/* else {
+					std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";
+					_m_thread.set_priority(2);
 				}*/
-
+			}
 		}
 
 		/**

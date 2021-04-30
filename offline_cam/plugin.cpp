@@ -20,7 +20,10 @@ public:
 		, last_ts{0}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 		, next_row{_m_sensor_data.cbegin()}
-    { }
+		, _m_log{"metrics/offline_cam.csv"}
+    {
+		_m_log << "rt_pub,rt_trig,dt\n";
+	}
 
 	virtual skip_option _p_should_skip() override {
 		if (true
@@ -73,9 +76,8 @@ public:
 			// }
 		}
 #else
-#error
-		nearest_row = next_row;
-		next_row++;
+		// nearest_row = next_row;
+		// next_row++;
 #endif
 
 
@@ -99,16 +101,18 @@ public:
 
 
 			// 1970s
-			auto real_now = _m_rtc->get_start() + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
-			CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "cam", 0, real_now));
+			auto expected_real_time_given_dataset_time = _m_rtc->get_start() + std::chrono::nanoseconds{nearest_row->first - dataset_first_time};
+			_m_log << _m_rtc->time_since_start().count() << "," << time_since_start.count() << "," << (nearest_row->first - dataset_first_time) << "\n";
+			CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "cam", 0, expected_real_time_given_dataset_time));
 			_m_cam_publisher.put(new (_m_cam_publisher.allocate()) cam_type {
-				real_now,
+				expected_real_time_given_dataset_time,
 				img0,
 				img1,
 				nearest_row->first
 			});
 			// good++;
 		} else {
+			_m_log << _m_rtc->time_since_start().count() << "," << time_since_start.count() << ",\n";
 			bad++;
 			// std::this_thread::sleep_for(std::chrono::milliseconds{5});
 			// std::cerr
@@ -140,6 +144,7 @@ private:
 	ullong last_ts;
 	std::shared_ptr<realtime_clock> _m_rtc;
 	std::map<ullong, sensor_types>::const_iterator next_row;
+	std::ofstream _m_log;
 };
 
 PLUGIN_MAIN(offline_cam);

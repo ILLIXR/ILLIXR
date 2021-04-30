@@ -57,7 +57,7 @@ public:
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
-		, log{"timewarp.csv"}
+		, log{"metrics/timewarp.csv"}
 	{
 		log << "iteration,last_vsync,start,stop,sleep_duration,work_complete,vsync,completion,next_vsync\n";
 	}
@@ -297,8 +297,8 @@ public:
 			// log << iteration_no << std::endl;
 		}
 		auto start = _m_rtc->now();
-		auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
 		if (!is_scheduler()) {
+			auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
 			std::this_thread::sleep_for(sleep_duration);
 		}
 		auto stop = _m_rtc->now();
@@ -309,7 +309,7 @@ public:
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(stop.time_since_epoch()).count() << ','
-			<< std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count() << ',';
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(GetNextSwapTimeEstimate() - std::chrono::steady_clock::now()).count() << ',';
 		
 
 		most_recent_frame = _m_eyebuffer.get_ro_nullable();
@@ -541,6 +541,17 @@ public:
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
 
+		glFinish();
+
+	// {
+	// 	struct sched_param sp = { .sched_priority = 1,};
+	// 	[[maybe_unused]] int ret = sched_setscheduler(get_tid(), SCHED_FIFO, &sp);
+	// 	if (ret != 0) {
+	// 		std::cerr << "My priority is bad" << std::endl;
+	// 		abort();
+	// 	}
+	// }
+
 #ifndef NDEBUG
 		auto delta = _m_rtc->now() - most_recent_frame->render_time;
 		printf("\033[1;36m[TIMEWARP]\033[0m Time since render: %3fms\n", (float)(delta.count() / 1000000.0));
@@ -567,6 +578,15 @@ public:
 		glXSwapBuffers(xwin->dpy, xwin->win);
 		if (iteration_no < 500)
 			DEBUG((((void)"after glXSwapBuffers"),1));
+
+	// {
+	// 	struct sched_param sp = { .sched_priority = 3,};
+	// 	[[maybe_unused]] int ret = sched_setscheduler(get_tid(), SCHED_FIFO, &sp);
+	// 	if (ret != 0) {
+	// 		std::cerr << "My priority is bad" << std::endl;
+	// 		abort();
+	// 	}
+	// }
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();

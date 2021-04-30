@@ -36,6 +36,15 @@ int main(int argc, char* const* argv) {
 	setup_frame_logger();
 	r = ILLIXR::runtime_factory(nullptr);
 
+	{
+		struct sched_param sp = { .sched_priority = 3,};
+		[[maybe_unused]] int ret = sched_setscheduler(get_tid(), SCHED_FIFO, &sp);
+		if (ret != 0) {
+			std::cerr << "My priority is bad" << std::endl;
+			abort();
+		}
+	}
+
 	[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), "main");
 	assert(!ret);
 
