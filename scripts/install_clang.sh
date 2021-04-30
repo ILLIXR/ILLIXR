@@ -78,6 +78,8 @@ make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
 sudo make -C "${build_dir}" -j "${illixr_nproc}" install
+sudo ln -s "${prefix_dir}"/bin/clang "${prefix_dir}"/bin/clang-10
+sudo ln -s "${prefix_dir}"/bin/clang++ "${prefix_dir}"/bin/clang++-10
 
 ## Log
 log_dependency "${dep_name}" "${deps_log_dir}" "${src_dir}" "${dep_ver}"
