@@ -32,6 +32,9 @@ fi
 repo_url="https://github.com/llvm/llvm-project.git"
 build_dir="${src_dir}/build"
 
+cmd_clang_c="${prefix_dir}/bin/clang"
+cmd_clang_cxx="${prefix_dir}/bin/clang++"
+
 max_nproc_clang="4"
 if [ "${illixr_nproc}" -gt "${max_nproc_clang}" ]; then
     ## Too many threads => run out of memory
@@ -47,11 +50,11 @@ llvm_projects=(
     clang-tools-extra
 ) # End list
 
-is_first_project="1"
 llvm_projects_arg=""
+is_first_project="yes"
 for project in "${llvm_projects[@]}"; do
-    if [ "${is_first_project}" ]; then
-        is_first_project="0"
+    if [ "${is_first_project}" = "yes" ]; then
+        is_first_project="no"
     else
         llvm_projects_arg+=";"
     fi
@@ -78,8 +81,14 @@ make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
 sudo make -C "${build_dir}" -j "${illixr_nproc}" install
-sudo ln -s "${prefix_dir}"/bin/clang "${prefix_dir}"/bin/clang-10
-sudo ln -s "${prefix_dir}"/bin/clang++ "${prefix_dir}"/bin/clang++-10
+
+if [ ! -e "${cmd_clang_c}-10" ]; then
+    sudo ln -s "${cmd_clang_c}" "${cmd_clang_cxx}-10"
+fi
+
+if [ ! -e "${cmd_clang_cxx}-10" ]; then
+    sudo ln -s "${cmd_clang_cxx}" "${cmd_clang_cxx}-10"
+fi
 
 ## Log
 log_dependency "${dep_name}" "${deps_log_dir}" "${src_dir}" "${dep_ver}"
