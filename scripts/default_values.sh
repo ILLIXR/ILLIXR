@@ -5,6 +5,14 @@
 
 ### Default imported variables setup ###
 
+if [ -z "${CC}" ]; then
+    export CC="clang-10"
+fi
+
+if [ -z "${CXX}" ]; then
+    export CXX="clang++-10"
+fi
+
 if [ -z "${opt_dir}" ]; then
     export opt_dir="/opt/ILLIXR"
 fi

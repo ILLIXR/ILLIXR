@@ -32,11 +32,32 @@ fi
 repo_url="https://github.com/llvm/llvm-project.git"
 build_dir="${src_dir}/build"
 
-max_nproc_clang=4
+max_nproc_clang="4"
 if [ "${illixr_nproc}" -gt "${max_nproc_clang}" ]; then
     ## Too many threads => run out of memory
     illixr_nproc="${max_nproc_clang}"
 fi
+
+llvm_projects=(
+    libc
+    libcxx
+    libcxxabi
+    lld
+    clang
+    clang-tools-extra
+) # End list
+
+is_first_project="1"
+llvm_projects_arg=""
+for project in "${llvm_projects[@]}"; do
+    if [ "${is_first_project}" ]; then
+        is_first_project="0"
+    else
+        llvm_projects_arg+=";"
+    fi
+
+    llvm_projects_arg+="${project}"
+done
 
 
 ### Fetch, build and install ###
@@ -52,7 +73,7 @@ cmake \
     -D CMAKE_CXX_COMPILER="g++" \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
-    -G "Unix Makefiles"
+    -D LLVM_ENABLE_PROJECTS="${llvm_projects_arg}"
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install

@@ -41,6 +41,11 @@ case "${build_type}" in
                     ;;
 esac
 
+env_compiler=(
+    CC="${CC}"
+    CXX="${CXX}"
+) # End list
+
 
 ### Checks ###
 
@@ -59,7 +64,7 @@ git submodule update --init
 
 ## Build
 mkdir -p "${build_dir}"
-"${src_dir}/bootstrap.sh" --prefix="${prefix_dir}"
+env "${env_compiler[@]}" "${src_dir}/bootstrap.sh" --prefix="${prefix_dir}" --with-toolset=clang
 "${src_dir}/b2" --build-dir="${build_dir}" -j "${illixr_nproc}" variant="${build_variant}"
 
 ## Install

@@ -45,6 +45,8 @@ git clone --depth 1 --branch "${dep_ver_extra}" "${repo_url_extra}" "${opencv_di
 cmake \
     -S "${src_dir}" \
     -B "${build_dir}" \
+    -D CMAKE_C_COMPILER="${CC}" \
+    -D CMAKE_CXX_COMPILER="${CXX}" \
     -D CMAKE_BUILD_TYPE="${build_type}" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
     -D BUILD_TESTS=OFF \

@@ -49,8 +49,10 @@ cd "${build_dir}"
     --enable-modules \
     --audio-drv-list=pa \
     --target-list=x86_64-softmmu \
-    --enable-kvm
-    #--prefix="${prefix_dir}" ## For installing. See below.
+    --enable-kvm \
+    #--prefix="${prefix_dir}" \ ## For installing. See below.
+    CC="${CC}" \
+    CXX="${CXX}"
 make -j "${illixr_nproc}"
 
 ## Install
