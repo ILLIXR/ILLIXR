@@ -42,7 +42,6 @@ if [ "${illixr_nproc}" -gt "${max_nproc_clang}" ]; then
 fi
 
 llvm_projects=(
-    libc
     libcxx
     libcxxabi
     lld
@@ -83,11 +82,11 @@ make -C "${build_dir}" -j "${illixr_nproc}"
 ## Install
 sudo make -C "${build_dir}" -j "${illixr_nproc}" install
 
-if [ ! -e "${cmd_clang_c}" ]; then
-    sudo ln -s "${cmd_clang_c}-10" "${cmd_clang_cxx}"
+if [ ! -e "${cmd_clang_c}" ] && [ -e "${cmd_clang_c}" ]; then
+    sudo ln -s "${cmd_clang_c}-10" "${cmd_clang_c}"
 fi
 
-if [ ! -e "${cmd_clang_cxx}" ]; then
+if [ ! -e "${cmd_clang_cxx}" ] && [ -e "${cmd_clang_cxx}" ]; then
     sudo ln -s "${cmd_clang_cxx}-10" "${cmd_clang_cxx}"
 fi
 
