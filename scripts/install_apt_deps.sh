@@ -80,7 +80,7 @@ pkg_dep_list_prereq=(
 pkg_dep_list_common=(
     build-essential
     git
-    clang-10
+    #clang-10
     make
     cmake
     unzip
@@ -138,7 +138,7 @@ pkg_dep_list_usb=(
 pkg_dep_list_thread=(
     libc++-dev
     libc++abi-dev
-    libboost-all-dev
+    #libboost-all-dev
     libtbb-dev
 ) # End list
 
@@ -261,6 +261,8 @@ if [ "${use_cuda}" = "yes" ]; then
 
     if [ "${distro_name}" = "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" = "x86_64" ]; then
         case "${distro_version}" in
+            21.04)  distro_name_cuda="ubuntu2104"
+		    ;;
             20.04)  distro_name_cuda="ubuntu2004"
                     ;;
             18.04)  distro_name_cuda="ubuntu1804"

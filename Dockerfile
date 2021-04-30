@@ -58,6 +58,7 @@ RUN ldconfig
 
 COPY . ${HOME}/ILLIXR/
 WORKDIR ILLIXR
+RUN mkdir -p $(dirname ${env_config_path})
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
 ENTRYPOINT ./runner.sh ${runner_action}

@@ -47,8 +47,7 @@ function detect_dependency()
 {
     local dep_name=${1}
     local deps_log_dir=${2}
-    local enable_quiet=${3}
-    local enable_dry_run=${4}
+    local enable_dry_run=${3}
 
     export dep_log_path="${deps_log_dir}/${dep_name}.sh"
 
@@ -56,14 +55,12 @@ function detect_dependency()
         enable_dry_run="no"
     fi
 
-    if [ -z "${enable_quiet}" ]; then
-        enable_quiet="no"
-    fi
-
     ## Only proceed if a dependency directory is defined
     if [ ! -z "${deps_log_dir}" ]; then
         ## Check if a log file exists. If so, export its values for the caller.
         if [ -f "${dep_log_path}" ]; then
+	    echo "DETECT [dep <- '${dep_name}', dir <- '${src_dir}']"
+
             ## Avoid other side-effects if dry-run is enabled
             if [ "${enable_dry_run}" = "no" ]; then
                 . "${dep_log_path}"
@@ -73,12 +70,6 @@ function detect_dependency()
                 #> export src_dir
                 #> export dep_ver
                 #> export timestamp
-
-                echo "DETECT [dep <- '${dep_name}', dir <- '${src_dir}']"
-
-                if [ "${enable_quiet}" = "no" ]; then
-                    tail --lines=5 "${dep_log_path}"
-                fi
             fi
 
             return 0

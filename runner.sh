@@ -28,7 +28,7 @@ venv_name="illixr-runner"
 ### Launch application
 
 ## If we find an installation log for conda, use the src_dir recorded
-detect_dependency "${dep_name_conda}" "${deps_log_dir}" "yes"
+detect_dependency "${dep_name_conda}" "${deps_log_dir}"
 if [ "$?" -eq 0 ]; then
     src_dir_conda="${src_dir}"
     dep_log_path_conda="${dep_log_path}"

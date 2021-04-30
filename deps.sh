@@ -16,6 +16,20 @@ fi
 ## Apt
 export script_path_apt="scripts/install_apt_deps.sh"
 
+## Clang
+export dep_name_clang="clang"
+export script_path_clang="scripts/install_clang.sh"
+export parent_dir_clang="${opt_dir}"
+export dep_prompt_clang="Install Clang (and LLVM) from source"
+export dep_ver_clang="llvmorg-10.0.1"
+
+## Boost
+export dep_name_boost="boost"
+export script_path_boost="scripts/install_boost.sh"
+export parent_dir_boost="${opt_dir}"
+export dep_prompt_boost="Install Boost from source"
+export dep_ver_boost="boost-1.65.1"
+
 ## OpenCV
 export dep_name_opencv="opencv"
 export script_path_opencv="scripts/install_opencv.sh"
