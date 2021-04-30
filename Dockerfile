@@ -27,6 +27,12 @@ COPY ./scripts/system_utils.sh ${HOME}/scripts/system_utils.sh
 COPY ./scripts/install_apt_deps.sh ${HOME}/scripts/install_apt_deps.sh
 RUN ./scripts/install_apt_deps.sh
 
+COPY ./scripts/install_clang.sh ${HOME}/scripts/install_clang.sh
+RUN ./scripts/install_clang.sh
+
+COPY ./scripts/install_boost.sh ${HOME}/scripts/install_boost.sh
+RUN ./scripts/install_boost.sh
+
 COPY ./scripts/install_opencv.sh ${HOME}/scripts/install_opencv.sh
 RUN ./scripts/install_opencv.sh
 

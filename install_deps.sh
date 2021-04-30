@@ -278,13 +278,13 @@ prompt_install \
     "${dep_prompt_opencv}" \
     "${dep_ver_opencv}"
 
-prompt_install \
-    "${dep_name_eigen}" \
-    "${deps_log_dir}" \
-    "${script_path_eigen}" \
-    "${parent_dir_eigen}" \
-    "${dep_prompt_eigen}" \
-    "${dep_ver_eigen}"
+#prompt_install \
+#    "${dep_name_eigen}" \
+#    "${deps_log_dir}" \
+#    "${script_path_eigen}" \
+#    "${parent_dir_eigen}" \
+#    "${dep_prompt_eigen}" \
+#    "${dep_ver_eigen}"
 
 prompt_install \
     "${dep_name_vulkan}" \
@@ -401,7 +401,7 @@ else
     echo "Assuming : dir <- '${src_dir_conda}'"
 fi
 
-env_config_parent_dir = $(dirname "${env_config_path}")
+env_config_parent_dir=$(dirname "${env_config_path}")
 if [ ! -d "${env_config_parent_dir}" ]; then
     mkdir -p "${env_config_parent_dir}"
 fi
