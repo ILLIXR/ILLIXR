@@ -10,7 +10,7 @@ if [ -z "${CC}" ]; then
 fi
 
 if [ -z "${CXX}" ]; then
-    export CXX="clang++-10"
+    export CXX="clang++"
 fi
 
 if [ -z "${opt_dir}" ]; then
