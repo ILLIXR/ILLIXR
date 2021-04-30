@@ -48,7 +48,7 @@ git clone --depth 1 --branch "${dep_ver}" "${repo_url}" "${src_dir}"
 cmake \
     -S "${src_dir}/llvm" \
     -B "${build_dir}" \
-    -D CMAKE_BUILD_TYPE="Release" \           # This is a large build
+    -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
     -G "Unix Makefiles"
 make -C "${build_dir}" -j "${illixr_nproc}"
