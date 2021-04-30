@@ -34,7 +34,7 @@ if [ -z "${deps_log_dir}" ]; then
 fi
 
 if [ -z "${env_config_path}" ]; then
-    export env_config_path=".cache/runner/environment.yml"
+    export env_config_path="runner/environment.yml"
 fi
 
 

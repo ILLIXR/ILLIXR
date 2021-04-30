@@ -12,7 +12,7 @@ ENV illixr_nproc=${JOBS}
 ENV build_type=Release
 
 ENV src_dir_conda=${opt_dir}/miniconda3
-ENV env_config_path=.cache/runner/environment.yml
+ENV env_config_path=runner/environment.yml
 ENV runner_action=configs/${ACTION}.yaml
 
 RUN mkdir -p ${opt_dir}
@@ -64,7 +64,6 @@ RUN ldconfig
 
 COPY . ${HOME}/ILLIXR/
 WORKDIR ILLIXR
-RUN mkdir -p $(dirname ${env_config_path})
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
 ENTRYPOINT ./runner.sh ${runner_action}
