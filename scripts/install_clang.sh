@@ -31,8 +31,8 @@ fi
 
 repo_url="https://github.com/llvm/llvm-project.git"
 build_dir="${src_dir}/build"
-max_nproc_clang=4
 
+max_nproc_clang=4
 if [ "${illixr_nproc}" -gt "${max_nproc_clang}" ]; then
     ## Too many threads => run out of memory
     illixr_nproc="${max_nproc_clang}"
@@ -48,6 +48,8 @@ git clone --depth 1 --branch "${dep_ver}" "${repo_url}" "${src_dir}"
 cmake \
     -S "${src_dir}/llvm" \
     -B "${build_dir}" \
+    -D CMAKE_C_COMPILER="gcc" \
+    -D CMAKE_CXX_COMPILER="g++" \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
     -G "Unix Makefiles"
