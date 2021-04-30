@@ -45,6 +45,14 @@ int main(int argc, char* const* argv) {
 		}
 	}
 
+	{
+		std::ifstream input_freq {"/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"};
+		std::ofstream output_freq {"metrics/frequency"};
+		size_t freq;
+		input_freq >> freq;
+		output_freq << freq;
+	}
+
 	[[maybe_unused]] int ret = pthread_setname_np(pthread_self(), "main");
 	assert(!ret);
 

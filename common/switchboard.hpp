@@ -16,7 +16,7 @@
 #include "cpu_timer/cpu_timer.hpp"
 #include "managed_thread.hpp"
 #include "frame_info.hpp"
-#include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
 
 	[[maybe_unused]] static bool is_scheduler2() {
 		const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
@@ -287,7 +287,7 @@ private:
 		void enqueue(ptr<const event>&& this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
 				_m_queue_size++;
-				if (_m_queue_size > 100) {
+				if (_m_queue_size > 30) {
 					std::cout << "Queue overflow: topic " << _m_topic_name << ", plugin " << _m_plugin_id << " has " << _m_queue_size << std::endl;
 				}
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
@@ -298,6 +298,10 @@ private:
 
 		const managed_thread& get_thread() const {
 			return _m_thread;
+		}
+
+		~topic_subscription() {
+			_m_thread.stop();
 		}
 	};
 
@@ -440,7 +444,6 @@ private:
 			// Must acquire unique state on _m_subscriptions_lock
 			const std::unique_lock lock{_m_subscriptions_lock};
 			_m_subscriptions.clear();
-			_m_buffers.clear();
 		}
 	};
 

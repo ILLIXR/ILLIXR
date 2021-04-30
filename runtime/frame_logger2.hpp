@@ -10,7 +10,7 @@
 
 #include "common/frame_info.hpp"
 #include "common/switchboard.hpp"
-#include "sqlite_wrapper.hpp"
+#include "common/sqlite_wrapper.hpp"
 
 namespace ILLIXR {
 

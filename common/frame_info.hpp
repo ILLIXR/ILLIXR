@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "../runtime/sqlite_wrapper.hpp"
+#include "sqlite_wrapper.hpp"
 
 namespace ILLIXR {
 

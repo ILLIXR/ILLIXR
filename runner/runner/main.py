@@ -119,31 +119,48 @@ def load_native(config: Mapping[str, Any]) -> None:
         ],
         desc="Building plugins",
     )
-    actual_cmd_str = config["loader"].get("command", "$cmd")
-    illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
-    env_override = dict(ILLIXR_DATA=str(data_path), ILLIXR_DEMO_DATA=str(demo_data_path), KIMERA_ROOT=config["loader"]["kimera_path"])
-    env_list = [f"{var}={val}" for var, val in env_override.items()]
+
+    actual_cmd_str = config["loader"].get("command", "$full_cmd")
+
+    env_override = dict(
+        ILLIXR_DATA=str(data_path),
+        ILLIXR_DEMO_DATA=str(demo_data_path),
+        KIMERA_ROOT=config["loader"]["kimera_path"],
+        ILLIXR_RUN_DURATION=str(config["loader"].get("duration", 20)),
+        ILLIXR_SCHEDULER=str(config["loader"].get("scheduler", "n")),
+    )
+
+    sudo_prefix = ["sudo"] if "sudo" in config["loader"].get("sudo", False) else []
+    cpu_freq_prefix = ["/home/grayson5/.local/bin/cpu_freq", config["loader"]["cpu_freq_ghz"]] if "cpu_freq_ghz" in config["loader"] else []
+    gdb_prefix = ["gdb", "--quiet", "--args"] if "gdb" in config["loader"].get("gdb", False) else []
+    taskset_prefix = ["taskset", "--all-tasks", "--cpu-list", config["loader"]["cpu_list"]] if "cpu_list" in config["loader"] else []
+    illixr_cmd = [str(runtime_exe_path), *map(str, plugin_paths)]
+    env_prefix = ["env", "-C", Path(".").resolve()] + [f"{var}={val}" for var, val in env_override.items()]
+
     actual_cmd_list = list(
         flatten1(
             replace_all(
                 unflatten(shlex.split(actual_cmd_str)),
                 {
-                    ("$env_cmd",): ["env", "-C", Path(".").resolve(), *env_list, *illixr_cmd_list],
-                    ("$cmd",): illixr_cmd_list,
+                    ("$sudo_prefix",): sudo_prefix,
+                    ("$cpu_freq_prefix",): sudo_prefix,
+                    ("$gdb_prefix",): sudo_prefix,
+                    ("$taskset_prefix",): taskset_prefix,
+                    ("$env_prefix",): env_prefix,
+                    ("$cmd",): illixr_cmd,
                     ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
-                    ("$env",): env_list,
+                    ("$full_cmd",): sudo_prefix + gdb_prefix + cpu_freq_prefix + taskset_prefix + env_prefix + illixr_cmd
                 },
             )
         )
     )
+
     log_stdout_str = config["loader"].get("log_stdout", None)
     log_stdout_ctx: ContextManager[Optional[BinaryIO]] = cast(ContextManager[Optional[BinaryIO]],
         open(log_stdout_str, "wb")
         if log_stdout_str is not None
         else noop_context(None)
     )
-    cpu_freq = config["loader"].get("cpu_freq_ghz", None)
-    cpu_freq_ctx: ContextManager[None] = set_cpu_freq(cpu_freq) if cpu_freq is not None else noop_context()
     with log_stdout_ctx as log_stdout:
         with cpu_freq_ctx:
             subprocess_run(

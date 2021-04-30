@@ -61,14 +61,13 @@ public:
 			// Earliest after
 			// nearest_row = after_row;
 
-			// Latest before
+			// Most recent
 			after_row--;
 			nearest_row = after_row /* after_row - 1 */;
 
 			// Nearest row
 			// auto after_row2 = after_row;
 			// auto prev_row = after_row; prev_row--;
-			// // stop using after_row
 			// if (after_row2->first - lookup_time < lookup_time - prev_row->first) {
 			// 	nearest_row = after_row2;
 			// } else {
