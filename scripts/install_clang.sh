@@ -36,7 +36,7 @@ max_nproc_clang=4
 if [ "${illixr_nproc}" -gt "${max_nproc_clang}" ]; then
     ## Too many threads => run out of memory
     illixr_nproc="${max_nproc_clang}"
-else
+fi
 
 
 ### Fetch, build and install ###
