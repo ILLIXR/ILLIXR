@@ -75,18 +75,17 @@ cmake \
     -D CMAKE_CXX_COMPILER="g++" \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
-    -D BUILD_SHARED_LIBS=ON \
     -D LLVM_ENABLE_PROJECTS="${llvm_projects_arg}"
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
 sudo make -C "${build_dir}" -j "${illixr_nproc}" install
 
-if [ ! -e "${cmd_clang_c}" ] && [ -e "${cmd_clang_c}" ]; then
+if [ ! -e "${cmd_clang_c}" ] && [ -e "${cmd_clang_c}-10" ]; then
     sudo ln -s "${cmd_clang_c}-10" "${cmd_clang_c}"
 fi
 
-if [ ! -e "${cmd_clang_cxx}" ] && [ -e "${cmd_clang_cxx}" ]; then
+if [ ! -e "${cmd_clang_cxx}" ] && [ -e "${cmd_clang_cxx}-10" ]; then
     sudo ln -s "${cmd_clang_cxx}-10" "${cmd_clang_cxx}"
 fi
 
