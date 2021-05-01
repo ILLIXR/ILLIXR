@@ -47,16 +47,15 @@ public:
 		});
 	}
 
-	// virtual void _p_one_iteration() override {
-	// 	auto datum = _m_imu.get_ro_nullable();
-	// 	if (datum && (last_time == time_point{} || datum->time > last_time)) {
-	// 		callback(datum);
-	// 		last_time = datum->time;
-	// 	}
-	// 	std::this_thread::sleep_for(std::chrono::microseconds{500});
-	// }
+	bool first_time = true;
 
 	void callback(switchboard::ptr<const imu_type> datum) {
+		if (first_time) {
+			first_time = false;
+			if (is_dynamic_scheduler() || is_static_scheduler()) {
+				set_priority(get_tid(), 3);
+			}
+		}
 		_m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
 		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC.count());
 

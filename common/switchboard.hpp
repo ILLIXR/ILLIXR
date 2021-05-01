@@ -18,11 +18,6 @@
 #include "frame_info.hpp"
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 
-	[[maybe_unused]] static bool is_scheduler2() {
-		const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
-		return ILLIXR_SCHEDULER_str && (ILLIXR_SCHEDULER_str[0] == 'y');
-	}
-
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
@@ -264,19 +259,6 @@ private:
 		{
 			std::cerr << "topic_subscription, topic_name: " << topic_name << ", plugin_id: " << plugin_id << "\n";
 			_m_thread.start();
-
-			if (is_scheduler2()) {
-				// If is scheduler, have highest priority
-				if (_m_plugin_id == 1) {
-					std::cerr << "scheduler_thread.set_priority(4)\n";
-					_m_thread.set_priority(4);
-				} else if (_m_plugin_id == 3) {
-					_m_thread.set_priority(3);
-				}/* else {
-					std::cerr << "plugins[" << plugin_id << "].thread.set_priority(2)\n";
-					_m_thread.set_priority(2);
-				}*/
-			}
 		}
 
 		/**

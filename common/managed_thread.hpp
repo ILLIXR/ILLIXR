@@ -14,6 +14,19 @@ namespace ILLIXR {
 
 [[maybe_unused]] static pid_t get_tid() { return syscall(SYS_gettid); }
 
+[[maybe_unused]] static void set_priority(pid_t pid, int priority) {
+	struct sched_param sp = { .sched_priority = priority,};
+	errno = 0;
+	[[maybe_unused]] int ret = sched_setscheduler(pid, SCHED_FIFO, &sp);
+	if (ret) {
+		int ferrno = errno;
+		errno = 0;
+		std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setscheduler");
+		std::cerr << ret << " " << ferrno << " " << err.what() << std::endl;
+		throw err;
+	}
+}
+
 /**
  * @brief A boolean condition-variable.
  *
@@ -244,22 +257,6 @@ public:
 			errno = 0;
 			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setaffinity");
 			std::cerr << ret << " " << ferrno << " " << err.what() << "\n";
-			throw err;
-		}
-	}
-
-	void set_priority(int priority) const {
-		struct sched_param sp = { .sched_priority = priority,};
-
-		errno = 0;
-
-		[[maybe_unused]] int ret = sched_setscheduler(get_pid(), SCHED_FIFO, &sp);
-
-		if (ret) {
-			int ferrno = errno;
-			errno = 0;
-			std::system_error err (std::make_error_code(std::errc(ferrno)), "sched_setscheduler");
-			std::cerr << ret << " " << ferrno << " " << err.what() << " " << strcmp(std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER"), "y") << " " << std::getenv("ILLIXR_IGNORE_SCHED_SETSCHEDULER") << "\n";
 			throw err;
 		}
 	}

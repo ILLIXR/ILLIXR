@@ -109,7 +109,7 @@ properties:
       - cpu_freq
     properties:
       scheduler:
-        type: boolean
+        type: string
       cpus:
         description: "Use 0 for as many as there are processors"
         type: integer

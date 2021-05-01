@@ -14,6 +14,7 @@
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "common/pose_prediction.hpp"
+#include "common/managed_thread.hpp"
 
 #define DEBUG2(x1, x2) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x1 << "=" << x1 << << ", " << #x2 << "=" << x2 << std::endl;
 #define DEBUG(x) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x << "=" << x << std::endl;
@@ -297,7 +298,7 @@ public:
 			// log << iteration_no << std::endl;
 		}
 		auto start = _m_rtc->now();
-		if (!is_scheduler()) {
+		if (have_manual_timing()) {
 			auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
 			std::this_thread::sleep_for(sleep_duration);
 		}
@@ -328,6 +329,9 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
+		if (is_static_scheduler()) {
+			set_priority(get_tid(), 3);
+		}
 		lastSwapTime = _m_rtc->now();
 
 		// Generate reference HMD and physical body dimensions
@@ -573,11 +577,7 @@ public:
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(_m_rtc->now().time_since_epoch()).count() << ',';
 
-		if (iteration_no < 500)
-			DEBUG((((void)"before glXSwapBuffers"),1));
 		glXSwapBuffers(xwin->dpy, xwin->win);
-		if (iteration_no < 500)
-			DEBUG((((void)"after glXSwapBuffers"),1));
 
 	// {
 	// 	struct sched_param sp = { .sched_priority = 3,};

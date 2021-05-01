@@ -168,7 +168,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_DEMO_DATA=str(demo_data_path),
         KIMERA_ROOT=config["loader"]["kimera_path"],
         ILLIXR_RUN_DURATION=str(config["conditions"]["duration"]),
-        ILLIXR_SCHEDULER=["n", "y"][scheduler_enabled],
+        ILLIXR_SCHEDULER=config["conditions"]["scheduler"],
         ILLIXR_SCHEDULER_CONFIG=scheduler_config_path,
         ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]],
         **config["loader"].get("env", {}),
@@ -213,6 +213,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         "cmd":  actual_cmd_list,
         "git-commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, check=True).stdout,
         "git-dirty": subprocess.run(["git", "status", "--porcelain=2"], capture_output=True, check=True).stdout,
+        "command": actual_cmd_list,
     }
 
 
@@ -222,6 +223,9 @@ def load_native(config: Mapping[str, Any]) -> None:
         if log_stdout_str is not None
         else noop_context(None)
     )
+
+    (Path("metrics") / "config.yaml").write_text(yaml.dump(config))
+
     with log_stdout_ctx as log_stdout:
         subprocess_run(
             actual_cmd_list,
@@ -342,7 +346,6 @@ def run_config(config_path: Path, overrides: List[Tuple[Tuple[str], str]]) -> No
     if metrics.exists():
         shutil.rmtree(metrics)
     metrics.mkdir()
-    (metrics / "config.yaml").write_text(yaml.dump(config))
 
     if loader not in loaders:
         raise RuntimeError(f"No such loader: {loader}")

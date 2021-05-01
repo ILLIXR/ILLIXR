@@ -13,6 +13,7 @@
 //#undef Complex // For 'Complex' conflict
 #include "phonebook.hpp" 
 #include "switchboard.hpp"
+#include "defs.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
@@ -232,18 +233,12 @@ namespace ILLIXR {
 	};
 
 	[[maybe_unused]] void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb) {
-		if (pb) {
+		if (pb && is_dynamic_scheduler()) {
 			auto sb = pb->lookup_impl<switchboard>();
 			auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
 			std::cerr << "Thread of plugin " << _m_plugin_id << " publish" << std::endl;
 			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});
 		}
-
-		std::cerr << "Thread of plugin " << _m_plugin_id << " start" << std::endl;
 	}
 
-	[[maybe_unused]] static bool is_scheduler() {
-		const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
-		return ILLIXR_SCHEDULER_str && (ILLIXR_SCHEDULER_str[0] == 'y');
-	}
 }

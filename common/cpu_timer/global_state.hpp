@@ -91,7 +91,7 @@ namespace detail {
 		{ }
 
 		~StackContainer() {
-			std::cerr << "StackContainer::~StackContainer: " << id << std::endl;
+			// std::cerr << "StackContainer::~StackContainer: " << id << std::endl;
 			process.delete_stack(id);
 		}
 

@@ -109,7 +109,7 @@ public:
 			using namespace std::chrono_literals;
 
 			// Essentially, XRWaitFrame.
-			if (!is_scheduler()) {
+			if (have_manual_timing()) {
 				wait_vsync();
 			}
 
