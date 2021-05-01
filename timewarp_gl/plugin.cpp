@@ -275,7 +275,7 @@ public:
 
 		// TODO: poll GLX window events
 		auto start = _m_rtc->now();
-		std::chrono::nanoseconds ideal_wakeup = lastSwapTime + vsync_period - delay;
+		time_point ideal_wakeup = lastSwapTime + vsync_period - delay;
 		if (is_manual_scheduler()) {
 			std::this_thread::sleep_for(ideal_wakeup - start);
 		} else if (is_priority_scheduler() || is_default_scheduler()) {
@@ -292,7 +292,7 @@ public:
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(stop.time_since_epoch()).count() << ','
-			<< std::chrono::duration_cast<std::chrono::nanoseconds>(ideal_wakeup).count() << ',';
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(ideal_wakeup.time_since_epoch()).count() << ',';
 		
 
 		most_recent_frame = _m_eyebuffer.get_ro_nullable();

@@ -10,8 +10,7 @@ def main() -> None:
         for cpu_freq in [2.6]:
         # for cpu_freq in [1.3, 1.8, 2.6, 5.3]:
             for scheduler in ["default", "static", "priority", "manual"]:
-                for cpus in [1]:
-                # for cpu_list in ["0"] if scheduler == "default" else ["0", "0-10"]:
+                for cpus in [1, 10] if scheduler == "manual" else [1]:
                     label = f"{random.randint(0, 2**32 - 1):x}"
                     print(scheduler, cpus, cpu_freq, label)
                     subprocess.run([
