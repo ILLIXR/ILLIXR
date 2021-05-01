@@ -291,6 +291,12 @@ def threading_map(
     )
 
 
+def recursive_setitem(dct: Mapping[str, Any], path: Tuple[str], val: Any) -> None:
+    if len(path) == 1:
+        dct[path[0]] = val
+    else:
+        recursive_setitem(dct[path[0]], path[1:], val)
+
 def fill_defaults(
     thing: Any, thing_schema: Mapping[str, Any], path: Optional[List[str]] = None
 ) -> None:
@@ -547,3 +553,8 @@ def set_cpu_freq(freq_ghz: float) -> None:
     finally:
         all_cpu_set("cpufreq/scaling_min_freq", old_min_freqs)
         all_cpu_set("cpufreq/scaling_max_freq", old_max_freqs)
+
+Key = TypeVar("Key")
+Val = TypeVar("Val")
+def invert(dct: Mapping[Key, Val]) -> Mapping[Val, Key]:
+    return {val: key for key, val in dct.items()}

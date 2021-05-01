@@ -2,10 +2,17 @@
 import multiprocessing
 import os
 import shlex
+import json
 import tempfile
+import getpass
+import shutil
 from pathlib import Path
 import subprocess
-from typing import Any, List, Mapping, Optional, ContextManager, BinaryIO, cast
+import functools
+import operator
+import zlib
+import datetime
+from typing import Any, List, Mapping, Optional, ContextManager, BinaryIO, Tuple, cast
 
 import click
 import jsonschema
@@ -21,6 +28,8 @@ from util import (
     threading_map,
     unflatten,
     noop_context,
+    recursive_setitem,
+    invert,
 )
 from yamlinclude import YamlIncludeConstructor
 
@@ -106,6 +115,35 @@ def build_runtime(config: Mapping[str, Any], suffix: str, test: bool = False,) -
     return runtime_path / runtime_name
 
 
+def write_scheduler_config(config: Mapping[str, Any]) -> Path:
+    dag = config["loader"]["scheduler"]
+    freq = config["conditions"].get("cpu_freq", 5.3)
+    expected_ov = (8.33/1.05 - dag["nodes"]["timewarp_gl"][0][freq] - dag["nodes"]["gtsam_integrator"][0][freq] - dag["nodes"]["offline_imu"][0][freq] - dag["nodes"]["gldemo"][0][freq]) * dag["fc"][freq] - dag["nodes"]["offline_cam"][0][freq]
+    assert expected_ov - 0.1 <= dag["nodes"]["open_vins"][0][freq] <= expected_ov + 0.1, expected_ov
+
+    name2id = invert(dict(enumerate([None] + [
+        Path(plugin["path"]).name
+        for plugin_group in config["plugin_groups"]
+        for plugin in plugin_group["plugin_group"]
+    ])))
+
+    path = Path(tempfile.gettempdir()) / "illixr_dag.txt"
+
+    lines: str = []
+    for node, (ctmap, b, c, d, _) in dag["nodes"].items():
+        lines.append(f"N {name2id[node]} {ctmap[freq]} {b} {c} {d}")
+    for node, (_, _, _, _, neighbors) in dag["nodes"].items():
+        if neighbors:
+            lines.append(f"E {name2id[node]} {' '.join(str(name2id[neighbor]) for neighbor in neighbors)} X")
+    for weight, chain in dag["chains"]:
+        if chain:
+            lines.append(f"C {weight} {' '.join(str(name2id[node]) for node in chain)} X")
+    if dag["constr"]:
+        lines.append("constr")
+
+    path.write_text("\n".join(lines))
+    return path
+
 def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
@@ -122,38 +160,61 @@ def load_native(config: Mapping[str, Any]) -> None:
 
     actual_cmd_str = config["loader"].get("command", "$full_cmd")
 
+    scheduler_enabled = config["conditions"]["scheduler"]
+    scheduler_config_path = str(write_scheduler_config(config)) if scheduler_enabled else ""
+
     env_override = dict(
         ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
         KIMERA_ROOT=config["loader"]["kimera_path"],
-        ILLIXR_RUN_DURATION=str(config["loader"].get("duration", 20)),
-        ILLIXR_SCHEDULER=str(config["loader"].get("scheduler", "n")),
+        ILLIXR_RUN_DURATION=str(config["conditions"]["duration"]),
+        ILLIXR_SCHEDULER=["n", "y"][scheduler_enabled],
+        ILLIXR_SCHEDULER_CONFIG=scheduler_config_path,
+        ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]],
+        **config["loader"].get("env", {}),
     )
 
-    sudo_prefix = ["sudo"] if "sudo" in config["loader"].get("sudo", False) else []
-    cpu_freq_prefix = ["/home/grayson5/.local/bin/cpu_freq", config["loader"]["cpu_freq_ghz"]] if "cpu_freq_ghz" in config["loader"] else []
-    gdb_prefix = ["gdb", "--quiet", "--args"] if "gdb" in config["loader"].get("gdb", False) else []
-    taskset_prefix = ["taskset", "--all-tasks", "--cpu-list", config["loader"]["cpu_list"]] if "cpu_list" in config["loader"] else []
+    echo_prefix = ["echo"] if config["loader"].get("echo", False) else []
+    sudo_prefix = ["sudo"] if config["loader"].get("sudo", False) else []
+    cpu_freq_prefix = ["python3", "/home/grayson5/.local/bin/cpu_freq", str(config["conditions"]["cpu_freq"])]
+    gdb_prefix = ["gdb", "--quiet", "--args"] if config["loader"].get("gdb", False) else []
+    cpus = config["conditions"]["cpus"]
+    cpus = multiprocessing.cpu_count() if cpus == 0 else cpus
+    taskset_prefix = ["taskset", "--all-tasks", "--cpu-list", "0-{cpus-1}"] if "cpu_list" in config["loader"] else []
     illixr_cmd = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_prefix = ["env", "-C", Path(".").resolve()] + [f"{var}={val}" for var, val in env_override.items()]
+
+    hash_ = functools.reduce(operator.xor, [
+        zlib.crc32(path.read_bytes())
+        for path in [runtime_exe_path, *plugin_paths]
+    ])
 
     actual_cmd_list = list(
         flatten1(
             replace_all(
                 unflatten(shlex.split(actual_cmd_str)),
                 {
-                    ("$sudo_prefix",): sudo_prefix,
-                    ("$cpu_freq_prefix",): sudo_prefix,
-                    ("$gdb_prefix",): sudo_prefix,
-                    ("$taskset_prefix",): taskset_prefix,
-                    ("$env_prefix",): env_prefix,
+                    ("$echo",): echo_prefix,
+                    ("$sudo",): sudo_prefix,
+                    ("$cpu_freq",): sudo_prefix,
+                    ("$gdb",): sudo_prefix,
+                    ("$taskset",): taskset_prefix,
+                    ("$env",): env_prefix,
                     ("$cmd",): illixr_cmd,
-                    ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
-                    ("$full_cmd",): sudo_prefix + gdb_prefix + cpu_freq_prefix + taskset_prefix + env_prefix + illixr_cmd
+                    ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd))],
+                    ("$full_cmd",): echo_prefix + sudo_prefix + cpu_freq_prefix + taskset_prefix + env_prefix + gdb_prefix + illixr_cmd,
                 },
             )
         )
     )
+    config["conditions"]["hash"] = hash_
+    config["info"] = {
+        "date": datetime.datetime.now().isoformat(),
+        "cmd":  actual_cmd_list,
+        "git-commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, check=True).stdout,
+        "git-dirty": subprocess.run(["git", "status", "--porcelain=2"], capture_output=True, check=True).stdout,
+    }
+
 
     log_stdout_str = config["loader"].get("log_stdout", None)
     log_stdout_ctx: ContextManager[Optional[BinaryIO]] = cast(ContextManager[Optional[BinaryIO]],
@@ -162,13 +223,11 @@ def load_native(config: Mapping[str, Any]) -> None:
         else noop_context(None)
     )
     with log_stdout_ctx as log_stdout:
-        with cpu_freq_ctx:
-            subprocess_run(
-                actual_cmd_list,
-                env_override=env_override,
-                stdout=log_stdout,
-                stderr=subprocess.STDOUT,
-            )
+        subprocess_run(
+            actual_cmd_list,
+            stdout=log_stdout,
+            stderr=subprocess.STDOUT,
+        )
 
 
 def load_tests(config: Mapping[str, Any]) -> None:
@@ -259,7 +318,7 @@ loaders = {
 }
 
 
-def run_config(config_path: Path) -> None:
+def run_config(config_path: Path, overrides: List[Tuple[Tuple[str], str]]) -> None:
     """Parse a YAML config file, returning the validated ILLIXR system config."""
     YamlIncludeConstructor.add_to_loader_class(
         loader_class=yaml.FullLoader, base_dir=config_path.parent,
@@ -274,18 +333,38 @@ def run_config(config_path: Path) -> None:
     jsonschema.validate(instance=config, schema=config_schema)
     fill_defaults(config, config_schema)
 
+    for key, val in overrides:
+        recursive_setitem(config, key, json.loads(val))
+
     loader = config["loader"]["name"]
+
+    metrics = Path("metrics")
+    if metrics.exists():
+        shutil.rmtree(metrics)
+    metrics.mkdir()
+    (metrics / "config.yaml").write_text(yaml.dump(config))
 
     if loader not in loaders:
         raise RuntimeError(f"No such loader: {loader}")
+
     loaders[loader](config)
+
+    subprocess_run(["sudo", "chown", getpass.getuser(), "-R", str(metrics)])
+
+    if "metrics" in config["loader"]:
+        shutil.move(metrics, config["loader"]["metrics"])
 
 
 if __name__ == "__main__":
 
     @click.command()
     @click.argument("config_path", type=click.Path(exists=True))
-    def main(config_path: str) -> None:
-        run_config(Path(config_path))
+    @click.option("--overrides", multiple=True, type=str)
+    def main(config_path: str, overrides: List[str]) -> None:
+        overrides = [
+            (tuple(key.split(".")), val)
+            for key, val in [override.split("=") for override in overrides]
+        ]
+        run_config(Path(config_path), overrides)
 
     main()

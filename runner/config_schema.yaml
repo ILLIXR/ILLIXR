@@ -98,6 +98,25 @@ properties:
         additionalProperties:
           type: string
         description: Vars that get passed to the build system
+  conditions:
+    type: object
+    additionalProperties: false
+    defulat: {}
+    required:
+      - scheduler
+      - duration
+      - cpus
+      - cpu_freq
+    properties:
+      scheduler:
+        type: boolean
+      cpus:
+        description: "Use 0 for as many as there are processors"
+        type: integer
+      cpu_freq:
+        type: number
+      duration:
+        type: number
   loader:
     type: object
     additionalProperties: true
