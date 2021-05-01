@@ -28,7 +28,7 @@ public:
 protected:
 	virtual void _p_thread_setup() override {
 		if (is_dynamic_scheduler() || is_static_scheduler()) {
-			set_priority(get_tid(), 3);
+			set_priority(get_tid(), 5);
 		}
 	}
 	virtual skip_option _p_should_skip() override {
@@ -56,16 +56,6 @@ protected:
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
 		_m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
-
-		struct sched_param param;
-		int rc = sched_getparam(get_tid(), &param);
-		if (rc != 0) {
-			abort();
-		}
-		if (param.sched_priority != 3) {
-			std::cerr << "My priority isn't three." << std::endl;
-			abort();
-		}
 
 		_m_imu_cam.put(new (_m_imu_cam.allocate()) imu_type{
 			real_now,

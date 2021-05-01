@@ -171,6 +171,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_SCHEDULER=config["conditions"]["scheduler"],
         ILLIXR_SCHEDULER_CONFIG=scheduler_config_path,
         ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]],
+        ILLIXR_TIMEWARP_DELAY=str(int(config["loader"]["scheduler"]["nodes"]["timewarp_gl"][0][config["conditions"]["cpu_freq"]] * 1e6)),
         **config["loader"].get("env", {}),
     )
 
@@ -182,7 +183,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     cpus = multiprocessing.cpu_count() if cpus == 0 else cpus
     taskset_prefix = ["taskset", "--all-tasks", "--cpu-list", "0-{cpus-1}"] if "cpu_list" in config["loader"] else []
     illixr_cmd = [str(runtime_exe_path), *map(str, plugin_paths)]
-    env_prefix = ["env", "-C", Path(".").resolve()] + [f"{var}={val}" for var, val in env_override.items()]
+    env_prefix = ["env", "-C", str(Path(".").resolve())] + [f"{var}={val}" for var, val in env_override.items()]
 
     hash_ = functools.reduce(operator.xor, [
         zlib.crc32(path.read_bytes())
@@ -210,10 +211,9 @@ def load_native(config: Mapping[str, Any]) -> None:
     config["conditions"]["hash"] = hash_
     config["info"] = {
         "date": datetime.datetime.now().isoformat(),
-        "cmd":  actual_cmd_list,
+        "command":  actual_cmd_list,
         "git-commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, check=True).stdout,
         "git-dirty": subprocess.run(["git", "status", "--porcelain=2"], capture_output=True, check=True).stdout,
-        "command": actual_cmd_list,
     }
 
 

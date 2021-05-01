@@ -39,6 +39,13 @@ int main(int argc, char* const* argv) {
 		boost::filesystem::create_directory(metrics);
 	}
 
+	{
+		std::cerr << "Scheduler: " << is_default_scheduler() << is_priority_scheduler() << is_manual_scheduler() << is_static_scheduler() << is_dynamic_scheduler() << std::endl;
+		if ((is_default_scheduler() + is_priority_scheduler() + is_manual_scheduler() + is_static_scheduler() + is_dynamic_scheduler()) != 1) {
+			abort();
+		}
+	}
+
 	setup_frame_logger();
 	r = ILLIXR::runtime_factory(nullptr);
 

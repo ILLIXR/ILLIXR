@@ -30,7 +30,7 @@ data:
       download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 demo_data: demo_data/
 conditions:
-  scheduler: static
+  scheduler: default
   duration: 20
   cpus: 1
   cpu_freq: 5.3
@@ -40,7 +40,7 @@ loader:
   gdb: no
   sudo: yes
   echo: no
-  # metrics: metrics/
+  # metrics: metrics-all/
   # log_stdout: metrics/output
   env:
      __GL_MaxFramesAllowed: "1"

@@ -8,15 +8,21 @@ namespace ILLIXR {
 		return ret;
 	}
 
-	[[maybe_unused]] static bool is_static_scheduler() {
+	[[maybe_unused]] static bool is_priority_scheduler() {
 		static const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
-		static bool ret = ILLIXR_SCHEDULER_str && (strcmp(ILLIXR_SCHEDULER_str, "static") == 0);
+		static bool ret = ILLIXR_SCHEDULER_str && (strcmp(ILLIXR_SCHEDULER_str, "priority") == 0);
 		return ret;
 	}
 
-	[[maybe_unused]] static bool have_manual_timing() {
+	[[maybe_unused]] static bool is_manual_scheduler() {
 		static const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
 		static bool ret = ILLIXR_SCHEDULER_str && (strcmp(ILLIXR_SCHEDULER_str, "manual") == 0);
+		return ret;
+	}
+
+	[[maybe_unused]] static bool is_static_scheduler() {
+		static const char* ILLIXR_SCHEDULER_str = std::getenv("ILLIXR_SCHEDULER");
+		static bool ret = ILLIXR_SCHEDULER_str && (strcmp(ILLIXR_SCHEDULER_str, "static") == 0);
 		return ret;
 	}
 

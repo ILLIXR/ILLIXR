@@ -39,6 +39,7 @@ from typing import (
     Union,
 )
 import zipfile
+import zlib
 
 from tqdm import tqdm
 
@@ -394,6 +395,9 @@ def is_relative_to(a: Path, b: Path) -> bool:
 
 DISPLAY_PATH_LENGTH = 60
 
+def compress(val: str) -> str:
+    return "{:x}".format(zlib.crc32(val.encode()))
+
 
 def pathify(
     path_descr: Union[str, Mapping[str, Any]],
@@ -431,7 +435,7 @@ Returns:
         return Path(path_descr)
     elif "download_url" in path_descr:
         url = path_descr["download_url"]
-        cache_dest = cache_path / escape_fname(url)
+        cache_dest = cache_path / compress(url)
         if should_dir:
             raise ValueError(f"{path_descr} points to a file (because of the download_url scheme) not a dir")
         elif cache_dest.exists():
@@ -460,7 +464,7 @@ Returns:
             path_descr["archive_path"], base, cache_path, True, False
         )
         cache_key = archive_path.relative_to(cache_path) if is_relative_to(archive_path, cache_path) else str(archive_path)
-        cache_dest = cache_path / escape_fname(str(cache_key))
+        cache_dest = cache_path / compress(str(cache_key))
         if not should_dir:
             raise ValueError(
                 f"{path_descr} points to a dir (because of the archive_path scheme) not a file"
@@ -471,7 +475,7 @@ Returns:
             unzip_with_progress(archive_path, cache_dest, f"Unzipping {truncate(str(cache_key), DISPLAY_PATH_LENGTH)}")
             return cache_dest
     elif "git_repo" in path_descr:
-        cache_dest = cache_path / escape_fname(path_descr["git_repo"])
+        cache_dest = cache_path / compress(path_descr["git_repo"])
         if not should_dir:
             raise ValueError(
                 f"{path_descr} points to a dir (because of the git_repo scheme) not a file"

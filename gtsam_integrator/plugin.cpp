@@ -42,20 +42,15 @@ public:
 		, _m_log{"gtsam_wakeup.csv"}
 	{
 		_m_log << "gtsam_wakeup\n";
-		sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
+		auto& thread = sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
 			callback(datum);
 		});
+		if (is_dynamic_scheduler() || is_static_scheduler() || is_priority_scheduler()) {
+			set_priority(thread.get_pid(), 5);
+		}
 	}
 
-	bool first_time = true;
-
 	void callback(switchboard::ptr<const imu_type> datum) {
-		if (first_time) {
-			first_time = false;
-			if (is_dynamic_scheduler() || is_static_scheduler()) {
-				set_priority(get_tid(), 3);
-			}
-		}
 		_m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
 		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC.count());
 

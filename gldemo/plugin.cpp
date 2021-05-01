@@ -99,9 +99,14 @@ public:
 		std::this_thread::sleep_until(wait_time);
 	}
 
+	time_point last_wakeup;
 	void _p_thread_setup() override {
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+		if (is_priority_scheduler()) {
+			set_priority(get_tid(), 3);
+		}
+		last_wakeup = std::chrono::steady_clock::now();
 	}
 
 	void _p_one_iteration() override {
@@ -109,8 +114,12 @@ public:
 			using namespace std::chrono_literals;
 
 			// Essentially, XRWaitFrame.
-			if (have_manual_timing()) {
+			if (is_manual_scheduler()) {
 				wait_vsync();
+			} else if (is_default_scheduler() || is_priority_scheduler()) {
+				auto sleep_dur = last_wakeup + vsync_period - std::chrono::steady_clock::now();
+				std::this_thread::sleep_for(sleep_dur);
+				last_wakeup = std::chrono::steady_clock::now();
 			}
 
 			glUseProgram(demoShaderProgram);

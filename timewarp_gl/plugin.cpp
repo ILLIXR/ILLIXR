@@ -60,7 +60,7 @@ public:
 		, _m_rtc{pb->lookup_impl<realtime_clock>()}
 		, log{"metrics/timewarp.csv"}
 	{
-		log << "iteration,last_vsync,start,stop,sleep_duration,work_complete,vsync,completion,next_vsync\n";
+		log << "iteration,last_vsync,start,stop,ideal_wakeup,work_complete,vsync,completion,next_vsync\n";
 	}
 
 private:
@@ -72,8 +72,6 @@ private:
 
 	static constexpr int DISPLAY_REFRESH_RATE = 120;
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-
-	static constexpr double DELAY_FRACTION = 0.91;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
@@ -263,27 +261,9 @@ private:
 		transform = texCoordProjection * deltaViewMatrix;
 	}
 
-	// Get the estimated time of the next swap/next Vsync.
-	// This is an estimate, used to wait until *just* before vsync.
-	time_point GetNextSwapTimeEstimate() {
-		if (lastSwapTime > _m_rtc->now()) abort();
-		return lastSwapTime + vsync_period;
-	}
-
-	// Get the estimated amount of time to put the CPU thread to sleep,
-	// given a specified percentage of the total Vsync period to delay.
-	std::chrono::nanoseconds EstimateTimeToSleep(double framePercentage){
-		return std::chrono::duration_cast<std::chrono::nanoseconds>((GetNextSwapTimeEstimate() - _m_rtc->now()) * framePercentage);
-		// (lastSwapTime + vsync_period - now) * framePercentage
-		// now = lastSwapTime + delta
-		// (vsync_period - delta) * frame_percentage
-		// If delta -> 0, it's close to right.
-
-		// lastSwapTime + vsync_period * framePercentage - now()
-	}
-
-
 public:
+
+	time_point last_start_time;
 
 	virtual skip_option _p_should_skip() override {
 		using namespace std::chrono_literals;
@@ -294,13 +274,15 @@ public:
 
 
 		// TODO: poll GLX window events
-		if (GetNextSwapTimeEstimate() > _m_rtc->now()) {
-			// log << iteration_no << std::endl;
-		}
 		auto start = _m_rtc->now();
-		if (have_manual_timing()) {
-			auto sleep_duration = EstimateTimeToSleep(DELAY_FRACTION);
-			std::this_thread::sleep_for(sleep_duration);
+		std::chrono::nanoseconds ideal_wakeup = lastSwapTime + vsync_period - delay;
+		if (is_manual_scheduler()) {
+			std::this_thread::sleep_for(ideal_wakeup - start);
+		} else if (is_priority_scheduler() || is_default_scheduler()) {
+			if (last_start_time != time_point{}) {
+				std::this_thread::sleep_for(last_start_time + vsync_period - start);
+			}
+			last_start_time = std::chrono::steady_clock::now();
 		}
 		auto stop = _m_rtc->now();
 
@@ -310,7 +292,7 @@ public:
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(stop.time_since_epoch()).count() << ','
-			<< std::chrono::duration_cast<std::chrono::nanoseconds>(GetNextSwapTimeEstimate() - std::chrono::steady_clock::now()).count() << ',';
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(ideal_wakeup).count() << ',';
 		
 
 		most_recent_frame = _m_eyebuffer.get_ro_nullable();
@@ -328,10 +310,19 @@ public:
 		warp(glfwGetTime());
 	}
 
+	std::chrono::nanoseconds delay;
+
 	virtual void _p_thread_setup() override {
-		if (is_static_scheduler()) {
-			set_priority(get_tid(), 3);
+		if (is_priority_scheduler()) {
+			set_priority(get_tid(), 4);
 		}
+
+		if (std::getenv("ILLIXR_TIMEWARP_DELAY") == nullptr) {
+			std::cerr << "Please set ILLIXR_TIMEWARP_DELAY (ns)" << std::endl;
+			abort();
+		}
+		delay = std::chrono::nanoseconds{std::stoi(std::string{std::getenv("ILLIXR_TIMEWARP_DELAY")})};
+
 		lastSwapTime = _m_rtc->now();
 
 		// Generate reference HMD and physical body dimensions
@@ -597,7 +588,7 @@ public:
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ',';
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_point>{GetNextSwapTimeEstimate()});
+		_m_vsync_estimate.put(new (_m_vsync_estimate.allocate()) switchboard::event_wrapper<time_point>{lastSwapTime + vsync_period});
 
 #ifndef NDEBUG
 		std::chrono::nanoseconds imu_to_display = lastSwapTime - latest_pose.pose.sensor_time;
@@ -616,12 +607,12 @@ public:
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
 		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
 		printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);
-		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(GetNextSwapTimeEstimate() - lastSwapTime).count() << "ms in the future" << std::endl;
+		std::cout<< "Timewarp estimating: " << std::chrono::duration_cast<std::chrono::milliseconds>(lastSwapTime + vsync_period - lastSwapTime).count() << "ms in the future" << std::endl;
 #endif
 
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() << ','
-			<< std::chrono::duration_cast<std::chrono::nanoseconds>(GetNextSwapTimeEstimate().time_since_epoch()).count() << '\n';
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>((lastSwapTime + vsync_period).time_since_epoch()).count() << '\n';
 	}
 
 	virtual ~timewarp_gl() override {

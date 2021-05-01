@@ -25,6 +25,12 @@ public:
 		_m_log << "rt_pub,rt_trig,dt\n";
 	}
 
+	virtual void _p_thread_setup() override {
+		if (is_priority_scheduler()) {
+			set_priority(get_tid(), 1);
+		}
+	}
+
 	virtual skip_option _p_should_skip() override {
 		if (true
 			// next_row != _m_sensor_data.end() && next_row->second.cam0 && next_row->second.cam1
@@ -36,7 +42,9 @@ public:
 	}
 
 	virtual void _p_one_iteration() override {
+
 		duration time_since_start = _m_rtc->time_since_start();
+		duration begin = time_since_start;
 		ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
 		std::map<ullong, sensor_types>::const_iterator nearest_row;
 
@@ -123,8 +131,18 @@ public:
 			// 	;
 			// abort();
 		}
-		if (!is_dynamic_scheduler()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{5});
+
+		duration end = _m_rtc->time_since_start();
+		duration now = end;
+		duration latency = end - begin;
+		if (is_default_scheduler() || is_priority_scheduler()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds{50} - latency);
+		}
+		if (is_manual_scheduler()) {
+			auto next_row = nearest_row;
+			next_row++;
+			auto next_dataset_time = std::chrono::nanoseconds{next_row->first} - std::chrono::nanoseconds{dataset_first_time};
+			std::this_thread::sleep_for(next_dataset_time - latency - now);
 		}
 
 		// auto s = static_cast<float>((_m_rtc->time_since_start() - time_since_start).count()) / 1000.0f / 1000.0f;
