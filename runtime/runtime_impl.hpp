@@ -6,6 +6,7 @@
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "stdout_record_logger.hpp"
+#include "sqlite_record_logger.hpp"
 #include "noop_record_logger.hpp"
 #include "common/realtime_clock.hpp"
 #include <opencv2/core/utility.hpp>
@@ -18,7 +19,7 @@ public:
 // #ifndef MULTICORE
 		cv::setNumThreads(0);
 // #endif
-		pb.register_impl<record_logger>(std::make_shared<noop_record_logger>());
+		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
 		pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
 		pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 		pb.register_impl<xlib_gl_extended_window>(std::make_shared<xlib_gl_extended_window>(448*2, 320*2, appGLCtx));

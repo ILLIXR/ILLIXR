@@ -266,6 +266,7 @@ public:
 	time_point last_start_time;
 
 	virtual skip_option _p_should_skip() override {
+		CPU_TIMER_TIME_BLOCK("_p_should_skip");
 		using namespace std::chrono_literals;
 		// Sleep for approximately 90% of the time until the next vsync.
 		// Scheduling granularity can't be assumed to be super accurate here,
@@ -423,25 +424,7 @@ public:
 	}
 
 	virtual void warp([[maybe_unused]] float time) {
-		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
-
-		glBindFramebuffer(GL_FRAMEBUFFER,0);
-		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		glClearColor(0, 0, 0, 0);
-    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		glDepthFunc(GL_LEQUAL);
-
-		// Use the timewarp program
-		glUseProgram(timewarpShaderProgram);
-
-		//double cursor_x, cursor_y;
-		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
-
-		// Generate "starting" view matrix, from the pose
-		// sampled at the time of rendering the frame.
 		Eigen::Matrix4f viewMatrix = Eigen::Matrix4f::Identity();
-		viewMatrix.block(0,0,3,3) = most_recent_frame->render_pose.pose.orientation.toRotationMatrix();
-		// math_util::view_from_quaternion(&viewMatrix, most_recent_frame->render_pose.pose.orientation);
 
 		// We simulate two asynchronous view matrices,
 		// one at the beginning of display refresh,
@@ -452,6 +435,19 @@ public:
 		// compensating for display panel refresh delay (wow!)
 		Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
 		Eigen::Matrix4f viewMatrixEnd = Eigen::Matrix4f::Identity();
+		Eigen::Matrix4f timeWarpStartTransform4x4;
+		Eigen::Matrix4f timeWarpEndTransform4x4;
+
+		{
+			CPU_TIMER_TIME_BLOCK("_math");
+		//double cursor_x, cursor_y;
+		//glfwGetCursorPos(window, &cursor_x, &cursor_y);
+
+		// Generate "starting" view matrix, from the pose
+		// sampled at the time of rendering the frame.
+		viewMatrix.block(0,0,3,3) = most_recent_frame->render_pose.pose.orientation.toRotationMatrix();
+		// math_util::view_from_quaternion(&viewMatrix, most_recent_frame->render_pose.pose.orientation);
+
 
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
@@ -466,8 +462,21 @@ public:
 		// Calculate the timewarp transformation matrices.
 		// These are a product of the last-known-good view matrix
 		// and the predictive transforms.
-		Eigen::Matrix4f timeWarpStartTransform4x4;
-		Eigen::Matrix4f timeWarpEndTransform4x4;
+		}
+
+		{
+			CPU_TIMER_TIME_BLOCK("_glDraw");
+
+		glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc);
+
+		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glClearColor(0, 0, 0, 0);
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glDepthFunc(GL_LEQUAL);
+
+		// Use the timewarp program
+		glUseProgram(timewarpShaderProgram);
 
 		// Calculate timewarp transforms using predictive view transforms
 		CalculateTimeWarpTransform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
@@ -535,8 +544,12 @@ public:
 			// with the UV and position buffers correctly offset.
 			glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*)0);
 		}
+		}
 
-		glFinish();
+		{
+			CPU_TIMER_TIME_BLOCK("_glFinish");
+			glFinish();
+		}
 
 	// {
 	// 	struct sched_param sp = { .sched_priority = 1,};
@@ -546,6 +559,9 @@ public:
 	// 		abort();
 	// 	}
 	// }
+
+		{
+		CPU_TIMER_TIME_BLOCK("_glXSwapBuffers");
 
 #ifndef NDEBUG
 		auto delta = _m_rtc->now() - most_recent_frame->render_time;
@@ -581,8 +597,12 @@ public:
 
 		// The swap time needs to be obtained and published as soon as possible
 		lastSwapTime = _m_rtc->now();
+		}
 
 		CPU_TIMER_TIME_EVENT_INFO(false, false, "exit", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "vsync", 0, lastSwapTime));
+
+		{
+		CPU_TIMER_TIME_BLOCK("_bookkeeping");
 
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(lastSwapTime.time_since_epoch()).count() << ',';
@@ -613,6 +633,8 @@ public:
 		log
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() << ','
 			<< std::chrono::duration_cast<std::chrono::nanoseconds>((lastSwapTime + vsync_period).time_since_epoch()).count() << '\n';
+		}
+
 	}
 
 	virtual ~timewarp_gl() override {

@@ -35,6 +35,12 @@ const record_header __switchboard_callback_header {"switchboard_callback", {
        {"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
 }};
 
+const record_header __switchboard_overflow_header {"switchboard_overflow", {
+       {"plugin_id", typeid(plugin_id_t)},
+       {"topic_name", typeid(std::string)},
+       {"buffer", typeid(std::size_t)},
+}};
+
 /**
  * @Should be private to Switchboard.
  */
@@ -266,11 +272,19 @@ private:
 		 *
 		 * Thread-safe
 		 */
+		size_t logs = 0;
 		void enqueue(ptr<const event>&& this_event) {
 			if (_m_thread.get_state() == managed_thread::state::running) {
 				_m_queue_size++;
 				if (_m_queue_size > 30) {
-					std::cout << "Queue overflow: topic " << _m_topic_name << ", plugin " << _m_plugin_id << " has " << _m_queue_size << std::endl;
+					if (logs % 20 == 0) {
+						_m_record_logger->log(record{__switchboard_overflow_header, std::vector<std::any>{
+							std::make_any<plugin_id_t>(_m_plugin_id),
+							std::make_any<std::string>(_m_topic_name),
+							std::make_any<size_t>(_m_queue_size),
+						}});
+					}
+					logs++;
 				}
 				[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
 				assert(ret);

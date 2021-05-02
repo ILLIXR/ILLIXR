@@ -6,7 +6,7 @@ import click
 @click.command()
 def main() -> None:
     all_metrics = Path("metrics-all")
-    for it in range(1):
+    for it in range(2):
         for cpu_freq in [2.6]:
         # for cpu_freq in [1.3, 1.8, 2.6, 5.3]:
             for scheduler in ["default", "static", "priority", "manual"]:
