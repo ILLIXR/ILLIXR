@@ -2,6 +2,9 @@
 
 #--- Script for installing Clang ---#
 
+## Currently disabled: TBD
+## Using system package 'clang-10' (see 'scripts/install_apt_deps.sh')
+
 
 ### Setup ###
 
@@ -47,20 +50,40 @@ llvm_projects=(
     lld
     clang
     clang-tools-extra
+    compiler-rt
 ) # End list
 
-llvm_projects_arg=""
-is_first_project="yes"
-for project in "${llvm_projects[@]}"; do
-    if [ "${is_first_project}" = "yes" ]; then
-        is_first_project="no"
-    else
-        llvm_projects_arg+=";"
-    fi
+llvm_projects_arg=$(join_strings "${llvm_projects[*]}")
 
-    llvm_projects_arg+="${project}"
-done
+## Speed up compilation by building only the native target backend
+## To build more than one target, append the target to the list
+## (with targets delimited by semicolons)
+arch_name=$(uname --machine)
+case "${arch_name}" in
+    x86_64)
+        llvm_targets_arg="X86"
+        ;;
+    aarch64)
+        llvm_targets_arg="AAarch64"
+        ;;
+    *)
+        print_warning "Unsupported target LLVM backend '${arch_name}'."
+        exit 1
+        ;;
+esac
 
+build_opts_llvm=(
+    -D LLVM_ENABLE_PROJECTS="${llvm_projects_arg}"
+    -D LLVM_TARGETS_TO_BUILD="${llvm_targets_arg}"
+) # End list
+
+
+### Checks ###
+
+## Assert no system packages will be overwritten by this install
+## If present, remove the conflicting packages before proceeding
+pkg_list_clang="clang-10"
+detect_packages "${pkg_list_clang}" "${PKG_MODE_FOUND_NONFATAL}"
 
 ### Fetch, build and install ###
 
@@ -75,7 +98,7 @@ cmake \
     -D CMAKE_CXX_COMPILER="g++" \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}" \
-    -D LLVM_ENABLE_PROJECTS="${llvm_projects_arg}"
+    "${build_opts_llvm[@]}"
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install

@@ -55,4 +55,4 @@ dependencies:
   - zlib=1.2.11=h7b6447c_3
   - pip:
     - pyyaml-include==1.2
-prefix: /home/sam/miniconda3/envs/illixr-runner
+prefix: /opt/ILLIXR/miniconda3/envs/illixr-runner

@@ -41,6 +41,7 @@ case "${arch_name}" in
         check_cmd_conda=$(conda --version 2>/dev/null)
         if [ "$?" -eq 0 ]; then
             ## Conda found
+            echo "Found conda installation. Exiting installation script."
             exit 0
         fi
         ;;

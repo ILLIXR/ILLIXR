@@ -7,6 +7,36 @@
 function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
 
 
+## Function for joining strings in an array/list
+## The first argument, 'strings_list', is a space seperated list of packages to process
+## The second argument, 'delimiter', defaults to a semicolon
+function join_strings()
+{
+    local strings_list=(${1})
+    local delimiter=${2}
+
+    local string_out=""
+    local delimiter_default=";"
+    local is_first_string="yes"
+
+    if [ -z "${delimiter}" ]; then
+        delimiter="${delimiter_default}"
+    fi
+
+    for string in "${strings_list[@]}"; do
+        if [ "${is_first_string}" = "yes" ]; then
+            is_first_string="no"
+        else
+            string_out+="${delimiter}"
+        fi
+
+        string_out+="${string}"
+    done
+
+    echo "${string_out}"
+}
+
+
 ## Function for logging dependency information post-installation
 function log_dependency()
 {
@@ -59,7 +89,7 @@ function detect_dependency()
     if [ ! -z "${deps_log_dir}" ]; then
         ## Check if a log file exists. If so, export its values for the caller.
         if [ -f "${dep_log_path}" ]; then
-	    echo "DETECT [dep <- '${dep_name}', dir <- '${src_dir}']"
+            echo -n "DETECT [dep <- '${dep_name}'"
 
             ## Avoid other side-effects if dry-run is enabled
             if [ "${enable_dry_run}" = "no" ]; then
@@ -70,8 +100,11 @@ function detect_dependency()
                 #> export src_dir
                 #> export dep_ver
                 #> export timestamp
+
+                echo -n ", dir <- '${src_dir}'"
             fi
 
+            echo "]"
             return 0
         fi
     fi

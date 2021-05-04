@@ -6,8 +6,9 @@ ARG ACTION=ci
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 ENV CC=clang-10
-ENV CXX=clang++
+ENV CXX=clang++-10
 ENV opt_dir=/opt/ILLIXR
+ENV prefix_dir=/usr/local
 ENV illixr_nproc=${JOBS}
 ENV build_type=Release
 
@@ -26,15 +27,26 @@ COPY ./scripts/system_utils.sh ${HOME}/scripts/system_utils.sh
 
 COPY ./scripts/install_apt_deps.sh ${HOME}/scripts/install_apt_deps.sh
 RUN ./scripts/install_apt_deps.sh
+RUN apt-get autoremove -y # Save space by cleaning up
 
-COPY ./scripts/install_clang.sh ${HOME}/scripts/install_clang.sh
-RUN ./scripts/install_clang.sh
+## Locally built clang not in use yet
+#COPY ./scripts/install_clang.sh ${HOME}/scripts/install_clang.sh
+#RUN ./scripts/install_clang.sh
 
-COPY ./scripts/install_boost.sh ${HOME}/scripts/install_boost.sh
-RUN ./scripts/install_boost.sh
+## Make clang symlinks in the prefix dir
+RUN ln -s $(which ${CC}) ${prefix_dir}/bin/clang
+RUN ln -s $(which ${CXX}) ${prefix_dir}/bin/clang++
+
+## Locally built boost not in use yet
+#COPY ./scripts/install_boost.sh ${HOME}/scripts/install_boost.sh
+#RUN ./scripts/install_boost.sh
 
 COPY ./scripts/install_opencv.sh ${HOME}/scripts/install_opencv.sh
 RUN ./scripts/install_opencv.sh
+
+## Locally built eigen not in use yet
+#COPY ./scripts/install_eigen.sh ${HOME}/scripts/install_eigen.sh
+#RUN ./scripts/install_eigen.sh
 
 COPY ./scripts/install_vulkan_headers.sh ${HOME}/scripts/install_vulkan_headers.sh
 RUN ./scripts/install_vulkan_headers.sh

@@ -80,7 +80,7 @@ pkg_dep_list_prereq=(
 pkg_dep_list_common=(
     build-essential
     git
-    #clang-10
+    clang-10
     make
     cmake
     unzip
@@ -138,7 +138,6 @@ pkg_dep_list_usb=(
 pkg_dep_list_thread=(
     libc++-dev
     libc++abi-dev
-    #libboost-all-dev
     libtbb-dev
 ) # End list
 
@@ -152,6 +151,7 @@ pkg_dep_list_math=(
 ) # End list
 
 pkg_dep_list_nogroup=(
+    libboost-all-dev
     libsqlite3-dev
     libepoxy-dev
     libgbm-dev
@@ -180,6 +180,7 @@ pkg_dep_list_docker=(
 pkg_dep_list_realsense_anyarch=(
     librealsense2-utils
     librealsense2-dev
+    librealsense2-gl-dev
 ) # End List
 
 pkg_dep_list_realsense_x86_64=(

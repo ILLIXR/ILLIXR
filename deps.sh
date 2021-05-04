@@ -17,18 +17,20 @@ fi
 export script_path_apt="scripts/install_apt_deps.sh"
 
 ## Clang
-export dep_name_clang="clang"
-export script_path_clang="scripts/install_clang.sh"
-export parent_dir_clang="${opt_dir}"
-export dep_prompt_clang="Install Clang (and LLVM) from source"
-export dep_ver_clang="llvmorg-10.0.1"
+## Locally built clang not in use yet
+#export dep_name_clang="clang"
+#export script_path_clang="scripts/install_clang.sh"
+#export parent_dir_clang="${opt_dir}"
+#export dep_prompt_clang="Install Clang (and LLVM) from source"
+#export dep_ver_clang="llvmorg-10.0.1"
 
 ## Boost
-export dep_name_boost="boost"
-export script_path_boost="scripts/install_boost.sh"
-export parent_dir_boost="${opt_dir}"
-export dep_prompt_boost="Install Boost from source"
-export dep_ver_boost="boost-1.65.1"
+## Locally built boost not in use yet
+#export dep_name_boost="boost"
+#export script_path_boost="scripts/install_boost.sh"
+#export parent_dir_boost="${opt_dir}"
+#export dep_prompt_boost="Install Boost from source"
+#export dep_ver_boost="boost-1.65.1"
 
 ## OpenCV
 export dep_name_opencv="opencv"
@@ -38,11 +40,12 @@ export dep_prompt_opencv="Install OpenCV from source"
 export dep_ver_opencv="3.4.6-instrumented"
 
 ## Eigen
-export dep_name_eigen="eigen"
-export script_path_eigen="scripts/install_eigen.sh"
-export parent_dir_eigen="${opt_dir}"
-export dep_prompt_eigen="Install eigen (Eigen3) from source"
-export dep_ver_eigen="3.3.7"
+## Locally built eigen not in use yet
+#export dep_name_eigen="eigen"
+#export script_path_eigen="scripts/install_eigen.sh"
+#export parent_dir_eigen="${opt_dir}"
+#export dep_prompt_eigen="Install eigen (Eigen3) from source"
+#export dep_ver_eigen="3.3.7"
 
 ## Vulkan (Headers)
 export dep_name_vulkan="Vulkan-Headers"

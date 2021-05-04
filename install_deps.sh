@@ -232,7 +232,7 @@ sudo chown "${USER}:" "${opt_dir}"
 . deps.sh
 
 echo "The user will now be prompted to install the following dependencies and optional features:
-  Binary packages (via apt-get), Clang, Boost, Docker, CUDA, OpenCV, eigen, Vulkan,
+  Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan,
   gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)
 " # End echo
 
@@ -254,13 +254,14 @@ if y_or_n "Add apt-get sources list/keys and install necessary packages"; then
     fi
 fi
 
-prompt_install \
-    "${dep_name_clang}" \
-    "${deps_log_dir}" \
-    "${script_path_clang}" \
-    "${parent_dir_clang}" \
-    "${dep_prompt_clang}" \
-    "${dep_ver_clang}"
+## Locally built clang not in use yet
+#prompt_install \
+#    "${dep_name_clang}" \
+#    "${deps_log_dir}" \
+#    "${script_path_clang}" \
+#    "${parent_dir_clang}" \
+#    "${dep_prompt_clang}" \
+#    "${dep_ver_clang}"
 
 prompt_install \
     "${dep_name_boost}" \
@@ -278,6 +279,7 @@ prompt_install \
     "${dep_prompt_opencv}" \
     "${dep_ver_opencv}"
 
+## Locally built eigen not in use yet
 #prompt_install \
 #    "${dep_name_eigen}" \
 #    "${deps_log_dir}" \

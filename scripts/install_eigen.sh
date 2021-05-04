@@ -2,6 +2,9 @@
 
 #--- Script for installing eigen ---#
 
+## Currently disabled: Needs VTK from source using older toolchain
+## Using system package 'libeigen3-dev' (see 'scripts/install_apt_deps.sh')
+
 
 ### Setup ###
 
