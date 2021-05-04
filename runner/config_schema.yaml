@@ -108,7 +108,7 @@ properties:
       name:
         default: native
         type: string
-        description: "Currently supports: 'native', 'monado', 'tests', or 'clean'"
+        description: "Currently supports: 'native', 'monado', 'tests', 'clean', or 'delint'"
         properties:
           path:
             $ref: '#/definitions/path'

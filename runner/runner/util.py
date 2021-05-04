@@ -208,7 +208,8 @@ def threading_imap_unordered(
 
     `desc` is an optional label for the progress bar.
 
-    If the length cannot be determined by operator.length_hint, `length_hint` will be used. If it is None, we fallback to tqdm without a `total`.
+    If the length cannot be determined by operator.length_hint, `length_hint` will be used.
+    If it is None, we fallback to tqdm without a `total`.
     """
     results: queue.Queue[Tuple[str, Union[V, BaseException]]] = queue.Queue(maxsize=operator.length_hint(iterable))
 
@@ -268,7 +269,8 @@ def threading_map(
 
     `desc` is an optional label for the progress bar.
 
-    If the length cannot be determined by operator.length_hint, `length_hint` will be used. If it is None, we fallback to tqdm without a `total`.
+    If the length cannot be determined by operator.length_hint, `length_hint` will be used.
+    If it is None, we fallback to tqdm without a `total`.
     """
 
     return map(

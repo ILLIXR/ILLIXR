@@ -177,6 +177,7 @@ pkg_dep_list_docker=(
 pkg_dep_list_realsense_anyarch=(
     librealsense2-utils
     librealsense2-dev
+    librealsense2-gl-dev
 ) # End List
 
 pkg_dep_list_realsense_x86_64=(

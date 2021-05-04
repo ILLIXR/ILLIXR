@@ -1,2 +1,3 @@
-LDFLAGS = -ldl -pthread -lstdc++fs $(shell pkg-config glfw3 glew sqlite3 x11 --libs)
+PKG_DEPS = $(shell cat pkg-deps.txt)
+LDFLAGS = -ldl -pthread -lstdc++fs $(shell pkg-config ${PKG_DEPS} --libs)
 include common/common.mk
