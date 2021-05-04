@@ -40,7 +40,7 @@ public:
 		, _m_in{sb->subscribe_latest<imu_integrator_seq>("imu_integrator_seq")}
 		, _m_imu_integrator_input{sb->subscribe_latest<imu_integrator_input>("imu_integrator_input")}
         , _m_true_pose{sb->subscribe_latest<pose_type>("true_pose")}
-		, _m_imu_raw{sb->publish<imu_raw_type>("imu_raw")},
+		, _m_imu_raw{sb->publish<imu_raw_type>("imu_raw")}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
 		, first_true_pose_flag(false)
 		, _seq_expect(1)
