@@ -141,6 +141,8 @@ public:
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid predicted pose pointer");
 			ImGui::Text("Prediced pose position (XYZ):\n  (%f, %f, %f)", predicted_pose.position.x(), predicted_pose.position.y(), predicted_pose.position.z());
 			ImGui::Text("Predicted pose quaternion (XYZW):\n  (%f, %f, %f, %f)", predicted_pose.orientation.x(), predicted_pose.orientation.y(), predicted_pose.orientation.z(), predicted_pose.orientation.w());
+			std::cout<<"O[DEBUGVIEW]ur POSE!!!: "<<" "<<predicted_pose.position.x()<<" "<<predicted_pose.position.y()<<" "<<predicted_pose.position.z()<<" "<<predicted_pose.orientation.x()<<" "<<predicted_pose.orientation.y()<<" "<<predicted_pose.orientation.z()<<" "<<predicted_pose.orientation.w()<<" "<<std::endl;
+       
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid predicted pose pointer");
 		}
@@ -184,6 +186,8 @@ public:
 			ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
 			ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose.position.x(), true_pose.position.y(), true_pose.position.z());
 			ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose.orientation.x(), true_pose.orientation.y(), true_pose.orientation.z(), true_pose.orientation.w());
+			std::cout<<"Tr[DEBUGVIEW]ue POSE!!!: "<<" "<<true_pose.position.x()<<" "<<true_pose.position.y()<<" "<<true_pose.position.z()<<" "<<true_pose.orientation.x()<<" "<<true_pose.orientation.y()<<" "<<true_pose.orientation.z()<<" "<<true_pose.orientation.w()<<" "<<std::endl;
+       
 		} else {
 			ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
 		}
