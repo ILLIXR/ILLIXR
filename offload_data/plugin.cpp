@@ -1,5 +1,4 @@
 #include "common/plugin.hpp"
-#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/phonebook.hpp"
 #include "common/data_format.hpp"
@@ -19,50 +18,31 @@
 using namespace ILLIXR;
 
 
-class offload_data : public threadloop {
+class offload_data : public plugin {
 public:
 	offload_data(std::string name_, phonebook* pb_)
-		: threadloop{name_, pb_}
+		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _offload_data_reader{sb->get_reader<texture_pose>("texture_pose")}
-		, _seq_expect(1)
-		, _stat_processed(0)
-		, _stat_missed(0)
 		, percent{0}
 		, img_idx{0}
 		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 		, is_success{true}
 		/// TODO: Set with #198
 		, obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
-	{ }
+	{
+		sb->schedule<texture_pose>(id, "texture_pose", [&](switchboard::ptr<const texture_pose> datum, size_t) {
+			callback(datum);
+		});
+    }
 
-	virtual skip_option _p_should_skip() override {
-		auto in = _offload_data_reader.get_ro_nullable();
-		if (in == nullptr || in->seq == _seq_expect - 1) {
-			// No new data, sleep
-			std::this_thread::sleep_for(std::chrono::milliseconds{1});
-			return skip_option::skip_and_yield;
-		} else {
-			if (in->seq != _seq_expect) {
-				_stat_missed = in->seq - _seq_expect;
-			} else {
-				_stat_missed = 0;
-			}
-			_stat_processed++;
-			_seq_expect = in->seq+1;
-			return skip_option::run;
-		}
-	}
-
-	void _p_one_iteration() override {
+	void callback(switchboard::ptr<const texture_pose> datum) {
 #ifndef NDEBUG
 		std::cout << "Image index: " << img_idx++ << std::endl;
 #endif
-        auto datum_texture_pose = _offload_data_reader.get_ro_nullable();
-        if (datum_texture_pose != nullptr) {
-            /// A texture pose is present. Store it back to our container.
-            _offload_data_container.push_back(datum_texture_pose);
-        }
+        /// A texture pose is present. Store it back to our container.
+        _offload_data_container.push_back(datum);
+
+        RAC_ERRNO_MSG("offloaded_data");
 	}
 
 	virtual ~offload_data() override {
@@ -79,8 +59,6 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-    switchboard::reader<texture_pose> _offload_data_reader;
-	long long _seq_expect, _stat_processed, _stat_missed;
 	std::vector<int> _time_seq;
 	std::vector<switchboard::ptr<const texture_pose>> _offload_data_container;
 
