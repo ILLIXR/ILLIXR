@@ -11,18 +11,37 @@
 ## 
 plugin_groups:
   - plugin_group:
-    - path: common/
-  - !include "all_plugins.yaml"
+    ## Runtime
+    - path: runtime
+    - path: common
+    ## Core Plugins
+    - path: timewarp_gl
+    ## Real-Time SLAM Plugins
+    - path: offline_imu_cam
+    - path: zed
+    - path: gtsam_integrator
+    - path: pose_prediction
+    ## Other Plugins
+    #- path: realsense
+    - path: ground_truth_slam
+    - path: gldemo
+    - path: debugview
+    - path: pose_lookup
+    - path: rk4_integrator
+    - path: timewarp_gl
 
 action:
   name:            delint
+
+  enable_fix:      True
+  cpp_std:         c++17
+
   linter:          clang-tidy-10
   formatter:       clang-format-10
   lint_file:       .clang-tidy        ## Must be .clang-tidy for now
   format_file:     .clang-format      ## Must be .clang-format for now
+
   filter_out:      #macro_plugin.hpp
-  enable_fix:      True
-  cpp_std:         c++17
   target_file:     #common/plugin.hpp
   target_pkg_deps: #common/pkg-deps.txt
 
@@ -32,3 +51,5 @@ data: data
 demo_data: demo_data
 enable_offload: False
 enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False

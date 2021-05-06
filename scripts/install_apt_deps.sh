@@ -79,6 +79,8 @@ pkg_dep_list_common=(
     build-essential
     git
     clang-10
+    clang-format-10
+    clang-tidy-10
     make
     cmake
     unzip

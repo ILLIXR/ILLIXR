@@ -1,5 +1,5 @@
 ---
-Checks:          '-*'
+Checks:          '-*,cppcoreguidelines-interfaces-global-init,cppcoreguidelines-narrowing-conversions'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

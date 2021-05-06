@@ -300,7 +300,8 @@ def delint_files(
     paths_pkg_include: List[str],
 ) -> None:
     def path_to_json(path: Path) -> str:
-        return '{"name":"%s","lines":[[9999999,9999999]]}' % str(path)
+        max_line_no: int = 9999999
+        return f'{"name":"{path}","lines":[[{max_line_no},{max_line_no}]]}'
 
     arg_fix: List[str] = ["--fix", "--fix-errors"] if enable_fix else list()
     objs_filter: List[str] = [path_to_json(path) for path in paths_filter_out] + ['{"name":".hpp"}', '{"name":".cpp"}']
@@ -311,7 +312,7 @@ def delint_files(
     arg_limit: str = "-ferror-limit=0"
     cmd_delint: List[str] = [exe_linter] + arg_fix + arg_files + [arg_sep, arg_std, arg_limit] + paths_pkg_include
 
-    subprocess_run(cmd_delint, check=True, capture_output=False)
+    #subprocess_run(cmd_delint, check=True, capture_output=False)
 
     if enable_fix:
         ## If `enable_fix` is on, also apply in-place formatting
@@ -331,27 +332,25 @@ def delint_one_plugin(
     enable_fix: bool,
     str_cpp_std: str,
 ) -> Path:
-    path_plugin: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+    action: str = config["action"]["name"]
 
+    path_plugin: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
     if not path_plugin.is_dir():
-        raise RuntimeError("[delint_one_plugin] Directory '%s' does not exist" % str(path_plugin))
+        raise RuntimeError(f"[{action}] Directory '{path_plugin}' does not exist")
 
     paths_pkg_include: List[str] ## Forward declaration of type for `paths_pkg_include`
-    if str(plugin_config["path"]) != "common/":
+    path_common: Path = pathify(config["common"]["path"], root_dir, cache_path, True, True)
+
+    if str(plugin_config["path"]).find("common") == -1:
         ## Kludge: If the plugin being processed is not `common`, emit `common` to the include paths
-        path_common_sym: Path = path_plugin / "common"
-
-        if not path_common_sym.is_symlink():
-            raise RuntimeError("[delint_one_plugin] File '%s' does not exist" % str(path_common_sym))
-
-        path_common: Path = path_common_sym.resolve()
         paths_pkg_include = ["-I" + str(path_common)]
     else:
         ## Kludge: If the plugin being processed is `common`, emit an empty list of include paths
         paths_pkg_include = list()
 
     path_pkg_deps: Path = path_plugin / "pkg-deps.txt"
-    paths_pkg_include.extend(find_pkg_deps(path_pkg_deps))
+    if path_pkg_deps.is_file():
+        paths_pkg_include.extend(find_pkg_deps(path_pkg_deps))
 
     glob_hpp: str = "**/*.hpp"
     glob_cpp: str = "**/*.cpp"
@@ -366,13 +365,17 @@ def delint_one_plugin(
 
 
 def delint_code(config: Mapping[str, Any]) -> None:
+    print("Note: The linter is disabled for now. Running the formatter ...")
+
+    action = config["action"]["name"]
+
     path_lint_file: Path = relative_to(Path(config["action"]["lint_file"]), root_dir)
     path_format_file: Path = relative_to(Path(config["action"]["format_file"]), root_dir)
 
     if not path_lint_file.is_file():
-        raise RuntimeError("[delint_code] Lint file '%s' not found" % str(path_lint_file))
+        raise RuntimeError(f"[{action}] Lint file '{path_lint_file}' not found")
     if not path_format_file.is_file():
-        raise RuntimeError("[delint_code] Format file '%s' not found" % str(path_format_file))
+        raise RuntimeError(f"[{action}] Format file '{path_format_file}' not found")
 
     exe_linter: str = config["action"]["linter"]
     exe_formatter: str = config["action"]["formatter"]
@@ -387,7 +390,7 @@ def delint_code(config: Mapping[str, Any]) -> None:
         paths_filter_out = [relative_to(Path(str_path), root_dir) for str_path in str_filter_out.split(",")]
         # for path_filter_out in paths_filter_out:
         #    if not path_filter_out.is_file():
-        #        raise RuntimeError("[delint_code] Source file '%s' not found" % str(path_filter_out))
+        #        raise RuntimeError(f"[{action}] Source file '{path_filter_out}' not found")
     else:
         paths_filter_out = list()
 
@@ -397,9 +400,9 @@ def delint_code(config: Mapping[str, Any]) -> None:
         path_target_pkg_deps: Path = relative_to(Path(target_pkg_deps), root_dir)
 
         if not path_target_file.is_file():
-            raise RuntimeError("[delint_code] Target file '%s' not found" % str(path_target_file))
+            raise RuntimeError(f"[{action}] Target file '{path_target_file}' not found")
         if not path_target_pkg_deps.is_file():
-            raise RuntimeError("[delint_code] Target file '%s' not found" % str(path_target_pkg_deps))
+            raise RuntimeError(f"[{action}] Target file '{path_target_pkg_deps}' not found")
 
         paths_pkg_include: List[str] = find_pkg_deps(path_target_pkg_deps)
         delint_files(
