@@ -127,8 +127,8 @@ TEST_F(SwitchboardTest, TestSyncAsync)
         } };
 
         std::thread fast_reader { [&sb] {
-            uint64_tlast_datum = 0;
-            auto    reader     = sb.get_reader<uint64_wrapper>("multiples_of_six");
+            uint64_t last_datum = 0;
+            auto     reader     = sb.get_reader<uint64_wrapper>("multiples_of_six");
 
             for (uint64_t i = 0; i < MAX_ITERATIONS; ++i) {
                 switchboard::ptr<const uint64_wrapper> datum = reader.get_ro_nullable();
