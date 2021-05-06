@@ -26,7 +26,7 @@ namespace ILLIXR {
 class sqlite_thread {
 public:
 	sqlite3pp::database prep_db() {
-        assert(errno == 0 && "Errno should not be set at start of prep_db");
+        RAC_ERRNO_MSG("sqlite_record_logger at start of prep_db");
 
 		if (!std::experimental::filesystem::exists(dir)) {
 			std::experimental::filesystem::create_directory(dir);
@@ -42,7 +42,7 @@ public:
 	}
 
 	std::string prep_insert_str() {
-		assert(errno == 0 && "Errno should not be set at start of prep_insert_str");
+		RAC_ERRNO_MSG("sqlite_record_logger at start of prep_insert_str");
 
 		std::string drop_table_string = std::string{"DROP TABLE IF EXISTS "} + table_name + std::string{";"};
 		db.execute(drop_table_string.c_str());
@@ -72,7 +72,7 @@ public:
 		create_table_string.erase(create_table_string.size() - 2);
 		create_table_string += std::string{");"};
 
-		assert(errno == 0 && "Errno should not be set before create table execute");
+		RAC_ERRNO_MSG("sqlite_record_logger before create table execute");
 		db.execute(create_table_string.c_str());
 		RAC_ERRNO_MSG("sqlite_record_logger after create table execute");
 

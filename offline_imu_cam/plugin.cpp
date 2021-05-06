@@ -54,7 +54,7 @@ protected:
 	}
 
 	virtual void _p_one_iteration() override {
-	    assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
+	    RAC_ERRNO_MSG("offline_imu_cam at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 #ifndef NDEBUG
         std::chrono::time_point<std::chrono::nanoseconds> tp_dataset_now{std::chrono::nanoseconds{dataset_now}};

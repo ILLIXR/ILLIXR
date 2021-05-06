@@ -47,7 +47,7 @@ public:
 		char* error;
 
 		// dlopen man page says that it can set errno sp
-		assert(errno == 0 && "Errno should not be set before dlopen");
+		RAC_ERRNO_MSG("dynamic_lib before dlopen");
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
 		RAC_ERRNO_MSG("dynamic_lib after dlopen");
 
@@ -57,7 +57,7 @@ public:
         }
 
 		return dynamic_lib{void_ptr{handle, [](void* handle) {
-			assert(errno == 0);
+            RAC_ERRNO();
 			
 			char* error;
 			int ret = dlclose(handle);
@@ -68,7 +68,7 @@ public:
 	}
 
 	const void* operator[](const std::string& symbol_name) const {
-		assert(errno == 0 && "Errno should not be set at start of operator[]");
+		RAC_ERRNO_MSG("dynamic_lib at start of operator[]");
 
 		char* error;		
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());

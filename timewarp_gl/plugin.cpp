@@ -351,7 +351,7 @@ private:
 public:
 
 	virtual void _p_one_iteration() override {
-	    assert(errno == 0 && "Errno should not be set at start of iteration");
+	    RAC_ERRNO_MSG("timewarp_gl at start of iteration");
 	    const time_type time_now = std::chrono::system_clock::now();
 		warp(time_now);
 	}
@@ -375,7 +375,7 @@ public:
 	}
 
 	virtual void _p_thread_setup() override {
-        assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
+        RAC_ERRNO_MSG("timewarp_gl at start of _p_thread_setup");
 
 		time_last_swap = std::chrono::system_clock::now();
 
@@ -503,7 +503,7 @@ public:
 	}
 
 	virtual void warp([[maybe_unused]] time_type time) {
-		assert(errno == 0 && "Errno should not be set at start of warp");
+		RAC_ERRNO_MSG("timewarp_gl at start of warp");
 
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 		assert(gl_result && "glXMakeCurrent should not fail");
@@ -774,7 +774,7 @@ public:
 #endif
 
 	virtual ~timewarp_gl() override {
-		assert(errno == 0 && "Errno should not be set at start of destructor");
+		RAC_ERRNO_MSG("timewarp_gl at start of destructor");
 
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
 		assert(gl_result && "glXMakeCurrent should not fail");

@@ -26,7 +26,7 @@ namespace ILLIXR {
 		bool has_texture;
 
 		void Draw() {
-            assert(errno == 0 && "Errno should not be set at start of Draw");
+            RAC_ERRNO_MSG("gl_util/obj at start of Draw");
 
 			glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
 			glEnableVertexAttribArray(0);
@@ -67,7 +67,7 @@ namespace ILLIXR {
 		//
 		// obj_filename is the actual .obj file to be loaded.
 		ObjScene(const std::string& obj_dir, const std::string& obj_filename) {
-		    assert(errno == 0 && "Errno should not be set at start of ObjScene");
+		    RAC("gl_util/obj at start of ObjScene");
 
 			// If any of the following procedures fail to correctly load,
 			// we'll set this flag false (for the relevant operation)

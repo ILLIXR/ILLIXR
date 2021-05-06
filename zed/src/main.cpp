@@ -120,7 +120,7 @@ protected:
     }
 
     virtual void _p_one_iteration() override {
-        assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
+        RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
@@ -179,7 +179,7 @@ protected:
     }
 
     virtual void _p_one_iteration() override {
-        assert(errno == 0 && "Errno should not be set at start of _p_one_iteration");
+        RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
         // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 

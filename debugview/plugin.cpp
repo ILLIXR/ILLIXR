@@ -84,7 +84,7 @@ public:
 	}
 
 	void draw_GUI() {
-        assert(errno == 0 && "Errno should not be set at start of draw_GUI");
+        RAC_ERRNO_MSG("debugview at start of draw_GUI");
 
 		// Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -257,7 +257,7 @@ public:
 	}
 
 	bool load_camera_images() {
-        assert(errno == 0 && "Errno should not be set at start of load_camera_images");
+        RAC_ERRNO_MSG("debugview at start of load_camera_images");
 
 		if (last_datum_with_images == nullptr) {
 			return false;
@@ -313,14 +313,14 @@ public:
 	}
 
 	void _p_thread_setup() override {
-        assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
+        RAC_ERRNO_MSG("debugview at start of _p_thread_setup");
 
 		// Note: glfwMakeContextCurrent must be called from the thread which will be using it.
 		glfwMakeContextCurrent(gui_window);
 	}
 
 	void _p_one_iteration() override {
-        assert(errno == 0 && "Errno should not be set at stat of _p_one_iteration");
+        RAC_ERRNO_MSG("debugview at stat of _p_one_iteration");
 
         RAC_ERRNO_MSG("debugview before glfwPollEvents");
         glfwPollEvents();
@@ -474,7 +474,7 @@ public:
 
 	// Debug view application overrides _p_start to control its own lifecycle/scheduling.
 	virtual void start() override {
-        assert(errno == 0 && "Errno should not be set at the top of start()");
+        RAC_ERRNO_MSG("debugview at the top of start()");
 
 		// The "imu_cam" topic is not really a topic, in the current implementation.
 		// It serves more as an event stream. Camera frames are only available on this topic
@@ -591,7 +591,7 @@ public:
 	}
 
 	virtual ~debugview() override {
-		assert(errno == 0 && "Errno should not be set at start of destructor");
+		RAC_ERRNO_MSG("debugview at start of destructor");
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
@@ -599,7 +599,7 @@ public:
 
 		glfwDestroyWindow(gui_window);
 
-		assert(errno == 0 && "Errno should not be set during destructor");
+		RAC_ERRNO_MSG("debugview during destructor");
 
 		glfwTerminate();
 	}

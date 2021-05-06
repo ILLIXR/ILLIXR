@@ -29,7 +29,7 @@ cpp_clock_gettime(clockid_t clock_id) {
 				  : "memory" /* Clobbers */);
     struct timespec ts;
 
-    assert(errno == 0 && "Errno should not be set before clock_gettime");
+    RAC_ERRNO_MSG("cpu_timer before clock_gettime");
 
     if (clock_gettime(clock_id, &ts)) {
         throw std::runtime_error{std::string{"clock_gettime returned "} + strerror(errno)};

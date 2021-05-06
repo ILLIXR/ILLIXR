@@ -29,7 +29,7 @@ namespace ILLIXR {
 #ifndef NDEBUG
             std::cout << "Opening display" << std::endl;
 #endif
-            assert(errno == 0 && "Errno should not be set at start of xlib_gl_extended_window constructor");
+            RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
 
             dpy = XOpenDisplay(nullptr);
             if (!dpy) {
@@ -64,7 +64,7 @@ namespace ILLIXR {
 #ifndef NDEBUG
             std::cout << "Getting matching framebuffer configs" << std::endl;
 #endif
-            assert(errno == 0 && "Errno should not be set before glXChooseFBConfig");
+            RAC_ERRNO_MSG("extended_window before glXChooseFBConfig");
 
             int fbcount = 0;
             GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
