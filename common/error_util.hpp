@@ -25,9 +25,10 @@
 #endif /// RAC_ERRNO_MSG
 
 
-namespace ILLIXR {
+namespace ILLIXR
+{
 
-static const bool ENABLE_VERBOSE_ERRORS {ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_ENABLE_VERBOSE_ERRORS", "False"))};
+static const bool ENABLE_VERBOSE_ERRORS { ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_ENABLE_VERBOSE_ERRORS", "False")) };
 
 /**
  * @brief Support function to report errno values when debugging (NDEBUG).
@@ -36,12 +37,9 @@ static const bool ENABLE_VERBOSE_ERRORS {ILLIXR::str_to_bool(ILLIXR::getenv_or("
  * It will subsequently clear errno (reset value to 0).
  * Otherwise, this function does nothing.
  */
-inline void report_and_clear_errno(
-    [[maybe_unused]] const std::string& file,
-    [[maybe_unused]] const int& line,
-    [[maybe_unused]] const std::string& function,
-    [[maybe_unused]] const std::string& msg = ""
-) {
+inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[maybe_unused]] const int& line,
+                                   [[maybe_unused]] const std::string& function, [[maybe_unused]] const std::string& msg = "")
+{
 #ifndef NDEBUG
     if (errno > 0) {
         if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
@@ -62,7 +60,8 @@ inline void report_and_clear_errno(
  * Switches to using abort during debugging over std::exit so that we can capture
  * SIGABRT for debugging.
  */
-inline void abort(const std::string& msg = "", [[maybe_unused]] const int error_val = 1) {
+inline void abort(const std::string& msg = "", [[maybe_unused]] const int error_val = 1)
+{
     std::cerr << "** ERROR ** " << msg << std::endl;
 #ifndef NDEBUG
     std::abort();

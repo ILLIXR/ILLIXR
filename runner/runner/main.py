@@ -301,7 +301,7 @@ def delint_files(
 ) -> None:
     def path_to_json(path: Path) -> str:
         max_line_no: int = 9999999
-        return f'{"name":"{path}","lines":[[{max_line_no},{max_line_no}]]}'
+        return '{"name":"{%s}","lines":[[{%d},{%d}]]}' % (path, max_line_no, max_line_no)
 
     arg_fix: List[str] = ["--fix", "--fix-errors"] if enable_fix else list()
     objs_filter: List[str] = [path_to_json(path) for path in paths_filter_out] + ['{"name":".hpp"}', '{"name":".cpp"}']

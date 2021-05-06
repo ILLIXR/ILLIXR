@@ -4,8 +4,8 @@
 #include "common/global_module_defs.hpp"
 
 
-constexpr std::chrono::seconds ILLIXR_RUN_DURATION_DEFAULT {60};
-[[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION {10};
+constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT { 60 };
+[[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION { 10 };
 
 ILLIXR::runtime* r;
 
@@ -17,7 +17,8 @@ ILLIXR::runtime* r;
  * Forward SIGILL from illegal instructions to catchsegv in `ci.yaml`.
  * Provides additional debugging information via `-rdynamic`.
  */
-static void sigill_handler(int sig) {
+static void sigill_handler(int sig)
+{
     assert(sig == SIGILL && "sigill_handler is for SIGILL");
     std::raise(SIGSEGV);
 }
@@ -28,7 +29,8 @@ static void sigill_handler(int sig) {
  * Forward SIGABRT from `std::abort` and `assert` to catchsegv in `ci.yaml`.
  * Provides additional debugging information via `-rdynamic`.
  */
-static void sigabrt_handler(int sig) {
+static void sigabrt_handler(int sig)
+{
     assert(sig == SIGABRT && "sigabrt_handler is for SIGABRT");
     std::raise(SIGSEGV);
 }
@@ -39,34 +41,36 @@ static void sigabrt_handler(int sig) {
  *
  * Stops the execution of the application via the ILLIXR runtime.
  */
-static void sigint_handler([[maybe_unused]] int sig) {
+static void sigint_handler([[maybe_unused]] int sig)
+{
     assert(sig == SIGINT && "sigint_handler is for SIGINT");
-	if (r) {
-		r->stop();
-	}
+    if (r) {
+        r->stop();
+    }
 }
 
 
-class cancellable_sleep {
+class cancellable_sleep
+{
 public:
-	template <typename T, typename R>
-	bool sleep(std::chrono::duration<T, R> duration) {
-		auto wake_up_time = std::chrono::system_clock::now() + duration;
-		while (!_m_terminate.load() && std::chrono::system_clock::now() < wake_up_time) {
-			std::this_thread::sleep_for(std::chrono::milliseconds{100});
-		}
-		return _m_terminate.load();
-	}
-	void cancel() {
-		_m_terminate.store(true);
-	}
+    template <typename T, typename R> bool sleep(std::chrono::duration<T, R> duration)
+    {
+        auto wake_up_time = std::chrono::system_clock::now() + duration;
+        while (!_m_terminate.load() && std::chrono::system_clock::now() < wake_up_time) {
+            std::this_thread::sleep_for(std::chrono::milliseconds { 100 });
+        }
+        return _m_terminate.load();
+    }
+    void cancel() { _m_terminate.store(true); }
+
 private:
-	std::atomic<bool> _m_terminate {false};
+    std::atomic<bool> _m_terminate { false };
 };
 
 
-int main(int argc, char* const* argv) {
-	r = ILLIXR::runtime_factory(nullptr);
+int main(int argc, char* const* argv)
+{
+    r = ILLIXR::runtime_factory(nullptr);
 
 #ifndef NDEBUG
     /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
@@ -74,7 +78,7 @@ int main(int argc, char* const* argv) {
     std::signal(SIGABRT, sigabrt_handler);
 #endif /// NDEBUG
 
-	/// Shutting down method 1: Ctrl+C
+    /// Shutting down method 1: Ctrl+C
     std::signal(SIGINT, sigint_handler);
 
 #ifndef NDEBUG
@@ -91,33 +95,30 @@ int main(int argc, char* const* argv) {
     }
 #endif /// NDEBUG
 
-	/// Shutting down method 2: Run timer
-	std::chrono::seconds run_duration = 
-		getenv("ILLIXR_RUN_DURATION")
-		? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
-		: ILLIXR_RUN_DURATION_DEFAULT;
+    /// Shutting down method 2: Run timer
+    std::chrono::seconds run_duration = getenv("ILLIXR_RUN_DURATION")
+        ? std::chrono::seconds { std::stol(std::string { getenv("ILLIXR_RUN_DURATION") }) }
+        : ILLIXR_RUN_DURATION_DEFAULT;
 
-	assert(errno == 0 && "Errno should not be set after creating runtime");
+    assert(errno == 0 && "Errno should not be set after creating runtime");
 
-	std::vector<std::string> lib_paths;
-	std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
-		return std::string{arg};
-	});
-	assert(errno == 0 && "Errno should not be set before loading dynamic libraries");
-	r->load_so(lib_paths);
+    std::vector<std::string> lib_paths;
+    std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) { return std::string { arg }; });
+    assert(errno == 0 && "Errno should not be set before loading dynamic libraries");
+    r->load_so(lib_paths);
 
-	cancellable_sleep cs;
-	std::thread th{[&]{
-		cs.sleep(run_duration);
-		r->stop();
-	}};
+    cancellable_sleep cs;
+    std::thread       th { [&] {
+        cs.sleep(run_duration);
+        r->stop();
+    } };
 
-	r->wait(); // blocks until shutdown is r->stop()
+    r->wait(); // blocks until shutdown is r->stop()
 
-	// cancel our sleep, so we can join the other thread
-	cs.cancel();
-	th.join();
+    // cancel our sleep, so we can join the other thread
+    cs.cancel();
+    th.join();
 
-	delete r;
-	return 0;
+    delete r;
+    return 0;
 }

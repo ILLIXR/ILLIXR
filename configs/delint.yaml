@@ -41,7 +41,7 @@ action:
   lint_file:       .clang-tidy        ## Must be .clang-tidy for now
   format_file:     .clang-format      ## Must be .clang-format for now
 
-  filter_out:      #macro_plugin.hpp
+  filter_out:      runtime/plugin.hpp
   target_file:     #common/plugin.hpp
   target_pkg_deps: #common/pkg-deps.txt
 
