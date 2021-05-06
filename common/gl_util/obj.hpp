@@ -67,7 +67,7 @@ namespace ILLIXR {
 		//
 		// obj_filename is the actual .obj file to be loaded.
 		ObjScene(const std::string& obj_dir, const std::string& obj_filename) {
-		    RAC("gl_util/obj at start of ObjScene");
+		    RAC_ERRNO_MSG("gl_util/obj at start of ObjScene");
 
 			// If any of the following procedures fail to correctly load,
 			// we'll set this flag false (for the relevant operation)
