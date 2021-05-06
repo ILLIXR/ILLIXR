@@ -69,6 +69,10 @@ Each configuration comprises an _action_, a _profile_, and a list of [_plugins_]
             the entire ILLIXR project.
         Defined in `ILLIXR/configs/clean.yaml` and supported by `ILLIXR/clean.sh`.
 
+    *   `delint`:
+        A meta-task that delints and formats source files for all included plugins.
+        Defined in `ILLIXR/configs/delint.yaml`.
+
     *   `docs`:
         A meta-task that generates and populates the documention subdirectories in the project.
 
