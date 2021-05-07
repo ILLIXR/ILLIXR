@@ -355,7 +355,7 @@ def run_config(config_path: Path, overrides: List[Tuple[Tuple[str], str]]) -> No
     subprocess_run(["sudo", "chown", getpass.getuser(), "-R", str(metrics)])
 
     if "metrics" in config["loader"]:
-        shutil.move(metrics, config["loader"]["metrics"])
+        shutil.move(str(metrics), config["loader"]["metrics"])
 
 
 if __name__ == "__main__":
