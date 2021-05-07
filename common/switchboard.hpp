@@ -16,7 +16,13 @@
 #include "cpu_timer/cpu_timer.hpp"
 #include "managed_thread.hpp"
 #include "frame_info.hpp"
+#include "defs.hpp"
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+
+#ifndef DEBUG
+#define DEBUG2(x1, x2) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x1 << "=" << x1 << ", " << #x2 << "=" << x2 << std::endl;
+#define DEBUG(x) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x << "=" << x << std::endl;
+#endif
 
 namespace ILLIXR {
 
@@ -52,7 +58,35 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
        {"idle_cycles", typeid(std::size_t)},
 }};
 
-static void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb);
+	struct thread_info {
+		pid_t pid;
+		std::string name;
+		thread_info(pid_t pid_, std::string name_)
+			: pid{pid_}
+			, name{name_}
+		{ }
+	};
+
+	struct completion {
+		double wall_time_end;
+		double cpu_time_duration;
+		completion(double wall_time_end_, double cpu_time_duration_)
+			: wall_time_end{wall_time_end_}
+			, cpu_time_duration{cpu_time_duration_}
+		{ }
+	};
+
+	static double cpu_time_now() {
+		struct timespec ts;
+		clock_gettime(CLOCK_THREAD_CPUTIME_ID , &ts);
+		return (ts.tv_sec + 1e-9*ts.tv_nsec);
+	}
+
+	static double wall_time_now() {
+		struct timespec ts;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		return (ts.tv_sec + 1e-9*ts.tv_nsec);
+	}
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -135,7 +169,12 @@ public:
 		event_wrapper(underlying_type underlying_data_)
 			: underlying_data{underlying_data_}
 		{ }
+		
 		operator underlying_type() const { return underlying_data; }
+
+		underlying_type& o() { return underlying_data; }
+		const underlying_type& o() const { return underlying_data; }
+
 		underlying_type& operator*() { return underlying_data; }
 		const underlying_type& operator*() const { return underlying_data; }
 	};
@@ -187,10 +226,11 @@ private:
 		}
 
 		void thread_body() {
-			std::optional<switchboard::writer<switchboard::event_wrapper<bool>>> completion_publisher;
+			auto cpu_time_start = cpu_time_now();
+			std::optional<switchboard::writer<switchboard::event_wrapper<completion>>> completion_publisher;
 			if (pb) {
 				auto sb = pb->lookup_impl<switchboard>();
-				completion_publisher.emplace(sb->get_writer<switchboard::event_wrapper<bool>>(std::to_string(_m_plugin_id) + "_completion"));
+				completion_publisher.emplace(sb->get_writer<switchboard::event_wrapper<completion>>(std::to_string(_m_plugin_id) + "_completion"));
 			}
 
 			// Try to pull event off of queue
@@ -211,7 +251,7 @@ private:
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				if (completion_publisher) {
-					completion_publisher->put(new (completion_publisher->allocate()) switchboard::event_wrapper<bool> {true});
+					completion_publisher->put(new (completion_publisher->allocate()) switchboard::event_wrapper<completion> {completion{wall_time_now(), cpu_time_now() - cpu_time_start}});
 				}
 			} else {
 				// Nothing to do.
@@ -257,7 +297,12 @@ private:
 								std::cerr << strerror(errno) << std::endl;
 							}
 							assert(!rc);
-							thread_on_start(_m_thread, _m_plugin_id, pb);
+							if (pb && (is_static_scheduler() || is_dynamic_scheduler())) {
+								auto sb = pb->lookup_impl<switchboard>();
+								auto thread_id_publisher = sb->get_writer<switchboard::event_wrapper<thread_info>>(std::to_string(_m_plugin_id) + "_thread_id");
+								std::cerr << "Thread of plugin " << _m_plugin_id << " publish" << std::endl;
+								thread_id_publisher.put(new (thread_id_publisher.allocate()) switchboard::event_wrapper<thread_info>{thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)}});
+							}
 						},
 						[this]{this->thread_on_stop();},
 						cpu_timer::make_type_eraser<FrameInfo>(std::to_string(_m_plugin_id), _m_topic_name, 0)

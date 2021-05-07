@@ -223,22 +223,4 @@ namespace ILLIXR {
 		float	metersPerTanAngleAtCenter;
 	};
 
-	struct thread_info : switchboard::event {
-		pid_t pid;
-		std::string name;
-		thread_info(pid_t pid_, std::string name_)
-			: pid{pid_}
-			, name{name_}
-		{ }
-	};
-
-	[[maybe_unused]] void thread_on_start(const managed_thread& _m_thread, size_t _m_plugin_id, const phonebook* pb) {
-		if (pb && (is_static_scheduler() || is_dynamic_scheduler())) {
-			auto sb = pb->lookup_impl<switchboard>();
-			auto thread_id_publisher = sb->get_writer<thread_info>(std::to_string(_m_plugin_id) + "_thread_id");
-			std::cerr << "Thread of plugin " << _m_plugin_id << " publish" << std::endl;
-			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{_m_thread.get_pid(), std::to_string(_m_plugin_id)});
-		}
-	}
-
 }

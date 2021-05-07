@@ -16,8 +16,10 @@
 #include "common/pose_prediction.hpp"
 #include "common/managed_thread.hpp"
 
+#ifndef DEBUG
 #define DEBUG2(x1, x2) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x1 << "=" << x1 << << ", " << #x2 << "=" << x2 << std::endl;
 #define DEBUG(x) std::cerr << __FILE__ << ':' << __LINE__ << ": " << #x << "=" << x << std::endl;
+#endif
 
 using namespace ILLIXR;
 
@@ -437,6 +439,7 @@ public:
 		Eigen::Matrix4f viewMatrixEnd = Eigen::Matrix4f::Identity();
 		Eigen::Matrix4f timeWarpStartTransform4x4;
 		Eigen::Matrix4f timeWarpEndTransform4x4;
+		fast_pose_type latest_pose;
 
 		{
 			CPU_TIMER_TIME_BLOCK("_math");
@@ -452,7 +455,7 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		const fast_pose_type latest_pose = pp->get_fast_pose();
+		latest_pose = pp->get_fast_pose();
 		viewMatrixBegin.block(0,0,3,3) = latest_pose.pose.orientation.toRotationMatrix();
 
 		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
@@ -577,8 +580,6 @@ public:
 
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
-		[[maybe_unused]] auto beforeSwap = glfwGetTime();
-
 		CPU_TIMER_TIME_EVENT_INFO(true, false, "exit", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "frame_ready", 0));
 
 		log
@@ -622,8 +623,6 @@ public:
 		// 	{predict_to_display},
 		// 	{render_to_display},
 		// }});
-		auto afterSwap = glfwGetTime();
-		printf("\033[1;36m[TIMEWARP]\033[0m Swap time: %5fms\n", (float)(afterSwap - beforeSwap) * 1000);
 		printf("\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: %3f ms\n", float(imu_to_display.count()) / 1e6);
 		printf("\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: %3f ms\n", float(predict_to_display.count()) / 1e6);
 		printf("\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: %3f ms\n", float(render_to_display.count()) / 1e6);

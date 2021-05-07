@@ -32,8 +32,8 @@ public:
 	threadloop(std::string name_, phonebook* pb_, bool is_scheduled_ = true)
 		: plugin(name_, pb_)
 		, sb{pb->lookup_impl<switchboard>()}
-		, thread_id_publisher{sb->get_writer<thread_info>(std::to_string(id) + "_thread_id")}
-		, completion_publisher{sb->get_writer<switchboard::event_wrapper<bool>>(std::to_string(id) + "_completion")}
+		, thread_id_publisher{sb->get_writer<switchboard::event_wrapper<thread_info>>(std::to_string(id) + "_thread_id")}
+		, completion_publisher{sb->get_writer<switchboard::event_wrapper<completion>>(std::to_string(id) + "_completion")}
 		, is_scheduled{is_scheduled_ && (is_static_scheduler() || is_dynamic_scheduler())}
 	{ }
 
@@ -54,8 +54,12 @@ public:
 		} else {
 			paused.clear();
 			thread = std::make_unique<managed_thread>([this]{
-				thread_main(false);
-				completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<bool> {true});
+					auto cpu_time_start = cpu_time_now();
+					thread_main(false);
+					completion_publisher.put(new (completion_publisher.allocate()) switchboard::event_wrapper<completion> {completion{
+						wall_time_now(),
+						cpu_time_now() - cpu_time_start
+					}});
 				},
 				[this]{
 					char* name = new char[100];
@@ -71,7 +75,7 @@ public:
 			thread->start();
 			auto pid = thread->get_pid();
 			assert(pid != 0);
-			thread_id_publisher.put(new (thread_id_publisher.allocate()) thread_info{pid, std::to_string(id)});
+			thread_id_publisher.put(new (thread_id_publisher.allocate()) switchboard::event_wrapper<thread_info>{thread_info{pid, std::to_string(id)}});
 		}
 	}
 
@@ -128,8 +132,8 @@ protected:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	switchboard::writer<thread_info> thread_id_publisher;
-	switchboard::writer<switchboard::event_wrapper<bool>> completion_publisher;
+	switchboard::writer<switchboard::event_wrapper<thread_info>> thread_id_publisher;
+	switchboard::writer<switchboard::event_wrapper<completion>> completion_publisher;
 	bool first_time = true;
 	record_coalescer it_log {record_logger_};
 	bool is_scheduled;

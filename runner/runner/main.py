@@ -117,6 +117,8 @@ def build_runtime(config: Mapping[str, Any], suffix: str, test: bool = False,) -
 
 def write_scheduler_config(config: Mapping[str, Any]) -> Path:
     dag = config["loader"]["scheduler"]
+    scheduler = config["conditions"]["scheduler"]
+    assert scheduler in {"static", "dynamic"}
     freq = config["conditions"].get("cpu_freq", 5.3)
     expected_ov = (8.33/1.05 - dag["nodes"]["timewarp_gl"][0][freq] - dag["nodes"]["gtsam_integrator"][0][freq] - dag["nodes"]["offline_imu"][0][freq] - dag["nodes"]["gldemo"][0][freq]) * dag["fc"][freq] - dag["nodes"]["offline_cam"][0][freq]
     assert expected_ov - 0.1 <= dag["nodes"]["open_vins"][0][freq] <= expected_ov + 0.1, expected_ov
@@ -131,20 +133,19 @@ def write_scheduler_config(config: Mapping[str, Any]) -> Path:
 
     lines: str = []
     for node, (ctmap, b, c, d, _) in dag["nodes"].items():
-        lines.append(f"N {name2id[node]} {ctmap[freq]} {b} {c} {d}")
+        compute_time = ctmap[freq] if scheduler == "static" else 5.0
+        lines.append(f"N {name2id[node]} {compute_time} {b} {c} {d} N")
     for node, (_, _, _, _, neighbors) in dag["nodes"].items():
         if neighbors:
             lines.append(f"E {name2id[node]} {' '.join(str(name2id[neighbor]) for neighbor in neighbors)} X")
     for weight, chain in dag["chains"]:
         if chain:
             lines.append(f"C {weight} {' '.join(str(name2id[node]) for node in chain)} X")
-    if dag["constr"]:
-        lines.append("constr")
-
+    lines.append(dag["mode"])
     path.write_text("\n".join(lines))
     return path
 
-def load_native(config: Mapping[str, Any]) -> None:
+def load_native(config: Mapping[str, Any], quiet: bool) -> None:
     runtime_exe_path = build_runtime(config, "exe")
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
@@ -156,22 +157,24 @@ def load_native(config: Mapping[str, Any]) -> None:
             for plugin_config in plugin_group["plugin_group"]
         ],
         desc="Building plugins",
+        quiet=quiet,
     )
 
     actual_cmd_str = config["loader"].get("command", "$full_cmd")
 
-    scheduler_enabled = config["conditions"]["scheduler"]
-    scheduler_config_path = str(write_scheduler_config(config)) if scheduler_enabled else ""
+    scheduler = config["conditions"]["scheduler"]
+    scheduler_config_path = str(write_scheduler_config(config)) if scheduler in {"static", "dynamic"} else ""
 
     env_override = dict(
         ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
         KIMERA_ROOT=config["loader"]["kimera_path"],
         ILLIXR_RUN_DURATION=str(config["conditions"]["duration"]),
-        ILLIXR_SCHEDULER=config["conditions"]["scheduler"],
+        ILLIXR_SCHEDULER=scheduler,
         ILLIXR_SCHEDULER_CONFIG=scheduler_config_path,
-        ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]],
+        ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]] if scheduler == "static" else 1,
         ILLIXR_TIMEWARP_DELAY=str(int(config["loader"]["scheduler"]["nodes"]["timewarp_gl"][0][config["conditions"]["cpu_freq"]] * 1e6)),
+        ILLIXR_SWAP_ORDER=["n", "y"][int(config["conditions"].get("swap", False))],
         **config["loader"].get("env", {}),
     )
 
@@ -232,6 +235,9 @@ def load_native(config: Mapping[str, Any]) -> None:
             stdout=log_stdout,
             stderr=subprocess.STDOUT,
         )
+
+    if sudo_prefix:
+        subprocess_run([*sudo_prefix, "chown", getpass.getuser(), "-R", "metrics"])
 
 
 def load_tests(config: Mapping[str, Any]) -> None:
@@ -322,7 +328,7 @@ loaders = {
 }
 
 
-def run_config(config_path: Path, overrides: List[Tuple[Tuple[str], str]]) -> None:
+def run_config(config_path: Path, overrides: List[Tuple[Tuple[str], str]], quiet: bool) -> None:
     """Parse a YAML config file, returning the validated ILLIXR system config."""
     YamlIncludeConstructor.add_to_loader_class(
         loader_class=yaml.FullLoader, base_dir=config_path.parent,
@@ -350,24 +356,19 @@ def run_config(config_path: Path, overrides: List[Tuple[Tuple[str], str]]) -> No
     if loader not in loaders:
         raise RuntimeError(f"No such loader: {loader}")
 
-    loaders[loader](config)
-
-    subprocess_run(["sudo", "chown", getpass.getuser(), "-R", str(metrics)])
-
-    if "metrics" in config["loader"]:
-        shutil.move(str(metrics), config["loader"]["metrics"])
-
+    loaders[loader](config, quiet)
 
 if __name__ == "__main__":
 
     @click.command()
     @click.argument("config_path", type=click.Path(exists=True))
     @click.option("--overrides", multiple=True, type=str)
-    def main(config_path: str, overrides: List[str]) -> None:
+    @click.option("--quiet/--verbose", default=False, type=bool)
+    def main(config_path: str, overrides: List[str], quiet: bool) -> None:
         overrides = [
             (tuple(key.split(".")), val)
             for key, val in [override.split("=") for override in overrides]
         ]
-        run_config(Path(config_path), overrides)
+        run_config(Path(config_path), overrides, quiet)
 
     main()

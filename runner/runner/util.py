@@ -212,6 +212,7 @@ def threading_imap_unordered(
     chunksize: int = 1,
     desc: Optional[str] = None,
     length_hint: Optional[int] = 0,
+    quiet: bool = False,
 ) -> Iterable[V]:
     """Clone of multiprocessing.imap_unordered for threads with tqdm for progress
 
@@ -256,6 +257,7 @@ def threading_imap_unordered(
             get_results(results),
             total=my_length_hint(iterable, length_hint),
             desc=desc,
+            disable=quiet,
         )
     )
 
@@ -271,6 +273,7 @@ def threading_map(
     chunksize: int = 1,
     desc: Optional[str] = None,
     length_hint: Optional[int] = 0,
+    quiet: bool = False,
 ) -> Iterable[V]:
     """Clone of multiprocessing.map for threads with tqdm for progress
 
@@ -287,6 +290,7 @@ def threading_map(
                 list(enumerate(iterable)),
                 chunksize=chunksize,
                 length_hint=my_length_hint(iterable, length_hint),
+                quiet=quiet,
             ),
         ),
     )
