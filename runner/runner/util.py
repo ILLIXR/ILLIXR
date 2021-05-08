@@ -527,9 +527,16 @@ def make(
 
 
 def cmake(
-    path: Path, build_path: Path, var_dict: Optional[Mapping[str, str]] = None
+    path: Path,
+    build_path: Path,
+    var_dict: Optional[Mapping[str, str]] = None,
+    parallelism: Optional[int] = None,
+    env_override: Optional[Mapping[str, str]] = None
 ) -> None:
-    parallelism = max(1, multiprocessing.cpu_count() // 2)
+
+    if parallelism is None:
+        parallelism = max(1, multiprocessing.cpu_count() // 2)
+
     var_args = [f"-D{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
     build_path.mkdir(exist_ok=True)
     subprocess_run(
@@ -545,5 +552,6 @@ def cmake(
         ],
         check=True,
         capture_output=True,
+        env_override=env_override,
     )
-    make(build_path, ["all"])
+    make(build_path, ["all"], parallelism=parallelism, env_override=env_override)

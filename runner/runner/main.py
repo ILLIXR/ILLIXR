@@ -181,56 +181,85 @@ def load_tests(config: Mapping[str, Any]) -> None:
 
 
 def load_monado(config: Mapping[str, Any]) -> None:
+    action_name = config["action"]["name"]
+
     profile = config["profile"]
-    cmake_profile = "Debug" if profile == "dbg" else "Release"
-    openxr_app_config = config["action"]["openxr_app"].get("config", {})
+    cmake_profile = "Debug" if profile == "dbg" else "RelWithDebInfo"
+
     monado_config = config["action"]["monado"].get("config", {})
+
+    if "openxr_app" in config["action"]:
+        openxr_app_config = config["action"]["openxr_app"].get("config", {})
+        openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
 
-    cmake(
-        monado_path,
-        monado_path / "build",
-        dict(
-            CMAKE_BUILD_TYPE=cmake_profile,
-            BUILD_WITH_LIBUDEV="0",
-            BUILD_WITH_LIBUVC="0",
-            BUILD_WITH_LIBUSB="0",
-            BUILD_WITH_NS="0",
-            BUILD_WITH_PSMV="0",
-            BUILD_WITH_PSVR="0",
-            BUILD_WITH_OPENHMD="0",
-            BUILD_WITH_VIVE="0",
-            ILLIXR_PATH=str(runtime_path),
-            **monado_config,
-        ),
-    )
-    cmake(
-        openxr_app_path,
-        openxr_app_path / "build",
-        dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
-    )
+    is_mainline: bool = bool(config["action"]["is_mainline"])
+
     build_runtime(config, "so")
-    plugin_paths = threading_map(
+
+    plugin_paths: List[Path] = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
+    plugin_paths_comp_arg: str = ':'.join(map(str, plugin_paths))
+
+    env_monado: Mapping[str, str] = dict(
+        ILLIXR_DATA=str(data_path),
+        ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
+        ILLIXR_COMP=plugin_paths_comp_arg,
+        XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
+    )
+
+    ## For CMake
+    build_opts: Mapping[str, str] = dict(
+        CMAKE_BUILD_TYPE=cmake_profile,
+        ILLIXR_PATH=str(runtime_path),
+        **monado_config,
+    )
+
+    cmake(
+        monado_path,
+        monado_path / "build",
+        build_opts,
+        env_override=env_monado,
+    )
+
+    if not is_mainline:
+        cmake(
+            openxr_app_path,
+            openxr_app_path / "build",
+            dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
+        )
+
+    monado_target_name : str  # Forward declare type
+    monado_target_dir  : Path # Forward declare type
+    monado_target_path : Path # Forward declare type
+
+    if is_mainline:
+        monado_target_name = "monado-service"
+        monado_target_dir  = monado_path / "build" / "src" / "xrt" / "targets" / "service"
+        monado_target_path = monado_target_dir / monado_target_name
+    else:
+        monado_target_name = "openxr-example"
+        monado_target_dir  = openxr_app_path / "build"
+        monado_target_path = monado_target_dir / monado_target_name
+
+    if not monado_target_path.exists():
+        raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
+
+    monado_cmd: List[str] = [str(monado_target_path)]
 
     subprocess_run(
-        [str(openxr_app_path / "build" / "./openxr-example")],
+        monado_cmd,
         env_override=dict(
-            XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
-            ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
-            ILLIXR_COMP=":".join(map(str, plugin_paths)),
-            ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
@@ -238,6 +267,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
             REALSENSE_CAM=str(realsense_cam_string),
+            **env_monado,
         ),
         check=True,
     )
