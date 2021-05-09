@@ -169,7 +169,7 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
     Topic details:
 
-    -   Asynchronously *reads* `texture_image` on `texture_image`.
+    -   Synchronously *reads* `texture_pose` on `texture_pose`.
 
 -   [`zed`][22]:
     Reads images and [_IMU_][36] measurements from the [ZED Mini][24].
