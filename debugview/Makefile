@@ -1,3 +1,4 @@
-LDFLAGS = -ggdb -ldl -pthread $(shell pkg-config glfw3 glew opencv x11 --libs)
-CFLAGS = $(shell pkg-config glfw3 glew opencv x11 --cflags)
+PKG_DEPS = $(shell cat pkg-deps.txt)
+LDFLAGS = -ggdb -ldl -pthread $(shell pkg-config ${PKG_DEPS} --libs)
+CFLAGS = $(shell pkg-config ${PKG_DEPS} --cflags)
 include common/common.mk

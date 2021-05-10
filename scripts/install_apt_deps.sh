@@ -79,6 +79,8 @@ pkg_dep_list_common=(
     build-essential
     git
     clang-10
+    clang-format-10
+    clang-tidy-10
     make
     cmake
     unzip
@@ -177,6 +179,7 @@ pkg_dep_list_docker=(
 pkg_dep_list_realsense_anyarch=(
     librealsense2-utils
     librealsense2-dev
+    librealsense2-gl-dev
 ) # End List
 
 pkg_dep_list_realsense_x86_64=(

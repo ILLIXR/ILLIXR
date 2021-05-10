@@ -11,7 +11,7 @@
 #include <gtsam/base/Matrix.h>
 #include <gtsam/base/Vector.h>
 #include <gtsam/navigation/AHRSFactor.h>
-#include <gtsam/navigation/CombinedImuFactor.h>  // Used if IMU combined is off.
+#include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
 #include <boost/smart_ptr/shared_ptr.hpp>
@@ -23,34 +23,35 @@
 using ImuBias = gtsam::imuBias::ConstantBias;
 using namespace ILLIXR;
 
-typedef struct {
-    double timestamp;
+typedef struct
+{
+    double                      timestamp;
     Eigen::Matrix<double, 3, 1> wm;
     Eigen::Matrix<double, 3, 1> am;
 } imu_type;
 
 
-class imu_integrator : public plugin {
+class imu_integrator : public plugin
+{
 public:
     imu_integrator(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
-        , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+        : plugin { name_, pb_ }
+        , sb { pb->lookup_impl<switchboard>() }
+        , _m_imu_cam { sb->get_reader<imu_cam_type>("imu_cam") }
+        , _m_imu_integrator_input { sb->get_reader<imu_integrator_input>("imu_integrator_input") }
+        , _m_imu_raw { sb->get_writer<imu_raw_type>("imu_raw") }
     {
-        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
-            callback(datum);
-        });
+        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) { callback(datum); });
     }
 
-    void callback(switchboard::ptr<const imu_cam_type> datum) {
+    void callback(switchboard::ptr<const imu_cam_type> datum)
+    {
         double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
 
         imu_type data;
         data.timestamp = timestamp_in_seconds;
-        data.wm = (datum->angular_v).cast<double>();
-        data.am = (datum->linear_a).cast<double>();
+        data.wm        = (datum->angular_v).cast<double>();
+        data.am        = (datum->linear_a).cast<double>();
         _imu_vec.emplace_back(data);
 
         clean_imu_vec(timestamp_in_seconds);
@@ -63,7 +64,7 @@ private:
     const std::shared_ptr<switchboard> sb;
 
     // IMU Data, Sequence Flag, and State Vars Needed
-    switchboard::reader<imu_cam_type> _m_imu_cam;
+    switchboard::reader<imu_cam_type>         _m_imu_cam;
     switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
     // Write IMU Biases for PP
@@ -71,8 +72,8 @@ private:
 
     std::vector<imu_type> _imu_vec;
 
-    [[maybe_unused]] double last_cam_time = 0;
-    double last_imu_offset = 0;
+    [[maybe_unused]] double last_cam_time   = 0;
+    double                  last_imu_offset = 0;
 
     /**
      * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
@@ -88,20 +89,18 @@ private:
         using pim_ptr_t = gtsam::PreintegrationType*;
 
         PimObject(const imu_int_t& imu_int_input)
-            : _imu_bias{imu_int_input.biasAcc, imu_int_input.biasGyro}
-            , _pim{nullptr}
+            : _imu_bias { imu_int_input.biasAcc, imu_int_input.biasGyro }
+            , _pim { nullptr }
         {
-            pim_t::Params _params{imu_int_input.params.n_gravity};
+            pim_t::Params _params { imu_int_input.params.n_gravity };
             _params.setGyroscopeCovariance(std::pow(imu_int_input.params.gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
             _params.setAccelerometerCovariance(std::pow(imu_int_input.params.acc_noise, 2.0) * Eigen::Matrix3d::Identity());
-            _params.setIntegrationCovariance(std::pow(imu_int_input.params.imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
+            _params.setIntegrationCovariance(std::pow(imu_int_input.params.imu_integration_sigma, 2.0)
+                                             * Eigen::Matrix3d::Identity());
             _params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
             _params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-            _pim = new pim_t {
-                boost::make_shared<pim_t::Params>(std::move(_params)),
-                _imu_bias
-            };
+            _pim = new pim_t { boost::make_shared<pim_t::Params>(std::move(_params)), _imu_bias };
             resetIntegrationAndSetBias(imu_int_input);
         }
 
@@ -117,21 +116,19 @@ private:
         {
             assert(_pim != nullptr && "_pim should not be null");
 
-            _imu_bias = bias_t{imu_int_input.biasAcc, imu_int_input.biasGyro};
+            _imu_bias = bias_t { imu_int_input.biasAcc, imu_int_input.biasGyro };
             _pim->resetIntegrationAndSetBias(_imu_bias);
 
-            _navstate_lkf = nav_t {
-                gtsam::Pose3{gtsam::Rot3{imu_int_input.quat}, imu_int_input.position},
-                imu_int_input.velocity
-            };
+            _navstate_lkf
+                = nav_t { gtsam::Pose3 { gtsam::Rot3 { imu_int_input.quat }, imu_int_input.position }, imu_int_input.velocity };
         }
 
         void integrateMeasurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept
         {
             assert(_pim != nullptr && "_pim shuold not be null");
 
-            const gtsam::Vector3 measured_acc{imu_input.am};
-            const gtsam::Vector3 measured_omega{imu_input.wm};
+            const gtsam::Vector3 measured_acc { imu_input.am };
+            const gtsam::Vector3 measured_omega { imu_input.wm };
 
             /// Delta T should be in seconds
             const double delta_t = imu_input_next.timestamp - imu_input.timestamp;
@@ -152,8 +149,8 @@ private:
         }
 
     private:
-        bias_t _imu_bias;
-        nav_t _navstate_lkf;
+        bias_t    _imu_bias;
+        nav_t     _navstate_lkf;
         pim_ptr_t _pim;
     };
 
@@ -161,7 +158,8 @@ private:
 
 
     // Remove IMU values older than 'IMU_TTL' from the imu buffer
-    void clean_imu_vec(const double& timestamp) {
+    void clean_imu_vec(const double& timestamp)
+    {
         auto imu_iterator = _imu_vec.begin();
 
         // Since the vector is ordered oldest to latest, keep deleting until you
@@ -176,7 +174,8 @@ private:
     }
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-    void propagate_imu_values(const double& timestamp, const time_type& real_time) {
+    void propagate_imu_values(const double& timestamp, const time_type& real_time)
+    {
         auto input_values = _m_imu_integrator_input.get_ro_nullable();
         if (input_values == nullptr) {
             return;
@@ -204,7 +203,7 @@ private:
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
         const double time_begin = input_values->last_cam_integration_time + last_imu_offset;
-        const double time_end = input_values->t_offset + timestamp;
+        const double time_end   = input_values->t_offset + timestamp;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
@@ -215,7 +214,7 @@ private:
         }
 
         ImuBias prev_bias = _pim_obj->biasHat();
-        ImuBias bias = _pim_obj->biasHat();
+        ImuBias bias      = _pim_obj->biasHat();
 
 #ifndef NDEBUG
         std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
@@ -228,43 +227,30 @@ private:
             _pim_obj->integrateMeasurement(prop_datum_i, prop_datum_i_next);
 
             prev_bias = bias;
-            bias = _pim_obj->biasHat();
+            bias      = _pim_obj->biasHat();
         }
 
         gtsam::NavState navstate_k = _pim_obj->predict();
-        gtsam::Pose3 out_pose = navstate_k.pose();
+        gtsam::Pose3    out_pose   = navstate_k.pose();
 
 #ifndef NDEBUG
-        std::cout << "Base Position (x, y, z) = "
-                  << input_values->position(0) << ", "
-                  << input_values->position(1) << ", "
+        std::cout << "Base Position (x, y, z) = " << input_values->position(0) << ", " << input_values->position(1) << ", "
                   << input_values->position(2) << std::endl;
 
-        std::cout << "New  Position (x, y, z) = "
-                  << out_pose.x() << ", "
-                  << out_pose.y() << ", "
-                  << out_pose.z() << std::endl;
+        std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
 #endif
 
-        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
-            imu_raw_type {
-                prev_bias.gyroscope(),
-                prev_bias.accelerometer(),
-                bias.gyroscope(),
-                bias.accelerometer(),
-                out_pose.translation(),             /// Position
-                navstate_k.velocity(),              /// Velocity
-                out_pose.rotation().toQuaternion(), /// Eigen Quat
-                real_time
-            }
-        ));
+        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(imu_raw_type { prev_bias.gyroscope(), prev_bias.accelerometer(),
+                                                                        bias.gyroscope(), bias.accelerometer(),
+                                                                        out_pose.translation(), /// Position
+                                                                        navstate_k.velocity(), /// Velocity
+                                                                        out_pose.rotation().toQuaternion(), /// Eigen Quat
+                                                                        real_time }));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-    std::vector<imu_type> select_imu_readings(
-        const std::vector<imu_type>& imu_data,
-        const double& time_begin,
-        const double& time_end)
+    std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, const double& time_begin,
+                                              const double& time_end)
     {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {
@@ -307,13 +293,14 @@ private:
     }
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-    static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, const double& timestamp) {
+    static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, const double& timestamp)
+    {
         imu_type data;
         data.timestamp = timestamp;
 
         const double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
-        data.am = (1 - lambda) * imu_1.am + lambda * imu_2.am;
-        data.wm = (1 - lambda) * imu_1.wm + lambda * imu_2.wm;
+        data.am             = (1 - lambda) * imu_1.am + lambda * imu_2.am;
+        data.wm             = (1 - lambda) * imu_1.wm + lambda * imu_2.wm;
 
         return data;
     }

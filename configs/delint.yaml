@@ -1,0 +1,55 @@
+##
+## Configuration to delint and format the codebase.
+##
+## To delint only a single file (instead of all code defined in `plugin_groups`),
+## simply define paths for your `target_file` and its `target_pkg_deps` (for `-I<include-path>` handling)
+##
+## If there are too many errors and warnings, redirect the standard output to a file:
+##     `./runner.sh configs/delint.yaml > delint-output-<datetime>.log`
+##
+## To have the delinter ignore a file, add the file path to the comma-separated list in `filter_out`
+## 
+plugin_groups:
+  - plugin_group:
+    ## Runtime
+    - path: runtime
+    - path: common
+    ## Core Plugins
+    - path: timewarp_gl
+    ## Real-Time SLAM Plugins
+    - path: offline_imu_cam
+    - path: zed
+    - path: gtsam_integrator
+    - path: pose_prediction
+    ## Other Plugins
+    #- path: realsense
+    - path: ground_truth_slam
+    - path: gldemo
+    - path: debugview
+    - path: pose_lookup
+    - path: rk4_integrator
+    - path: timewarp_gl
+
+action:
+  name:            delint
+
+  enable_fix:      True
+  cpp_std:         c++17
+
+  linter:          clang-tidy-10
+  formatter:       clang-format-10
+  lint_file:       .clang-tidy        ## Must be .clang-tidy for now
+  format_file:     .clang-format      ## Must be .clang-format for now
+
+  filter_out:      runtime/plugin.hpp
+  target_file:     #common/plugin.hpp
+  target_pkg_deps: #common/pkg-deps.txt
+
+## Unused definitions
+profile: opt
+data: data
+demo_data: demo_data
+enable_offload: False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False
