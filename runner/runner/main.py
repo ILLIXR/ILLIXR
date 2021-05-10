@@ -121,7 +121,7 @@ def write_scheduler_config(config: Mapping[str, Any]) -> Path:
     assert scheduler in {"static", "dynamic"}
     freq = config["conditions"].get("cpu_freq", 5.3)
     expected_ov = (8.33/1.05 - dag["nodes"]["timewarp_gl"][0][freq] - dag["nodes"]["gtsam_integrator"][0][freq] - dag["nodes"]["offline_imu"][0][freq] - dag["nodes"]["gldemo"][0][freq]) * dag["fc"][freq] - dag["nodes"]["offline_cam"][0][freq]
-    assert expected_ov - 0.1 <= dag["nodes"]["open_vins"][0][freq] <= expected_ov + 0.1, expected_ov
+    # assert expected_ov - 0.1 <= dag["nodes"]["open_vins"][0][freq] <= expected_ov + 0.1, expected_ov
 
     name2id = invert(dict(enumerate([None] + [
         Path(plugin["path"]).name
@@ -141,7 +141,16 @@ def write_scheduler_config(config: Mapping[str, Any]) -> Path:
     for weight, chain in dag["chains"]:
         if chain:
             lines.append(f"C {weight} {' '.join(str(name2id[node]) for node in chain)} X")
-    lines.append(dag["mode"])
+    lines.append({
+        0: "",
+        1: f"WF {name2id['offline_cam']} {name2id['gldemo']} X",
+        2: "",
+    }[config["conditions"]["swap"]])
+
+    lines.append("weights")
+
+    if "appendix" in dag:
+        lines.extend(dag["appendix"])
     path.write_text("\n".join(lines))
     return path
 
@@ -174,7 +183,7 @@ def load_native(config: Mapping[str, Any], quiet: bool) -> None:
         ILLIXR_SCHEDULER_CONFIG=scheduler_config_path,
         ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]] if scheduler == "static" else 1,
         ILLIXR_TIMEWARP_DELAY=str(int(config["loader"]["scheduler"]["nodes"]["timewarp_gl"][0][config["conditions"]["cpu_freq"]] * 1e6)),
-        ILLIXR_SWAP_ORDER=["n", "y"][int(config["conditions"].get("swap", False))],
+        ILLIXR_SWAP_ORDER=str(config["conditions"].get("swap", "N/A")),
         **config["loader"].get("env", {}),
     )
 

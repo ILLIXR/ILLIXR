@@ -31,7 +31,7 @@ data:
 demo_data: demo_data/
 conditions:
   scheduler: dynamic
-  duration: 40
+  duration: 75
   cpus: 1
   cpu_freq: 5.3
 loader:
@@ -50,7 +50,7 @@ loader:
         "open_vins"       : [{5.3: 18.02,  2.6: 20.17, 1.8: 44.35, 1.3: 20.84}, 0, 0,    0,    ["gtsam_integrator"]],
         "gtsam_integrator": [{5.3:   .1,   2.6:   .2 , 1.8:   .07, 1.3:   .31}, 5, 0,    0,    ["gldemo", "timewarp_gl"]],
         "gldemo"          : [{5.3:   .9,   2.6:  1.04, 1.8:  2.11, 1.3:  1.11}, 0, 8.33, 0,    ["timewarp_gl"]],
-        "timewarp_gl"     : [{5.3:   .9,   2.6:  1.62, 1.8:  2.32, 1.3:  3.  }, 0, 8.33, 8.33, []],
+        "timewarp_gl"     : [{5.3:  1.4,   2.6:  1.62, 1.8:  2.32, 1.3:  3.  }, 0, 8.33, 8.33, []],
         "offline_imu"     : [{5.3:   .02,  2.6:   .02, 1.8:   .02, 1.3:   .03}, 5, 0,    0,    ["gtsam_integrator", "open_vins"]],
         "offline_cam"     : [{5.3:   .03,  2.6:   .04, 1.8:   .02, 1.3:   .06}, 0, 0,    0,    ["open_vins"]],
     }

@@ -251,7 +251,7 @@ private:
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				if (completion_publisher) {
-					completion_publisher->put(new (completion_publisher->allocate()) switchboard::event_wrapper<completion> {completion{wall_time_now(), cpu_time_now() - cpu_time_start}});
+					completion_publisher->put(new (completion_publisher->allocate()) switchboard::event_wrapper<completion> {completion{wall_time_now(), cpu_time_now() - cpu_time_start + (_m_plugin_id == 6 ? 0.00095 : 0)}});
 				}
 			} else {
 				// Nothing to do.
