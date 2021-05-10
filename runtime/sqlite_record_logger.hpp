@@ -9,7 +9,7 @@
 #include <shared_mutex>
 #include <experimental/filesystem>
 #include <cerrno>
-#include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "common/concurrentqueue/blockingconcurrentqueue.hpp"
 #include "sqlite3pp/sqlite3pp.hpp"
 #include "common/record_logger.hpp"
 #include "common/global_module_defs.hpp"
