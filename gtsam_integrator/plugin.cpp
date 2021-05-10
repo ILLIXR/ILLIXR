@@ -19,8 +19,8 @@
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
-constexpr double IMU_TTL = 5.;
-// constexpr duration IMU_TTL {std::chrono::seconds{5}};
+#define IMU_TTL 5
+// TODO: constexpr duration IMU_TTL {std::chrono::seconds{5}};
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
@@ -57,16 +57,17 @@ public:
     }
 
     void callback(switchboard::ptr<const imu_cam_type> datum) {
-		auto t = double(datum->dataset_time) * (1/1'000'000'000.);
-        _imu_vec.emplace_back(
-			// emplace_back forwards these arguments to the constructor of imu_type
-			t,
-			(datum->angular_v).cast<double>(),
-			(datum->linear_a).cast<double>()
-		);
+		double timestamp_in_seconds = double(datum->dataset_time) * (1/1'000'000'000.);
+		// TODO: use emplace_back
 
-        clean_imu_vec(t);
-        propagate_imu_values(t, datum->time);
+		_imu_vec.emplace_back(
+							  timestamp_in_seconds,
+							  datum->angular_v.cast<double>(),
+							  datum->linear_a.cast<double>()
+							  );
+
+        clean_imu_vec(timestamp_in_seconds);
+        propagate_imu_values(timestamp_in_seconds, datum->time);
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -85,7 +86,7 @@ private:
 
     std::vector<imu_type> _imu_vec;
 
-    [[maybe_unused]] double last_cam_time;
+    [[maybe_unused]] double last_cam_time = 0;
     double last_imu_offset = 0;
 
     /**
@@ -147,8 +148,8 @@ private:
             const gtsam::Vector3 measured_acc{imu_input.am};
             const gtsam::Vector3 measured_omega{imu_input.wm};
 
-			// Delta T should be in seconds
-			const double delta_t = (imu_input.timestamp - imu_input_next.timestamp);
+			/// Delta T should be in seconds
+			const double delta_t = imu_input_next.timestamp - imu_input.timestamp;
 
 			_pim->integrateMeasurement(measured_acc, measured_omega, delta_t);
         }
@@ -181,7 +182,7 @@ private:
 		// Since the vector is ordered oldest to latest, keep deleting until you
 		// hit a value less than 'IMU_TTL' seconds old
 		while (imu_iterator != _imu_vec.end()) {
-			if (timestamp-(*imu_iterator).timestamp < IMU_TTL) {
+			if (timestamp - imu_iterator->timestamp < IMU_TTL) {
 				break;
 			}
 
@@ -192,7 +193,7 @@ private:
     // Timestamp we are propagating the biases to (new IMU reading time)
 	void propagate_imu_values(double timestamp, time_point real_time) {
 		auto input_values = _m_imu_integrator_input.get_ro_nullable();
-		if (input_values == NULL) {
+		if (input_values == nullptr) {
 			return;
 		}
 
@@ -217,8 +218,8 @@ private:
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
-		double time_begin = input_values->last_cam_integration_time + last_imu_offset;
-		double time_end = timestamp + input_values->t_offset;
+		const double time_begin = input_values->last_cam_integration_time + last_imu_offset;
+		const double time_end = input_values->t_offset + timestamp;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
@@ -235,8 +236,8 @@ private:
         std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
 #endif
 
-        for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
-            _pim_obj->integrateMeasurement(prop_data[i], prop_data[i + 1]);
+        for (int i = 0; i < int(prop_data.size()) - 1; i++) {
+            _pim_obj->integrateMeasurement(prop_data.at(i), prop_data.at(i+1));
 
             prev_bias = bias;
             bias = _pim_obj->biasHat();
@@ -282,7 +283,7 @@ private:
             return prop_data;
         }
 
-        for (std::size_t i = 0; i < imu_data.size() - 1; i++) {
+        for (int i = 0; i < int(imu_data.size()) - 1; i++) {
 
             // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
             if (imu_data[i + 1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
@@ -309,7 +310,7 @@ private:
         // This would cause the noise covariance to be Infinity
         for (int i = 0; i < int(prop_data.size()) - 1; i++) {
 			// I need prop_data.size() - 1 to be signed, because it might equal -1.
-            if (std::abs((prop_data[i + 1].timestamp - prop_data[i].timestamp)) < 1e-12) {
+            if (std::abs(prop_data[i + 1].timestamp - prop_data[i].timestamp) < 1e-12) {
                 prop_data.erase(prop_data.begin() + i);
                 i--;
             }
