@@ -45,8 +45,8 @@ public:
 							  datum->linear_a.cast<double>()
 							  );
 
-        clean_imu_vec(t);
-        propagate_imu_values(t, datum->time);
+        clean_imu_vec(timestamp_in_seconds);
+        propagate_imu_values(timestamp_in_seconds, datum->time);
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -261,7 +261,7 @@ private:
             return prop_data;
         }
 
-        for (std::size_t i = 0; i < imu_data.size() - 1; i++) {
+        for (int i = 0; i < int(imu_data.size()) - 1; i++) {
 
             // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
             if (imu_data[i + 1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
