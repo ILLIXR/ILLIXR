@@ -15,7 +15,7 @@
 #include "cpu_timer.hpp"
 #include "record_logger.hpp"
 #include "managed_thread.hpp"
-#include "../runtime/concurrentqueue/blockingconcurrentqueue.hpp"
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
 
 namespace ILLIXR {
 
