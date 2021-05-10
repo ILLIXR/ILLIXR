@@ -7,6 +7,7 @@
 #include "plugin.hpp"
 #include "cpu_timer.hpp"
 #include "stoplight.hpp"
+#include "error_util.hpp"
 
 namespace ILLIXR {
 
@@ -98,9 +99,9 @@ private:
 				auto iteration_start_cpu_time  = thread_cpu_time();
 				auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 				
-				assert(errno == 0);
+				RAC_ERRNO();
 				_p_one_iteration();
-				assert(errno == 0);
+				RAC_ERRNO();
 				
 				it_log.log(record{__threadloop_iteration_header, {
 					{id},

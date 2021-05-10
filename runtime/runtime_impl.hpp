@@ -27,7 +27,7 @@ public:
 	}
 
 	virtual void load_so(const std::vector<std::string>& so_paths) override {
-        assert(errno == 0 && "Errno should not be set before creating any dynamic library");
+        RAC_ERRNO_MSG("runtime_impl before creating any dynamic library");
 
 		std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
 		    RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
@@ -119,6 +119,6 @@ private:
 };
 
 extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
-    assert(errno == 0 && "Errno should not be set before creating the runtime");
+    RAC_ERRNO_MSG("runtime_impl before creating the runtime");
 	return new runtime_impl{appGLCtx};
 }

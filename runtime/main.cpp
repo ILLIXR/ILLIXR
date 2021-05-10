@@ -97,13 +97,13 @@ int main(int argc, char* const* argv) {
 		? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
 		: ILLIXR_RUN_DURATION_DEFAULT;
 
-	assert(errno == 0 && "Errno should not be set after creating runtime");
+	RAC_ERRNO_MSG("main after creating runtime");
 
 	std::vector<std::string> lib_paths;
 	std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
 		return std::string{arg};
 	});
-	assert(errno == 0 && "Errno should not be set before loading dynamic libraries");
+	RAC_ERRNO_MSG("main before loading dynamic libraries");
 	r->load_so(lib_paths);
 
 	cancellable_sleep cs;

@@ -107,7 +107,7 @@ public:
 	}
 
 	void _p_thread_setup() override {
-		assert(errno == 0 && "Errno should not be set at start of _p_thread_setup");
+		RAC_ERRNO_MSG("gldemo at start of _p_thread_setup");
 
 		// Note: glXMakeContextCurrent must be called from the thread which will be using it.
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
@@ -311,7 +311,7 @@ private:
 	}
 
 	void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_target){
-        assert(errno == 0 && "Errno should not be set at the start of createFBO");
+        RAC_ERRNO_MSG("gldemo at start of createFBO");
 
 		// Create a framebuffer to draw some things to the eye texture
 		glGenFramebuffers(1, fbo);
@@ -349,7 +349,7 @@ public:
 
 	// Dummy "application" overrides _p_start to control its own lifecycle/scheduling.
 	virtual void start() override {
-		assert(errno == 0 && "Errno should not be set at start of gldemo start function");
+		RAC_ERRNO_MSG("gldemo at start of gldemo start function");
 
         [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 		assert(gl_result_0 && "glXMakeCurrent should not fail");
@@ -373,12 +373,12 @@ public:
 		createSharedEyebuffer(&(eyeTextures[0]));
 		createSharedEyebuffer(&(eyeTextures[1]));
 
-        assert(errno == 0 && "Errno should not be set after creating eye buffers");
+        RAC_ERRNO_MSG("gldemo after creating eye buffers");
 
 		// Initialize FBO and depth targets, attaching to the frame handle
 		createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
 
-        assert(errno == 0 && "Errno should not be set after creating FBO");
+        RAC_ERRNO_MSG("gldemo after creating FBO");
 
 		// Create and bind global VAO object
 		glGenVertexArrays(1, &demo_vao);
