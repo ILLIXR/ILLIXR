@@ -261,7 +261,7 @@ private:
             return prop_data;
         }
 
-        for (std::size_t i = 0; i < imu_data.size() - 1; i++) {
+        for (int i = 0; i < int(imu_data.size()) - 1; i++) {
 
             // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
             if (imu_data[i + 1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
