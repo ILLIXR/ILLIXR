@@ -7,6 +7,112 @@
 function print_warning() { echo -e "\e[31m*Warning* ${1}\e[39m"; }
 
 
+## Function for joining strings in an array/list
+## The first argument, 'strings_list', is a space seperated list of packages to process
+## The second argument, 'delimiter', defaults to a semicolon
+function join_strings()
+{
+    local strings_list=(${1})
+    local delimiter=${2}
+
+    local string_out=""
+    local delimiter_default=";"
+    local is_first_string="yes"
+
+    if [ -z "${delimiter}" ]; then
+        delimiter="${delimiter_default}"
+    fi
+
+    for string in "${strings_list[@]}"; do
+        if [ "${is_first_string}" = "yes" ]; then
+            is_first_string="no"
+        else
+            string_out+="${delimiter}"
+        fi
+
+        string_out+="${string}"
+    done
+
+    echo "${string_out}"
+}
+
+
+## Function for logging dependency information post-installation
+function log_dependency()
+{
+    local dep_name=${1}
+    local deps_log_dir=${2}
+    local src_dir=${3}
+    local dep_ver=${4}
+
+    local timestamp=$(date --universal)
+
+    if [ -z "${deps_log_dir}" ]; then
+        print_warning "Dependency log directory not defined (deps_log_dir='${deps_log_dir}'.)"
+        return 1
+    fi
+
+    mkdir -p "${deps_log_dir}"
+
+    local dep_log_path="${deps_log_dir}/${dep_name}.sh"
+
+    if [ ! -f "${dep_log_path}" ]; then
+        echo "#!/bin/bash" > "${dep_log_path}"
+    fi
+
+    dep_log_msg="\n### INSTALL ###"
+    dep_log_msg+="\nexport dep_name='${dep_name}'"
+    dep_log_msg+="\nexport src_dir='${src_dir}'"
+    dep_log_msg+="\nexport dep_ver='${dep_ver}'"
+    dep_log_msg+="\nexport timestamp='${timestamp}'"
+
+    echo -e ${dep_log_msg} >> "${dep_log_path}"
+
+    return 0
+}
+
+
+## Function to detect installation of dependency after logging via 'log_dependency'
+function detect_dependency()
+{
+    local dep_name=${1}
+    local deps_log_dir=${2}
+    local enable_dry_run=${3}
+
+    export dep_log_path="${deps_log_dir}/${dep_name}.sh"
+
+    if [ -z "${enable_dry_run}" ]; then
+        enable_dry_run="no"
+    fi
+
+    ## Only proceed if a dependency directory is defined
+    if [ ! -z "${deps_log_dir}" ]; then
+        ## Check if a log file exists. If so, export its values for the caller.
+        if [ -f "${dep_log_path}" ]; then
+            echo -n "DETECT [dep <- '${dep_name}'"
+
+            ## Avoid other side-effects if dry-run is enabled
+            if [ "${enable_dry_run}" = "no" ]; then
+                . "${dep_log_path}"
+
+                ## The following values are exported:
+                #> export dep_name
+                #> export src_dir
+                #> export dep_ver
+                #> export timestamp
+
+                echo -n ", dir <- '${src_dir}'"
+            fi
+
+            echo "]"
+            return 0
+        fi
+    fi
+
+    return 1
+}
+
+
 ## Function for detecting possible conflicting system packages
 ## The first argument, 'pkg_list', is a space seperated list of packages to process
 ## The second argument, 'detect_mode', can be specified as follows:
@@ -20,11 +126,11 @@ function detect_packages()
     local pkg_list=${1}
     local detect_mode=${2}
 
-    dpkg -l ${pkg_list}
+    dpkg --list --no-pager ${pkg_list}
 
     case "${detect_mode}" in
         "${PKG_MODE_FOUND_FATAL}")
-            if [ "$?" == 0 ]; then
+            if [ "$?" -eq 0 ]; then
                 ## Command successful => Package found
                 local pkg_warn_msg="Detected conflicting installed system package(s) '${pkg_list}'."
                 print_warning "${pkg_warn_msg}"
@@ -32,7 +138,7 @@ function detect_packages()
             fi
             ;;
         "${PKG_MODE_MISSING_FATAL}")
-            if [ "$?" != 0 ]; then
+            if [ "$?" -ne 0 ]; then
                 ## Command failed => Package missing
                 local pkg_warn_msg="Detected missing system package(s) '${pkg_list}'."
                 print_warning "${pkg_warn_msg}"
@@ -40,7 +146,7 @@ function detect_packages()
             fi
             ;;
         "${PKG_MODE_FOUND_NONFATAL}")
-            if [ "$?" == 0 ]; then
+            if [ "$?" -eq 0 ]; then
                 ## Command successful => Package found
                 local pkg_msg="Removing conflicting system package(s) '${pkg_list}'."
                 echo "${pkg_msg}"
@@ -48,7 +154,7 @@ function detect_packages()
             fi
             ;;
         "${PKG_MODE_MISSING_NONFATAL}")
-            if [ "$?" != 0 ]; then
+            if [ "$?" -ne 0 ]; then
                 ## Command failed => Package missing
                 local pkg_msg="Installing missing system package(s) '${pkg_list}'."
                 echo "${pkg_msg}"

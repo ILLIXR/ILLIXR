@@ -76,7 +76,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
     -   *Calls* `pose_prediction`.
     -   Asynchronously *reads* `rendered_frame` on `eyebuffer` topic.
-    -   *Publishes* `type_type` on `vsync_estimate`.
+    -   *Publishes* `time_type` on `vsync_estimate` topic.
     -   *Publishes* `hologram_input` on `hologram_in` topic.
     -   *Publishes* `texture_pose` on `texture_pose` topic if `ILLIXR_OFFLOAD_ENABLE` is set in the env.
 
@@ -161,7 +161,7 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
     Topic details:
 
-    -   Asynchronously *reads* `time_type` on `vsync_estimate`.
+    -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
         This tells `pose_lookup` what time to lookup.
 
 -   [`offload_data`][21]:
@@ -169,7 +169,7 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
     Topic details:
 
-    -   Synchronously *reads* `texture_pose` on `texture_pose`.
+    -   Synchronously *reads* `texture_pose` on `texture_pose` topic.
 
 -   [`zed`][22]:
     Reads images and [_IMU_][36] measurements from the [ZED Mini][24].
@@ -178,8 +178,8 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
     Topic details:
 
-    -   *Publishes* `imu_cam_type` on `imu_cam`.
-    -   *Publishes* `rgb_depth_type` on `rgb_depth`.
+    -   *Publishes* `imu_cam_type` on `imu_cam` topic.
+    -   *Publishes* `rgb_depth_type` on `rgb_depth` topic.
 
 -   [`realsense`][23]:
     Reads images and [_IMU_][36] measurements from the [Intel Realsense][25].

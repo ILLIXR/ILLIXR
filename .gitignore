@@ -11,3 +11,4 @@ output.*
 metrics/
 .cache
 install/
+.deps
