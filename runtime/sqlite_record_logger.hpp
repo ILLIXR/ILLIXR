@@ -56,6 +56,8 @@ public:
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(bool)) {
 				create_table_string += std::string{"INTEGER"};
+			} else if (rh.get_column_type(i) == typeid(double)) {
+				create_table_string += std::string{"REAL"};
 			} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
@@ -66,8 +68,6 @@ public:
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(std::string)) {
 				create_table_string += std::string{"TEXT"};
-			} else if (rh.get_column_type(i) == typeid(double)) {
-				create_table_string += std::string{"REAL"};
 			} else {
 				throw std::runtime_error{std::string{"type "} + std::string{rh.get_column_type(i).name()} + std::string{" not found"}};
 			}
@@ -151,8 +151,8 @@ public:
 				} else if (rh.get_column_type(j) == typeid(std::chrono::nanoseconds)) {
 					auto val = r.get_value<duration>(j);
 					cmd.bind(j+1, static_cast<long long>(std::chrono::nanoseconds{val}.count()));
-				} else if (rh.get_column_type(j) == typeid(std::chrono::high_resolution_clock)) {
-					auto val = r.get_value<time_point>(j).time_since_epoch();
+				} else if (rh.get_column_type(j) == typeid(std::chrono::high_resolution_clock::time_point)) {
+					auto val = r.get_value<std::chrono::high_resolution_clock::time_point>(j).time_since_epoch();
 					cmd.bind(j+1, static_cast<long long>(std::chrono::nanoseconds{val}.count()));
 				} else if (rh.get_column_type(j) == typeid(duration)) {
 					auto val = r.get_value<duration>(j);
