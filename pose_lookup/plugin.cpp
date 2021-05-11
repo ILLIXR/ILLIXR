@@ -24,10 +24,7 @@ public:
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
-        , init_pos_offset{0}
         , align_rot{Eigen::Matrix3f::Zero()}
-        , align_trans{0}
-        , align_quat{0}
         , align_scale{0.0}
         , path_to_alignment{ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt")}
     {
