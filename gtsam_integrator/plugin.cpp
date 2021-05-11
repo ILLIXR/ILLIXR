@@ -19,19 +19,18 @@
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
-#define IMU_TTL 5
-// TODO: constexpr duration IMU_TTL {std::chrono::seconds{5}};
+constexpr duration IMU_TTL {std::chrono::seconds{5}};
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
 struct imu_type {
-	double timestamp;
+	time_point timestamp;
     Eigen::Matrix<double, 3, 1> wm;
     Eigen::Matrix<double, 3, 1> am;
 
 
 	imu_type(
-			 double timestamp_,
+			 time_point timestamp_,
 			 Eigen::Matrix<double, 3, 1> wm_,
 			 Eigen::Matrix<double, 3, 1> am_
 			 )
@@ -57,17 +56,14 @@ public:
     }
 
     void callback(switchboard::ptr<const imu_cam_type> datum) {
-		double timestamp_in_seconds = double(datum->dataset_time) * (1/1'000'000'000.);
-		// TODO: use emplace_back
-
 		_imu_vec.emplace_back(
-							  timestamp_in_seconds,
+							  datum->time,
 							  datum->angular_v.cast<double>(),
 							  datum->linear_a.cast<double>()
 							  );
 
-        clean_imu_vec(timestamp_in_seconds);
-        propagate_imu_values(timestamp_in_seconds, datum->time);
+        clean_imu_vec(datum->time);
+        propagate_imu_values(datum->time);
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -86,8 +82,8 @@ private:
 
     std::vector<imu_type> _imu_vec;
 
-    [[maybe_unused]] double last_cam_time = 0;
-    double last_imu_offset = 0;
+    [[maybe_unused]] time_point last_cam_time;
+    duration last_imu_offset;
 
     /**
      * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
@@ -149,9 +145,9 @@ private:
             const gtsam::Vector3 measured_omega{imu_input.wm};
 
 			/// Delta T should be in seconds
-			const double delta_t = imu_input_next.timestamp - imu_input.timestamp;
+			duration delta_t = imu_input_next.timestamp - imu_input.timestamp;
 
-			_pim->integrateMeasurement(measured_acc, measured_omega, delta_t);
+			_pim->integrateMeasurement(measured_acc, measured_omega, duration2double(delta_t));
         }
 
         bias_t biasHat() const noexcept
@@ -176,7 +172,7 @@ private:
 
 
     // Remove IMU values older than 'IMU_TTL' from the imu buffer
-	void clean_imu_vec(double timestamp) {
+	void clean_imu_vec(time_point timestamp) {
 		auto imu_iterator = _imu_vec.begin();
 
 		// Since the vector is ordered oldest to latest, keep deleting until you
@@ -191,7 +187,7 @@ private:
 	}
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-	void propagate_imu_values(double timestamp, time_point real_time) {
+	void propagate_imu_values(time_point real_time) {
 		auto input_values = _m_imu_integrator_input.get_ro_nullable();
 		if (input_values == nullptr) {
 			return;
@@ -218,8 +214,8 @@ private:
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
-		const double time_begin = input_values->last_cam_integration_time + last_imu_offset;
-		const double time_end = input_values->t_offset + timestamp;
+		time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
+		time_point time_end = input_values->t_offset + real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
@@ -275,8 +271,8 @@ private:
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
     std::vector<imu_type> select_imu_readings(
         const std::vector<imu_type>& imu_data,
-        const double& time_begin,
-        const double& time_end)
+        const time_point time_begin,
+        const time_point time_end)
     {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {
@@ -310,7 +306,7 @@ private:
         // This would cause the noise covariance to be Infinity
         for (int i = 0; i < int(prop_data.size()) - 1; i++) {
 			// I need prop_data.size() - 1 to be signed, because it might equal -1.
-            if (std::abs(prop_data[i + 1].timestamp - prop_data[i].timestamp) < 1e-12) {
+            if (std::chrono::abs(prop_data[i + 1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
                 prop_data.erase(prop_data.begin() + i);
                 i--;
             }
@@ -320,14 +316,14 @@ private:
     }
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-    static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, double timestamp) {
-		double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
-        return {
+	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, time_point timestamp) {
+		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
+		return imu_type {
 			timestamp,
 			(1 - lambda) * imu_1.am + lambda * imu_2.am,
 			(1 - lambda) * imu_1.wm + lambda * imu_2.wm
 		};
-    }
+	}
 };
 
 PLUGIN_MAIN(imu_integrator)
