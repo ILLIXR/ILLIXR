@@ -15,4 +15,5 @@ plugin_group:
   # - path: rk4_integrator/
   - path: gtsam_integrator/
   # - path: rk4_integrator/
+  - path: dummy_integrator/
   - path: pose_prediction/
