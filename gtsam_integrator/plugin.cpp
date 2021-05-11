@@ -305,7 +305,7 @@ private:
 			(1 - lambda) * imu_1.am + lambda * imu_2.am,
 			(1 - lambda) * imu_1.wm + lambda * imu_2.wm
 		};
-    }
+	}
 };
 
 PLUGIN_MAIN(gtsam_integrator)
