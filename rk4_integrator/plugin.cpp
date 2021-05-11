@@ -32,9 +32,9 @@ struct imu_type {
 
 const std::chrono::seconds IMU_SAMPLE_LIFETIME {5};
 
-class imu_integrator : public plugin {
+class rk4_integrator : public plugin {
 public:
-	imu_integrator(std::string name_, phonebook* pb_)
+	rk4_integrator(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
@@ -409,4 +409,4 @@ private:
     }
 };
 
-PLUGIN_MAIN(imu_integrator)
+PLUGIN_MAIN(rk4_integrator)

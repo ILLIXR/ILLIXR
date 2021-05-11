@@ -40,9 +40,9 @@ struct imu_type {
 	{ }
 };
 
-class imu_integrator : public plugin {
+class gtsam_integrator : public plugin {
 public:
-    imu_integrator(std::string name_, phonebook* pb_)
+    gtsam_integrator(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
@@ -326,4 +326,4 @@ private:
 	}
 };
 
-PLUGIN_MAIN(imu_integrator)
+PLUGIN_MAIN(gtsam_integrator)
