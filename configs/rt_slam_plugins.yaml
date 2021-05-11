@@ -14,10 +14,5 @@ plugin_group:
   #      version: "3.0"
   # - path: rk4_integrator/
   - path: gtsam_integrator/
-  # - path: rk4_integrator/
-<<<<<<< HEAD
-  - path: dummy_integrator/
-=======
->>>>>>> Fix integrators
   - path: pose_prediction/
   
