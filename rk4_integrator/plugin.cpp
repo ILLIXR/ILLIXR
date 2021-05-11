@@ -32,10 +32,6 @@ struct imu_type {
 
 const std::chrono::seconds IMU_SAMPLE_LIFETIME {5};
 
-double to_seconds(duration dur) {
-	return static_cast<double>(std::chrono::duration<long double, std::nano>(dur).count() * 1e-9L);
-}
-
 class imu_integrator : public plugin {
 public:
 	imu_integrator(std::string name_, phonebook* pb_)
@@ -139,7 +135,7 @@ private:
 			for(int i=0; i<int(prop_data.size())-1; i++) {
 
 				// Time elapsed over interval
-				double dt = to_seconds(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp);
+				double dt = duration2double(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp);
 
 				// Corrected imu measurements
 				w_hat = prop_data.at(i).wm - input_values->biasGyro;
@@ -203,7 +199,7 @@ private:
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
 		for (int i = 0; i < int(prop_data.size())-1; i++) {
-			if (std::chrono::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < std::chrono::nanoseconds{1}) {
+			if (std::chrono::abs(prop_data.at(i+1).timestamp - prop_data.at(i).timestamp) < std::chrono::nanoseconds{1}) {
 				prop_data.erase(prop_data.begin()+i);
 				i--;
 			}
@@ -214,7 +210,7 @@ private:
 
 	// For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
 	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, time_point timestamp) {
-		double lambda = to_seconds(timestamp - imu_1.timestamp) / to_seconds(imu_2.timestamp - imu_1.timestamp);
+		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
 		return imu_type {
 			timestamp,
 			(1 - lambda) * imu_1.am + lambda * imu_2.am,
