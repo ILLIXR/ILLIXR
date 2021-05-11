@@ -9,7 +9,6 @@
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
-#include <GLFW/glfw3.h>
 //#undef Complex // For 'Complex' conflict
 #include "phonebook.hpp" 
 #include "switchboard.hpp"
