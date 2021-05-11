@@ -1,3 +1,4 @@
+#include <ratio>
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "data_loading.hpp"
@@ -55,7 +56,6 @@ protected:
 	virtual void _p_one_iteration() override {
 	    RAC_ERRNO_MSG("offline_imu_cam at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
-		RelativeClock::time_point real_now = _m_clock->now();
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
 
@@ -88,7 +88,7 @@ protected:
 
         _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
             imu_cam_type {
-                real_now,
+				time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)},
                 (sensor_datum.imu0.value().angular_v).cast<float>(),
                 (sensor_datum.imu0.value().linear_a).cast<float>(),
                 cam0,

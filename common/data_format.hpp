@@ -76,8 +76,8 @@ namespace ILLIXR {
 
 	// IMU biases, initialization params, and slow pose needed by the IMU integrator
 	struct imu_integrator_input : public switchboard::event {
-		double last_cam_integration_time;
-		double t_offset;
+		time_point last_cam_integration_time;
+		duration t_offset;
 		imu_params params;
 		
 		Eigen::Vector3d biasAcc;
@@ -86,8 +86,8 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
 		imu_integrator_input(
-							 double last_cam_integration_time_,
-							 double t_offset_,
+							 time_point last_cam_integration_time_,
+							 duration t_offset_,
 							 imu_params params_,
 							 Eigen::Vector3d biasAcc_,
 							 Eigen::Vector3d biasGyro_,
