@@ -27,7 +27,6 @@ jobs:
       - name: Run CI (fetch-build-run)
         uses: ILLIXR/github-actions-workflows@v1
         with:
-          ghcr_token : ${{ env.ghcr_token }}
           distro_ver : ${{ env.distro_ver }}
           branch     : ${{ steps.extract_branch.outputs.branch }}
   illixr-tests-pr-ubuntu20:
@@ -49,6 +48,5 @@ jobs:
       - name: Run CI (fetch-build-run)
         uses: ILLIXR/github-actions-workflows@v1
         with:
-          ghcr_token : ${{ env.ghcr_token }}
           distro_ver : ${{ env.distro_ver }}
           branch     : ${{ steps.extract_branch.outputs.branch }}
