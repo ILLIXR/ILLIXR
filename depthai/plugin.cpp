@@ -31,7 +31,7 @@ public:
             depthQueue = d.getOutputQueue("depth", 1, true);
             rectifLeftQueue = d.getOutputQueue("rectified_left", 1, false);
             rectifRightQueue = d.getOutputQueue("rectified_right", 1, false);
-            imuQueue = d.getOutputQueue("imu", 50, false);
+            imuQueue = d.getOutputQueue("imu", 1, false);
             std::function<void(void)> i_lambda = [&](){callback();};
             auto imuPacket = imuQueue->get<dai::IMUData>();
             imuQueue->addCallback(i_lambda);
@@ -51,16 +51,27 @@ public:
         if(rectifR && rectifL && depthFrame && colorFrame) {
             // std::cout << "Images Received.." << std::endl;
             cv::Mat rgb = cv::Mat(colorFrame->getHeight(), colorFrame->getWidth(), CV_8UC3, colorFrame->getData().data());
+            
             cv::Mat rectifiedLeftFrame = cv::Mat(rectifL->getHeight(), rectifL->getWidth(), CV_8UC1, rectifL->getData().data());
-            cv::flip(rectifiedLeftFrame, rectifiedLeftFrame, 1);
+            cv::Mat LeftOut;
+            cv::flip(rectifiedLeftFrame, LeftOut, 1);
+
+            // cv::Mat LeftOut = cv::Mat(rectifL->getHeight(), rectifL->getWidth(), CV_8UC1, rectifL->getData().data());
+            // cv::flip(LeftOut, LeftOut, 1);
+
             cv::Mat rectifiedRightFrame = cv::Mat(rectifR->getHeight(), rectifR->getWidth(), CV_8UC1, rectifR->getData().data());
-            cv::flip(rectifiedRightFrame, rectifiedRightFrame, 1);
+            cv::Mat RightOut;
+            cv::flip(rectifiedRightFrame, RightOut, 1);
+
+            // cv::Mat RightOut = cv::Mat(rectifR->getHeight(), rectifR->getWidth(), CV_8UC1, rectifR->getData().data());
+            // cv::flip(RightOut, RightOut, 1);
+
             cv::Mat depth = cv::Mat(depthFrame->getHeight(), depthFrame->getWidth(), CV_16UC1, depthFrame->getData().data());
             cv::Mat converted_depth;
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
             cam_type_ = cam_type {
-                .img0 = cv::Mat{rectifiedLeftFrame},
-                .img1 = cv::Mat{rectifiedRightFrame},
+                .img0 = cv::Mat{LeftOut},
+                .img1 = cv::Mat{RightOut},
                 .rgb = cv::Mat{rgb},
                 .depth = cv::Mat{converted_depth},
                 .iteration = iteration_cam,
@@ -93,11 +104,12 @@ public:
                 first_packet = std::chrono::steady_clock::now();
             }
             imu_packet++;
+            
             auto imuDatas = imuPacket->imuDatas;
-            time_type test_time_point;
             for(auto& imuData : imuDatas) {
                 gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.gyroscope.timestamp.getTimestamp());
-                if (gyroTs == imu_time_point){return;}
+                if (gyroTs == test_time_point){return;}
+                test_time_point = gyroTs;
                 la = {imuData.acceleroMeter.x, imuData.acceleroMeter.y, imuData.acceleroMeter.z};
                 av = {imuData.gyroscope.x, imuData.gyroscope.y, imuData.gyroscope.z};
             }
@@ -175,6 +187,7 @@ private:
     int imu_pub{0};
     int rgbd_pub{0};
     std::chrono::time_point<std::chrono::steady_clock> first_packet;
+    std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> test_time_point;
 
 
     dai::Pipeline p;
