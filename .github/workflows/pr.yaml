@@ -19,16 +19,47 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Extract Branch Name
-        id: extract_branch
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        shell: bash
+      - name  : Extract Branch Name
+        id    : extract_branch
+        run   : echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        shell : bash
 
-      - name: Run CI (fetch-build-run)
-        uses: ILLIXR/github-actions-workflows@v1
-        with:
-          distro_ver : ${{ env.distro_ver }}
-          branch     : ${{ steps.extract_branch.outputs.branch }}
+      - name  : Login to ghcr.io
+        if    : ${{ env.ghcr_token }}
+        run   : echo ${{ env.ghcr_token }} | docker login ghcr.io -u illixr-ci --password-stdin
+        shell : bash
+
+      # Pulls latest and current branch tag of this container. This allows the docker build to use the cache for faster builds.
+      - name  : Pull Docker Cache
+        run   : docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} || docker pull ghcr.io/illixr/illixr-tests:latest || true
+        shell : bash
+
+      # Performs the docker build and pulls the cache from either the branch name tag or from latest.
+      # The latest tag is what is on master so it will use that cache the first time this branch runs
+      - name  : Build Docker Image
+        run   : docker build --build-arg JOBS="$(nproc)" --build-arg=BASE_IMG=ubuntu:${{ env.distro_ver }} --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
+      - name  : Push Docker Image
+        if    : ${{ env.ghcr_token }}
+        run   : docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
+      # For builds on master we also want to push the image as the latest tag.
+      - name  : Tag Master Docker Image As Latest
+        if    : ${{ steps.extract_branch.outputs.branch == "master" }}
+        run   : docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest fi
+        shell : bash
+
+      - name  : Pull Docker Image
+        if    : ${{ env.ghcr_token }}
+        run   : docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
+      - name  : Run Tests
+        run   : docker run ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
   illixr-tests-pr-ubuntu20:
     env:
       distro_ver: 20.04
@@ -40,13 +71,43 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Extract Branch Name
-        id: extract_branch
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        shell: bash
+      - name  : Extract Branch Name
+        id    : extract_branch
+        run   : echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        shell : bash
 
-      - name: Run CI (fetch-build-run)
-        uses: ILLIXR/github-actions-workflows@v1
-        with:
-          distro_ver : ${{ env.distro_ver }}
-          branch     : ${{ steps.extract_branch.outputs.branch }}
+      - name  : Login to ghcr.io
+        if    : ${{ env.ghcr_token }}
+        run   : echo ${{ env.ghcr_token }} | docker login ghcr.io -u illixr-ci --password-stdin
+        shell : bash
+
+      # Pulls latest and current branch tag of this container. This allows the docker build to use the cache for faster builds.
+      - name  : Pull Docker Cache
+        run   : docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} || docker pull ghcr.io/illixr/illixr-tests:latest || true
+        shell : bash
+
+      # Performs the docker build and pulls the cache from either the branch name tag or from latest.
+      # The latest tag is what is on master so it will use that cache the first time this branch runs
+      - name  : Build Docker Image
+        run   : docker build --build-arg JOBS="$(nproc)" --build-arg=BASE_IMG=ubuntu:${{ env.distro_ver }} --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
+      - name  : Push Docker Image
+        if    : ${{ env.ghcr_token }}
+        run   : docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
+      # For builds on master we also want to push the image as the latest tag.
+      - name  : Tag Master Docker Image As Latest
+        if    : ${{ steps.extract_branch.outputs.branch == "master" }}
+        run   : docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest fi
+        shell : bash
+
+      - name  : Pull Docker Image
+        if    : ${{ env.ghcr_token }}
+        run   : docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
+
+      - name  : Run Tests
+        run   : docker run ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+        shell : bash
