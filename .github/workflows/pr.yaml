@@ -21,7 +21,7 @@ jobs:
 
       - name  : Extract Branch Name
         id    : extract_branch
-        run   : echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run   : echo "##[set-output name=branch;]$(echo ${GITHUB_REF})"
         shell : bash
 
       - name  : Login to ghcr.io
@@ -73,7 +73,7 @@ jobs:
 
       - name  : Extract Branch Name
         id    : extract_branch
-        run   : echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run   : echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF})"
         shell : bash
 
       - name  : Login to ghcr.io
