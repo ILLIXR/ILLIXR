@@ -9,7 +9,7 @@ jobs:
     env:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
       distro_ver: 18.04
-    runs-on: ubuntu-${{ env.distro_ver }}
+    runs-on: ubuntu-18.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
@@ -26,7 +26,7 @@ jobs:
     env:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
       distro_ver: 20.04
-    runs-on: ubuntu-${{ env.distro_ver }}
+    runs-on: ubuntu-20.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
