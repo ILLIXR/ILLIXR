@@ -135,13 +135,13 @@ private:
 			for(int i=0; i<int(prop_data.size())-1; i++) {
 
 				// Time elapsed over interval
-				double dt = duration2double(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp);
+				double dt = duration2double(prop_data[i+1].timestamp-prop_data[i].timestamp);
 
 				// Corrected imu measurements
-				w_hat = prop_data.at(i).wm - input_values->biasGyro;
-				a_hat = prop_data.at(i).am - input_values->biasAcc;
-				w_hat2 = prop_data.at(i+1).wm - input_values->biasGyro;
-				a_hat2 = prop_data.at(i+1).am - input_values->biasAcc;
+				w_hat = prop_data[i].wm - input_values->biasGyro;
+				a_hat = prop_data[i].am - input_values->biasAcc;
+				w_hat2 = prop_data[i+1].wm - input_values->biasGyro;
+				a_hat2 = prop_data[i+1].am - input_values->biasAcc;
 
 				// Compute the new state mean value
 				Eigen::Vector4d new_quat;
@@ -176,21 +176,21 @@ private:
 		for (int i = 0; i < int(imu_data.size())-1; i++) {
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
-			if (imu_data.at(i+1).timestamp > time_begin && imu_data.at(i).timestamp < time_begin) {
-				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_begin);
+			if (imu_data[i+1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
+				imu_type data = interpolate_imu(imu_data[i], imu_data[i+1], time_begin);
 				prop_data.push_back(data);
 				continue;
 			}
 
 			// IMU is within time_begin and time_end
-			if (imu_data.at(i).timestamp >= time_begin && imu_data.at(i+1).timestamp <= time_end) {
-				prop_data.push_back(imu_data.at(i));
+			if (imu_data[i].timestamp >= time_begin && imu_data[i+1].timestamp <= time_end) {
+				prop_data.push_back(imu_data[i]);
 				continue;
 			}
 
 			// IMU is past time_end
-			if (imu_data.at(i+1).timestamp > time_end) {
-				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
+			if (imu_data[i+1].timestamp > time_end) {
+				imu_type data = interpolate_imu(imu_data[i], imu_data[i+1], time_end);
 				prop_data.push_back(data);
 				break;
 			}
@@ -199,7 +199,7 @@ private:
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
 		for (int i = 0; i < int(prop_data.size())-1; i++) {
-			if (std::chrono::abs(prop_data.at(i+1).timestamp - prop_data.at(i).timestamp) < std::chrono::nanoseconds{1}) {
+			if (std::chrono::abs(prop_data[i+1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
 				prop_data.erase(prop_data.begin()+i);
 				i--;
 			}
