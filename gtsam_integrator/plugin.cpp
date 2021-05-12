@@ -233,7 +233,7 @@ private:
 #endif
 
         for (int i = 0; i < int(prop_data.size()) - 1; i++) {
-            _pim_obj->integrateMeasurement(prop_data.at(i), prop_data.at(i+1));
+            _pim_obj->integrateMeasurement(prop_data[i], prop_data[i+1]);
 
             prev_bias = bias;
             bias = _pim_obj->biasHat();
@@ -290,7 +290,7 @@ private:
 
             // IMU is within time_begin and time_end
             if (imu_data[i].timestamp >= time_begin && imu_data[i + 1].timestamp <= time_end) {
-                prop_data.push_back(imu_data.at(i));
+                prop_data.push_back(imu_data[i]);
                 continue;
             }
 
