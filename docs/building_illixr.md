@@ -64,7 +64,7 @@ For actions that launch ILLIXR (like `native`), `kimera_path` is a [_Path_][15] 
     points to the root directory to look for Kimera-VIO, if the plugin is enabled.
 In the example above, `kimera_path` is defined in `ILLIXR/configs/data/kimera-default.yaml`.
 You can `!include` other configuration files via [pyyaml-include][13].
-Consider separating the site-specific configuration options into its own file.
+Consider separating the site-specific configuration options into their own file.
 
 Following `kimera_path` are a few commented parameters for debugging and logging.
 The `native` action supports an optional `command` argument.
@@ -96,7 +96,7 @@ See the [Specifying Paths][15] section for more information.
 
 Next is the compilation `profile` property (see [_profiles_][11]) which accepts two values:
 
--   `opt`: Compiles with `-O3` and disables debug prints and assertions,
+-   `opt`: Compiles with `-O3` and disables debug prints and assertions.
 
 -   `dbg`: Compiles with debug flags and enables debug prints and assertions.
 

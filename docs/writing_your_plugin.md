@@ -109,8 +109,8 @@ To add your own functionality via the plugin interface:
         from the config before running the new component.
     For example, if the new component is a SLAM then the old SLAM needs to be removed from
         the config.
-    This can be accomplished by editing the flows/plugin groups included for the `native`
-    The plugin flow structure for `native` shown here:
+    This can be accomplished by editing the flows/plugin groups included in `native.yaml`.
+    The plugin flow structure for `native.yaml` is shown here:
 
     <!--- language: lang-yaml -->
 
@@ -118,9 +118,9 @@ To add your own functionality via the plugin interface:
           - !include "ci/flows/kimera-gtsam.yaml"
         append: !include "plugins/groups/misc-native.yaml"
 
-    can be changed to this equivalent expanded flow, containing all the plugin groups specified
-        in `ILLIXR/ci/flows/kimera-gtsam.yaml`, plus the addition of a new plugin group
-        containing your plugin:
+    The structure can be changed to this equivalent expanded flow,
+        containing all the plugin groups specified in `ILLIXR/ci/flows/kimera-gtsam.yaml`,
+        plus the addition of a new plugin group containing your plugin:
 
     <!--- language: lang-yaml -->
 

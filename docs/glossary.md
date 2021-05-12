@@ -32,7 +32,7 @@ For instructions for how to modify or write your own plugins, see the [Modifying
 
 -   **Plugin Group**:
     A _plugin group_ is a collection of plugins to be loaded and executed by a [_flow_][50]
-        launched by from a [_Runner_][55] configuration.
+        launched by a [_Runner_][55] configuration.
     Groups are specified using the `plugin_group` identifier defined in our [_schema_][50].
 
 See the [Plugin API documentation][53].
