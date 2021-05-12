@@ -47,7 +47,7 @@ jobs:
 
       # For builds on master we also want to push the image as the latest tag.
       - name  : Tag Master Docker Image As Latest
-        if    : steps.extract_branch.outputs.branch == "master"
+        if    : steps.extract_branch.outputs.branch == 'master'
         run   : docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest fi
         shell : bash
 
@@ -99,7 +99,7 @@ jobs:
 
       # For builds on master we also want to push the image as the latest tag.
       - name  : Tag Master Docker Image As Latest
-        if    : steps.extract_branch.outputs.branch == "master"
+        if    : steps.extract_branch.outputs.branch == 'master'
         run   : docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest fi
         shell : bash
 
