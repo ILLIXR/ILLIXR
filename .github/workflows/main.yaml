@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  illixr-tests-master.18:
+  illixr-tests-master-ubuntu18:
     env:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
       distro_ver: 18.04
@@ -22,7 +22,7 @@ jobs:
         with:
           ghcr_token: ${{ env.ghcr_token }}
           distro_ver: ${{ env.distro_ver }}
-  illixr-tests-master.20:
+  illixr-tests-master-ubuntu20:
     env:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
       distro_ver: 20.04
