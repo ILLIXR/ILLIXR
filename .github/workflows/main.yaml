@@ -18,7 +18,7 @@ jobs:
           submodules: recursive
 
       - name: Run CI (fetch-build-run)
-        uses: actions/github-actions-workflows@v1
+        uses: ILLIXR/github-actions-workflows@v1
         with:
           ghcr_token: ${{ env.ghcr_token }}
           distro_ver: ${{ env.distro_ver }}
@@ -35,7 +35,7 @@ jobs:
           submodules: recursive
 
       - name: Run CI (fetch-build-run)
-        uses: actions/github-actions-workflows@v1
+        uses: ILLIXR/github-actions-workflows@v1
         with:
           ghcr_token: ${{ env.ghcr_token }}
           distro_ver: ${{ env.distro_ver }}
