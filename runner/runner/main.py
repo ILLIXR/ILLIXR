@@ -123,7 +123,8 @@ def do_ci(config: Mapping[str, Any]) -> None:
     enable_offload_flag: str = config["enable_offload"]
     enable_alignment_flag: str = config["enable_alignment"]
 
-    distro_ver: str = os.environ["DISTRO_VER"] # Kludge: Multiple machines for GitHub Actions / Docker
+    ## Kludge: Multiple machines for GitHub Actions / Docker
+    distro_ver: Optional[str] = os.environ["DISTRO_VER"] if "DISTRO_VER" in os.environ else None
 
     for ci_type in ["no-build", "build-only", "run-solo"]:
         for plugin_config in config["action"][ci_type]["plugin_group"]:
