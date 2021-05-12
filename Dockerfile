@@ -8,7 +8,6 @@ ARG JOBS=1
 ARG ACTION=ci
 ARG BUILD_TYPE=Release
 
-ENV DISTRO_VER=${BASE_IMG}
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 ENV CC=clang-10
@@ -32,7 +31,7 @@ COPY ./scripts/default_values.sh ${HOME}/scripts/default_values.sh
 COPY ./scripts/system_utils.sh ${HOME}/scripts/system_utils.sh
 
 COPY ./scripts/install_apt_deps.sh ${HOME}/scripts/install_apt_deps.sh
-RUN if [ ${DISTRO_VER#ubuntu:} = 18.04 ]; \
+RUN if [ ${BASE_IMG#ubuntu:} = 18.04 ]; \
     then use_realsense=yes; \
     else use_realsense=no; \
     fi && env use_realsense=${use_realsense} ./scripts/install_apt_deps.sh
@@ -87,4 +86,4 @@ COPY . ${HOME}/ILLIXR/
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-ENTRYPOINT env DISTRO_VER=${DISTRO_VER#ubuntu:} ./runner.sh ${runner_action}
+ENTRYPOINT env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh ${runner_action}
