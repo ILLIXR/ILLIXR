@@ -10,7 +10,7 @@ The included `Makefile`:
 
 -   Compiles `plugin.cpp` and any other `*.cpp` files into the plugin.
 
--   Will invoke a recompile the target any time any `*.hpp` or `*.cpp` file changes.
+-   Will invoke a recompile of the target any time any `*.hpp` or `*.cpp` file changes.
 
 -   Compiles with C++17.
     You can change this in your plugin by defining
