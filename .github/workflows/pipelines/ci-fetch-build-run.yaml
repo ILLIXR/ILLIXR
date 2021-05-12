@@ -1,0 +1,48 @@
+inputs:
+  ghcr_token:
+    description: Token for the GitHub Container Registry
+    default:
+  distro_ver:
+    description: The type of machine to run the job on
+    default:
+
+runs:
+  using: composite
+  steps:
+  - name: Login to ghcr.io
+    if: ${{ inputs.ghcr_token }}
+    run: echo ${{ inputs.ghcr_token }} | docker login ghcr.io -u illixr-ci --password-stdin
+
+  - name: Extract Branch Name
+    if: ${{ inputs.ghcr_token }}
+    id: extract_branch
+    run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+    shell: bash
+
+  # Pulls latest and current branch tag of this container. This allows the docker build to use the cache for faster builds.
+  - name: Pull Docker Cache
+    if: ${{ inputs.ghcr_token }}
+    run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} || docker pull ghcr.io/illixr/illixr-tests:latest || true
+
+  # Performs the docker build and pulls the cache from either the branch name tag or from latest.
+  # The latest tag is what is on master so it will use that cache the first time this branch runs
+  - name: Build Docker Image
+    if: ${{ inputs.ghcr_token }}
+    run: docker build --build-arg JOBS="$(nproc)" --build-arg=BASE_IMG=ubuntu:${{ inputs.distro_ver }} --cache-from ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }},ghcr.io/illixr/illixr-tests:latest . -t ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+
+  - name: Push Docker Image
+    if: ${{ inputs.ghcr_token }}
+    run: docker push ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+
+  # For builds on master we also want to push the image as the latest tag.
+  - name: Tag Master Docker Image As Latest
+    if: steps.extract_branch.outputs.branch == 'master'
+    run: docker tag ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }} ghcr.io/illixr/illixr-tests:latest && docker push ghcr.io/illixr/illixr-tests:latest
+
+  - name: Pull Docker Image
+    if: ${{ inputs.ghcr_token }}
+    run: docker pull ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}
+
+  - name: Run Tests
+    if: ${{ inputs.ghcr_token }}
+    run: docker run ghcr.io/illixr/illixr-tests:${{ steps.extract_branch.outputs.branch }}

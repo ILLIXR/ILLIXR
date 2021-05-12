@@ -123,6 +123,8 @@ def do_ci(config: Mapping[str, Any]) -> None:
     enable_offload_flag: str = config["enable_offload"]
     enable_alignment_flag: str = config["enable_alignment"]
 
+    distro_ver: str = os.environ["DISTRO_VER"] # Kludge: Multiple machines for GitHub Actions / Docker
+
     for ci_type in ["no-build", "build-only", "run-solo"]:
         for plugin_config in config["action"][ci_type]["plugin_group"]:
             plugin_path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -133,6 +135,9 @@ def do_ci(config: Mapping[str, Any]) -> None:
             clean_one_plugin(config, plugin_config)
 
             if ci_type == "no-build":
+                continue
+            elif plugin_name == "realsense" and distro_ver != "18.04":
+                ## Kludge: RealSense packages are not available for yet Ubuntu 20+ LTS
                 continue
 
             plugin_so_path: Path = build_one_plugin(config, plugin_config)

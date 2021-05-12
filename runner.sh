@@ -17,7 +17,11 @@ cd "$(dirname ${0})"
 ## Source the configurations for our dependencies
 . deps.sh
 
+## Get OS
+. /etc/os-release
+
 ## Setup script
+distro_ver="${DISTRO_VER=${VERSION_ID}}" # DISTRO_VER (Dockerfile), VERSION_ID (os-release)
 interp_cmd="python"
 interp_args=""
 script_path="runner/runner/main.py"
@@ -53,4 +57,4 @@ else
 fi
 
 ## Start executing action from main
-"${interp_cmd}" ${interp_args} "${script_path}" "${script_args}"
+env DISTRO_VER="${distro_ver}" "${interp_cmd}" ${interp_args} "${script_path}" "${script_args}"

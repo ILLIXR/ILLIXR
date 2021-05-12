@@ -2,5 +2,4 @@ plugin_group:
   - !include "plugins/hologram.yaml"
   - !include "plugins/monado_integration.yaml"
   - !include "plugins/monado_openxr_app.yaml"
-  - !include "plugins/realsense.yaml"
   - !include "plugins/zed.yaml"

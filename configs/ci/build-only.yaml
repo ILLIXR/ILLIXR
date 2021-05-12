@@ -3,3 +3,6 @@ plugin_group:
   - !include "plugins/gldemo.yaml"
   - !include "plugins/timewarp_gl.yaml"
   - !include "plugins/pose_lookup.yaml"
+  - !include "plugins/pose_prediction.yaml"
+  - !include "plugins/rk4_integrator.yaml"
+  - !include "plugins/realsense.yaml"

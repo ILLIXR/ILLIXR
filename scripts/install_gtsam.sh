@@ -71,21 +71,22 @@ make -C "${build_dir}" -j "${illixr_nproc}"
 ## Install
 # Fix suffixed symlinks for the generated shared libaries
 if [ "${build_type}" != "Release" ]; then
-    so_file_release="libgtsam.so"
-    so_file_unstable_release="libgtsam_unstable.so"
+    prefix_dir_lib="${prefix_dir}/lib"
+    so_file_release="${prefix_dir_lib}/libgtsam.so"
+    so_file_unstable_release="${prefix_dir_lib}/libgtsam_unstable.so"
 
     cd "${build_dir}/gtsam"
 
     if  [ -f "${so_file}" ]; then
         if [ -f "${so_file_release}" ]; then
-            sudo rm -f --preserve-root=all "${so_file_release}"
+            sudo rm -f --preserve-root "${so_file_release}"
         fi
         sudo ln -s "${so_file}" "${so_file_release}"
     fi
 
     if  [ -f "${so_file_unstable}" ]; then
         if [ -f "${so_file_unstable_release}" ]; then
-            sudo rm -f --preserve-root=all "${so_file_unstable_release}"
+            sudo rm -f --preserve-root "${so_file_unstable_release}"
         fi
         sudo ln -s "${so_file_unstable}" "${so_file_unstable_release}"
     fi

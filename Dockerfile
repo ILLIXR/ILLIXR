@@ -1,8 +1,14 @@
-FROM ubuntu:20.04
+ARG BASE_IMG=ubuntu:20.04
+
+FROM ${BASE_IMG}
+
+ARG BASE_IMG
 
 ARG JOBS=1
 ARG ACTION=ci
+ARG BUILD_TYPE=Release
 
+ENV DISTRO_VER=${BASE_IMG#ubuntu:}
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 ENV CC=clang-10
@@ -10,7 +16,7 @@ ENV CXX=clang++-10
 ENV opt_dir=/opt/ILLIXR
 ENV prefix_dir=/usr/local
 ENV illixr_nproc=${JOBS}
-ENV build_type=Release
+ENV build_type=${BUILD_TYPE}
 
 ENV src_dir_conda=${opt_dir}/miniconda3
 ENV env_config_path=runner/environment.yml
@@ -26,7 +32,10 @@ COPY ./scripts/default_values.sh ${HOME}/scripts/default_values.sh
 COPY ./scripts/system_utils.sh ${HOME}/scripts/system_utils.sh
 
 COPY ./scripts/install_apt_deps.sh ${HOME}/scripts/install_apt_deps.sh
-RUN ./scripts/install_apt_deps.sh
+RUN if [ ${DISTRO_VER} = 18.04 ]; \
+    then use_realsense=yes; \
+    else use_realsense=no; \
+    fi && env use_realsense=${use_realsense} ./scripts/install_apt_deps.sh
 RUN apt-get autoremove -y # Save space by cleaning up
 
 ## Locally built clang not in use yet
@@ -78,4 +87,4 @@ COPY . ${HOME}/ILLIXR/
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-ENTRYPOINT ./runner.sh ${runner_action}
+ENTRYPOINT env DISTRO_VER=${DISTRO_VER} ./runner.sh ${runner_action}
