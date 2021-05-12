@@ -4,10 +4,12 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  ghcr_token: ${{ secrets.GHCR_TOKEN }}
+
 jobs:
   illixr-tests-pr-ubuntu18:
     env:
-      ghcr_token: ${{ secrets.GHCR_TOKEN }}
       distro_ver: 18.04
     runs-on: ubuntu-18.04
     steps:
@@ -17,14 +19,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Extract Branch Name
+        id: extract_branch
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        shell: bash
+
       - name: Run CI (fetch-build-run)
         uses: ILLIXR/github-actions-workflows@v1
         with:
-          ghcr_token: ${{ env.ghcr_token }}
-          distro_ver: ${{ env.distro_ver }}
+          ghcr_token : ${{ env.ghcr_token }}
+          distro_ver : ${{ env.distro_ver }}
+          branch     : ${{ steps.extract_branch.outputs.branch }}
   illixr-tests-pr-ubuntu20:
     env:
-      ghcr_token: ${{ secrets.GHCR_TOKEN }}
       distro_ver: 20.04
     runs-on: ubuntu-20.04
     steps:
@@ -34,8 +41,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Extract Branch Name
+        id: extract_branch
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        shell: bash
+
       - name: Run CI (fetch-build-run)
         uses: ILLIXR/github-actions-workflows@v1
         with:
-          ghcr_token: ${{ env.ghcr_token }}
-          distro_ver: ${{ env.distro_ver }}
+          ghcr_token : ${{ env.ghcr_token }}
+          distro_ver : ${{ env.distro_ver }}
+          branch     : ${{ steps.extract_branch.outputs.branch }}
