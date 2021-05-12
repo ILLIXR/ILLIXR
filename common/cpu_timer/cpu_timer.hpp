@@ -114,3 +114,5 @@ namespace cpu_timer {
 #define CPU_TIMER_TIME_FUNCTION() CPU_TIMER_TIME_FUNCTION_INFO(cpu_timer::type_eraser_default)
 
 #define CPU_TIMER_TIME_EVENT() CPU_TIMER_TIME_EVENT_INFO(false, false, __func__, cpu_timer::type_eraser_default)
+
+#define CPU_TIMER

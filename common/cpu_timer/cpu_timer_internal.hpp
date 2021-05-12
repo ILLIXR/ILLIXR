@@ -457,7 +457,22 @@ namespace detail {
 			log_period = log_period_;
 		}
 
-		bool is_enabled() {
+		/**
+		 * @brief Calls callback after every frame.
+		 *
+		 * This is usually too inefficient.
+		 */
+		void callback_every_frame() { set_callback_period(CpuTime{1}); }
+
+		/**
+		 * @brief Call callback in destructor.
+		 *
+		 * This is the most efficient, putting the entire lifetime of
+		 * each thread into one batch and calling the callback.
+		 */
+		void callback_once() { set_callback_period(CpuTime{0}); }
+
+		bool is_enabled() const {
 			return enabled;
 		}
 
@@ -466,7 +481,8 @@ namespace detail {
 		 *
 		 * All in-progress threads will complete with the prior value.
 		 */
-		void set_callback(std::unique_ptr<CallbackType>&& callback_) {
+		void set_callback(CallbackType&& callback_) {
+			// std::lock_guard<std::mutex> config_lock {config_mutex};
 			callback = std::move(callback_);
 		}
 
