@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cerrno>
+#include <cassert>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
@@ -19,10 +20,10 @@ namespace ILLIXR {
     public:
         int        width;
         int        height;
-        Display    *dpy;
+        Display*   dpy;
         Window     win;
         GLXContext glc;
-        xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context){
+        xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context) {
             width = _width;
             height = _height;
 
@@ -32,7 +33,7 @@ namespace ILLIXR {
             RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
 
             dpy = XOpenDisplay(nullptr);
-            if (!dpy) {
+            if (dpy == nullptr) {
                 ILLIXR::abort("Cannot connect to X server");
             } else {
 				// Apparently, XOpenDisplay's _true_ error indication is whether dpy is nullptr.
@@ -67,7 +68,8 @@ namespace ILLIXR {
             RAC_ERRNO_MSG("extended_window before glXChooseFBConfig");
 
             int fbcount = 0;
-            GLXFBConfig* fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), visual_attribs, &fbcount);
+            int screen = DefaultScreen(dpy);
+            GLXFBConfig* fbc = glXChooseFBConfig(dpy, screen, visual_attribs, &fbcount);
             if (!fbc) {
                 ILLIXR::abort("Failed to retrieve a framebuffer config");
             }
@@ -93,14 +95,17 @@ namespace ILLIXR {
                               << ", SAMPLES = " << samples
                               << std::endl;
 #endif
-                    if (best_fbc < 0 || (samp_buf && samples > best_num_samp))
-                      best_fbc = i, best_num_samp = samples;
-                    if (worst_fbc < 0 || !samp_buf || samples < worst_num_samp)
-                      worst_fbc = i, worst_num_samp = samples;
+                    if (best_fbc < 0 || (samp_buf && samples > best_num_samp)) {
+                        best_fbc = i, best_num_samp = samples;
+                    }
+                    if (worst_fbc < 0 || (!samp_buf || samples < worst_num_samp)) {
+                        worst_fbc = i, worst_num_samp = samples;
+                    }
                 }
                 XFree(vi);
             }
 
+            assert(0 <= best_fbc && best_fbc < fbcount);
             GLXFBConfig bestFbc = fbc[best_fbc];
 
             // Free the FBConfig list allocated by glXChooseFBConfig()
@@ -133,6 +138,7 @@ namespace ILLIXR {
 
             // Done with visual info
             XFree(vi);
+            XFreeColormap(dpy, cmap);
 
 #ifndef NDEBUG
             std::cout << "Creating context" << std::endl;
@@ -175,6 +181,14 @@ namespace ILLIXR {
             const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
             */
 #endif
+        }
+
+        ~xlib_gl_extended_window() {
+            XDestroyWindow(dpy, win);
+            Window root = DefaultRootWindow(dpy); /// What does this do?
+            XDestroyWindow(dpy, glc);
+            glXDestroyContext(dpy, glc);
+            // XFree(dpy);
         }
     };
 }
