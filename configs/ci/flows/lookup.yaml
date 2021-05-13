@@ -1,5 +1,7 @@
 flow:
   - plugin_group:
+    ## 'pose_lookup' needs to load before consumers of poses
     - !include "plugins/pose_lookup.yaml"
-    - !include "plugins/gldemo.yaml"
   - !include "plugins/groups/core.yaml"
+  - plugin_group:
+    - !include "plugins/gldemo.yaml"

@@ -1,3 +1,4 @@
 plugin_group:
+  - !include "plugins/pose_prediction.yaml"
   - !include "plugins/timewarp_gl.yaml"
   - !include "plugins/audio.yaml"

@@ -2,6 +2,5 @@ plugin_group:
   - !include "plugins/audio.yaml"
   - !include "plugins/gtsam_integrator.yaml"
   - !include "plugins/kimera-vio.yaml"
-  - !include "plugins/offline_imu_cam.yaml"
   - !include "plugins/offload_data.yaml"
   - !include "plugins/openvins.yaml"

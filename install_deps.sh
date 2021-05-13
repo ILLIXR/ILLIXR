@@ -263,13 +263,14 @@ fi
 #    "${dep_prompt_clang}" \
 #    "${dep_ver_clang}"
 
-prompt_install \
-    "${dep_name_boost}" \
-    "${deps_log_dir}" \
-    "${script_path_boost}" \
-    "${parent_dir_boost}" \
-    "${dep_prompt_boost}" \
-    "${dep_ver_boost}"
+## Locally built boost not in use yet
+#prompt_install \
+#    "${dep_name_boost}" \
+#    "${deps_log_dir}" \
+#    "${script_path_boost}" \
+#    "${parent_dir_boost}" \
+#    "${dep_prompt_boost}" \
+#    "${dep_ver_boost}"
 
 prompt_install \
     "${dep_name_opencv}" \

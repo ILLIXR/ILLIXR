@@ -12,22 +12,37 @@ When debugging locally, we recommend using either `gdb` or `valgrind` in this wa
 From the root directory in your project, run:
 
 <!--- language: lang-shell -->
-    docker build [--build-arg=JOBS="<integer>"] [--no-cache] --tag <repository>:<tag> .
+    docker build .                                    \
+        [--build-arg=JOBS="<integer>"]                \
+        [--build-arg=BASE_IMG="<image-name>"]         \
+        [--build-arg=ACTION="<runner-action>"]        \
+        [--build-arg=BUILD_TYPE="<cmake-build-type>"] \
+        [--no-cache]                                  \
+        --tag <repository>:<tag>
 
-Note the optional `Dockerfile` argument, `JOBS`, which specifies the number of threads/tasks to use for building.
+Note the optional `Dockerfile` argument, `JOBS`, which specifies the number of
+    threads/tasks to use for building.
+The `BASE_IMG` argument specifies the Docker image to pull for
+    the build (default: `ubuntu:21.04`).
+The `ACTION` argument specifies the default [_Runner_][11] action to use for
+    the `docker run` entrypoint (default: `ci`).
+The `BUILD_TYPE` argument specifes the build profile (e.g. CMake's `CMAKE_BUILD_TYPE`)
+    (default: `Release`).
 Also note the optional argument, `--no-cache`, which forces Docker to rerun commands in `Dockerfile`
     (see [this article][1] for more information).
-For this project's main module, you can use something like `illixr-illixr` for the `<repository>` value,
+For this project's main module, you can use something like `illixr/illixr` for the `<repository>` value,
     and your current branch name or release version as the `<tag>` value.
 
-Note that building the docker image can take some time (up to 40min on a 4-core desktop machine) and uses somewhere between 2-4GB of RAM.
+Note that building the docker image can take some time (up to 40min on a 4-core desktop machine)
+    and uses somewhere between 2-4GB of RAM.
 
 #### From a GitHub Pull Request's CI/CD Flow
 Follow these steps when a CI/CD build fails on a PR:
 
 -   Click `details` on the failing build.
 
--   In the build view go to the Push Docker Image tab and copy the `docker push ghcr.io/illixr/illixr-tests:<branch-name>` command.
+-   In the build view go to the Push Docker Image tab and copy
+        the `docker push ghcr.io/illixr/illixr-tests:<branch-name>` command.
 
 -   Then in your terminal, run:
 
@@ -49,7 +64,8 @@ Now run:
 
 You are now in a bash shell in a docker container.
 
-From here you can test whichever project flow you wish, such as the usual `./runner.sh configs/native.yaml`,
+From here you can test whichever project flow you wish, such as the usual
+    `./runner.sh configs/native.yaml`,
     or the CI/CD testing flow (`./runner.sh configs/ci.yaml`).
 
 
@@ -60,3 +76,4 @@ From here you can test whichever project flow you wish, such as the usual `./run
 [//]: # (- Internal -)
 
 [10]:   building_illixr.md
+[11]:   glossary.md#runner
