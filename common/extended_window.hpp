@@ -185,8 +185,8 @@ namespace ILLIXR {
 
         ~xlib_gl_extended_window() {
             XDestroyWindow(dpy, win);
-            Window root = DefaultRootWindow(dpy); /// What does this do?
-            XDestroyWindow(dpy, glc);
+            Window root = DefaultRootWindow(dpy);
+            XDestroyWindow(dpy, root);
             glXDestroyContext(dpy, glc);
             // XFree(dpy);
         }
