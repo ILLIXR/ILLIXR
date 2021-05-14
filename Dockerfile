@@ -33,7 +33,7 @@ RUN mkdir -p ${opt_dir}
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 RUN apt-get update && apt-get install -y sudo curl unzip
 
-## Create illixr_dir, cache_path, data_dir_euroc, ${sub_path_euroc} together
+## Create illixr_dir, cache_path, data_dir_euroc, sub_path_euroc together
 ## Prevents Runner from fetching
 RUN mkdir -p ${data_dir_euroc}/${sub_path_euroc}
 
