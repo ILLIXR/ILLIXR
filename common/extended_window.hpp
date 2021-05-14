@@ -187,7 +187,7 @@ namespace ILLIXR {
             XDestroyWindow(dpy, win);
             Window root = DefaultRootWindow(dpy);
             XDestroyWindow(dpy, root);
-            glXDestroyContext(dpy, glc);
+            //glXDestroyContext(dpy, glc);
             // XFree(dpy);
         }
     };
