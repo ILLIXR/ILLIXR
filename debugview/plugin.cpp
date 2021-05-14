@@ -431,7 +431,6 @@ private:
 
 	switchboard::reader<pose_type> _m_slow_pose;
     switchboard::reader<imu_raw_type> _m_fast_pose;
-	// std::unique_ptr<reader_latest<imu_cam_type>> _m_imu_cam_data;
 	GLFWwindow* gui_window;
 
 	uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
