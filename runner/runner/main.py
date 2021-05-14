@@ -241,17 +241,15 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     monado_target_name : str  # Forward declare type
     monado_target_dir  : Path # Forward declare type
-    monado_target_path : Path # Forward declare type
 
     if is_mainline:
         monado_target_name = "monado-service"
         monado_target_dir  = monado_path / "build" / "src" / "xrt" / "targets" / "service"
-        monado_target_path = monado_target_dir / monado_target_name
     else:
         monado_target_name = "openxr-example"
         monado_target_dir  = openxr_app_path / "build"
-        monado_target_path = monado_target_dir / monado_target_name
 
+    monado_target_path: Path = monado_target_dir / monado_target_name
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
 
