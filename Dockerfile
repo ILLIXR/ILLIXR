@@ -14,17 +14,32 @@ ENV CC=clang-10
 ENV CXX=clang++-10
 ENV opt_dir=/opt/ILLIXR
 ENV prefix_dir=/usr/local
+ENV illixr_dir=${HOME}/ILLIXR
 ENV illixr_nproc=${JOBS}
 ENV build_type=${BUILD_TYPE}
+ENV cache_path=.cache/paths
 
 ENV src_dir_conda=${opt_dir}/miniconda3
 ENV env_config_path=runner/environment.yml
 ENV runner_action=configs/${ACTION}.yaml
 
+ENV url_euroc='http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+ENV data_dir_euroc=${illixr_dir}/${cache_path}/http%%c%%s%%srobotics.ethz.ch%%s~asl-datasets%%sijrr_euroc_mav_dataset%%svicon_room1%%sV1_02_medium%%sV1_02_medium.zip
+ENV zip_path_euroc=${illixr_dir}/${cache_path}/euroc-mav-vicon-medium.zip
+ENV sub_path_euroc=mav0
+
 RUN mkdir -p ${opt_dir}
 
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
-RUN apt-get update && apt-get install -y sudo
+RUN apt-get update && apt-get install -y sudo curl unzip
+
+## Create illixr_dir, cache_path, data_dir_euroc, ${sub_path_euroc} together
+## Prevents Runner from fetching
+RUN mkdir -p ${data_dir_euroc}/${sub_path_euroc}
+
+## Download (and cache) the euroc dataset early in the build
+RUN curl ${url_euroc} -o ${zip_path_euroc}
+RUN unzip -d ${data_dir_euroc} ${zip_path_euroc} ${sub_path_euroc}/ # slash required
 
 COPY ./deps.sh ${HOME}/deps.sh
 COPY ./scripts/default_values.sh ${HOME}/scripts/default_values.sh
@@ -82,7 +97,7 @@ RUN ./scripts/install_conda.sh
 
 RUN ldconfig
 
-COPY . ${HOME}/ILLIXR/
+COPY . ${illixr_dir}
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
