@@ -14,7 +14,6 @@
 
 using namespace ILLIXR;
 
-/// Inherit from `plugin` if you don't need the threadloop
 class depthai : public plugin {
 public:
     depthai(std::string name_, phonebook* pb_)
@@ -22,49 +21,64 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
+        //Initialize DepthAI pipeline and device 
         , p{createCameraPipeline()}
         , d{p}
         { 
             d.startPipeline();
-            std::cout << "Depthai pipeline started" << std::endl;
+            #ifndef NDEBUG
+                std::cout << "Depthai pipeline started" << std::endl;
+            #endif
             color = d.getOutputQueue("preview", 1, false);
-            depthQueue = d.getOutputQueue("depth", 1, true);
+            depthQueue = d.getOutputQueue("depth", 1, false);
             rectifLeftQueue = d.getOutputQueue("rectified_left", 1, false);
             rectifRightQueue = d.getOutputQueue("rectified_right", 1, false);
             imuQueue = d.getOutputQueue("imu", 1, false);
-            std::function<void(void)> i_lambda = [&](){callback();};
-            auto imuPacket = imuQueue->get<dai::IMUData>();
-            imuQueue->addCallback(i_lambda);
-            
+            std::function<void(void)> imu_callback = [&](){callback();};
+            imuQueue->addCallback(imu_callback);
         }
 
     void callback(){  
         std::lock_guard<std::mutex> lock(mutex);
-        //Retrieve available data
-        interrupts++;
+        //Check for available data
+        bool color_go = color->has<dai::ImgFrame>();
+        bool depth_go = depthQueue->has<dai::ImgFrame>();
+        bool rectifL_go = rectifLeftQueue->has<dai::ImgFrame>();
+        bool rectifR_go = rectifRightQueue->has<dai::ImgFrame>();
+        bool imuPacket_go = imuQueue->has<dai::IMUData>();
         
-        auto colorFrame = color->tryGet<dai::ImgFrame>();
-        auto depthFrame = depthQueue->tryGet<dai::ImgFrame>();
-        auto rectifL = rectifLeftQueue->tryGet<dai::ImgFrame>();
-        auto rectifR = rectifRightQueue->tryGet<dai::ImgFrame>();
-        auto imuPacket = imuQueue->tryGet<dai::IMUData>();
-        if(rectifR && rectifL && depthFrame && colorFrame) {
-            // std::cout << "Images Received.." << std::endl;
-            cv::Mat rgb = cv::Mat(colorFrame->getHeight(), colorFrame->getWidth(), CV_8UC3, colorFrame->getData().data());
+        #ifndef NDEBUG
+                if(color_go){
+                    rgb_count++;
+                }
+                if(depth_go){
+                    depth_count++;
+                }
+                if(rectifL_go){
+                    left_count++;
+                }
+                if(rectifR_go){
+                    right_count++;
+                }
+        #endif
+
+        if(rectifR_go && rectifL_go && depth_go && color_go) {
+            #ifndef NDEBUG
+                all_count++;
+            #endif
+            auto colorFrame = color->tryGet<dai::ImgFrame>();
+            auto depthFrame = depthQueue->tryGet<dai::ImgFrame>();
+            auto rectifL = rectifLeftQueue->tryGet<dai::ImgFrame>();
+            auto rectifR = rectifRightQueue->tryGet<dai::ImgFrame>();
             
+            cv::Mat color = cv::Mat(colorFrame->getHeight(), colorFrame->getWidth(), CV_8UC3, colorFrame->getData().data());
+            cv::Mat rgb_out{color.clone()};
             cv::Mat rectifiedLeftFrame = cv::Mat(rectifL->getHeight(), rectifL->getWidth(), CV_8UC1, rectifL->getData().data());
-            cv::Mat LeftOut;
-            cv::flip(rectifiedLeftFrame, LeftOut, 1);
-
-            // cv::Mat LeftOut = cv::Mat(rectifL->getHeight(), rectifL->getWidth(), CV_8UC1, rectifL->getData().data());
-            // cv::flip(LeftOut, LeftOut, 1);
-
+            cv::Mat LeftOut{rectifiedLeftFrame.clone()};
+            cv::flip(LeftOut, LeftOut, 1);
             cv::Mat rectifiedRightFrame = cv::Mat(rectifR->getHeight(), rectifR->getWidth(), CV_8UC1, rectifR->getData().data());
-            cv::Mat RightOut;
-            cv::flip(rectifiedRightFrame, RightOut, 1);
-
-            // cv::Mat RightOut = cv::Mat(rectifR->getHeight(), rectifR->getWidth(), CV_8UC1, rectifR->getData().data());
-            // cv::flip(RightOut, RightOut, 1);
+            cv::Mat RightOut{rectifiedRightFrame.clone()};
+            cv::flip(RightOut, RightOut, 1);
 
             cv::Mat depth = cv::Mat(depthFrame->getHeight(), depthFrame->getWidth(), CV_16UC1, depthFrame->getData().data());
             cv::Mat converted_depth;
@@ -72,7 +86,7 @@ public:
             cam_type_ = cam_type {
                 .img0 = cv::Mat{LeftOut},
                 .img1 = cv::Mat{RightOut},
-                .rgb = cv::Mat{rgb},
+                .rgb = cv::Mat{rgb_out},
                 .depth = cv::Mat{converted_depth},
                 .iteration = iteration_cam,
             };
@@ -81,8 +95,8 @@ public:
         // Images
         std::optional<cv::Mat> img0 = std::nullopt;
         std::optional<cv::Mat> img1 = std::nullopt;
-        std::optional<cv::Mat> rgbi = std::nullopt;
-        std::optional<cv::Mat> depthi = std::nullopt;
+        std::optional<cv::Mat> rgb = std::nullopt;
+        std::optional<cv::Mat> depth = std::nullopt;
 
             
         if (last_iteration_cam != cam_type_.iteration)
@@ -90,28 +104,40 @@ public:
             last_iteration_cam = cam_type_.iteration;
             img0 = cam_type_.img0;
             img1 = cam_type_.img1;
-            rgbi = cam_type_.rgb;
-            depthi = cam_type_.depth;
+            rgb = cam_type_.rgb;
+            depth = cam_type_.depth;
         }
         
         std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> gyroTs;
         Eigen::Vector3f la;
         Eigen::Vector3f av;
         
-        if(imuPacket) {
-            // std::cout << "ImuPacket Received.." << std::endl;
-            if(imu_packet == 0){
-                first_packet = std::chrono::steady_clock::now();
-            }
-            imu_packet++;
+        if(imuPacket_go) {
+            auto imuPacket = imuQueue->tryGet<dai::IMUData>();
+            #ifndef NDEBUG
+                if(imu_packet == 0){
+                    first_packet = std::chrono::steady_clock::now();
+                }
+                imu_packet++;
+            #endif
             
             auto imuDatas = imuPacket->imuDatas;
             for(auto& imuData : imuDatas) {
-                gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.gyroscope.timestamp.getTimestamp());
-                if (gyroTs == test_time_point){return;}
-                test_time_point = gyroTs;
-                la = {imuData.acceleroMeter.x, imuData.acceleroMeter.y, imuData.acceleroMeter.z};
-                av = {imuData.gyroscope.x, imuData.gyroscope.y, imuData.gyroscope.z};
+                if(useRaw){
+                    gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.rawGyroscope.timestamp.getTimestamp());
+                    if (gyroTs <= test_time_point){return;}
+                    test_time_point = gyroTs;
+                    la = {imuData.rawAcceleroMeter.x, imuData.rawAcceleroMeter.y, imuData.rawAcceleroMeter.z};
+                    av = {imuData.rawGyroscope.x, imuData.rawGyroscope.y, imuData.rawGyroscope.z};
+                }
+                else {
+                    gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.gyroscope.timestamp.getTimestamp());
+                    if (gyroTs <= test_time_point){return;}
+                    test_time_point = gyroTs;
+                    la = {imuData.acceleroMeter.x, imuData.acceleroMeter.y, imuData.acceleroMeter.z};
+                    av = {imuData.gyroscope.x, imuData.gyroscope.y, imuData.gyroscope.z};
+                }
+                
             }
         
             // Time as ullong (nanoseconds)
@@ -122,8 +148,9 @@ public:
             time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
             
             // Submit to switchboard
-            // std::cout << "Publishing IMU and stereo.." << std::endl;
-            imu_pub++;
+            #ifndef NDEBUG
+                imu_pub++;
+            #endif
             _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
                 {
                     imu_time_point,
@@ -135,14 +162,15 @@ public:
                 }
             ));
             
-            if (rgbi && depthi)
+            if (rgb && depth)
             {
-                // std::cout << "Publishing RGB-D.." << std::endl;
-                rgbd_pub++;
+                #ifndef NDEBUG
+                    rgbd_pub++;
+                #endif
                 _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
                     {
-                        rgbi,
-                        depthi,
+                        rgb,
+                        depth,
                         imu_time
                     }
                 ));
@@ -151,14 +179,13 @@ public:
 
     }
         
-
-
-
-    
     virtual ~depthai() override {
-        std::printf("Depthai Destructor Interrupts: %d Packets %d PUB: IMU: %d RGB-D: %d\n", interrupts, imu_packet, imu_pub, rgbd_pub);
-        auto dur = std::chrono::steady_clock::now() - first_packet;
-        std::printf("Time since first packet: %ld ms\n",  std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
+        #ifndef NDEBUG
+            std::printf("Depthai Destructor: %d Packets Received %d Published: IMU: %d RGB-D: %d\n", imu_packet, imu_pub, rgbd_pub);
+            auto dur = std::chrono::steady_clock::now() - first_packet;
+            std::printf("Time since first packet: %ld ms\n",  std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
+            std::printf("Depthai RGB: %d Left: %d Right: %d Depth: %d All: %d\n", rgb_count, left_count, right_count, depth_count, all_count);
+        #endif
     }
 
 
@@ -182,13 +209,19 @@ private:
 	// int iteration_imu = 0;
 	int last_iteration_cam;
 	// int last_iteration_imu;
-    int imu_packet{0};
-    int interrupts{0};
-    int imu_pub{0};
-    int rgbd_pub{0};
+    #ifndef NDEBUG
+        int imu_packet{0};
+        int imu_pub{0};
+        int rgbd_pub{0};
+        int rgb_count{0};
+        int left_count{0};
+        int right_count{0};
+        int depth_count{0};
+        int all_count{0};
+    #endif
     std::chrono::time_point<std::chrono::steady_clock> first_packet;
     std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> test_time_point;
-
+    bool useRaw = true;
 
     dai::Pipeline p;
     dai::Device d;
@@ -201,7 +234,9 @@ private:
 
 
     dai::Pipeline createCameraPipeline() {
-        std::cout << "Depthai creating pipeline" << std::endl;
+        #ifndef NDEBUG
+            std::cout << "Depthai creating pipeline" << std::endl;
+        #endif
         dai::Pipeline p;
 
         // IMU
@@ -211,10 +246,23 @@ private:
 
         dai::IMUSensorConfig sensorConfig;
         sensorConfig.reportIntervalUs = 2500;  // 400hz
-        sensorConfig.sensorId = dai::IMUSensorId::IMU_ACCELEROMETER;
+        if(useRaw){
+            sensorConfig.sensorId = dai::IMUSensorId::RAW_ACCELEROMETER;
+        }
+        else{
+            sensorConfig.sensorId = dai::IMUSensorId::ACCELEROMETER;
+        }
+
         imu->enableIMUSensor(sensorConfig);
-        sensorConfig.sensorId = dai::IMUSensorId::IMU_GYROSCOPE_CALIBRATED;
+
+        if(useRaw){
+            sensorConfig.sensorId = dai::IMUSensorId::RAW_GYROSCOPE;
+        }
+        else{
+            sensorConfig.sensorId = dai::IMUSensorId::GYROSCOPE_CALIBRATED;
+        }
         imu->enableIMUSensor(sensorConfig);
+
         // above this threshold packets will be sent in batch of X, if the host is not blocked
         imu->setBatchReportThreshold(1);
         // maximum number of IMU packets in a batch, if it's reached device will block sending until host can receive it
@@ -278,10 +326,9 @@ private:
         xoutRectifL->setStreamName("rectified_left");
         xoutRectifR->setStreamName("rectified_right");
 
-        if(outputRectified) {
-            stereo->rectifiedLeft.link(xoutRectifL->input);
-            stereo->rectifiedRight.link(xoutRectifR->input);
-        }
+        stereo->rectifiedLeft.link(xoutRectifL->input);
+        stereo->rectifiedRight.link(xoutRectifR->input);
+        
         stereo->depth.link(xoutDepth->input);
         // Link plugins CAM -> STEREO -> XLINK
         monoLeft->out.link(stereo->left);
