@@ -35,7 +35,7 @@ action:
       XRT_HAVE_LIBUSB                    : ON
       XRT_HAVE_LIBUVC                    : ON
       XRT_HAVE_V4L2                      : ON
-      XRT_HAVE_SDL2                      : OFF
+      XRT_HAVE_SDL2                      : ON
       XRT_BUILD_DRIVER_ARDUINO           : OFF
       XRT_BUILD_DRIVER_OHMD              : OFF
       XRT_BUILD_DRIVER_DAYDREAM          : OFF
@@ -50,10 +50,8 @@ action:
       XRT_BUILD_DRIVER_SURVIVE           : OFF
       XRT_BUILD_DRIVER_VIVE              : OFF
       XRT_BUILD_DRIVER_HANDTRACKING      : OFF
+      XRT_BUILD_DRIVER_WMR               : OFF
       XRT_FEATURE_SERVICE                : ON
-      XRT_FEATURE_OPENXR_LAYER_CYLINDER  : OFF
-      XRT_FEATURE_OPENXR_LAYER_EQUIRECT2 : OFF
-      XRT_FEATURE_OPENXR_LAYER_EQUIRECT1 : OFF
 
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
 
