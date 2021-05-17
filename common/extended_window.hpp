@@ -188,8 +188,14 @@ namespace ILLIXR {
             [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
             assert(gl_result && "glXMakeCurrent should not fail");
 
-            /// Destroyed by XCloseDisplay: win, dlc, _m_cmap
+            glXDestroyContext(dpy, glc);
+            XDestroyWindow(dpy, win);
+            Window root = DefaultRootWindow(dpy);
+            XDestroyWindow(dpy, root);
+            XFreeColormap(dpy, _m_cmap);
+
             /// See [documentation](https://tronche.com/gui/x/xlib/display/XCloseDisplay.html)
+            /// See [example](https://www.khronos.org/opengl/wiki/Programming_OpenGL_in_Linux:_GLX_and_Xlib)
             XCloseDisplay(dpy);
 
             RAC_ERRNO_MSG("xlib_gl_extended_window at end of destructor");
