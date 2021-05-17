@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['threadloop',['threadloop',['../classILLIXR_1_1threadloop.html',1,'ILLIXR']]],
-  ['timer',['timer',['../classtimer.html',1,'']]],
-  ['timer_3c_20now_5ffn_2c_20time_5fpoint_2c_20duration_20_3e',['timer&lt; now_fn, time_point, duration &gt;',['../classtimer.html',1,'']]]
+  ['reader',['reader',['../classILLIXR_1_1switchboard_1_1reader.html',1,'ILLIXR::switchboard']]],
+  ['record',['record',['../classILLIXR_1_1record.html',1,'ILLIXR']]],
+  ['record_5fcoalescer',['record_coalescer',['../classILLIXR_1_1record__coalescer.html',1,'ILLIXR']]],
+  ['record_5fheader',['record_header',['../classILLIXR_1_1record__header.html',1,'ILLIXR']]],
+  ['record_5flogger',['record_logger',['../classILLIXR_1_1record__logger.html',1,'ILLIXR']]]
 ];

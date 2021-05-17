@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['data_5fuse_5findicator',['data_use_indicator',['../classILLIXR_1_1data__use__indicator.html',1,'ILLIXR']]]
+  ['clear',['clear',['../classILLIXR_1_1Event.html#a551c4f887c0783b5370bb57fd0027959',1,'ILLIXR::Event']]]
 ];

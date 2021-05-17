@@ -51,16 +51,6 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href=".">ILLIXR (Version 2)</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#publications">Publications</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#getting-started-and-documentation">Getting Started and Documentation</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licensing-structure">Licensing Structure</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#get-in-touch">Get in Touch</a>
-    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="getting_started/">Getting Started (Version 2)</a>
@@ -88,6 +78,8 @@
                     <li class="toctree-l1"><a class="reference internal" href="api/html/annotated.html">ILLIXR API (Version 2)</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="LICENSE/">ILLIXR License (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
@@ -147,75 +139,96 @@
 <p><a href="LICENSE"><img alt="NCSA licensed" src="https://img.shields.io/badge/license-NCSA-blue.svg" /></a>
 <a href="https://github.com/ILLIXR/ILLIXR/actions"><img alt="CI" src="https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg" /></a>
 <a href="https://gitter.im/ILLIXR/community"><img alt="Gitter chat" src="https://badges.gitter.im/gitterHQ/gitter.png" /></a></p>
-<p><a href="https://www.youtube.com/watch?v=5GXsUP9_34U">
+<p><a href="https://youtu.be/GVcCW8WgEDY">
     <img
         alt="ILLIXR Simple Demo"
-        src="https://img.youtube.com/vi/5GXsUP9_34U/0.jpg"
-        style="width: 480px"
+        src="https://img.youtube.com/vi/GVcCW8WgEDY/0.jpg"
+        style="width: 320px"
+        class="center"
     >
 </a></p>
 <p>Illinois Extended Reality testbed or ILLIXR (pronounced like elixir) is
-    the first open-source full-system Extended Reality (XR) testbed.
-It contains standalone state-of-the-art components representative of a generic XR workflow,
-    as well as a runtime framework that integrates these components into an XR system.
-ILLIXR's runtime integration framework is modular, extensible, and <a href="https://www.khronos.org/openxr">OpenXR</a>-compatible.</p>
-<p>We use the term <em>components</em> and not <em>kernels</em> or <em>computations</em> because
-    each component of ILLIXR is an entire application in itself,
-    and consists of many kernels and computations.
-At the moment, ILLIXR interfaces the following state-of-the-art components,
-    with periodic ILLIXR source snapshots hosted on our <a href="https://github.com/ILLIXR/ILLIXR/releases">releases page</a>:</p>
+    the first fully open-source Extended Reality (XR) system and testbed.
+The modular, extensible, and <a href="https://www.khronos.org/openxr">OpenXR</a>-compatible ILLIXR runtime
+    integrates state-of-the-art XR components into a complete XR system.
+The testbed is part of the broader <a href="http://illixr.org">ILLIXR consortium</a>,
+    an industry-supported community effort to democratize XR systems
+    research, development, and benchmarking.</p>
+<p>You can find the complete ILLIXR system <a href="https://github.com/ILLIXR/ILLIXR">here</a>.</p>
+<p>ILLIXR also provides its components in standalone configurations to enable architects and
+    system designers to research each component in isolation.
+The standalone components are packaged together in the <a href="https://github.com/ILLIXR/ILLIXR/releases/tag/v1-latest">v1-latest release</a> of ILLIXR. </p>
+<p>ILLIXR's modular and extensible runtime allows adding new components and swapping different
+    implementations of a given component.
+ILLIXR currently contains the following components: </p>
 <ul>
 <li>
-<p>Perception</p>
-<ol>
-<li><a href="https://github.com/ILLIXR/RITnet">Eye tracking</a> **</li>
-<li><a href="https://github.com/ILLIXR/ElasticFusion">Scene reconstruction</a> **</li>
-<li><a href="https://github.com/ILLIXR/open_vins">Simultaneous Localization and Mapping</a> **</li>
+<p><em>Perception</em></p>
+<ul>
+<li>Eye Tracking<ol>
+<li><a href="https://github.com/ILLIXR/RITnet">RITNet</a> **</li>
 </ol>
 </li>
-<li>
-<p>Visual</p>
-<ol>
-<li><a href="https://github.com/ILLIXR/visual_postprocessing">Chromatic aberration correction</a></li>
-<li><a href="https://github.com/ILLIXR/HOTlab">Computational holography for adaptive multi-focal displays</a> **</li>
-<li><a href="https://github.com/ILLIXR/visual_postprocessing">Lens distortion correction</a></li>
-<li><a href="https://github.com/ILLIXR/visual_postprocessing">Reprojection</a></li>
+<li>Scene Reconstruction<ol>
+<li><a href="https://github.com/ILLIXR/ElasticFusion">ElasticFusion</a> **</li>
+<li><a href="https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration">KinectFusion</a> **</li>
 </ol>
 </li>
-<li>
-<p>Aural</p>
-<ol>
-<li><a href="https://github.com/ILLIXR/audio_pipeline">Audio encoding</a></li>
-<li><a href="https://github.com/ILLIXR/audio_pipeline">Audio playback</a></li>
+<li>Simultaneous Localization and Mapping<ol>
+<li><a href="https://github.com/ILLIXR/open_vins">OpenVINS</a> **</li>
+<li><a href="https://github.com/ILLIXR/Kimera-VIO">Kimera-VIO</a> **</li>
+</ol>
+</li>
+<li>Cameras and IMUs<ol>
+<li><a href="https://www.nvidia.com/en-us/gtc/catalog/?search.primarytopic=option_1564595704881&amp;search.sessiontype=option_1614028602338&amp;search.primaryindustrysegment=option_1563402697134&amp;search=An%20Open-Source%20Testbed#/">ZED Mini</a></li>
+<li><a href="https://github.com/ILLIXR/ILLIXR/tree/master/realsense">Intel RealSense</a></li>
 </ol>
 </li>
 </ul>
+</li>
+<li>
+<p><em>Visual</em></p>
+<ul>
+<li><a href="https://github.com/ILLIXR/visual_postprocessing">Chromatic aberration correction</a></li>
+<li><a href="https://github.com/ILLIXR/HOTlab">Computational holography for adaptive multi-focal displays</a> **</li>
+<li><a href="https://github.com/ILLIXR/visual_postprocessing">Lens distortion correction</a></li>
+<li><a href="https://github.com/ILLIXR/visual_postprocessing">Asynchronous Reprojection (TimeWarp)</a></li>
+</ul>
+</li>
+<li>
+<p><em>Aural</em></p>
+<ul>
+<li><a href="https://github.com/ILLIXR/audio_pipeline">Audio encoding</a> **</li>
+<li><a href="https://github.com/ILLIXR/audio_pipeline">Audio playback</a> **</li>
+</ul>
+</li>
+</ul>
 <p>(** Source is hosted in an external repository under the <a href="https://github.com/ILLIXR">ILLIXR project</a>.)</p>
-<p>We plan on adding more components (e.g., graphics and multiple versions for individual components)
-    and extending the runtime in the future.
-Our goal is not to create a commercial quality XR product for current hardware.
-Instead, the goal for ILLIXR is to advance computer architecture, systems, and
-    hardware-software co-design research for XR by making available a full system and
-    key state-of-the-art components of both modern and future XR applications.</p>
-<p>Many of the current components of ILLIXR were developed by domain experts and
-    obtained from publicly available repositories.
-They were modified for one or more of the following reasons:
-    fixing compilation,
-    adding features,
-    removing extraneous code/dependencies.
+<p>We continue to add more components (new components and new implementations). </p>
+<p>Many of the current components of ILLIXR were developed by domain experts and obtained from
+    publicly available repositories.
+They were modified for one or more of the following reasons: fixing compilation, adding features,
+    or removing extraneous code or dependencies.
 Each component not developed by us is available as a forked github repository for
     proper attribution to its authors.</p>
-<p>Detailed descriptions of each component and our runtime,
-    including performance and energy profiles, can be found in
-    our <a href="https://arxiv.org/pdf/2004.04643.pdf">paper</a>.</p>
-<h2 id="publications">Publications</h2>
-<p>We request that you cite our following paper (new version coming soon) when you
-    use ILLIXR for a publication.
+<h1 id="papers-talks-demos-consortium">Papers, talks, demos, consortium</h1>
+<p>A <a href="https://arxiv.org/pdf/2004.04643.pdf">paper</a> with details on ILLIXR, including its components, runtime, telemetry support,
+    and a comprehensive analysis of performance, power, and quality on desktop and embedded systems.</p>
+<p>A <a href="https://www.nvidia.com/en-us/gtc/catalog/?search.primarytopic=option_1564595704881&amp;search.sessiontype=option_1614028602338&amp;search.primaryindustrysegment=option_1563402697134&amp;search=An%20Open-Source%20Testbed#/">talk presented at NVIDIA GTC'21</a> describing ILLIXR and announcing the ILLIXR consortium:
+    <a href="https://youtu.be/ZY98lWksnpM">Video</a>.
+    <a href="https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971">Slides</a>. </p>
+<p>A <a href="https://youtu.be/GVcCW8WgEDY">demo</a> of an OpenXR application running with ILLIXR.</p>
+<p>The <a href="http://illixr.org">ILLIXR consortium</a> is an industry-supported community effort to democratize
+    XR systems research, development, and benchmarking.
+Visit our <a href="http://illixr.org">web site</a> for more information.</p>
+<h1 id="citation">Citation</h1>
+<p>We request that you cite our following <a href="https://arxiv.org/pdf/2004.04643.pdf">paper</a> (new version coming soon)
+    when you use ILLIXR for a publication.
 We would also appreciate it if you send us a citation once your work has been published.</p>
 <pre><code>@misc{HuzaifaDesai2020,
     title={Exploring Extended Reality with ILLIXR: A new Playground for Architecture Research},
-    author={Muhammad Huzaifa and Rishi Desai and Xutao Jiang and Joseph Ravichandran and Finn Sinclair and Sarita V. Adve},
-    year={2020},
+    author={Muhammad Huzaifa and Rishi Desai and Samuel Grayson and Xutao Jiang and Ying Jing and Jae Lee and Fang Lu and Yihan Pang and Joseph Ravichandran and Finn Sinclair and Boyuan Tian and Hengzhi Yuan and Jeffrey Zhang and Sarita V. Adve},
+    year={2021},
     eprint={2004.04643},
     primaryClass={cs.DC}
 }
@@ -223,8 +236,8 @@ We would also appreciate it if you send us a citation once your work has been pu
 <h2 id="getting-started-and-documentation">Getting Started and Documentation</h2>
 <p>For more information, see our <a href="https://illixr.github.io/ILLIXR/getting_started/">Getting Started page</a>.</p>
 <h2 id="acknowledgements">Acknowledgements</h2>
-<p>Muhammad Huzaifa led the development of ILLIXR in <a href="http://rsim.cs.illinois.edu">Sarita Adve’s research group</a>
-    at the University of Illinois at Urbana-Champaign.
+<p>The ILLIXR project started in <a href="http://rsim.cs.illinois.edu">Sarita Adve’s research group</a>,
+    co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
 Other major contributors include
     Rishi Desai,
     Samuel Grayson,
@@ -234,6 +247,7 @@ Other major contributors include
     Fang Lu,
     Yihan Pang,
     Joseph Ravichandran,
+    Giordano Salvador,
     Finn Sinclair,
     Boyuan Tian,
     Henghzhi Yuan,
@@ -291,6 +305,9 @@ The external libraries and softwares included in ILLIXR each have their own lice
 <p><a href="https://github.com/mp3guy/ElasticFusion">ElasticFusion</a> \ <a href="https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt">ElasticFusion license</a></p>
 </li>
 <li>
+<p><a href="https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration">KinectFusion</a> \ <a href="https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt">MIT License</a></p>
+</li>
+<li>
 <p><a href="https://github.com/ILLIXR/gtsam">GTSAM</a> \ <a href="https://github.com/borglab/gtsam/blob/develop/LICENSE.BSD">Simplified BSD License</a></p>
 </li>
 <li>
@@ -316,18 +333,17 @@ The external libraries and softwares included in ILLIXR each have their own lice
 </li>
 </ul>
 <p>Note that ILLIXR's extensibility allows the source to be configured and compiled using only
-    permissively licensed software.
-For more details on configuring ILLIXR, see the <a href="https://illixr.github.io/ILLIXR/illixr_plugins/">ILLIXR Plugins</a> and
-    <a href="https://illixr.github.io/ILLIXR/writing_your_plugin/">Writing your Plugin</a> pages.</p>
+    permissively licensed software.</p>
 <h2 id="get-in-touch">Get in Touch</h2>
-<p>Whether you are a computer architect, a systems person, an XR application developer,
-    or just anyone interested in XR, we would love to hear your feedback on ILLIXR!
-ILLIXR is a living testbed and we would like to both refine existing components and add new ones. 
-We believe ILLIXR has the opportunity to drive future computer architecture and
-    systems research for XR,
-    and can benefit from contributions from other researchers and organizations.
-If you would like to be a part of this effort, please contact us at
-    <em>illixr at cs dot illinois dot edu</em> or visit us on <a href="https://gitter.im/ILLIXR/community">Gitter</a> or just send us a pull request!</p>
+<p>Whether you are a computer architect, a compiler writer, a systems person, work on XR related algorithms
+    or applications, or just anyone interested in XR research, development, or products,
+    we would love to hear from you and hope you will contribute!
+You can join
+    the <a href="http://illixr.org">ILLIXR consortium</a>,
+    <a href="https://discord.gg/upkvy7x3W4">Discord</a>,
+    or <a href="mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community">mailing list</a>,
+    or send us an <a href="mailto:illixr@cs.illinois.edu">email</a>,
+    or just send us a pull request!</p>
               
             </div>
           </div>

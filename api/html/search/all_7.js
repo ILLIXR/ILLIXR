@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['operator_3d_3d',['operator==',['../classILLIXR_1_1record__header.html#a24dd44346428035992b45b2e7be72f6c',1,'ILLIXR::record_header']]]
+  ['illixr',['ILLIXR',['../namespaceILLIXR.html',1,'']]],
+  ['is_5fset',['is_set',['../classILLIXR_1_1Event.html#ae8f02d923b0f9c6859c31ce383d55cfa',1,'ILLIXR::Event']]]
 ];

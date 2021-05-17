@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
+                    </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
                 <ul>
@@ -141,36 +143,36 @@
               
                 <h1 id="writing-your-plugin">Writing Your Plugin</h1>
 <h2 id="adding-a-new-plugin-common-case">Adding a New Plugin (Common Case)</h2>
-<p>In the common case, one need only define a <code>Makefile</code> with the line <code>include common/common.mk</code>
+<p>In the common case, you only need to define a <code>Makefile</code> with the line <code>include common/common.mk</code>
     and symlink common (<code>ln -s ../common common</code>).
-This provides the necessary targets and uses the compiler <code>$(CXX)</code>,
-    which is defined in Make based on the OS and environment variables.</p>
+The included recipe file provides the necessary targets and uses the compiler <code>$(CXX)</code>,
+    which is defined based on the OS and environment variables.
+The included <code>Makefile</code>:</p>
 <ul>
 <li>
-<p>It compiles <code>plugin.cpp</code> and any other <code>*.cpp</code> files into the plugin.</p>
+<p>Compiles <code>plugin.cpp</code> and any other <code>*.cpp</code> files into the plugin.</p>
 </li>
 <li>
-<p>It will invoke a recompile the target any time any <code>*.hpp</code> or <code>*.cpp</code> file changes.</p>
+<p>Will invoke a recompile of the target any time any <code>*.hpp</code> or <code>*.cpp</code> file changes.</p>
 </li>
 <li>
-<p>It compiles with C++17. You can change this in your plugin by defining
+<p>Compiles with C++17.
+    You can change this in your plugin by defining
         <code>STDCXX = ...</code> before the <code>include</code>.
     This change will not affect other plugins; just yours.</p>
 </li>
 <li>
-<p>Libraries can be added by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>, for example</p>
+<p>Accepts specifying libraries by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>.
+    For example:</p>
 <!--- language: lang-makefile -->
 <pre><code>LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
 CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
 </code></pre>
-</li>
-<li>
-<p>See the source for the exact flags.</p>
-</li>
-<li>
-<p>Inserted the path of your directory into the <code>plugin</code>-list in <code>config.yaml</code>.</p>
+<p>See the source for the other flags and variables that you can set.</p>
 </li>
 </ul>
+<p>Finally, place the path of your plugin directory in the <code>plugin_group</code> list
+    for the configuration you would like to run (e.g. <code>ILLIXR/configs/native.yaml</code>).</p>
 <h2 id="adding-a-new-plugin-general-case">Adding a New Plugin (General Case)</h2>
 <p>Each plugin can have a completely independent build system, as long as:</p>
 <ul>
@@ -179,16 +181,17 @@ CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
     Inside this <code>Makefile</code>, one can defer to another build system.</p>
 </li>
 <li>
-<p>It's compiler maintains <em>ABI compatibility</em> with the compilers used in every other plugin.
+<p>Its compiler maintains <em>ABI compatibility</em> with the compilers used in every other plugin.
     Using the same version of Clang or GCC on the same architecture is sufficient for this.</p>
 </li>
 <li>
-<p>It's path is inserted in the root <code>config.yaml</code>, in the plugin list.</p>
+<p>Its path is in the <code>plugin_group</code> list for the configuration you would like
+        to run (e.g. <code>ILLIXR/configs/native.yaml</code>).</p>
 </li>
 </ul>
 <h2 id="tutorial">Tutorial</h2>
-<p>With this, you can extend ILLIXR for your own purposes.
-You can also replace any existing functionality this way.</p>
+<p>You can extend ILLIXR for your own purposes.
+To add your own functionality via the plugin interface:</p>
 <ol>
 <li>
 <p>Create a new directory anywhere for your new plugin and set it up for ILLIXR.
@@ -216,6 +219,18 @@ You can also replace any existing functionality this way.</p>
 <p>If you need custom concurrency (more complicated than a loop),
         triggered concurrency (by events fired in other plugins),
         or no concurrency then your plugin class should extend <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
+<ul>
+<li>
+<p>If you spin your own threads, they <strong>must</strong> wait for
+  <code>pb-&gt;lookup_impl&lt;Stoplight&gt;()-&gt;wait_for_ready()</code> the first time they
+  run. This allows the start of all threads in ILLIXR to be
+  synchronized.</p>
+</li>
+<li>
+<p>They <strong>must</strong> be joined-or-disowned at-or-before
+  <code>plugin::stop()</code>. This allows ILLIXR to shutdown cleanly.</p>
+</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -317,38 +332,48 @@ public:
           /// Find the switchboard in phonebook
         , sb{pb-&gt;lookup_impl&lt;switchboard&gt;()}
           /// Create a handle to a topic in switchboard for subscribing
-        , topic1{sb-&gt;subscribe_latest&lt;topic1_type&gt;("topic1")}
+        , topic1{sb-&gt;get_reader&lt;topic1_type&gt;("topic1")}
           /// Create a handle to a topic in switchboard for publishing
-        , topic2{sb-&gt;publish&lt;topic2_type&gt;("topic2")}
+        , topic2{sb-&gt;get_writer&lt;topic2_type&gt;("topic2")}
     {
         /// Read topic 1
-        topic1_type* event1 = topic1.get_latest_ro();
+        switchboard::ptr&lt;const topic1_type&gt; event1 = topic1.get_ro();
 
         /// Write to topic 2
-        topic2_type* event2 = new topic2_type;
-        topic2.put(event2);
+        topic2.put(
+            topic2.allocate&lt;topic2_type&gt;(
+                arg_1, // topic2_type::topic2_type() arg_type_1
+                ...,   // ...
+                arg_k  // topic2_type::topic2_type() arg_type_k
+            )
+        );
 
         /// Read topic 3 synchronously
-        sb-&gt;schedule&lt;topic3_type&gt;(get_name(), "topic3", [&amp;](const topic3_type *event3) {
-            /* This is a [lambda expression][1]
-             *
-             * [1]: https://en.cppreference.com/w/cpp/language/lambda
-             */
-            std::cout &lt;&lt; "Got a new event on topic3: " &lt;&lt; event3 &lt;&lt; std::endl;
-        });
+        sb-&gt;schedule&lt;topic3_type&gt;(
+            get_name(),
+            "topic3",
+            [&amp;](switchboard::ptr&lt;const topic3_type&gt; event3, std::size_t) {
+                /* This is a [lambda expression][1]
+                 *
+                 * [1]: https://en.cppreference.com/w/cpp/language/lambda
+                 */
+                std::cout &lt;&lt; "Got a new event on topic3: " &lt;&lt; event3 &lt;&lt; std::endl;
+                callback(event3);
+            }
+        );
     }
 
     virtual void _p_one_iteration override() {
         std::cout &lt;&lt; "Running" &lt;&lt; std::endl;
-        auto target = std::chrono::high_resolution_clock::now()
+        auto target = std::chrono::system_clock::now()
                     + std::chrono::milliseconds{10};
         reliable_sleep(target);
     }
 
 private:
     const std::shared_ptr&lt;switchboard&gt; sb;
-    std::unique_ptr&lt;reader_latest&lt;topic1_type&gt;&gt; topic1;
-    std::unique_ptr&lt;writer&lt;topic2&gt;&gt; topic2;
+    switchboard::reader&lt;topic1_type&gt; topic1;
+    switchboard::writer&lt;topic2&gt; topic2;
 };
 
 /// This line makes the plugin importable by Spindle

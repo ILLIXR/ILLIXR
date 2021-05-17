@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['flush',['flush',['../classILLIXR_1_1record__coalescer.html#a66c75672ea93e6f1ff706453c957a729',1,'ILLIXR::record_coalescer']]]
+  ['data_5fuse_5findicator',['data_use_indicator',['../classILLIXR_1_1data__use__indicator.html',1,'ILLIXR']]]
 ];

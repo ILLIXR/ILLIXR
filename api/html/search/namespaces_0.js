@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['illixr_75',['ILLIXR',['../namespaceILLIXR.html',1,'']]]
+  ['illixr',['ILLIXR',['../namespaceILLIXR.html',1,'']]]
 ];

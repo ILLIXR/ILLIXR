@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/CONTRIBUTING/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Contributing Guidelines (Version 2) - ILLIXR Docs</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Contributing Guidelines (Version 2)";
+    var mkdocs_page_input_path = "CONTRIBUTING.md";
+    var mkdocs_page_url = "/ILLIXR/docs/CONTRIBUTING/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> ILLIXR Docs</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../virtualization/">ILLIXR under Virtualization (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../writing_your_plugin/">Writing your Plugin (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Contributing Guidelines (Version 2)</a>
+    <ul class="current">
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet (Version 1)</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing (Version 1)</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">ILLIXR Docs</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Latest Documentation &raquo;</li>
+        
+      
+    
+    <li>Contributing Guidelines (Version 2)</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="contributing-guidelines">Contributing Guidelines</h1>
+<p>Please follow these steps when making pull requests (PRs):</p>
+<ol>
+<li>
+<p>First, create an issue describing the problem that needs to be fixed.
+    If an issue already exists, skip this step.
+    If you are looking for an issue to fix, see the <a href="https://github.com/ILLIXR/ILLIXR/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">"good first issue" label</a>.</p>
+</li>
+<li>
+<p>Assign the issue to yourself and add appropriate labels.
+    If you are an external contributor, comment on the issue so one of the ILLIXR team members
+        can assign the issue to you.</p>
+</li>
+<li>
+<p>Before you start making changes, make a new branch.
+    The branch <strong>MUST</strong> be named <code>issue-&lt;issue number&gt;-&lt;some descriptive name&gt;</code>.
+    For instance, <code>issue-32-fix-mem-leak</code> addresses the memory leak described in Issue #32.</p>
+</li>
+<li>
+<p>Fix the issue.</p>
+</li>
+<li>
+<p>Add your name to <code>ILLIXR/CONTRIBUTORS</code>.</p>
+</li>
+<li>
+<p>Push commits up to GitHub.</p>
+</li>
+<li>
+<p>Open a PR, and link it to the issue that the PR aims to resolve.
+    Please give the PR a descriptive name.</p>
+</li>
+<li>
+<p>As you make progress on your PR, keep your branch up-to-date with the <code>master</code> branch which
+        may have been updated <em>after</em> starting your PR.
+    Your PR <strong>MUST</strong> be updated to reflect changes to <code>master</code> in order to be merged.
+    Use the following procedure for updating your branch and when you are ready to commit your changes:</p>
+<!--- language: lang-none -->
+<pre><code>## While on your PR branch &lt;issue-branch&gt; hosted at &lt;your-remote&gt; repository:
+git commit # or git stash                                               ## Line A
+git checkout master
+
+git pull &lt;illixr-remote&gt; master --rebase &amp;&amp; git fetch &lt;illixr-remote&gt;   ## Line B
+
+git checkout &lt;issue-branch&gt;
+git rebase master                                                       ## Line C
+
+## If you stashed your changes on 'Line A':
+git stash apply &lt;stash-number&gt; &amp;&amp; git commit
+
+git push &lt;your-remote&gt; &lt;issue-branch&gt; --force-with-lease                ## Line D
+</code></pre>
+<p>For ILLIXR team members (others jump <a href="./#philosophy">here</a>):</p>
+<ul>
+<li>
+<p>In the example above, <code>&lt;illixr-remote&gt;</code> and <code>&lt;your-remote&gt;</code> are the same.</p>
+</li>
+<li>
+<p>When collaborating on branches in our repository, <code>Line B</code> may pull in changes that overwrite
+        the git commit history when performing <code>Line C</code>.
+    Subsequently, performing <code>Line D</code> will rewrite the history in the public branch.
+    To preserve branch commit histories in the case that a rollback is needed, we will employ
+        a checkpointing process for force updated branches.
+    This process will be manually performed, but may be automated in the future.</p>
+<p>If <code>Line B</code> shows an update to master, the following example illustrates your local repository
+    just after performing <code>Line B</code>:</p>
+<!--- language: lang-none -->
+<pre><code>A -- B -- C -- P -- Q -- R                                          ## master
+           \
+            D -- E -- F                                             ## issue-123-fixing-bug
+</code></pre>
+<p>In this example, commits <code>P</code>, <code>Q</code>, and <code>R</code> have been merged to <code>master</code>
+    (from feature branches not shown) after feature branch <code>issue-123-fixing-bug</code> was
+    forked from <code>master</code>.</p>
+<p>To checkpoint the <code>issue-123-fixing-bug</code> branch while it is checked out:</p>
+<!--- language: lang-none -->
+<pre><code>git branch issue-123.0-fixing-bug                                   ## Make alias for old issue-123-fixing-bug
+git checkout -b issue-123.1-fixing-bug                              ## Make new branch to rebase with master
+git rebase master                                                   ## Replay issue-123-fixing-bug onto master
+git branch -D issue-123-fixing-bug                                  ## Remove old issue-123-fixing-bug
+git branch issue-123-fixing-bug                                     ## Make issue-123-fixing-bug an alias of new branch
+git push &lt;illixr-remote&gt; issue-123.{0,1}-fixing-bug                 ## Push new checkpointed branches to remote
+git push &lt;illixr-remote&gt; issue-123-fixing-bug --force-with-lease    ## Force update issue-123-fixing-bug
+</code></pre>
+<blockquote>
+<p>Note:
+The term <em>alias</em> here is used to refer to branches which point to the same commit.
+This usage is different from standard <a href="https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases">Git Aliases</a> used for git command shortcuts.</p>
+</blockquote>
+<p>After checkpointing, your local repository should look as follows:</p>
+<!--- language: lang-none -->
+<pre><code>                           D' -- E' -- F'                           ## issue-123.1-fixing-bug, issue-123-fixing-bug
+                          /
+A -- B -- C -- P -- Q -- R                                          ## master
+           \
+            D -- E -- F                                             ## issue-123.0-fixing-bug
+</code></pre>
+<p>Commits <code>D</code>, <code>E</code>, and <code>F</code> have been added to a new branch starting from <code>R</code>,
+    but now have been given new hashes.
+This new branch is our up-to-date copy of the feature branch <code>issue-123-fixing-bug</code>.</p>
+<p>While working on a checkpointed branch, keep aliases up-to-date using <code>git rebase</code>:</p>
+<!--- language: lang-none -->
+<pre><code>git commit                                                          ## Add changes to issue-123.1-fixing-bug
+git checkout issue-123-fixing-bug                                   ## Switch to main issue-123-fixing-bug branch
+git rebase issue-123.1-fixing-bug                                   ## Fast-forward issue-123-fixing-bug to issue-123.1-fixing-bug
+</code></pre>
+<p>Conflicts are possible when two or more collaborators push changes concurrently to
+    the same branch.
+As long as each collaborator ensures that the branch update process starts at <code>Line A</code>,
+    conflicts can be detected and handled locally.
+In other words, <em>every</em> call to <code>git-push</code> should be preceeded by a call to <code>git-pull</code>,
+    following the process from <code>Line A</code> to <code>Line D</code> (or equivalent; git's CLI allows many
+    ways to achieve the same results).</p>
+<blockquote>
+<p>Note:
+<code>Line B</code> rebases the <code>master</code> branch assuming that we have checked out <code>master</code>.
+Forgetting to specify <code>master</code> in <code>Line B</code> may result in a <em>lossy</em> forced update in the
+    example below.
+Forgetting to checkout <code>master</code> will immediately apply your checked out feature branch's
+    changes, possibly also resulting in a <em>lossy</em> forced update.</p>
+</blockquote>
+<p>The output of <code>Line B</code> for a collaborator after the checkpointing process may contain
+    something like this:</p>
+<!--- language: lang-none -->
+<pre><code>From github.com:ILLIXR/ILLIXR
+  A..R          master                  -&gt; &lt;illixr-remote&gt;/master
++ A..F'         issue-123-fixing-bug    -&gt; &lt;illixr-remote&gt;/issue-123-fixing-bug  (forced update)
+* [new branch]  issue-123.0-fixing-bug  -&gt; &lt;illixr-remote&gt;/issue-123.0-fixing-bug
+* [new branch]  issue-123.1-fixing-bug  -&gt; &lt;illixr-remote&gt;/issue-123.1-fixing-bug
+</code></pre>
+<p>Conflicts which do not involve updates to the <code>master</code> branch can be resolved simply
+    by rebasing the current feature branch with the updated feature branch,
+    applying new changes on top of the updated feature branch:</p>
+<!--- language: lang-none -->
+<pre><code>## For the latest checkpoint X (local) and Y (remote), let Z := Y + 1 in
+git checkout issue-123.X-fixing-bug -b issue-123.Z-fixing-bug       ## Make new branch issue-123.Z-fixing-bug
+git rebase &lt;illixr-remote&gt;/issue-123.Y-fixing-bug                   ## Replay updates from issue-123.X-fixing-bug
+git push &lt;illixr-remote&gt; issue-123.Z-fixing-bug                     ## Make sure to update issue-123-fixing-bug after
+</code></pre>
+<p>The <code>--force-with-lease</code> argument in <code>Line D</code> is <em>not</em> required for our new checkpoint branch,
+    since a new branch should not conflict with a non-existing remote branch.
+We <em>expect</em> the subversion number for a new branch resulting from our
+    checkpoint conflict resolution to be new and unique.
+If the push fails, another conflict has occurred, and checkpoint conflict resolution
+    should be repeated.
+<code>Line D</code> should be safe to perform for the main feature branch now that we have
+    replayed our commits on top of the updated feature branch.</p>
+<blockquote>
+<p>Note:
+In the above example, the <code>git-rebase</code> is performed using the remote copy of
+    the checkpointed branch.
+We do this because <code>Line B</code> will not fast-forward or force update our local branches
+    (with the same subversion number as a conflicting remote branch, if any).</p>
+</blockquote>
+<p>In the case of a conflict with updates to <code>master</code>, <code>Line A</code> should show updates to
+    both the <code>master</code> branch <em>and</em> the feature branch to be pushed in <code>Line D</code>.
+A checkpointed version of the feature branch may also appear.
+This is because a feature branch should only be checkpointed in the presence of a
+    change to the <code>master</code> branch.
+Forced pushes should generally <em>not</em> be used for any other purpose.
+If multiple updates to <code>master</code> and the feature branch have occured, additional
+    checkpointed versions of the feature branch may also appear.
+In this scenario, we need to rebase our latest version of the feature branch with
+    the latest version of the feature branch pulled from <code>&lt;illixr-remote&gt;</code>.</p>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="philosophy">Philosophy</h1>
+<p>Why are the above steps necessary?</p>
+<ol>
+<li>
+<p>Assigning the issue to yourself ensures that multiple people don't work on the same thing
+        in parallel.</p>
+</li>
+<li>
+<p>The branch naming scheme organizes things a bit for us, and also makes it easy to find branches.</p>
+</li>
+<li>
+<p>Linking the issue to the PR ensures that we know which issue is being resolved,
+        and also automatically closes the issue when the PR gets merged.</p>
+</li>
+<li>
+<p>Using rebases keeps the <code>master</code> and feature branch histories streamlined (minimizing branching),
+        thus making it easier to compose feature branches for integration testing.
+    See this article on <a href="https://redfin.engineering/git-rebasing-public-branches-works-much-better-than-youd-think-ecc9a115aea9">rebasing public branches</a> for more information.</p>
+</li>
+</ol>
+<p>If your PR has not seen activity from the ILLIXR team after a long period of time (e.g., 2 weeks),
+    feel free to contact the team directly on the GitHub Issue Conversation tab or at
+    the Gitter forum linked below.</p>
+<h1 id="other-procedures">Other Procedures</h1>
+<ol>
+<li>
+<p>Branch Management:</p>
+<p>The branch rebasing and checkpointing process detailed above is tedious, and may be automated in
+    the future.
+Check back in with this document occasionally for improvements to the branch management process.</p>
+</li>
+<li>
+<p>Code Formatting:</p>
+<p>As ILLIXR grows, contributions will need to be standardized to accomodate multiple collaborators
+    with different coding styles.
+During code review of a PR, you may be asked to reformat your code to match the standards set for
+    ILLIXR code base.
+This process may be manually triggered by a comment from a review, or automated via Git and GitHub
+    in the future.</p>
+</li>
+<li>
+<p>Issue Templates:</p>
+<p>To make collaboration easier, templates for Issues and Pull Requests will be added to
+    the GitHub web interface.
+If an appropriate template exists for your task, please ensure to select it before submitting.</p>
+</li>
+</ol>
+<h1 id="getting-help">Getting Help</h1>
+<p>You can get seek help from our development community in three places:</p>
+<ol>
+<li>
+<p><a href="..">Main documentation site</a></p>
+</li>
+<li>
+<p><a href="../api/html/annotated.html">API documentation site</a></p>
+</li>
+<li>
+<p><a href="https://gitter.im/ILLIXR/community">Gitter community forum</a></p>
+</li>
+</ol>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../legacy/v1/" class="btn btn-neutral float-right" title="ILLIXR (Version 1)">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../LICENSE/" class="btn btn-neutral" title="ILLIXR License (Version 2)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../LICENSE/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../legacy/v1/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
