@@ -118,13 +118,13 @@ namespace ILLIXR {
 
             std::cout << "Creating colormap" << std::endl;
 #endif
-            Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+            _m_cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 
 #ifndef NDEBUG
             std::cout << "Creating window" << std::endl;
 #endif
             XSetWindowAttributes attributes;
-            attributes.colormap = cmap;
+            attributes.colormap = _m_cmap;
             attributes.background_pixel = 0;
             attributes.border_pixel = 0;
             attributes.event_mask = ExposureMask | KeyPressMask;
@@ -138,7 +138,6 @@ namespace ILLIXR {
 
             // Done with visual info
             XFree(vi);
-            XFreeColormap(dpy, cmap);
 
 #ifndef NDEBUG
             std::cout << "Creating context" << std::endl;
@@ -184,11 +183,25 @@ namespace ILLIXR {
         }
 
         ~xlib_gl_extended_window() {
-            XDestroyWindow(dpy, win);
-            Window root = DefaultRootWindow(dpy);
-            XDestroyWindow(dpy, root);
-            //glXDestroyContext(dpy, glc);
-            // XFree(dpy);
+            RAC_ERRNO_MSG("xlib_gl_extended_window at start of destructor");
+
+            [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
+            assert(gl_result && "glXMakeCurrent should not fail");
+
+            /// Destroyed by XCloseDisplay
+            /// See [documentation](https://tronche.com/gui/x/xlib/display/XCloseDisplay.html)
+            // XDestroyWindow(dpy, win);
+            // Window root = DefaultRootWindow(dpy);
+            // XDestroyWindow(dpy, root);
+            // glXDestroyContext(dpy, glc);
+            // XFreeColormap(dpy, _m_cmap);
+
+            XCloseDisplay(dpy);
+
+            RAC_ERRNO_MSG("xlib_gl_extended_window at end of destructor");
         }
+
+    private:
+        Colormap _m_cmap;
     };
 }

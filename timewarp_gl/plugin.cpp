@@ -772,19 +772,6 @@ public:
 	size_t log_count = 0;
 	size_t LOG_PERIOD = 20;
 #endif
-
-	virtual ~timewarp_gl() override {
-		RAC_ERRNO_MSG("timewarp_gl at start of destructor");
-
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
-		assert(gl_result && "glXMakeCurrent should not fail");
-
-        RAC_ERRNO_MSG("timewarp_gl before closing X");
- 		glXDestroyContext(xwin->dpy, xwin->glc);
- 		XDestroyWindow(xwin->dpy, xwin->win);
- 		XCloseDisplay(xwin->dpy);
-        RAC_ERRNO_MSG("timewarp_gl after closing X");
-	}
 };
 
 PLUGIN_MAIN(timewarp_gl)
