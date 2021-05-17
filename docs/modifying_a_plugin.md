@@ -30,7 +30,7 @@ This is how you can modify an existing ILLIXR plugin
 
         plugin_group:
           - path: timewarp_gl/
-          - name: /PATH/TO/LOCAL/AUDIO-PLUGIN
+          - path: /PATH/TO/LOCAL/AUDIO-PLUGIN
    
 1.  See the instructions on [Building ILLIXR][10] to learn how to run ILLIXR.
 
