@@ -71,6 +71,7 @@ def build_runtime(
     config: Mapping[str, Any],
     suffix: str,
     test: bool = False,
+    is_mainline: bool = False,
 ) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
@@ -78,7 +79,9 @@ def build_runtime(
     runtime_config = config["runtime"]["config"]
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
-    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
+    if is_mainline:
+        env_override.update(ILLIXR_MONADO_MAINLINE="ON")
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
@@ -201,11 +204,14 @@ def load_monado(config: Mapping[str, Any]) -> None:
     realsense_cam_string = config["realsense_cam"]
 
     is_mainline: bool = bool(config["action"]["is_mainline"])
+    build_runtime(config, "so", is_mainline=is_mainline)
 
-    build_runtime(config, "so")
+    def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
+        plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
+        return build_one_plugin(config, plugin_config)
 
     plugin_paths: List[Path] = threading_map(
-        lambda plugin_config: build_one_plugin(config, plugin_config),
+        process_plugin,
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
@@ -224,6 +230,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_PATH=str(runtime_path),
         **monado_config,
     )
+
+    if is_mainline:
+        build_opts.update(ILLIXR_MONADO_MAINLINE="ON")
 
     cmake(
         monado_path,

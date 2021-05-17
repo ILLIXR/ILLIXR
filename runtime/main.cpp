@@ -66,7 +66,11 @@ private:
 
 
 int main(int argc, char* const* argv) {
+#ifdef ILLIXR_MONADO_MAINLINE
 	r = ILLIXR::runtime_factory();
+#else
+	r = ILLIXR::runtime_factory(nullptr);
+#endif /// ILLIXR_MONADO_MAINLINE
 
 #ifndef NDEBUG
     /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
