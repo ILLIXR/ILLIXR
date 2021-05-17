@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['writer',['writer',['../classILLIXR_1_1writer.html',1,'ILLIXR']]]
+  ['service',['service',['../classILLIXR_1_1phonebook_1_1service.html',1,'ILLIXR::phonebook']]],
+  ['start_5fend_5flogger',['start_end_logger',['../classILLIXR_1_1start__end__logger.html',1,'ILLIXR']]],
+  ['stoplight',['Stoplight',['../classILLIXR_1_1Stoplight.html',1,'ILLIXR']]],
+  ['switchboard',['switchboard',['../classILLIXR_1_1switchboard.html',1,'ILLIXR']]]
 ];

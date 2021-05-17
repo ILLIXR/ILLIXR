@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['maybe_5fflush',['maybe_flush',['../classILLIXR_1_1record__coalescer.html#a854a0ce81c6558c6f8a7a9579c9eb982',1,'ILLIXR::record_coalescer']]]
+  ['is_5fset',['is_set',['../classILLIXR_1_1Event.html#ae8f02d923b0f9c6859c31ce383d55cfa',1,'ILLIXR::Event']]]
 ];

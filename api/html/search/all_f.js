@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['_7emanaged_5fthread_54',['~managed_thread',['../classILLIXR_1_1managed__thread.html#a24b2a08ab885d7f22235b1e67dd2d873',1,'ILLIXR::managed_thread']]]
+  ['wait',['wait',['../classILLIXR_1_1Event.html#ad3f15eaceeb001f69a2e838612c249d8',1,'ILLIXR::Event']]],
+  ['wait_5ftimeout',['wait_timeout',['../classILLIXR_1_1Event.html#aa97cf104f34089f5b36c29d57485264f',1,'ILLIXR::Event']]],
+  ['writer',['writer',['../classILLIXR_1_1switchboard_1_1writer.html',1,'ILLIXR::switchboard']]]
 ];

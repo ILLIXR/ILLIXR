@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['flush',['flush',['../classILLIXR_1_1record__coalescer.html#a66c75672ea93e6f1ff706453c957a729',1,'ILLIXR::record_coalescer']]]
+  ['clear',['clear',['../classILLIXR_1_1Event.html#a551c4f887c0783b5370bb57fd0027959',1,'ILLIXR::Event']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_7emanaged_5fthread_104',['~managed_thread',['../classILLIXR_1_1managed__thread.html#a24b2a08ab885d7f22235b1e67dd2d873',1,'ILLIXR::managed_thread']]]
+  ['register_5fimpl',['register_impl',['../classILLIXR_1_1phonebook.html#a60c9fe67373cc4165c240e8e89389dc1',1,'ILLIXR::phonebook']]],
+  ['report_5fand_5fclear_5ferrno',['report_and_clear_errno',['../namespaceILLIXR.html#af706e96bda21fafdd62a2ac8fd88bc62',1,'ILLIXR']]]
 ];

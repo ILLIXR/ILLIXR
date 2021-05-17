@@ -83,6 +83,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
+                    </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
                 <ul>
@@ -219,7 +221,7 @@
 <ul>
 <li><em>Calls</em> <code>pose_prediction</code>.</li>
 <li>Asynchronously <em>reads</em> <code>rendered_frame</code> on <code>eyebuffer</code> topic.</li>
-<li><em>Publishes</em> <code>type_type</code> on <code>vsync_estimate</code>.</li>
+<li><em>Publishes</em> <code>time_type</code> on <code>vsync_estimate</code> topic.</li>
 <li><em>Publishes</em> <code>hologram_input</code> on <code>hologram_in</code> topic.</li>
 <li><em>Publishes</em> <code>texture_pose</code> on <code>texture_pose</code> topic if <code>ILLIXR_OFFLOAD_ENABLE</code> is set in the env.</li>
 </ul>
@@ -314,7 +316,7 @@ Read the <a href="../api/html/classILLIXR_1_1switchboard.html">API documentation
     The plugin peeks "into the future" to determine what the exact <a href="../glossary/#pose"><em>pose</em></a> will be at a certain time.</p>
 <p>Topic details:</p>
 <ul>
-<li>Asynchronously <em>reads</em> <code>time_type</code> on <code>vsync_estimate</code>.
+<li>Asynchronously <em>reads</em> <code>time_type</code> on <code>vsync_estimate</code> topic.
     This tells <code>pose_lookup</code> what time to lookup.</li>
 </ul>
 </li>
@@ -323,7 +325,7 @@ Read the <a href="../api/html/classILLIXR_1_1switchboard.html">API documentation
     Writes <a href="../glossary/#framebuffer"><em>frames</em></a> and <a href="../glossary/#pose"><em>poses</em></a> output from the <a href="../glossary/#asynchronous-reprojection"><em>asynchronous reprojection</em></a> plugin to disk for analysis.</p>
 <p>Topic details:</p>
 <ul>
-<li>Asynchronously <em>reads</em> <code>texture_image</code> on <code>texture_image</code>.</li>
+<li>Synchronously <em>reads</em> <code>texture_pose</code> on <code>texture_pose</code> topic.</li>
 </ul>
 </li>
 <li>
@@ -333,8 +335,8 @@ Read the <a href="../api/html/classILLIXR_1_1switchboard.html">API documentation
     Note that this plugin implements two threads: one for the camera, and one for the IMU.</p>
 <p>Topic details:</p>
 <ul>
-<li><em>Publishes</em> <code>imu_cam_type</code> on <code>imu_cam</code>.</li>
-<li><em>Publishes</em> <code>rgb_depth_type</code> on <code>rgb_depth</code>.</li>
+<li><em>Publishes</em> <code>imu_cam_type</code> on <code>imu_cam</code> topic.</li>
+<li><em>Publishes</em> <code>rgb_depth_type</code> on <code>rgb_depth</code> topic.</li>
 </ul>
 </li>
 <li>

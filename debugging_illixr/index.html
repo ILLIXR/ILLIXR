@@ -95,6 +95,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
+                    </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
                 <ul>
@@ -157,20 +159,43 @@ When debugging locally, we recommend using either <code>gdb</code> or <code>valg
 <h2 id="debugging-pull-requests-or-with-a-clean-environment">Debugging Pull Requests or with a Clean Environment</h2>
 <h3 id="1-get-a-docker-image">1. Get a Docker Image</h3>
 <h4 id="from-your-local-project">From your Local Project</h4>
-<p>From the root directory in your project, run <code>docker build --tag &lt;repository&gt;:&lt;tag&gt; .</code>.
+<p>From the root directory in your project, run:</p>
+<!--- language: lang-shell -->
+<pre><code>docker build [--build-arg=JOBS="&lt;integer&gt;"] [--no-cache] --tag &lt;repository&gt;:&lt;tag&gt; .
+</code></pre>
+<p>Note the optional <code>Dockerfile</code> argument, <code>JOBS</code>, which specifies the number of threads/tasks to use for building.
+Also note the optional argument, <code>--no-cache</code>, which forces Docker to rerun commands in <code>Dockerfile</code>
+    (see <a href="https://www.baeldung.com/linux/docker-build-cache">this article</a> for more information).
 For this project's main module, you can use something like <code>illixr-illixr</code> for the <code>&lt;repository&gt;</code> value,
     and your current branch name or release version as the <code>&lt;tag&gt;</code> value.</p>
 <p>Note that building the docker image can take some time (up to 40min on a 4-core desktop machine) and uses somewhere between 2-4GB of RAM.</p>
 <h4 id="from-a-github-pull-requests-cicd-flow">From a GitHub Pull Request's CI/CD Flow</h4>
 <p>Follow these steps when a CI/CD build fails on a PR:</p>
 <ul>
-<li>Click <code>details</code> on the failing build.</li>
-<li>In the build view go to the Push Docker Image tab and copy the <code>docker push ghcr.io/illixr/illixr-tests:&lt;branch-name&gt;</code> command.</li>
-<li>Then in your terminal, run <code>docker pull ghcr.io/illixr/illixr-tests:&lt;branch-name&gt;</code>.</li>
+<li>
+<p>Click <code>details</code> on the failing build.</p>
+</li>
+<li>
+<p>In the build view go to the Push Docker Image tab and copy the <code>docker push ghcr.io/illixr/illixr-tests:&lt;branch-name&gt;</code> command.</p>
+</li>
+<li>
+<p>Then in your terminal, run:</p>
+<!--- language: lang-shell -->
+<pre><code>docker pull ghcr.io/illixr/illixr-tests:&lt;branch-name&gt;
+</code></pre>
+</li>
 </ul>
 <h3 id="2-test-your-image-in-the-docker-container">2. Test your Image in the Docker container</h3>
-<p>Verify that your image was created successfully: <code>docker image ls</code>. Take note of your image's <code>REPOSITORY</code> and <code>TAG</code> values.</p>
-<p>Now run <code>docker run -it --entrypoint /bin/bash &lt;repository&gt;:&lt;tag&gt;</code>. You are now in a bash shell in a docker container.</p>
+<p>Verify that your image was created successfully:</p>
+<!--- language: lang-shell -->
+<pre><code>docker image ls
+</code></pre>
+<p>Take note of your image's <code>REPOSITORY</code> and <code>TAG</code> values.
+Now run:</p>
+<!--- language: lang-shell -->
+<pre><code>docker run -it --entrypoint /bin/bash &lt;repository&gt;:&lt;tag&gt;
+</code></pre>
+<p>You are now in a bash shell in a docker container.</p>
 <p>From here you can test whichever project flow you wish, such as the usual <code>./runner.sh configs/native.yaml</code>,
     or the CI/CD testing flow (<code>./runner.sh configs/ci.yaml</code>).</p>
               

@@ -87,6 +87,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
+                    </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
                 <ul>
@@ -147,22 +149,25 @@
 <ol>
 <li>
 <p><strong>Clone the repository</strong>:</p>
-<!--- language: lang-shell -->
+<!--- language: lang-none -->
 <pre><code>git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
 </code></pre>
 <p><strong><em>Note for ILLIXR versions older than <code>v2.2.0</code></em></strong>:</p>
 <p>Update the submodules.
 Submodules are git repositories inside a git repository that need to be pulled down separately:</p>
-<!--- language: lang-shell -->
+<!--- language: lang-none -->
 <pre><code>git submodule update --init --recursive
 </code></pre>
 </li>
 <li>
 <p><strong>Install dependencies</strong>:</p>
 <!--- language: lang-shell -->
-<pre><code>./install_deps.sh
+<pre><code>./install_deps.sh [--jobs &lt;integer&gt;]
 </code></pre>
-<p>This script installs some Ubuntu/Debian packages and builds several dependencies from source:</p>
+<p>This script installs some Ubuntu/Debian packages and builds several dependencies from source.
+Without any arguments, the script will print the help message, and proceed using default values.
+To change the number of threads/tasks to use for building, specify using the <code>--jobs</code> argument.
+Other available options can be inspected using the <code>--help</code> flag.</p>
 </li>
 <li>
 <p><strong>Inspect <code>configs/native.yaml</code></strong>.</p>
