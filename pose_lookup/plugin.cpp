@@ -24,10 +24,13 @@ public:
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
+<<<<<<< HEAD
         , init_pos_offset{Eigen::Vector3f::Zero()}
         , align_rot{Eigen::Matrix3f::Zero()}
         , align_trans{Eigen::Vector3f::Zero()}
         , align_quat{Eigen::Vector4f::Zero()}
+=======
+>>>>>>> Respond to reviewer comments
         , align_scale{0.0}
     {
         if (enable_alignment) {
@@ -191,7 +194,6 @@ private:
     Eigen::Vector3f align_trans;
     Eigen::Vector4f align_quat;
     double align_scale;
-    std::string path_to_alignment;
 };
 
 
