@@ -558,7 +558,6 @@ public:
             ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
 		}
 
-		RAC_ERRNO_MSG("gldemo before ObjScene");
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 		headset = ObjScene(std::string(obj_dir), "headset.obj");
 
