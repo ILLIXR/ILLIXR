@@ -22,7 +22,7 @@ using namespace ILLIXR;
 static constexpr int   EYE_TEXTURE_WIDTH   = ILLIXR::FB_WIDTH;
 static constexpr int   EYE_TEXTURE_HEIGHT  = ILLIXR::FB_HEIGHT;
 
-static constexpr duration vsync_period {freq2period(60.0)};
+static constexpr duration VSYNC_PERIOD {freq2period(60.0)};
 static constexpr duration VSYNC_DELAY_TIME {std::chrono::milliseconds{2}};
 
 // Monado-style eyebuffers:
@@ -61,7 +61,7 @@ public:
 		if (next_vsync == nullptr) {
 			// If no vsync data available, just sleep for roughly a vsync period.
 			// We'll get synced back up later.
-			std::this_thread::sleep_for(vsync_period);
+			std::this_thread::sleep_for(VSYNC_PERIOD);
 			return;
 		}
 
@@ -72,7 +72,7 @@ public:
 		}
 #endif
 		
-		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
+		bool hasRenderedThisInterval = (now - lastTime) < VSYNC_PERIOD;
 
 		// If less than one frame interval has passed since we last rendered...
 		if (hasRenderedThisInterval)
@@ -85,7 +85,7 @@ public:
 			// by a vsync period, so it's always in the future.
 			while(wait_time < now)
 			{
-				wait_time += vsync_period;
+				wait_time += VSYNC_PERIOD;
 			}
 
 #ifndef NDEBUG
@@ -121,8 +121,6 @@ public:
 
 	void _p_one_iteration() override {
 		{
-			using namespace std::chrono_literals;
-
 			// Essentially, XRWaitFrame.
 			wait_vsync();
 
@@ -196,6 +194,8 @@ public:
 				demoscene.Draw();
 			}
 
+			glFinish();
+
 #ifndef NDEBUG
 			const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
             const double fps = 1.0 / frame_duration_s;
@@ -209,18 +209,15 @@ public:
 #endif
 			lastTime = _m_clock->now();
 
-			glFlush();
-
 			/// Publish our submitted frame handle to Switchboard!
-			auto lastFrameTime = _m_clock->now();
             _m_eyebuffer.put(_m_eyebuffer.allocate<rendered_frame>(rendered_frame{
-                // Somehow, C++ won't let me construct thsi object if I remove the `rendered_frame{` and `}`.
+                // Somehow, C++ won't let me construct this object if I remove the `rendered_frame{` and `}`.
 				// `allocate<rendered_frame>(...)` _should_ forward the arguments to rendered_frame's constructor, but I guess not.
                 std::array<GLuint, 2>{ eyeTextures[0], eyeTextures[1] },
                 std::array<GLuint, 2>{ which_buffer, which_buffer },
                 fast_pose,
                 fast_pose.predict_computed_time,
-                lastFrameTime
+                lastTime
 			}));
 
 			which_buffer = !which_buffer;
@@ -253,8 +250,6 @@ private:
 	// we're just atomically writing the handle to the
 	// correct eye/framebuffer in the "swapchain".
 	switchboard::writer<rendered_frame> _m_eyebuffer;
-
-	time_point lastFrameTime;
 
 	GLuint eyeTextures[2];
 	GLuint eyeTextureFBO;
@@ -400,7 +395,6 @@ public:
             ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
 		}
 
-		RAC_ERRNO_MSG("gldemo before ObjScene");
 		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 
 		// Construct a basic perspective projection
@@ -411,7 +405,7 @@ public:
 		assert(gl_result_1 && "glXMakeCurrent should not fail");
 		RAC_ERRNO_MSG("gldemo after glXMakeCurrent");
 
-		// Effectively, zero.
+		// Effectively, last vsync was at zero.
 		// Try to run gldemo right away.
 		threadloop::start();
 

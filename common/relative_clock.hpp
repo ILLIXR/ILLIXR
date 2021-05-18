@@ -5,8 +5,6 @@
 
 namespace ILLIXR {
 
-//using time_type [[deprecated("Use `RelativeClock::time_point`")]] = std::chrono::steady_clock::time_point;
-
 /**
  * @brief Relative clock for all of ILLIXR
  *

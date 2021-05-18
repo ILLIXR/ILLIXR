@@ -20,7 +20,7 @@ public:
 
 	void callback(switchboard::ptr<const imu_cam_type> datum) {
 		auto input_values = _m_imu_integrator_input.get_ro_nullable();
-		if (input_values == NULL) {
+		if (input_values == nullptr) {
 			return;
 		}
 
@@ -56,7 +56,7 @@ private:
 	// IMU Data, Sequence Flag, and State Vars Needed
 	switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
-	// IMU Biases
+	// IMU state
 	switchboard::writer<imu_raw_type> _m_imu_raw;
 };
 
