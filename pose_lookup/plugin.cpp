@@ -24,12 +24,12 @@ public:
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
-        , align_rot{Eigen::Matrix3f::Zero()}
         , align_scale{0.0}
-        , path_to_alignment{ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt")}
     {
-        if (enable_alignment)
+        if (enable_alignment) {
+			std::string path_to_alignment{ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt")};
             load_align_parameters(path_to_alignment, align_rot, align_trans, align_quat, align_scale);
+		}
         // Read position data of the first frame
         init_pos_offset = _m_sensor_data.cbegin()->second.position;
 
@@ -187,7 +187,6 @@ private:
     Eigen::Vector3f align_trans;
     Eigen::Vector4f align_quat;
     double align_scale;
-    std::string path_to_alignment;
 };
 
 

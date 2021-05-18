@@ -110,10 +110,9 @@ public:
 						_m_first_imu_time = imu_time;
 						_m_first_real_time = _m_clock->now();
 					}
-					time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
                     // Time as time_point
-                    time_point imu_time_point{*first_real_time + std::chrono::nanoseconds(imu_time - *first_imu_time)};
+                    time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
                     // Images
                     std::optional<cv::Mat> img0 = std::nullopt;
