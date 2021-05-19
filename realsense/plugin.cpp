@@ -137,8 +137,7 @@ public:
                             av,
                             la,
                             img0,
-                            img1,
-                            imu_time
+                            img1
                         }
                     ));
                     
@@ -146,9 +145,9 @@ public:
                     {
                         _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
                             {
+								imu_time_point,
                                 rgb,
-                                depth,
-                                imu_time
+                                depth
                             }
                         ));
                     }

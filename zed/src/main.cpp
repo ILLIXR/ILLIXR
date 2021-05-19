@@ -222,8 +222,7 @@ protected:
             av,
             la,
             img0,
-            img1,
-            imu_time
+            img1
 		));
 
         if (rgb && depth) {
