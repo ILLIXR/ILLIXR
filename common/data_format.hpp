@@ -30,35 +30,31 @@ namespace ILLIXR {
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat> img0;
 		std::optional<cv::Mat> img1;
-		ullong dataset_time;
 		imu_cam_type(time_point time_,
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
 					 std::optional<cv::Mat> img0_,
-					 std::optional<cv::Mat> img1_,
-					 ullong dataset_time_)
+					 std::optional<cv::Mat> img1_)
 			: time{time_}
 			, angular_v{angular_v_}
 			, linear_a{linear_a_}
 			, img0{img0_}
 			, img1{img1_}
-			, dataset_time{dataset_time_}
 		{ }
 	};
 
     class rgb_depth_type : public switchboard::event {
+        [[maybe_unused]] time_point time;
         std::optional<cv::Mat> rgb;
         std::optional<cv::Mat> depth;
-        [[maybe_unused]] ullong timestamp;
 	public:
-		rgb_depth_type(
+		rgb_depth_type(time_point time_,
 					   std::optional<cv::Mat> _rgb,
-					   std::optional<cv::Mat> _depth,
-					   ullong _timestamp
+					   std::optional<cv::Mat> _depth
 					   )
-			: rgb{_rgb}
+			: time{time_}
+			, rgb{_rgb}
 			, depth{_depth}
-			, timestamp{_timestamp}
 		{ }
     };
 

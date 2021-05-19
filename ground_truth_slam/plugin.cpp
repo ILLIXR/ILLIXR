@@ -28,7 +28,7 @@ public:
 	}
 
 	void feed_ground_truth(switchboard::ptr<const imu_cam_type> datum) {
-		ullong rounded_time = datum->dataset_time;
+		ullong rounded_time = datum->time.time_since_epoch().count();
 		auto it = _m_sensor_data.find(rounded_time);
 
 		if (it == _m_sensor_data.end()) {
