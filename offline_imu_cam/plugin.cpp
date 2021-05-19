@@ -92,8 +92,7 @@ protected:
                 (sensor_datum.imu0.value().angular_v).cast<float>(),
                 (sensor_datum.imu0.value().linear_a).cast<float>(),
                 cam0,
-                cam1,
-                dataset_now
+                cam1
             }
         ));
 
