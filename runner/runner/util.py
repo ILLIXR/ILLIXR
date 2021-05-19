@@ -514,9 +514,8 @@ def make(
     if parallelism is None:
         parallelism = max(1, multiprocessing.cpu_count() // 2)
 
-    var_dict_args = shlex.join(
-        f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()
-    )
+    var_dict_args: List[str] = list() if not var_dict else \
+                               [f"{key}={val}" for key, val in var_dict.items()]
 
     subprocess_run(
         ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],

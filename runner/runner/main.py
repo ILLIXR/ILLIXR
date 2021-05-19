@@ -81,7 +81,7 @@ def build_runtime(
     targets = [runtime_name] + (["tests/run"] if test else [])
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
     if is_mainline:
-        env_override.update(ILLIXR_MONADO_MAINLINE="ON")
+        runtime_config.update(ILLIXR_MONADO_MAINLINE="ON")
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 

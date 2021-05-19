@@ -5,14 +5,23 @@ STDCXX ?= c++17
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 RM := rm -f
 
+## A compilation flag for selecting the Monado integration mode
+#> If ILLIXR_MONADO_MAINLINE is set to 'ON', use the mainline Monado
+#> Else ILLIXR_MONADO_MAINLINE is empty, enabling the monado_integration compatible compilation
+ifeq ($(ILLIXR_MONADO_MAINLINE),ON)
+	MONADO_FLAGS := -DILLIXR_MONADO_MAINLINE
+else
+	MONADO_FLAGS :=
+endif
+
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
-DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic
+DBG_FLAGS ?= -Og -g $(MONADO_FLAGS) -Wall -Wextra -Werror -rdynamic
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic
-OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
+OPT_FLAGS ?= -O3 -DNDEBUG $(MONADO_FLAGS) -Wall -Wextra -Werror
 
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2>/dev/null)
