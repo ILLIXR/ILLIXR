@@ -192,6 +192,7 @@ namespace ILLIXR {
             , render_time(render_time_)
         { }
 	};
+	
 	struct hologram_input : public switchboard::event {
 		int seq;
 		hologram_input() { }
