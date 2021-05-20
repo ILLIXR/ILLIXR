@@ -53,6 +53,8 @@ action:
       XRT_BUILD_DRIVER_WMR          : OFF
       XRT_FEATURE_SERVICE           : ON
 
+  openxr_app: !include "openxr_app.yaml"
+
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
 
 profile: opt

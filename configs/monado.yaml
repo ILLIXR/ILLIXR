@@ -34,12 +34,7 @@ action:
       BUILD_WITH_OPENHMD : "0"
       BUILD_WITH_VIVE    : "0"
 
-  openxr_app:
-    path:
-      git_repo : https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
-      version  : "3.0"
-
-    config: {}
+  openxr_app: !include "openxr_app.yaml"
 
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
 

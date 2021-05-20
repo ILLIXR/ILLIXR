@@ -1,6 +1,23 @@
 $schema: http://json-schema.org/schema#
 $id: http://illixr.github.io/schemas/config.json
 definitions:
+  app:
+    oneOf:
+      - type: string
+      - type: object
+        additionalProperties: false
+        required:
+          - src_path
+          - bin_subpath
+        properties:
+          src_path:
+            $ref: '#/definitions/path'
+            default: {}
+            description: Path to source to build
+          bin_subpath:
+            type: string
+            default: ''
+            description: Path string of compiled app binary, relative to src_path
   path:
     oneOf:
       - type: string
@@ -119,6 +136,21 @@ properties:
         additionalProperties:
           type: string
         description: Interpretation of these vars is action-dependent
+      openxr_app:
+        default: {}
+        type: object
+        additionalProperties: False
+        properties:
+          app:
+            $ref: '#/definitions/app'
+            default: {}
+            description: The application to run with the 'monado' action
+          config:
+            type: object
+            default: {}
+            additionalProperties:
+              type: string
+            description: Vars that get passed to the build system
   data:
     $ref: '#/definitions/path'
     description: URL to offline IMU/cam data. Omit if not applicable.

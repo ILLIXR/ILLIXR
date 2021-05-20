@@ -2,6 +2,7 @@
 import multiprocessing
 import os
 import shlex
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any, BinaryIO, ContextManager, List, Mapping, Optional, cast
@@ -189,13 +190,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "RelWithDebInfo"
 
-    monado_config = config["action"]["monado"].get("config", {})
-
-    if "openxr_app" in config["action"]:
-        openxr_app_config = config["action"]["openxr_app"].get("config", {})
-        openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)
-
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
+    monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
@@ -207,7 +203,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
     build_runtime(config, "so", is_mainline=is_mainline)
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
-        plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
+        if is_mainline:
+            plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
         return build_one_plugin(config, plugin_config)
 
     plugin_paths: List[Path] = threading_map(
@@ -225,47 +222,71 @@ def load_monado(config: Mapping[str, Any]) -> None:
     )
 
     ## For CMake
-    build_opts: Mapping[str, str] = dict(
+    monado_build_opts: Mapping[str, str] = dict(
         CMAKE_BUILD_TYPE=cmake_profile,
         ILLIXR_PATH=str(runtime_path),
         **monado_config,
     )
 
     if is_mainline:
-        build_opts.update(ILLIXR_MONADO_MAINLINE="ON")
+        monado_build_opts.update(ILLIXR_MONADO_MAINLINE="ON")
 
+    ## Compile Monado
     cmake(
         monado_path,
         monado_path / "build",
-        build_opts,
+        monado_build_opts,
         env_override=env_monado,
     )
 
-    if not is_mainline:
+    if not "openxr_app" in config["action"]:
+        raise RuntimeError(f"Missing 'openxr_app' property for action '{action_name}")
+
+    openxr_app_obj    : Mapping[str, Any] = config["action"]["openxr_app"]
+    openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
+
+    openxr_app_path     : Optional[Path] # Forward declare type
+    openxr_app_bin_path : Path           # Forward declare type
+
+    if "src_path" in openxr_app_obj["app"]:
+        ## Pathify 'src_path' for compilation
+        openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
+        openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
+    else:
+        ## Get the full path to the 'app' binary
+        openxr_app_path     = None
+        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+
+    ## Compile the OpenXR app if we received an 'app' with 'src_path'
+    if openxr_app_path:
         cmake(
             openxr_app_path,
             openxr_app_path / "build",
             dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
         )
 
-    monado_target_name : str  # Forward declare type
-    monado_target_dir  : Path # Forward declare type
+    if not openxr_app_bin_path.exists():
+        raise RuntimeError(f"{action_name} Failed to build openxr_app (mainline={is_mainline}, path={openxr_app_bin_path})")
 
     if is_mainline:
-        monado_target_name = "monado-service"
-        monado_target_dir  = monado_path / "build" / "src" / "xrt" / "targets" / "service"
-    else:
-        monado_target_name = "openxr-example"
-        monado_target_dir  = openxr_app_path / "build"
+        monado_target_name : str  = "monado-service"
+        monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
+        monado_target_path : Path = monado_target_dir / monado_target_name
 
-    monado_target_path: Path = monado_target_dir / monado_target_name
-    if not monado_target_path.exists():
-        raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
+        if not monado_target_path.exists():
+            raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
 
-    monado_cmd: List[str] = [str(monado_target_path)]
+        env_popen: Mapping[str, str] = dict(**os.environ, **env_monado)
+
+        ## Open the Monado service application in the background
+        monado_socket = Path("/run/user/1000/monado_comp_ipc")
+        if monado_socket.exists():
+            ## The Monado service will crash if a previous instance is left behind
+            monado_socket.unlink()
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_popen, cwd=Path())
 
     subprocess_run(
-        monado_cmd,
+        [str(openxr_app_bin_path)],
         env_override=dict(
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
@@ -278,6 +299,14 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ),
         check=True,
     )
+
+    if is_mainline:
+        ## Close and clean up the Monado service application
+        try:
+            outs, errs = monado_service_proc.communicate(timeout=1)
+        except subprocess.TimeoutExpired:
+            monado_service_proc.kill()
+            outs, errs = monado_service_proc.communicate()
 
 
 def clean_project(config: Mapping[str, Any]) -> None:
