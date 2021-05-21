@@ -3,6 +3,7 @@ import multiprocessing
 import os
 import shlex
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any, BinaryIO, ContextManager, List, Mapping, Optional, cast
@@ -279,11 +280,11 @@ def load_monado(config: Mapping[str, Any]) -> None:
         env_popen: Mapping[str, str] = dict(**os.environ, **env_monado)
 
         ## Open the Monado service application in the background
-        monado_socket = Path("/run/user/1000/monado_comp_ipc")
-        if monado_socket.exists():
-            ## The Monado service will crash if a previous instance is left behind
-            monado_socket.unlink()
-        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_popen, cwd=Path())
+        ## The Monado service will crash if a previous instance is left behind
+        ## Cleaning up leftover sockets
+        Path("/run/user/1000/monado_comp_ipc").unlink(missing_ok=True)
+        Path("/tmp/monado_comp_ipc").unlink(missing_ok=True)
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_popen)
 
     subprocess_run(
         [str(openxr_app_bin_path)],
@@ -307,6 +308,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
         except subprocess.TimeoutExpired:
             monado_service_proc.kill()
             outs, errs = monado_service_proc.communicate()
+        print(outs, file=sys.stdout)
+        print(errs, file=sys.stderr)
 
 
 def clean_project(config: Mapping[str, Any]) -> None:
