@@ -5,7 +5,9 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
+from subprocess import PIPE
 from typing import Any, BinaryIO, ContextManager, List, Mapping, Optional, cast
 
 import click
@@ -280,11 +282,10 @@ def load_monado(config: Mapping[str, Any]) -> None:
         env_popen: Mapping[str, str] = dict(**os.environ, **env_monado)
 
         ## Open the Monado service application in the background
-        ## The Monado service will crash if a previous instance is left behind
-        ## Cleaning up leftover sockets
-        Path("/run/user/1000/monado_comp_ipc").unlink(missing_ok=True)
-        Path("/tmp/monado_comp_ipc").unlink(missing_ok=True)
-        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_popen)
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_popen, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+    ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    time.sleep(5)
 
     subprocess_run(
         [str(openxr_app_bin_path)],
@@ -308,8 +309,14 @@ def load_monado(config: Mapping[str, Any]) -> None:
         except subprocess.TimeoutExpired:
             monado_service_proc.kill()
             outs, errs = monado_service_proc.communicate()
-        print(outs, file=sys.stdout)
-        print(errs, file=sys.stderr)
+
+            ## Clean up leftover socket. It can only either be in $XDG_RUNTIME_DIR or /tmp
+            Path(os.environ['XDG_RUNTIME_DIR'] + "/monado_comp_ipc").unlink(missing_ok=True)
+            Path("/tmp/monado_comp_ipc").unlink(missing_ok=True)
+
+        ## Convert bytestrings to UTF-8 before printing
+        print("\nstdout:\n", outs.decode("utf-8"), file=sys.stdout)
+        print("\nstderr:\n", errs.decode("utf-8"), file=sys.stderr)
 
 
 def clean_project(config: Mapping[str, Any]) -> None:
