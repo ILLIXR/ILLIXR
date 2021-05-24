@@ -279,10 +279,10 @@ def load_monado(config: Mapping[str, Any]) -> None:
         if not monado_target_path.exists():
             raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
 
-        env_popen: Mapping[str, str] = dict(**os.environ, **env_monado)
+        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
 
         ## Open the Monado service application in the background
-        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_popen, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(5)
@@ -311,12 +311,14 @@ def load_monado(config: Mapping[str, Any]) -> None:
             outs, errs = monado_service_proc.communicate()
 
             ## Clean up leftover socket. It can only either be in $XDG_RUNTIME_DIR or /tmp
-            Path(os.environ['XDG_RUNTIME_DIR'] + "/monado_comp_ipc").unlink(missing_ok=True)
+            Path(env_monado_service['XDG_RUNTIME_DIR'] + "/monado_comp_ipc").unlink(missing_ok=True)
             Path("/tmp/monado_comp_ipc").unlink(missing_ok=True)
 
-        ## Convert bytestrings to UTF-8 before printing
-        print("\nstdout:\n", outs.decode("utf-8"), file=sys.stdout)
-        print("\nstderr:\n", errs.decode("utf-8"), file=sys.stderr)
+        print("\nstdout:\n")
+        sys.stdout.buffer.write(outs)
+
+        print("\nstderr:\n")
+        sys.stderr.buffer.write(errs)
 
 
 def clean_project(config: Mapping[str, Any]) -> None:
