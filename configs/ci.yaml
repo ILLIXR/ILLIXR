@@ -20,4 +20,5 @@ enable_pre_sleep: False
 action:
   name: tests
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
+  audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
 profile: dbg
