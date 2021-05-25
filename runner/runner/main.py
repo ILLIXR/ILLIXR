@@ -188,11 +188,10 @@ def load_native(config: Mapping[str, Any], quiet: bool) -> None:
 
     echo_prefix = ["echo"] if config["loader"].get("echo", False) else []
     sudo_prefix = ["sudo"] if config["loader"].get("sudo", False) else []
-    cpu_freq_prefix = ["./set_cpu_freq.sh", "--", str(config["conditions"]["cpu_freq"])]
+    cpu_freq_prefix = ["./set_cpu_freq.sh", "--", str(config["conditions"]["cpu_freq"])] if config["conditions"]["cpu_freq"] == 0.0 else []
     gdb_prefix = ["gdb", "--quiet", "--args"] if config["loader"].get("gdb", False) else []
     xvfb_prefix = ["xvfb-run"] if config["loader"].get("xvfb", False) else []
-    cpus = config["conditions"]["cpus"]
-    cpus = multiprocessing.cpu_count() if cpus == 0 else cpus
+    cpus = config["conditions"]["cpus"] if config["conditions"]["cpus"] == 0 else multiprocessing.cpu_count()
     taskset_prefix = ["taskset", "--all-tasks", "--cpu-list", "0-{cpus-1}"] if "cpu_list" in config["loader"] else []
     illixr_cmd = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_prefix = ["env", "-C", str(Path(".").resolve())] + [f"{var}={val}" for var, val in env_override.items()]

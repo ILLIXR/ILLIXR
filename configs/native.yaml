@@ -3,13 +3,14 @@ plugin_groups:
 
       # This has to go first because the n_thread_start queue needs to be listening
       # when the other plugins actually start up
-    - path: /robotics_project/scheduler_plugin # DON'T COMMIT ME
-        # subpath: scheduling_plugin
-        # relative_to:
-        #   # I am using git over SSH since this is a private repo.
-        #   # If you change this to HTTPS, you'll have to enter your password by hand (or else configure git credentials keeper).
-        #   git_repo: git@github.com:aditi741997/robotics_project.git
-        #   version: project-scheduling
+    - name: scheduling_plugin
+      path:
+        subpath: scheduling_plugin
+        relative_to:
+          # I am using git over SSH since this is a private repo.
+          # If you change this to HTTPS, you'll have to enter your password by hand (or else configure git credentials keeper).
+          git_repo: git@github.com:aditi741997/robotics_project.git
+          version: project-scheduling
 
     - name: open_vins
       path:
@@ -41,10 +42,8 @@ conditions:
   scheduler: dynamic
   duration: 75
   cpus: 1
-  cpu_freq: 2.6
   swap: 2
 loader:
-  xvfb: yes # DON'T COMMIT ME
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   name: native
   gdb: no

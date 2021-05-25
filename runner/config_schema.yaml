@@ -105,17 +105,18 @@ properties:
     required:
       - scheduler
       - duration
-      - cpus
-      - cpu_freq
       - swap
     properties:
       scheduler:
         type: string
       cpus:
-        description: "Use 0 for as many as there are processors"
+        description: "`0` means to use as many as possible"
+        default: 0
         type: integer
       cpu_freq:
+        description: "`0.0` means to not change the system"
         type: number
+        default: 0.0
       duration:
         type: number
       swap:
