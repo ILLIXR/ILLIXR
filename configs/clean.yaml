@@ -21,7 +21,7 @@ plugin_groups:
     - path: zed
     - name: Kimera-VIO
       path:
-        git_repo: https://github.com/ILLIXR/Kimera-VIO
+        git_repo: https://github.com/ILLIXR/Kimera-VIO.git
         version: "3.1"
     - name: OpenVINS
       path:
