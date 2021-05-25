@@ -145,9 +145,42 @@ then
 	# Load new library paths
 	sudo ldconfig
 
-	# I won't ask the user first, because this is not a global installation.
-	# All of this stuff goes into a project-specific venv.
-	$HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
+	if y_or_n "Next: Update conda env"; then
+		# I won't ask the user first, because this is not a global installation.
+		# All of this stuff goes into a project-specific venv.
+
+		# ^ true, but it takes five-ever, so lets ask anyway.
+		$HOME/miniconda3/bin/conda env create --force -f runner/environment.yml
+	fi
+
+	hl='\033[47m\033[47m\033[0;31m'
+	clear='\033[0m'
+
+	set -x
+
+	mosek_dir="${opt_dir}/mosek"
+	if [ ! -d "${mosek_dir}" ] && y_or_n "Needed for scheduling: Install Mosek Fusion."; then
+		mosek_zip="${opt_dir}/mosek.tar.bz2"
+		rm -f "${mosek_zip}"
+		wget --output-document="${mosek_zip}" https://download.mosek.com/stable/9.2.44/mosektoolslinux64x86.tar.bz2
+		tar --directory "${opt_dir}" --extract --verbose -f "${mosek_zip}"
+		rm "${mosek_zip}"
+	fi
+
+	if [ ! -L "${mosek_dir}/9.2/tools/platform/linux64x86/bin/libfusion64.so" ] && y_or_n "Needed for scheduling: Compile Mosek Fusion"; then
+		make -C "${mosek_dir}/9.2/tools/platform/linux64x86/src/fusion_cxx" install
+	fi
+
+	MOSEKLM_LICENSE_FILE="/opt/ILLIXR/mosek/mosek.lic"
+
+	if y_or_n "Needed for scheduling: Install Mosek Fusion License"; then
+		echo "${hl}Manual action required:${clear} Please request a personal academic license to Mosek Fusion, and tell me where you saved it: https://www.mosek.com/license/request/personal-academic/"
+		read -rp "${hl}Manual action required:${clear} Please enter the path to mosek.lic: " mosek_lic_src
+
+		cp "${mosek_lic_src}" "${MOSEKLM_LICENSE_FILE}"
+		# Nneed to set MOSEKLM_LICENSE_FILE at runtime
+	fi
+
 else
 	echo "${0} does not support ${ID_LIKE} yet."
 	exit 1

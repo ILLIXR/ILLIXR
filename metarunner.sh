@@ -6,4 +6,4 @@ conda run \
 	  --no-capture-output \
 	  --cwd "$(dirname ${0})" \
 	  --name illixr-runner \
-	  python runner/runner/main.py "${@}"
+	  python runner/runner/metarunner.py "${@}"

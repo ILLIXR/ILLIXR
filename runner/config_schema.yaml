@@ -107,6 +107,7 @@ properties:
       - duration
       - cpus
       - cpu_freq
+      - swap
     properties:
       scheduler:
         type: string
@@ -116,6 +117,8 @@ properties:
       cpu_freq:
         type: number
       duration:
+        type: number
+      swap:
         type: number
   loader:
     type: object

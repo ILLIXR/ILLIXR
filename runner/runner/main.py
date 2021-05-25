@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import multiprocessing
 import os
 import shlex
@@ -23,7 +22,6 @@ from util import (
     pathify,
     relative_to,
     replace_all,
-    set_cpu_freq,
     subprocess_run,
     threading_map,
     unflatten,
@@ -92,12 +90,12 @@ def build_one_plugin(
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
-    if not (path / "common").exists():
-        common_path = pathify(
-            config["common"]["path"], root_dir, cache_path, True, True
-        )
-        common_path = common_path.resolve()
-        os.symlink(common_path, path / "common")
+    if (path / "common").is_symlink():
+        (path / "common").unlink()
+    common_path = relative_to(pathify(
+        config["common"]["path"], root_dir, cache_path, True, True
+    ).resolve(), path)
+    os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
     targets = [plugin_so_name] + (["tests/run"] if test else [])
     make(path, targets, plugin_config["config"])
@@ -124,7 +122,7 @@ def write_scheduler_config(config: Mapping[str, Any]) -> Path:
     # assert expected_ov - 0.1 <= dag["nodes"]["open_vins"][0][freq] <= expected_ov + 0.1, expected_ov
 
     name2id = invert(dict(enumerate([None] + [
-        Path(plugin["path"]).name
+        Path(plugin["path"]).name if isinstance(plugin["path"], str) else plugin["name"]
         for plugin_group in config["plugin_groups"]
         for plugin in plugin_group["plugin_group"]
     ])))
@@ -184,13 +182,15 @@ def load_native(config: Mapping[str, Any], quiet: bool) -> None:
         ILLIXR_SCHEDULER_FC=config["loader"]["scheduler"]["fc"][config["conditions"]["cpu_freq"]] if scheduler == "static" else 1,
         ILLIXR_TIMEWARP_DELAY=str(int(config["loader"]["scheduler"]["nodes"]["timewarp_gl"][0][config["conditions"]["cpu_freq"]] * 1e6)),
         ILLIXR_SWAP_ORDER=str(config["conditions"].get("swap", "N/A")),
+        MOSEKLM_LICENSE_FILE="/opt/ILLIXR/mosek/mosek.lic",
         **config["loader"].get("env", {}),
     )
 
     echo_prefix = ["echo"] if config["loader"].get("echo", False) else []
     sudo_prefix = ["sudo"] if config["loader"].get("sudo", False) else []
-    cpu_freq_prefix = ["python3", "/home/grayson5/.local/bin/cpu_freq", str(config["conditions"]["cpu_freq"])]
+    cpu_freq_prefix = ["./set_cpu_freq.sh", "--", str(config["conditions"]["cpu_freq"])]
     gdb_prefix = ["gdb", "--quiet", "--args"] if config["loader"].get("gdb", False) else []
+    xvfb_prefix = ["xvfb-run"] if config["loader"].get("xvfb", False) else []
     cpus = config["conditions"]["cpus"]
     cpus = multiprocessing.cpu_count() if cpus == 0 else cpus
     taskset_prefix = ["taskset", "--all-tasks", "--cpu-list", "0-{cpus-1}"] if "cpu_list" in config["loader"] else []
@@ -215,7 +215,7 @@ def load_native(config: Mapping[str, Any], quiet: bool) -> None:
                     ("$env",): env_prefix,
                     ("$cmd",): illixr_cmd,
                     ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd))],
-                    ("$full_cmd",): echo_prefix + sudo_prefix + cpu_freq_prefix + taskset_prefix + env_prefix + gdb_prefix + illixr_cmd,
+                    ("$full_cmd",): echo_prefix + sudo_prefix + xvfb_prefix + cpu_freq_prefix + taskset_prefix + env_prefix + gdb_prefix + illixr_cmd,
                 },
             )
         )
