@@ -90,7 +90,7 @@ git -C ../illixr-analysis checkout ${branch}
     - `cpus`: the number of CPUs to use.
     - `cpu_freq`: the CPU frequency in GHz to use
 
-4. Invoke the meta-runner: it runs the runner over a configuration-grid. Run `./metarunner.sh --help` for info. Once you figure out the flags that you want, run them with `--dry-run`. This prints the configurations under trial without actually running them. Finally, when you have the configuration grid you like, run it without `--dry-run`. You should not touch the mouse or keyboard, lest your input perturb the results. Be sure to disable your screensaver before starting. For example:
+5. Invoke the meta-runner: it runs the runner over a configuration-grid. Run `./metarunner.sh --help` for info. Once you figure out the flags that you want, run them with `--dry-run`. This prints the configurations under trial without actually running them. Finally, when you have the configuration grid you like, run it without `--dry-run`. You should not touch the mouse or keyboard, lest your input perturb the results. Be sure to disable your screensaver before starting. For example:
 
 ```
 ./metarunner.sh --help
@@ -102,7 +102,7 @@ git -C ../illixr-analysis checkout ${branch}
   - Each run's `metrics_dir` is given a random name and moved into the `dir_of_metrics_dirs`, which is defined by the first argument to `./metarunner.sh`.
   - Following best practices, information meant to be computer-readable is not kept in filenames or directory names. Instead, we know the conditions and config from `${metrics}_dir/config.yaml`. This permits me to put more information that would fit into the filename, and I can use a computer-readable format, such as YAML. This does make it harder to manually find the metrics for a single trial, but the analysis script generates a "table of contents," so you can map "conditions" to `metrics_dir`.
 
-5. Clone, install, and run the analysis, possibly on another machine. The analysis uses CPU parallelism, so more cores helps. Follow the instructions in `ILLIXR-analysis/README.md`.
+6. Clone, install, and run the analysis, possibly on another machine. The analysis uses CPU parallelism, so more cores helps. Follow the instructions in [`ILLIXR-analysis/README.md`](https://github.com/ILLIXR/ILLIXR-analysis/blob/project-scheduling/README.md).
 
 ### Other changes from mainline ILLIXR
 
@@ -114,7 +114,9 @@ git -C ../illixr-analysis checkout ${branch}
 
 - This branch is based on an early version of Switchboard (issue-32-fix-mem-leak), and contains early prototypes of #217 (synchronize thread starts), #58 (use a common timer), #209 (add timing infrastructure), #211 (log timing data), #220 (use manged thread), and #222 (set thread names).
 
-- When using GDB or NSight Systems, be aware of the thread names. Self-scheduled threadloops are named `tl_${PLUGIN_ID}`, and Switchboard threads s_${PLUGIN_ID}_${TOPIC_NAME} where `${PLUGIN_ID}` is an integer plugin ID and `${TOPIC_NAME}` is a topic name.
+- When using GDB or NSight Systems, be aware of the thread names. Self-scheduled threadloops are named `tl_${PLUGIN_ID}`, and Switchboard threads `s_${PLUGIN_ID}_${TOPIC_NAME}` where `${PLUGIN_ID}` is an integer plugin ID and `${TOPIC_NAME}` is a topic name.
+
+- **For the documentation of the scheduler itself:** see [that project](https://github.com/aditi741997/robotics_project/tree/project-scheduling/README.md).
 
 ## Next steps
 
