@@ -2,8 +2,12 @@
 import multiprocessing
 import os
 import shlex
+import subprocess
+import sys
 import tempfile
+import time
 from pathlib import Path
+from subprocess import PIPE
 from typing import Any, BinaryIO, ContextManager, List, Mapping, Optional, cast
 
 import click
@@ -71,6 +75,7 @@ def build_runtime(
     config: Mapping[str, Any],
     suffix: str,
     test: bool = False,
+    is_mainline: bool = False,
 ) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
@@ -78,7 +83,9 @@ def build_runtime(
     runtime_config = config["runtime"]["config"]
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
-    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
+    env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
+    if is_mainline:
+        runtime_config.update(ILLIXR_MONADO_MAINLINE="ON")
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
@@ -181,56 +188,108 @@ def load_tests(config: Mapping[str, Any]) -> None:
 
 
 def load_monado(config: Mapping[str, Any]) -> None:
+    action_name = config["action"]["name"]
+
     profile = config["profile"]
-    cmake_profile = "Debug" if profile == "dbg" else "Release"
-    openxr_app_config = config["action"]["openxr_app"].get("config", {})
-    monado_config = config["action"]["monado"].get("config", {})
+    cmake_profile = "Debug" if profile == "dbg" else "RelWithDebInfo"
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
+    monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
 
-    cmake(
-        monado_path,
-        monado_path / "build",
-        dict(
-            CMAKE_BUILD_TYPE=cmake_profile,
-            BUILD_WITH_LIBUDEV="0",
-            BUILD_WITH_LIBUVC="0",
-            BUILD_WITH_LIBUSB="0",
-            BUILD_WITH_NS="0",
-            BUILD_WITH_PSMV="0",
-            BUILD_WITH_PSVR="0",
-            BUILD_WITH_OPENHMD="0",
-            BUILD_WITH_VIVE="0",
-            ILLIXR_PATH=str(runtime_path),
-            **monado_config,
-        ),
-    )
-    cmake(
-        openxr_app_path,
-        openxr_app_path / "build",
-        dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
-    )
-    build_runtime(config, "so")
-    plugin_paths = threading_map(
-        lambda plugin_config: build_one_plugin(config, plugin_config),
+    is_mainline: bool = bool(config["action"]["is_mainline"])
+    build_runtime(config, "so", is_mainline=is_mainline)
+
+    def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
+        if is_mainline:
+            plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
+        return build_one_plugin(config, plugin_config)
+
+    plugin_paths: List[Path] = threading_map(
+        process_plugin,
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )
+    plugin_paths_comp_arg: str = ':'.join(map(str, plugin_paths))
+
+    env_monado: Mapping[str, str] = dict(
+        ILLIXR_DATA=str(data_path),
+        ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
+        ILLIXR_COMP=plugin_paths_comp_arg,
+        XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
+    )
+
+    ## For CMake
+    monado_build_opts: Mapping[str, str] = dict(
+        CMAKE_BUILD_TYPE=cmake_profile,
+        ILLIXR_PATH=str(runtime_path),
+        **monado_config,
+    )
+
+    if is_mainline:
+        monado_build_opts.update(ILLIXR_MONADO_MAINLINE="ON")
+
+    ## Compile Monado
+    cmake(
+        monado_path,
+        monado_path / "build",
+        monado_build_opts,
+        env_override=env_monado,
+    )
+
+    if not "openxr_app" in config["action"]:
+        raise RuntimeError(f"Missing 'openxr_app' property for action '{action_name}")
+
+    openxr_app_obj    : Mapping[str, Any] = config["action"]["openxr_app"]
+    openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
+
+    openxr_app_path     : Optional[Path] # Forward declare type
+    openxr_app_bin_path : Path           # Forward declare type
+
+    if "src_path" in openxr_app_obj["app"]:
+        ## Pathify 'src_path' for compilation
+        openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
+        openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
+    else:
+        ## Get the full path to the 'app' binary
+        openxr_app_path     = None
+        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+
+    ## Compile the OpenXR app if we received an 'app' with 'src_path'
+    if openxr_app_path:
+        cmake(
+            openxr_app_path,
+            openxr_app_path / "build",
+            dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
+        )
+
+    if not openxr_app_bin_path.exists():
+        raise RuntimeError(f"{action_name} Failed to build openxr_app (mainline={is_mainline}, path={openxr_app_bin_path})")
+
+    if is_mainline:
+        monado_target_name : str  = "monado-service"
+        monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
+        monado_target_path : Path = monado_target_dir / monado_target_name
+
+        if not monado_target_path.exists():
+            raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
+
+        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
+
+        ## Open the Monado service application in the background
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+    ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    time.sleep(5)
 
     subprocess_run(
-        [str(openxr_app_path / "build" / "./openxr-example")],
+        [str(openxr_app_bin_path)],
         env_override=dict(
-            XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
-            ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
-            ILLIXR_COMP=":".join(map(str, plugin_paths)),
-            ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
@@ -238,9 +297,28 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
             REALSENSE_CAM=str(realsense_cam_string),
+            **env_monado,
         ),
         check=True,
     )
+
+    if is_mainline:
+        ## Close and clean up the Monado service application
+        try:
+            outs, errs = monado_service_proc.communicate(timeout=1)
+        except subprocess.TimeoutExpired:
+            monado_service_proc.kill()
+            outs, errs = monado_service_proc.communicate()
+
+            ## Clean up leftover socket. It can only either be in $XDG_RUNTIME_DIR or /tmp
+            Path(env_monado_service['XDG_RUNTIME_DIR'] + "/monado_comp_ipc").unlink(missing_ok=True)
+            Path("/tmp/monado_comp_ipc").unlink(missing_ok=True)
+
+        print("\nstdout:\n")
+        sys.stdout.buffer.write(outs)
+
+        print("\nstderr:\n")
+        sys.stderr.buffer.write(errs)
 
 
 def clean_project(config: Mapping[str, Any]) -> None:
