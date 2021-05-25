@@ -17,6 +17,7 @@ public:
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
+        , _m_dataset_first_time{_m_sensor_data.cbegin()->first}
 		, _m_first_time{true}
 	{ }
 
@@ -28,7 +29,7 @@ public:
 	}
 
 	void feed_ground_truth(switchboard::ptr<const imu_cam_type> datum) {
-		ullong rounded_time = datum->time.time_since_epoch().count();
+		ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
 		auto it = _m_sensor_data.find(rounded_time);
 
 		if (it == _m_sensor_data.end()) {
@@ -78,6 +79,7 @@ private:
 	switchboard::writer<pose_type> _m_true_pose;
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
 	const std::map<ullong, sensor_types> _m_sensor_data;
+    ullong _m_dataset_first_time;
     bool _m_first_time;
 };
 
