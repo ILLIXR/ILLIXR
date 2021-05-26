@@ -21,12 +21,16 @@ cd "$(dirname ${0})"
 . /etc/os-release
 
 ## Setup script
-distro_ver="${DISTRO_VER=${VERSION_ID}}" # DISTRO_VER (Dockerfile), VERSION_ID (os-release)
 interp_cmd="python"
 interp_args=""
 script_path="runner/runner/main.py"
 script_args="${@}"
 venv_name="illixr-runner"
+
+env_runner=(
+    XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:=/tmp}"
+    DISTRO_VER="${DISTRO_VER=${VERSION_ID}}" # DISTRO_VER (Dockerfile), VERSION_ID (os-release)
+) # End list
 
 
 ### Launch application
@@ -57,4 +61,4 @@ else
 fi
 
 ## Start executing action from main
-env DISTRO_VER="${distro_ver}" "${interp_cmd}" ${interp_args} "${script_path}" "${script_args}"
+env "${env_runner[@]}" "${interp_cmd}" ${interp_args} "${script_path}" "${script_args}"

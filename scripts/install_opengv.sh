@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_opengv}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_opengv}/${dep_name_opengv}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_opengv}"
-fi
+dep_name="${dep_name:=${dep_name_opengv}}"
+src_dir="${src_dir:=${parent_dir_opengv}/${dep_name_opengv}}"
+dep_ver="${dep_ver:=${dep_ver_opengv}}"
 
 repo_url="https://github.com/laurentkneip/opengv.git"
 build_dir="${src_dir}/build"

@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_openxr}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_openxr}/${dep_name_openxr}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_openxr}"
-fi
+dep_name="${dep_name:=${dep_name_openxr}}"
+src_dir="${src_dir:=${parent_dir_openxr}/${dep_name_openxr}}"
+dep_ver="${dep_ver:=${dep_ver_openxr}}"
 
 repo_url="https://github.com/KhronosGroup/OpenXR-SDK.git"
 build_dir="${src_dir}/build"

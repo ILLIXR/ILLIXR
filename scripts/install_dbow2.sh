@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_dbow2}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_dbow2}/${dep_name_dbow2}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_dbow2}"
-fi
+dep_name="${dep_name:=${dep_name_dbow2}}"
+src_dir="${src_dirL=${parent_dir_dbow2}/${dep_name_dbow2}}"
+dep_ver="${dep_ver:=${dep_ver_dbow2}}"
 
 repo_url="https://github.com/dorian3d/DBoW2.git"
 build_dir="${src_dir}/build"

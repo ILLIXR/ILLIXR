@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_qemu}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_qemu}/${dep_name_qemu}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_qemu}"
-fi
+dep_name="${dep_name:=${dep_name_qemu}}"
+src_dir="${src_dir:=${parent_dir_qemu}/${dep_name_qemu}}"
+dep_ver="${dep_ver:=${dep_ver_qemu}}"
 
 repo_url="git://git.qemu.org/qemu.git"
 build_dir="${src_dir}/build"

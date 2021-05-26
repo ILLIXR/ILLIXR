@@ -57,7 +57,16 @@ def flow_to_str(flow: Mapping[str, Any]) -> str:
 def clean_one_plugin(config: Mapping[str, Any], plugin_config: Mapping[str, Any]) -> Path:
     action_name = config["action"]["name"]
     profile = config["profile"]
-    plugin_path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+
+    plugin_path: Path # Forward declare type
+    if "path" in plugin_config:
+        plugin_path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+    elif "app" in plugin_config and "src_path" in plugin_config["app"]:
+        plugin_path = pathify(plugin_config["app"]["src_path"], root_dir, cache_path, True, True)
+    elif "app" in plugin_config:
+        plugin_path = pathify(plugin_config["app"], root_dir, cache_path, True, True)
+        return plugin_path # Binary => nothing to do
+
     path_str: str = str(plugin_path)
     name: str = plugin_to_str(plugin_path, plugin_config)
     targets: List[str] = ["clean"]
@@ -80,7 +89,16 @@ def build_one_plugin(
     test: bool = False,
 ) -> Path:
     profile = config["profile"]
-    plugin_path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+
+    plugin_path: Path # Forward declare type
+    if "path" in plugin_config:
+        plugin_path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+    elif "app" in plugin_config and "src_path" in plugin_config["app"]:
+        plugin_path = pathify(plugin_config["app"]["src_path"], root_dir, cache_path, True, True)
+    elif "app" in plugin_config:
+        plugin_path = pathify(plugin_config["app"], root_dir, cache_path, True, True)
+        return plugin_path # Binary => nothing to do
+
     if not (plugin_path / "common").exists():
         common_path = pathify(config["common"]["path"], root_dir, cache_path, True, True)
         common_path = common_path.resolve()
@@ -128,7 +146,13 @@ def do_ci(config: Mapping[str, Any]) -> None:
 
     for ci_type in ["no-build", "build-only", "run-solo"]:
         for plugin_config in config["action"][ci_type]["plugin_group"]:
-            plugin_path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+            plugin_path: Path # Forward declare type
+            if "path" in plugin_config:
+                plugin_path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+            elif "app" in plugin_config and "src_path" in plugin_config["app"]:
+                plugin_path = pathify(plugin_config["app"]["src_path"], root_dir, cache_path, True, True)
+            elif "app" in plugin_config:
+                plugin_path = pathify(plugin_config["app"], root_dir, cache_path, True, True)
             plugin_name: str = plugin_to_str(plugin_path, plugin_config)
 
             print(f"[{action_name}] {ci_type}: {plugin_name}")

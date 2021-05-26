@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_gtsam}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_gtsam}/${dep_name_gtsam}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_gtsam}"
-fi
+dep_name="${dep_name:=${dep_name_gtsam}}"
+src_dir="${src_dir:=${parent_dir_gtsam}/${dep_name_gtsam}}"
+dep_ver="${dep_ver:=${dep_ver_gtsam}}"
 
 repo_url="https://github.com/ILLIXR/gtsam.git"
 build_dir="${src_dir}/build"

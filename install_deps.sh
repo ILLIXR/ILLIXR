@@ -75,11 +75,7 @@ function prompt_value()
         echo -n "#>  Enter '${name}' [default: '${value_default}']: "
         read -rp '' value_in
 
-        if [ -z "${value_in}" ]; then
-            value_out="${value_default}"
-        else
-            value_out="${value_in}"
-        fi
+        value_out="${value_in:=${value_default}}"
     fi
 
     export value_out
@@ -232,7 +228,7 @@ sudo chown "${USER}:" "${opt_dir}"
 . deps.sh
 
 echo "The user will now be prompted to install the following dependencies and optional features:
-  Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan,
+  Binary packages (via apt-get), Docker, CUDA, Eigen, VTK, OpenCV, Vulkan,
   gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3), DepthAI
 " # End echo
 
@@ -273,21 +269,28 @@ fi
 #    "${dep_ver_boost}"
 
 prompt_install \
+    "${dep_name_vtk}" \
+    "${deps_log_dir}" \
+    "${script_path_vtk}" \
+    "${parent_dir_vtk}" \
+    "${dep_prompt_vtk}" \
+    "${dep_ver_vtk}"
+
+prompt_install \
+    "${dep_name_eigen}" \
+    "${deps_log_dir}" \
+    "${script_path_eigen}" \
+    "${parent_dir_eigen}" \
+    "${dep_prompt_eigen}" \
+    "${dep_ver_eigen}"
+
+prompt_install \
     "${dep_name_opencv}" \
     "${deps_log_dir}" \
     "${script_path_opencv}" \
     "${parent_dir_opencv}" \
     "${dep_prompt_opencv}" \
     "${dep_ver_opencv}"
-
-## Locally built eigen not in use yet
-#prompt_install \
-#    "${dep_name_eigen}" \
-#    "${deps_log_dir}" \
-#    "${script_path_eigen}" \
-#    "${parent_dir_eigen}" \
-#    "${dep_prompt_eigen}" \
-#    "${dep_ver_eigen}"
 
 prompt_install \
     "${dep_name_vulkan}" \

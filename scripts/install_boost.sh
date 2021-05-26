@@ -20,17 +20,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_boost}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_boost}/${dep_name_boost}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_boost}"
-fi
+dep_name="${dep_name:=${dep_name_boost}}"
+src_dir="${src_dir:=${parent_dir_boost}/${dep_name_boost}}"
+dep_ver="${dep_ver:=${dep_ver_boost}}"
 
 repo_url="https://github.com/boostorg/boost.git"
 build_dir="${src_dir}/build"

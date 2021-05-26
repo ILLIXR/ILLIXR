@@ -20,17 +20,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_clang}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_clang}/${dep_name_clang}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_clang}"
-fi
+dep_name="${dep_name:=${dep_name_clang}}"
+src_dir="${src_dir:=${parent_dir_clang}/${dep_name_clang}}"
+dep_ver="${dep_ver:=${dep_ver_clang}}"
 
 repo_url="https://github.com/llvm/llvm-project.git"
 build_dir="${src_dir}/build"
@@ -38,10 +30,10 @@ build_dir="${src_dir}/build"
 cmd_clang_c="${prefix_dir}/bin/clang"
 cmd_clang_cxx="${prefix_dir}/bin/clang++"
 
-max_nproc_clang="4"
-if [ "${illixr_nproc}" -gt "${max_nproc_clang}" ]; then
-    ## Too many threads => run out of memory
-    illixr_nproc="${max_nproc_clang}"
+## Cap the number of link jobs (linking is memory hungry)
+max_nproc_link_clang="4"
+if [ "${illixr_nproc}" -lt "${max_nproc_link_clang}" ]; then
+    max_nproc_link_clang="${illixr_nproc}"
 fi
 
 llvm_projects=(
@@ -75,6 +67,8 @@ esac
 build_opts_llvm=(
     -D LLVM_ENABLE_PROJECTS="${llvm_projects_arg}"
     -D LLVM_TARGETS_TO_BUILD="${llvm_targets_arg}"
+    -D LLVM_PARALLEL_COMPILE_JOBS="${illixr_nproc}"
+    -D LLVM_PARALLEL_LINK_JOBS="${max_nproc_link_clang}"
 ) # End list
 
 

@@ -50,12 +50,10 @@ function add_repo() {
 
 # Generate the list of package dependencies to install based on the provided package groups
 # The indirect variables referenced by the group names should be bash arrays
-# Good call site: list=$(pkg_dep_list_from "${group_list}")
-# Bad call site:  list="$(pkg_dep_list_from ${group_list})"
 function pkg_dep_list_from() {
+    local pkg_dep_groups=(${1})
     local pkg_dep_list=""
-    local pkg_dep_groups=${1}
-    for group in ${pkg_dep_groups}; do
+    for group in "${pkg_dep_groups[@]}"; do
         pkg_dep_list_group_var="pkg_dep_list_${group}"
         pkg_dep_list_group="${pkg_dep_list_group_var}[@]"
         pkg_dep_list+=" ${!pkg_dep_list_group}"
@@ -118,7 +116,7 @@ pkg_dep_list_image=(
     libjpeg-dev
     libpng-dev
     libtiff-dev
-    libvtk6-dev
+    #libvtk6-dev
 ) # End list
 
 pkg_dep_list_sound=(
@@ -147,7 +145,7 @@ pkg_dep_list_math=(
     libsuitesparse-dev
     libparmetis-dev
     libatlas-base-dev
-    libeigen3-dev
+    #libeigen3-dev
 ) # End list
 
 pkg_dep_list_nogroup=(
@@ -262,8 +260,6 @@ if [ "${use_cuda}" = "yes" ]; then
 
     if [ "${distro_name}" = "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" = "x86_64" ]; then
         case "${distro_version}" in
-            21.04)  distro_name_cuda="ubuntu2104"
-		    ;;
             20.04)  distro_name_cuda="ubuntu2004"
                     ;;
             18.04)  distro_name_cuda="ubuntu1804"

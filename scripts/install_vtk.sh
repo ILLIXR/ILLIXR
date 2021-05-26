@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#--- Script for installing Vulkan Headers ---#
+#--- Script for installing VTK ---#
 
 
 ### Setup ###
@@ -17,12 +17,20 @@
 
 ### Package metadata setup ###
 
-dep_name="${dep_name:=${dep_name_vulkan}}"
-src_dir="${src_dir:=${parent_dir_vulkan}/${dep_name_vulkan}}"
-dep_ver="${dep_ver:=${dep_ver_vulkan}}"
+dep_name="${dep_name:=${dep_name_vtk}}"
+src_dir="${src_dir:=${parent_dir_vtk}/${dep_name_vtk}}"
+dep_ver="${dep_ver:=${dep_ver_vtk}}"
 
-repo_url="https://github.com/KhronosGroup/Vulkan-Headers.git"
+repo_url="https://gitlab.kitware.com/vtk/vtk"
 build_dir="${src_dir}/build"
+
+
+### Checks ###
+
+## Assert no system packages will be overwritten by this install
+## If present, remove the conflicting packages before proceeding
+pkg_list_eigen="libvtk6-dev libvtk7-dev"
+detect_packages "${pkg_list_eigen}" "${PKG_MODE_FOUND_NONFATAL}"
 
 
 ### Fetch, build and install ###
@@ -38,6 +46,7 @@ cmake \
     -D CMAKE_CXX_COMPILER="${CXX}" \
     -D CMAKE_BUILD_TYPE="${build_type}" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}"
+# Make currently does nothing for eigen (only headers are in the repository)
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
