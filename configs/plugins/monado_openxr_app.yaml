@@ -1,4 +1,7 @@
 name: monado_openxr_app
-path:
-  git_repo: https://github.com/ILLIXR/Monado_OpenXR_Simple_Example.git
-  version: "3.0"
+app:
+  src_path:
+    git_repo : https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
+    version  : master
+  bin_subpath: build/openxr-example
+config: {}
