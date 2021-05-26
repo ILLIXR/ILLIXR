@@ -8,6 +8,7 @@ ARG JOBS=1
 ARG ACTION=ci
 ARG BUILD_TYPE=Release
 
+ENV ENABLE_DOCKER=yes
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 ENV CC=clang-10
@@ -64,12 +65,14 @@ RUN ln -s $(which ${CXX}) ${prefix_dir}/bin/clang++
 #COPY ./scripts/install_boost.sh ${HOME}/scripts/install_boost.sh
 #RUN ./scripts/install_boost.sh
 
+COPY ./scripts/install_vtk.sh ${HOME}/scripts/install_vtk.sh
+RUN ./scripts/install_vtk.sh
+
+COPY ./scripts/install_eigen.sh ${HOME}/scripts/install_eigen.sh
+RUN ./scripts/install_eigen.sh
+
 COPY ./scripts/install_opencv.sh ${HOME}/scripts/install_opencv.sh
 RUN ./scripts/install_opencv.sh
-
-## Locally built eigen not in use yet
-#COPY ./scripts/install_eigen.sh ${HOME}/scripts/install_eigen.sh
-#RUN ./scripts/install_eigen.sh
 
 COPY ./scripts/install_vulkan_headers.sh ${HOME}/scripts/install_vulkan_headers.sh
 RUN ./scripts/install_vulkan_headers.sh

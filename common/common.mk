@@ -14,6 +14,13 @@ else
 	MONADO_FLAGS :=
 endif
 
+## If called from Docker with 'ENABLE_DOCKER' defined, remove unsupported compilation flags
+ifeq ($(ENABLE_DOCKER),yes)
+GTEST_FLAGS_DBGEXTRA :=
+else
+GTEST_FLAGS_DBGEXTRA := -fsanitize=address,undefined
+endif # IS_DOCKER
+
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
@@ -75,9 +82,9 @@ tests/gdb: tests/test.exe
 
 tests/test.exe: $(CPP_TEST_FILES) $(CPP_FILES) $(HPP_FILES)
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) \
-	$(GTEST_FLAGS) -fsanitize=address,undefined -o ./tests/test.exe \
+	$(GTEST_FLAGS) $(GTEST_FLAGS_DBGEXTRA) -o ./tests/test.exe \
 	$(CPP_TEST_FILES) $(CPP_FILES) $(LDFLAGS)
-endif
+endif # CPP_TEST_FILES
 
 .PHONY: clean
 clean:

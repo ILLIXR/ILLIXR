@@ -29,6 +29,7 @@ venv_name="illixr-runner"
 
 env_runner=(
     XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:=/tmp}"
+    ENABLE_DOCKER="${ENABLE_DOCKER:=no}"
     DISTRO_VER="${DISTRO_VER=${VERSION_ID}}" # DISTRO_VER (Dockerfile), VERSION_ID (os-release)
 ) # End list
 

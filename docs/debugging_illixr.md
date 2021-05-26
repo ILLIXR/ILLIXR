@@ -23,7 +23,7 @@ From the root directory in your project, run:
 Note the optional `Dockerfile` argument, `JOBS`, which specifies the number of
     threads/tasks to use for building.
 The `BASE_IMG` argument specifies the Docker image to pull for
-    the build (default: `ubuntu:21.04`).
+    the build (default: `ubuntu:20.04`).
 The `ACTION` argument specifies the default [_Runner_][11] action to use for
     the `docker run` entrypoint (default: `ci`).
 The `BUILD_TYPE` argument specifes the build profile (e.g. CMake's `CMAKE_BUILD_TYPE`)
