@@ -161,9 +161,6 @@ def do_ci(config: Mapping[str, Any]) -> None:
 
             if ci_type == "no-build":
                 continue
-            elif plugin_name == "realsense" and distro_ver != "18.04":
-                ## Kludge: RealSense packages are not available for yet Ubuntu 20+ LTS
-                continue
 
             plugin_so_path: Path = build_one_plugin(config, plugin_config)
 

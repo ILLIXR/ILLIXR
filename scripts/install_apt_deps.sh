@@ -226,28 +226,38 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
-    case "${arch_name}" in
-        x86_64)     use_realsense="yes"
-                    pkg_dep_groups+=" realsense_anyarch"
-                    pkg_dep_groups+=" realsense_x86_64"
-                    ;;
-        aarch64)    use_realsense="yes"
-                    pkg_dep_groups+=" realsense_anyarch"
-                    ;;
-        *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense."
-                    exit 1
-                    ;;
-    esac
-else
+if [ "${use_realsense}" = "yes" ]; then
     pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
     pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
     pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations "
-    pkg_warn_msg_realsense+="for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. "
+    pkg_warn_msg_realsense+="for non Ubuntu LTS kernels, or other non-Ubuntu Linux distributions. "
     pkg_warn_msg_realsense+="If your project requires Intel RealSense support, "
     pkg_warn_msg_realsense+="please build and install the Intel RealSense SDK from source. "
     pkg_warn_msg_realsense+="For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
-    print_warning "${pkg_warn_msg_realsense}"
+
+    if [ "${distro_name}" = "ubuntu" ]; then
+        case "${distro_version}" in
+            18.04 | 20.04)  ;; # Okay
+            *)              print_warning "Bad distribution version '${distro_version}' for realsense."
+                            print_warning "${pkg_warn_msg_realsense}"
+                            exit 1
+                            ;;
+        esac
+        case "${arch_name}" in
+            x86_64)     pkg_dep_groups+=" realsense_anyarch"
+                        pkg_dep_groups+=" realsense_x86_64"
+                        ;;
+            aarch64)    pkg_dep_groups+=" realsense_anyarch"
+                        ;;
+            *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense."
+                        print_warning "${pkg_warn_msg_realsense}"
+                        exit 1
+                        ;;
+        esac
+    else
+        print_warning "${pkg_warn_msg_realsense}"
+        exit 1
+    fi
 fi
 
 ## CUDA ##
