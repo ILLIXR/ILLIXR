@@ -55,6 +55,7 @@ action:
 
   openxr_app: !include "openxr_app.yaml"
 
-  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
+  kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
+  audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
 
 profile: opt
