@@ -20,6 +20,8 @@ ENV illixr_nproc=${JOBS}
 ENV build_type=${BUILD_TYPE}
 ENV cache_path=.cache/paths
 
+ENV use_realsense=yes
+
 ENV src_dir_conda=${opt_dir}/miniconda3
 ENV env_config_path=runner/environment.yml
 ENV runner_action=configs/${ACTION}.yaml
@@ -47,10 +49,7 @@ COPY ./scripts/default_values.sh ${HOME}/scripts/default_values.sh
 COPY ./scripts/system_utils.sh ${HOME}/scripts/system_utils.sh
 
 COPY ./scripts/install_apt_deps.sh ${HOME}/scripts/install_apt_deps.sh
-RUN if [ ${BASE_IMG#ubuntu:} = 18.04 ]; \
-    then use_realsense=yes; \
-    else use_realsense=no; \
-    fi && env use_realsense=${use_realsense} ./scripts/install_apt_deps.sh
+RUN env use_realsense=${use_realsense} ./scripts/install_apt_deps.sh
 RUN apt-get autoremove -y # Save space by cleaning up
 
 ## Locally built clang not in use yet
