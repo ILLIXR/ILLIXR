@@ -178,6 +178,7 @@ def do_ci(config: Mapping[str, Any]) -> None:
                     ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
                     ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
                     ILLIXR_ENABLE_PRE_SLEEP=str(False), ## Hardcode to False for solo runs
+                    AUDIO_ROOT=config["action"]["audio_path"],
                     KIMERA_ROOT=config["action"]["kimera_path"],
                 ),
                 check=True,

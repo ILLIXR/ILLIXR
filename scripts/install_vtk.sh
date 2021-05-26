@@ -29,8 +29,8 @@ build_dir="${src_dir}/build"
 
 ## Assert no system packages will be overwritten by this install
 ## If present, remove the conflicting packages before proceeding
-pkg_list_eigen="libvtk6-dev libvtk7-dev"
-detect_packages "${pkg_list_eigen}" "${PKG_MODE_FOUND_NONFATAL}"
+pkg_list_vtk="libvtk6-dev libvtk7-dev"
+detect_packages "${pkg_list_vtk}" "${PKG_MODE_FOUND_NONFATAL}"
 
 
 ### Fetch, build and install ###
