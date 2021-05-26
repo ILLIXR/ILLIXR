@@ -4,12 +4,13 @@
 
 action:
   name: monado
-  is_mainline : False
+  is_mainline: False
+
+  monado:      !include "plugins/monado_integration.yaml"
+  openxr_app:  !include "plugins/monado_openxr_app.yaml"
 
   kimera_path: !include "data/kimera-default.yaml"
   audio_path:  !include "data/audio-default.yaml"
-  monado:      !include "plugins/monado_integration.yaml"
-  openxr_app:  !include "plugins/monado_openxr_app.yaml"
 
 common:    !include "plugins/common.yaml"
 runtime:   !include "plugins/runtime.yaml"

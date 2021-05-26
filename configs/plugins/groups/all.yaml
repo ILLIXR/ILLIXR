@@ -3,6 +3,7 @@ plugin_group:
   ## Excludes 'common'
   ## Excludes 'runtime'
   ## Excludes 'monado_integration'
+  ## Excludes 'monado_mainline'
   ## Excludes 'monado_openxr_app'
 
   ## Core Plugins
