@@ -5,7 +5,6 @@ FROM ${BASE_IMG}
 ARG BASE_IMG
 
 ARG JOBS=1
-ARG ACTIONS="ci ci-monado ci-monado-mainline"
 ARG BUILD_TYPE=Release
 
 ENV ENABLE_DOCKER=yes
@@ -102,6 +101,6 @@ COPY . ${illixr_dir}
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-ENTRYPOINT for action in (${ACTIONS})[@]; do \
+ENTRYPOINT for action in ci ci-monado ci-monado-mainline; do \
     env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml; \
 done

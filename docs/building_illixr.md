@@ -48,6 +48,7 @@ The first block in the config file (after any comments or file header) specifies
       name: native
 
       kimera_path: !include "data/kimera-default.yaml"
+      audio_path:  !include "data/audio-default.yaml"
 
       # run in GDB:
       # command: gdb -q --args $cmd
@@ -63,6 +64,9 @@ Each `action` specifies a `name` which has a corresponding function
 For actions that launch ILLIXR (like `native`), `kimera_path` is a [_Path_][15] that
     points to the root directory to look for Kimera-VIO, if the plugin is enabled.
 In the example above, `kimera_path` is defined in `ILLIXR/configs/data/kimera-default.yaml`.
+Actions also define `audio_path`, which points to the root directory for the audio_pipeline
+    plugin, if enabled.
+In the example above, `audio_path` is defined in `ILLIXR/configs/data/audio-default.yaml`.
 You can `!include` other configuration files via [pyyaml-include][13].
 Consider separating the site-specific configuration options into their own file.
 

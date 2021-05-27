@@ -15,7 +15,6 @@ From the root directory in your project, run:
     docker build .                                    \
         [--build-arg=JOBS="<integer>"]                \
         [--build-arg=BASE_IMG="<image-name>"]         \
-        [--build-arg=ACTIONS="<runner-action-list>"]  \
         [--build-arg=BUILD_TYPE="<cmake-build-type>"] \
         [--no-cache]                                  \
         --tag <repository>:<tag>
@@ -24,8 +23,6 @@ Note the optional `Dockerfile` argument, `JOBS`, which specifies the number of
     threads/tasks to use for building.
 The `BASE_IMG` argument specifies the Docker image to pull for
     the build (default: `ubuntu:20.04`).
-The `ACTIONS` argument specifies the list of [_Runner_][11] actions to use for
-    the `docker run` entrypoint(s) (default: `"ci ci-monado ci-monado-mainline"`).
 The `BUILD_TYPE` argument specifes the build profile (e.g. CMake's `CMAKE_BUILD_TYPE`)
     (default: `Release`).
 Also note the optional argument, `--no-cache`, which forces Docker to rerun commands in `Dockerfile`
