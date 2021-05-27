@@ -4,3 +4,5 @@ plugin_group:
   - !include "plugins/kimera-vio.yaml"
   - !include "plugins/offload_data.yaml"
   - !include "plugins/openvins.yaml"
+  - !include "plugins/pose_prediction.yaml"
+  - !include "plugins/rk4_integrator.yaml"

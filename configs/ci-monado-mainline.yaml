@@ -1,9 +1,13 @@
 ##
-## Configuration to run CI flows (see 'configs/ci')
+## Configuration to run CI with Monado (Mainline/Upstream)
 ##
 
 action:
-  name: tests
+  name: monado
+  is_mainline: True
+
+  monado:      !include "plugins/monado_mainline.yaml"
+  openxr_app:  !include "plugins/monado_openxr_app.yaml"
 
   kimera_path: !include "data/kimera-default.yaml"
   audio_path:  !include "data/audio-default.yaml"
@@ -21,8 +25,8 @@ demo_data: !include "data/demo-default.yaml"
 profile: dbg
 
 flows:
-  #- !include "ci/flows/lookup.yaml" # Failing (see 'plugins/pose_lookup.yaml')
-  - !include "ci/flows/openvins-rk4.yaml"
-  - !include "ci/flows/openvins-gtsam.yaml"
-  - !include "ci/flows/kimera-rk4.yaml"
-  - !include "ci/flows/kimera-gtsam.yaml"
+  - flow:
+    - !include "plugins/groups/rt_slam.yaml"
+    - !include "plugins/groups/kimera-gtsam.yaml"
+    - plugin_group:
+      - !include "plugins/pose_prediction.yaml"

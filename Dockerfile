@@ -5,7 +5,7 @@ FROM ${BASE_IMG}
 ARG BASE_IMG
 
 ARG JOBS=1
-ARG ACTION=ci
+ARG ACTIONS="ci ci-monado ci-monado-mainline"
 ARG BUILD_TYPE=Release
 
 ENV ENABLE_DOCKER=yes
@@ -24,7 +24,6 @@ ENV use_realsense=yes
 
 ENV src_dir_conda=${opt_dir}/miniconda3
 ENV env_config_path=runner/environment.yml
-ENV runner_action=configs/${ACTION}.yaml
 
 ENV url_euroc='http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 ENV data_dir_euroc=${illixr_dir}/${cache_path}/http%%c%%s%%srobotics.ethz.ch%%s~asl-datasets%%sijrr_euroc_mav_dataset%%svicon_room1%%sV1_02_medium%%sV1_02_medium.zip
@@ -42,7 +41,7 @@ RUN mkdir -p ${data_dir_euroc}/${sub_path_euroc}
 
 ## Download (and cache) the euroc dataset early in the build
 RUN curl ${url_euroc} -o ${zip_path_euroc}
-RUN unzip -d ${data_dir_euroc} ${zip_path_euroc} ${sub_path_euroc}/ # slash required
+RUN unzip -d ${data_dir_euroc} ${zip_path_euroc} ${sub_path_euroc}/*
 
 COPY ./deps.sh ${HOME}/deps.sh
 COPY ./scripts/default_values.sh ${HOME}/scripts/default_values.sh
@@ -103,4 +102,6 @@ COPY . ${illixr_dir}
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-ENTRYPOINT env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh ${runner_action}
+ENTRYPOINT for action in (${ACTIONS})[@]; do \
+    env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml; \
+done

@@ -146,6 +146,14 @@ def do_ci(config: Mapping[str, Any]) -> None:
 
     for ci_type in ["no-build", "build-only", "run-solo"]:
         for plugin_config in config["action"][ci_type]["plugin_group"]:
+            if "name" in plugin_config:
+                if plugin_config["name"] == "monado_integration":
+                    continue # Skip Monado plugins
+                if plugin_config["name"] == "monado_mainline":
+                    continue # Skip Monado plugins
+                if plugin_config["name"] == "monado_openxr_app":
+                    continue # Skip Monado plugins
+
             plugin_path: Path # Forward declare type
             if "path" in plugin_config:
                 plugin_path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -195,7 +203,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     realsense_cam_string = config["realsense_cam"]
 
     flow_id = 0
-    plugins_append = config["append"]["plugin_group"]
+    plugins_append: List[Mapping[str, Any]] = [config["append"],]
     for flow in [flow_obj["flow"] + plugins_append for flow_obj in config["flows"]]:
         flow_str: str = flow_to_str(flow)
         print(f"[{action_name}] Processing flow: {flow_str}")
@@ -276,7 +284,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
         ## Perform CI solo builds and runs before processing the flows
         do_ci(config)
 
-    plugins_append = config["append"]["plugin_group"]
+    plugins_append: List[Mapping[str, Any]] = [config["append"],]
     for flow in [flow_obj["flow"] + plugins_append for flow_obj in config["flows"]]:
         flow_str: str = flow_to_str(flow)
         print(f"[{action_name}] Processing flow: {flow_str}")
@@ -328,6 +336,17 @@ def load_monado(config: Mapping[str, Any]) -> None:
     is_mainline: bool = bool(config["action"]["is_mainline"])
     build_runtime(config, "so", is_mainline=is_mainline)
 
+    enable_ci = bool(config["action"]["enable_ci"]) if "enable_ci" in config["action"] else False
+
+    if enable_ci:
+        plugin_configs_build_only = config["action"]["build-only"]["plugin_group"]
+        plugins_build_only = [
+            plugin_config["name"] for plugin_config in plugin_configs_build_only if "name" in plugin_config
+        ]
+
+        if not "monado_openxr_app" in plugins_build_only:
+            return # Not building
+
     if not "openxr_app" in config["action"]:
         raise RuntimeError(f"Missing 'openxr_app' property for action '{action_name}")
 
@@ -362,7 +381,12 @@ def load_monado(config: Mapping[str, Any]) -> None:
             plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
         return build_one_plugin(config, plugin_config)
 
-    plugins_append = config["append"]["plugin_group"]
+    if enable_ci:
+        ## Continue if either 'monado_mainline' or 'monado_integration' plugin is present
+        if not "monado_mainline" in plugins_build_only and not "monado_integration" in plugins_build_only:
+            return # Not building
+
+    plugins_append: List[Mapping[str, Any]] = [config["append"],]
     for flow in [flow_obj["flow"] + plugins_append for flow_obj in config["flows"]]:
         flow_str: str = flow_to_str(flow)
         print(f"[{action_name}] Processing flow: {flow_str}")
@@ -398,6 +422,10 @@ def load_monado(config: Mapping[str, Any]) -> None:
             env_override=env_monado,
         )
 
+        if enable_ci:
+            ## When called from 'do_ci' and done building, continue
+            continue
+
         if is_mainline:
             monado_target_name : str  = "monado-service"
             monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
@@ -410,6 +438,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
             ## Open the Monado service application in the background
             monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
 
         ## Give the Monado service some time to boot up and the user some time to initialize VIO
         time.sleep(5)
@@ -451,7 +480,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
 def clean_project(config: Mapping[str, Any]) -> None:
     action_name = config["action"]["name"]
-    plugins_append = config["append"]["plugin_group"]
+    plugins_append: List[Mapping[str, Any]] = [config["append"],]
     for flow in [flow_obj["flow"] + plugins_append for flow_obj in config["flows"]]:
         flow_str: str = flow_to_str(flow)
         print(f"[{action_name}] Processing flow: {flow_str}")

@@ -1,1 +1,3 @@
 path: offline_imu_cam
+
+## Known issues: Causes a VTK undefined reference error after drain (dlclose) in run-solo

@@ -23,6 +23,5 @@ flows:
   - flow:
     - !include "plugins/groups/rt_slam.yaml"
     - !include "plugins/groups/kimera-gtsam.yaml"
-append:
-  plugin_group:
-    - !include "plugins/pose_prediction.yaml"
+    - plugin_group:
+      - !include "plugins/pose_prediction.yaml"

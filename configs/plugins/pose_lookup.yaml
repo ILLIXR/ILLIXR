@@ -1,1 +1,40 @@
 path: pose_lookup
+
+## Known issues: Causes a failed assertion for max compile-time size vs dynamic/runtime size
+##
+## Log:
+#>   Creating context
+#>   Register N6ILLIXR23xlib_gl_extended_windowE
+#>   Register N6ILLIXR9StoplightE
+#>   Creating: vsync_estimate for N6ILLIXR11switchboard13event_wrapperINSt6chrono10time_pointINS2_3_V212system_clockENS2_8durationIlSt5ratioILl1ELl1000000000EEEEEEEE
+#>   main.dbg.exe: /usr/local/include/eigen3/Eigen/src/Core/PlainObjectBase.h:312: void Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >::resize(Eigen::Index) [Derived = Eigen::Matrix<float, 3, 1, 0, 3, 1>]: Assertion `((SizeAtCompileTime == Dynamic && (MaxSizeAtCompileTime==Dynamic || size<=MaxSizeAtCompileTime)) || SizeAtCompileTime == size) && size>=0' failed.
+#>   Segmentation fault (core dumped)
+##
+## Backtrace:
+#>   /lib/x86_64-linux-gnu/libpthread.so.0(raise+0xc7)[0x7fc4f22aa817]
+#>   runtime/main.dbg.exe[0x452940]
+#>   /lib/x86_64-linux-gnu/libc.so.6(+0x3f040)[0x7fc4f1ee6040]
+#>   /lib/x86_64-linux-gnu/libc.so.6(gsignal+0xc7)[0x7fc4f1ee5fb7]
+#>   /lib/x86_64-linux-gnu/libc.so.6(abort+0x141)[0x7fc4f1ee7921]
+#>   /lib/x86_64-linux-gnu/libc.so.6(+0x3048a)[0x7fc4f1ed748a]
+#>   /lib/x86_64-linux-gnu/libc.so.6(+0x30502)[0x7fc4f1ed7502]
+#>   pose_lookup/plugin.dbg.so(+0x8e875)[0x7fc4e4163875]
+#>   pose_lookup/plugin.dbg.so(_ZN5Eigen15PlainObjectBaseINS_6MatrixIfLi3ELi1ELi0ELi3ELi1EEEE6_init1IiEEvlPNS_8internal9enable_ifIXaaooneLNS_9DenseBaseIS2_EUt_E3ELi1Entsr8internal14is_convertibleIT_fEE5valueoontLNS5_7is_sameINS_9MatrixXprENS_8ArrayXprEEUt_E0EeqLS9_3EL_ZNS_L7DynamicEEESA_E4typeE+0x24)[0x7fc4e4163824]
+#>   pose_lookup/plugin.dbg.so(_ZN5Eigen6MatrixIfLi3ELi1ELi0ELi3ELi1EEC2IiEERKT_+0x21)[0x7fc4e415ddd1]
+#>   pose_lookup/plugin.dbg.so(_ZN16pose_lookup_implC2EPKN6ILLIXR9phonebookE+0x1bf)[0x7fc4e415d82f]
+#>   pose_lookup/plugin.dbg.so(_ZN9__gnu_cxx13new_allocatorI16pose_lookup_implE9constructIS1_JRPN6ILLIXR9phonebookEEEEvPT_DpOT0_+0x17)[0x7fc4e415d667]
+#>   pose_lookup/plugin.dbg.so(_ZNSt16allocator_traitsISaI16pose_lookup_implEE9constructIS0_JRPN6ILLIXR9phonebookEEEEvRS1_PT_DpOT0_+0x20)[0x7fc4e415d4c0]
+#>   pose_lookup/plugin.dbg.so(_ZNSt23_Sp_counted_ptr_inplaceI16pose_lookup_implSaIS0_ELN9__gnu_cxx12_Lock_policyE2EEC2IJRPN6ILLIXR9phonebookEEEES1_DpOT_+0x71)[0x7fc4e415d331]
+#>   pose_lookup/plugin.dbg.so(_ZNSt14__shared_countILN9__gnu_cxx12_Lock_policyE2EEC2I16pose_lookup_implSaIS4_EJRPN6ILLIXR9phonebookEEEESt19_Sp_make_shared_tagPT_RKT0_DpOT1_+0x73)[0x7fc4e415d1b3]
+#>   pose_lookup/plugin.dbg.so(_ZNSt12__shared_ptrI16pose_lookup_implLN9__gnu_cxx12_Lock_policyE2EEC2ISaIS0_EJRPN6ILLIXR9phonebookEEEESt19_Sp_make_shared_tagRKT_DpOT0_+0x2e)[0x7fc4e415d10e]
+#>   pose_lookup/plugin.dbg.so(_ZNSt10shared_ptrI16pose_lookup_implEC2ISaIS0_EJRPN6ILLIXR9phonebookEEEESt19_Sp_make_shared_tagRKT_DpOT0_+0x20)[0x7fc4e415d0d0]
+#>   pose_lookup/plugin.dbg.so(_ZSt15allocate_sharedI16pose_lookup_implSaIS0_EJRPN6ILLIXR9phonebookEEESt10shared_ptrIT_ERKT0_DpOT1_+0x20)[0x7fc4e415d080]
+#>   pose_lookup/plugin.dbg.so(_ZSt11make_sharedI16pose_lookup_implJRPN6ILLIXR9phonebookEEESt10shared_ptrIT_EDpOT0_+0x32)[0x7fc4e4157fb2]
+#>   pose_lookup/plugin.dbg.so(_ZN18pose_lookup_pluginC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPN6ILLIXR9phonebookE+0x38)[0x7fc4e4155fd8]
+#>   pose_lookup/plugin.dbg.so(this_plugin_factory+0x4a)[0x7fc4e41545aa]
+#>   runtime/main.dbg.exe(_ZZN12runtime_impl7load_soERKSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS6_EEENKUlRKT_E1_clIPFPN6ILLIXR6pluginEPNSG_9phonebookEEEEDaSD_+0xd4)[0x46c164]
+#>   runtime/main.dbg.exe(_ZSt9transformIN9__gnu_cxx17__normal_iteratorIPKPFPN6ILLIXR6pluginEPNS2_9phonebookEESt6vectorIS8_SaIS8_EEEESt20back_insert_iteratorISB_ISt10unique_ptrIS3_St14default_deleteIS3_EESaISJ_EEEZN12runtime_impl7load_soERKSB_INSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIST_EEEUlRKT_E1_ET0_SY_SY_S12_T1_+0x66)[0x469636]
+#>   runtime/main.dbg.exe(_ZN12runtime_impl7load_soERKSt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS6_EE+0x2fa)[0x4553da]
+#>   runtime/main.dbg.exe(main+0x3da)[0x45273a]
+#>   /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xe7)[0x7fc4f1ec8bf7]
+#>   runtime/main.dbg.exe(_start+0x2a)[0x45214a]

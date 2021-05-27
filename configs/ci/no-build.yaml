@@ -1,6 +1,3 @@
 plugin_group:
   - !include "plugins/hologram.yaml"
-  - !include "plugins/monado_integration.yaml"
-  - !include "plugins/monado_mainline.yaml"
-  - !include "plugins/monado_openxr_app.yaml"
   - !include "plugins/zed.yaml"
