@@ -141,26 +141,31 @@ def do_ci(config: Mapping[str, Any]) -> None:
     enable_offload_flag: str = config["enable_offload"]
     enable_alignment_flag: str = config["enable_alignment"]
 
+    ## Kludge: Implementation of Monado apps is done in 'load_monado' action
+    plugin_list_ignore: List[str] = [
+        "monado_integration",
+        "monado_mainline",
+        "monado_openxr_app",
+    ]
+
     ## Kludge: Multiple machines for GitHub Actions / Docker
     distro_ver: Optional[str] = os.environ["DISTRO_VER"] if "DISTRO_VER" in os.environ else None
 
     for ci_type in ["no-build", "build-only", "run-solo"]:
         for plugin_config in config["action"][ci_type]["plugin_group"]:
-            if "name" in plugin_config:
-                if plugin_config["name"] == "monado_integration":
-                    continue # Skip Monado plugins
-                if plugin_config["name"] == "monado_mainline":
-                    continue # Skip Monado plugins
-                if plugin_config["name"] == "monado_openxr_app":
-                    continue # Skip Monado plugins
+            if "name" in plugin_config and plugin_config["name"] in plugin_list_ignore:
+                continue # Skip plugins
 
-            plugin_path: Path # Forward declare type
+            plugin_path_obj: Union[str, Mapping[str, Any]] # Forward declare type
+
             if "path" in plugin_config:
-                plugin_path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
+                plugin_path_obj = pathify(plugin_config["path"]
             elif "app" in plugin_config and "src_path" in plugin_config["app"]:
-                plugin_path = pathify(plugin_config["app"]["src_path"], root_dir, cache_path, True, True)
+                plugin_path_obj = plugin_config["app"]["src_path"]
             elif "app" in plugin_config:
-                plugin_path = pathify(plugin_config["app"], root_dir, cache_path, True, True)
+                plugin_path_obj = plugin_config["app"]
+
+            plugin_path: Path = pathify(plugin_path_obj, root_dir, cache_path, True, True)
             plugin_name: str = plugin_to_str(plugin_path, plugin_config)
 
             print(f"[{action_name}] {ci_type}: {plugin_name}")
