@@ -159,7 +159,7 @@ def do_ci(config: Mapping[str, Any]) -> None:
             plugin_path_obj: Union[str, Mapping[str, Any]] # Forward declare type
 
             if "path" in plugin_config:
-                plugin_path_obj = pathify(plugin_config["path"]
+                plugin_path_obj = plugin_config["path"]
             elif "app" in plugin_config and "src_path" in plugin_config["app"]:
                 plugin_path_obj = plugin_config["app"]["src_path"]
             elif "app" in plugin_config:
