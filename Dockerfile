@@ -104,7 +104,7 @@ RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 ENTRYPOINT                                                                 \
 failed_ci=0;                                                               \
 for action in ci ci-monado ci-monado-mainline; do                          \
-    env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml; \
-    failed_ci=$($? && ${failed_ci});                                       \
+    env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml  \
+    || failed_ci=1                                                         \
 done;                                                                      \
 exit ${failed_ci}
