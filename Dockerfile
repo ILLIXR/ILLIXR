@@ -101,6 +101,10 @@ COPY . ${illixr_dir}
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-ENTRYPOINT for action in ci ci-monado ci-monado-mainline; do \
+ENTRYPOINT                                                                 \
+failed_ci=0;                                                               \
+for action in ci ci-monado ci-monado-mainline; do                          \
     env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml; \
-done
+    failed_ci=$($? && ${failed_ci});                                       \
+done;                                                                      \
+exit ${failed_ci}

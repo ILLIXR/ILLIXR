@@ -428,7 +428,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         )
 
         if enable_ci:
-            ## When called from 'do_ci' and done building, continue
+            ## When called with 'enable_ci' and done building, continue (i.e. don't run the app)
             continue
 
         if is_mainline:
@@ -443,7 +443,6 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
             ## Open the Monado service application in the background
             monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
 
         ## Give the Monado service some time to boot up and the user some time to initialize VIO
         time.sleep(5)
@@ -485,7 +484,19 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
 def clean_project(config: Mapping[str, Any]) -> None:
     action_name = config["action"]["name"]
-    plugins_append: List[Mapping[str, Any]] = [config["append"],]
+
+    plugins_append: List[Mapping[str, Any]] = [
+        config["append"],
+        {
+            ## Instead of having a file in 'configs/plugins/groups',
+            ## construct the shared plugin group here
+            'plugin_group': [
+                config["common"],
+                config["runtime"],
+            ]
+        },
+    ]
+
     for flow in [flow_obj["flow"] + plugins_append for flow_obj in config["flows"]]:
         flow_str: str = flow_to_str(flow)
         print(f"[{action_name}] Processing flow: {flow_str}")

@@ -13,4 +13,3 @@ demo_data: !include "data/demo-default.yaml"
 flows:
   - flow:
     - !include "plugins/groups/all.yaml"
-    - !include "plugins/groups/shared.yaml" # Runtime + Common

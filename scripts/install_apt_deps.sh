@@ -385,3 +385,9 @@ echo "Packages marked for installation: ${pkg_dep_list}"
 
 # Install all packages marked by this script
 sudo apt-get install -q -y ${pkg_dep_list}
+
+## Patch SDL2 for openxr-simple-example on Ubuntu 20
+if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "20.04" ]; then
+for file in /usr/include/SDL2/*; do
+    sudo ln -s "${file}" "/usr/include/$(basename ${file})"
+done
