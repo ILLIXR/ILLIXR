@@ -35,9 +35,10 @@ public:
             imuQueue = device.getOutputQueue("imu", 1, false);
             std::function<void(void)> imu_callback = [&](){callback();};
             imuQueue->addCallback(imu_callback);
+            test_time_point = std::chrono::steady_clock::now();
         }
 
-    void callback(){  
+    void callback(){ 
         std::lock_guard<std::mutex> lock(mutex);
         //Check for available data
         bool color_go = colorQueue->has<dai::ImgFrame>();
@@ -61,6 +62,12 @@ public:
                 }
         #endif
 
+            // Images
+            std::optional<cv::Mat> img0 = std::nullopt;
+            std::optional<cv::Mat> img1 = std::nullopt;
+            std::optional<cv::Mat> rgb = std::nullopt;
+            std::optional<cv::Mat> depth = std::nullopt;
+
         if(rectifR_go && rectifL_go && depth_go && color_go) {
             #ifndef NDEBUG
                 all_count++;
@@ -69,7 +76,7 @@ public:
             auto depthFrame = depthQueue->tryGet<dai::ImgFrame>();
             auto rectifL = rectifLeftQueue->tryGet<dai::ImgFrame>();
             auto rectifR = rectifRightQueue->tryGet<dai::ImgFrame>();
-            
+
             cv::Mat color = cv::Mat(colorFrame->getHeight(), colorFrame->getWidth(), CV_8UC3, colorFrame->getData().data());
             cv::Mat rgb_out{color.clone()};
             cv::Mat rectifiedLeftFrame = cv::Mat(rectifL->getHeight(), rectifL->getWidth(), CV_8UC1, rectifL->getData().data());
@@ -82,29 +89,11 @@ public:
             cv::Mat depth = cv::Mat(depthFrame->getHeight(), depthFrame->getWidth(), CV_16UC1, depthFrame->getData().data());
             cv::Mat converted_depth;
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
-            cam_type_ = cam_type {
-                .img0 = cv::Mat{LeftOut},
-                .img1 = cv::Mat{RightOut},
-                .rgb = cv::Mat{rgb_out},
-                .depth = cv::Mat{converted_depth},
-                .iteration = iteration_cam,
-            };
-            iteration_cam++;
-        }
-        // Images
-        std::optional<cv::Mat> img0 = std::nullopt;
-        std::optional<cv::Mat> img1 = std::nullopt;
-        std::optional<cv::Mat> rgb = std::nullopt;
-        std::optional<cv::Mat> depth = std::nullopt;
-
-            
-        if (last_iteration_cam != cam_type_.iteration)
-        {
-            last_iteration_cam = cam_type_.iteration;
-            img0 = cam_type_.img0;
-            img1 = cam_type_.img1;
-            rgb = cam_type_.rgb;
-            depth = cam_type_.depth;
+        
+            img0 = LeftOut;
+            img1 = RightOut;
+            rgb = rgb_out;
+            depth = converted_depth;
         }
         
         std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> gyroTs;
@@ -193,18 +182,6 @@ private:
     switchboard::writer<imu_cam_type> _m_imu_cam;
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
     std::mutex mutex;
-    typedef struct {
-        cv::Mat img0;
-        cv::Mat img1;
-        cv::Mat rgb;
-        cv::Mat depth;
-        int iteration;
-    } cam_type;
-
-    cam_type cam_type_;
-
-    int iteration_cam = 0;
-	int last_iteration_cam;
 
     #ifndef NDEBUG
         int imu_packet{0};
@@ -218,7 +195,7 @@ private:
     #endif
     std::chrono::time_point<std::chrono::steady_clock> first_packet_time;
     std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> test_time_point;
-    bool useRaw = true;
+    bool useRaw = false;
     dai::Device device;
 
     std::shared_ptr<dai::DataOutputQueue> colorQueue;
