@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#--- Script for installing Kimera (RPGO) ---#
+#--- Script for installing DepthAI-Core library ---#
 
 
 ### Setup ###

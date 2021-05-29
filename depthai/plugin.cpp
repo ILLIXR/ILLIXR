@@ -2,10 +2,10 @@
 #include <cstdio>
 #include <iostream>
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 
 // Inludes common necessary includes for development using depthai library
-#include "depthai/depthai.hpp"
+#include <depthai/depthai.hpp>
 
 // ILLIXR includes
 #include "common/threadloop.hpp"
@@ -22,18 +22,17 @@ public:
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         //Initialize DepthAI pipeline and device 
-        , p{createCameraPipeline()}
-        , d{p}
+        , device{createCameraPipeline()}
         { 
-            d.startPipeline();
+            device.startPipeline();
             #ifndef NDEBUG
                 std::cout << "Depthai pipeline started" << std::endl;
             #endif
-            color = d.getOutputQueue("preview", 1, false);
-            depthQueue = d.getOutputQueue("depth", 1, false);
-            rectifLeftQueue = d.getOutputQueue("rectified_left", 1, false);
-            rectifRightQueue = d.getOutputQueue("rectified_right", 1, false);
-            imuQueue = d.getOutputQueue("imu", 1, false);
+            colorQueue = device.getOutputQueue("preview", 1, false);
+            depthQueue = device.getOutputQueue("depth", 1, false);
+            rectifLeftQueue = device.getOutputQueue("rectified_left", 1, false);
+            rectifRightQueue = device.getOutputQueue("rectified_right", 1, false);
+            imuQueue = device.getOutputQueue("imu", 1, false);
             std::function<void(void)> imu_callback = [&](){callback();};
             imuQueue->addCallback(imu_callback);
         }
@@ -41,7 +40,7 @@ public:
     void callback(){  
         std::lock_guard<std::mutex> lock(mutex);
         //Check for available data
-        bool color_go = color->has<dai::ImgFrame>();
+        bool color_go = colorQueue->has<dai::ImgFrame>();
         bool depth_go = depthQueue->has<dai::ImgFrame>();
         bool rectifL_go = rectifLeftQueue->has<dai::ImgFrame>();
         bool rectifR_go = rectifRightQueue->has<dai::ImgFrame>();
@@ -66,7 +65,7 @@ public:
             #ifndef NDEBUG
                 all_count++;
             #endif
-            auto colorFrame = color->tryGet<dai::ImgFrame>();
+            auto colorFrame = colorQueue->tryGet<dai::ImgFrame>();
             auto depthFrame = depthQueue->tryGet<dai::ImgFrame>();
             auto rectifL = rectifLeftQueue->tryGet<dai::ImgFrame>();
             auto rectifR = rectifRightQueue->tryGet<dai::ImgFrame>();
@@ -116,7 +115,7 @@ public:
             auto imuPacket = imuQueue->tryGet<dai::IMUData>();
             #ifndef NDEBUG
                 if(imu_packet == 0){
-                    first_packet = std::chrono::steady_clock::now();
+                    first_packet_time = std::chrono::steady_clock::now();
                 }
                 imu_packet++;
             #endif
@@ -182,7 +181,7 @@ public:
     virtual ~depthai() override {
         #ifndef NDEBUG
             std::printf("Depthai Destructor: Packets Received %d Published: IMU: %d RGB-D: %d\n", imu_packet, imu_pub, rgbd_pub);
-            auto dur = std::chrono::steady_clock::now() - first_packet;
+            auto dur = std::chrono::steady_clock::now() - first_packet_time;
             std::printf("Time since first packet: %ld ms\n",  std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
             std::printf("Depthai RGB: %d Left: %d Right: %d Depth: %d All: %d\n", rgb_count, left_count, right_count, depth_count, all_count);
         #endif
@@ -202,13 +201,11 @@ private:
         int iteration;
     } cam_type;
 
-
     cam_type cam_type_;
 
     int iteration_cam = 0;
-	// int iteration_imu = 0;
 	int last_iteration_cam;
-	// int last_iteration_imu;
+
     #ifndef NDEBUG
         int imu_packet{0};
         int imu_pub{0};
@@ -219,14 +216,12 @@ private:
         int depth_count{0};
         int all_count{0};
     #endif
-    std::chrono::time_point<std::chrono::steady_clock> first_packet;
+    std::chrono::time_point<std::chrono::steady_clock> first_packet_time;
     std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> test_time_point;
     bool useRaw = true;
+    dai::Device device;
 
-    dai::Pipeline p;
-    dai::Device d;
-
-    std::shared_ptr<dai::DataOutputQueue> color;
+    std::shared_ptr<dai::DataOutputQueue> colorQueue;
     std::shared_ptr<dai::DataOutputQueue> depthQueue;
     std::shared_ptr<dai::DataOutputQueue> rectifLeftQueue;
     std::shared_ptr<dai::DataOutputQueue> rectifRightQueue;
