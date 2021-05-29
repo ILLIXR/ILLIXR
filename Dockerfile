@@ -101,6 +101,8 @@ COPY . ${illixr_dir}
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
+RUN rm -rf ${opt_dir}/*/build # Clean up to save space
+
 ENTRYPOINT                                                                 \
 failed_ci=0;                                                               \
 for action in ci ci-monado ci-monado-mainline; do                          \
