@@ -26,7 +26,7 @@ ENV env_config_path=runner/environment.yml
 
 ENV url_euroc='http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 ENV data_dir_euroc=${illixr_dir}/${cache_path}/http%%c%%s%%srobotics.ethz.ch%%s~asl-datasets%%sijrr_euroc_mav_dataset%%svicon_room1%%sV1_02_medium%%sV1_02_medium.zip
-ENV zip_path_euroc=${illixr_dir}/${cache_path}/euroc-mav-vicon-medium.zip
+ENV zip_path_euroc=${illixr_dir}/${cache_path}/http%c%s%srobotics.ethz.ch%s~asl-datasets%sijrr_euroc_mav_dataset%svicon_room1%sV1_02_medium%sV1_02_medium.zip
 ENV sub_path_euroc=mav0
 
 RUN mkdir -p ${opt_dir}
