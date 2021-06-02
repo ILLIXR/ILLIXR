@@ -101,14 +101,14 @@ COPY . ${illixr_dir}
 WORKDIR ILLIXR
 RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-RUN du -sh ${illixr_dir}
+RUN du -sh ${illixr_dir} ${opt_dir}
 RUN rm -rf ${opt_dir}/*/build # Clean up to save space
-RUN du -sh ${illixr_dir}
+RUN du -sh ${illixr_dir} ${opt_dir}
 
 ENTRYPOINT                                                                 \
 failed_ci=0;                                                               \
-for action in ci clean ci-monado clean ci-monado-mainline; do              \
-    du -sh ${illixr_dir};                                                  \
+for action in ci clean ci-monado clean ci-monado-mainline clean docs; do   \
+    du -sh ${illixr_dir} ${opt_dir}                                        \
     env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml  \
     || failed_ci=1;                                                        \
 done;                                                                      \
