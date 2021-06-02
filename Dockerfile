@@ -108,7 +108,9 @@ RUN du -sh ${illixr_dir} ${opt_dir}
 ENTRYPOINT                                                                 \
 failed_ci=0;                                                               \
 for action in ci clean ci-monado clean ci-monado-mainline clean docs; do   \
-    du -sh ${illixr_dir} ${opt_dir}                                        \
+    echo "[${action}] Starting ...";                                       \
+    echo -n "Disk usage: ";                                                \
+    du -sh ${illixr_dir} ${opt_dir};                                       \
     env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml  \
     || failed_ci=1;                                                        \
 done;                                                                      \
