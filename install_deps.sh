@@ -236,6 +236,9 @@ if y_or_n "Add apt-get sources list/keys and install necessary packages"; then
     if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
         export use_docker="yes"
     fi
+    if y_or_n "^^^^  Also install RealSense2 camera support"; then
+        export use_realsense="yes"
+    fi
     pmt_msg_warn_cuda="Also automate install of CUDA 11 (cuda) for GPU plugin support on Ubuntu (_only_!)"
     pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, "
     pmt_msg_warn_cuda+="or if a supported GPU is not found)"

@@ -32,7 +32,7 @@ ENV sub_path_euroc=mav0
 RUN mkdir -p ${opt_dir}
 
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
-RUN apt-get update && apt-get install -y sudo curl unzip
+RUN apt-get update && apt-get install -y sudo curl unzip doxygen
 
 ## Create illixr_dir, cache_path, data_dir_euroc, sub_path_euroc together
 ## Prevents Runner from fetching
@@ -99,17 +99,17 @@ RUN ldconfig
 
 COPY . ${illixr_dir}
 WORKDIR ILLIXR
-RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
 
-RUN du -sh ${illixr_dir} ${opt_dir}
-RUN rm -rf ${opt_dir}/*/build # Clean up to save space
-RUN du -sh ${illixr_dir} ${opt_dir}
+RUN ${src_dir_conda}/bin/conda env create --force -f ${env_config_path}
+RUN python -m pip install mkdocs
+
+RUN rm -rf ${opt_dir}/*/build # Save space by cleaning up
 
 ENTRYPOINT                                                                 \
 failed_ci=0;                                                               \
 for action in ci clean ci-monado clean ci-monado-mainline clean docs; do   \
     echo "[${action}] Starting ...";                                       \
-    echo -n "Disk usage: ";                                                \
+    echo "Disk usage:";                                                    \
     du -sh ${illixr_dir} ${opt_dir};                                       \
     env DISTRO_VER=${BASE_IMG#ubuntu:} ./runner.sh configs/${action}.yaml  \
     || failed_ci=1;                                                        \
