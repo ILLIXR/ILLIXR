@@ -5,6 +5,7 @@
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/threadloop.hpp"
+#include "common/global_module_defs.hpp"
 #include "data_loading.hpp"
 
 using namespace ILLIXR;
@@ -17,7 +18,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-		, _m_sensor_data{load_data(cr->DATA_PATH.value())}
+		, _m_sensor_data{load_data(cr->DATA_PATH.value(), cr->GROUND_TRUTH_PATH_SUB.value())}
 		, _m_first_time{true}
 	{ }
 

@@ -606,7 +606,12 @@ def pathify_path_vars(
     def path_fun(tup: Tuple[str, str]) -> Tuple[str, str]:
         k, v = tup
         if k.endswith(key_suffix):
-            path: Path = pathify(v, base, cache_path, should_exist, should_dir)
+            path: Path # Forward declare type
+            try:
+                path = pathify(v, base, cache_path, should_exist, should_dir)
+            except ValueError:
+                ## Path does not yet exist. Assuming it is an output (to be generated later).
+                path = pathify(v, base, cache_path, False, False)
             return (k, str(path))
         else:
             return (k, v)

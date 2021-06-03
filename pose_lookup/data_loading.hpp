@@ -1,6 +1,7 @@
 #include <map>
 #include <fstream>
 #include <string>
+#include <string_view>
 #include <optional>
 #include <math.h>
 
@@ -26,11 +27,11 @@ typedef pose_type sensor_types;
 
 static
 std::map<ullong, sensor_types>
-load_data(const std::string& data_path) {
+load_data(const std::string& data_path, const std::string& subpath) {
 	std::map<ullong, sensor_types> data;
 
-    constexpr std::string subpath {"/state_groundtruth_estimate0/data.csv"};
-    std::ifstream gt_file {data_path + subpath};
+    /// TODO: configure
+    std::ifstream gt_file {data_path + "/" + subpath};
 
 	if (!gt_file.good()) {
 		std::cerr << "'" << data_path << subpath << "' is not a good path" << std::endl;

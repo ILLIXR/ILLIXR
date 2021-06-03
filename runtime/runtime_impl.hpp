@@ -28,6 +28,8 @@ public:
       , _m_glx_fb_width{cr->FB_WIDTH.value()}
 	  , _m_glx_fb_height{cr->FB_WIDTH.value()}
 	  , _m_run_duration{cr->RUN_DURATION.value()}
+      , _m_pre_sleep_duration{cr->PRE_SLEEP_DURATION.value()}
+      , _m_enable_pre_sleep{cr->ENABLE_PRE_SLEEP.value()}
 	{
 		pb.register_impl<const_registry>(cr);
 		pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
@@ -105,9 +107,17 @@ public:
 		pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
 	}
 
-	virtual long get_run_duration() const override {
+	virtual long get_run_duration() const noexcept override {
 		return _m_run_duration;
 	}
+
+    virtual unsigned int get_pre_sleep_duration() const noexcept override {
+        return _m_pre_sleep_duration;
+    }
+
+    virtual bool get_enable_pre_sleep() const noexcept override {
+        return _m_enable_pre_sleep;
+    }
 
 	virtual ~runtime_impl() override {
 		if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
@@ -139,10 +149,12 @@ private:
 	const std::shared_ptr<const_registry> cr;
 
 	using CR = ILLIXR::const_registry;
-	const CR::DECL_FB_WIDTH::type     _m_glx_fb_width;
-	const CR::DECL_FB_HEIGHT::type    _m_glx_fb_height;
-	const CR::DECL_RUN_DURATION::type _m_run_duration;
-u;
+	const CR::DECL_FB_WIDTH::type           _m_glx_fb_width;
+	const CR::DECL_FB_HEIGHT::type          _m_glx_fb_height;
+	const CR::DECL_RUN_DURATION::type       _m_run_duration;
+	const CR::DECL_PRE_SLEEP_DURATION::type _m_pre_sleep_duration;
+	const CR::DECL_ENABLE_PRE_SLEEP::type   _m_enable_pre_sleep;
+};
 
 #ifdef ILLIXR_MONADO_MAINLINE
 extern "C" runtime* runtime_factory() {

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstdint>
 #include <string>
 #include <stdexcept>
 #include <string_view>
@@ -13,19 +14,10 @@
 namespace ILLIXR
 {
 
-/**
- * @brief Convert a string containing a (python) boolean to the bool type
- */
-inline bool str_to_bool(std::string var) {
-    return (var == "True")  ? true  :
-           (var == "False") ? false :
-           throw std::runtime_error("Invalid conversion from std::string to bool");
-}
-
 
 /*--- Declarations ---*/
 /**
- * (Macro expansion) Function used to create string literals from variable names
+ * @brief (Macro expansion) Function used to create string literals from variable names
  *
  * _X: The literal text (i.e. variable name) to be stringified
  */
@@ -42,17 +34,17 @@ inline bool str_to_bool(std::string var) {
  * _SUFFIX: The suffix to be applied for the std::sto.. function called
  */
 #ifndef DECLARE_TO_FUNC
-#define DECLARE_TO_FUNC(_TYPE, _SUFFIX)             \
-template<>                                          \
-_TYPE to(const std::string& value_str) noexcept     \
-{                                                   \
-    return std::sto##_SUFFIX(value_str);            \
+#define DECLARE_TO_FUNC(_TYPE, _SUFFIX)     \
+template<>                                  \
+_TYPE to(const std::string& value_str)      \
+{                                           \
+    return std::sto##_SUFFIX(value_str);    \
 }
 #endif // DECLARE_TO_FUNC
 
 
 /**
- * (Macro expansion) Function used to declare constants used by modules
+ * @brief (Macro expansion) Function used to declare constants used by modules
  *
  * _NAME:       The constant's name to be used by module code
  * _TYPE:       The type name for the constant
@@ -106,8 +98,7 @@ public:                                                                 \
         const std::string& var_name,                                    \
         from_str_func from_str,                                         \
         type var_default                                                \
-    ) noexcept                                                          \
-        : const_decl<_TYPE>{var_name, from_str, var_default}            \
+    ) : const_decl<_TYPE>{var_name, from_str, var_default}              \
     { }                                                                 \
                                                                         \
     DECL_##_NAME(const DECL_##_NAME& other) noexcept                    \
@@ -120,8 +111,9 @@ DECL_##_NAME _NAME { STRINGIFY(_NAME), from_str_##_NAME, _VALUE }
 
 
 /**
- * A template base class for constant definitions to be provided to the
- * const_registry for global parameter lookups
+ * @brief A template base class for constant definitions
+ *
+ * Placed in the const_registry for global parameter lookups
  *
  * Each specialized derived class holds the constant's name, value, and
  * default value fetched via const accessors
@@ -139,10 +131,9 @@ public:
         const std::string& var_name,
         from_str_func from_str,
         type var_default
-    ) noexcept
-        : _m_name{var_name}
-        , _m_from_str{from_str}
-        , _m_default{var_default}
+    ) : _m_name{var_name}
+      , _m_from_str{from_str}
+      , _m_default{var_default}
     {
         const std::string value_str { value_str_from_env(_m_name.c_str()) };
         _m_value = (value_str.empty()) ? _m_default : _m_from_str(value_str);
@@ -191,7 +182,7 @@ private:
      */
     static std::string value_str_from_env(const char* const var_name) noexcept
     {
-        const char* const c_str { std::getenv(var_name) };
+        const char* const c_str {std::getenv(var_name)};
 #ifndef NDEBUG
         std::cout << "value_str_from_env(" << var_name << "): " << c_str
                   << std::endl
@@ -214,6 +205,12 @@ private:
 };
 
 
+
+/**
+ * @brief A class for constant declarations and their type conversions
+ *
+ * See DECLARE_CONST and 'common/const_decls.hpp' for usage details
+ */
 class const_registry : public phonebook::service
 {
 public:
@@ -236,33 +233,28 @@ public:
     }
 
     template<typename T>
-    static T to(const std::string& value_str) noexcept;
+    static T to(const std::string& value_str);
 
     /*--- Wrappers needed for a single argument for the `std::sto..` functions ---*/
 
-    DECLARE_TO_FUNC(int,    i);
-    DECLARE_TO_FUNC(long,   l);
-    DECLARE_TO_FUNC(double, d);
+    DECLARE_TO_FUNC(int,          i);
+    DECLARE_TO_FUNC(unsigned int, ul);
+    DECLARE_TO_FUNC(long,         l);
+    DECLARE_TO_FUNC(double,       d);
+
+    template<> /// Function is static via template specialization
+    bool to(const std::string& value_str)
+    {
+        /// Converting from Python-style bools
+        return (value_str == "True")  ? true  :
+               (value_str == "False") ? false :
+               throw std::runtime_error("Invalid conversion from std::string to bool");
+    }
 
     /*--- Constant declarations ---*/
 
-#define DATA_PATH DATA_PATH
-    DECLARE_CONST(DATA_PATH,     RawPath, noop<RawPath>, "/dev/null");
+#include "const_decls.hpp"
 
-#define DEMO_OBJ_PATH DEMO_OBJ_PATH    
-    DECLARE_CONST(DEMO_OBJ_PATH, RawPath, noop<RawPath>, "/dev/null");
-
-#define FB_WIDTH FB_WIDTH
-    DECLARE_CONST(FB_WIDTH,      int,     to<int>,       2560); // Pixels
-
-#define FB_HEIGHT FB_HEIGHT
-    DECLARE_CONST(FB_HEIGHT,     int,     to<int>,       1440); // Pixels
-
-#define RUN_DURATION RUN_DURATION
-    DECLARE_CONST(RUN_DURATION,  long,    to<int>,       60L ); // Seconds
-
-#define REFRESH_RATE REFRESH_RATE
-    DECLARE_CONST(REFRESH_RATE,  double,  to<double>,    60.0); // Hz
 };
 
 }

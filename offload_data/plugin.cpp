@@ -22,13 +22,15 @@ class offload_data : public plugin {
 public:
 	offload_data(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
+		, cr{pb->lookup_impl<const_registry>()}
 		, sb{pb->lookup_impl<switchboard>()}
 		, percent{0}
 		, img_idx{0}
-		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+		, _m_enable_offload{cr->ENABLE_OFFLOAD.value()}
+		, _m_fb_width{cr->FB_WIDTH.value()}
+		, _m_fb_height{cr->FB_HEIGHT.value()}
+		, _m_obj_dir{cr->OFFLOAD_PATH.value()}
 		, is_success{true}
-		/// TODO: Set with #198
-		, obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")}
 	{
 		sb->schedule<texture_pose>(id, "texture_pose", [&](switchboard::ptr<const texture_pose> datum, size_t) {
 			callback(datum);
@@ -47,9 +49,9 @@ public:
 
 	virtual ~offload_data() override {
 		// Write offloaded data from memory to disk
-		if (enable_offload)
+		if (_m_enable_offload)
 		{
-			boost::filesystem::path p(obj_dir);
+			boost::filesystem::path p(_m_obj_dir);
 			boost::filesystem::remove_all(p);
 			boost::filesystem::create_directories(p);
 
@@ -58,15 +60,22 @@ public:
 	}
 
 private:
+	const std::shared_ptr<const_registry> cr;
 	const std::shared_ptr<switchboard> sb;
 	std::vector<int> _time_seq;
 	std::vector<switchboard::ptr<const texture_pose>> _offload_data_container;
 
 	int percent;
 	int img_idx;
-	bool enable_offload;
+
+	// Constants set at construction-time (lookup from const_registry)
+	using CR = ILLIXR::const_registry;
+    const CR::DECL_ENABLE_OFFLOAD::type _m_enable_offload;
+    const CR::DECL_FB_WIDTH::type       _m_fb_width;
+    const CR::DECL_FB_HEIGHT::type      _m_fb_height;
+	const CR::DECL_OFFLOAD_PATH::type   _m_obj_dir;
+
 	bool is_success;
-	std::string obj_dir;
 
 	void writeMetadata(std::vector<int> _time_seq)
 	{
@@ -80,7 +89,7 @@ private:
 		std::vector<int>::iterator max = std::max_element(_time_seq.begin(), _time_seq.end());
 		std::vector<int>::iterator min = std::min_element(_time_seq.begin(), _time_seq.end());
 
-		std::ofstream meta_file (obj_dir + "metadata.out");
+		std::ofstream meta_file (_m_obj_dir + "metadata.out");
 		if (meta_file.is_open())
 		{
 			meta_file << "mean: " << mean << std::endl;
@@ -113,11 +122,11 @@ private:
 			// Get collecting time for each frame
 			_time_seq.push_back(container_it->offload_time);
 
-			std::string image_name = obj_dir + std::to_string(img_idx) + ".png";
-			std::string pose_name = obj_dir + std::to_string(img_idx) + ".txt";
+			std::string image_name = _m_obj_dir + std::to_string(img_idx) + ".png";
+			std::string pose_name = _m_obj_dir + std::to_string(img_idx) + ".txt";
 
 			// Write image
-			is_success = stbi_write_png(image_name.c_str(), ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, 3, container_it->image, 0);
+			is_success = stbi_write_png(image_name.c_str(), _m_fb_width, _m_fb_height, 3, container_it->image, 0);
 			if (!is_success)
 			{
                 ILLIXR::abort("Image create failed !!! ");

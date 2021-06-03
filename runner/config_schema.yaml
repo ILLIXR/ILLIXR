@@ -151,26 +151,10 @@ properties:
             additionalProperties:
               type: string
             description: Vars that get passed to the build system
-  enable_offload:
-    type: boolean
-    description: Flag to activate data collection at runtime.
-  enable_alignment:
-    type: boolean
-    description: Flag to activate the ground-truth alignment.
-  enable_verbose_errors:
-    type: boolean
-    description: Flag to activate verbose logging in 'common/error_util.hpp'
-  enable_pre_sleep:
-    type: boolean
-    description: Flag to activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
   profile:
     default: dbg
     type: string
     description: "Currently supports 'dbg' and 'opt'"
-  realsense_cam:
-    default: auto
-    type: string
-    description: "When realsense plugin is used, this argument selects the model to use. Currently supports 'auto', 'D4XX' series that have IMU, and 'T26X'. 'auto' will select device based on supported IMU streams or T26X presence, prefering D4XX series with IMU"
   constants:
     type: array
     default: []

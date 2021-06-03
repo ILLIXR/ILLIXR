@@ -16,24 +16,23 @@ using namespace ILLIXR;
 class pose_lookup_impl : public pose_prediction {
 public:
     pose_lookup_impl(const phonebook* const pb)
-		: sb{pb->lookup_impl<switchboard>()}
-		, cr{pb->lookup_impl<const_registry>()}
-		, _m_sensor_data{load_data(cr->DATA_PATH.value())}
+		: cr{pb->lookup_impl<const_registry>()}
+		, sb{pb->lookup_impl<switchboard>()}
+		, _m_sensor_data{load_data(cr->DATA_PATH.value(), cr->GROUND_TRUTH_PATH_SUB.value())}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
         , dataset_first_time{_m_sensor_data_it->first}
         , _m_start_of_time{std::chrono::high_resolution_clock::now()}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_type>>("vsync_estimate")}
-        /// TODO: Set with #198
-        , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
+        , _m_enable_alignment{cr->ENABLE_ALIGNMENT.value()}
+        , _m_alignment_mtx_path{cr->ALIGNMENT_MATRIX_PATH.value()}
         , init_pos_offset{0}
         , align_rot{Eigen::Matrix3f::Zero()}
         , align_trans{0}
         , align_quat{0}
         , align_scale{0.0}
-        , path_to_alignment{ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt")}
     {
-        if (enable_alignment)
-            load_align_parameters(path_to_alignment, align_rot, align_trans, align_quat, align_scale);
+        if (_m_enable_alignment)
+            load_align_parameters(_m_alignment_mtx_path, align_rot, align_trans, align_quat, align_scale);
         // Read position data of the first frame
         init_pos_offset = _m_sensor_data.cbegin()->second.position;
 
@@ -81,7 +80,7 @@ public:
             pose.orientation
         };
 
-        if (enable_alignment)
+        if (_m_enable_alignment)
         {
             // Step 2: Apply estimated alignment parameters
             // Step 2.1: Position alignment
@@ -186,13 +185,15 @@ private:
 	time_type _m_start_of_time;
 	switchboard::reader<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
-    bool enable_alignment;
+    using CR = ILLIXR::const_registry;
+    const CR::DECL_ENABLE_ALIGNMENT::type      _m_enable_alignment;
+    const CR::DECL_ALIGNMENT_MATRIX_PATH::type _m_alignment_mtx_path;
+
     Eigen::Vector3f init_pos_offset;
     Eigen::Matrix3f align_rot;
     Eigen::Vector3f align_trans;
     Eigen::Vector4f align_quat;
     double align_scale;
-    std::string path_to_alignment;
 };
 
 

@@ -1,10 +1,11 @@
 #include <csignal>
+#include <memory>
 #include <unistd.h> /// Not portable
 #include "runtime_impl.hpp"
 #include "common/global_module_defs.hpp"
 
 
-[[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION {10};
+/// The ILLIXR runtime object handle
 ILLIXR::runtime* r;
 
 
@@ -81,20 +82,19 @@ int main(int argc, char* const* argv) {
 
 #ifndef NDEBUG
     /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
-    /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
-    const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
-    if (enable_pre_sleep) {
+    /// Enable using the ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
+    /// Useful for attaching debuggers to Runner actions which do not expose 
+    /// a configurable command (e.g., 'configs/ci.yaml')
+    if (r->get_enable_pre_sleep()) {
         const pid_t pid = getpid();
+        const auto pre_sleep_duration {r->get_pre_sleep_duration()};
         std::cout << "[main] Pre-sleep enabled." << std::endl
                   << "[main] PID: " << pid << std::endl
-                  << "[main] Sleeping for " << ILLIXR_PRE_SLEEP_DURATION << " seconds ..." << std::endl;
-        sleep(ILLIXR_PRE_SLEEP_DURATION);
+                  << "[main] Sleeping for " << pre_sleep_duration << " seconds ..." << std::endl;
+        sleep(pre_sleep_duration);
         std::cout << "[main] Resuming ..." << std::endl;
     }
 #endif /// NDEBUG
-
-	/// Shutting down method 2: Run timer
-    std::chrono::seconds run_duration { r->get_run_duration() } ;
 
 	RAC_ERRNO_MSG("main after creating runtime");
 
@@ -107,6 +107,8 @@ int main(int argc, char* const* argv) {
 
 	cancellable_sleep cs;
 	std::thread th{[&]{
+        /// Shutting down method 2: Run timer
+        const std::chrono::seconds run_duration {r->get_run_duration()};
 		cs.sleep(run_duration);
 		r->stop();
 	}};
@@ -117,6 +119,9 @@ int main(int argc, char* const* argv) {
 	cs.cancel();
 	th.join();
 
-	delete r;
+    if (r != nullptr) {
+        delete r;
+        r = nullptr;
+    }
 	return 0;
 }
