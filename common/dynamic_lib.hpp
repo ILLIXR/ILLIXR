@@ -71,9 +71,9 @@ public:
 
 #ifndef NDEBUG
         const std::size_t path_basename_end        {path.find_last_of("/")};
-        const std::size_t path_basename_begin_tmp  {path.rfind("/", path_basename_end - 1)};
-        const std::size_t path_basename_begin      {(path_basename_begin_tmp == std::string::npos) ? 0U : path_basename_begin_tmp + 1};
-        const std::size_t path_basename_size       {path_basename_end - path_basename_begin + 1};
+        const std::size_t path_basename_begin_tmp  {path.rfind("/", path_basename_end - 1U)};
+        const std::size_t path_basename_begin      {(path_basename_begin_tmp == std::string::npos) ? 0U : path_basename_begin_tmp + 1U};
+        const std::size_t path_basename_size       {path_basename_end - path_basename_begin + 1U};
 
         std::vector<char> path_basename_buf;
         path_basename_buf.resize(path_basename_size);
