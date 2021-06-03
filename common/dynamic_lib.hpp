@@ -27,29 +27,29 @@ class dynamic_lib {
 private:
     dynamic_lib(
         void_ptr&& handle
-        , const std::string& lib_name = ""
+        , const std::string& lib_path = ""
     ) : _m_handle{std::move(handle)}
-      , _m_lib_name{std::move(lib_name)}
+      , _m_lib_path{std::move(lib_path)}
     { }
 
 public:
     dynamic_lib(dynamic_lib&& other)
         : _m_handle{std::move(other._m_handle)}
-        , _m_lib_name{std::move(other._m_lib_name)}
+        , _m_lib_path{std::move(other._m_lib_path)}
     { }
 
     dynamic_lib& operator=(dynamic_lib&& other) {
         if (this != &other) {
             _m_handle   = std::move(other._m_handle);
-            _m_lib_name = std::move(other._m_lib_name);
+            _m_lib_path = std::move(other._m_lib_path);
         }
         return *this;
     }
 
     ~dynamic_lib() {
 #ifndef NDEBUG
-        if (_m_lib_name.size() > 0U) {
-            std::cout << "[dynamic_lib] Destructing library : " << _m_lib_name << std::endl;
+        if (!_m_lib_path.empty()) {
+            std::cout << "[dynamic_lib] Destructing library : " << _m_lib_path << std::endl;
         }
 #endif /// NDEBUG
     }
@@ -61,23 +61,16 @@ public:
     static dynamic_lib create(const std::string_view& path) {
         char* error;
 
-        const std::size_t path_basename_end        {path.find_last_of("/")};
-        const std::size_t path_basename_begin_tmp  {path.rfind("/", path_basename_end - 1U)};
-        const std::size_t path_basename_begin      {(path_basename_begin_tmp == std::string::npos) ? 0U : path_basename_begin_tmp + 1U};
-        const std::size_t path_basename_size       {path_basename_end - path_basename_begin + 1U};
+        /// The contents of a string_view must not outlive the parent string
+        /// Copy the contents passed to create into a new string
+        std::vector<char> path_buf;
+        path_buf.resize(path.size() + 1U);
+        std::copy(path.cbegin(), path.cend(), path_buf.begin());
+        path_buf.back() = '\0';
 
-        std::vector<char> path_basename_buf;
-        path_basename_buf.resize(path_basename_size);
-        std::copy(
-            path.cbegin() + path_basename_begin,
-            path.cbegin() + path_basename_end,
-            path_basename_buf.begin()
-        );
-        path_basename_buf.back() = '\0';
-
-        std::string path_basename {path_basename_buf.cbegin(), path_basename_buf.cend()};
+        std::string path_copy {path_buf.cbegin(), path_buf.cend()};
 #ifndef NDEBUG
-        std::cout << "[dynamic_lib] Opening library : " << path_basename << std::endl;
+        std::cout << "[dynamic_lib] Opening library : " << path_copy << std::endl;
 #endif /// NDEBUG
 
         // dlopen man page says that it can set errno sp
@@ -107,8 +100,8 @@ public:
                     throw std::runtime_error{msg_error};
 #endif /// NDEBUG
                 }
-            }}
-            , path_basename /// Keep the dynamic lib name for debugging
+            }},
+            path_copy /// Keep the dynamic lib name for debugging
         };
     }
 
@@ -133,8 +126,8 @@ public:
     }
 
 private:
-    void_ptr _m_handle;
-    std::string _m_lib_name;
+    void_ptr    _m_handle;
+    std::string _m_lib_path;
 };
 
 }
