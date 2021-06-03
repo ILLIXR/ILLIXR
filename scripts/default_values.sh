@@ -5,53 +5,19 @@
 
 ### Default imported variables setup ###
 
-if [ -z "${CC}" ]; then
-    export CC="clang-10"
-fi
+export CC="${CC:=clang-10}"
+export CXX="${CXX:=clang++-10}"
 
-if [ -z "${CXX}" ]; then
-    export CXX="clang++-10"
-fi
-
-if [ -z "${XDG_RUNTIME_DIR}" ]; then
-    export XDG_RUNTIME_DIR="/tmp"
-fi
-
-if [ -z "${opt_dir}" ]; then
-    export opt_dir="/opt/ILLIXR"
-fi
-
-if [ -z "${prefix_dir}" ]; then
-    export prefix_dir="/usr/local"
-fi
-
-if [ -z "${illixr_nproc}" ]; then
-    export illixr_nproc="1"
-fi
-
-if [ -z "${build_type}" ]; then
-    export build_type="RelWithDebInfo"
-fi
-
-if [ -z "${deps_log_dir}" ]; then
-    export deps_log_dir=".cache/deps"
-fi
-
-if [ -z "${env_config_path}" ]; then
-    export env_config_path="runner/environment.yml"
-fi
+export opt_dir="${opt_dir:=/opt/ILLIXR}"
+export prefix_dir="${prefix_dir:=/usr/local}"
+export illixr_nproc="${illixr_nproc:=1}"
+export build_type="${build_type:=RelWithDebInfo}"
+export deps_log_dir="${deps_log_dir:=.cache/deps}"
+export env_config_path="${env_config_path:=runner/environment.yml}"
 
 
 ### For use with 'scripts/install_apt_deps.sh' ###
 
-if [ -z "${use_realsense}" ]; then
-    export use_realsense="no"
-fi
-
-if [ -z "${use_docker}" ]; then
-    export use_docker="no"
-fi
-
-if [ -z "${use_cuda}" ]; then
-    export use_cuda="no"
-fi
+export use_realsense="${use_realsense:=no}"
+export use_docker="${use_docker:=no}"
+export use_cuda="${use_cuda:=no}"

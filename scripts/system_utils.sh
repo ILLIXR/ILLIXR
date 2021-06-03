@@ -16,8 +16,8 @@ function join_strings()
     local delimiter=${2}
 
     local string_out=""
-    local delimiter_default=";"
     local is_first_string="yes"
+    local delimiter_default=";"
 
     if [ -z "${delimiter}" ]; then
         delimiter="${delimiter_default}"
@@ -127,6 +127,10 @@ function detect_packages()
     local detect_mode=${2}
 
     dpkg --list --no-pager ${pkg_list}
+    if [ "$?" -eq 2 ]; then
+        ## Try again without the pager argument
+        env PAGER="" dpkg --list ${pkg_list}
+    fi
 
     case "${detect_mode}" in
         "${PKG_MODE_FOUND_FATAL}")
@@ -138,7 +142,7 @@ function detect_packages()
             fi
             ;;
         "${PKG_MODE_MISSING_FATAL}")
-            if [ "$?" -ne 0 ]; then
+            if [ "$?" -eq 1 ]; then
                 ## Command failed => Package missing
                 local pkg_warn_msg="Detected missing system package(s) '${pkg_list}'."
                 print_warning "${pkg_warn_msg}"
@@ -154,7 +158,7 @@ function detect_packages()
             fi
             ;;
         "${PKG_MODE_MISSING_NONFATAL}")
-            if [ "$?" -ne 0 ]; then
+            if [ "$?" -eq 1 ]; then
                 ## Command failed => Package missing
                 local pkg_msg="Installing missing system package(s) '${pkg_list}'."
                 echo "${pkg_msg}"

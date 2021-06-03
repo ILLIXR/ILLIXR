@@ -6,12 +6,8 @@
 ### Setup ###
 
 ## Source the default values for imported variables
-if [ -z "${working_dir}" ]; then
-    . scripts/default_values.sh
-else
-    ## 'working_dir' is not empty => Script was called from anonymous shell
-    . "${working_dir}/scripts/default_values.sh"
-fi
+## 'working_dir' is not empty => Script was called from anonymous shell
+. "${working_dir:=.}/scripts/default_values.sh"
 
 ## Apt
 export script_path_apt="scripts/install_apt_deps.sh"
@@ -32,20 +28,26 @@ export script_path_apt="scripts/install_apt_deps.sh"
 #export dep_prompt_boost="Install Boost from source"
 #export dep_ver_boost="boost-1.65.1"
 
+## VTK
+export dep_name_vtk="vtk"
+export script_path_vtk="scripts/install_vtk.sh"
+export parent_dir_vtk="${opt_dir}"
+export dep_prompt_vtk="Install VTK from source"
+export dep_ver_vtk="v6.3.0"
+
+## Eigen
+export dep_name_eigen="eigen"
+export script_path_eigen="scripts/install_eigen.sh"
+export parent_dir_eigen="${opt_dir}"
+export dep_prompt_eigen="Install eigen (Eigen3) from source"
+export dep_ver_eigen="3.3.7"
+
 ## OpenCV
 export dep_name_opencv="opencv"
 export script_path_opencv="scripts/install_opencv.sh"
 export parent_dir_opencv="${opt_dir}"
 export dep_prompt_opencv="Install OpenCV from source"
 export dep_ver_opencv="3.4.6-instrumented"
-
-## Eigen
-## Locally built eigen not in use yet
-#export dep_name_eigen="eigen"
-#export script_path_eigen="scripts/install_eigen.sh"
-#export parent_dir_eigen="${opt_dir}"
-#export dep_prompt_eigen="Install eigen (Eigen3) from source"
-#export dep_ver_eigen="3.3.7"
 
 ## Vulkan (Headers)
 export dep_name_vulkan="Vulkan-Headers"

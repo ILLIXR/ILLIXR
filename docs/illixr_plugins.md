@@ -1,8 +1,14 @@
-# ILLIXR plugins
+# ILLIXR Plugins
 
 This page details the structure of ILLIXR's [_plugins_][41] and how they interact with each other.
 
 ## Default Plugins
+
+Each plugin included in ILLIXR by default contains a [_configuration_][40] file describing
+    to its properties (e.g., location, version, etc.).
+These configuration files are found in `ILLIXR/configs/plugins/`.
+
+The following default plugins are defined:
 
 -   [`offline_imu_cam`][2]:
     Reads [_IMU_][36] data and images from files on disk, emulating a real sensor on the [_headset_][38]
@@ -127,6 +133,7 @@ See [Writing Your Plugin][30] to extend ILLIXR.
 
 
 ## Other Supported Plugins
+
 ILLIXR supports additional plugins to replace some of the default plugins.
 
 -   [`hologram`][9]:

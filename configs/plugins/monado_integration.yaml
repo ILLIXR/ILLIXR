@@ -1,0 +1,14 @@
+name: monado_integration
+path:
+  git_repo: https://github.com/ILLIXR/monado_integration.git
+  version: "3.0"
+
+config: # For CMake
+  BUILD_WITH_LIBUDEV : "0"
+  BUILD_WITH_LIBUSB  : "0"
+  BUILD_WITH_LIBUVC  : "0"
+  BUILD_WITH_NS      : "0"
+  BUILD_WITH_PSMV    : "0"
+  BUILD_WITH_PSVR    : "0"
+  BUILD_WITH_OPENHMD : "0"
+  BUILD_WITH_VIVE    : "0"

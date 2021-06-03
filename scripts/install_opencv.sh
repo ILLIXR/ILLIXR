@@ -15,17 +15,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_opencv}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_opencv}/${dep_name_opencv}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_opencv}"
-fi
+dep_name="${dep_name:=${dep_name_opencv}}"
+src_dir="${src_dir:=${parent_dir_opencv}/${dep_name_opencv}}"
+dep_ver="${dep_ver:=${dep_ver_opencv}}"
 
 dep_ver_extra="3.4.6"
 repo_url="https://github.com/ILLIXR/opencv"

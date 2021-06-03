@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_kimera_rpgo}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_kimera_rpgo}/${dep_name_kimera_rpgo}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_kimera_rpgo}"
-fi
+dep_name="${dep_name:=${dep_name_kimera_rpgo}}"
+src_dir="${src_dir:=${parent_dir_kimera_rpgo}/${dep_name_kimera_rpgo}}"
+dep_ver="${dep_ver:=${dep_ver_kimera_rpgo}}"
 
 repo_url="https://github.com/MIT-SPARK/Kimera-RPGO.git"
 build_dir="${src_dir}/build"

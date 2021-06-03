@@ -20,17 +20,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_eigen}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_eigen}/${dep_name_eigen}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_eigen}"
-fi
+dep_name="${dep_name:=${dep_name_eigen}}"
+src_dir="${src_dir:=${parent_dir_eigen}/${dep_name_eigen}}"
+dep_ver="${dep_ver:=${dep_ver_eigen}}"
 
 repo_url="https://gitlab.com/libeigen/eigen.git"
 build_dir="${src_dir}/build"

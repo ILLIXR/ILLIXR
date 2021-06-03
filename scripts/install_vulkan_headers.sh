@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_vulkan}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_vulkan}/${dep_name_vulkan}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_vulkan}"
-fi
+dep_name="${dep_name:=${dep_name_vulkan}}"
+src_dir="${src_dir:=${parent_dir_vulkan}/${dep_name_vulkan}}"
+dep_ver="${dep_ver:=${dep_ver_vulkan}}"
 
 repo_url="https://github.com/KhronosGroup/Vulkan-Headers.git"
 build_dir="${src_dir}/build"
