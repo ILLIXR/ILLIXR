@@ -4,7 +4,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <functional>
+#include <algorithm>
 
 #include "global_module_defs.hpp"
 #include "error_util.hpp"
@@ -23,21 +25,42 @@ Usage:
 
 class dynamic_lib {
 private:
-	dynamic_lib(void_ptr&& handle)
-		: _m_handle{std::move(handle)}
+	dynamic_lib(
+	    void_ptr&& handle
+#ifndef NDEBUG
+        , const std::string& lib_name = ""
+#endif /// NDEBUG
+	) : _m_handle{std::move(handle)}
+#ifndef NDEBUG
+      , _m_lib_name{std::move(lib_name)}
+#endif /// NDEBUG
 	{ }
 
 public:
 	dynamic_lib(dynamic_lib&& other)
 		: _m_handle{std::move(other._m_handle)}
+#ifndef NDEBUG
+        , _m_lib_name{std::move(other._m_lib_name)}
+#endif /// NDEBUG
 	{ }
 
 	dynamic_lib& operator=(dynamic_lib&& other) {
 		if (this != &other) {
-			_m_handle = std::move(other._m_handle);
+			_m_handle   = std::move(other._m_handle);
+#ifndef NDEBUG
+			_m_lib_name = std::move(other._m_lib_name);
+#endif /// NDEBUG
 		}
 		return *this;
 	}
+
+#ifndef NDEBUG
+	~dynamic_lib() {
+        if (_m_lib_name.size() > 0U) {
+            std::cout << "[dynamic_lib] Destructing library : " << _m_lib_name << std::endl;
+        }
+    }
+#endif /// NDEBUG
 
 	static dynamic_lib create(const std::string& path) {
 		return dynamic_lib::create(std::string_view{path.c_str()});
@@ -46,6 +69,25 @@ public:
 	static dynamic_lib create(const std::string_view& path) {
 		char* error;
 
+#ifndef NDEBUG
+        const std::size_t path_basename_end        {path.find_last_of("/")};
+        const std::size_t path_basename_begin_tmp  {path.rfind("/", path_basename_end - 1)};
+        const std::size_t path_basename_begin      {(path_basename_begin_tmp == std::string::npos) ? 0U : path_basename_begin_tmp + 1};
+        const std::size_t path_basename_size       {path_basename_end - path_basename_begin + 1};
+
+        std::vector<char> path_basename_buf;
+        path_basename_buf.resize(path_basename_size);
+        std::copy(
+            path.cbegin() + path_basename_begin,
+            path.cbegin() + path_basename_end,
+            path_basename_buf.begin()
+        );
+        path_basename_buf.back() = '\0';
+
+        std::string path_basename {path_basename_buf.cbegin(), path_basename_buf.cend()};
+        std::cout << "[dynamic_lib] Opening library : " << path_basename << std::endl;
+#endif /// NDEBUG
+
 		// dlopen man page says that it can set errno sp
 		RAC_ERRNO_MSG("dynamic_lib before dlopen");
 		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
@@ -53,18 +95,31 @@ public:
 
 		if ((error = dlerror()) || !handle) {
 			throw std::runtime_error{
-				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})
+			};
         }
 
-		return dynamic_lib{void_ptr{handle, [](void* handle) {
-            RAC_ERRNO();
-			
-			char* error;
-			int ret = dlclose(handle);
-			if ((error = dlerror()) || ret)
-				throw std::runtime_error{
-					"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
-		}}};
+		return dynamic_lib{
+		    void_ptr{handle, [](void* handle) {
+                RAC_ERRNO();
+
+                char* error;
+                int ret = dlclose(handle);
+                if ((error = dlerror()) || ret) {
+                    const std::string msg_error {"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
+#ifndef NDEBUG
+                    /// If debugging, only report the dlclose error (non-fatal, can leak memory)
+                    std::cerr << "[dynamic_lib] " << msg_error << std::endl;
+#else
+                    /// If not debugging, raise the dlclose error (fatal)
+                    throw std::runtime_error{msg_error};
+#endif /// NDEBUG
+                }
+		    }}
+#ifndef NDEBUG
+		    , path_basename /// Keep the dynamic lib name for debugging
+#endif /// NDEBUG
+		};
 	}
 
 	const void* operator[](const std::string& symbol_name) const {
@@ -72,9 +127,11 @@ public:
 
 		char* error;		
 		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
-		if ((error = dlerror()))
+		if ((error = dlerror())) {
 			throw std::runtime_error{
-				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})
+			};
+        }
 		return symbol;
 	}
 
@@ -87,6 +144,9 @@ public:
 
 private:
 	void_ptr _m_handle;
+#ifndef NDEBUG
+    std::string _m_lib_name;
+#endif /// NDEBUG
 };
 
 }
