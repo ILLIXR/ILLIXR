@@ -2168,6 +2168,7 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
   std::stringstream errss;
 
   std::ifstream ifs(filename);
+
   if (!ifs) {
     errss << "Cannot open file [" << filename << "]" << std::endl;
     if (err) {

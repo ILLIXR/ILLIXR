@@ -9,6 +9,7 @@
 #include "common/data_format.hpp"
 #include "common/extended_window.hpp"
 #include "common/shader_util.hpp"
+#include "common/global_module_defs.hpp"
 #include "utils/hmd.hpp"
 #include "common/math_util.hpp"
 #include "shaders/basic_shader.hpp"
@@ -18,6 +19,7 @@
 #include "common/error_util.hpp"
 
 using namespace ILLIXR;
+
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
 
@@ -47,42 +49,44 @@ public:
 	// data whenever it needs to.
 	timewarp_gl(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
+		, cr{pb->lookup_impl<const_registry>()}
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+		, _m_screen_width{cr->FB_WIDTH.value()}
+		, _m_screen_height{cr->FB_HEIGHT.value()}
+		, _m_display_refresh_rate{cr->REFRESH_RATE.value()}
+		, _m_vsync_period{static_cast<std::size_t>(NANO_SEC/_m_display_refresh_rate)}
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
 		, _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
+		, _m_disable_timewarp{cr->DISABLE_TIMEWARP.value()}
+		, _m_enable_offload{cr->ENABLE_OFFLOAD.value()}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
-		  // TODO: Use #198 to configure this. Delete getenv_or.
-		  // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
-		  // Timewarp poses a "second channel" by which pose data can correct the video stream,
-		  // which results in a "multipath" between the pose and the video stream.
-		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 	{ }
 
 private:
+	const std::shared_ptr<const_registry> cr;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
+	const std::shared_ptr<xlib_gl_extended_window> xwin;
 
-	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
-	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
+	// Constants set at construction-time (lookup from const_registry)
+	using CR = ILLIXR::const_registry;
+	const CR::DECL_FB_WIDTH::type     _m_screen_width;
+	const CR::DECL_FB_HEIGHT::type    _m_screen_height;
+	const CR::DECL_REFRESH_RATE::type _m_display_refresh_rate;
 
-	static constexpr double DISPLAY_REFRESH_RATE = 60.0;
+	const std::chrono::nanoseconds _m_vsync_period;
+
 	static constexpr double FPS_WARNING_TOLERANCE = 0.5;
 
 	// Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
 	static constexpr double DELAY_FRACTION = 0.8;
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
-
-	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
-
-	const std::shared_ptr<xlib_gl_extended_window> xwin;
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -94,7 +98,14 @@ private:
 	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
 
 	// Switchboard plug for publishing offloaded data
+    // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
+    // Timewarp poses a "second channel" by which pose data can correct the video stream,
+    // which results in a "multipath" between the pose and the video stream.
+    // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
     switchboard::writer<texture_pose> _m_offload_data;
+
+	const CR::DECL_DISABLE_TIMEWARP::type _m_disable_timewarp;
+	const CR::DECL_ENABLE_OFFLOAD::type   _m_enable_offload;
 
 	record_coalescer timewarp_gpu_logger;
 	record_coalescer mtp_logger;
@@ -154,10 +165,6 @@ private:
 	// Sequence number of offload data
 	long long _offload_seq{0};
 
-	bool disable_warp;
-
-	bool enable_offload;
-
 	// PBO buffer for reading texture image
 	GLuint PBO_buffer;
 
@@ -171,7 +178,7 @@ private:
 
 	GLubyte* readTextureImage(){
 
-		GLubyte* pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+		GLubyte* pixels = new GLubyte[_m_screen_width * _m_screen_height * 3];
 
 		// Start timer
 		startGetTexTime = std::chrono::high_resolution_clock::now();
@@ -198,7 +205,7 @@ private:
 		}
 
 		// Copy texture to CPU memory
-		memcpy(pixels, ptr, SCREEN_WIDTH * SCREEN_HEIGHT * 3);
+		memcpy(pixels, ptr, _m_screen_width * _m_screen_height * 3);
 
 		// Unmap the buffer
 		glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
@@ -338,7 +345,7 @@ private:
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
 	time_type GetNextSwapTimeEstimate() {
-		return time_last_swap + vsync_period;
+		return time_last_swap + _m_vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
@@ -380,7 +387,7 @@ public:
 		time_last_swap = std::chrono::system_clock::now();
 
 		// Generate reference HMD and physical body dimensions
-    	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
+		HMD::GetDefaultHmdInfo(_m_screen_width, _m_screen_height, &hmd_info);
 		HMD::GetDefaultBodyInfo(&body_info);
 
     	// Construct timewarp meshes and other data
@@ -489,11 +496,11 @@ public:
 		assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
 
-		if (enable_offload) {
+		if (_m_enable_offload) {
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-            glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
+            glBufferData(GL_PIXEL_PACK_BUFFER, _m_screen_width * _m_screen_height * 3, 0, GL_STREAM_DRAW);
         }
 
         RAC_ERRNO_MSG("timewarp_gl before glXMakeCurrent");
@@ -509,7 +516,7 @@ public:
 		assert(gl_result && "glXMakeCurrent should not fail");
 
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
-		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glViewport(0, 0, _m_screen_width, _m_screen_height);
 		glClearColor(0, 0, 0, 0);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -541,7 +548,7 @@ public:
 		// TODO: Right now, this samples the latest pose published to the "pose" topic.
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
-		const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+		const fast_pose_type latest_pose = _m_disable_timewarp ? most_recent_frame->render_pose : pp->get_fast_pose();
 		viewMatrixBegin.block(0,0,3,3) = latest_pose.pose.orientation.toRotationMatrix();
 
 		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
@@ -665,7 +672,7 @@ public:
 			// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
 		}
 
-		if (time_since_render > vsync_period) {
+		if (time_since_render > _m_vsync_period) {
             std::cout << "\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!" << std::endl;
 		}
 #endif
@@ -704,7 +711,7 @@ public:
 			{render_to_display},
 		}});
 
-		if (enable_offload) {
+		if (_m_enable_offload) {
 			// Read texture image from texture buffer
 			GLubyte* image = readTextureImage();
 

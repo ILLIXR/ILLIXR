@@ -13,16 +13,13 @@
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/gl_util/obj.hpp"
+#include "common/global_module_defs.hpp"
 #include "shaders/demo_shader.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/error_util.hpp"
 
 using namespace ILLIXR;
 
-static constexpr int   EYE_TEXTURE_WIDTH   = ILLIXR::FB_WIDTH;
-static constexpr int   EYE_TEXTURE_HEIGHT  = ILLIXR::FB_HEIGHT;
-
-static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/60)};
 static constexpr std::chrono::milliseconds VSYNC_DELAY_TIME {std::size_t{2}};
 
 // Monado-style eyebuffers:
@@ -40,6 +37,12 @@ public:
 
 	gldemo(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
+		, cr{pb->lookup_impl<const_registry>()}
+		, _m_eye_texture_width{cr->FB_WIDTH.value()}
+		, _m_eye_texture_height{cr->FB_HEIGHT.value()}
+		, _m_display_refresh_rate{cr->REFRESH_RATE.value()}
+		, _m_obj_dir{cr->DEMO_OBJ_PATH.value()}
+		, _m_vsync_period{static_cast<std::size_t>(NANO_SEC/_m_display_refresh_rate)}
 		, xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
@@ -60,7 +63,7 @@ public:
 		if (next_vsync == nullptr) {
 			// If no vsync data available, just sleep for roughly a vsync period.
 			// We'll get synced back up later.
-			std::this_thread::sleep_for(vsync_period);
+			std::this_thread::sleep_for(_m_vsync_period);
 			return;
 		}
 
@@ -71,7 +74,7 @@ public:
 		}
 #endif
 		
-		bool hasRenderedThisInterval = (now - lastFrameTime) < vsync_period;
+		bool hasRenderedThisInterval = (now - lastFrameTime) < _m_vsync_period;
 
 		// If less than one frame interval has passed since we last rendered...
 		if (hasRenderedThisInterval)
@@ -84,7 +87,7 @@ public:
 			// by a vsync period, so it's always in the future.
 			while(wait_time < now)
 			{
-				wait_time += vsync_period;
+				wait_time += _m_vsync_period;
 			}
 
 #ifndef NDEBUG
@@ -131,7 +134,8 @@ public:
 
 			glUseProgram(demoShaderProgram);
 			glBindVertexArray(demo_vao);
-			glViewport(0, 0, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+
+			glViewport(0, 0, _m_eye_texture_width, _m_eye_texture_height);
 
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
@@ -245,6 +249,18 @@ public:
 #endif
 
 private:
+
+	// Constants set at construction-time (lookup from const_registry)
+	const std::shared_ptr<const_registry> cr;
+
+	using CR = ILLIXR::const_registry;
+	const CR::DECL_FB_WIDTH::type      _m_eye_texture_width;
+	const CR::DECL_FB_HEIGHT::type     _m_eye_texture_height;
+	const CR::DECL_REFRESH_RATE::type  _m_display_refresh_rate;
+	const CR::DECL_DEMO_OBJ_PATH::type _m_obj_dir;
+
+	const std::chrono::nanoseconds _m_vsync_period;
+
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
@@ -296,7 +312,7 @@ private:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, _m_eye_texture_width, _m_eye_texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
 		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture, will rebind later
 
@@ -317,13 +333,14 @@ private:
 		glGenFramebuffers(1, fbo);
 
 		// Bind the FBO as the active framebuffer.
-    	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
-		glGenRenderbuffers(1, depth_target);
-    	glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
-    	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
-    	//glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, EYE_TEXTURE_WIDTH, EYE_TEXTURE_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
 
-    	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glGenRenderbuffers(1, depth_target);
+		glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, _m_eye_texture_width, _m_eye_texture_height);
+		//glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, _m_eye_texture_width, _m_eye_texture_height);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		// Bind eyebuffer texture
         std::cout << "About to bind eyebuffer texture, texture handle: " << *texture_handle << std::endl;
@@ -397,13 +414,8 @@ public:
 		RAC_ERRNO_MSG("gldemo after glGetUniformLocation");
 
 		// Load/initialize the demo scene.
-
-		char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-		if (obj_dir == nullptr) {
-            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
-		}
-		demoscene = ObjScene(std::string(obj_dir), "scene.obj");
-
+		demoscene = ObjScene(_m_obj_dir, "scene.obj");
+		
 		// Construct a basic perspective projection
 		math_util::projection_fov( &basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f );
 

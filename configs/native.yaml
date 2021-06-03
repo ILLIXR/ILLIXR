@@ -7,17 +7,6 @@ plugin_groups:
       - path: offload_data/
   - !include "core_plugins.yaml"
 
-data:
-  subpath: mav0
-  relative_to:
-    archive_path:
-      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-demo_data: demo_data/
-
-enable_offload:   False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
 # realsense_cam: auto
 
 action:
@@ -35,3 +24,6 @@ action:
   # log_stdout: metrics/output.log
 
 profile: opt
+
+constants:
+  - !include "global_module_defs.yaml"
