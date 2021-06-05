@@ -69,7 +69,6 @@ These are the instructions for running the scheduler experiment. This has **not*
 ```
 git checkout ${branch}
 git -C ../open_vins checkout ${branch}
-git -C ../robotics_project checkout ${branch}
 git -C ../illixr-analysis checkout ${branch}
 ```
 
