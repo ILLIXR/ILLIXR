@@ -24,7 +24,6 @@ public:
         //Initialize DepthAI pipeline and device 
         , device{createCameraPipeline()}
         { 
-            device.startPipeline();
             #ifndef NDEBUG
                 std::cout << "Depthai pipeline started" << std::endl;
             #endif
@@ -109,22 +108,15 @@ public:
                 imu_packet++;
             #endif
             
-            auto imuDatas = imuPacket->imuDatas;
+            auto imuDatas = imuPacket->packets;
             for(auto& imuData : imuDatas) {
-                if(useRaw){
-                    gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.rawGyroscope.timestamp.getTimestamp());
-                    if (gyroTs <= test_time_point){return;}
-                    test_time_point = gyroTs;
-                    la = {imuData.rawAcceleroMeter.x, imuData.rawAcceleroMeter.y, imuData.rawAcceleroMeter.z};
-                    av = {imuData.rawGyroscope.x, imuData.rawGyroscope.y, imuData.rawGyroscope.z};
-                }
-                else {
-                    gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.gyroscope.timestamp.getTimestamp());
+
+                    gyroTs = std::chrono::time_point_cast<std::chrono::nanoseconds>(imuData.gyroscope.timestamp.get());
                     if (gyroTs <= test_time_point){return;}
                     test_time_point = gyroTs;
                     la = {imuData.acceleroMeter.x, imuData.acceleroMeter.y, imuData.acceleroMeter.z};
                     av = {imuData.gyroscope.x, imuData.gyroscope.y, imuData.gyroscope.z};
-                }
+                
                 
             }
         
@@ -215,25 +207,14 @@ private:
         auto imu = p.create<dai::node::IMU>();
         auto xoutImu = p.create<dai::node::XLinkOut>();
         xoutImu->setStreamName("imu");
-
-        dai::IMUSensorConfig sensorConfig;
-        sensorConfig.reportIntervalUs = 2500;  // 400hz
+    
+        // Enable raw readings at 500Hz for accel and gyro
         if(useRaw){
-            sensorConfig.sensorId = dai::IMUSensorId::RAW_ACCELEROMETER;
+            imu->enableIMUSensor({dai::IMUSensor::ACCELEROMETER_RAW, dai::IMUSensor::GYROSCOPE_RAW}, 400);
         }
         else{
-            sensorConfig.sensorId = dai::IMUSensorId::ACCELEROMETER;
+            imu->enableIMUSensor({dai::IMUSensor::ACCELEROMETER, dai::IMUSensor::GYROSCOPE_CALIBRATED}, 400);
         }
-
-        imu->enableIMUSensor(sensorConfig);
-
-        if(useRaw){
-            sensorConfig.sensorId = dai::IMUSensorId::RAW_GYROSCOPE;
-        }
-        else{
-            sensorConfig.sensorId = dai::IMUSensorId::GYROSCOPE_CALIBRATED;
-        }
-        imu->enableIMUSensor(sensorConfig);
 
         // above this threshold packets will be sent in batch of X, if the host is not blocked
         imu->setBatchReportThreshold(1);
@@ -269,8 +250,6 @@ private:
         monoRight->setFps(30.0);
         
         //Stereo Setup
-        bool outputDepth = true;
-        bool outputRectified = true;
         // Better handling for occlusions:
         bool lrcheck = true;
         // Closer-in minimum depth, disparity range is doubled (from 95 to 190):
@@ -287,8 +266,6 @@ private:
         auto xoutRectifR = p.create<dai::node::XLinkOut>();
         auto xoutDepth = p.create<dai::node::XLinkOut>();
         
-        stereo->setOutputDepth(outputDepth);
-        stereo->setOutputRectified(outputRectified);
         stereo->setConfidenceThreshold(200);
         stereo->setLeftRightCheck(lrcheck);
         stereo->setExtendedDisparity(extended);
