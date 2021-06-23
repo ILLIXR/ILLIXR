@@ -13,6 +13,10 @@ if [ -z "${CXX}" ]; then
     export CXX="clang++-10"
 fi
 
+if [ -z "${XDG_RUNTIME_DIR}" ]; then
+    export XDG_RUNTIME_DIR="/tmp"
+fi
+
 if [ -z "${opt_dir}" ]; then
     export opt_dir="/opt/ILLIXR"
 fi

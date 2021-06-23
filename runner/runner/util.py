@@ -135,7 +135,7 @@ class CalledProcessError(Exception):
         stdout = ("\nstdout:\n" + textwrap.indent(self.stdout.decode(), "  ")) if self.stdout is not None else ""
         stderr = ("\nstderr:\n" + textwrap.indent(self.stderr.decode(), "  ")) if self.stderr is not None else ""
 
-        return f"""Command returned non-zero exit status {self.returncode}.command:{cmd_str}{stdout}{stderr}"""
+        return f"""Command returned non-zero exit status {self.returncode}\ncommand: {cmd_str}{stdout}{stderr}"""
 
 
 def subprocess_run(
@@ -514,9 +514,8 @@ def make(
     if parallelism is None:
         parallelism = max(1, multiprocessing.cpu_count() // 2)
 
-    var_dict_args = shlex.join(
-        f"{key}={val}" for key, val in (var_dict if var_dict else {}).items()
-    )
+    var_dict_args: List[str] = list() if not var_dict else \
+                               [f"{key}={val}" for key, val in var_dict.items()]
 
     subprocess_run(
         ["make", "-j", str(parallelism), "-C", str(path), *targets, *var_dict_args],
@@ -527,9 +526,16 @@ def make(
 
 
 def cmake(
-    path: Path, build_path: Path, var_dict: Optional[Mapping[str, str]] = None
+    path: Path,
+    build_path: Path,
+    var_dict: Optional[Mapping[str, str]] = None,
+    parallelism: Optional[int] = None,
+    env_override: Optional[Mapping[str, str]] = None
 ) -> None:
-    parallelism = max(1, multiprocessing.cpu_count() // 2)
+
+    if parallelism is None:
+        parallelism = max(1, multiprocessing.cpu_count() // 2)
+
     var_args = [f"-D{key}={val}" for key, val in (var_dict if var_dict else {}).items()]
     build_path.mkdir(exist_ok=True)
     subprocess_run(
@@ -545,5 +551,6 @@ def cmake(
         ],
         check=True,
         capture_output=True,
+        env_override=env_override,
     )
-    make(build_path, ["all"])
+    make(build_path, ["all"], parallelism=parallelism, env_override=env_override)
