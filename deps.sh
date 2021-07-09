@@ -109,3 +109,10 @@ export script_path_conda="scripts/install_conda.sh"
 export parent_dir_conda="${opt_dir}"
 export dep_prompt_conda="Install Conda"
 export dep_ver_conda="py38_4.9.2"
+
+## DepthAI
+export dep_name_depthai="depthai"
+export script_path_depthai="scripts/install_depthai.sh"
+export parent_dir_depthai="${opt_dir}"
+export dep_prompt_depthai="Install DepthAI from source"
+export dep_ver_depthai="v2.5.0"
