@@ -25,12 +25,11 @@ export script_path_apt="scripts/install_apt_deps.sh"
 #export dep_ver_clang="llvmorg-10.0.1"
 
 ## Boost
-## Locally built boost not in use yet
-#export dep_name_boost="boost"
-#export script_path_boost="scripts/install_boost.sh"
-#export parent_dir_boost="${opt_dir}"
-#export dep_prompt_boost="Install Boost from source"
-#export dep_ver_boost="boost-1.65.1"
+export dep_name_boost="boost"
+export script_path_boost="scripts/install_boost.sh"
+export parent_dir_boost="${opt_dir}"
+export dep_prompt_boost="Install Boost from source"
+export dep_ver_boost="boost-1.65.1"
 
 ## OpenCV
 export dep_name_opencv="opencv"
