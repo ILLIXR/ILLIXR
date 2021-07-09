@@ -61,18 +61,6 @@ public:
     static dynamic_lib create(const std::string_view& path) {
         char* error;
 
-        /// The contents of a string_view must not outlive the parent string
-        /// Copy the contents passed to create into a new string
-        std::vector<char> path_buf;
-        path_buf.resize(path.size() + 1U);
-        std::copy(path.cbegin(), path.cend(), path_buf.begin());
-        path_buf.back() = '\0';
-
-        std::string path_copy {path_buf.cbegin(), path_buf.cend()};
-#ifndef NDEBUG
-        std::cout << "[dynamic_lib] Opening library : " << path_copy << std::endl;
-#endif /// NDEBUG
-
         // dlopen man page says that it can set errno sp
         RAC_ERRNO_MSG("dynamic_lib before dlopen");
         void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
@@ -101,7 +89,7 @@ public:
 #endif /// NDEBUG
                 }
             }},
-            path_copy /// Keep the dynamic lib name for debugging
+            std::string{path} /// Keep the dynamic lib name for debugging
         };
     }
 
