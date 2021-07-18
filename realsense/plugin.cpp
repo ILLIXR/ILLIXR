@@ -26,7 +26,8 @@ public:
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
-        {      
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
+        {
             cfg.disable_all_streams();
             configure_camera();
         }
@@ -105,10 +106,13 @@ public:
 
                     // Time as ullong (nanoseconds)
                     ullong imu_time = static_cast<ullong>(ts * 1000000);
+					if (!_m_first_imu_time) {
+						_m_first_imu_time = imu_time;
+						_m_first_real_time = _m_clock->now();
+					}
 
                     // Time as time_point
-                    using time_point = std::chrono::system_clock::time_point;
-                    time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
+                    time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
                     // Images
                     std::optional<cv::Mat> img0 = std::nullopt;
@@ -133,8 +137,7 @@ public:
                             av,
                             la,
                             img0,
-                            img1,
-                            imu_time
+                            img1
                         }
                     ));
                     
@@ -142,9 +145,9 @@ public:
                     {
                         _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
                             {
+								imu_time_point,
                                 rgb,
-                                depth,
-                                imu_time
+                                depth
                             }
                         ));
                     }
@@ -302,6 +305,10 @@ private:
         }
     }
 
+
+	std::optional<ullong> _m_first_imu_time;
+	std::optional<time_point> _m_first_real_time;
+	const std::shared_ptr<const RelativeClock> _m_clock;
 };
 
 PLUGIN_MAIN(realsense);
