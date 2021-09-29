@@ -351,7 +351,7 @@ fi
 # If supported, add the gpg keys and repository for Intel RealSense
 if [ "${use_realsense}" = "yes" ]; then
     key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
-    repo_url_realsense="http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo"
+    repo_url_realsense="http://librealsense.intel.com/Debian/apt-repo"
     key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
     add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "${distro_codename} main" "${key_id_realsense}"
 fi
