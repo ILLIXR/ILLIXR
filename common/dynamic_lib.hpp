@@ -80,13 +80,8 @@ public:
                 int ret = dlclose(handle);
                 if ((error = dlerror()) || ret) {
                     const std::string msg_error {"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
-#ifndef NDEBUG
-                    /// If debugging, only report the dlclose error (non-fatal, can leak memory)
                     std::cerr << "[dynamic_lib] " << msg_error << std::endl;
-#else
-                    /// If not debugging, raise the dlclose error (fatal)
                     throw std::runtime_error{msg_error};
-#endif /// NDEBUG
                 }
             }},
             std::string{path} /// Keep the dynamic lib name for debugging
