@@ -72,12 +72,12 @@ git -C ../open_vins checkout ${branch}
 git -C ../illixr-analysis checkout ${branch}
 ```
 
-3. Verify the new `./config/native.yaml` (the other configs are out-of-date). All of the experimentally-controlled variables reside in `conditions`; they will be set by the meta-runner.
+3. Verify the new `./configs/native.yaml` (the other configs are out-of-date). All of the experimentally-controlled variables reside in `conditions`; they will be set by the meta-runner.
 
   - `loader.scheduler.nodes.timewarp_gl[0][loader.conditions.cpu_freq]` determines the vsync delay period (integer nanoseconds), in both scheduled and non-scheduled cases. The experiment is **highly** sensitive to this parameter 😥.
   - The rest of `loader.scheduler` contains parameters only used when the scheduler is `static` or `dynamic`.
 
-4. To run one configuration, type `./runner.sh config/native.yaml`. Note that the runner has changed slightly:
+4. To run one configuration, type `./runner.sh configs/native.yaml`. Note that the runner has changed slightly:
 
   - It is easier to run with GDB, with sudo, and with other runners. See `loader` in `configs/native.yaml` for details.
   - The runner supports `--override parent_key.child_key=json_encoded_val`.

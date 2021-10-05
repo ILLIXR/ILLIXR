@@ -28,7 +28,7 @@ plugin_groups:
 
     - path: offline_imu/
     - path: offline_cam/
-    # - path: zed/
+    #- path: zed/
 
     # - path: debugview/
 
@@ -41,7 +41,7 @@ demo_data: demo_data/
 conditions:
   cpu_freq: 5.3
   scheduler: dynamic
-  duration: 75
+  duration: 15
   cpus: 1
   swap: 2
 loader:

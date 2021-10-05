@@ -183,6 +183,7 @@ def load_native(config: Mapping[str, Any], quiet: bool) -> None:
         ILLIXR_TIMEWARP_DELAY=str(int(config["loader"]["scheduler"]["nodes"]["timewarp_gl"][0][config["conditions"]["cpu_freq"]] * 1e6)),
         ILLIXR_SWAP_ORDER=str(config["conditions"].get("swap", "N/A")),
         MOSEKLM_LICENSE_FILE="/opt/ILLIXR/mosek/mosek.lic",
+        DISPLAY=os.environ.get("DISPLAY", ""),
         **config["loader"].get("env", {}),
     )
 
