@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_gtest}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_gtest}/${dep_name_gtest}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_gtest}"
-fi
+dep_name="${dep_name:=${dep_name_gtest}}"
+src_dir="${src_dirL=${parent_dir_gtest}/${dep_name_gtest}}"
+dep_ver="${dep_ver:=${dep_ver_gtest}}"
 
 repo_url="https://github.com/google/googletest.git"
 build_dir="${src_dir}/build"

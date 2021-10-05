@@ -1,0 +1,4 @@
+## A '#/definitions/path' for the 'action.kimera_path' config
+## Temporary until including the 'kimera-vio.yaml' plugin
+#> automatically configures 'action.kimera_path'
+.cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/

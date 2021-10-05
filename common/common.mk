@@ -2,26 +2,35 @@
 ## Simply define them before including common.mk
 CXX := clang++-10
 STDCXX ?= c++17
-CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 RM := rm -f
 
 ## A compilation flag for selecting the Monado integration mode
 #> If ILLIXR_MONADO_MAINLINE is set to 'ON', use the mainline Monado
 #> Else ILLIXR_MONADO_MAINLINE is empty, enabling the monado_integration compatible compilation
 ifeq ($(ILLIXR_MONADO_MAINLINE),ON)
-	MONADO_FLAGS := -DILLIXR_MONADO_MAINLINE
+MONADO_FLAGS := -DILLIXR_MONADO_MAINLINE
 else
-	MONADO_FLAGS :=
+MONADO_FLAGS :=
 endif
+
+## If called from Docker with 'ENABLE_DOCKER' defined, remove unsupported compilation flags
+ifeq ($(ENABLE_DOCKER),yes)
+GTEST_FLAGS_DBGEXTRA :=
+else
+GTEST_FLAGS_DBGEXTRA := -fsanitize=address,undefined
+endif # ENABLE_DOCKER
+
+EXTRA_FLAGS := $(MONADO_FLAGS)
+CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"' $(EXTRA_FLAGS)
 
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
-DBG_FLAGS ?= -Og -g $(MONADO_FLAGS) -Wall -Wextra -Werror -rdynamic
+DBG_FLAGS ?= -Og -g -Wall -Wextra -Werror -rdynamic
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic
-OPT_FLAGS ?= -O3 -DNDEBUG $(MONADO_FLAGS) -Wall -Wextra -Werror
+OPT_FLAGS ?= -O3 -DNDEBUG -Wall -Wextra -Werror
 
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2>/dev/null)
@@ -75,9 +84,9 @@ tests/gdb: tests/test.exe
 
 tests/test.exe: $(CPP_TEST_FILES) $(CPP_FILES) $(HPP_FILES)
 	$(CXX) -ggdb -std=$(STDCXX) $(CFLAGS) $(CPPFLAGS) $(DBG_FLAGS) \
-	$(GTEST_FLAGS) -fsanitize=address,undefined -o ./tests/test.exe \
+	$(GTEST_FLAGS) $(GTEST_FLAGS_DBGEXTRA) -o ./tests/test.exe \
 	$(CPP_TEST_FILES) $(CPP_FILES) $(LDFLAGS)
-endif
+endif # CPP_TEST_FILES
 
 .PHONY: clean
 clean:

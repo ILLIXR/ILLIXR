@@ -1,3 +1,4 @@
+name: monado_openxr_app
 app:
   src_path:
     git_repo : https://gitlab.freedesktop.org/monado/demos/openxr-simple-example

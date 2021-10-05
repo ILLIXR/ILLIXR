@@ -1,0 +1,32 @@
+##
+## Configuration to run CI with Monado (Integrated/Fork)
+##
+
+action:
+  name: monado
+  is_mainline: False
+
+  monado:      !include "plugins/monado_integration.yaml"
+  openxr_app:  !include "plugins/monado_openxr_app.yaml"
+
+  kimera_path: !include "data/kimera-default.yaml"
+  audio_path:  !include "data/audio-default.yaml"
+
+  enable_ci:  True
+  run-solo:   !include "ci/run-solo.yaml"
+  build-only: !include "ci/build-only.yaml"
+  no-build:   !include "ci/no-build.yaml"
+
+common:    !include "plugins/common.yaml"
+runtime:   !include "plugins/runtime.yaml"
+data:      !include "data/data-default.yaml"
+demo_data: !include "data/demo-default.yaml"
+
+profile: dbg
+
+flows:
+  - flow:
+    - !include "plugins/groups/rt_slam.yaml"
+    - !include "plugins/groups/kimera-gtsam.yaml"
+    - plugin_group:
+      - !include "plugins/pose_prediction.yaml"

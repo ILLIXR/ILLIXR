@@ -17,17 +17,9 @@
 
 ### Package metadata setup ###
 
-if [ -z "${dep_name}" ]; then
-    dep_name="${dep_name_conda}"
-fi
-
-if [ -z "${src_dir}" ]; then
-    src_dir="${parent_dir_conda}/${dep_name_conda}"
-fi
-
-if [ -z "${dep_ver}" ]; then
-    dep_ver="${dep_ver_conda}"
-fi
+dep_name="${dep_name:=${dep_name_conda}}"
+src_dir="${src_dir:=${parent_dir_conda}/${dep_name_conda}}"
+dep_ver="${dep_ver:=${dep_ver_conda}}"
 
 arch_name=$(uname --machine)
 script_url="https://repo.anaconda.com/miniconda/Miniconda3-${dep_ver}-Linux-${arch_name}.sh"

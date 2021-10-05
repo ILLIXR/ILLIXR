@@ -50,12 +50,10 @@ function add_repo() {
 
 # Generate the list of package dependencies to install based on the provided package groups
 # The indirect variables referenced by the group names should be bash arrays
-# Good call site: list=$(pkg_dep_list_from "${group_list}")
-# Bad call site:  list="$(pkg_dep_list_from ${group_list})"
 function pkg_dep_list_from() {
+    local pkg_dep_groups=(${1})
     local pkg_dep_list=""
-    local pkg_dep_groups=${1}
-    for group in ${pkg_dep_groups}; do
+    for group in "${pkg_dep_groups[@]}"; do
         pkg_dep_list_group_var="pkg_dep_list_${group}"
         pkg_dep_list_group="${pkg_dep_list_group_var}[@]"
         pkg_dep_list+=" ${!pkg_dep_list_group}"
@@ -118,7 +116,7 @@ pkg_dep_list_image=(
     libjpeg-dev
     libpng-dev
     libtiff-dev
-    libvtk6-dev
+    #libvtk6-dev
 ) # End list
 
 pkg_dep_list_sound=(
@@ -147,7 +145,7 @@ pkg_dep_list_math=(
     libsuitesparse-dev
     libparmetis-dev
     libatlas-base-dev
-    libeigen3-dev
+    #libeigen3-dev
 ) # End list
 
 pkg_dep_list_nogroup=(
@@ -228,28 +226,38 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
-    case "${arch_name}" in
-        x86_64)     use_realsense="yes"
-                    pkg_dep_groups+=" realsense_anyarch"
-                    pkg_dep_groups+=" realsense_x86_64"
-                    ;;
-        aarch64)    use_realsense="yes"
-                    pkg_dep_groups+=" realsense_anyarch"
-                    ;;
-        *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense."
-                    exit 1
-                    ;;
-    esac
-else
+if [ "${use_realsense}" = "yes" ]; then
     pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
     pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
     pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations "
-    pkg_warn_msg_realsense+="for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. "
+    pkg_warn_msg_realsense+="for non Ubuntu LTS kernels, or other non-Ubuntu Linux distributions. "
     pkg_warn_msg_realsense+="If your project requires Intel RealSense support, "
     pkg_warn_msg_realsense+="please build and install the Intel RealSense SDK from source. "
     pkg_warn_msg_realsense+="For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
-    print_warning "${pkg_warn_msg_realsense}"
+
+    if [ "${distro_name}" = "ubuntu" ]; then
+        case "${distro_version}" in
+            18.04 | 20.04)  ;; # Okay
+            *)              print_warning "Bad distribution version '${distro_version}' for realsense."
+                            print_warning "${pkg_warn_msg_realsense}"
+                            exit 1
+                            ;;
+        esac
+        case "${arch_name}" in
+            x86_64)     pkg_dep_groups+=" realsense_anyarch"
+                        pkg_dep_groups+=" realsense_x86_64"
+                        ;;
+            aarch64)    pkg_dep_groups+=" realsense_anyarch"
+                        ;;
+            *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense."
+                        print_warning "${pkg_warn_msg_realsense}"
+                        exit 1
+                        ;;
+        esac
+    else
+        print_warning "${pkg_warn_msg_realsense}"
+        exit 1
+    fi
 fi
 
 ## CUDA ##
@@ -262,8 +270,6 @@ if [ "${use_cuda}" = "yes" ]; then
 
     if [ "${distro_name}" = "ubuntu" ] && [ "${is_atleast_ubuntu1804}" ] && [ "${arch_name}" = "x86_64" ]; then
         case "${distro_version}" in
-            21.04)  distro_name_cuda="ubuntu2104"
-		    ;;
             20.04)  distro_name_cuda="ubuntu2004"
                     ;;
             18.04)  distro_name_cuda="ubuntu1804"
@@ -351,7 +357,7 @@ fi
 # If supported, add the gpg keys and repository for Intel RealSense
 if [ "${use_realsense}" = "yes" ]; then
     key_srv_url_list_realsense="keys.gnupg.net hkp://keyserver.ubuntu.com:80"
-    repo_url_realsense="http://librealsense.intel.com/Debian/apt-repo"
+    repo_url_realsense="https://librealsense.intel.com/Debian/apt-repo"
     key_id_realsense="F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE"
     add_repo "${key_srv_url_list_realsense}" "${repo_url_realsense}" "${distro_codename} main" "${key_id_realsense}"
 fi
@@ -379,3 +385,10 @@ echo "Packages marked for installation: ${pkg_dep_list}"
 
 # Install all packages marked by this script
 sudo apt-get install -q -y ${pkg_dep_list}
+
+## Patch SDL2 for openxr-simple-example on Ubuntu 20
+if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "20.04" ]; then
+    for file in /usr/include/SDL2/*; do
+        sudo ln -s "${file}" "/usr/include/$(basename ${file})"
+    done
+fi

@@ -75,11 +75,7 @@ function prompt_value()
         echo -n "#>  Enter '${name}' [default: '${value_default}']: "
         read -rp '' value_in
 
-        if [ -z "${value_in}" ]; then
-            value_out="${value_default}"
-        else
-            value_out="${value_in}"
-        fi
+        value_out="${value_in:=${value_default}}"
     fi
 
     export value_out
@@ -232,13 +228,16 @@ sudo chown "${USER}:" "${opt_dir}"
 . deps.sh
 
 echo "The user will now be prompted to install the following dependencies and optional features:
-  Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan,
+  Binary packages (via apt-get), Docker, CUDA, Eigen, VTK, OpenCV, Vulkan,
   gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3), DepthAI
 " # End echo
 
 if y_or_n "Add apt-get sources list/keys and install necessary packages"; then
     if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
         export use_docker="yes"
+    fi
+    if y_or_n "^^^^  Also install RealSense2 camera support"; then
+        export use_realsense="yes"
     fi
     pmt_msg_warn_cuda="Also automate install of CUDA 11 (cuda) for GPU plugin support on Ubuntu (_only_!)"
     pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, "
@@ -263,13 +262,30 @@ fi
 #    "${dep_prompt_clang}" \
 #    "${dep_ver_clang}"
 
+## Locally built boost not in use yet
+#prompt_install \
+#    "${dep_name_boost}" \
+#    "${deps_log_dir}" \
+#    "${script_path_boost}" \
+#    "${parent_dir_boost}" \
+#    "${dep_prompt_boost}" \
+#    "${dep_ver_boost}"
+
 prompt_install \
-    "${dep_name_boost}" \
+    "${dep_name_vtk}" \
     "${deps_log_dir}" \
-    "${script_path_boost}" \
-    "${parent_dir_boost}" \
-    "${dep_prompt_boost}" \
-    "${dep_ver_boost}"
+    "${script_path_vtk}" \
+    "${parent_dir_vtk}" \
+    "${dep_prompt_vtk}" \
+    "${dep_ver_vtk}"
+
+prompt_install \
+    "${dep_name_eigen}" \
+    "${deps_log_dir}" \
+    "${script_path_eigen}" \
+    "${parent_dir_eigen}" \
+    "${dep_prompt_eigen}" \
+    "${dep_ver_eigen}"
 
 prompt_install \
     "${dep_name_opencv}" \
@@ -278,15 +294,6 @@ prompt_install \
     "${parent_dir_opencv}" \
     "${dep_prompt_opencv}" \
     "${dep_ver_opencv}"
-
-## Locally built eigen not in use yet
-#prompt_install \
-#    "${dep_name_eigen}" \
-#    "${deps_log_dir}" \
-#    "${script_path_eigen}" \
-#    "${parent_dir_eigen}" \
-#    "${dep_prompt_eigen}" \
-#    "${dep_ver_eigen}"
 
 prompt_install \
     "${dep_name_vulkan}" \

@@ -17,12 +17,21 @@ cd "$(dirname ${0})"
 ## Source the configurations for our dependencies
 . deps.sh
 
+## Get OS
+. /etc/os-release
+
 ## Setup script
 interp_cmd="python"
 interp_args=""
 script_path="runner/runner/main.py"
 script_args="${@}"
 venv_name="illixr-runner"
+
+env_runner=(
+    XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:=/tmp}"
+    ENABLE_DOCKER="${ENABLE_DOCKER:=no}"
+    DISTRO_VER="${DISTRO_VER:=${VERSION_ID}}" # DISTRO_VER (Dockerfile), VERSION_ID (os-release)
+) # End list
 
 
 ### Launch application
@@ -53,4 +62,4 @@ else
 fi
 
 ## Start executing action from main
-"${interp_cmd}" ${interp_args} "${script_path}" "${script_args}"
+env "${env_runner[@]}" "${interp_cmd}" ${interp_args} "${script_path}" "${script_args}"

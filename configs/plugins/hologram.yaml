@@ -1,0 +1,4 @@
+name: hologram
+path:
+  git_repo: https://github.com/ILLIXR/HOTlab.git
+  version: "3.1"
