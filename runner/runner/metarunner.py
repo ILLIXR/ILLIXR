@@ -37,6 +37,13 @@ import json
     show_default=True,
 )
 @click.option(
+    "--timewarp-cushions",
+    default="0.95",
+    type=str,
+    help="Comma-separated list of ms to add to the dynamic scheduler's estimate of the compute-time of timewarp.",
+    show_default=True,
+)
+@click.option(
     "--multicore-manual/--no-multicore-manual",
     default=True,
     type=bool,
@@ -50,6 +57,13 @@ import json
     help="This prints the config instead of runnign ILLIXR. Use this to make sure you like the configuration-grid.",
     show_default=True,
 )
+@click.option(
+    "--duration",
+    default=75,
+    type=int,
+    help="The duration of the ILLIXR run.",
+    show_default=True,
+)
 def main(
         metrics_dir: Path,
         iters: int,
@@ -57,7 +71,9 @@ def main(
         schedulers: str,
         cpu_freqs: str,
         multicore_manual: bool,
-        dry_run: bool
+        timewarp_cushions: float,
+        dry_run: bool,
+        duration: int,
 ) -> None:
     """This is a metarunner (it runs the runner on a configuration-grid)
 
@@ -73,11 +89,12 @@ def main(
                     for swap in swap_list:
                         cpus_list = [1, 10] if scheduler == "manual" and multicore_manual else [1]
                         for cpus in cpus_list:
-                            yield scheduler, cpu_freq, it, cpus, swap
+                            for timewarp_cushion in timewarp_cushions.split(","):
+                                yield scheduler, cpu_freq, it, cpus, swap, float(timewarp_cushion)
 
     options = list(gen_options())
 
-    for scheduler, cpu_freq, it, cpus, swap in tqdm(options, disable=dry_run):
+    for scheduler, cpu_freq, it, cpus, swap, timewarp_cushion in tqdm(options, disable=dry_run):
         label = f"{random.randint(0, 2**32 - 1):08x}"
         cmd = [
             sys.executable,
@@ -89,6 +106,8 @@ def main(
             *["--overrides", f'conditions.cpus={cpus}'],
             *["--overrides", f"conditions.cpu_freq={cpu_freq}"],
             *["--overrides", f'loader.log_stdout="metrics/log"'],
+            *["--overrides", f'conditions.duration={duration}'],
+            *["--overrides", f'conditions.timewarp_cushion={timewarp_cushion}'],
         ]
         if dry_run:
             swap_str = f", swap: {json.dumps(swap):5s}"

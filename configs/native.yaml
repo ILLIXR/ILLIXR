@@ -41,19 +41,20 @@ demo_data: demo_data/
 conditions:
   cpu_freq: 5.3
   scheduler: dynamic
-  duration: 15
+  duration: 20
   cpus: 1
   swap: 2
+  timewarp_cushion: 1.8
 loader:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   name: native
   gdb: no
   sudo: yes
   echo: no
-  # log_stdout: metrics/output
+  log_stdout: metrics/output
   env:
-     __GL_MaxFramesAllowed: "1"
-     __GL_SYNC_TO_VBLANK: "1"
+    __GL_MaxFramesAllowed: "1"
+    __GL_SYNC_TO_VBLANK: "1"
 
   scheduler:
     nodes: {

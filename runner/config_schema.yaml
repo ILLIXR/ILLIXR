@@ -106,6 +106,7 @@ properties:
       - scheduler
       - duration
       - swap
+      - timewarp_cushion
     properties:
       scheduler:
         type: string
@@ -120,6 +121,8 @@ properties:
       duration:
         type: number
       swap:
+        type: number
+      timewarp_cushion:
         type: number
   loader:
     type: object

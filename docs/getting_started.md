@@ -60,16 +60,12 @@ ILLIXR can be run inside a Qemu-KVM image. Check out the instructions [here][7].
 
 ## ILLIXR Scheduler experiments
 
-These are the instructions for running the scheduler experiment. This has **not** been tested yet.
-
 1. Run `./install_deps.sh`. Save time by saying "no" to the items you have already done. All of the new ones are at the end. You will need to install apt deps again.
 
 2. Check out a specific version. Replace `${branch}` with either `checkpoint-sosp` (tag frozen in time) or `project-scheduling` (branch with the latest changes) in the following snippet. New development should begin on `project-scheduling`. After SOSP, I have worked to make `project-scheduling` run on other people's machines. You can always `git diff checkpoint-sosp project-scheduling` to see what has been improved.
 
 ```
 git checkout ${branch}
-git -C ../open_vins checkout ${branch}
-git -C ../illixr-analysis checkout ${branch}
 ```
 
 3. Verify the new `./configs/native.yaml` (the other configs are out-of-date). All of the experimentally-controlled variables reside in `conditions`; they will be set by the meta-runner.

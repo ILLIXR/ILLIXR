@@ -143,6 +143,7 @@ def write_scheduler_config(config: Mapping[str, Any]) -> Path:
         0: "",
         1: f"WF {name2id['offline_cam']} {name2id['gldemo']} X",
         2: "",
+        3: f"WF {name2id['offline_cam']} {name2id['gldemo']} X",
     }[config["conditions"]["swap"]])
 
     lines.append("weights")
@@ -184,6 +185,7 @@ def load_native(config: Mapping[str, Any], quiet: bool) -> None:
         ILLIXR_SWAP_ORDER=str(config["conditions"].get("swap", "N/A")),
         MOSEKLM_LICENSE_FILE="/opt/ILLIXR/mosek/mosek.lic",
         DISPLAY=os.environ.get("DISPLAY", ""),
+        TIMEWARP_CUSHION=str(config["conditions"].get("timewarp_cushion", 0.95) / 1000),
         **config["loader"].get("env", {}),
     )
 

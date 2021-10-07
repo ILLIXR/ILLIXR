@@ -28,6 +28,19 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+	[[maybe_unused]] static double __get_timewarp_cushion() {
+		static double timewarp_cushion = []() {
+			const char* timewarp_cushion_str = std::getenv("TIMEWARP_CUSHION");
+			if (!timewarp_cushion_str) {
+				throw std::runtime_error{"TIMEWARP_CUSHION is not defined."};
+			}
+			double ret = std::stof(timewarp_cushion_str);
+			std::cout << "timewarp_cushion = " << ret << std::endl;
+			return ret;
+		} ();
+		return timewarp_cushion;
+	}
+
 /**
  * @Should be private to Switchboard.
  */
@@ -251,7 +264,11 @@ private:
 				// std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << " v\n";
 				_m_callback(std::move(this_event), _m_dequeued);
 				if (completion_publisher) {
-					completion_publisher->put(new (completion_publisher->allocate()) switchboard::event_wrapper<completion> {completion{wall_time_now(), cpu_time_now() - cpu_time_start + (_m_plugin_id == 6 ? 0.00095 : 0)}});
+					completion comp = {
+						wall_time_now(),
+						cpu_time_now() - cpu_time_start + (_m_plugin_id == 6 ? __get_timewarp_cushion() : 0),
+					};
+					completion_publisher->put(new (completion_publisher->allocate()) switchboard::event_wrapper<completion> {comp});
 				}
 			} else {
 				// Nothing to do.
