@@ -43,8 +43,8 @@ conditions:
   scheduler: dynamic
   duration: 20
   cpus: 1
-  swap: 2
-  timewarp_cushion: 1.8
+  swap: 1
+  timewarp_cushion: 0.95
 loader:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO/
   name: native

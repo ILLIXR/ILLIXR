@@ -6,7 +6,13 @@ import shlex
 import subprocess
 import sys
 import click
+import warnings
 import json
+
+class ILLIXRWarning(Warning):
+    pass
+
+warnings.simplefilter("always", category=ILLIXRWarning)
 
 @click.command()
 @click.argument("metrics_dir", type=Path)
@@ -94,6 +100,8 @@ def main(
 
     options = list(gen_options())
 
+    subprocess.run(["sudo", "rm", "-rf", "metrics"], check=True)
+
     for scheduler, cpu_freq, it, cpus, swap, timewarp_cushion in tqdm(options, disable=dry_run):
         label = f"{random.randint(0, 2**32 - 1):08x}"
         cmd = [
@@ -113,6 +121,21 @@ def main(
             swap_str = f", swap: {json.dumps(swap):5s}"
             print(f"{{scheduler: {json.dumps(scheduler):10s}, cpu_freq: {json.dumps(cpu_freq):3s}, cpus: {cpus:2d}{swap_str}}}")
         else:
-            subprocess.run(cmd, check=True)
-            shutil.move("metrics", metrics_dir / label)
+            while True:
+                subprocess.run(cmd, check=True)
+                metrics = Path("metrics")
+                if is_good_run(metrics):
+                    shutil.move(metrics, metrics_dir / label)
+                    break
+                else:
+                    warnings.warn(ILLIXRWarning("ILLIRX did not really run. I'm not sure why. Re-trying"))
+
+def is_good_run(metrics: Path) -> bool:
+    log = (metrics / "log").read_text()
+    return all([
+        log.count("waiting for enough clone states") >= 4,
+        log.count("Stack frame logger on ") >= 5,
+        log.count("NOT ENOUGH POINTS -- Tracking failed") >= 30,
+    ])
+
 main()
