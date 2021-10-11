@@ -11,7 +11,9 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 SET(EXECUTABLE_OUTPUT_PATH ".")
+SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
+find_package(Threads REQUIRED)
 find_package(ZED 3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
@@ -31,4 +33,4 @@ FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 
 add_library(plugin SHARED ${HDR_FILES} ${SRC_FILES})
-target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES} -lpthread)
+target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES} Threads::Threads)
