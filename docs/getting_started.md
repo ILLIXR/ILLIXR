@@ -84,14 +84,21 @@ git checkout ${branch}
     - `duration`: the duration in seconds to run ILLIXR.
     - `cpus`: the number of CPUs to use.
     - `cpu_freq`: the CPU frequency in GHz to use
+    - `swaps`: Configure two aspects of order within the static and dynamic scheduler: the order of components within the hyperperiod and whether to use "wait for" logic in the scheduler. We experimentally determine the best configuration is swap = 0.
 
 5. Invoke the meta-runner: it runs the runner over a configuration-grid. Run `./metarunner.sh --help` for info. Once you figure out the flags that you want, run them with `--dry-run`. This prints the configurations under trial without actually running them. Finally, when you have the configuration grid you like, run it without `--dry-run`. You should not touch the mouse or keyboard, lest your input perturb the results. Be sure to disable your screensaver before starting. For example:
 
 ```
+# See what the options are
 ./metarunner.sh --help
-./metarunner.sh metrics-all --iters 2 --cpu-freqs 2.6,5.3 --swaps 2 --no-multicore-manual --dry-run
-./metarunner.sh metrics-all --iters 2 --cpu-freqs 2.6,5.3 --swaps 2 --no-multicore-manual
-# This takes a 75 seconds + startup/shutdown (~20s) per item in the configuration-grid...
+
+# Check if this is the desired grid
+./metarunner.sh ../metrics-all --iters 2 --cpu-freqs 2.6,5.3 --swaps 0,1,2,3 --no-multicore-manual --dry-run
+
+# Actually take data
+# This is the command I used for EuroSys
+./metarunner.sh ../metrics-big --iters 20 --cpu-freqs 5.3 --swaps 0 --no-multicore-manual --schedulers dynamic --duration 75 --timewarp-cushions 0.95
+
 ```
 
   - Each run's `metrics_dir` is given a random name and moved into the `dir_of_metrics_dirs`, which is defined by the first argument to `./metarunner.sh`.
