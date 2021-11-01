@@ -93,6 +93,6 @@ if [ "${build_type}" != "Release" ]; then
     cd -
 fi
 sudo make -C "${build_dir}" -j "${illixr_nproc}" install
-
+sudo ln -s /usr/local/lib/${so_file} /usr/local/lib/libgtsam.so 
 ## Log
 log_dependency "${dep_name}" "${deps_log_dir}" "${src_dir}" "${dep_ver}"
