@@ -264,4 +264,3 @@ private:
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(zed_imu_thread);
 
-int main(int argc, char **argv) { return 0; }

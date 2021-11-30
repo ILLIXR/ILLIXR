@@ -37,6 +37,7 @@ plugin_groups:
     - path: pose_lookup
     - path: rk4_integrator
     - path: timewarp_gl
+    - path: depthai
 
 action:
   name: clean

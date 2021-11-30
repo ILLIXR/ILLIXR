@@ -25,12 +25,11 @@ export script_path_apt="scripts/install_apt_deps.sh"
 #export dep_ver_clang="llvmorg-10.0.1"
 
 ## Boost
-## Locally built boost not in use yet
-#export dep_name_boost="boost"
-#export script_path_boost="scripts/install_boost.sh"
-#export parent_dir_boost="${opt_dir}"
-#export dep_prompt_boost="Install Boost from source"
-#export dep_ver_boost="boost-1.65.1"
+export dep_name_boost="boost"
+export script_path_boost="scripts/install_boost.sh"
+export parent_dir_boost="${opt_dir}"
+export dep_prompt_boost="Install Boost from source"
+export dep_ver_boost="boost-1.65.1"
 
 ## OpenCV
 export dep_name_opencv="opencv"
@@ -109,3 +108,10 @@ export script_path_conda="scripts/install_conda.sh"
 export parent_dir_conda="${opt_dir}"
 export dep_prompt_conda="Install Conda"
 export dep_ver_conda="py38_4.9.2"
+
+## DepthAI
+export dep_name_depthai="depthai"
+export script_path_depthai="scripts/install_depthai.sh"
+export parent_dir_depthai="${opt_dir}"
+export dep_prompt_depthai="Install DepthAI from source"
+export dep_ver_depthai="v2.5.0"

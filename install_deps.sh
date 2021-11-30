@@ -233,7 +233,7 @@ sudo chown "${USER}:" "${opt_dir}"
 
 echo "The user will now be prompted to install the following dependencies and optional features:
   Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan,
-  gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3)
+  gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3), DepthAI
 " # End echo
 
 if y_or_n "Add apt-get sources list/keys and install necessary packages"; then
@@ -371,6 +371,14 @@ prompt_install \
     "${parent_dir_conda}" \
     "${dep_prompt_conda}" \
     "${dep_ver_conda}"
+
+prompt_install \
+    "${dep_name_depthai}" \
+    "${deps_log_dir}" \
+    "${script_path_depthai}" \
+    "${parent_dir_depthai}" \
+    "${dep_prompt_depthai}" \
+    "${dep_ver_depthai}"
 
 ## Load new library paths
 sudo ldconfig
