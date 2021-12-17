@@ -20,15 +20,9 @@ action:
   is_mainline : False
 
   monado:
-<<<<<<< HEAD
     path:
       git_repo : https://github.com/ILLIXR/monado_integration.git
       version  : "3.1"
-=======
-    path: ../monado_integration
-      # git_repo : https://github.com/ILLIXR/monado_integration.git
-      # version  : "3.0"
->>>>>>> use local monado
 
     config: # For CMake
       BUILD_WITH_LIBUDEV : "0"
