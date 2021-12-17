@@ -16,6 +16,7 @@
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
+#define NANO_SEC 1000000000.0
 
 namespace ILLIXR {
 
@@ -163,7 +164,7 @@ namespace ILLIXR {
 		time_point sample_time;
 		time_point render_time;
 		rendered_frame() { }
-		rendered_frame(std::array<GLuint, 2>&& texture_handles_,
+		rendered_frame(std::array<GLuint, 2>&& texture_handles_, 
 		               std::array<GLuint, 2>&& swap_indices_,
 		               fast_pose_type render_pose_,
                        time_point sample_time_,
