@@ -32,7 +32,8 @@ public:
 		return time_point{std::chrono::steady_clock::now() - _m_start};
 	}
 	int64_t absolute_ns(time_point relative) {
-		return std::chrono::nanoseconds{(_m_start + relative).time_since_epoch()}.count();
+		// return std::chrono::nanoseconds{(_m_start + relative).time_since_epoch()}.count();
+		return std::chrono::nanoseconds{_m_start.time_since_epoch()}.count() + std::chrono::nanoseconds{relative.time_since_epoch()}.count();
 	}
 
 	/**
