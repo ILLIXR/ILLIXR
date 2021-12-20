@@ -116,32 +116,32 @@ properties:
           type: string
         description: Vars that get passed to the build system
 
-  conditions:
-    type: object
-    additionalProperties: false
-    defulat: {}
-    required:
-      - scheduler
-      - duration
-      - swap
-      - timewarp_cushion
-    properties:
-      scheduler:
-        type: string
-      cpus:
-        description: "`0` means to use as many as possible"
-        default: 0
-        type: integer
-      cpu_freq:
-        description: "`0.0` means to not change the system"
-        type: number
-        default: 0.0
-      duration:
-        type: number
-      swap:
-        type: number
-      timewarp_cushion:
-        type: number
+  # conditions:
+  #   type: object
+  #   additionalProperties: false
+  #   defulat: {}
+  #   required:
+  #     - scheduler
+  #     - duration
+  #     - swap
+  #     - timewarp_cushion
+  #   properties:
+  #     scheduler:
+  #       type: string
+  #     cpus:
+  #       description: "`0` means to use as many as possible"
+  #       default: 0
+  #       type: integer
+  #     cpu_freq:
+  #       description: "`0.0` means to not change the system"
+  #       type: number
+  #       default: 0.0
+  #     duration:
+  #       type: number
+  #     swap:
+  #       type: number
+  #     timewarp_cushion:
+  #       type: number
 
   action:
     type: object
