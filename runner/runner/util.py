@@ -469,7 +469,7 @@ Returns:
                 ["git", "-C", str(repo_path), "fetch"], check=True, capture_output=True
             )
             subprocess_run(
-                ["git", "-C", str(repo_path), "checkout", path_descr["version"]],
+                ["git", "-C", str(repo_path), "checkout", "--force", path_descr["version"]],
                 check=True,
                 capture_output=True,
             )

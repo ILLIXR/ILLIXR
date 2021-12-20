@@ -9,8 +9,8 @@ plugin_group:
       version: "3.1"
   # - name: OpenVINS
   #   path:
-  #     git_repo: https://github.com/ILLIXR/open_vins.git
-  #     version: "3.0"
+  #      git_repo: https://github.com/ILLIXR/open_vins.git
+  #      version: "3.0"
   # - path: rk4_integrator/
   - path: gtsam_integrator/
   - path: pose_prediction/
