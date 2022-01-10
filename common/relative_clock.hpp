@@ -21,7 +21,6 @@ using _clock_period = std::nano;
 using _clock_duration = std::chrono::duration<_clock_rep, _clock_period>;
 
 class time_point {
-
 public:
 	using duration = _clock_duration;  
 	time_point() { }
@@ -35,44 +34,6 @@ public:
 		this->_m_time_since_epoch -= d; 
 		return *this;
 	}
-private:
-	duration _m_time_since_epoch;
-};
-
-inline time_point::duration operator-(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() - rhs.time_since_epoch();
-}
-
-inline time_point operator+(const time_point& pt, const time_point::duration& d) {
-	return time_point(pt.time_since_epoch()+d);
-}
-
-inline time_point operator+(const time_point::duration& d, const time_point& pt) {
-	return time_point(pt.time_since_epoch()+d);
-}
-
-inline bool operator<(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() < rhs.time_since_epoch(); 
-}
-
-inline bool operator>(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() > rhs.time_since_epoch(); 
-}
-
-inline bool operator<=(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() <= rhs.time_since_epoch(); 
-}
-
-inline bool operator>=(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() >= rhs.time_since_epoch(); 
-}
-inline bool operator==(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() == rhs.time_since_epoch(); 
-}
-inline bool operator!=(const time_point& lhs, const time_point& rhs) {
-	return lhs.time_since_epoch() != rhs.time_since_epoch(); 
-}
-
 /**
  * @brief Relative clock for all of ILLIXR
  *
