@@ -163,7 +163,7 @@ namespace ILLIXR {
 		time_point sample_time;
 		time_point render_time;
 		rendered_frame() { }
-		rendered_frame(std::array<GLuint, 2>&& texture_handles_,
+		rendered_frame(std::array<GLuint, 2>&& texture_handles_, 
 		               std::array<GLuint, 2>&& swap_indices_,
 		               fast_pose_type render_pose_,
                        time_point sample_time_,

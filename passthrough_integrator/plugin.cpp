@@ -5,9 +5,9 @@
 
 using namespace ILLIXR;
 
-class dummy_integrator : public plugin {
+class passthrough_integrator : public plugin {
 public:
-	dummy_integrator(std::string name_, phonebook* pb_)
+	passthrough_integrator(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
@@ -38,6 +38,11 @@ public:
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
 
+		w_hat.setZero();
+		a_hat.setZero();
+		w_hat2.setZero();
+		a_hat2.setZero();
+
 		_m_imu_raw.put(_m_imu_raw.allocate(
 			w_hat,
 			a_hat,
@@ -60,4 +65,4 @@ private:
 	switchboard::writer<imu_raw_type> _m_imu_raw;
 };
 
-PLUGIN_MAIN(dummy_integrator)
+PLUGIN_MAIN(passthrough_integrator)

@@ -31,6 +31,10 @@ public:
 		assert(_m_start > std::chrono::steady_clock::time_point{} && "Can't call now() before this clock has been start()ed.");
 		return time_point{std::chrono::steady_clock::now() - _m_start};
 	}
+	int64_t absolute_ns(time_point relative) {
+		// return std::chrono::nanoseconds{(_m_start + relative).time_since_epoch()}.count();
+		return std::chrono::nanoseconds{_m_start.time_since_epoch()}.count() + std::chrono::nanoseconds{relative.time_since_epoch()}.count();
+	}
 
 	/**
 	 * @brief Starts the clock. All times are relative to this point.
