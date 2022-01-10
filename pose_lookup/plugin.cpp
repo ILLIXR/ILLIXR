@@ -24,7 +24,6 @@ public:
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         /// TODO: Set with #198
         , enable_alignment{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
-        , align_scale{0.0}
     {
         if (enable_alignment) {
 			std::string path_to_alignment{ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt")};
