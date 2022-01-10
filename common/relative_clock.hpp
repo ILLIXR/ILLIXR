@@ -82,7 +82,7 @@ inline bool operator!=(const time_point& lhs, const time_point& rhs) {
  * Unfortunately this can't satisfy [Clock][1]
  * because it needs to have data (namely _m_start) shared across link-time boundaries. There's no
  * clean way to do this with static variables, so instead I use instance variables and Phonebook.
- *
+ * 
  * [1]: https://en.cppreference.com/w/cpp/named_req/Clock
  */
 class RelativeClock : public phonebook::service {
