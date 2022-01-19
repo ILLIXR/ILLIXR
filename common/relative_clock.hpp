@@ -15,21 +15,49 @@ namespace ILLIXR {
  * [1]: https://en.cppreference.com/w/cpp/chrono/time_point
  * [2]: https://en.cppreference.com/w/cpp/named_req/Clock
  */
-class time_point<class duration = std::chrono::duration<long, std::nano>> {
+class time_point {
+
 public:
-	constexpr time_point() { }
+	using duration = std::chrono::duration<long, std::nano>; 
+	time_point() { }
 	constexpr explicit time_point(const duration& time_since_epoch) : _m_time_since_epoch{time_since_epoch} { }
-	template<class Duration2>
-	constexpr time_point(const time_point<duration2>& t) : _m_time_since_epoch{std::chrono::duration_cast<duration>(t._m_time_since_epoch)} { }
+	// template<class duration2>
+	// constexpr time_point(const time_point<duration2>& t) : _m_time_since_epoch{std::chrono::duration_cast<duration>(t._m_time_since_epoch)} { }
 	duration time_since_epoch() const { return _m_time_since_epoch; }
+	time_point& operator+=(const duration& d) {
+		this->_m_time_since_epoch += d; 
+		return *this;
+	}
 private:
 	duration _m_time_since_epoch;
 };
 
-template<class D1, class D2>
-constexpr typename std::common_type<D1,D2>::type
-operator-(const time_point<D1>& lhs, const time_point<D2>& rhs) {
+inline time_point::duration operator-(const time_point& lhs, const time_point& rhs) {
 	return lhs.time_since_epoch() - rhs.time_since_epoch();
+}
+
+inline time_point operator+(const time_point& pt, const time_point::duration& d) {
+	return time_point(pt.time_since_epoch()+d);
+}
+
+inline time_point operator+(const time_point::duration& d, const time_point& pt) {
+	return time_point(pt.time_since_epoch()+d);
+}
+
+inline bool operator<(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() < rhs.time_since_epoch(); 
+}
+
+inline bool operator>(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() > rhs.time_since_epoch(); 
+}
+
+inline bool operator<=(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() <= rhs.time_since_epoch(); 
+}
+
+inline bool operator>=(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() >= rhs.time_since_epoch(); 
 }
 
 /**
@@ -51,7 +79,7 @@ public:
 	using rep = long;
 	using period = std::nano;
 	using duration = std::chrono::duration<rep, period>;
-	using time_point = time_point<duration>;
+	using time_point = time_point;
 	static constexpr bool is_steady = true;
 	static_assert(std::chrono::steady_clock::is_steady);
 
