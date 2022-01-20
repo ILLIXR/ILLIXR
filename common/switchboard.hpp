@@ -12,7 +12,11 @@
 #include <chrono>
 #include <exception>
 #include "phonebook.hpp"
-#include "cpu_timer.hpp"
+#if __has_include("cpu_timer.hpp")
+# include "cpu_timer.hpp"
+#else
+static std::chrono::nanoseconds thread_cpu_time() { return {}; }
+#endif
 #include "record_logger.hpp"
 #include "managed_thread.hpp"
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
