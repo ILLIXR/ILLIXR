@@ -20,9 +20,9 @@ action:
   is_mainline : False
 
   monado:
-    path: ../monado_integration
-      # git_repo : https://github.com/ILLIXR/monado_integration.git
-      # version  : "3.0"
+    path: 
+      git_repo : https://github.com/ILLIXR/monado_integration.git
+      version  : "issue-58-standardize-clock"
 
     config: # For CMake
       BUILD_WITH_LIBUDEV : "0"
