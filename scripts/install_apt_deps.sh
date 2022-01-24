@@ -151,7 +151,6 @@ pkg_dep_list_math=(
 ) # End list
 
 pkg_dep_list_nogroup=(
-    libboost-all-dev
     libsqlite3-dev
     libepoxy-dev
     libgbm-dev
