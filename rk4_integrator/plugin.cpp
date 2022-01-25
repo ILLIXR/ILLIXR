@@ -20,10 +20,10 @@ struct imu_type {
 
 
 	imu_type(
-			 time_point timestamp_,
-			 Eigen::Matrix<double, 3, 1> wm_,
-			 Eigen::Matrix<double, 3, 1> am_
-			 )
+		time_point timestamp_,
+		Eigen::Matrix<double, 3, 1> wm_,
+		Eigen::Matrix<double, 3, 1> am_
+		)
 		: timestamp{timestamp_}
 		, wm{wm_}
 		, am{am_}
