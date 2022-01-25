@@ -48,11 +48,11 @@ namespace ILLIXR {
         std::optional<cv::Mat> rgb;
         std::optional<cv::Mat> depth;
 	public:
-		rgb_depth_type(time_point time_,
+		rgb_depth_type(time_point _time,
 					   std::optional<cv::Mat> _rgb,
 					   std::optional<cv::Mat> _depth
 					   )
-			: time{time_}
+			: time{_time}
 			, rgb{_rgb}
 			, depth{_depth}
 		{ }

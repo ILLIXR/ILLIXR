@@ -17,7 +17,7 @@ public:
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
-        , _m_dataset_first_time{_m_sensor_data.cbegin()->first}
+		, _m_dataset_first_time{_m_sensor_data.cbegin()->first}
 		, _m_first_time{true}
 	{ }
 
