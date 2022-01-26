@@ -11,6 +11,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
