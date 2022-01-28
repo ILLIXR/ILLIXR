@@ -10,7 +10,7 @@ cd $(dirname "${0}")
 
 if [ $(whoami) = "root" ]; then
 	echo "Please run this script as your normal user, not as root, not with sudo."
-	echo "This script will ask for your password when it wants to elevate priveleges."
+	echo "This script will ask for your password when it wants to elevate privileges."
 	exit 1
 fi
 
