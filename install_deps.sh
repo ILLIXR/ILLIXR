@@ -8,6 +8,12 @@
 ## Update the working directory
 cd $(dirname "${0}")
 
+if [ $(whoami) = "root" ]; then
+	echo "Please run this script as your normal user, not as root, not with sudo."
+	echo "This script will ask for your password when it wants to elevate priveleges."
+	exit 1
+fi
+
 ## Source the default system values
 . scripts/default_values.sh
 
