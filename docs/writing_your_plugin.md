@@ -91,6 +91,8 @@ To add your own functionality via the plugin interface:
 
     <!--- language: lang-cpp -->
 
+        /// A minimal/no-op IlliXR plugin
+
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
         #include "common/threadloop.hpp"
@@ -99,21 +101,33 @@ To add your own functionality via the plugin interface:
 
         using namespace ILLIXR;
 
-        /// Inherit from `plugin` if you don't need the threadloop
-        class plugin_name : public threadloop {
+        /// Inherit from plugin if you don't need the threadloop
+        /// Inherit from threadloop to provide a new thread to perform the task
+        class basic_plugin : public threadloop {
         public:
-            plugin_name(std::string name_, phonebook* pb_)
+            basic_plugin(std::string name_, phonebook* pb_)
                 : threadloop{name_, pb_}
-                { }
+            {
+                printf("Starting Plugin basic_plugin\n");
+            }
+
+            virtual ~basic_plugin() override {
+                printf("Ending Plugin basic_plugin\n");
+            }
+
+            /// For `threadloop` style plugins, do not override the start() method unless you know what you're doing!
+
+            /// _p_one_iteration() is called in a thread created by threadloop::start()
             void _p_one_iteration() override {
                 std::cout << "This goes to the log" << std::endl;
                 std::cout << "This goes to the console" << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds{100});
             }
+
         };
 
-        // This line makes the plugin importable by Spindle
-        PLUGIN_MAIN(plugin_name);
+        /// This line makes the plugin importable by Spindle
+        PLUGIN_MAIN(basic_plugin);
 
 1.  At this point, you should be able to build your plugin with ILLIXR.
     Move to the ILLIXR repo and update `configs/native.yaml`.
