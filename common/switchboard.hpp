@@ -72,7 +72,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  * switchboard::reader<topic1_type> topic1 = switchboard.get_reader<topic1_type>("topic1");
  *
  * // Get a writer on topic2
- * switchboard::writer<topic2_type> topic2 = switchboard.get_reader<topic2_type>("topic1");
+ * switchboard::writer<topic2_type> topic2 = switchboard.get_writer<topic2_type>("topic1");
  *
  * while (true) {
  *     // Read topic 1
@@ -405,8 +405,8 @@ public:
         * This will return null if no event is on the topic yet.
         */
        ptr<const specific_event> get_ro_nullable() const noexcept {
-          ptr<const event> this_event = _m_topic.get();
-          ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+           ptr<const event> this_event = _m_topic.get();
+           ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
            if (this_event != nullptr) {
 			   assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
@@ -422,13 +422,13 @@ public:
         * @throws `runtime_error` If no event is on the topic yet.
         */
         ptr<const specific_event> get_ro() const {
-           ptr<const specific_event> this_specific_event = get_ro_nullable();
-           if (this_specific_event != nullptr) {
-               return this_specific_event;
-           } else {
-               /// Otherwise, no event on the topic yet
-               throw std::runtime_error("No event on topic");
-           }
+            ptr<const specific_event> this_specific_event = get_ro_nullable();
+            if (this_specific_event != nullptr) {
+                return this_specific_event;
+            } else {
+                /// Otherwise, no event on the topic yet
+                throw std::runtime_error("No event on topic");
+            }
         }
 
        /**
@@ -437,12 +437,12 @@ public:
         * @throws `runtime_error` If no event is on the topic yet.
         */
         ptr<specific_event> get_rw() const {
-           /*
-             This method is currently not more efficient than calling get_ro() and making a copy,
-             but in the future it could be.
-            */
-           ptr<const specific_event> this_specific_event = get_ro();
-           return std::make_shared<specific_event>(*this_specific_event);
+            /*
+              This method is currently not more efficient than calling get_ro() and making a copy,
+              but in the future it could be.
+             */
+            ptr<const specific_event> this_specific_event = get_ro();
+            return std::make_shared<specific_event>(*this_specific_event);
         }
     };
 
