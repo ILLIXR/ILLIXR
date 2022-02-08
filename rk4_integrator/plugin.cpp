@@ -22,16 +22,16 @@ public:
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
-		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+		sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
 			callback(datum);
 		});
 	}
 
-	void callback(switchboard::ptr<const imu_cam_type> datum) {
+	void callback(switchboard::ptr<const imu_type> datum) {
 		_imu_vec.emplace_back(
 			datum->time,
-			datum->angular_v.cast<double>(),
-			datum->linear_a.cast<double>()
+			datum->angular_v,
+			datum->linear_a
 		);
 
 		clean_imu_vec(datum->time);
@@ -116,13 +116,13 @@ private:
 			for(size_t i=0; i<prop_data.size()-1; i++) {
 
 				// Time elapsed over interval
-				double dt = duration2double(prop_data[i+1].timestamp-prop_data[i].timestamp);
+				double dt = duration2double(prop_data[i+1].time-prop_data[i].time);
 
 				// Corrected imu measurements
-				w_hat = prop_data[i].wm - input_values->biasGyro;
-				a_hat = prop_data[i].am - input_values->biasAcc;
-				w_hat2 = prop_data[i+1].wm - input_values->biasGyro;
-				a_hat2 = prop_data[i+1].am - input_values->biasAcc;
+				w_hat = prop_data[i].angular_v.cast<double>() - input_values->biasGyro;
+				a_hat = prop_data[i].linear_a.cast<double>() - input_values->biasAcc;
+				w_hat2 = prop_data[i+1].angular_v.cast<double>() - input_values->biasGyro;
+				a_hat2 = prop_data[i+1].linear_a.cast<double>() - input_values->biasAcc;
 
 				// Compute the new state mean value
 				Eigen::Vector4d new_quat;
@@ -157,20 +157,20 @@ private:
 		for (size_t i = 0; i < imu_data.size()-1; i++) {
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
-			if (imu_data[i+1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
+			if (imu_data[i+1].time > time_begin && imu_data[i].time < time_begin) {
 				imu_type data = interpolate_imu(imu_data[i], imu_data[i+1], time_begin);
 				prop_data.push_back(data);
 				continue;
 			}
 
 			// IMU is within time_begin and time_end
-			if (imu_data[i].timestamp >= time_begin && imu_data[i+1].timestamp <= time_end) {
+			if (imu_data[i].time >= time_begin && imu_data[i+1].time <= time_end) {
 				prop_data.push_back(imu_data[i]);
 				continue;
 			}
 
 			// IMU is past time_end
-			if (imu_data[i+1].timestamp > time_end) {
+			if (imu_data[i+1].time > time_end) {
 				imu_type data = interpolate_imu(imu_data[i], imu_data[i+1], time_end);
 				prop_data.push_back(data);
 				break;
@@ -180,7 +180,7 @@ private:
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
 		for (int i = 0; i < int(prop_data.size())-1; i++) {
-			if (std::chrono::abs(prop_data[i+1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
+			if (std::abs((prop_data[i+1].time - prop_data[i].time).count()) < 1e-9) {
 				prop_data.erase(prop_data.begin()+i);
 				i--; // i can be negative, so use type int
 			}
@@ -194,8 +194,8 @@ private:
 		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
 		return imu_type {
 			timestamp,
-			(1 - lambda) * imu_1.am + lambda * imu_2.am,
-			(1 - lambda) * imu_1.wm + lambda * imu_2.wm
+			(1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
+			(1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v
 		};
 	}
 
