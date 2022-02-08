@@ -273,8 +273,6 @@ private:
 		std::atomic<size_t> _m_queue_size {0};
 
 	public:
-        topic_buffer() { printf("topic buffer created"); }
-        
 		void enqueue(ptr<const event>&& this_event) {
 			_m_queue_size++;
 			[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
@@ -289,8 +287,6 @@ private:
 			_m_queue.wait_dequeue(_m_ctok, obj);
 			return obj;
 		}
-
-        ~topic_buffer() {}
 	};
 
     /**
