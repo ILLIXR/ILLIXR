@@ -24,22 +24,48 @@ namespace ILLIXR {
 	// Data type that combines the IMU and camera data at a certain timestamp.
 	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
 	// time is the current UNIX time where dataset_time is the time read from the csv
-	struct imu_cam_type : public switchboard::event {
+	// struct imu_cam_type : public switchboard::event {
+	// 	time_point time;
+	// 	Eigen::Vector3f angular_v;
+	// 	Eigen::Vector3f linear_a;
+	// 	std::optional<cv::Mat> img0;
+	// 	std::optional<cv::Mat> img1;
+	// 	imu_cam_type(time_point time_,
+	// 				 Eigen::Vector3f angular_v_,
+	// 				 Eigen::Vector3f linear_a_,
+	// 				 std::optional<cv::Mat> img0_,
+	// 				 std::optional<cv::Mat> img1_)
+	// 		: time{time_}
+	// 		, angular_v{angular_v_}
+	// 		, linear_a{linear_a_}
+	// 		, img0{img0_}
+	// 		, img1{img1_}
+	// 	{ }
+	// };
+	struct cam_type : switchboard::event {
+		time_point time;
+		cv::Mat img0;
+		cv::Mat img1;
+		cam_type(
+				 time_point _time,
+				 cv::Mat _img0,
+				 cv::Mat _img1)
+			: time{_time}
+			, img0{_img0}
+			, img1{_img1}
+		{ }
+	};
+
+	struct imu_type : switchboard::event {
 		time_point time;
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
-		std::optional<cv::Mat> img0;
-		std::optional<cv::Mat> img1;
-		imu_cam_type(time_point time_,
+		imu_type(time_point time_,
 					 Eigen::Vector3f angular_v_,
-					 Eigen::Vector3f linear_a_,
-					 std::optional<cv::Mat> img0_,
-					 std::optional<cv::Mat> img1_)
+					 Eigen::Vector3f linear_a_)
 			: time{time_}
 			, angular_v{angular_v_}
 			, linear_a{linear_a_}
-			, img0{img0_}
-			, img1{img1_}
 		{ }
 	};
 
