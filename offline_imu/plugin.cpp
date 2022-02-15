@@ -51,7 +51,7 @@ protected:
 	virtual void _p_one_iteration() override {
 		assert(_m_sensor_data_it != _m_sensor_data.end());
 		//std::cerr << " IMU time: " << std::chrono::time_point<std::chrono::nanoseconds>(std::chrono::nanoseconds{dataset_now}).time_since_epoch().count() << std::endl;
-		time_point real_now(std::chrono::nanoseconds{dataset_now - dataset_first_time});
+		time_point real_now(std::chrono::duration<long, std::nano>{dataset_now - dataset_first_time});
 		// CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "imu", 0, real_now));
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
