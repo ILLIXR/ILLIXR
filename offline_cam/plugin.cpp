@@ -109,7 +109,7 @@ public:
 
 
 			// 1970s
-			time_point expected_real_time_given_dataset_time(std::chrono::nanoseconds{nearest_row->first - dataset_first_time});
+			time_point expected_real_time_given_dataset_time(std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time});
 			_m_log << _m_rtc->now().time_since_epoch().count() << "," << time_since_start.count() << "," << (nearest_row->first - dataset_first_time) << "\n";
 			// CPU_TIMER_TIME_EVENT_INFO(false, false, "entry", cpu_timer::make_type_eraser<FrameInfo>(std::to_string(id), "cam", 0, expected_real_time_given_dataset_time));
 			_m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>(
