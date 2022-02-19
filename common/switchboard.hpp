@@ -13,9 +13,9 @@
 #include <exception>
 #include "phonebook.hpp"
 #if __has_include("cpu_timer.hpp")
-# include "cpu_timer.hpp"
+	#include "cpu_timer.hpp"
 #else
-static std::chrono::nanoseconds thread_cpu_time() { return {}; }
+	static std::chrono::nanoseconds thread_cpu_time() { return {}; }
 #endif
 #include "record_logger.hpp"
 #include "managed_thread.hpp"
@@ -72,7 +72,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  * switchboard::reader<topic1_type> topic1 = switchboard.get_reader<topic1_type>("topic1");
  *
  * // Get a writer on topic2
- * switchboard::writer<topic2_type> topic2 = switchboard.get_writer<topic2_type>("topic1");
+ * switchboard::writer<topic2_type> topic2 = switchboard.get_writer<topic2_type>("topic2");
  *
  * while (true) {
  *     // Read topic 1

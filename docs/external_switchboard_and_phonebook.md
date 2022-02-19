@@ -1,8 +1,8 @@
 # Using Switchboard and Phonebook Externally
 
-Switchboard was desigend as a self-contained entity from ILLIXR that one can reuse in other
+Switchboard was designed as a self-contained entity from ILLIXR that one can reuse in other
 projects. The relevant API is [here for Switchboard][switchboard_api] and [here for
-Phonebook][phonebook_api]
+Phonebook][phonebook_api].
 
 One simply needs to copy these files, maintaining directory structure.
 
@@ -62,11 +62,12 @@ cp path/to/ILLIXR/common/switchboard.hpp common
 cp path/to/ILLIXR/common/phonebook.hpp common
 cp path/to/ILLIXR/common/record_logger.hpp common
 cp path/to/ILLIXR/common/managed_thread.hpp common
-cp path/to/ILLIXR/common/concurrentqueue/blockingconcurrentqueue.hpp common/blockingconcurrentqueue.hpp
-cp path/to/ILLIXR/common/concurrentqueue/concurrentqueue.hpp common/concurrentqueue.hpp
-cp path/to/ILLIXR/common/concurrentqueue/lightweightsemaphore.hpp common/lightweightsemaphore.hpp
+cp path/to/ILLIXR/common/concurrentqueue/blockingconcurrentqueue.hpp common/concurrentqueue/blockingconcurrentqueue.hpp
+cp path/to/ILLIXR/common/concurrentqueue/concurrentqueue.hpp common/concurrentqueue/concurrentqueue.hpp
+cp path/to/ILLIXR/common/concurrentqueue/lightweightsemaphore.hpp common/concurrentqueue/lightweightsemaphore.hpp
 emacs main.cpp # copy and paste from this doc
 
+# This will *probbaly* work with any C++-17 compatible compiler, but I've tested with clang-10.
 # Nix is my preferred package manager, but you can use whichever you like.
 # This command will not affect system packages, just create a temporary environment with the right clang.
 nix-shell -p clang_10
