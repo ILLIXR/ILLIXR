@@ -91,7 +91,7 @@ To add your own functionality via the plugin interface:
 
     <!--- language: lang-cpp -->
 
-        /// A minimal/no-op IlliXR plugin
+        /// A minimal/no-op ILLIXR plugin
 
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
@@ -108,19 +108,19 @@ To add your own functionality via the plugin interface:
             basic_plugin(std::string name_, phonebook* pb_)
                 : threadloop{name_, pb_}
             {
-                printf("Starting Plugin basic_plugin\n");
+                std::cout << "Constructing basic_plugin" << std::endl;
             }
 
+            /// Note the virtual.
             virtual ~basic_plugin() override {
-                printf("Ending Plugin basic_plugin\n");
+                std::cout << "Deconstructing basic_plugin" << std::endl;
             }
 
             /// For `threadloop` style plugins, do not override the start() method unless you know what you're doing!
-
             /// _p_one_iteration() is called in a thread created by threadloop::start()
             void _p_one_iteration() override {
                 std::cout << "This goes to the log" << std::endl;
-                std::cout << "This goes to the console" << std::endl;
+                std::cerr << "This goes to the console" << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds{100});
             }
 
