@@ -76,7 +76,7 @@ To add your own functionality via the plugin interface:
             then your plugin class should extend [`plugin`][13]. Your code goes
             in the `start` method.
 
-    - If you want to scheduled data-driven work in either case, call
+    - If you want to schedule data-driven work in either case, call
       [`sb->schedule(...)`][14].
 			
     - If you spin your own threads, they **must** wait for
@@ -108,19 +108,19 @@ To add your own functionality via the plugin interface:
             basic_plugin(std::string name_, phonebook* pb_)
                 : threadloop{name_, pb_}
             {
-                std::cout << "Constructing basic_plugin" << std::endl;
+                std::cout << "Constructing basic_plugin." << std::endl;
             }
 
             /// Note the virtual.
             virtual ~basic_plugin() override {
-                std::cout << "Deconstructing basic_plugin" << std::endl;
+                std::cout << "Deconstructing basic_plugin." << std::endl;
             }
 
             /// For `threadloop` style plugins, do not override the start() method unless you know what you're doing!
             /// _p_one_iteration() is called in a thread created by threadloop::start()
             void _p_one_iteration() override {
-                std::cout << "This goes to the log" << std::endl;
-                std::cerr << "This goes to the console" << std::endl;
+                std::cout << "This goes to the log when `log` is set in the config." << std::endl;
+                std::cerr << "This goes to the console." << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds{100});
             }
 
