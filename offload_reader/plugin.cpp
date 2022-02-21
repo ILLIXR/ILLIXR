@@ -30,50 +30,28 @@ public:
 		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Reader");
 		subscriber_slow_pose = eCAL::protobuf::CSubscriber
 		<vio_output_proto::SlowPose>("output_slow_pose");
-		subscriber_slow_pose.AddReceiveCallback(
-		std::bind(&offload_reader::ReceiveSlowPose, this, std::placeholders::_2));
-
 		subscriber_imu_int = eCAL::protobuf::CSubscriber
 		<vio_output_proto::IMUIntInput>("output_imu_int");
-		subscriber_imu_int.AddReceiveCallback(
-		std::bind(&offload_reader::ReceiveImuIntInput, this, std::placeholders::_2));
 	}
 
 	virtual void _p_one_iteration() {
-		// while (!receive_slow_pose_done || !receive_imu_int_done) {
-		// 	// Spin
-		// }
+		vio_output_proto::SlowPose slow_pose;
+		subscriber_slow_pose.Receive(slow_pose);
 
-		// receive_slow_pose_done = false;
-		// receive_imu_int_done = false;
-	}
-
-
-private:
-	void ReceiveSlowPose(const vio_output_proto::SlowPose& slow_pose) {
 		pose_type datum_pose_tmp{
 			ILLIXR::time_type{std::chrono::nanoseconds{slow_pose.timestamp()}},
-			Eigen::Vector3f{
-				static_cast<float>(slow_pose.position().x()), 
-				static_cast<float>(slow_pose.position().y()), 
-				static_cast<float>(slow_pose.position().z())},
-			Eigen::Quaternionf{
-				static_cast<float>(slow_pose.rotation().w()), 
-				static_cast<float>(slow_pose.rotation().x()), 
-				static_cast<float>(slow_pose.rotation().y()), 
-				static_cast<float>(slow_pose.rotation().z())}
+			Eigen::Vector3f{slow_pose.position().x(), slow_pose.position().y(), slow_pose.position().z()},
+			Eigen::Quaternionf{slow_pose.rotation().w(), slow_pose.rotation().x(), slow_pose.rotation().y(), slow_pose.rotation().z()}
 		};
 
 		switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
-		receive_slow_pose_done = true;
-	}
+		vio_output_proto::IMUIntInput imu_int_input;
+		subscriber_imu_int.Receive(imu_int_input);
 
-
-	void ReceiveImuIntInput(const vio_output_proto::IMUIntInput& imu_int_input) {
 		imu_integrator_input datum_imu_int_tmp{
-			static_cast<double>(imu_int_input.last_cam_integration_time()),
+			static_cast<double>(slow_pose.timestamp()),
 			imu_int_input.t_offset(),
 			imu_params{
 				imu_int_input.imu_params().gyro_noise(),
@@ -90,21 +68,18 @@ private:
 			},
 			Eigen::Vector3d{imu_int_input.biasacc().x(), imu_int_input.biasacc().y(), imu_int_input.biasacc().z()},
 			Eigen::Vector3d{imu_int_input.biasgyro().x(), imu_int_input.biasgyro().y(), imu_int_input.biasgyro().z()},
-			Eigen::Matrix<double,3,1>{imu_int_input.position().x(), imu_int_input.position().y(), imu_int_input.position().z()},
+			Eigen::Matrix<double,3,1>{slow_pose.position().x(), slow_pose.position().y(), slow_pose.position().z()},
 			Eigen::Matrix<double,3,1>{imu_int_input.velocity().x(), imu_int_input.velocity().y(), imu_int_input.velocity().z()},
-			Eigen::Quaterniond{imu_int_input.rotation().w(), imu_int_input.rotation().x(), imu_int_input.rotation().y(), imu_int_input.rotation().z()}
+			Eigen::Quaterniond{slow_pose.rotation().w(), slow_pose.rotation().x(), slow_pose.rotation().y(), slow_pose.rotation().z()}
 		};
 
 		switchboard::ptr<imu_integrator_input> datum_imu_int =
             _m_imu_integrator_input.allocate<imu_integrator_input>(std::move(datum_imu_int_tmp));
         _m_imu_integrator_input.put(std::move(datum_imu_int));
-
-		receive_imu_int_done = true;
 	}
 
-	bool receive_imu_int_done = false;
-	bool receive_slow_pose_done = false;
 
+private:
     const std::shared_ptr<switchboard> sb;
 	switchboard::writer<pose_type> _m_pose;
 	switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
