@@ -19,6 +19,7 @@ nav:
         - 'ILLIXR API (Version 2)': api/html/annotated.html
         - 'ILLIXR License (Version 2)': LICENSE.md
         - 'Contributing Guidelines (Version 2)': CONTRIBUTING.md
+        - 'Using Switchboard and Phonebook Externally (Version 2)': external_switchboard_and_phonebook.md
     - 'Legacy Documentation':
         - 'ILLIXR (Version 1)': legacy/v1/index.md
         - 'Audio Pipeline (Version 1)': legacy/v1/README-audio.md

@@ -37,7 +37,7 @@ namespace ILLIXR {
 	 * };
 	 * void blah_blah(phonebook* pb) {
 	 *     // Expose `this` as the "official" implementation of `B_service` for this run.
-	 *     pb->register_impl<B_service>(new B_impl);
+	 *     pb->register_impl<B_service>(std::make_shared<B_impl>());
 	 * }
 	 * \endcode
 	 * 
