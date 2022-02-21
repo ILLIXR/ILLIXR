@@ -4,7 +4,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <functional>
+#include <algorithm>
 
 #include "global_module_defs.hpp"
 #include "error_util.hpp"
@@ -23,70 +25,92 @@ Usage:
 
 class dynamic_lib {
 private:
-	dynamic_lib(void_ptr&& handle)
-		: _m_handle{std::move(handle)}
-	{ }
+    dynamic_lib(
+        void_ptr&& handle
+        , const std::string& lib_path = ""
+    ) : _m_handle{std::move(handle)}
+      , _m_lib_path{std::move(lib_path)}
+    { }
 
 public:
-	dynamic_lib(dynamic_lib&& other)
-		: _m_handle{std::move(other._m_handle)}
-	{ }
+    dynamic_lib(dynamic_lib&& other)
+        : _m_handle{std::move(other._m_handle)}
+        , _m_lib_path{std::move(other._m_lib_path)}
+    { }
 
-	dynamic_lib& operator=(dynamic_lib&& other) {
-		if (this != &other) {
-			_m_handle = std::move(other._m_handle);
-		}
-		return *this;
-	}
+    dynamic_lib& operator=(dynamic_lib&& other) {
+        if (this != &other) {
+            _m_handle   = std::move(other._m_handle);
+            _m_lib_path = std::move(other._m_lib_path);
+        }
+        return *this;
+    }
 
-	static dynamic_lib create(const std::string& path) {
-		return dynamic_lib::create(std::string_view{path.c_str()});
-	}
+    ~dynamic_lib() {
+#ifndef NDEBUG
+        if (!_m_lib_path.empty()) {
+            std::cout << "[dynamic_lib] Destructing library : " << _m_lib_path << std::endl;
+        }
+#endif /// NDEBUG
+    }
 
-	static dynamic_lib create(const std::string_view& path) {
-		char* error;
+    static dynamic_lib create(const std::string& path) {
+        return dynamic_lib::create(std::string_view{path.c_str()});
+    }
 
-		// dlopen man page says that it can set errno sp
-		RAC_ERRNO_MSG("dynamic_lib before dlopen");
-		void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
-		RAC_ERRNO_MSG("dynamic_lib after dlopen");
+    static dynamic_lib create(const std::string_view& path) {
+        char* error;
 
-		if ((error = dlerror()) || !handle) {
-			throw std::runtime_error{
-				"dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+        // dlopen man page says that it can set errno sp
+        RAC_ERRNO_MSG("dynamic_lib before dlopen");
+        void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL);
+        RAC_ERRNO_MSG("dynamic_lib after dlopen");
+
+        if ((error = dlerror()) || !handle) {
+            throw std::runtime_error{
+                "dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})
+            };
         }
 
-		return dynamic_lib{void_ptr{handle, [](void* handle) {
-            RAC_ERRNO();
-			
-			char* error;
-			int ret = dlclose(handle);
-			if ((error = dlerror()) || ret)
-				throw std::runtime_error{
-					"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
-		}}};
-	}
+        return dynamic_lib{
+            void_ptr{handle, [](void* handle) {
+                RAC_ERRNO();
 
-	const void* operator[](const std::string& symbol_name) const {
-		RAC_ERRNO_MSG("dynamic_lib at start of operator[]");
+                char* error;
+                int ret = dlclose(handle);
+                if ((error = dlerror()) || ret) {
+                    const std::string msg_error {"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
+                    std::cerr << "[dynamic_lib] " << msg_error << std::endl;
+                    throw std::runtime_error{msg_error};
+                }
+            }},
+            std::string{path} /// Keep the dynamic lib name for debugging
+        };
+    }
 
-		char* error;		
-		void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
-		if ((error = dlerror()))
-			throw std::runtime_error{
-				"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
-		return symbol;
-	}
+    const void* operator[](const std::string& symbol_name) const {
+        RAC_ERRNO_MSG("dynamic_lib at start of operator[]");
 
-	template <typename T>
-	const T get(const std::string& symbol_name) const {
-		const void* obj = (*this)[symbol_name];
-		// return reinterpret_cast<const T>((*this)[symbol_name]);
-		return (const T) obj;
-	}
+        char* error;
+        void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
+        if ((error = dlerror())) {
+            throw std::runtime_error{
+                "dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})
+            };
+        }
+        return symbol;
+    }
+
+    template <typename T>
+    const T get(const std::string& symbol_name) const {
+        const void* obj = (*this)[symbol_name];
+        // return reinterpret_cast<const T>((*this)[symbol_name]);
+        return (const T) obj;
+    }
 
 private:
-	void_ptr _m_handle;
+    void_ptr    _m_handle;
+    std::string _m_lib_path;
 };
 
 }
