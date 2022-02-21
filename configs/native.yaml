@@ -5,6 +5,7 @@ plugin_groups:
       - path: gldemo/
       - path: debugview/
       - path: offload_data/
+      - path: offload_writer/
   - !include "core_plugins.yaml"
 
 data:

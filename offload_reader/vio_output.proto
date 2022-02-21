@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package vio_output_proto;
+
+message Vec3 {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message Quat {
+    double w = 1;
+    double x = 2;
+    double y = 3;
+    double z = 4;
+}
+
+message IMUParams {
+    double gyro_noise = 3;
+    double acc_noise = 4;
+    double gyro_walk = 5;
+    double acc_walk = 6;
+    Vec3 n_gravity = 7;
+    double imu_integration_sigma = 8;
+    double nominal_rate = 9;
+}
+
+message SlowPose
+{
+    uint64 timestamp = 1;
+    Vec3 position = 2;
+    Quat rotation = 3;
+}
+
+message IMUIntInput {
+    double last_cam_integration_time = 1;
+    double t_offset = 2;
+    IMUParams imu_params = 3;
+    
+    Vec3 biasAcc = 4;
+    Vec3 biasGyro = 5;
+    Vec3 position = 6;
+    Quat rotation = 7;
+    Vec3 velocity = 8;
+}
