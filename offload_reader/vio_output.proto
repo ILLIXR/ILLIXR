@@ -43,3 +43,8 @@ message IMUIntInput {
     Quat rotation = 7;
     Vec3 velocity = 8;
 }
+
+message VIOOutput {
+    SlowPose slow_pose = 1;
+    IMUIntInput imu_int_input = 2;
+}

@@ -10,7 +10,7 @@ message Vec3 {
 
 message IMUCamData
 {
-  int64 timestamp = 1;
+  fixed64 timestamp = 1;
   Vec3 angular_vel = 2;
   Vec3 linear_accel = 3;
 
@@ -18,4 +18,8 @@ message IMUCamData
   int32 cols = 5;
   bytes img0_data = 6;
   bytes img1_data = 7;
+}
+
+message IMUCamVec {
+  repeated IMUCamData imu_cam_data = 1;
 }

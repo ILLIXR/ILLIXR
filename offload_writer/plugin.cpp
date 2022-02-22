@@ -21,7 +21,7 @@ public:
     { 
 		// Initialize eCAL and create a protobuf publisher
 		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Writer");
-		publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamData>("vio_input");
+		publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
 	}
 
 
@@ -34,43 +34,51 @@ public:
 
 
     void send_imu_cam_data(switchboard::ptr<const imu_cam_type> datum) {
-		vio_input_proto::IMUCamData imu_cam_data;
-		imu_cam_data.set_timestamp(datum->dataset_time);
+		vio_input_proto::IMUCamData* imu_cam_data = data_buffer->add_imu_cam_data();
+		imu_cam_data->set_timestamp(datum->dataset_time);
 
 		vio_input_proto::Vec3* angular_vel = new vio_input_proto::Vec3();
 		angular_vel->set_x(datum->angular_v.x());
 		angular_vel->set_y(datum->angular_v.y());
 		angular_vel->set_z(datum->angular_v.z());
-		imu_cam_data.set_allocated_angular_vel(angular_vel);
+		imu_cam_data->set_allocated_angular_vel(angular_vel);
 
 		vio_input_proto::Vec3* linear_accel = new vio_input_proto::Vec3();
 		linear_accel->set_x(datum->linear_a.x());
 		linear_accel->set_y(datum->linear_a.y());
 		linear_accel->set_z(datum->linear_a.z());
-		imu_cam_data.set_allocated_linear_accel(linear_accel);
+		imu_cam_data->set_allocated_linear_accel(linear_accel);
 
       	if (!datum->img0.has_value() && !datum->img1.has_value()) {
-			imu_cam_data.set_rows(-1);
-			imu_cam_data.set_cols(-1);
-		}
-		 else {
+			imu_cam_data->set_rows(-1);
+			imu_cam_data->set_cols(-1);
+
+		} else {
 			cv::Mat img0{datum->img0.value()};
         	cv::Mat img1{datum->img1.value()};
 
-			imu_cam_data.set_rows(img0.rows);
-			imu_cam_data.set_cols(img0.cols);
+			// cv::imshow("test", img0);
+			// cv::waitKey(0);
+			// cv::imshow("test", img1);
+        	// cv::waitKey(0);
+
+			imu_cam_data->set_rows(img0.rows);
+			imu_cam_data->set_cols(img0.cols);
 
 			// Need to verify whether img0.data is malloc'd or not
-			imu_cam_data.set_img0_data((char*) img0.data);
-			imu_cam_data.set_img1_data((char*) img1.data);
-		}
+			imu_cam_data->set_img0_data((char*) img0.data);
+			imu_cam_data->set_img1_data((char*) img1.data);
 
-		publisher.Send(imu_cam_data);
+			publisher.Send(*data_buffer);
+			delete data_buffer;
+			data_buffer = new vio_input_proto::IMUCamVec();
+		}
     }
 
 private:
     const std::shared_ptr<switchboard> sb;
-	eCAL::protobuf::CPublisher<vio_input_proto::IMUCamData> publisher;
+	eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec> publisher;
+	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 };
 
 PLUGIN_MAIN(offload_writer)
