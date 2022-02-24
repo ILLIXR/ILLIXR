@@ -50,7 +50,7 @@ public:
 	 */
 	virtual void start() override {
 		plugin::start();
-		_m_thread = std::thread(std::bind(&threadloop::thread_main, this));
+		_m_thread = std::thread(std::bind(&threadloop::thread_main, this)); // TODO change to managed_thread
 		assert(!_m_stoplight->check_should_stop());
 		assert(_m_thread.joinable());
 	}
@@ -64,6 +64,10 @@ public:
 		assert(_m_stoplight->check_should_stop());
 		assert(_m_thread.joinable());
 		_m_thread.join();
+	}
+
+	virtual void internal_stop() override {
+		_m_internal_stop.store(true); 
 	}
 
 	virtual ~threadloop() override {
@@ -170,8 +174,13 @@ protected:
 		return _m_terminate.load();
 	}
 
+	bool should_internal_stop() {
+		return _m_internal_stop.load();
+	}
+
 private:
 	std::atomic<bool> _m_terminate {false};
+	std::atomic<bool> _m_internal_stop {false};
 	std::thread _m_thread;
 	std::shared_ptr<const Stoplight> _m_stoplight;
 };
