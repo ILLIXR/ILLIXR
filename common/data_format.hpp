@@ -61,8 +61,8 @@ namespace ILLIXR {
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		imu_type(time_point time_,
-					 Eigen::Vector3f angular_v_,
-					 Eigen::Vector3f linear_a_)
+				 Eigen::Vector3f angular_v_,
+				 Eigen::Vector3f linear_a_)
 			: time{time_}
 			, angular_v{angular_v_}
 			, linear_a{linear_a_}
