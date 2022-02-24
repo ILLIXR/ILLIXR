@@ -33,9 +33,9 @@ public:
 	// }
 
 	virtual skip_option _p_should_skip() override {
-		if (true
+		if (!should_internal_stop())
 			// next_row != _m_sensor_data.end() && next_row->second.cam0 && next_row->second.cam1
-			) {
+		{
 			return skip_option::run;
 		} else {
 			return skip_option::stop;
@@ -57,7 +57,7 @@ public:
 			std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + " << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
 #endif
 			after_row--;
-			stop();
+			internal_stop();
 			return;
 		} else if (after_row == _m_sensor_data.cbegin()) {
 #ifndef NDEBUG
