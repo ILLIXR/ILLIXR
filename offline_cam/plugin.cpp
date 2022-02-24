@@ -33,7 +33,7 @@ public:
 	// }
 
 	virtual skip_option _p_should_skip() override {
-		if (true)
+		if (!should_internal_stop())
 			// next_row != _m_sensor_data.end() && next_row->second.cam0 && next_row->second.cam1
 		{
 			return skip_option::run;
