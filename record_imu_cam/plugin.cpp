@@ -59,7 +59,7 @@ public:
 
 		// write cam1 
 		std::optional<cv::Mat> cam1_data = datum->img1;
-        std::string cam1_img = record_data + "cam1/data/" + std::to_string(timestamp) + ".png";
+        	std::string cam1_img = record_data + "cam1/data/" + std::to_string(timestamp) + ".png";
 		if (cam1_data!=std::nullopt) {
 			cam1_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
 			cv::imwrite(cam1_img, cam1_data.value());
