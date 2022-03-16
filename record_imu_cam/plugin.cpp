@@ -1,4 +1,3 @@
-#include "common/phonebook.hpp"
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
@@ -17,10 +16,6 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 	{
-		sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t){
-			this->dump_data(datum);
-		});
-
 		std::string record_data = get_record_data_path();
 		//check folder exist, if exist delete it'
 		system(("rm  -r " + record_data).c_str());
@@ -28,7 +23,7 @@ public:
 		std::string imu_file = record_data + "imu0/" + "data.csv";
 		system(("mkdir -p " + record_data + "imu0/").c_str());
 		imu_wt_file.open(imu_file, std::ofstream::out);
-		imu_wt_file << "#timestamp [ns],w_RS_S_x [rad s^-1],w_RS_S_y [rad s^-1],w_RS_S_z [rad s^-1],a_RS_S_x [m s^-2],a_RS_S_y [m s^-2],a_RS_S_z [m s^-2]" << std::endl;
+		imu_wt_file << "#timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]" << std::endl;
 
 		std::string cam0_file = record_data + "cam0/" + "data.csv";
 		system(("mkdir -p " + record_data + "cam0/data").c_str());
@@ -39,6 +34,10 @@ public:
 		system(("mkdir -p " + record_data + "cam1/data").c_str());
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
 		cam1_wt_file << "#timestamp [ns],filename" << std::endl;
+
+		sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t){
+			this->dump_data(datum);
+		});
 	}
 
 	void dump_data(switchboard::ptr<const imu_cam_type> datum) {
@@ -46,31 +45,24 @@ public:
 		ullong timestamp  = datum->dataset_time;
 		Eigen::Vector3f angular_v = datum->angular_v;
 		Eigen::Vector3f linear_a = datum->linear_a;
-		//std::cout << "____angular_v:" << datum->angular_v[0] << std::endl;
+
 		// write imu0
-		imu_wt_file << datum->dataset_time
-	       			<< "," << std::setprecision(17) << angular_v[0]
-				<< "," << angular_v[1]
-	       			<< "," << angular_v[2]
-	       			<< "," << linear_a[0]
-				<< "," << linear_a[1]
-	       			<< "," << linear_a[2]
-				<< std::endl;
+		imu_wt_file << datum->dataset_time << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2] << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
 		// write cam0
-		std::optional<cv::Mat>  cam0_data = datum->img0;
+		std::optional<cv::Mat> cam0_data = datum->img0;
 		std::string cam0_img = record_data + "cam0/data/" + std::to_string(timestamp) + ".png";
 		if (cam0_data!=std::nullopt) {
 			cam0_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
-			cv::imwrite(cam0_img, (cam0_data.value()));
+			cv::imwrite(cam0_img, cam0_data.value());
 		}
 
 		// write cam1 
-		std::optional<cv::Mat>  cam1_data = datum->img1;
-                std::string cam1_img = record_data + "cam1/data/" + std::to_string(timestamp) + ".png";
+		std::optional<cv::Mat> cam1_data = datum->img1;
+        std::string cam1_img = record_data + "cam1/data/" + std::to_string(timestamp) + ".png";
 		if (cam1_data!=std::nullopt) {
 			cam1_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
-			cv::imwrite(cam1_img, (cam1_data.value()));
+			cv::imwrite(cam1_img, cam1_data.value());
 		}
 
 	}
@@ -88,10 +80,9 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	std::string get_record_data_path() {
-		//std::string illixr_data(std::getenv("ILLIXR_DATA"));
 		std::string ILLIXR_DIR = std::filesystem::current_path();
 		// set path for data recording here
-		return ILLIXR_DIR + "/.cache/paths/data_record/";
+		return ILLIXR_DIR + "/data_record/";
 	}
 
 };
