@@ -3,7 +3,8 @@
 #include "common/data_format.hpp"
 
 #include <fstream>
-#include <filesystem>
+#include <boost/filesystem.hpp>
+#include <iomanip>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
@@ -18,20 +19,20 @@ public:
 	{
 		std::string record_data = get_record_data_path();
 		//check folder exist, if exist delete it'
-		system(("rm  -r " + record_data).c_str());
+		boost::filesystem::remove_all(record_data);
 
 		std::string imu_file = record_data + "imu0/" + "data.csv";
-		system(("mkdir -p " + record_data + "imu0/").c_str());
+		boost::filesystem::create_directories(record_data + "imu0/");
 		imu_wt_file.open(imu_file, std::ofstream::out);
 		imu_wt_file << "#timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]" << std::endl;
 
 		std::string cam0_file = record_data + "cam0/" + "data.csv";
-		system(("mkdir -p " + record_data + "cam0/data").c_str());
+		boost::filesystem::create_directories(record_data + "cam0/");
 		cam0_wt_file.open(cam0_file, std::ofstream::out);
 		cam0_wt_file << "#timestamp [ns],filename" << std::endl;
 
 		std::string cam1_file = record_data + "cam1/" + "data.csv";
-		system(("mkdir -p " + record_data + "cam1/data").c_str());
+		boost::filesystem::create_directories(record_data + "cam1/");
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
 		cam1_wt_file << "#timestamp [ns],filename" << std::endl;
 
@@ -80,7 +81,7 @@ private:
 	const std::shared_ptr<switchboard> sb;
 
 	std::string get_record_data_path() {
-		std::string ILLIXR_DIR = std::filesystem::current_path();
+		std::string ILLIXR_DIR = boost::filesystem::current_path().string();
 		// set path for data recording here
 		return ILLIXR_DIR + "/data_record/";
 	}
