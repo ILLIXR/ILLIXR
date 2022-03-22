@@ -7,6 +7,7 @@
 #include <ecal/msg/protobuf/publisher.h>
 #include <google/protobuf/util/time_util.h>
 
+#include <thread>
 #include <string>
 
 #include "vio_input.pb.h"
@@ -22,11 +23,13 @@ public:
 		// Initialize eCAL and create a protobuf publisher
 		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Writer");
 		publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
+
 	}
 
 
     virtual void start() override {
         plugin::start();
+
         sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
 			this->send_imu_cam_data(datum);
 		});
@@ -34,6 +37,15 @@ public:
 
 
     void send_imu_cam_data(switchboard::ptr<const imu_cam_type> datum) {
+		// Ensures that slam doesnt start before valid IMU readings come in
+        if (datum == nullptr) {
+            assert(previous_timestamp == 0);
+            return;
+        }
+
+		assert(datum->dataset_time > previous_timestamp);
+		previous_timestamp = datum->dataset_time;
+
 		vio_input_proto::IMUCamData* imu_cam_data = data_buffer->add_imu_cam_data();
 		imu_cam_data->set_timestamp(datum->dataset_time);
 
@@ -57,17 +69,16 @@ public:
 			cv::Mat img0{datum->img0.value()};
         	cv::Mat img1{datum->img1.value()};
 
-			// cv::imshow("test", img0);
-			// cv::waitKey(0);
-			// cv::imshow("test", img1);
-        	// cv::waitKey(0);
-
 			imu_cam_data->set_rows(img0.rows);
 			imu_cam_data->set_cols(img0.cols);
 
 			// Need to verify whether img0.data is malloc'd or not
 			imu_cam_data->set_img0_data((char*) img0.data);
 			imu_cam_data->set_img1_data((char*) img1.data);
+
+			std::cout << "SENDING NUM: " << num << std::endl;
+			data_buffer->set_num(num);
+			num++;
 
 			publisher.Send(*data_buffer);
 			delete data_buffer;
@@ -76,9 +87,12 @@ public:
     }
 
 private:
+	int num = 0;
+	double previous_timestamp = 0;
+	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
+
     const std::shared_ptr<switchboard> sb;
 	eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec> publisher;
-	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 };
 
 PLUGIN_MAIN(offload_writer)

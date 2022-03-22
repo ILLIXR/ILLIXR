@@ -22,4 +22,5 @@ message IMUCamData
 
 message IMUCamVec {
   repeated IMUCamData imu_cam_data = 1;
+  int32 num = 2;
 }
