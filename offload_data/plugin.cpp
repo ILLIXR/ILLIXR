@@ -111,7 +111,7 @@ private:
 		for (auto& container_it : _offload_data_container)
 		{
 			// Get collecting time for each frame
-			_time_seq.push_back(std::chrono::duration_cast<std::chrono::duration<long, std::milli>>(container_it->offload_time).count());
+			_time_seq.push_back(std::chrono::duration_cast<std::chrono::duration<long, std::milli>>(container_it->offload_duration).count());
 
 			std::string image_name = obj_dir + std::to_string(img_idx) + ".png";
 			std::string pose_name = obj_dir + std::to_string(img_idx) + ".txt";
