@@ -8,9 +8,10 @@ namespace ILLIXR {
 /**
  * Mimick of `std::chrono::time_point<Clock, Rep>` [1].
  *
- * Can't use `std::chrono::time_point<Clock, Rep>`, because the `Clock` must satisfy the named
- * requirements of the Clock interface [2], but `RelativeClock` cannot for the aforementioned
- * reasons. Instead, we will mimick the interface of [1] here.
+ * Can't use `std::chrono::time_point<Clock, Rep>`, because the `Clock` must satisfy the Clock interface [2],
+ * but `RelativeClock` cannot satisfy this interface because `RelativeClock::now()` 
+ * is a stateful (instance method) not pure (class method).
+ * Instead, we will mimick the interface of [1] here.
  *
  * [1]: https://en.cppreference.com/w/cpp/chrono/time_point
  * [2]: https://en.cppreference.com/w/cpp/named_req/Clock
@@ -21,8 +22,6 @@ public:
 	using duration = std::chrono::duration<long, std::nano>; 
 	time_point() { }
 	constexpr explicit time_point(const duration& time_since_epoch) : _m_time_since_epoch{time_since_epoch} { }
-	// template<class duration2>
-	// constexpr time_point(const time_point<duration2>& t) : _m_time_since_epoch{std::chrono::duration_cast<duration>(t._m_time_since_epoch)} { }
 	duration time_since_epoch() const { return _m_time_since_epoch; }
 	time_point& operator+=(const duration& d) {
 		this->_m_time_since_epoch += d; 
@@ -88,7 +87,6 @@ public:
 		return time_point{std::chrono::steady_clock::now() - _m_start};
 	}
 	int64_t absolute_ns(time_point relative) {
-		// return std::chrono::nanoseconds{(_m_start + relative).time_since_epoch()}.count();
 		return std::chrono::nanoseconds{_m_start.time_since_epoch()}.count() + std::chrono::nanoseconds{relative.time_since_epoch()}.count();
 	}
 
