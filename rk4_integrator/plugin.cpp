@@ -79,11 +79,10 @@ private:
 	void clean_imu_vec(time_point timestamp) {
 		auto it0 = _imu_vec.begin();
         while (it0 != _imu_vec.end()) {
-            if (timestamp - it0->timestamp > IMU_SAMPLE_LIFETIME) {
-                it0 = _imu_vec.erase(it0);
-            } else {
-                it0++;
+            if (timestamp - it0->timestamp < IMU_SAMPLE_LIFETIME) {
+               break;
             }
+           it0 = _imu_vec.erase(it0);
          }
 	}
 
@@ -132,7 +131,7 @@ private:
 		// Loop through all IMU messages, and use them to move the state forward in time
 		// This uses the zero'th order quat, and then constant acceleration discrete
 		if (prop_data.size() > 1) {
-			for(int i=0; i<int(prop_data.size())-1; i++) {
+			for(size_t i=0; i<prop_data.size()-1; i++) {
 
 				// Time elapsed over interval
 				double dt = duration2double(prop_data[i+1].timestamp-prop_data[i].timestamp);
@@ -173,7 +172,7 @@ private:
 			return prop_data;
 		}
 
-		for (int i = 0; i < int(imu_data.size())-1; i++) {
+		for (size_t i = 0; i < imu_data.size()-1; i++) {
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
 			if (imu_data[i+1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
@@ -201,7 +200,7 @@ private:
 		for (int i = 0; i < int(prop_data.size())-1; i++) {
 			if (std::chrono::abs(prop_data[i+1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
 				prop_data.erase(prop_data.begin()+i);
-				i--;
+				i--; // i can be negative, so use type int
 			}
 		}
 
@@ -209,7 +208,7 @@ private:
 	}
 
 	// For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, time_point timestamp) {
+	static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
 		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
 		return imu_type {
 			timestamp,
