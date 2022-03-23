@@ -164,7 +164,7 @@ private:
 	// The flag is reset to GL_NO_ERROR after a glGetError call
 	GLenum err;
 
-	duration offload_time;
+	duration offload_duration;
 
 	const std::shared_ptr<const RelativeClock> _m_clock;
 
@@ -214,11 +214,11 @@ private:
 		}
 
 		// Record the image collection time
-		offload_time = _m_clock->now() - startGetTexTime;
+		offload_duration = _m_clock->now() - startGetTexTime;
 
 
 #ifndef NDEBUG
-		double time = duration2double<std::milli>(offload_time);
+		double time = duration2double<std::milli>(offload_duration);
 		std::cout << "Texture image collecting time: " << time << "ms" << std::endl;
 #endif
 
@@ -707,7 +707,7 @@ public:
             _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
                 texture_pose {
                     static_cast<int>(++_offload_seq), /// TODO: Should texture_pose.seq be a long long too?
-                    offload_time,
+                    offload_duration,
                     image,
                     time_last_swap,
                     latest_pose.pose.position,
