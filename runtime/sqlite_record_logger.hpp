@@ -57,7 +57,7 @@ public:
 			} else if (rh.get_column_type(i) == typeid(bool)) {
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(double)) {
-				create_table_string += std::string{"REAL"};
+				create_table_string += std::string{"REAL"}; // For performance timing. Will be deleted when implementing #208.
 			} else if (rh.get_column_type(i) == typeid(std::chrono::nanoseconds)) {
 				create_table_string += std::string{"INTEGER"};
 			} else if (rh.get_column_type(i) == typeid(std::chrono::high_resolution_clock::time_point)) {
