@@ -113,7 +113,7 @@ private:
 		// Loop through all IMU messages, and use them to move the state forward in time
 		// This uses the zero'th order quat, and then constant acceleration discrete
 		if (prop_data.size() > 1) {
-			for(int i=0; i<int(prop_data.size())-1; i++) {
+			for(size_t i=0; i<prop_data.size()-1; i++) {
 
 				// Time elapsed over interval
 				double dt = duration2double(prop_data[i+1].timestamp-prop_data[i].timestamp);
