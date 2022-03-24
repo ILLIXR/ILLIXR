@@ -66,7 +66,12 @@ public:
 		_m_thread.join();
 	}
 
-	virtual void internal_stop() override {
+	/**
+	 * @brief Stops the thread.
+	 *
+	 * A thread should call this if it wants to stop itself (due to out of data for example). 
+	 */ 
+	virtual void internal_stop() {
 		_m_internal_stop.store(true); 
 	}
 
@@ -89,7 +94,7 @@ private:
 		_p_thread_setup();
 
 		// _m_stoplight->wait_for_ready();
-		while (!_m_stoplight->check_should_stop()) {
+		while (!_m_stoplight->check_should_stop() && !should_internal_stop()) {
 			skip_option s = _p_should_skip();
 
 			switch (s) {
@@ -170,16 +175,21 @@ protected:
 	 *
 	 * Check this before doing long-running computation; it makes termination more responsive.
 	 */
-	bool should_terminate() {
-		return _m_terminate.load();
-	}
+	// bool should_terminate() {
+	// 	return _m_terminate.load();
+	// }
 
+	/**
+	 * @brief Whether the thread has been asked to terminate.
+	 *
+	 * Check this before proceeding to the next iteration. 
+	 */
 	bool should_internal_stop() {
 		return _m_internal_stop.load();
 	}
 
 private:
-	std::atomic<bool> _m_terminate {false};
+	// std::atomic<bool> _m_terminate {false};
 	std::atomic<bool> _m_internal_stop {false};
 	std::thread _m_thread;
 	std::shared_ptr<const Stoplight> _m_stoplight;

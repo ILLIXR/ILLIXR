@@ -48,8 +48,7 @@ namespace ILLIXR {
 		 * chance to join the thread before the derived class is destroyed, and the thread accesses
 		 * freed memory. Instead, we call plugin->stop manually before destrying anything.
 		 */
-		virtual void stop() { }
-		virtual void internal_stop() {} 
+		virtual void stop() { } 
 
 		plugin(const std::string& name_, phonebook* pb_)
 			: name{name_}
