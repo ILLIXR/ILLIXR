@@ -11,6 +11,10 @@
 
 using namespace ILLIXR;
 
+/*
+The plugin to record the IMU and the camera data. It is written by Ying Jing and Henry Che from Illinois.
+*/
+
 class record_imu_cam : public plugin {
 public:
 	record_imu_cam(std::string name_, phonebook* pb_)
