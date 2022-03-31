@@ -58,9 +58,9 @@ public:
 
 		// write cam0
 		std::optional<cv::Mat> cam0_data = datum->img0;
-		boost::filesystem::path cam0_data_dir = record_data / "cam0/data/";
+		boost::filesystem::path cam0_data_dir = record_data / "cam0" / "data";
 		boost::filesystem::create_directories(cam0_data_dir);
-		std::string cam0_img = cam0_data_dir.string() + std::to_string(timestamp) + ".png";
+		std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
 		if (cam0_data!=std::nullopt) {
 			cam0_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
 			cv::imwrite(cam0_img, cam0_data.value());
@@ -68,9 +68,9 @@ public:
 
 		// write cam1 
 		std::optional<cv::Mat> cam1_data = datum->img1;
-		boost::filesystem::path cam1_data_dir = record_data / "cam1/data/";
+		boost::filesystem::path cam1_data_dir = record_data / "cam1" / "data";
 		boost::filesystem::create_directories(cam1_data_dir);
-        std::string cam1_img = cam1_data_dir.string() + std::to_string(timestamp) + ".png";
+        std::string cam1_img = cam1_data_dir.string() + "/" +std::to_string(timestamp) + ".png";
 		if (cam1_data!=std::nullopt) {
 			cam1_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
 			cv::imwrite(cam1_img, cam1_data.value());
@@ -93,7 +93,7 @@ private:
 	boost::filesystem::path get_record_data_path() {
 		boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
 		// set path for data recording here
-		return ILLIXR_DIR / "/data_record/";
+		return ILLIXR_DIR / "data_record";
 	}
 
 };
