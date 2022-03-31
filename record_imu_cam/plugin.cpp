@@ -10,7 +10,6 @@
 #include <opencv2/imgproc.hpp>
 
 using namespace ILLIXR;
-
 /*
 The plugin to record the IMU and the camera data. It is written by Ying Jing and Henry Che from Illinois.
 */
@@ -25,19 +24,19 @@ public:
 		//check folder exist, if exist delete it'
 		boost::filesystem::remove_all(record_data);
 
-		boost::filesystem::path imu_dir = boost::filesystem::operator/(record_data, "imu0");
+		boost::filesystem::path imu_dir = record_data / "imu0";
 		boost::filesystem::create_directories(imu_dir);
 		std::string imu_file = imu_dir.string() + "/data.csv";
 		imu_wt_file.open(imu_file, std::ofstream::out);
 		imu_wt_file << "#timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]" << std::endl;
 
-		boost::filesystem::path cam0_dir = boost::filesystem::operator/(record_data, "cam0");
+		boost::filesystem::path cam0_dir = record_data / "cam0";
 		boost::filesystem::create_directories(cam0_dir);
 		std::string cam0_file = cam0_dir.string() + "/data.csv";
 		cam0_wt_file.open(cam0_file, std::ofstream::out);
 		cam0_wt_file << "#timestamp [ns],filename" << std::endl;
 
-		boost::filesystem::path cam1_dir = boost::filesystem::operator/(record_data, "cam1");
+		boost::filesystem::path cam1_dir = record_data / "cam1";
 		boost::filesystem::create_directories(cam1_dir);
 		std::string cam1_file = cam1_dir.string() + "/data.csv";
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
@@ -59,7 +58,7 @@ public:
 
 		// write cam0
 		std::optional<cv::Mat> cam0_data = datum->img0;
-		boost::filesystem::path cam0_data_dir = boost::filesystem::operator/(record_data, "cam0/data/");
+		boost::filesystem::path cam0_data_dir = record_data / "cam0/data/";
 		boost::filesystem::create_directories(cam0_data_dir);
 		std::string cam0_img = cam0_data_dir.string() + std::to_string(timestamp) + ".png";
 		if (cam0_data!=std::nullopt) {
@@ -69,7 +68,7 @@ public:
 
 		// write cam1 
 		std::optional<cv::Mat> cam1_data = datum->img1;
-		boost::filesystem::path cam1_data_dir = boost::filesystem::operator/(record_data, "cam1/data/");
+		boost::filesystem::path cam1_data_dir = record_data / "cam1/data/";
 		boost::filesystem::create_directories(cam1_data_dir);
         std::string cam1_img = cam1_data_dir.string() + std::to_string(timestamp) + ".png";
 		if (cam1_data!=std::nullopt) {
@@ -94,7 +93,7 @@ private:
 	boost::filesystem::path get_record_data_path() {
 		boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
 		// set path for data recording here
-		return boost::filesystem::operator/(ILLIXR_DIR,"/data_record/");
+		return ILLIXR_DIR / "/data_record/";
 	}
 
 };
