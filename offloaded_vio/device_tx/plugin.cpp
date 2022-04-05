@@ -6,6 +6,10 @@
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/publisher.h>
 #include <google/protobuf/util/time_util.h>
+#include <opencv2/core/mat.hpp>
+
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
 
 #include <thread>
 #include <string>
@@ -66,8 +70,8 @@ public:
 			imu_cam_data->set_cols(-1);
 
 		} else {
-			cv::Mat img0{datum->img0.value()};
-        	cv::Mat img1{datum->img1.value()};
+			cv::Mat img0{(datum->img0.value()).clone()};
+        	cv::Mat img1{(datum->img1.value()).clone()};
 
 			imu_cam_data->set_rows(img0.rows);
 			imu_cam_data->set_cols(img0.cols);
@@ -77,6 +81,7 @@ public:
 			imu_cam_data->set_img1_data((char*) img1.data);
 
 			// std::cout << "SENDING NUM: " << num << std::endl;
+			std::cout << "Num imu vals: " << data_buffer->imu_cam_data_size() << std::endl;
 			data_buffer->set_num(num);
 			num++;
 
