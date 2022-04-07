@@ -12,6 +12,6 @@ plugin_group:
   #      git_repo: https://github.com/ILLIXR/open_vins.git
   #      version: "3.0"
   # - path: rk4_integrator/
-  # - path: gtsam_integrator/
-  - path: passthrough_integrator/
+  - path: gtsam_integrator/
+  # - path: passthrough_integrator/
   - path: pose_prediction/
