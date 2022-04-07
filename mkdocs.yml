@@ -19,7 +19,7 @@ nav:
         - 'ILLIXR API': api/html/annotated.html
         - 'ILLIXR License': LICENSE.md
         - 'Contributing Guidelines': CONTRIBUTING.md
-        - 'Updating Tags and Documentation:' updating_tags_and_docs.md
+        - 'Updating Tags and Documentation': updating_tags_and_docs.md
         - 'Using Switchboard and Phonebook Externally': external_switchboard_and_phonebook.md
     - 'Legacy Documentation (Version 1)':
         - 'ILLIXR': legacy/v1/index.md
