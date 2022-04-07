@@ -1,6 +1,6 @@
 plugin_group:
-  - path: offline_imu_cam/
-  # - path: zed/
+  # - path: offline_imu_cam/
+  - path: zed/
   # - path: realsense/
   # - path: depthai/
   # - name: Kimera-VIO/

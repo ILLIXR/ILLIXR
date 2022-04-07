@@ -76,12 +76,9 @@ public:
 			imu_cam_data->set_rows(img0.rows);
 			imu_cam_data->set_cols(img0.cols);
 
-			// Need to verify whether img0.data is malloc'd or not
-			imu_cam_data->set_img0_data((char*) img0.data);
-			imu_cam_data->set_img1_data((char*) img1.data);
+			imu_cam_data->set_img0_data((void*) img0.data, img0.rows * img0.cols);
+			imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
 
-			// std::cout << "SENDING NUM: " << num << std::endl;
-			std::cout << "Num imu vals: " << data_buffer->imu_cam_data_size() << std::endl;
 			data_buffer->set_num(num);
 			num++;
 
