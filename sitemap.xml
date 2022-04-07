@@ -1,91 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    
+    <url>
      <loc>https://illixr.github.io/ILLIXR/docs/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/getting_started/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/building_illixr/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/debugging_illixr/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/virtualization/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/illixr_plugins/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/modifying_a_plugin/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/writing_your_plugin/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/monado_illixr_runtime_overview/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/monado_integration_dataflow/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/logging_and_metrics/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/glossary/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/api/html/annotated.html</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/LICENSE/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/CONTRIBUTING/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-audio/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-efusion/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-hotlab/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-openvins/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-ritnet/</loc>
-     <lastmod>2021-05-17</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-visualpp/</loc>
-     <lastmod>2021-05-17</lastmod>
+     <lastmod>2022-04-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/CONTRIBUTING/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/LICENSE/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/building_illixr/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/debugging_illixr/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/external_switchboard_and_phonebook/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/getting_started/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/glossary/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/illixr_plugins/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/logging_and_metrics/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/modifying_a_plugin/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/monado_illixr_runtime_overview/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/monado_integration_dataflow/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/releases/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/virtualization/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs/writing_your_plugin/</loc>
+     <lastmod>2022-04-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+        
+    <url>
+     <loc>https://illixr.github.io/ILLIXR/docs</loc>
+     <lastmod></lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
 </urlset>

@@ -7,26 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/writing_your_plugin/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Writing your Plugin (Version 2) - ILLIXR Docs</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+  <title>Writing your plugin - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../css/theme.css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Writing your Plugin (Version 2)";
+    var mkdocs_page_name = "Writing your plugin";
     var mkdocs_page_input_path = "writing_your_plugin.md";
-    var mkdocs_page_url = "/ILLIXR/docs/writing_your_plugin/";
+    var mkdocs_page_url = "/writing_your_plugin/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -36,77 +34,159 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    <input type="text" name="q" placeholder="Search docs" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
-                <ul class="current">
-                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../virtualization/">ILLIXR under Virtualization (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Writing your Plugin (Version 2)</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-plugin-common-case">Adding a New Plugin (Common Case)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-plugin-general-case">Adding a New Plugin (General Case)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a>
-    </li>
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../CONTRIBUTING/">CONTRIBUTING</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../LICENSE/">LICENSE</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../building_illixr/">Building illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../debugging_illixr/">Debugging illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../external_switchboard_and_phonebook/">External switchboard and phonebook</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../glossary/">Glossary</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../illixr_plugins/">Illixr plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../logging_and_metrics/">Logging and metrics</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../modifying_a_plugin/">Modifying a plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../releases/">Releases</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../virtualization/">Virtualization</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Writing your plugin</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#writing-your-plugin">Writing Your Plugin</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#adding-a-new-plugin-common-case">Adding a New Plugin (Common Case)</a></li>
+        
+            <li><a class="toctree-l3" href="#adding-a-new-plugin-general-case">Adding a New Plugin (General Case)</a></li>
+        
+            <li><a class="toctree-l3" href="#tutorial">Tutorial</a></li>
+        
+        </ul>
+    
+
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
-                    </li>
-                </ul>
-                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing (Version 1)</a>
-                    </li>
-                </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Legacy</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <span class="caption-text">V1</span>
+    <ul class="subnav">
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-audio/">README audio</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-efusion/">README efusion</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-hotlab/">README hotlab</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-openvins/">README openvins</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-ritnet/">README ritnet</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-visualpp/">README visualpp</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/">Home</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
       </div>
-    </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -125,17 +205,12 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>Latest Documentation &raquo;</li>
-        
-      
     
-    <li>Writing your Plugin (Version 2)</li>
+    <li>Writing your plugin</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
-  
   <hr/>
 </div>
           <div role="main">
@@ -165,6 +240,7 @@ The included <code>Makefile</code>:</p>
 <p>Accepts specifying libraries by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>.
     For example:</p>
 <!--- language: lang-makefile -->
+
 <pre><code>LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
 CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
 </code></pre>
@@ -202,7 +278,8 @@ To add your own functionality via the plugin interface:</p>
 <p>Create a <code>Makefile</code> with the following contents.
     See <a href="../building_illixr/">Building ILLIXR</a> for more details and alternative setups.</p>
 <!--- language: lang-makefile -->
-<pre><code>include common.mk
+
+<pre><code>include common/common.mk
 </code></pre>
 </li>
 </ul>
@@ -212,49 +289,76 @@ To add your own functionality via the plugin interface:</p>
         or <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
 <ul>
 <li>
-<p>If your plugin just needs to run one computation repeatedly,
-        then your plugin class should extend <a href="../api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>.</p>
+<p>If your plugin just needs to run one computation repeatedly, then your
+        plugin class should extend <a href="../api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>. Your code goes in
+        <code>_p_one_iteration</code>, which gets called in a hot loop. <code>threadloop</code>
+        inherits from plugin, but adds threading functionality. If you don't
+        use <code>_p_one_iteration</code>, inheriting from <code>threadloop</code> is superfluous;
+        Inherit from plugin directly instead.</p>
 </li>
 <li>
-<p>If you need custom concurrency (more complicated than a loop),
-        triggered concurrency (by events fired in other plugins),
-        or no concurrency then your plugin class should extend <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
-<ul>
+<p>If you need custom concurrency (more complicated than a loop), triggered
+        concurrency (by events fired in other plugins), or no concurrency
+        then your plugin class should extend <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>. Your code goes
+        in the <code>start</code> method.</p>
+</li>
+<li>
+<p>If you want to schedule data-driven work in either case, call
+  <a href="../api/html/classILLIXR_1_1switchboard.html"><code>sb-&gt;schedule(...)</code></a>.</p>
+</li>
 <li>
 <p>If you spin your own threads, they <strong>must</strong> wait for
-  <code>pb-&gt;lookup_impl&lt;Stoplight&gt;()-&gt;wait_for_ready()</code> the first time they
-  run. This allows the start of all threads in ILLIXR to be
-  synchronized.</p>
+      <code>pb-&gt;lookup_impl&lt;Stoplight&gt;()-&gt;wait_for_ready()</code> the first time they
+      run. This allows the start of all threads in ILLIXR to be
+      synchronized.</p>
 </li>
 <li>
 <p>They <strong>must</strong> be joined-or-disowned at-or-before
-  <code>plugin::stop()</code>. This allows ILLIXR to shutdown cleanly.</p>
-</li>
-</ul>
+      <code>plugin::stop()</code>. This allows ILLIXR to shutdown cleanly.</p>
 </li>
 </ul>
 </li>
 <li>
 <p>Write a file called <code>plugin.cpp</code> with this body, replacing every instance of <code>plugin_name</code>:</p>
 <!--- language: lang-cpp -->
-<pre><code>#include "common/phonebook.hpp"
+
+<pre><code>/// A minimal/no-op ILLIXR plugin
+
+#include "common/phonebook.hpp"
 #include "common/plugin.hpp"
 #include "common/threadloop.hpp"
+#include &lt;chrono&gt;
+#include &lt;thread&gt;
 
 using namespace ILLIXR;
 
-/// Inherit from `plugin` if you don't need the threadloop
-class plugin_name : public threadloop {
+/// Inherit from plugin if you don't need the threadloop
+/// Inherit from threadloop to provide a new thread to perform the task
+class basic_plugin : public threadloop {
 public:
-    plugin_name(std::string name_, phonebook* pb_)
+    basic_plugin(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
-        { }
-    virtual void start() override { }
-    virtual ~plugin_name() override { }
+    {
+        std::cout &lt;&lt; "Constructing basic_plugin." &lt;&lt; std::endl;
+    }
+
+    /// Note the virtual.
+    virtual ~basic_plugin() override {
+        std::cout &lt;&lt; "Deconstructing basic_plugin." &lt;&lt; std::endl;
+    }
+
+    /// For `threadloop` style plugins, do not override the start() method unless you know what you're doing!
+    /// _p_one_iteration() is called in a thread created by threadloop::start()
+    void _p_one_iteration() override {
+        std::cout &lt;&lt; "This goes to the log when `log` is set in the config." &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "This goes to the console." &lt;&lt; std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds{100});
+    }
+
 };
 
-// This line makes the plugin importable by Spindle
-PLUGIN_MAIN(plugin_name);
+/// This line makes the plugin importable by Spindle
+PLUGIN_MAIN(basic_plugin);
 </code></pre>
 </li>
 <li>
@@ -266,6 +370,7 @@ PLUGIN_MAIN(plugin_name);
         the config.
     See <a href="../building_illixr/">Building ILLIXR</a> for more details on the config file.</p>
 <!--- language: lang-yaml -->
+
 <pre><code>plugin_groups:
   - !include "rt_slam_plugins.yaml"
   - !include "core_plugins.yaml"
@@ -290,6 +395,7 @@ data:
 <li>
 <p>Finally, run ILLIXR with your new plugin with the following command:</p>
 <!--- language: lang-shell -->
+
 <pre><code>./runner.sh configs/native.yaml
 </code></pre>
 </li>
@@ -305,6 +411,7 @@ Then we query <a href="../api/html/classILLIXR_1_1switchboard.html"><code>switch
 We will read <code>topic1</code>, write to <code>topic2</code>, and schedule computation on <code>topic 3</code>.
 See the API documentation for <code>phonebook</code> and <code>switchboard</code> for more details.</p>
 <!--- language: lang-cpp -->
+
 <pre><code>#include "common/phonebook.hpp"
 #include "common/plugin.hpp"
 #include "common/threadloop.hpp"
@@ -388,10 +495,10 @@ PLUGIN_MAIN(plugin_name);
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../monado_illixr_runtime_overview/" class="btn btn-neutral float-right" title="Monado Overview (Version 2)">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../legacy/v1/README-audio/" class="btn btn-neutral float-right" title="README audio">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../modifying_a_plugin/" class="btn btn-neutral" title="Modifying a Plugin (Version 2)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../virtualization/" class="btn btn-neutral" title="Virtualization"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -403,35 +510,28 @@ PLUGIN_MAIN(plugin_name);
     
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
     </section>
-
+    
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../modifying_a_plugin/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../virtualization/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../monado_illixr_runtime_overview/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../legacy/v1/README-audio/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        };
-    </script>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>

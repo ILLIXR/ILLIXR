@@ -7,26 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/virtualization/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>ILLIXR under Virtualization (Version 2) - ILLIXR Docs</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+  <title>Virtualization - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../css/theme.css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "ILLIXR under Virtualization (Version 2)";
+    var mkdocs_page_name = "Virtualization";
     var mkdocs_page_input_path = "virtualization.md";
-    var mkdocs_page_url = "/ILLIXR/docs/virtualization/";
+    var mkdocs_page_url = "/virtualization/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -36,85 +34,163 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href=".." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    <input type="text" name="q" placeholder="Search docs" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
-                <ul class="current">
-                    <li class="toctree-l1"><a class="reference internal" href="..">ILLIXR (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">ILLIXR under Virtualization (Version 2)</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#build-qemu">Build QEMU</a>
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../CONTRIBUTING/">CONTRIBUTING</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../LICENSE/">LICENSE</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../building_illixr/">Building illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../debugging_illixr/">Debugging illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../external_switchboard_and_phonebook/">External switchboard and phonebook</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../glossary/">Glossary</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../illixr_plugins/">Illixr plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../logging_and_metrics/">Logging and metrics</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../modifying_a_plugin/">Modifying a plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../releases/">Releases</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Virtualization</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#setting-up-illixr-in-qemu">Setting up ILLIXR in QEMU</a></li>
+    
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#why-build-qemu-from-source">Why build QEMU from source?</a>
-    </li>
+        
+            <li><a class="toctree-l3" href="#build-qemu">Build QEMU</a></li>
+        
+            <li><a class="toctree-l3" href="#setup-ubuntu-in-the-vm">Setup Ubuntu in the VM</a></li>
+        
+            <li><a class="toctree-l3" href="#booting-the-vm">Booting the VM</a></li>
+        
+            <li><a class="toctree-l3" href="#setting-up-the-vm">Setting up the VM</a></li>
+        
+            <li><a class="toctree-l3" href="#uninstalling">Uninstalling</a></li>
+        
         </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#setup-ubuntu-in-the-vm">Setup Ubuntu in the VM</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#booting-the-vm">Booting the VM</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#setting-up-the-vm">Setting up the VM</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#uninstalling">Uninstalling</a>
-    </li>
+    
+
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../writing_your_plugin/">Writing your Plugin (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
-                    </li>
-                </ul>
-                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing (Version 1)</a>
-                    </li>
-                </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../writing_your_plugin/">Writing your plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Legacy</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <span class="caption-text">V1</span>
+    <ul class="subnav">
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-audio/">README audio</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-efusion/">README efusion</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-hotlab/">README hotlab</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-openvins/">README openvins</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-ritnet/">README ritnet</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/README-visualpp/">README visualpp</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../legacy/v1/">Home</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
       </div>
-    </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -133,17 +209,12 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>Latest Documentation &raquo;</li>
-        
-      
     
-    <li>ILLIXR under Virtualization (Version 2)</li>
+    <li>Virtualization</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
-  
   <hr/>
 </div>
           <div role="main">
@@ -190,10 +261,10 @@ Once Ubuntu is installed, it is safe to delete <code>ubuntu-18.04.5-desktop-amd6
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../illixr_plugins/" class="btn btn-neutral float-right" title="ILLIXR Plugins (Version 2)">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../writing_your_plugin/" class="btn btn-neutral float-right" title="Writing your plugin">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../debugging_illixr/" class="btn btn-neutral" title="ILLIXR Debugging Tips (Version 2)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../releases/" class="btn btn-neutral" title="Releases"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -205,35 +276,28 @@ Once Ubuntu is installed, it is safe to delete <code>ubuntu-18.04.5-desktop-amd6
     
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
     </section>
-
+    
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../debugging_illixr/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../releases/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../illixr_plugins/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../writing_your_plugin/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        };
-    </script>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>

@@ -7,26 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  <link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/legacy/v1/README-openvins/">
   <link rel="shortcut icon" href="../../../img/favicon.ico">
-  <title>OpenVINS (Version 1) - ILLIXR Docs</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+  <title>README openvins - ILLIXR Docs</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="../../../css/theme.css" />
-  <link rel="stylesheet" href="../../../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../css/highlight.css">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "OpenVINS (Version 1)";
+    var mkdocs_page_name = "README openvins";
     var mkdocs_page_input_path = "legacy/v1/README-openvins.md";
-    var mkdocs_page_url = "/ILLIXR/docs/legacy/v1/README-openvins/";
+    var mkdocs_page_url = "/legacy/v1/README-openvins/";
   </script>
   
-  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+  <script src="../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -36,77 +34,159 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href="../../.." class="icon icon-home"> ILLIXR Docs</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    <input type="text" name="q" placeholder="Search docs" />
   </form>
 </div>
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                <p class="caption"><span class="caption-text">Latest Documentation</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../..">ILLIXR (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/">Getting Started (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../building_illixr/">Building ILLIXR (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../debugging_illixr/">ILLIXR Debugging Tips (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../virtualization/">ILLIXR under Virtualization (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../illixr_plugins/">ILLIXR Plugins (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../modifying_a_plugin/">Modifying a Plugin (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../writing_your_plugin/">Writing your Plugin (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../monado_illixr_runtime_overview/">Monado Overview (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../monado_integration_dataflow/">Monado Dataflow (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../logging_and_metrics/">Logging and Metrics (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../glossary/">ILLIXR Glossary (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../api/html/annotated.html">ILLIXR API (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../LICENSE/">ILLIXR License (Version 2)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING/">Contributing Guidelines (Version 2)</a>
-                    </li>
-                </ul>
-                <p class="caption"><span class="caption-text">Legacy Documentation</span></p>
-                <ul class="current">
-                    <li class="toctree-l1"><a class="reference internal" href="../">ILLIXR (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../README-audio/">Audio Pipeline (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../README-efusion/">ElasticFusion (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../README-hotlab/">HOTlab (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">OpenVINS (Version 1)</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#news-events">News / Events</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#project-features">Project Features</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#credit-licensing">Credit / Licensing</a>
-    </li>
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../CONTRIBUTING/">CONTRIBUTING</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../LICENSE/">LICENSE</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../building_illixr/">Building illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../debugging_illixr/">Debugging illixr</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../external_switchboard_and_phonebook/">External switchboard and phonebook</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../getting_started/">Getting started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../glossary/">Glossary</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../illixr_plugins/">Illixr plugins</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../logging_and_metrics/">Logging and metrics</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../modifying_a_plugin/">Modifying a plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../monado_illixr_runtime_overview/">Monado illixr runtime overview</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../monado_integration_dataflow/">Monado integration dataflow</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../releases/">Releases</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../virtualization/">Virtualization</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../../../writing_your_plugin/">Writing your plugin</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Legacy</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <span class="caption-text">V1</span>
+    <ul class="subnav">
+                <li class="toctree-l3">
+                    
+    <a class="" href="../README-audio/">README audio</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../README-efusion/">README efusion</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../README-hotlab/">README hotlab</a>
+                </li>
+                <li class="toctree-l3 current">
+                    
+    <a class="current" href="./">README openvins</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l4"><a href="#open-vins">Open VINS</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l5" href="#news-events">News / Events</a></li>
+        
+            <li><a class="toctree-l5" href="#project-features">Project Features</a></li>
+        
+            <li><a class="toctree-l5" href="#credit-licensing">Credit / Licensing</a></li>
+        
+        </ul>
+    
+
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../README-ritnet/">RITnet (Version 1)</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../README-visualpp/">Visual Post-processing (Version 1)</a>
-                    </li>
-                </ul>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../README-ritnet/">README ritnet</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../README-visualpp/">README visualpp</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../">Home</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
       </div>
-    </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -126,16 +206,19 @@
     
       
         
-          <li>Legacy Documentation &raquo;</li>
+          <li>Legacy &raquo;</li>
+        
+      
+        
+          <li>V1 &raquo;</li>
         
       
     
-    <li>OpenVINS (Version 1)</li>
+    <li>README openvins</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
   </ul>
-  
   <hr/>
 </div>
           <div role="main">
@@ -215,7 +298,7 @@ Please take a look at the feature list below for full details on what the system
 If you have any issues with the code please open an issue on our github page
     with relevant implementation details and references.
 For researchers that have leveraged or compared to this work, please cite the following:</p>
-<pre><code class="language-txt">@article{TBD,
+<pre><code class="txt">@article{TBD,
   author    = {},
   title     = {},
   journal   = {},
@@ -223,6 +306,7 @@ For researchers that have leveraged or compared to this work, please cite the fo
   year      = {2019},
 }
 </code></pre>
+
 <p>The codebase is licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License v3 (GPL-3)</a>.</p>
               
             </div>
@@ -231,10 +315,10 @@ For researchers that have leveraged or compared to this work, please cite the fo
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../README-ritnet/" class="btn btn-neutral float-right" title="RITnet (Version 1)">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../README-ritnet/" class="btn btn-neutral float-right" title="README ritnet">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../README-hotlab/" class="btn btn-neutral" title="HOTlab (Version 1)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../README-hotlab/" class="btn btn-neutral" title="README hotlab"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -246,17 +330,17 @@ For researchers that have leveraged or compared to this work, please cite the fo
     
   </div>
 
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
     </section>
-
+    
   </div>
 
-  <div class="rst-versions" role="note" aria-label="versions">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
@@ -267,14 +351,7 @@ For researchers that have leveraged or compared to this work, please cite the fo
       
     </span>
 </div>
-    <script>var base_url = '../../..';</script>
-    <script src="../../../js/theme.js" defer></script>
-      <script src="../../../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        };
-    </script>
+    <script src="../../../js/theme.js"></script>
 
 </body>
 </html>

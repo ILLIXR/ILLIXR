@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>LICENSE - ILLIXR Docs</title>
+  <title>External switchboard and phonebook - ILLIXR Docs</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,9 +17,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "LICENSE";
-    var mkdocs_page_input_path = "LICENSE.md";
-    var mkdocs_page_url = "/LICENSE/";
+    var mkdocs_page_name = "External switchboard and phonebook";
+    var mkdocs_page_input_path = "external_switchboard_and_phonebook.md";
+    var mkdocs_page_url = "/external_switchboard_and_phonebook/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -57,12 +57,9 @@
     <a class="" href="../CONTRIBUTING/">CONTRIBUTING</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">LICENSE</a>
-    <ul class="subnav">
-            
-    </ul>
+    <a class="" href="../LICENSE/">LICENSE</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -75,9 +72,15 @@
     <a class="" href="../debugging_illixr/">Debugging illixr</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <a class="" href="../external_switchboard_and_phonebook/">External switchboard and phonebook</a>
+    <a class="current" href="./">External switchboard and phonebook</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#using-switchboard-and-phonebook-externally">Using Switchboard and Phonebook Externally</a></li>
+    
+
+    </ul>
 	    </li>
           
             <li class="toctree-l1">
@@ -193,7 +196,7 @@
     
       
     
-    <li>LICENSE</li>
+    <li>External switchboard and phonebook</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -203,32 +206,84 @@
           <div role="main">
             <div class="section">
               
-                <p>Copyright (c) 2019 The Board of Trustees of the University of Illinois.  All rights reserved.</p>
-<p>Developed by: Professor Sarita Adve's research group
-              University of Illinois at Urbana-Champaign
-              http://rsim.cs.illinois.edu</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal with
-the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to
-do so, subject to the following conditions:
-<em> Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimers.
-</em> Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimers in the documentation
-  and/or other materials provided with the distribution.
-* Neither the names of Professor Sarita Adve's research group, University of
-  Illinois at Urbana-Champaign, nor the names of its contributors may be used
-  to endorse or promote products derived from this Software without specific
-  prior written permission.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
-SOFTWARE.</p>
+                <h1 id="using-switchboard-and-phonebook-externally">Using Switchboard and Phonebook Externally</h1>
+<p>Switchboard was designed as a self-contained entity from ILLIXR that one can reuse in other
+projects. The relevant API is <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1switchboard.html">here for Switchboard</a> and <a href="https://illixr.github.io/ILLIXR/api/html/classILLIXR_1_1phonebook.html">here for
+Phonebook</a>.</p>
+<p>One simply needs to copy these files, maintaining directory structure.</p>
+<pre><code>common/switchboard.hpp
+common/phonebook.hpp
+common/record_logger.hpp
+common/managed_thread.hpp
+common/concurrentqueue/blockingconcurrentqueue.hpp
+common/concurrentqueue/concurrentqueue.hpp
+common/concurrentqueue/lightweightsemaphore.hpp
+</code></pre>
+
+<p>This will serve as our <code>main.cpp</code>:</p>
+<pre><code>#include &lt;iostream&gt;
+#include &quot;common/switchboard.hpp&quot;
+
+class service : public ILLIXR::phonebook::service {
+public:
+    void act() { std::cout &lt;&lt; &quot;Hello from service\n&quot;; };
+};
+
+class data : public ILLIXR::switchboard::event {
+public:
+    data(size_t id_) : id{id_} { }
+    size_t id;
+};
+
+int main() {
+    ILLIXR::phonebook main_pb;
+    main_pb.register_impl&lt;service&gt;(std::make_shared&lt;service&gt;());
+    main_pb.lookup_impl&lt;service&gt;()-&gt;act();
+
+    // From docs of Switchboard: if first arg is null, logging is disabled.
+    // Logging should be disabled if we are running externally.
+    ILLIXR::switchboard main_sb {nullptr};
+    auto writer = main_sb.get_writer&lt;data&gt;(&quot;topic&quot;);
+    auto reader = main_sb.get_reader&lt;data&gt;(&quot;topic&quot;);
+    writer.put(writer.allocate&lt;data&gt;(42));
+    std::cout &lt;&lt; &quot;The answer to life... is &quot; &lt;&lt; reader.get_ro()-&gt;id &lt;&lt; std::endl;
+
+    return 0;
+}
+</code></pre>
+
+<p>We use Switchboard and Phonebook with <code>clang</code> 10 or greater, but you can probably make this work in
+GCC or other compilers as long as they support C++17.</p>
+<p>For example:</p>
+<pre><code># Must copy with directory structure
+mkdir -p common/concurrentqueue
+cp path/to/ILLIXR/common/switchboard.hpp common
+cp path/to/ILLIXR/common/phonebook.hpp common
+cp path/to/ILLIXR/common/record_logger.hpp common
+cp path/to/ILLIXR/common/managed_thread.hpp common
+cp path/to/ILLIXR/common/concurrentqueue/blockingconcurrentqueue.hpp common/concurrentqueue/blockingconcurrentqueue.hpp
+cp path/to/ILLIXR/common/concurrentqueue/concurrentqueue.hpp common/concurrentqueue/concurrentqueue.hpp
+cp path/to/ILLIXR/common/concurrentqueue/lightweightsemaphore.hpp common/concurrentqueue/lightweightsemaphore.hpp
+emacs main.cpp # copy and paste from this doc
+
+# This will *probbaly* work with any C++-17 compatible compiler, but I've tested with clang-10.
+# Nix is my preferred package manager, but you can use whichever you like.
+# This command will not affect system packages, just create a temporary environment with the right clang.
+nix-shell -p clang_10
+
+# Compile
+clang++ -Wextra -pthread -std=c++17 main.cpp
+
+# Run
+./a.out
+</code></pre>
+
+<p>The output is:</p>
+<pre><code>Register 7service
+Hello from service
+Creating: topic for 4data
+The answer to life... is 42
+</code></pre>
               
             </div>
           </div>
@@ -236,10 +291,10 @@ SOFTWARE.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../building_illixr/" class="btn btn-neutral float-right" title="Building illixr">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../getting_started/" class="btn btn-neutral float-right" title="Getting started">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../CONTRIBUTING/" class="btn btn-neutral" title="CONTRIBUTING"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../debugging_illixr/" class="btn btn-neutral" title="Debugging illixr"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -265,10 +320,10 @@ SOFTWARE.</p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../CONTRIBUTING/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../debugging_illixr/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../building_illixr/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../getting_started/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
