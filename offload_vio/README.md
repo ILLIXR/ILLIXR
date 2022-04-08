@@ -14,7 +14,7 @@ config files will run Kimera-VIO on the server and will feed it with the EuRoC d
 
 To run more complicated experiment setups where the device and server are not on the same machine,
 you will need to setup each machine to be able to send/recieve UDP multicasts. A detailed guide
-can be found [here]
+can be found [here][1]
 
 
 [//]: # (- References -)
