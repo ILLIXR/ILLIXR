@@ -16,15 +16,23 @@ namespace ILLIXR {
  * [1]: https://en.cppreference.com/w/cpp/chrono/time_point
  * [2]: https://en.cppreference.com/w/cpp/named_req/Clock
  */
+using _clock_rep = long;
+using _clock_period = std::nano;
+using _clock_duration = std::chrono::duration<_clock_rep, _clock_period>;
+
 class time_point {
 
 public:
-	using duration = std::chrono::duration<long, std::nano>; 
+	using duration = _clock_duration;  
 	time_point() { }
 	constexpr explicit time_point(const duration& time_since_epoch) : _m_time_since_epoch{time_since_epoch} { }
 	duration time_since_epoch() const { return _m_time_since_epoch; }
 	time_point& operator+=(const duration& d) {
 		this->_m_time_since_epoch += d; 
+		return *this;
+	}
+	time_point& operator-=(const duration& d) {
+		this->_m_time_since_epoch -= d; 
 		return *this;
 	}
 private:
@@ -58,6 +66,12 @@ inline bool operator<=(const time_point& lhs, const time_point& rhs) {
 inline bool operator>=(const time_point& lhs, const time_point& rhs) {
 	return lhs.time_since_epoch() >= rhs.time_since_epoch(); 
 }
+inline bool operator==(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() == rhs.time_since_epoch(); 
+}
+inline bool operator!=(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() != rhs.time_since_epoch(); 
+}
 
 /**
  * @brief Relative clock for all of ILLIXR
@@ -75,9 +89,9 @@ inline bool operator>=(const time_point& lhs, const time_point& rhs) {
 class RelativeClock : public phonebook::service {
 public:
 
-	using rep = long;
-	using period = std::nano;
-	using duration = std::chrono::duration<rep, period>;
+	using rep = _clock_rep;
+	using period = _clock_period;
+	using duration = _clock_duration;
 	using time_point = time_point;
 	static constexpr bool is_steady = true;
 	static_assert(std::chrono::steady_clock::is_steady);

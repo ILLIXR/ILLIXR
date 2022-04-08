@@ -13,25 +13,7 @@
 
 using namespace ILLIXR;
 
-struct imu_type {
-	time_point timestamp;
-    Eigen::Matrix<double, 3, 1> wm;
-    Eigen::Matrix<double, 3, 1> am;
-
-
-	imu_type(
-		time_point timestamp_,
-		Eigen::Matrix<double, 3, 1> wm_,
-		Eigen::Matrix<double, 3, 1> am_
-		)
-		: timestamp{timestamp_}
-		, wm{wm_}
-		, am{am_}
-	{ }
-};
-
-const std::chrono::seconds IMU_SAMPLE_LIFETIME {5};
-
+constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}}; 
 class rk4_integrator : public plugin {
 public:
 	rk4_integrator(std::string name_, phonebook* pb_)

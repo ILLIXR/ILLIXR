@@ -25,11 +25,11 @@ public:
 		, _m_sensor_data{load_data()}
 		, _m_sensor_data_it{_m_sensor_data.cbegin()}
 		, _m_sb{pb->lookup_impl<switchboard>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
 		, _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
 	{ }
 
 protected:
@@ -39,7 +39,7 @@ protected:
 			dataset_now = _m_sensor_data_it->first;
 
 			std::this_thread::sleep_for(
-				RelativeClock::time_point{std::chrono::nanoseconds{dataset_now - dataset_first_time}} - _m_clock->now()
+				time_point{std::chrono::nanoseconds{dataset_now - dataset_first_time}} - _m_clock->now()
 			);
 			if (_m_sensor_data_it->second.imu0) {
 				return skip_option::run;
@@ -56,6 +56,10 @@ protected:
 	virtual void _p_one_iteration() override {
 	    RAC_ERRNO_MSG("offline_imu_cam at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
+#ifndef NDEBUG
+		std::chrono::time_point<std::chrono::nanoseconds> tp_dataset_now{std::chrono::nanoseconds{dataset_now}};
+		std::cerr << " IMU time: " << tp_dataset_now.time_since_epoch().count() << std::endl;
+#endif
 		const sensor_types& sensor_datum = _m_sensor_data_it->second;
 		++_m_sensor_data_it;
 
@@ -103,6 +107,7 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
 	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
 	const std::shared_ptr<switchboard> _m_sb;
+	std::shared_ptr<const RelativeClock> _m_clock;
 	switchboard::writer<imu_cam_type> _m_imu_cam;
 
 	// Timestamp of the first IMU value from the dataset
@@ -112,7 +117,6 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
-	std::shared_ptr<const RelativeClock> _m_clock;
 };
 
 PLUGIN_MAIN(offline_imu_cam)
