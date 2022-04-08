@@ -65,6 +65,12 @@ inline bool operator<=(const time_point& lhs, const time_point& rhs) {
 inline bool operator>=(const time_point& lhs, const time_point& rhs) {
 	return lhs.time_since_epoch() >= rhs.time_since_epoch(); 
 }
+inline bool operator==(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() == rhs.time_since_epoch(); 
+}
+inline bool operator!=(const time_point& lhs, const time_point& rhs) {
+	return lhs.time_since_epoch() != rhs.time_since_epoch(); 
+}
 
 /**
  * @brief Relative clock for all of ILLIXR

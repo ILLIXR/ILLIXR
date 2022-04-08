@@ -210,7 +210,6 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
-	const std::shared_ptr<const RelativeClock> _m_clock;
     
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
