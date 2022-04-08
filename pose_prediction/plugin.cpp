@@ -11,12 +11,12 @@ class pose_prediction_impl : public pose_prediction {
 public:
     pose_prediction_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
     { }
 
     // No parameter get_fast_pose() should just predict to the next vsync
@@ -202,6 +202,7 @@ public:
 private:
     mutable std::atomic<bool> first_time{true};
     const std::shared_ptr<switchboard> sb;
+    const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::reader<pose_type> _m_slow_pose;
     switchboard::reader<imu_raw_type> _m_imu_raw;
 	switchboard::reader<pose_type> _m_true_pose;
@@ -209,7 +210,6 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
-	const std::shared_ptr<const RelativeClock> _m_clock;
     
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
