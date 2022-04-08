@@ -82,17 +82,19 @@ Visit our [web site][37] for more information.
 
 # Citation
 
-We request that you cite our following [paper][8] (new version coming soon)
-    when you use ILLIXR for a publication.
+We request that you cite our following [paper][8] when you use ILLIXR for a publication.
 We would also appreciate it if you send us a citation once your work has been published.
 
 ```
-@misc{HuzaifaDesai2020,
-    title={Exploring Extended Reality with ILLIXR: A new Playground for Architecture Research},
-    author={Muhammad Huzaifa and Rishi Desai and Samuel Grayson and Xutao Jiang and Ying Jing and Jae Lee and Fang Lu and Yihan Pang and Joseph Ravichandran and Finn Sinclair and Boyuan Tian and Hengzhi Yuan and Jeffrey Zhang and Sarita V. Adve},
-    year={2021},
-    eprint={2004.04643},
-    primaryClass={cs.DC}
+@inproceedings{HuzaifaDesai2021,
+  author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
+  booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)}, 
+  title={ILLIXR: Enabling End-to-End Extended Reality Research}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={24-38},
+  doi={10.1109/IISWC53511.2021.00014}
 }
 ```
 
@@ -220,7 +222,7 @@ You can join
 [5]:    https://github.com/ILLIXR/visual_postprocessing
 [6]:    https://github.com/ILLIXR/HOTlab
 [7]:    https://github.com/ILLIXR
-[8]:    https://arxiv.org/pdf/2004.04643.pdf
+[8]:    https://ieeexplore.ieee.org/abstract/document/9668280
 [9]:    http://rsim.cs.illinois.edu
 [10]:   https://monado.dev
 [11]:   https://research.fb.com/programs/openeds-challenge

@@ -9,7 +9,7 @@ These instructions have been tested with Ubuntu 18.04 and 20.04.
 
     <!--- language: lang-none -->
 
-        git clone --recursive --branch v2-latest https://github.com/ILLIXR/ILLIXR
+        git clone https://github.com/ILLIXR/ILLIXR
 
     ***Note for ILLIXR versions older than `v2.2.0`***:
 
