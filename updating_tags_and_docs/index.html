@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/logging_and_metrics/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/updating_tags_and_docs/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Logging and Metrics - ILLIXR Docs</title>
+    <title>Updating Tags and Documentation - ILLIXR Docs</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Logging and Metrics";
-        var mkdocs_page_input_path = "logging_and_metrics.md";
-        var mkdocs_page_url = "/ILLIXR/docs/logging_and_metrics/";
+        var mkdocs_page_name = "Updating Tags and Documentation";
+        var mkdocs_page_input_path = "updating_tags_and_docs.md";
+        var mkdocs_page_url = "/ILLIXR/docs/updating_tags_and_docs/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -62,13 +62,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Logging and Metrics</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#logging">Logging</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#metrics">Metrics</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary</a>
                   </li>
@@ -78,7 +72,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../updating_tags_and_docs/">Updating Tags and Documentation</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Updating Tags and Documentation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#updating-tags">Updating Tags</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#updating-documentation">Updating Documentation</a>
+    </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../external_switchboard_and_phonebook/">Using Switchboard and Phonebook Externally</a>
                   </li>
@@ -114,7 +114,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Latest Documentation &raquo;</li><li>Logging and Metrics</li>
+          <li>Latest Documentation &raquo;</li><li>Updating Tags and Documentation</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -124,36 +124,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="logging-and-metrics">Logging and Metrics</h1>
-<p>The ILLIXR project supports several ways for an ILLIXR application to log and report details about
-    its execution.</p>
-<h2 id="logging">Logging</h2>
-<p>ILLIXR implements a modular logging system that enables users to capture and record key statistics
-    in real-time.</p>
-<ul>
+                <h1 id="updating-tags-and-documentation">Updating Tags and Documentation</h1>
+<h2 id="updating-tags">Updating Tags</h2>
+<p>For releases, perform these steps from <code>master</code> once the desired features have been merged in.</p>
+<ol>
 <li>
-<p><strong><code>record_logger</code></strong>:
-    The base class describing ILLIXR's logging interface.</p>
+<p>Get latest tags:</p>
+<!--- language: lang-none -->
+<pre><code>git pull --tags -f
+</code></pre>
 </li>
 <li>
-<p><strong><code>noop_logger</code></strong>:
-    Implements a trivially empty implementation of <code>record_logger</code>.
-    Can be used for debugging or performance if runtime statistics are not needed.</p>
+<p>Tag your branch. Please use semantic versioning to name the tag; i.e., <code>v&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</code>:</p>
+<!--- language: lang-none -->
+<pre><code>git tag -f &lt;tag-name&gt; ## `-f` is required if updating an existing tag
+</code></pre>
 </li>
 <li>
-<p><strong><code>sqlite_record_logger</code></strong>:
-    Extends the <code>record_logger</code> to store records in a local <a href="../glossary/#sqlite"><em>SQLite database</em></a>.</p>
+<p>Push your tag upstream:</p>
+<!--- language: lang-none -->
+<pre><code>git push origin --tags
+</code></pre>
 </li>
-</ul>
-<h2 id="metrics">Metrics</h2>
-<p>ILLIXR allows users to generate higher order statistics from logged results called <em>Metrics</em>.</p>
-<p><strong><em>TODO</em></strong></p>
+</ol>
+<h2 id="updating-documentation">Updating Documentation</h2>
+<p>Perform these steps from the root directory of the project.</p>
+<ol>
+<li>
+<p>Create the directory where the generated files will be placed:</p>
+<!--- language: lang-none -->
+<pre><code>mkdir -p site/api
+</code></pre>
+</li>
+<li>
+<p>Run <code>doxygen</code> to generate API documentation:</p>
+<!--- language: lang-none -->
+<pre><code>doxygen doxygen.conf
+</code></pre>
+</li>
+<li>
+<p>Run <code>mkdocs</code> to deploy new documentation:</p>
+<!--- language: lang-none -->
+<pre><code>mkdocs gh-deploy
+</code></pre>
+</li>
+</ol>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../monado_integration_dataflow/" class="btn btn-neutral float-left" title="Monado Dataflow"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../glossary/" class="btn btn-neutral float-right" title="ILLIXR Glossary">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../CONTRIBUTING/" class="btn btn-neutral float-left" title="Contributing Guidelines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../external_switchboard_and_phonebook/" class="btn btn-neutral float-right" title="Using Switchboard and Phonebook Externally">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -176,10 +197,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../monado_integration_dataflow/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../CONTRIBUTING/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../glossary/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../external_switchboard_and_phonebook/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
