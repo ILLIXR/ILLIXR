@@ -30,7 +30,6 @@ public:
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
 	{ }
 
 protected:
@@ -118,7 +117,6 @@ private:
 
 	record_coalescer imu_cam_log;
 	record_coalescer camera_cvtfmt_log;
-	std::shared_ptr<const RelativeClock> _m_clock;
 };
 
 PLUGIN_MAIN(offline_imu_cam)
