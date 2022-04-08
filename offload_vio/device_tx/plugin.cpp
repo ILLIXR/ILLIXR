@@ -5,14 +5,7 @@
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/publisher.h>
-#include <google/protobuf/util/time_util.h>
 #include <opencv2/core/mat.hpp>
-
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
-
-#include <thread>
-#include <string>
 
 #include "vio_input.pb.h"
 

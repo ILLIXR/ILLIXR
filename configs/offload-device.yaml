@@ -1,12 +1,17 @@
 plugin_groups:
-  - !include "rt_slam_plugins.yaml"
   - plugin_group:
+      - path: offline_imu_cam/
+      # - path: zed/
+      # - path: rk4_integrator/
+      - path: gtsam_integrator/
+      # - path: passthrough_integrator/
+      - path: pose_prediction/
       # - path: ground_truth_slam/
       - path: gldemo/
       - path: debugview/
       # - path: offload_data/
-      - path: offloaded_vio/device_rx/
-      - path: offloaded_vio/device_tx/
+      - path: offload_vio/device_rx/
+      - path: offload_vio/device_tx/
       # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
       # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
   - !include "core_plugins.yaml"

@@ -5,7 +5,6 @@
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
-#include <google/protobuf/util/time_util.h>
 
 #include "vio_output.pb.h"
 

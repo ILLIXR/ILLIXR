@@ -1,9 +1,22 @@
+# For OpenVINS, make sure the repo is downloaded from github by the runner (uncomment lines
+# 12-15 and run the runner with this config. If youre using EuRoC this is all you need to do. If running
+# with ZED, download the repo, uncomment line 11, and comment out line 12-15. Go to this file
+# .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/ov_msckf/src/slam2.cpp and uncomment
+# line 23 (the ZED define)
+
 plugin_groups:
   - plugin_group:
-      - path: offloaded_vio/server_rx/
-      - path: offloaded_vio/server_tx/
-      # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
-      - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
+      - path: offload_vio/server_rx/
+      - path: offload_vio/server_tx/
+      # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
+      # - name: OpenVINS
+      #   path:
+      #      git_repo: https://github.com/ILLIXR/open_vins.git
+      #      version: "3.0"
+      - name: Kimera-VIO/
+        path:
+          git_repo: https://github.com/ILLIXR/Kimera-VIO.git
+          version: "3.1"
 
 data:
   subpath: mav0

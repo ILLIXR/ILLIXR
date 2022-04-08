@@ -5,10 +5,6 @@
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/publisher.h>
-#include <google/protobuf/util/time_util.h>
-
-#include <thread>
-#include <string>
 
 #include "vio_output.pb.h"
 
