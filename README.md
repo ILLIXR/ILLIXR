@@ -87,6 +87,15 @@ We would also appreciate it if you send us a citation once your work has been pu
 
 ```
 @inproceedings{HuzaifaDesai2021,
+  author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
+  booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)}, 
+  title={ILLIXR: Enabling End-to-End Extended Reality Research}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={24-38},
+  doi={10.1109/IISWC53511.2021.00014}
+}
     author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
     booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)},
     title={ILLIXR: Enabling End-to-End Extended Reality Research},
