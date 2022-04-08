@@ -59,48 +59,75 @@ To add your own functionality via the plugin interface:
 
         <!--- language: lang-makefile -->
 
-            include common.mk
+            include common/common.mk
 
 1.  You must decide if your plugin should inherit the standardized [`threadloop`][12]
         or [`plugin`][13].
 
-    -   If your plugin just needs to run one computation repeatedly,
-            then your plugin class should extend [`threadloop`][12].
+    -   If your plugin just needs to run one computation repeatedly, then your
+            plugin class should extend [`threadloop`][12]. Your code goes in
+            `_p_one_iteration`, which gets called in a hot loop. `threadloop`
+            inherits from plugin, but adds threading functionality. If you don't
+            use `_p_one_iteration`, inheriting from `threadloop` is superfluous;
+            Inherit from plugin directly instead.
 
-    -   If you need custom concurrency (more complicated than a loop),
-            triggered concurrency (by events fired in other plugins),
-            or no concurrency then your plugin class should extend [`plugin`][13].
+    -   If you need custom concurrency (more complicated than a loop), triggered
+            concurrency (by events fired in other plugins), or no concurrency
+            then your plugin class should extend [`plugin`][13]. Your code goes
+            in the `start` method.
+
+    - If you want to schedule data-driven work in either case, call
+      [`sb->schedule(...)`][14].
 			
-        - If you spin your own threads, they **must** wait for
+    - If you spin your own threads, they **must** wait for
           `pb->lookup_impl<Stoplight>()->wait_for_ready()` the first time they
           run. This allows the start of all threads in ILLIXR to be
           synchronized.
 
-        - They **must** be joined-or-disowned at-or-before
+    - They **must** be joined-or-disowned at-or-before
           `plugin::stop()`. This allows ILLIXR to shutdown cleanly.
 
 1.  Write a file called `plugin.cpp` with this body, replacing every instance of `plugin_name`:
 
     <!--- language: lang-cpp -->
 
+        /// A minimal/no-op ILLIXR plugin
+
         #include "common/phonebook.hpp"
         #include "common/plugin.hpp"
         #include "common/threadloop.hpp"
+        #include <chrono>
+        #include <thread>
 
         using namespace ILLIXR;
 
-        /// Inherit from `plugin` if you don't need the threadloop
-        class plugin_name : public threadloop {
+        /// Inherit from plugin if you don't need the threadloop
+        /// Inherit from threadloop to provide a new thread to perform the task
+        class basic_plugin : public threadloop {
         public:
-            plugin_name(std::string name_, phonebook* pb_)
+            basic_plugin(std::string name_, phonebook* pb_)
                 : threadloop{name_, pb_}
-                { }
-            virtual void start() override { }
-            virtual ~plugin_name() override { }
+            {
+                std::cout << "Constructing basic_plugin." << std::endl;
+            }
+
+            /// Note the virtual.
+            virtual ~basic_plugin() override {
+                std::cout << "Deconstructing basic_plugin." << std::endl;
+            }
+
+            /// For `threadloop` style plugins, do not override the start() method unless you know what you're doing!
+            /// _p_one_iteration() is called in a thread created by threadloop::start()
+            void _p_one_iteration() override {
+                std::cout << "This goes to the log when `log` is set in the config." << std::endl;
+                std::cerr << "This goes to the console." << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds{100});
+            }
+
         };
 
-        // This line makes the plugin importable by Spindle
-        PLUGIN_MAIN(plugin_name);
+        /// This line makes the plugin importable by Spindle
+        PLUGIN_MAIN(basic_plugin);
 
 1.  At this point, you should be able to build your plugin with ILLIXR.
     Move to the ILLIXR repo and update `configs/native.yaml`.
