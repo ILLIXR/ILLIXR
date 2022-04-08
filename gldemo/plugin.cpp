@@ -44,9 +44,9 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		//, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
-		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-		, _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")}
 		, _m_clock{pb->lookup_impl<RelativeClock>()}
+		, _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+		, _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")}	
 	{ }
 
 	// Essentially, a crude equivalent of XRWaitFrame.
@@ -126,8 +126,6 @@ public:
 
 			glUseProgram(demoShaderProgram);
 			glBindFramebuffer(GL_FRAMEBUFFER, eyeTextureFBO);
-
-			// Determine which set of eye textures to be using.
 
 			glUseProgram(demoShaderProgram);
 			glBindVertexArray(demo_vao);
@@ -243,6 +241,7 @@ private:
 	const std::unique_ptr<const xlib_gl_extended_window> xwin;
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
+	const std::shared_ptr<const RelativeClock> _m_clock;
 	const switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 
 	// Switchboard plug for application eye buffer.
@@ -272,8 +271,6 @@ private:
 	Eigen::Matrix4f basicProjection;
 
 	time_point lastTime;
-
-	const std::shared_ptr<const RelativeClock> _m_clock;
 
 	int createSharedEyebuffer(GLuint* texture_handle){
 

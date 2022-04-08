@@ -23,32 +23,15 @@ constexpr duration IMU_TTL {std::chrono::seconds{5}};
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
-struct imu_type {
-	time_point timestamp;
-    Eigen::Matrix<double, 3, 1> wm;
-    Eigen::Matrix<double, 3, 1> am;
-
-
-	imu_type(
-			 time_point timestamp_,
-			 Eigen::Matrix<double, 3, 1> wm_,
-			 Eigen::Matrix<double, 3, 1> am_
-			 )
-		: timestamp{timestamp_}
-		, wm{wm_}
-		, am{am_}
-	{ }
-};
-
 class gtsam_integrator : public plugin {
 public:
     gtsam_integrator(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
     {
         sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
             callback(datum);
@@ -70,6 +53,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard> sb;
+    const std::shared_ptr<RelativeClock> _m_clock;
 
     // IMU Data, Sequence Flag, and State Vars Needed
     switchboard::reader<imu_cam_type> _m_imu_cam;
@@ -77,8 +61,6 @@ private:
 
     // Write IMU Biases for PP
     switchboard::writer<imu_raw_type> _m_imu_raw;
-
-	const std::shared_ptr<RelativeClock> _m_clock;
 
     std::vector<imu_type> _imu_vec;
 
@@ -316,7 +298,7 @@ private:
     }
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, time_point timestamp) {
+	static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
 		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
 		return imu_type {
 			timestamp,

@@ -50,6 +50,7 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
 		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
@@ -63,12 +64,12 @@ public:
 		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
 		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
 		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
 	{ }
 
 private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
+	const std::shared_ptr<const RelativeClock> _m_clock;
 
 	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
 	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
@@ -165,8 +166,6 @@ private:
 	GLenum err;
 
 	duration offload_duration;
-
-	const std::shared_ptr<const RelativeClock> _m_clock;
 
 	GLubyte* readTextureImage(){
 
@@ -498,8 +497,6 @@ public:
 	}
 
 	virtual void _p_one_iteration() override {
-		RAC_ERRNO_MSG("timewarp_gl at start of warp");
-
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 		assert(gl_result && "glXMakeCurrent should not fail");
 
@@ -650,14 +647,11 @@ public:
 		glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
-        const time_point time_now = _m_clock->now();
-		const duration time_since_render = time_now - most_recent_frame->render_time;
+		const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
 
 		if (log_count > LOG_PERIOD) {
             const double time_since_render_ms_d = duration2double<std::milli>(time_since_render);
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
-			// We have always been warping from the correct swap, so I will disable this.
-			// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
 		}
 
 		if (time_since_render > vsync_period) {
