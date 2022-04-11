@@ -28,7 +28,7 @@ action:
   monado:
     path:
       git_repo : https://gitlab.freedesktop.org/monado/monado.git
-      version  : master
+      version  : main
 
     config: # For CMake
       XRT_HAVE_LIBUDEV              : ON

@@ -4,27 +4,28 @@ site_dir: site/docs
 site_url: https://illixr.github.io/ILLIXR/docs
 nav:
     - 'Latest Documentation':
-        - 'ILLIXR (Version 2)': index.md
-        - 'Getting Started (Version 2)': getting_started.md
-        - 'Building ILLIXR (Version 2)': building_illixr.md
-        - 'ILLIXR Debugging Tips (Version 2)': debugging_illixr.md
-        - 'ILLIXR under Virtualization (Version 2)': virtualization.md
-        - 'ILLIXR Plugins (Version 2)': illixr_plugins.md
-        - 'Modifying a Plugin (Version 2)': modifying_a_plugin.md
-        - 'Writing your Plugin (Version 2)': writing_your_plugin.md
-        - 'Monado Overview (Version 2)': monado_illixr_runtime_overview.md
-        - 'Monado Dataflow (Version 2)': monado_integration_dataflow.md
-        - 'Logging and Metrics (Version 2)': logging_and_metrics.md
-        - 'ILLIXR Glossary (Version 2)': glossary.md
-        - 'ILLIXR API (Version 2)': api/html/annotated.html
-        - 'ILLIXR License (Version 2)': LICENSE.md
-        - 'Contributing Guidelines (Version 2)': CONTRIBUTING.md
-        - 'Using Switchboard and Phonebook Externally (Version 2)': external_switchboard_and_phonebook.md
-    - 'Legacy Documentation':
-        - 'ILLIXR (Version 1)': legacy/v1/index.md
-        - 'Audio Pipeline (Version 1)': legacy/v1/README-audio.md
-        - 'ElasticFusion (Version 1)': legacy/v1/README-efusion.md
-        - 'HOTlab (Version 1)': legacy/v1/README-hotlab.md
-        - 'OpenVINS (Version 1)': legacy/v1/README-openvins.md
-        - 'RITnet (Version 1)': legacy/v1/README-ritnet.md
-        - 'Visual Post-processing (Version 1)': legacy/v1/README-visualpp.md
+        - 'ILLIXR': index.md
+        - 'Getting Started': getting_started.md
+        - 'Building ILLIXR': building_illixr.md
+        - 'ILLIXR Debugging Tips': debugging_illixr.md
+        - 'ILLIXR Under Virtualization': virtualization.md
+        - 'ILLIXR Plugins': illixr_plugins.md
+        - 'Modifying a Plugin': modifying_a_plugin.md
+        - 'Writing Your Plugin': writing_your_plugin.md
+        - 'Monado Overview': monado_illixr_runtime_overview.md
+        - 'Monado Dataflow': monado_integration_dataflow.md
+        - 'Logging and Metrics': logging_and_metrics.md
+        - 'ILLIXR Glossary': glossary.md
+        - 'ILLIXR API': api/html/annotated.html
+        - 'ILLIXR License': LICENSE.md
+        - 'Contributing Guidelines': CONTRIBUTING.md
+        - 'Updating Tags and Documentation': updating_tags_and_docs.md
+        - 'Using Switchboard and Phonebook Externally': external_switchboard_and_phonebook.md
+    - 'Legacy Documentation (Version 1)':
+        - 'ILLIXR': legacy/v1/index.md
+        - 'Audio Pipeline': legacy/v1/README-audio.md
+        - 'ElasticFusion': legacy/v1/README-efusion.md
+        - 'HOTlab': legacy/v1/README-hotlab.md
+        - 'OpenVINS': legacy/v1/README-openvins.md
+        - 'RITnet': legacy/v1/README-ritnet.md
+        - 'Visual Post-processing': legacy/v1/README-visualpp.md
