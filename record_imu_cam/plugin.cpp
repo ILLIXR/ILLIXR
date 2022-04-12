@@ -8,11 +8,7 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-
 using namespace ILLIXR;
-/*
-The plugin to record the IMU and the camera data. It is written by Ying Jing and Henry Che from Illinois.
-*/
 
 class record_imu_cam : public plugin {
 public:
@@ -20,24 +16,29 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 	{
-		boost::filesystem::path record_data = get_record_data_path();
-		//check folder exist, if exist delete it'
+		record_data = get_record_data_path();
+		// check folder exist, if exist delete it'
 		boost::filesystem::remove_all(record_data);
 
+		// create imu0 directory
 		boost::filesystem::path imu_dir = record_data / "imu0";
 		boost::filesystem::create_directories(imu_dir);
 		std::string imu_file = imu_dir.string() + "/data.csv";
 		imu_wt_file.open(imu_file, std::ofstream::out);
 		imu_wt_file << "#timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]" << std::endl;
 
+		// create cam0 directory
 		boost::filesystem::path cam0_dir = record_data / "cam0";
-		boost::filesystem::create_directories(cam0_dir);
+		cam0_data_dir = cam0_dir / "data";
+		boost::filesystem::create_directories(cam0_data_dir);
 		std::string cam0_file = cam0_dir.string() + "/data.csv";
 		cam0_wt_file.open(cam0_file, std::ofstream::out);
 		cam0_wt_file << "#timestamp [ns],filename" << std::endl;
 
+		// create cam1 directory
 		boost::filesystem::path cam1_dir = record_data / "cam1";
-		boost::filesystem::create_directories(cam1_dir);
+		cam1_data_dir = cam1_dir / "data";
+		boost::filesystem::create_directories(cam1_data_dir);
 		std::string cam1_file = cam1_dir.string() + "/data.csv";
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
 		cam1_wt_file << "#timestamp [ns],filename" << std::endl;
@@ -48,7 +49,6 @@ public:
 	}
 
 	void dump_data(switchboard::ptr<const imu_cam_type> datum) {
-		boost::filesystem::path record_data = get_record_data_path();
 		ullong timestamp  = datum->dataset_time;
 		Eigen::Vector3f angular_v = datum->angular_v;
 		Eigen::Vector3f linear_a = datum->linear_a;
@@ -58,24 +58,19 @@ public:
 
 		// write cam0
 		std::optional<cv::Mat> cam0_data = datum->img0;
-		boost::filesystem::path cam0_data_dir = record_data / "cam0" / "data";
-		boost::filesystem::create_directories(cam0_data_dir);
 		std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
-		if (cam0_data!=std::nullopt) {
+		if (cam0_data != std::nullopt) {
 			cam0_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
 			cv::imwrite(cam0_img, cam0_data.value());
 		}
 
 		// write cam1 
 		std::optional<cv::Mat> cam1_data = datum->img1;
-		boost::filesystem::path cam1_data_dir = record_data / "cam1" / "data";
-		boost::filesystem::create_directories(cam1_data_dir);
         std::string cam1_img = cam1_data_dir.string() + "/" +std::to_string(timestamp) + ".png";
-		if (cam1_data!=std::nullopt) {
-			cam1_wt_file << timestamp << "," << timestamp <<".png "<< std::endl;
+		if (cam1_data != std::nullopt) {
+			cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
 			cv::imwrite(cam1_img, cam1_data.value());
 		}
-
 	}
 
 	virtual ~record_imu_cam() override { 
@@ -90,12 +85,15 @@ private:
 	std::ofstream cam1_wt_file;
 	const std::shared_ptr<switchboard> sb;
 
+	boost::filesystem::path record_data; 
+	boost::filesystem::path cam0_data_dir;
+	boost::filesystem::path cam1_data_dir;
+
+	// TODO: This should come from a yaml file
 	boost::filesystem::path get_record_data_path() {
 		boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
-		// set path for data recording here
 		return ILLIXR_DIR / "data_record";
 	}
-
 };
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(record_imu_cam);
