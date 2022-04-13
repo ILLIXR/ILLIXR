@@ -12,3 +12,4 @@ metrics/
 .cache
 install/
 .deps
+data_record/

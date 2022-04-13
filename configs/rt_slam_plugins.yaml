@@ -3,6 +3,7 @@ plugin_group:
   # - path: zed/
   # - path: realsense/
   # - path: depthai/
+  # - path: record_imu_cam/
   - name: Kimera-VIO/
     path:
       git_repo: https://github.com/ILLIXR/Kimera-VIO.git
