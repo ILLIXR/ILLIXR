@@ -228,7 +228,7 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
+if [ "${distro_name}" = "ubuntu" ] && ([ "${distro_version}" = "18.04" ] || [ "${distro_version}" = "20.04" ]); then
     case "${arch_name}" in
         x86_64)     use_realsense="yes"
                     pkg_dep_groups+=" realsense_anyarch"
@@ -241,15 +241,6 @@ if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
                     exit 1
                     ;;
     esac
-else
-    pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
-    pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
-    pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations "
-    pkg_warn_msg_realsense+="for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. "
-    pkg_warn_msg_realsense+="If your project requires Intel RealSense support, "
-    pkg_warn_msg_realsense+="please build and install the Intel RealSense SDK from source. "
-    pkg_warn_msg_realsense+="For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
-    print_warning "${pkg_warn_msg_realsense}"
 fi
 
 ## CUDA ##
