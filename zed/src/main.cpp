@@ -152,13 +152,13 @@ public:
     zed_imu_thread(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
     {
         camera_thread_.start();
     }
@@ -227,9 +227,9 @@ protected:
 
         if (rgb && depth) {
             _m_rgb_depth.put(_m_rgb_depth.allocate(
+                    imu_time_point, 
                     rgb,
-                    depth,
-                    imu_time
+                    depth
 			));
         }
 
@@ -243,6 +243,7 @@ private:
     zed_camera_thread camera_thread_;
 
     const std::shared_ptr<switchboard> sb;
+    const std::shared_ptr<const RelativeClock> _m_clock;
 	switchboard::writer<imu_cam_type> _m_imu_cam;
 	switchboard::reader<cam_type> _m_cam_type;
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
@@ -258,7 +259,6 @@ private:
 
 	std::optional<ullong> _m_first_imu_time;
 	std::optional<time_point> _m_first_real_time;
-	const std::shared_ptr<const RelativeClock> _m_clock;
 };
 
 // This line makes the plugin importable by Spindle
