@@ -16,4 +16,3 @@ plugin_group:
   - path: gtsam_integrator/
   # - path: passthrough_integrator/
   - path: pose_prediction/
-  # - path: pose_lookup/
