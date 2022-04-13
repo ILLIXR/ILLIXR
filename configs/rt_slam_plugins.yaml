@@ -3,15 +3,15 @@ plugin_group:
   # - path: zed/
   # - path: realsense/
   # - path: depthai/
-  # - name: Kimera-VIO/
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-  #     version: "3.2"
-  - name: OpenVINS
+  - name: Kimera-VIO/
     path:
-       git_repo: https://github.com/ILLIXR/open_vins.git
-       version: "issue-58-standardize-clock"
+      git_repo: https://github.com/ILLIXR/Kimera-VIO.git
+      version: "3.2"
+  # - name: OpenVINS
+  #   path:
+  #     git_repo: https://github.com/ILLIXR/open_vins.git
+  #     version: "issue-58-standardize-clock"
   # - path: rk4_integrator/
   - path: gtsam_integrator/
-  # - path: passthrough_integrator/
   - path: pose_prediction/
+  
