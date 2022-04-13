@@ -15,8 +15,10 @@ public:
 	record_imu_cam(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
+		, record_data{get_record_data_path()}
+		, cam0_data_dir{record_data / "cam0" / "data"}
+		, cam1_data_dir{record_data / "cam1" / "data"}
 	{
-		record_data = get_record_data_path();
 		// check folder exist, if exist delete it'
 		boost::filesystem::remove_all(record_data);
 
@@ -29,7 +31,6 @@ public:
 
 		// create cam0 directory
 		boost::filesystem::path cam0_dir = record_data / "cam0";
-		cam0_data_dir = cam0_dir / "data";
 		boost::filesystem::create_directories(cam0_data_dir);
 		std::string cam0_file = cam0_dir.string() + "/data.csv";
 		cam0_wt_file.open(cam0_file, std::ofstream::out);
@@ -37,7 +38,6 @@ public:
 
 		// create cam1 directory
 		boost::filesystem::path cam1_dir = record_data / "cam1";
-		cam1_data_dir = cam1_dir / "data";
 		boost::filesystem::create_directories(cam1_data_dir);
 		std::string cam1_file = cam1_dir.string() + "/data.csv";
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
@@ -85,9 +85,9 @@ private:
 	std::ofstream cam1_wt_file;
 	const std::shared_ptr<switchboard> sb;
 
-	boost::filesystem::path record_data; 
-	boost::filesystem::path cam0_data_dir;
-	boost::filesystem::path cam1_data_dir;
+	const boost::filesystem::path record_data; 
+	const boost::filesystem::path cam0_data_dir;
+	const boost::filesystem::path cam1_data_dir;
 
 	// TODO: This should come from a yaml file
 	boost::filesystem::path get_record_data_path() {
