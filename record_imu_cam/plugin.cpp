@@ -19,7 +19,7 @@ public:
 		, cam0_data_dir{record_data / "cam0" / "data"}
 		, cam1_data_dir{record_data / "cam1" / "data"}
 	{
-		// check folder exist, if exist delete it'
+		// check folder exist, if exist delete it
 		boost::filesystem::remove_all(record_data);
 
 		// create imu0 directory
@@ -30,16 +30,14 @@ public:
 		imu_wt_file << "#timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]" << std::endl;
 
 		// create cam0 directory
-		boost::filesystem::path cam0_dir = record_data / "cam0";
 		boost::filesystem::create_directories(cam0_data_dir);
-		std::string cam0_file = cam0_dir.string() + "/data.csv";
+		std::string cam0_file = (record_data / "cam0" / "data.csv").string();
 		cam0_wt_file.open(cam0_file, std::ofstream::out);
 		cam0_wt_file << "#timestamp [ns],filename" << std::endl;
 
 		// create cam1 directory
-		boost::filesystem::path cam1_dir = record_data / "cam1";
 		boost::filesystem::create_directories(cam1_data_dir);
-		std::string cam1_file = cam1_dir.string() + "/data.csv";
+		std::string cam1_file = (record_data / "cam1" / "data.csv").string();
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
 		cam1_wt_file << "#timestamp [ns],filename" << std::endl;
 
@@ -66,7 +64,7 @@ public:
 
 		// write cam1 
 		std::optional<cv::Mat> cam1_data = datum->img1;
-        std::string cam1_img = cam1_data_dir.string() + "/" +std::to_string(timestamp) + ".png";
+        	std::string cam1_img = cam1_data_dir.string() + "/" +std::to_string(timestamp) + ".png";
 		if (cam1_data != std::nullopt) {
 			cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
 			cv::imwrite(cam1_img, cam1_data.value());
