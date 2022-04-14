@@ -87,6 +87,7 @@ public:
                 }
             }
 
+<<<<<<< HEAD
             if (auto fs = frame.as<rs2::frameset>()) {
                 double ts = fs.get_timestamp(); 
                 ullong cam_time = static_cast<ullong>(ts * 1000000);
@@ -128,6 +129,22 @@ public:
                         cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
                         cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
                         _m_cam.put(_m_cam.allocate<cam_type>(
+=======
+                    if (img0 && img1) {
+                        _m_cam.put(_m_cam.allocate<cam_type>(
+                            {
+                                imu_time_point,
+                                img0.value(),
+                                img1.value()
+                            }
+                        ));
+                    }
+                     
+                    
+                    if (rgb && depth)
+                    {
+                        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
+>>>>>>> realsense zed can compile
                             {
                                 cam_time_point,
                                 cv::Mat{fisheye_left},
@@ -171,10 +188,14 @@ private:
     std::string realsense_cam;
 
     std::optional<ullong> _m_first_imu_time;
+<<<<<<< HEAD
 	std::optional<time_point> _m_first_real_time_imu;
 
     std::optional<ullong> _m_first_cam_time;
 	std::optional<time_point> _m_first_real_time_cam;
+=======
+	std::optional<time_point> _m_first_real_time;
+>>>>>>> realsense zed can compile
 
     void find_supported_devices(rs2::device_list devices){
         bool gyro_found{false};
@@ -280,6 +301,10 @@ private:
             profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter to use stereo images for SLAM but degrades depth quality in low texture environments.
         }
     }
+<<<<<<< HEAD
+=======
+	
+>>>>>>> realsense zed can compile
 };
 
 PLUGIN_MAIN(realsense);
