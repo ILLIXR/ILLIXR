@@ -23,11 +23,11 @@ public:
 	realsense(std::string name_, phonebook *pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
-		, _m_clock{pb->lookup_impl<RelativeClock>()}
         {
             cfg.disable_all_streams();
             configure_camera();
@@ -131,16 +131,6 @@ public:
                         depth = realsense_cam_type_.depth;
                     }
                     
-                    // Submit to switchboard
-                    // _m_imu_cam.put(_m_imu_cam.allocate<imu_realsense_cam_type>(
-                    //     {
-                    //         imu_time_point,
-                    //         av,
-                    //         la,
-                    //         img0,
-                    //         img1
-                    //     }
-                    // ));
                     _m_imu.put(_m_imu.allocate<imu_type>(
                         {
                             imu_time_point,
@@ -149,13 +139,16 @@ public:
                         }
                     )); 
 
-                    m_cam.put(_m_cam.allocate<cam_type>(
-                        {
-                            imu_time_point,
-                            img0,
-                            img1
-                        }
-                    )); 
+                    if (img0 && img1) {
+                        _m_cam.put(_m_cam.allocate<cam_type>(
+                            {
+                                imu_time_point,
+                                img0.value(),
+                                img1.value()
+                            }
+                        ));
+                    }
+                     
                     
                     if (rgb && depth)
                     {
@@ -195,6 +188,7 @@ private:
     } accel_type;
 
 	const std::shared_ptr<switchboard> sb;
+    const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_type> _m_imu;
     switchboard::writer<cam_type> _m_cam;
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
@@ -216,6 +210,9 @@ private:
 	int last_iteration_cam;
 	int last_iteration_accel;
     std::string realsense_cam;
+
+    std::optional<ullong> _m_first_imu_time;
+	std::optional<time_point> _m_first_real_time;
 
     void find_supported_devices(rs2::device_list devices){
         bool gyro_found{false};
@@ -321,11 +318,7 @@ private:
             profiles.get_device().first<rs2::depth_sensor>().set_option(RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter to use stereo images for SLAM but degrades depth quality in low texture environments.
         }
     }
-
-
-	std::optional<ullong> _m_first_imu_time;
-	std::optional<time_point> _m_first_real_time;
-	const std::shared_ptr<const RelativeClock> _m_clock;
+	
 };
 
 PLUGIN_MAIN(realsense);
