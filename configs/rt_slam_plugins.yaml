@@ -14,7 +14,5 @@ plugin_group:
   #     version: "issue-58-standardize-clock"
   # - path: rk4_integrator/
   - path: gtsam_integrator/
-  # - path: rk4_integrator/
-  - path: dummy_integrator/
   - path: pose_prediction/
   
