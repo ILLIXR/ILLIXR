@@ -163,9 +163,7 @@ private:
 	rs2::pipeline pipe;
 	rs2::config cfg;
 
-    cam_enum cam_select{UNSUPPORTED};
-    bool D4XXI_found{false};
-    bool T26X_found{false}; 
+	realsense_cam_type realsense_cam_type_;
     
 	accel_type accel_data;
 	int iteration_accel = 0;

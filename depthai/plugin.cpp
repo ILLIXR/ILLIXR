@@ -21,8 +21,6 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam{sb->get_writer<cam_type>("cam")}
-        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         //Initialize DepthAI pipeline and device 
         , device{createCameraPipeline()}
         { 
