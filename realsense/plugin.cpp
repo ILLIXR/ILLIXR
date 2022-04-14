@@ -24,7 +24,8 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_imu{sb->get_writer<imu_type>("imu")}
+        , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
         {
@@ -132,15 +133,30 @@ public:
                     }
                     
                     // Submit to switchboard
-                    _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+                    // _m_imu_cam.put(_m_imu_cam.allocate<imu_realsense_cam_type>(
+                    //     {
+                    //         imu_time_point,
+                    //         av,
+                    //         la,
+                    //         img0,
+                    //         img1
+                    //     }
+                    // ));
+                    _m_imu.put(_m_imu.allocate<imu_type>(
                         {
                             imu_time_point,
                             av,
-                            la,
+                            la
+                        }
+                    )); 
+
+                    m_cam.put(_m_cam.allocate<cam_type>(
+                        {
+                            imu_time_point,
                             img0,
                             img1
                         }
-                    ));
+                    )); 
                     
                     if (rgb && depth)
                     {
@@ -166,7 +182,7 @@ private:
         cv::Mat rgb;
         cv::Mat depth;
         int iteration;
-    } cam_type;
+    } realsense_cam_type;
 
     typedef enum {
         UNSUPPORTED,
@@ -181,8 +197,9 @@ private:
 
 	const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_cam_type> _m_imu_cam;
-    switchboard::writer<rgb_depth_type> _m_rgb_depth;
+    switchboard::writer<imu_type> _m_imu;
+    switchboard::writer<cam_type> _m_cam;
+	switchboard::writer<rgb_depth_type> _m_rgb_depth;
     std::mutex mutex;
 	rs2::pipeline_profile profiles;
 	rs2::pipeline pipe;

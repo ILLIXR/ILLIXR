@@ -256,6 +256,14 @@ private:
                 _m_enqueued++;
             }
         }
+
+        // const managed_thread& get_thread() const {
+		// 	return _m_thread;
+		// }
+
+		// ~topic_subscription() {
+		// 	_m_thread.stop();
+		// }
     };
 
     class topic_buffer {
@@ -265,6 +273,8 @@ private:
 		std::atomic<size_t> _m_queue_size {0};
 
 	public:
+        topic_buffer() { printf("topic buffer created"); }
+        
 		void enqueue(ptr<const event>&& this_event) {
 			_m_queue_size++;
 			[[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
@@ -279,6 +289,8 @@ private:
 			_m_queue.wait_dequeue(_m_ctok, obj);
 			return obj;
 		}
+
+        ~topic_buffer() {}
 	};
 
     /**
@@ -317,6 +329,8 @@ private:
             , _m_record_logger{record_logger_}
 			, _m_latest_index{0}
         { }
+
+        ~topic() {}
 
         const std::string& name() { return _m_name; }
 
@@ -555,7 +569,7 @@ private:
     template <typename specific_event>
     topic& try_register_topic(const std::string& topic_name) {
         {
-            const std::shared_lock lock{_m_registry_lock};
+            const std::unique_lock lock{_m_registry_lock};
             auto found = _m_registry.find(topic_name);
             if (found != _m_registry.end()) {
                 topic& topic_ = found->second;
@@ -645,8 +659,10 @@ public:
      * Leave topics in place, so existing reader/writer handles will not crash.
      */
     void stop() {
-        const std::shared_lock lock{_m_registry_lock};
+        const std::unique_lock lock{_m_registry_lock};
+        std::cout << "In total " << _m_registry.size() << "topics\n"; 
         for (auto& pair : _m_registry) {
+            std::cout << "Stopping topic: " << pair.second.name() << "\n";
             pair.second.stop();
         }
     }
