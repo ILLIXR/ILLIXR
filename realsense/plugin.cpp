@@ -131,16 +131,6 @@ public:
                         depth = realsense_cam_type_.depth;
                     }
                     
-                    // Submit to switchboard
-                    // _m_imu_cam.put(_m_imu_cam.allocate<imu_realsense_cam_type>(
-                    //     {
-                    //         imu_time_point,
-                    //         av,
-                    //         la,
-                    //         img0,
-                    //         img1
-                    //     }
-                    // ));
                     _m_imu.put(_m_imu.allocate<imu_type>(
                         {
                             imu_time_point,
@@ -149,13 +139,16 @@ public:
                         }
                     )); 
 
-                    m_cam.put(_m_cam.allocate<cam_type>(
-                        {
-                            imu_time_point,
-                            img0,
-                            img1
-                        }
-                    )); 
+                    if (img0 && img1) {
+                        _m_cam.put(_m_cam.allocate<cam_type>(
+                            {
+                                imu_time_point,
+                                img0.value(),
+                                img1.value()
+                            }
+                        ));
+                    }
+                     
                     
                     if (rgb && depth)
                     {
@@ -219,7 +212,7 @@ private:
     std::string realsense_cam;
 
     std::optional<ullong> _m_first_imu_time;
-    std::optional<time_point> _m_first_real_time;
+	std::optional<time_point> _m_first_real_time;
 
     void find_supported_devices(rs2::device_list devices){
         bool gyro_found{false};
@@ -328,4 +321,3 @@ private:
 };
 
 PLUGIN_MAIN(realsense);
-
