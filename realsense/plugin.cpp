@@ -39,46 +39,7 @@ public:
             // This lock guarantees that concurrent invocations of `callback` are serialized.
             // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
             // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
-
-            if (cam_select == D4XXI){
-                if (auto fs = frame.as<rs2::frameset>()) {
-                    rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
-                    rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
-                    rs2::video_frame depth_frame = fs.get_depth_frame();
-                    rs2::video_frame rgb_frame = fs.get_color_frame();
-                    cv::Mat ir_left = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*)ir_frame_left.get_data());
-                    cv::Mat ir_right = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void *)ir_frame_right.get_data());
-                    cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void *)rgb_frame.get_data());
-                    cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void *)depth_frame.get_data());
-                    cv::Mat converted_depth;
-                    float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
-                    depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                    realsense_cam_type_ = realsense_cam_type {
-                        .img0 = cv::Mat{ir_left},
-                        .img1 = cv::Mat{ir_right},
-                        .rgb = cv::Mat{rgb},
-                        .depth = cv::Mat{converted_depth},
-                        .iteration = iteration_cam,
-                    };
-                    iteration_cam++;
-                }
-            }
-
-            else if (cam_select == T26X){
-                if (auto fs = frame.as<rs2::frameset>()) {
-                    rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
-                    rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
-                    cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
-                    cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
-                    realsense_cam_type_ = realsense_cam_type {
-                        .img0 = cv::Mat{fisheye_left},
-                        .img1 = cv::Mat{fisheye_right},
-                        .iteration = iteration_cam,
-                    };
-                    iteration_cam++;
-                }
-            }
-
+            
             if (auto mf = frame.as<rs2::motion_frame>()) {
                 std::string s = mf.get_profile().stream_name();
 
@@ -109,27 +70,11 @@ public:
                     ullong imu_time = static_cast<ullong>(ts * 1000000);
 					if (!_m_first_imu_time) {
 						_m_first_imu_time = imu_time;
-						_m_first_real_time = _m_clock->now();
+						_m_first_real_time_imu = _m_clock->now();
 					}
 
                     // Time as time_point
-                    time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
-
-                    // Images
-                    std::optional<cv::Mat> img0 = std::nullopt;
-                    std::optional<cv::Mat> img1 = std::nullopt;
-                    std::optional<cv::Mat> rgb = std::nullopt;
-                    std::optional<cv::Mat> depth = std::nullopt;
-
-                        
-                    if (last_iteration_cam != realsense_cam_type_.iteration)
-                    {
-                        last_iteration_cam = realsense_cam_type_.iteration;
-                        img0 = realsense_cam_type_.img0;
-                        img1 = realsense_cam_type_.img1;
-                        rgb = realsense_cam_type_.rgb;
-                        depth = realsense_cam_type_.depth;
-                    }
+                    time_point imu_time_point{*_m_first_real_time_imu + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
                     
                     _m_imu.put(_m_imu.allocate<imu_type>(
                         {
@@ -138,44 +83,64 @@ public:
                             la
                         }
                     )); 
-
-                    if (img0 && img1) {
-                        _m_cam.put(_m_cam.allocate<cam_type>(
-                            {
-                                imu_time_point,
-                                img0.value(),
-                                img1.value()
-                            }
-                        ));
-                    }
-                     
-                    
-                    if (rgb && depth)
-                    {
-                        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-                            {
-								imu_time_point,
-                                rgb,
-                                depth
-                            }
-                        ));
-                    }
                 }
             }
-			
+
+            if (auto fs = frame.as<rs2::frameset>()) {
+                double ts = fs.get_timestamp(); 
+                ullong cam_time = static_cast<ullong>(ts * 1000000);
+                if (!_m_first_cam_time) {
+                    _m_first_cam_time = cam_time;
+                    _m_first_real_time_cam = _m_clock->now();
+                }
+                time_point cam_time_point{*_m_first_real_time_cam + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
+                if (cam_select == D4XXI) {
+                    rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
+                    rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
+                    rs2::video_frame depth_frame = fs.get_depth_frame();
+                    rs2::video_frame rgb_frame = fs.get_color_frame();
+                    cv::Mat ir_left = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*)ir_frame_left.get_data());
+                    cv::Mat ir_right = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void *)ir_frame_right.get_data());
+                    cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void *)rgb_frame.get_data());
+                    cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void *)depth_frame.get_data());
+                    cv::Mat converted_depth;
+                    float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
+                    depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
+                    _m_cam.put(_m_cam.allocate<cam_type>(
+                        {
+                            cam_time_point,
+                            cv::Mat{ir_left},
+                            cv::Mat{ir_right}
+                        }
+                    ));
+                    _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
+                        {
+                            cam_time_point,
+                            rgb,
+                            depth
+                        }
+                    ));
+                } else if (cam_select == T26X){
+                    if (auto fs = frame.as<rs2::frameset>()) {
+                        rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
+                        rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
+                        cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
+                        cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
+                        _m_cam.put(_m_cam.allocate<cam_type>(
+                            {
+                                cam_time_point,
+                                cv::Mat{fisheye_left},
+                                cv::Mat{fisheye_right}
+                            }
+                        ));
+                    }
+                }   
+            }        
         };
 
 	virtual ~realsense() override { pipe.stop(); }
 
 private:
-    typedef struct {
-        cv::Mat img0;
-        cv::Mat img1;
-        cv::Mat rgb;
-        cv::Mat depth;
-        int iteration;
-    } realsense_cam_type;
-
     typedef enum {
         UNSUPPORTED,
         D4XXI,
@@ -199,20 +164,20 @@ private:
 	rs2_vector gyro_data;
 	rs2_vector accel_data;
 
-	realsense_cam_type realsense_cam_type_;
     cam_enum cam_select{UNSUPPORTED};
     bool D4XXI_found{false};
     bool T26X_found{false}; 
     
 	accel_type accel_type_;
-	int iteration_cam = 0;
 	int iteration_accel = 0;
-	int last_iteration_cam;
 	int last_iteration_accel;
     std::string realsense_cam;
 
     std::optional<ullong> _m_first_imu_time;
-	std::optional<time_point> _m_first_real_time;
+	std::optional<time_point> _m_first_real_time_imu;
+
+    std::optional<ullong> _m_first_cam_time;
+	std::optional<time_point> _m_first_real_time_cam;
 
     void find_supported_devices(rs2::device_list devices){
         bool gyro_found{false};
