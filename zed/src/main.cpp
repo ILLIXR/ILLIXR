@@ -21,8 +21,8 @@ const record_header __imu_cam_record {"imu_cam", {
     {"has_camera", typeid(bool)},
 }};
 
-struct cam_type : public switchboard::event {
-	cam_type(
+struct zed_cam_type : public switchboard::event {
+	zed_cam_type(
 			 cv::Mat _img0,
 			 cv::Mat _img1,
 			 cv::Mat _rgb,
@@ -75,7 +75,7 @@ public:
     zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
     : threadloop{name_, pb_}
     , sb{pb->lookup_impl<switchboard>()}
-    , _m_cam_type{sb->get_writer<cam_type>("cam_type")}
+    , _m_zed_cam{sb->get_writer<zed_cam_type>("zed_cam_type")}
     , zedm{zedm_}
     , image_size{zedm->getCameraInformation().camera_configuration.resolution}
     {
@@ -94,7 +94,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard> sb;
-	switchboard::writer<cam_type> _m_cam_type;
+	switchboard::writer<zed_cam_type> _m_zed_cam;
     std::shared_ptr<Camera> zedm;
     Resolution image_size;
     RuntimeParameters runtime_parameters;
@@ -128,13 +128,15 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        _m_cam_type.put(_m_cam_type.allocate(
-            // Make a copy, so that we don't have race
-            cv::Mat{imageL_ocv},
-            cv::Mat{imageR_ocv},
-			cv::Mat{rgb_ocv},
-            cv::Mat{depth_ocv},
-            iteration_no
+        _m_zed_cam.put(_m_zed_cam.allocate<zed_cam_type>(
+            {
+                // Make a copy, so that we don't have race
+                cv::Mat{imageL_ocv},
+                cv::Mat{imageR_ocv},
+                cv::Mat{rgb_ocv},
+                cv::Mat{depth_ocv},
+                iteration_no
+            }    
         ));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
@@ -153,8 +155,14 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
+<<<<<<< HEAD
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
+=======
+        , _m_zed_cam{sb->get_reader<zed_cam_type>("zed_cam_type")}
+        , _m_imu{sb->get_writer<imu_type>("imu")}
+        , _m_cam{sb->get_writer<cam_type>("cam")}
+>>>>>>> realsense zed can compile
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
@@ -203,7 +211,7 @@ protected:
 		std::optional<cv::Mat> depth = std::nullopt;
 		std::optional<cv::Mat> rgb = std::nullopt;
 
-        switchboard::ptr<const cam_type> c = _m_cam_type.get_ro_nullable();
+        switchboard::ptr<const zed_cam_type> c = _m_zed_cam.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
             last_serial_no = c->serial_no;
             img0 = c->img0;
@@ -217,19 +225,31 @@ protected:
             {bool(img0)},
         }});
 
-        _m_imu_cam.put(_m_imu_cam.allocate(
-            imu_time_point,
-            av,
-            la,
-            img0,
-            img1
-		));
+        _m_imu.put(_m_imu.allocate<imu_type>(
+            {
+                imu_time_point,
+                av,
+                la
+            }
+        )); 
+
+        if (img0 && img1) {
+            _m_cam.put(_m_cam.allocate<cam_type>(
+                {
+                    imu_time_point,
+                    img0.value(),
+                    img1.value()
+                }
+            )); 
+        }
 
         if (rgb && depth) {
-            _m_rgb_depth.put(_m_rgb_depth.allocate(
-                    imu_time_point, 
+            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
+                {
+                    imu_time_point,
                     rgb,
                     depth
+                }
 			));
         }
 
@@ -244,8 +264,9 @@ private:
 
     const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-	switchboard::writer<imu_cam_type> _m_imu_cam;
-	switchboard::reader<cam_type> _m_cam_type;
+    switchboard::reader<zed_cam_type> _m_zed_cam;
+	switchboard::writer<imu_type> _m_imu;
+    switchboard::writer<cam_type> _m_cam; 
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
 
     // IMU
