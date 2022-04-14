@@ -23,22 +23,22 @@ constexpr duration IMU_TTL {std::chrono::seconds{5}};
 
 using ImuBias = gtsam::imuBias::ConstantBias;
 
-struct imu_type {
-	time_point timestamp;
-    Eigen::Matrix<double, 3, 1> wm;
-    Eigen::Matrix<double, 3, 1> am;
+// struct imu_type {
+// 	time_point timestamp;
+//     Eigen::Matrix<double, 3, 1> wm;
+//     Eigen::Matrix<double, 3, 1> am;
 
 
-	imu_type(
-			 time_point timestamp_,
-			 Eigen::Matrix<double, 3, 1> wm_,
-			 Eigen::Matrix<double, 3, 1> am_
-			 )
-		: timestamp{timestamp_}
-		, wm{wm_}
-		, am{am_}
-	{ }
-};
+// 	imu_type(
+// 			 time_point timestamp_,
+// 			 Eigen::Matrix<double, 3, 1> wm_,
+// 			 Eigen::Matrix<double, 3, 1> am_
+// 			 )
+// 		: timestamp{timestamp_}
+// 		, wm{wm_}
+// 		, am{am_}
+// 	{ }
+// };
 
 class gtsam_integrator : public plugin {
 public:

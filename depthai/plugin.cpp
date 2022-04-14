@@ -19,7 +19,8 @@ public:
     depthai(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_imu{sb->get_writer<imu_type>("imu")}
+        , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         //Initialize DepthAI pipeline and device 
         , device{createCameraPipeline()}
@@ -171,7 +172,8 @@ public:
 
 private:
     const std::shared_ptr<switchboard> sb;
-    switchboard::writer<imu_cam_type> _m_imu_cam;
+    switchboard::writer<cam_type> _m_imu;
+    switchboard::writer<cam_type> _m_cam; 
 	switchboard::writer<rgb_depth_type> _m_rgb_depth;
     std::mutex mutex;
 
