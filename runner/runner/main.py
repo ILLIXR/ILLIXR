@@ -289,19 +289,44 @@ def load_monado(config: Mapping[str, Any]) -> None:
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(5)
 
+    actual_cmd_str = config["action"].get("command", "$cmd")
+    illixr_cmd_list = [str(openxr_app_bin_path), *map(str, plugin_paths)]
+    env_override=dict(
+        ILLIXR_DEMO_DATA=str(demo_data_path),
+        ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+        ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+        ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
+        ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+        KIMERA_ROOT=config["action"]["kimera_path"],
+        AUDIO_ROOT=config["action"]["audio_path"],
+        REALSENSE_CAM=str(realsense_cam_string),
+        **env_monado,
+    )
+    env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
+    actual_cmd_list = list(
+        flatten1(
+            replace_all(
+                unflatten(shlex.split(actual_cmd_str)),
+                {
+                    ("$env_cmd",): [
+                        "env",
+                        "-C",
+                        Path(".").resolve(),
+                        *env_list,
+                        *illixr_cmd_list,
+                    ],
+                    ("$cmd",): illixr_cmd_list,
+                    ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
+                    ("$env",): env_list,
+                },
+            )
+        )
+    )
+    print(str(config["action"].get("ILLIXR_RUN_DURATION", 10)))
     subprocess_run(
-        [str(openxr_app_bin_path)],
-        env_override=dict(
-            ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
-            KIMERA_ROOT=config["action"]["kimera_path"],
-            AUDIO_ROOT=config["action"]["audio_path"],
-            REALSENSE_CAM=str(realsense_cam_string),
-            **env_monado,
-        ),
+        actual_cmd_list,
+        env_override=env_override,
         check=True,
     )
 
