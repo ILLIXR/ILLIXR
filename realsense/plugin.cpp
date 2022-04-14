@@ -121,24 +121,24 @@ public:
                         }
                     ));
                 } else if (cam_select == T26X){
-                    if (auto fs = frame.as<rs2::frameset>()) {
-                        rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
-                        rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
-                        cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
-                        cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
-                        _m_cam.put(_m_cam.allocate<cam_type>(
-                            {
-                                cam_time_point,
-                                cv::Mat{fisheye_left},
-                                cv::Mat{fisheye_right}
-                            }
-                        ));
-                    }
-                }   
-            }        
+                    
+                    rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
+                    rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
+                    cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
+                    cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
+                    _m_cam.put(_m_cam.allocate<cam_type>(
+                        {
+                            cam_time_point,
+                            cv::Mat{fisheye_left},
+                            cv::Mat{fisheye_right}
+                        }
+                    ));
+                }
+            }
         };
+        
+    virtual ~realsense() override { pipe.stop(); }
 
-	virtual ~realsense() override { pipe.stop(); }
 
 private:
     typedef enum {

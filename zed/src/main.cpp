@@ -155,14 +155,9 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-<<<<<<< HEAD
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
-        , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
-=======
         , _m_zed_cam{sb->get_reader<zed_cam_type>("zed_cam_type")}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
->>>>>>> realsense zed can compile
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
