@@ -69,6 +69,7 @@ public:
 private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
+	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	const std::shared_ptr<const RelativeClock> _m_clock;
 
 	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
@@ -83,8 +84,6 @@ private:
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
 	static constexpr std::chrono::nanoseconds vsync_period {freq2period(DISPLAY_REFRESH_RATE)};
-
-	const std::shared_ptr<xlib_gl_extended_window> xwin;
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
