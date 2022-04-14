@@ -47,31 +47,14 @@ namespace ILLIXR {
 		{ }
 	};
 
-	struct imu_type {
-		time_point timestamp;
-		Eigen::Matrix<double, 3, 1> wm;
-		Eigen::Matrix<double, 3, 1> am;
-
-
-		imu_type(
-				time_point timestamp_,
-				Eigen::Matrix<double, 3, 1> wm_,
-				Eigen::Matrix<double, 3, 1> am_
-				)
-			: timestamp{timestamp_}
-			, wm{wm_}
-			, am{am_}
-		{ }
-	};
-
     class rgb_depth_type : public switchboard::event {
         [[maybe_unused]] time_point time;
-        std::optional<cv::Mat> rgb;
-        std::optional<cv::Mat> depth;
+        cv::Mat rgb;
+        cv::Mat depth;
 	public:
 		rgb_depth_type(time_point _time,
-					   std::optional<cv::Mat> _rgb,
-					   std::optional<cv::Mat> _depth
+					   cv::Mat _rgb,
+					   cv::Mat _depth
 					   )
 			: time{_time}
 			, rgb{_rgb}
