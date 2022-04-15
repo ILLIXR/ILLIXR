@@ -2,7 +2,7 @@
 /* FauxPose/plugin.cpp                                                       */
 /*                                                                           */
 /* Created: 03/03/2022                                                       */
-/* Last Edited: 03/24/2022                                                   */
+/* Last Edited: 04/14/2022                                                   */
 /*                                                                           */
 /* An IlliXR plugin that publishes position tracking data ("pose")           */
 /*	 from a mathematical operation just to quickly produce some known    */
@@ -16,7 +16,7 @@
 /*   * get_fast_pose() method returns a "fast_pose_type"                     */
 /*   * "fast_pose_type" is a "pose_type" plus computed & target timestamps   */
 /*   * correct_pose() method returns a "pose_type"                           */
-/*   * (This version posted to freevr.org/Downloads)                         */
+/*   * (This version uploaded to ILLIXR github)                              */
 /*                                                                           */
 
 #include "common/phonebook.hpp"
@@ -42,8 +42,7 @@ public:
 		auto now = std::chrono::system_clock::now();
 		sim_start_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
 
-		// Set an initial faux-pose location
-		//simulated_location = Eigen::Vector3f{0.0, 1.5, 0.0};
+		// Set the faux-pose movement parameters
 		period = 0.5;
 		amplitude = 2.0;
 	}
@@ -69,6 +68,7 @@ public:
 		return false;
 	}
 
+	// ********************************************************************
 	virtual pose_type correct_pose([[maybe_unused]] const pose_type pose) const override {
 		pose_type simulated_pose;
 		printf("[fauxpose] Returning (zero) pose\n");
@@ -80,6 +80,7 @@ public:
 		return offset;
 	}
 
+	// ********************************************************************
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override{
 		std::unique_lock lock {offset_mutex};
 		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
@@ -89,13 +90,7 @@ public:
 
 	// ********************************************************************
 	virtual fast_pose_type get_fast_pose() const override  {                                          
-	//	const switchboard::ptr<const switchboard::event_wrapper<time_type>> estimated_vsync = _m_vsync_estimate.get_ro_nullable();
-	//	if (estimated_vsync == nullptr) {                                                            
-	//		std::cerr << "Vsync estimation not valid yet, returning fast_pose for now()" << std::endl;
 			return get_fast_pose(std::chrono::system_clock::now());                                  
-	//	} else {                                                                                     
-	//		return get_fast_pose(**estimated_vsync);                                                 
-	//	}                                                                                            
 	}
 
 	// ********************************************************************
@@ -105,16 +100,13 @@ public:
 	//
 	// NOTE: time_type == std::chrono::system_clock::time_point
 	virtual fast_pose_type get_fast_pose(time_type time) const override {
-		pose_type simulated_pose;
-		double	sim_time;
+		pose_type simulated_pose;	/* The algorithmically calculated 6-DOF pose */
+		double	sim_time;		/* sim_time is used to regulate a consistent movement */
 
 		RAC_ERRNO_MSG("[fauxpose] at start of _p_one_iteration");
 
 		// Calculate simulation time from start of execution
 		std::chrono::nanoseconds elapsed_time;
-		//auto now = std::chrono::system_clock::now();
-		//time_type current_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
-		//elapsed_time = current_time - sim_start_time;
 		elapsed_time = time - sim_start_time;
 		sim_time = elapsed_time.count() * 0.000000001;
 
@@ -123,8 +115,7 @@ public:
 		//fprintf(stderr, "[fauxpose] ********* elapsed time = %ld (%lf)\n", elapsed_time.count(), sim_time);
 
 		// Calculate new pose values
-		//simulated_location = Eigen::Vector3f{0.1f, 0.0f, 0.0f};
-
+		//   Pose values are calculated from the passage of time to maintain consistency */
 		//fprintf(stderr, "FP: time.count is %ld\n", time.time_since_epoch());
 		simulated_pose.position[0] = amplitude * sin(sim_time * period);	// X
 		simulated_pose.position[1] = 1.5;					// Y
@@ -148,9 +139,10 @@ private:
 	const std::shared_ptr<switchboard> sb;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
-	time_type sim_start_time;
-	double period;
-	double amplitude;
+
+	time_type sim_start_time;	/* Store the initial time to calculate a known runtime */
+	double period;			/* The period of the circular movment (in seconds) */
+	double amplitude;		/* The amplitude of the circular movment (in meters) */
 };
 
 // ********************************************************************
@@ -169,8 +161,6 @@ public:
 		);
 		printf("[fauxpose] Starting Plugin\n");
 		RAC_ERRNO_MSG("[fauxpose] in constructor");
-
-		//sim_start_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
 	}
 
 	// ********************************************************************
