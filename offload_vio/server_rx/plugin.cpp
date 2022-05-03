@@ -34,11 +34,13 @@ private:
 			std::optional<cv::Mat> cam1 = std::nullopt;
 
 			if (curr_data.rows() != -1 && curr_data.cols() != -1) {
-				unsigned char* img0_data = (unsigned char*) curr_data.img0_data().c_str();
-				unsigned char* img1_data = (unsigned char*) curr_data.img1_data().c_str();
 
-				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_data);
-				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_data);
+				// Must do a deep copy of the received data (in the form of a string of bytes)
+				std::string *img0_copy = new std::string(curr_data.img0_data());
+				std::string *img1_copy = new std::string(curr_data.img1_data());
+
+				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
+				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
 
 				cam0 = std::make_optional<cv::Mat>(img0);
 				cam1 = std::make_optional<cv::Mat>(img1);
