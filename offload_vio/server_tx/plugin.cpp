@@ -16,12 +16,7 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-    { 
-		// Initialize eCAL and create a protobuf publisher
-		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Writer");
-		publisher = eCAL::protobuf::CPublisher
-		<vio_output_proto::VIOOutput>("vio_output");
-	}
+    { }
 
 
     virtual void start() override {
@@ -30,6 +25,11 @@ public:
         sb->schedule<pose_type>(id, "slow_pose", [this](switchboard::ptr<const pose_type> datum, std::size_t) {
 			this->send_vio_output(datum);
 		});
+
+		// Initialize eCAL and create a protobuf publisher
+		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Writer");
+		publisher = eCAL::protobuf::CPublisher
+		<vio_output_proto::VIOOutput>("vio_output");
 	}
 
 

@@ -33,10 +33,6 @@ public:
 		std::bind(&offload_reader::ReceiveVioOutput, this, std::placeholders::_2));
 	}
 
-	virtual void _p_one_iteration() {
-	}
-
-
 private:
 	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {		
 		vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
