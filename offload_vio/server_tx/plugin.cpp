@@ -16,20 +16,20 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-    { }
+    { 
+		eCAL::Initialize(0, NULL, "VIO Server Writer");
+		publisher = eCAL::protobuf::CPublisher<vio_output_proto::VIOOutput>("vio_output");
+	}
 
 
+	// This schedule function cant go in the constructor because there seems to be an issue with 
+	// the callbeing being triggered before any data is written to slow_pose. This needs debugging.
     virtual void start() override {
         plugin::start();
 
         sb->schedule<pose_type>(id, "slow_pose", [this](switchboard::ptr<const pose_type> datum, std::size_t) {
 			this->send_vio_output(datum);
 		});
-
-		// Initialize eCAL and create a protobuf publisher
-		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Writer");
-		publisher = eCAL::protobuf::CPublisher
-		<vio_output_proto::VIOOutput>("vio_output");
 	}
 
 

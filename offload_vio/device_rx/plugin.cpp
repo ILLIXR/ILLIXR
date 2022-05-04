@@ -26,11 +26,9 @@ public:
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
-		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Reader");
-		subscriber = eCAL::protobuf::CSubscriber
-		<vio_output_proto::VIOOutput>("vio_output");
-		subscriber.AddReceiveCallback(
-		std::bind(&offload_reader::ReceiveVioOutput, this, std::placeholders::_2));
+		eCAL::Initialize(0, NULL, "VIO Device Reader");
+		subscriber = eCAL::protobuf::CSubscriber<vio_output_proto::VIOOutput>("vio_output");
+		subscriber.AddReceiveCallback(std::bind(&offload_reader::ReceiveVioOutput, this, std::placeholders::_2));
 	}
 
 private:
@@ -55,7 +53,7 @@ private:
 		vio_output_proto::IMUIntInput imu_int_input = vio_output.imu_int_input();
 
 		imu_integrator_input datum_imu_int_tmp{
-			static_cast<double>(imu_int_input.last_cam_integration_time()),
+			imu_int_input.last_cam_integration_time(),
 			imu_int_input.t_offset(),
 			imu_params{
 				imu_int_input.imu_params().gyro_noise(),

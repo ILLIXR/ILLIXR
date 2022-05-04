@@ -16,18 +16,18 @@ message Quat {
 }
 
 message IMUParams {
-    double gyro_noise = 3;
-    double acc_noise = 4;
-    double gyro_walk = 5;
-    double acc_walk = 6;
-    Vec3 n_gravity = 7;
-    double imu_integration_sigma = 8;
-    double nominal_rate = 9;
+    double gyro_noise = 1;
+    double acc_noise = 2;
+    double gyro_walk = 3;
+    double acc_walk = 4;
+    Vec3 n_gravity = 5;
+    double imu_integration_sigma = 6;
+    double nominal_rate = 7;
 }
 
 message SlowPose
 {
-    uint64 timestamp = 1;
+    fixed64 timestamp = 1;
     Vec3 position = 2;
     Quat rotation = 3;
 }

@@ -17,11 +17,9 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
     { 
-		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Reader");
-		subscriber = eCAL::protobuf::CSubscriber
-		<vio_input_proto::IMUCamVec>("vio_input");
-		subscriber.AddReceiveCallback(
-		std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
+		eCAL::Initialize(0, NULL, "VIO Server Reader");
+		subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
+		subscriber.AddReceiveCallback(std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
 	}
 
 private:
@@ -36,8 +34,8 @@ private:
 			if (curr_data.rows() != -1 && curr_data.cols() != -1) {
 
 				// Must do a deep copy of the received data (in the form of a string of bytes)
-				std::string *img0_copy = new std::string(curr_data.img0_data());
-				std::string *img1_copy = new std::string(curr_data.img1_data());
+				auto img0_copy = std::make_shared<std::string>(std::string(curr_data.img0_data()));
+				auto img1_copy = std::make_shared<std::string>(std::string(curr_data.img1_data()));
 
 				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
 				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());

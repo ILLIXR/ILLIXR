@@ -1,22 +1,35 @@
-# For OpenVINS, make sure the repo is downloaded from github by the runner (uncomment lines
-# 12-15 and run the runner with this config. If youre using EuRoC this is all you need to do. If running
-# with ZED, download the repo, uncomment line 11, and comment out line 12-15. Go to this file
-# .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/ov_msckf/src/slam2.cpp and uncomment
-# line 23 (the ZED define)
+# NOTE: If running OpenVINS with the ZED mini, download the repo using Option 1, then modify
+# .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/ov_msckf/src/slam2.cpp 
+# and uncomment line 23 (the ZED define). After this modification you will need to use Option 2 instead of 1.
 
 plugin_groups:
   - plugin_group:
       - path: offload_vio/server_rx/
       - path: offload_vio/server_tx/
-      - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
-      # - name: OpenVINS
-      #   path:
-      #      git_repo: https://github.com/ILLIXR/open_vins.git
-      #      version: "3.0"
+
+      #################################################################
+      ### ONLY ONE OF THE FOLLOWING SHOULD BE UNCOMMENTED AT A TIME ###
+      #################################################################
+
+      # Option 1: Uncomment if OpenVINS hasnt been fetched from remote (Default).
+      - name: OpenVINS
+        path:
+           git_repo: https://github.com/ILLIXR/open_vins.git
+           version: "3.0"
+
+      # Option 2: Uncomment if you made changes to OpenVINS and want those to be reflected in the subsequent ILLIXR runs.
+      # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
+
+      # Option 3: Uncomment if Kimera hasnt been fetched from remote.
       # - name: Kimera-VIO/
       #   path:
       #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
       #     version: "3.1"
+
+      # Option 4: Uncomment if you made changes to Kimera and want those to be reflected in the subsequent ILLIXR runs.
+      # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
+
+      #################################################################
 
 data:
   subpath: mav0

@@ -17,10 +17,8 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
     { 
-		// Initialize eCAL and create a protobuf publisher
-		eCAL::Initialize(0, NULL, "VIO Offloading Sensor Data Writer");
+		eCAL::Initialize(0, NULL, "VIO Device Transmitter");
 		publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
-
 	}
 
 
@@ -72,9 +70,6 @@ public:
 			imu_cam_data->set_img0_data((void*) img0.data, img0.rows * img0.cols);
 			imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
 
-			data_buffer->set_num(num);
-			num++;
-
 			publisher.Send(*data_buffer);
 			delete data_buffer;
 			data_buffer = new vio_input_proto::IMUCamVec();
@@ -82,7 +77,6 @@ public:
     }
 
 private:
-	int num = 0;
 	double previous_timestamp = 0;
 	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 
