@@ -27,6 +27,7 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
         {      
+            cam_data.iteration = -1;
             accel_data.iteration = -1;
             cfg.disable_all_streams();
             configure_camera();
@@ -52,7 +53,7 @@ public:
                     cv::Mat converted_depth;
                     float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
                     depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                    cam_type_ = cam_type {
+                    cam_data = cam_type {
                         .img0 = cv::Mat{ir_left},
                         .img1 = cv::Mat{ir_right},
                         .rgb = cv::Mat{rgb},
@@ -69,7 +70,7 @@ public:
                     rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
                     cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
                     cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
-                    cam_type_ = cam_type {
+                    cam_data = cam_type {
                         .img0 = cv::Mat{fisheye_left},
                         .img1 = cv::Mat{fisheye_right},
                         .iteration = iteration_cam,
@@ -117,13 +118,13 @@ public:
                     std::optional<cv::Mat> depth = std::nullopt;
 
                         
-                    if (last_iteration_cam != cam_type_.iteration)
+                    if (last_iteration_cam != cam_data.iteration)
                     {
-                        last_iteration_cam = cam_type_.iteration;
-                        img0 = cam_type_.img0;
-                        img1 = cam_type_.img1;
-                        rgb = cam_type_.rgb;
-                        depth = cam_type_.depth;
+                        last_iteration_cam = cam_data.iteration;
+                        img0 = cam_data.img0;
+                        img1 = cam_data.img1;
+                        rgb = cam_data.rgb;
+                        depth = cam_data.depth;
                     }
                     
                     // Submit to switchboard
@@ -183,7 +184,7 @@ private:
 	rs2::pipeline pipe;
 	rs2::config cfg;
 
-	cam_type cam_type_;
+	cam_type cam_data;
     cam_enum cam_select{UNSUPPORTED};
     bool D4XXI_found{false};
     bool T26X_found{false}; 
@@ -191,7 +192,7 @@ private:
 	accel_type accel_data;
 	int iteration_cam = 0;
 	int iteration_accel = 0;
-	int last_iteration_cam;
+	int last_iteration_cam = -1;
 	int last_iteration_accel = -1;
     std::string realsense_cam;
 
