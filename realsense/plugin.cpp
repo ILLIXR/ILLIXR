@@ -27,6 +27,7 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
         {      
+            accel_data.iteration = -1;
             cfg.disable_all_streams();
             configure_camera();
         }
@@ -83,21 +84,20 @@ public:
                 if (s == "Accel")
                 {
                     rs2::motion_frame accel = mf;
-                    accel_data = accel.get_motion_data();
-                    accel_type_.accel_data = &accel_data;
-                    accel_type_.iteration = iteration_accel;
+                    accel_data.data = accel.get_motion_data();
+                    accel_data.iteration = iteration_accel;
                     iteration_accel++;
                 }
 
                 if (s == "Gyro")
                 {
-                    if (last_iteration_accel == accel_type_.iteration) { return; }
+                    if (last_iteration_accel == accel_data.iteration) { return; }
 
-                    last_iteration_accel = accel_type_.iteration;
-                    rs2_vector accel = *accel_type_.accel_data;
+                    last_iteration_accel = accel_data.iteration;
+                    rs2_vector accel = accel_data.data;
                     rs2::motion_frame gyro = mf;
                     double ts = gyro.get_timestamp();
-                    gyro_data = gyro.get_motion_data();
+                    rs2_vector gyro_data = gyro.get_motion_data();
 
                     // IMU data
                     Eigen::Vector3f la = {accel.x, accel.y, accel.z};
@@ -171,7 +171,7 @@ private:
     } cam_enum;
 
     typedef struct {
-        rs2_vector* accel_data;
+        rs2_vector data;
         int iteration;
     } accel_type;
 
@@ -182,19 +182,17 @@ private:
 	rs2::pipeline_profile profiles;
 	rs2::pipeline pipe;
 	rs2::config cfg;
-	rs2_vector gyro_data;
-	rs2_vector accel_data;
 
 	cam_type cam_type_;
     cam_enum cam_select{UNSUPPORTED};
     bool D4XXI_found{false};
     bool T26X_found{false}; 
     
-	accel_type accel_type_;
+	accel_type accel_data;
 	int iteration_cam = 0;
 	int iteration_accel = 0;
 	int last_iteration_cam;
-	int last_iteration_accel;
+	int last_iteration_accel = -1;
     std::string realsense_cam;
 
     void find_supported_devices(rs2::device_list devices){
