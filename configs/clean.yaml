@@ -38,6 +38,10 @@ plugin_groups:
     - path: rk4_integrator
     - path: timewarp_gl
     - path: depthai
+    - path: offload_vio/device_tx
+    - path: offload_vio/device_rx
+    - path: offload_vio/server_tx
+    - path: offload_vio/server_rx
 
 action:
   name: clean
