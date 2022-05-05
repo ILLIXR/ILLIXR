@@ -10,8 +10,8 @@ sudo apt-get install libprotobuf-dev protobuf-compiler
 ```
 
 The most simple example is running the offloaded setup on one machine with the server in one terminal
-and the device running in a different terminal. **Each terminal must be running from separate ILLIXR** 
-repositories (clone ILLIXR twice to different locations; running both the server and device from the same 
+and the device running in a different terminal. **Each terminal must be running from separate ILLIXR 
+repositories** (clone ILLIXR twice to different locations; running both the server and device from the same 
 ILLIR repository will cause lock issues). 
 
 Start ILLIXR using the runner with configs/offload-server.yaml
