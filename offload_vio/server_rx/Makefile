@@ -1,3 +1,5 @@
+nproc=$(shell python3 -c 'import multiprocessing; print( max(multiprocessing.cpu_count() - 1, 1))')
+
 CXX := clang++-10
 CC := clang-10
 
