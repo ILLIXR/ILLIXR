@@ -33,8 +33,8 @@ message SlowPose
 }
 
 message IMUIntInput {
-    double last_cam_integration_time = 1;
-    double t_offset = 2;
+    fixed64 last_cam_integration_time = 1;
+    fixed64 t_offset = 2;
     IMUParams imu_params = 3;
     
     Vec3 biasAcc = 4;

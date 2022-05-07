@@ -47,7 +47,6 @@ private:
 			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
 				imu_cam_type {
 					time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
-					std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now()),
 					Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
 					Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()},
 					cam0,
