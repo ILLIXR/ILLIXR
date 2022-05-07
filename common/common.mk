@@ -21,7 +21,7 @@ DBG_FLAGS ?= -Og -g $(MONADO_FLAGS) -Wall -Wextra -Werror -rdynamic
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic
-OPT_FLAGS ?= -O3 -DNDEBUG $(MONADO_FLAGS) -Wall -Wextra 
+OPT_FLAGS ?= -O3 -DNDEBUG $(MONADO_FLAGS) -Wall -Wextra -Werror
 
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2>/dev/null)

@@ -47,7 +47,7 @@ public:
 	}
 
 	void dump_data(switchboard::ptr<const imu_cam_type> datum) {
-		ullong timestamp  = datum->dataset_time;  // long timestamp = datum->time.time_since_epoch().count(); or long timestamp = _m_clock->now().time_since_epoch().count(); 
+		long timestamp = datum->time.time_since_epoch().count();
 		Eigen::Vector3f angular_v = datum->angular_v;
 		Eigen::Vector3f linear_a = datum->linear_a;
 

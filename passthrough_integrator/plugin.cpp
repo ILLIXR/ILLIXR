@@ -38,10 +38,10 @@ public:
 		Eigen::Matrix<double,3,1> w_hat2;
 		Eigen::Matrix<double,3,1> a_hat2;
 
-		w_hat.setZero();
-		a_hat.setZero();
-		w_hat2.setZero();
-		a_hat2.setZero();
+		w_hat = datum->angular_v.cast<double>();
+		a_hat = datum->linear_a.cast<double>();
+		w_hat2 = datum->angular_v.cast<double>();
+		a_hat2 = datum->linear_a.cast<double>();	
 
 		_m_imu_raw.put(_m_imu_raw.allocate(
 			w_hat,
