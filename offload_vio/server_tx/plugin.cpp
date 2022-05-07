@@ -56,8 +56,8 @@ public:
 		switchboard::ptr<const imu_integrator_input> imu_int_input = _m_imu_int_input.get_ro_nullable();
 
 		vio_output_proto::IMUIntInput* protobuf_imu_int_input = new vio_output_proto::IMUIntInput();
-		protobuf_imu_int_input->set_t_offset(imu_int_input->t_offset);
-		protobuf_imu_int_input->set_last_cam_integration_time(imu_int_input->last_cam_integration_time);
+		protobuf_imu_int_input->set_t_offset(imu_int_input->t_offset.count());
+		protobuf_imu_int_input->set_last_cam_integration_time(imu_int_input->last_cam_integration_time.time_since_epoch().count());
 
 		vio_output_proto::IMUParams* imu_params = new vio_output_proto::IMUParams();
 		imu_params->set_gyro_noise(imu_int_input->params.gyro_noise);
