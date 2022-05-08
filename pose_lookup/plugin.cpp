@@ -31,7 +31,7 @@ public:
         , align_scale{0.0}
     {
         if (enable_alignment) {
-            path_to_alignment = ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt"); 
+            std::string path_to_alignment(ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt"));
             load_align_parameters(path_to_alignment, align_rot, align_trans, align_quat, align_scale);
 		}
         // Read position data of the first frame
@@ -191,7 +191,6 @@ private:
     Eigen::Vector3f align_trans;
     Eigen::Vector4f align_quat;
     double align_scale;
-    std::string path_to_alignment;
 };
 
 
