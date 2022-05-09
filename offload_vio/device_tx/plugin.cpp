@@ -38,11 +38,11 @@ public:
             return;
         }
 
-		assert(datum->dataset_time > previous_timestamp);
-		previous_timestamp = datum->dataset_time;
+		assert(datum->time.time_since_epoch().count() > previous_timestamp);
+		previous_timestamp = datum->time.time_since_epoch().count();
 
 		vio_input_proto::IMUCamData* imu_cam_data = data_buffer->add_imu_cam_data();
-		imu_cam_data->set_timestamp(datum->dataset_time);
+		imu_cam_data->set_timestamp(datum->time.time_since_epoch().count());
 
 		vio_input_proto::Vec3* angular_vel = new vio_input_proto::Vec3();
 		angular_vel->set_x(datum->angular_v.x());
@@ -77,7 +77,7 @@ public:
     }
 
 private:
-	double previous_timestamp = 0;
+	long previous_timestamp = 0;
 	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 
     const std::shared_ptr<switchboard> sb;

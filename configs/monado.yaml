@@ -22,7 +22,7 @@ action:
   monado:
     path:
       git_repo : https://github.com/ILLIXR/monado_integration.git
-      version  : "3.0"
+      version  : "3.1"
 
     config: # For CMake
       BUILD_WITH_LIBUDEV : "0"

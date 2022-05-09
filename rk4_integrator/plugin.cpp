@@ -13,18 +13,10 @@
 
 using namespace ILLIXR;
 
-typedef struct {
-	double timestamp;
-	Eigen::Matrix<double, 3, 1> wm;
-	Eigen::Matrix<double, 3, 1> am;
-} imu_type;
-
-#define IMU_SAMPLE_LIFETIME 5
-
-
-class imu_integrator : public plugin {
+constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}}; 
+class rk4_integrator : public plugin {
 public:
-	imu_integrator(std::string name_, phonebook* pb_)
+	rk4_integrator(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
@@ -36,16 +28,14 @@ public:
 	}
 
 	void callback(switchboard::ptr<const imu_cam_type> datum) {
-		double timestamp_in_seconds = (double(datum->dataset_time) / NANO_SEC);
+		_imu_vec.emplace_back(
+			datum->time,
+			datum->angular_v.cast<double>(),
+			datum->linear_a.cast<double>()
+		);
 
-		imu_type data;
-        data.timestamp = timestamp_in_seconds;
-        data.wm = (datum->angular_v).cast<double>();
-        data.am = (datum->linear_a).cast<double>();
-		_imu_vec.emplace_back(data);
-
-		clean_imu_vec(timestamp_in_seconds);
-        propagate_imu_values(timestamp_in_seconds, datum->time);
+		clean_imu_vec(datum->time);
+        propagate_imu_values(datum->time);
 
         RAC_ERRNO_MSG("rk4_integrator");
 	}
@@ -59,7 +49,7 @@ private:
 	// IMU Biases
 	switchboard::writer<imu_raw_type> _m_imu_raw;
 	std::vector<imu_type> _imu_vec;
-	double last_imu_offset;
+	duration last_imu_offset;
 	bool has_last_offset = false;
 
 	[[maybe_unused]] int counter = 0;
@@ -68,23 +58,22 @@ private:
 	[[maybe_unused]] double last_cam_time = 0;
 
 	// Clean IMU values older than IMU_SAMPLE_LIFETIME seconds
-	void clean_imu_vec(double timestamp) {
+	void clean_imu_vec(time_point timestamp) {
 		auto it0 = _imu_vec.begin();
         while (it0 != _imu_vec.end()) {
-            if (timestamp-(*it0).timestamp > IMU_SAMPLE_LIFETIME) {
-                it0 = _imu_vec.erase(it0);
-            } else {
-                it0++;
+            if (timestamp - it0->timestamp < IMU_SAMPLE_LIFETIME) {
+               break;
             }
+           it0 = _imu_vec.erase(it0);
          }
 	}
 
 	// Timestamp we are propagating the biases to (new IMU reading time)
-	void propagate_imu_values(double timestamp, time_type real_time) {
-        auto input_values = _m_imu_integrator_input.get_ro_nullable();
-        if (!input_values) {
-            return;
-        }
+	void propagate_imu_values(time_point real_time) {
+		auto input_values = _m_imu_integrator_input.get_ro_nullable();
+		if (input_values == nullptr) {
+			return;
+		}
 
 		if (!has_last_offset) {
             /// TODO: Should be set and tested at the end of this function to avoid staleness from VIO.
@@ -109,11 +98,11 @@ private:
 		// counter++;
 
 		// Get what our IMU-camera offset should be (t_imu = t_cam + calib_dt)
-		double t_off_new = input_values->t_offset;
+		duration t_off_new = input_values->t_offset;
 
 		// This is the last CAM time
-		double time0 = input_values->last_cam_integration_time + last_imu_offset;
-		double time1 = timestamp + t_off_new;
+		time_point time0 = input_values->last_cam_integration_time + last_imu_offset;
+		time_point time1 = real_time + t_off_new;
 
 		std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time0, time1);
 		Eigen::Matrix<double,3,1> w_hat;
@@ -127,13 +116,13 @@ private:
 			for(size_t i=0; i<prop_data.size()-1; i++) {
 
 				// Time elapsed over interval
-				double dt = prop_data.at(i+1).timestamp-prop_data.at(i).timestamp;
+				double dt = duration2double(prop_data[i+1].timestamp-prop_data[i].timestamp);
 
 				// Corrected imu measurements
-				w_hat = prop_data.at(i).wm - input_values->biasGyro;
-				a_hat = prop_data.at(i).am - input_values->biasAcc;
-				w_hat2 = prop_data.at(i+1).wm - input_values->biasGyro;
-				a_hat2 = prop_data.at(i+1).am - input_values->biasAcc;
+				w_hat = prop_data[i].wm - input_values->biasGyro;
+				a_hat = prop_data[i].am - input_values->biasAcc;
+				w_hat2 = prop_data[i+1].wm - input_values->biasGyro;
+				a_hat2 = prop_data[i+1].am - input_values->biasAcc;
 
 				// Compute the new state mean value
 				Eigen::Vector4d new_quat;
@@ -159,30 +148,30 @@ private:
     }
 
 	// Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, double time_begin, double time_end) {
+	std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin, time_point time_end) {
 		std::vector<imu_type> prop_data;
 		if (imu_data.size() < 2) {
 			return prop_data;
 		}
 
-		for (unsigned i = 0; i < imu_data.size()-1; i++) {
+		for (size_t i = 0; i < imu_data.size()-1; i++) {
 
 			// If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
-			if (imu_data.at(i+1).timestamp > time_begin && imu_data.at(i).timestamp < time_begin) {
-				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_begin);
+			if (imu_data[i+1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
+				imu_type data = interpolate_imu(imu_data[i], imu_data[i+1], time_begin);
 				prop_data.push_back(data);
 				continue;
 			}
 
 			// IMU is within time_begin and time_end
-			if (imu_data.at(i).timestamp >= time_begin && imu_data.at(i+1).timestamp <= time_end) {
-				prop_data.push_back(imu_data.at(i));
+			if (imu_data[i].timestamp >= time_begin && imu_data[i+1].timestamp <= time_end) {
+				prop_data.push_back(imu_data[i]);
 				continue;
 			}
 
 			// IMU is past time_end
-			if (imu_data.at(i+1).timestamp > time_end) {
-				imu_type data = interpolate_imu(imu_data.at(i), imu_data.at(i+1), time_end);
+			if (imu_data[i+1].timestamp > time_end) {
+				imu_type data = interpolate_imu(imu_data[i], imu_data[i+1], time_end);
 				prop_data.push_back(data);
 				break;
 			}
@@ -190,10 +179,10 @@ private:
 
 		// Loop through and ensure we do not have an zero dt values
 		// This would cause the noise covariance to be Infinity
-		for (size_t i = 0; i < prop_data.size()-1; i++) {
-			if (std::abs(prop_data.at(i+1).timestamp-prop_data.at(i).timestamp) < 1e-12) {
+		for (int i = 0; i < int(prop_data.size())-1; i++) {
+			if (std::chrono::abs(prop_data[i+1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
 				prop_data.erase(prop_data.begin()+i);
-				i--;
+				i--; // i can be negative, so use type int
 			}
 		}
 
@@ -201,15 +190,13 @@ private:
 	}
 
 	// For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-	static imu_type interpolate_imu(const imu_type imu_1, imu_type imu_2, double timestamp) {
-		imu_type data;
-		data.timestamp = timestamp;
-
-		double lambda = (timestamp - imu_1.timestamp) / (imu_2.timestamp - imu_1.timestamp);
-		data.am = (1 - lambda) * imu_1.am + lambda * imu_2.am;
-		data.wm = (1 - lambda) * imu_1.wm + lambda * imu_2.wm;
-
-		return data;
+	static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
+		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
+		return imu_type {
+			timestamp,
+			(1 - lambda) * imu_1.am + lambda * imu_2.am,
+			(1 - lambda) * imu_1.wm + lambda * imu_2.wm
+		};
 	}
 
 	void predict_mean_rk4(Eigen::Vector4d quat, Eigen::Vector3d pos, Eigen::Vector3d vel, double dt,
@@ -403,4 +390,4 @@ private:
     }
 };
 
-PLUGIN_MAIN(imu_integrator)
+PLUGIN_MAIN(rk4_integrator)

@@ -19,7 +19,7 @@ public:
 		, _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
     { 
 		pose_type datum_pose_tmp{
-            ILLIXR::time_type{},
+            time_point{},
             Eigen::Vector3f{0, 0, 0},
             Eigen::Quaternionf{1, 0, 0, 0}
         };
@@ -35,7 +35,7 @@ private:
 	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {		
 		vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
 		pose_type datum_pose_tmp{
-			ILLIXR::time_type{std::chrono::nanoseconds{slow_pose.timestamp()}},
+			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
 			Eigen::Vector3f{
 				static_cast<float>(slow_pose.position().x()), 
 				static_cast<float>(slow_pose.position().y()), 
@@ -53,8 +53,8 @@ private:
 		vio_output_proto::IMUIntInput imu_int_input = vio_output.imu_int_input();
 
 		imu_integrator_input datum_imu_int_tmp{
-			imu_int_input.last_cam_integration_time(),
-			imu_int_input.t_offset(),
+			time_point{std::chrono::nanoseconds{imu_int_input.last_cam_integration_time()}},
+			duration(std::chrono::nanoseconds{imu_int_input.t_offset()}),
 			imu_params{
 				imu_int_input.imu_params().gyro_noise(),
 				imu_int_input.imu_params().acc_noise(),

@@ -59,7 +59,7 @@ public:
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	std::vector<int> _time_seq;
+	std::vector<long> _time_seq;
 	std::vector<switchboard::ptr<const texture_pose>> _offload_data_container;
 
 	int percent;
@@ -68,7 +68,7 @@ private:
 	bool is_success;
 	std::string obj_dir;
 
-	void writeMetadata(std::vector<int> _time_seq)
+	void writeMetadata(std::vector<long> _time_seq)
 	{
 		double mean  = std::accumulate(_time_seq.begin(), _time_seq.end(), 0.0) / _time_seq.size();
 		double accum = 0.0;
@@ -77,8 +77,8 @@ private:
 		});
 		double stdev = sqrt(accum/(_time_seq.size() - 1));
 
-		std::vector<int>::iterator max = std::max_element(_time_seq.begin(), _time_seq.end());
-		std::vector<int>::iterator min = std::min_element(_time_seq.begin(), _time_seq.end());
+		std::vector<long>::iterator max = std::max_element(_time_seq.begin(), _time_seq.end());
+		std::vector<long>::iterator min = std::min_element(_time_seq.begin(), _time_seq.end());
 
 		std::ofstream meta_file (obj_dir + "metadata.out");
 		if (meta_file.is_open())
@@ -90,13 +90,13 @@ private:
 			meta_file << "total number: " << _time_seq.size() << std::endl;
 
 			meta_file << "raw time: " << std::endl;
-			for (int& it : _time_seq)
+			for (long& it : _time_seq)
 				meta_file << it << " ";
 			meta_file << std::endl << std::endl << std::endl;
 
 			meta_file << "ordered time: " << std::endl;
 			std::sort(_time_seq.begin(), _time_seq.end(), [](int x, int y) {return x > y;});
-			for (int& it : _time_seq)
+			for (long& it : _time_seq)
 				meta_file << it << " ";
 		}
 		meta_file.close();
@@ -111,7 +111,7 @@ private:
 		for (auto& container_it : _offload_data_container)
 		{
 			// Get collecting time for each frame
-			_time_seq.push_back(container_it->offload_time);
+			_time_seq.push_back(std::chrono::duration_cast<std::chrono::duration<long, std::milli>>(container_it->offload_duration).count());
 
 			std::string image_name = obj_dir + std::to_string(img_idx) + ".png";
 			std::string pose_name = obj_dir + std::to_string(img_idx) + ".txt";
@@ -127,13 +127,10 @@ private:
 			std::ofstream pose_file (pose_name);
 			if (pose_file.is_open())
 			{
-				std::time_t pose_time = std::chrono::system_clock::to_time_t(container_it->pose_time);
-
 				// Transfer timestamp to duration
 				auto duration = (container_it->pose_time).time_since_epoch().count();
 
 				// Write time data
-				pose_file << "cTime: " << std::ctime(&pose_time);
 				pose_file << "strTime: " << duration << std::endl;
 
 				// Write position coordinates in x y z

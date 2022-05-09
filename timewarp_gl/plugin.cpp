@@ -23,14 +23,14 @@ typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int i
 
 const record_header timewarp_gpu_record {"timewarp_gpu", {
 	{"iteration_no", typeid(std::size_t)},
-	{"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-	{"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
+	{"wall_time_start", typeid(time_point)},
+	{"wall_time_stop" , typeid(time_point)},
 	{"gpu_time_duration", typeid(std::chrono::nanoseconds)},
 }};
 
 const record_header mtp_record {"mtp_record", {
 	{"iteration_no", typeid(std::size_t)},
-	{"vsync", typeid(std::chrono::high_resolution_clock::time_point)},
+	{"vsync", typeid(time_point)},
 	{"imu_to_display", typeid(std::chrono::nanoseconds)},
 	{"predict_to_display", typeid(std::chrono::nanoseconds)},
 	{"render_to_display", typeid(std::chrono::nanoseconds)},
@@ -50,9 +50,10 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
-		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_type>>("vsync_estimate")}
+		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
 		, _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
 		, timewarp_gpu_logger{record_logger_}
 		, mtp_logger{record_logger_}
@@ -68,6 +69,8 @@ public:
 private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
+	const std::shared_ptr<xlib_gl_extended_window> xwin;
+	const std::shared_ptr<const RelativeClock> _m_clock;
 
 	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
 	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
@@ -80,9 +83,7 @@ private:
 
 	static constexpr double RUNNING_AVG_ALPHA = 0.1;
 
-	static constexpr std::chrono::nanoseconds vsync_period {std::size_t(NANO_SEC/DISPLAY_REFRESH_RATE)};
-
-	const std::shared_ptr<xlib_gl_extended_window> xwin;
+	static constexpr std::chrono::nanoseconds vsync_period {freq2period(DISPLAY_REFRESH_RATE)};
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -91,7 +92,7 @@ private:
 	switchboard::writer<hologram_input> _m_hologram;
 
 	// Switchboard plug for publishing vsync estimates
-	switchboard::writer<switchboard::event_wrapper<time_type>> _m_vsync_estimate;
+	switchboard::writer<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 
 	// Switchboard plug for publishing offloaded data
     switchboard::writer<texture_pose> _m_offload_data;
@@ -101,10 +102,7 @@ private:
 
 	GLuint timewarpShaderProgram;
 
-	time_type time_last_swap;
-
-	time_type startGetTexTime;
-	time_type endGetTexTime;
+	time_point time_last_swap;
 
 	HMD::hmd_info_t hmd_info;
 	HMD::body_info_t body_info;
@@ -161,20 +159,19 @@ private:
 	// PBO buffer for reading texture image
 	GLuint PBO_buffer;
 
-    	// Time of reading and transferring texture image
-	int offload_time;
-
 	// Error code of OpenGL calls
 	// No other errors are recorded until glGetError is called
 	// The flag is reset to GL_NO_ERROR after a glGetError call
 	GLenum err;
+
+	duration offload_duration;
 
 	GLubyte* readTextureImage(){
 
 		GLubyte* pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
 
 		// Start timer
-		startGetTexTime = std::chrono::high_resolution_clock::now();
+		time_point startGetTexTime = _m_clock->now();
 
 		// Enable PBO buffer
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
@@ -214,14 +211,13 @@ private:
 			std::cerr << "Timewarp: glBindBuffer to 0 failed" << std::endl;
 		}
 
-		// Terminate timer
-		endGetTexTime = std::chrono::high_resolution_clock::now();
-
 		// Record the image collection time
-		offload_time = std::chrono::duration_cast<std::chrono::milliseconds>(endGetTexTime - startGetTexTime).count();
+		offload_duration = _m_clock->now() - startGetTexTime;
+
 
 #ifndef NDEBUG
-		std::cout << "Texture image collecting time: " << offload_time << std::endl;
+		double time = duration2double<std::milli>(offload_duration);
+		std::cout << "Texture image collecting time: " << time << "ms" << std::endl;
 #endif
 
 		return pixels;
@@ -337,24 +333,18 @@ private:
 
 	// Get the estimated time of the next swap/next Vsync.
 	// This is an estimate, used to wait until *just* before vsync.
-	time_type GetNextSwapTimeEstimate() {
+	time_point GetNextSwapTimeEstimate() {
 		return time_last_swap + vsync_period;
 	}
 
 	// Get the estimated amount of time to put the CPU thread to sleep,
 	// given a specified percentage of the total Vsync period to delay.
-	std::chrono::duration<double, std::nano> EstimateTimeToSleep(double framePercentage){
-		return (GetNextSwapTimeEstimate() - std::chrono::system_clock::now()) * framePercentage;
+	duration EstimateTimeToSleep(double framePercentage){
+		return std::chrono::duration_cast<duration>((GetNextSwapTimeEstimate() - _m_clock->now()) * framePercentage);
 	}
 
 
 public:
-
-	virtual void _p_one_iteration() override {
-	    RAC_ERRNO_MSG("timewarp_gl at start of iteration");
-	    const time_type time_now = std::chrono::system_clock::now();
-		warp(time_now);
-	}
 
     virtual skip_option _p_should_skip() override {
 		using namespace std::chrono_literals;
@@ -364,7 +354,7 @@ public:
 		// MTP here. More you wait, closer to the display sync you sample the pose.
 
 		// TODO: poll GLX window events
-		std::this_thread::sleep_for(std::chrono::duration<double>(EstimateTimeToSleep(DELAY_FRACTION)));
+		std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
 		if (_m_eyebuffer.get_ro_nullable() != nullptr) {
 			return skip_option::run;
 		} else {
@@ -377,7 +367,10 @@ public:
 	virtual void _p_thread_setup() override {
         RAC_ERRNO_MSG("timewarp_gl at start of _p_thread_setup");
 
-		time_last_swap = std::chrono::system_clock::now();
+		// Wait a vsync for gldemo to go first.
+		// This first time_last_swap will be "out of phase" with actual vsync.
+		// The second one should be on the dot, since we don't exit the first until actual vsync.
+		time_last_swap = _m_clock->now() + vsync_period;
 
 		// Generate reference HMD and physical body dimensions
     	HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
@@ -502,9 +495,7 @@ public:
 		assert(gl_result_1 && "glXMakeCurrent should not fail");
 	}
 
-	virtual void warp([[maybe_unused]] time_type time) {
-		RAC_ERRNO_MSG("timewarp_gl at start of warp");
-
+	virtual void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 		assert(gl_result && "glXMakeCurrent should not fail");
 
@@ -572,7 +563,7 @@ public:
 
 		glBindVertexArray(tw_vao);
 
-		auto gpu_start_wall_time = std::chrono::system_clock::now();
+		auto gpu_start_wall_time = _m_clock->now();
 
 		GLuint query;
 		GLuint64 elapsed_time = 0;
@@ -655,14 +646,11 @@ public:
 		glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
-        const time_type time_now = std::chrono::system_clock::now();
-		const std::chrono::nanoseconds time_since_render = time_now - most_recent_frame->render_time;
+		const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
 
 		if (log_count > LOG_PERIOD) {
-            const double time_since_render_ms_d = std::chrono::duration_cast<std::chrono::milliseconds>(time_since_render).count();
+            const double time_since_render_ms_d = duration2double<std::milli>(time_since_render);
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
-			// We have always been warping from the correct swap, so I will disable this.
-			// std::cout << "\033[1;36m[TIMEWARP]\033[0m Warping from swap " << most_recent_frame->swap_indices[0] << std::endl;
 		}
 
 		if (time_since_render > vsync_period) {
@@ -677,18 +665,18 @@ public:
 		// Call swap buffers; when vsync is enabled, this will return to the CPU thread once
 		//     the buffers have been successfully swapped.
 		// TODO: GLX V SYNCH SWAP BUFFER
-		[[maybe_unused]] time_type time_before_swap = std::chrono::system_clock::now();
+		[[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
         RAC_ERRNO_MSG("timewarp_gl before glXSwapBuffers");
 		glXSwapBuffers(xwin->dpy, xwin->win);
 		RAC_ERRNO_MSG("timewarp_gl after glXSwapBuffers");
 
 		// The swap time needs to be obtained and published as soon as possible
-		time_last_swap = std::chrono::system_clock::now();
-		[[maybe_unused]] time_type time_after_swap = time_last_swap;
+		time_last_swap = _m_clock->now();
+		[[maybe_unused]] time_point time_after_swap = time_last_swap;
 
 		// Now that we have the most recent swap time, we can publish the new estimate.
-		_m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_type>>(
+		_m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(
             GetNextSwapTimeEstimate()
         ));
 
@@ -698,7 +686,7 @@ public:
 
 		mtp_logger.log(record{mtp_record, {
 			{iteration_no},
-			{static_cast<std::chrono::high_resolution_clock::time_point>(time_last_swap)},
+			{time_last_swap},
 			{imu_to_display},
 			{predict_to_display},
 			{render_to_display},
@@ -712,7 +700,7 @@ public:
             _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
                 texture_pose {
                     static_cast<int>(++_offload_seq), /// TODO: Should texture_pose.seq be a long long too?
-                    offload_time,
+                    offload_duration,
                     image,
                     time_last_swap,
                     latest_pose.pose.position,
@@ -724,12 +712,12 @@ public:
 
 #ifndef NDEBUG
 		if (log_count > LOG_PERIOD) {
-            const double time_swap = std::chrono::duration_cast<std::chrono::milliseconds>(time_after_swap - time_before_swap).count();
-            const double latency_mtd = imu_to_display.count()/1e6;
-            const double latency_ptd = predict_to_display.count()/1e6;
-            const double latency_rtd = render_to_display.count()/1e6;
-            const time_type time_next_swap = GetNextSwapTimeEstimate();
-            const double timewarp_estimate = std::chrono::duration_cast<std::chrono::milliseconds>(time_next_swap - time_last_swap).count();
+            const double time_swap = duration2double<std::milli>(time_after_swap - time_before_swap);
+            const double latency_mtd = duration2double<std::milli>(imu_to_display);
+            const double latency_ptd = duration2double<std::milli>(predict_to_display);
+            const double latency_rtd = duration2double<std::milli>(render_to_display);
+            const time_point time_next_swap = GetNextSwapTimeEstimate();
+            const double timewarp_estimate = duration2double<std::milli>(time_next_swap - time_last_swap);
 
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Swap time: " << time_swap << "ms" << std::endl
 			          << "\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: " << latency_mtd << "ms" << std::endl
@@ -754,8 +742,8 @@ public:
 
 		timewarp_gpu_logger.log(record{timewarp_gpu_record, {
 			{iteration_no},
-			{static_cast<std::chrono::high_resolution_clock::time_point>(gpu_start_wall_time)},
-			{std::chrono::high_resolution_clock::now()},
+			{gpu_start_wall_time},
+			{_m_clock->now()},
 			{std::chrono::nanoseconds(elapsed_time)},
 		}});
 

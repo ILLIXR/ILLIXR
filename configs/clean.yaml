@@ -22,11 +22,11 @@ plugin_groups:
     - name: Kimera-VIO
       path:
         git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-        version: "3.1"
+        version: "3.2"
     - name: OpenVINS
       path:
         git_repo: https://github.com/ILLIXR/open_vins.git
-        version: "3.0"
+        version: "3.1"
     - path: gtsam_integrator
     - path: pose_prediction
     ## Other Plugins

@@ -1,4 +1,3 @@
-
 #include <cstdio>
 #include <iostream>
 
@@ -11,6 +10,7 @@
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
+#include "common/relative_clock.hpp"
 
 using namespace ILLIXR;
 
@@ -19,6 +19,7 @@ public:
     depthai(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         //Initialize DepthAI pipeline and device 
@@ -122,10 +123,12 @@ public:
         
             // Time as ullong (nanoseconds)
             ullong imu_time = static_cast<ullong>(gyroTs.time_since_epoch().count());
+            if (!_m_first_imu_time) {
+                _m_first_imu_time = imu_time;
+                _m_first_real_time = _m_clock->now();
+			}
 
-            // Time as time_point
-            using time_point = std::chrono::system_clock::time_point;
-            time_type imu_time_point{std::chrono::duration_cast<time_point::duration>(std::chrono::nanoseconds(imu_time))};
+            time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
             
             // Submit to switchboard
             #ifndef NDEBUG
@@ -138,7 +141,6 @@ public:
                     la,
                     img0,
                     img1,
-                    imu_time
                 }
             ));
             
@@ -149,9 +151,9 @@ public:
                 #endif
                 _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
                     {
+                        imu_time_point,
                         rgb,
                         depth,
-                        imu_time
                     }
                 ));
             }
@@ -171,8 +173,9 @@ public:
 
 private:
     const std::shared_ptr<switchboard> sb;
+    const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_cam_type> _m_imu_cam;
-	switchboard::writer<rgb_depth_type> _m_rgb_depth;
+    switchboard::writer<rgb_depth_type> _m_rgb_depth;
     std::mutex mutex;
 
     #ifndef NDEBUG
@@ -196,6 +199,8 @@ private:
     std::shared_ptr<dai::DataOutputQueue> rectifRightQueue;
     std::shared_ptr<dai::DataOutputQueue> imuQueue;
 
+    std::optional<ullong> _m_first_imu_time;
+    std::optional<time_point> _m_first_real_time;
 
     dai::Pipeline createCameraPipeline() {
         #ifndef NDEBUG

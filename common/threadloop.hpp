@@ -81,9 +81,13 @@ private:
 		record_coalescer it_log {record_logger_};
 		std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
+		// TODO: In the future, synchronize the main loop instead of the setup.
+		// This is currently not possible because RelativeClock is required in
+		// some setup functions, and RelativeClock is only guaranteed to be
+		// available once `wait_for_ready()` unblocks.
+		_m_stoplight->wait_for_ready();
 		_p_thread_setup();
 
-		_m_stoplight->wait_for_ready();
 		while (!_m_stoplight->check_should_stop()) {
 			skip_option s = _p_should_skip();
 

@@ -47,13 +47,13 @@ public:
 	}
 
 	void dump_data(switchboard::ptr<const imu_cam_type> datum) {
-		ullong timestamp  = datum->dataset_time;
+		long timestamp = datum->time.time_since_epoch().count();
 		Eigen::Vector3f angular_v = datum->angular_v;
 		Eigen::Vector3f linear_a = datum->linear_a;
 
 		// write imu0
-		imu_wt_file << datum->dataset_time << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2] << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
-
+		imu_wt_file << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2] << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
+		
 		// write cam0
 		std::optional<cv::Mat> cam0_data = datum->img0;
 		std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
