@@ -9,9 +9,9 @@
 
 using namespace ILLIXR;
 
-class pose_prediction_impl : public pose_prediction {
+class const_accel_predictor_impl : public pose_prediction {
 public:
-    pose_prediction_impl(const phonebook* const pb)
+    const_accel_predictor_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
@@ -396,13 +396,17 @@ private:
     }
 };
 
-class pose_prediction_plugin : public plugin {
+class const_accel_predictor_plugin : public plugin {
 public:
-    pose_prediction_plugin(const std::string& name, phonebook* pb)
-        : plugin{name, pb} {
+    const_accel_predictor_plugin(const std::string& name, phonebook* pb)
+        : plugin{name, pb}
+    {
         pb->register_impl<pose_prediction>(
-            std::static_pointer_cast<pose_prediction>(std::make_shared<pose_prediction_impl>(pb)));
+            std::static_pointer_cast<pose_prediction>(
+                std::make_shared<const_accel_predictor_impl>(pb)
+            )
+        );
     }
 };
 
-PLUGIN_MAIN(pose_prediction_plugin);
+PLUGIN_MAIN(const_accel_predictor_plugin);
