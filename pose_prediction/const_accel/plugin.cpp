@@ -209,7 +209,7 @@ private:
 	mutable std::shared_mutex offset_mutex;
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
-    // Returns a pair of the predictor state_plus and the time associated with the
+    // Returns a pair of the predictor state and the time associated with the
     // most recent imu reading used to perform this prediction.
     std::pair<Eigen::Matrix<double, 13, 1>, time_point> predict_mean_rk4(double dt) const {
         // Pre-compute things

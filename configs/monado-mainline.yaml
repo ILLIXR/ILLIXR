@@ -2,7 +2,7 @@ plugin_groups:
   - plugin_group:
     - path: offline_imu_cam
     - path: gtsam_integrator
-    - path: pose_prediction/const_accel
+    - path: pose_prediction/const_vel
     - name: OpenVINS
       path:
         git_repo : https://github.com/ILLIXR/open_vins.git

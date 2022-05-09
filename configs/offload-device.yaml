@@ -6,7 +6,8 @@ plugin_groups:
       # - path: rk4_integrator/
       - path: gtsam_integrator/
       # - path: passthrough_integrator/
-      - path: pose_prediction/const_accel
+      # - path: pose_prediction/const_accel
+      - path: pose_prediction/const_vel
       # - path: ground_truth_slam/
       - path: gldemo/
       - path: debugview/
