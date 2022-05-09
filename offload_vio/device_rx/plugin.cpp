@@ -35,7 +35,7 @@ private:
 	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {		
 		vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
 		pose_type datum_pose_tmp{
-			time_point{std::chrono::nanoseconds{slow_pose.timestamp{}}}, 
+			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
 			Eigen::Vector3f{
 				static_cast<float>(slow_pose.position().x()), 
 				static_cast<float>(slow_pose.position().y()), 
