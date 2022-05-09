@@ -154,7 +154,11 @@ namespace ILLIXR {
 		time_point sensor_time; // Recorded time of sensor data ingestion
 		Eigen::Vector3f position;
 		Eigen::Quaternionf orientation;
-		pose_type() { }
+		pose_type()
+			: sensor_time{time_point{}}
+			, position{Eigen::Vector3f{0, 0, 0}}
+			, orientation{Eigen::Quaternionf{1, 0, 0, 0}}
+		{ }
 		pose_type(time_point sensor_time_,
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
