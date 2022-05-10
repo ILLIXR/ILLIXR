@@ -47,4 +47,5 @@ message IMUIntInput {
 message VIOOutput {
     SlowPose slow_pose = 1;
     IMUIntInput imu_int_input = 2;
+    fixed64 real_timestamp = 3;
 }
