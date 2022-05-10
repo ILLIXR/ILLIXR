@@ -70,6 +70,7 @@ public:
 			imu_cam_data->set_img0_data((void*) img0.data, img0.rows * img0.cols);
 			imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
 
+			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			publisher.Send(*data_buffer);
 			delete data_buffer;
 			data_buffer = new vio_input_proto::IMUCamVec();
