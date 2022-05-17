@@ -27,14 +27,25 @@ public:
     }
 
 private:
-    void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {
-        vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
-        pose_type                  datum_pose_tmp{
-            time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
-            Eigen::Vector3f{static_cast<float>(slow_pose.position().x()), static_cast<float>(slow_pose.position().y()),
-                            static_cast<float>(slow_pose.position().z())},
-            Eigen::Quaternionf{static_cast<float>(slow_pose.rotation().w()), static_cast<float>(slow_pose.rotation().x()),
-                               static_cast<float>(slow_pose.rotation().y()), static_cast<float>(slow_pose.rotation().z())}};
+	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {		
+		vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
+
+		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		double sec_to_trans = (curr_time - vio_output.real_timestamp()) / 1e9;
+		std::cout << "Seconds to receive pose (ms): " << sec_to_trans * 1e3 << std::endl;
+
+		pose_type datum_pose_tmp{
+			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
+			Eigen::Vector3f{
+				static_cast<float>(slow_pose.position().x()), 
+				static_cast<float>(slow_pose.position().y()), 
+				static_cast<float>(slow_pose.position().z())},
+			Eigen::Quaternionf{
+				static_cast<float>(slow_pose.rotation().w()),
+				static_cast<float>(slow_pose.rotation().x()), 
+				static_cast<float>(slow_pose.rotation().y()), 
+				static_cast<float>(slow_pose.rotation().z())}
+		};
 
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
