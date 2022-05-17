@@ -32,7 +32,8 @@ private:
 
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double sec_to_trans = (curr_time - vio_output.real_timestamp()) / 1e9;
-		std::cout << "Seconds to receive pose (ms): " << sec_to_trans * 1e3 << std::endl;
+		// std::cout << "Seconds to receive pose (ms): " << sec_to_trans * 1e3 << std::endl;
+		std::cout << "Round trip + VIO Processing time (ms): " << sec_to_trans * 1e3 << std::endl;
 
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
