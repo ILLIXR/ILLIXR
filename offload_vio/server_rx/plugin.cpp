@@ -15,7 +15,7 @@ public:
 	server_reader(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+		, _m_imu_cam{sb->get_writer<imu_cam_type_prof>("imu_cam")}
     { 
 		eCAL::Initialize(0, NULL, "VIO Server Reader");
 		subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
@@ -48,9 +48,10 @@ private:
 				cam1 = std::make_optional<cv::Mat>(img1);
 			}
 
-			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-				imu_cam_type {
+			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type_prof>(
+				imu_cam_type_prof {
 					time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
+					time_point{std::chrono::nanoseconds{vio_input.real_timestamp()}}, // Timestamp of the cam frame
 					Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
 					Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()},
 					cam0,
@@ -61,7 +62,7 @@ private:
 	}
 
     const std::shared_ptr<switchboard> sb;
-	switchboard::writer<imu_cam_type> _m_imu_cam;
+	switchboard::writer<imu_cam_type_prof> _m_imu_cam;
 
 	eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec> subscriber;
 };

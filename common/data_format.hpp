@@ -43,6 +43,28 @@ namespace ILLIXR {
 		{ }
 	};
 
+	struct imu_cam_type_prof : public switchboard::event {
+		time_point time;
+		time_point start_time;
+		Eigen::Vector3f angular_v;
+		Eigen::Vector3f linear_a;
+		std::optional<cv::Mat> img0;
+		std::optional<cv::Mat> img1;
+		imu_cam_type_prof(time_point time_,
+					 time_point start_time_,
+					 Eigen::Vector3f angular_v_,
+					 Eigen::Vector3f linear_a_,
+					 std::optional<cv::Mat> img0_,
+					 std::optional<cv::Mat> img1_)
+			: time{time_}
+			, start_time{start_time_}
+			, angular_v{angular_v_}
+			, linear_a{linear_a_}
+			, img0{img0_}
+			, img1{img1_}
+		{ }
+	};
+
 	struct imu_type {
 		time_point timestamp;
 		Eigen::Matrix<double, 3, 1> wm;
@@ -163,6 +185,28 @@ namespace ILLIXR {
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
 			: sensor_time{sensor_time_}
+			, position{position_}
+			, orientation{orientation_}
+		{ }
+	};
+
+	struct pose_type_prof : public switchboard::event {
+		time_point sensor_time; // Recorded time of sensor data ingestion
+		time_point start_time; // Recorded time of transfer start
+		Eigen::Vector3f position;
+		Eigen::Quaternionf orientation;
+		pose_type_prof()
+			: sensor_time{time_point{}}
+			, start_time{time_point{}}
+			, position{Eigen::Vector3f{0, 0, 0}}
+			, orientation{Eigen::Quaternionf{1, 0, 0, 0}}
+		{ }
+		pose_type_prof(time_point sensor_time_,
+				  time_point start_time_,
+				  Eigen::Vector3f position_,
+				  Eigen::Quaternionf orientation_)
+			: sensor_time{sensor_time_}
+			, start_time{start_time_}
 			, position{position_}
 			, orientation{orientation_}
 		{ }
