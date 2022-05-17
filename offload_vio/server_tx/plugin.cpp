@@ -29,12 +29,13 @@ public:
     virtual void start() override {
         plugin::start();
 
-        sb->schedule<pose_type>(id, "slow_pose", [this](switchboard::ptr<const pose_type> datum, std::size_t) {
-            this->send_vio_output(datum);
-        });
-    }
+        sb->schedule<pose_type_prof>(id, "slow_pose", [this](switchboard::ptr<const pose_type_prof> datum, std::size_t) {
+			this->send_vio_output(datum);
+		});
+	}
 
-    void send_vio_output(switchboard::ptr<const pose_type> datum) {
+
+    void send_vio_output(switchboard::ptr<const pose_type_prof> datum) {
 
 		// Construct slow pose for output
 		vio_output_proto::SlowPose* protobuf_slow_pose = new vio_output_proto::SlowPose();
@@ -108,7 +109,12 @@ public:
 		vio_output_proto::VIOOutput* vio_output_params = new vio_output_proto::VIOOutput();
 		vio_output_params->set_allocated_slow_pose(protobuf_slow_pose);
 		vio_output_params->set_allocated_imu_int_input(protobuf_imu_int_input);
+
+		// This line will get you the trasnfer time of the pose
 		vio_output_params->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+
+		// This will get the time elapsed of the full roundtrip loop
+		vio_output_params->set_real_timestamp(datum->start_time.time_since_epoch().count());
 
 		publisher.Send(*vio_output_params);
 		delete vio_output_params;
