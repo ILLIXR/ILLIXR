@@ -34,6 +34,11 @@ public:
 private:
 	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {		
 		vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
+
+		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		double sec_to_trans = (curr_time - vio_output.real_timestamp()) / 1e9;
+		std::cout << "Seconds to receive pose (ms): " << sec_to_trans * 1e3 << std::endl;
+
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
 			Eigen::Vector3f{
