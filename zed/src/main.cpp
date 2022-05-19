@@ -201,7 +201,7 @@ protected:
         // it_log.log(record{__imu_cam_record, {
         //     {iteration_no},
         //     {bool(img0)},
-        // }}); // FIXME need to change the log format, no img0 anymore
+        // }}); // FIXME need to change the log format, separate for imu and cam
 
         _m_imu.put(_m_imu.allocate<imu_type>(
             {
