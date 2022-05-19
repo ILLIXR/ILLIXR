@@ -15,7 +15,8 @@ public:
 	server_reader(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+		, _m_imu{sb->get_writer<imu_type>("imu")}
+		, _m_cam{sb->get_writer<cam_type>("cam")}
     { 
 		eCAL::Initialize(0, NULL, "VIO Server Reader");
 		subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
@@ -28,9 +29,6 @@ private:
 		for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
 			vio_input_proto::IMUCamData curr_data = vio_input.imu_cam_data(i);
 
-			std::optional<cv::Mat> cam0 = std::nullopt;
-			std::optional<cv::Mat> cam1 = std::nullopt;
-
 			if (curr_data.rows() != -1 && curr_data.cols() != -1) {
 
 				// Must do a deep copy of the received data (in the form of a string of bytes)
@@ -40,24 +38,28 @@ private:
 				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
 				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
 
-				cam0 = std::make_optional<cv::Mat>(img0);
-				cam1 = std::make_optional<cv::Mat>(img1);
+				_m_cam.put(_m_cam.allocate<cam_type>(
+					cam_type {
+						time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
+						img0,
+						img1
+					}
+				));
 			}
 
-			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-				imu_cam_type {
+			_m_imu.put(_m_imu.allocate<imu_type>(
+				imu_type {
 					time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
 					Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
 					Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()},
-					cam0,
-					cam1
 				}
-			));	
+			));
 		}
 	}
 
     const std::shared_ptr<switchboard> sb;
-	switchboard::writer<imu_cam_type> _m_imu_cam;
+	switchboard::writer<imu_type> _m_imu;
+	switchboard::writer<cam_type> _m_cam; 
 
 	eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec> subscriber;
 };
