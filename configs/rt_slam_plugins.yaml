@@ -5,15 +5,15 @@ plugin_group:
   # - path: realsense/
   # - path: depthai/
   # - path: record_imu_cam/
-  # - name: Kimera-VIO/
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-      # version: "issue-50-separate-imu-cam"
-  - name: OpenVINS
-    path: 
-      git_repo: https://github.com/ILLIXR/open_vins.git
+  - name: Kimera-VIO/
+    path:
+      git_repo: https://github.com/ILLIXR/Kimera-VIO.git
       version: "issue-50-separate-imu-cam"
+  # - name: OpenVINS
+    # path: 
+      # git_repo: https://github.com/ILLIXR/open_vins.git
+      # version: "issue-50-separate-imu-cam"
   # - path: rk4_integrator/
   - path: gtsam_integrator/
-  # - path: passthrough_integrator
+  # - path: passthrough_integrator/
   - path: pose_prediction/
