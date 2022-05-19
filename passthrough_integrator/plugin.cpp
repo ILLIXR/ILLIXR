@@ -13,12 +13,12 @@ public:
 		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
 	{
-		sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+		sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
 			callback(datum);
 		});
 	}
 
-	void callback(switchboard::ptr<const imu_cam_type> datum) {
+	void callback(switchboard::ptr<const imu_type> datum) {
 		auto input_values = _m_imu_integrator_input.get_ro_nullable();
 		if (input_values == nullptr) {
 			return;

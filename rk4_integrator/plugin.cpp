@@ -61,7 +61,7 @@ private:
 	void clean_imu_vec(time_point timestamp) {
 		auto it0 = _imu_vec.begin();
         while (it0 != _imu_vec.end()) {
-            if (timestamp - it0->timestamp < IMU_SAMPLE_LIFETIME) {
+            if (timestamp - it0->time < IMU_SAMPLE_LIFETIME) {
                break;
             }
            it0 = _imu_vec.erase(it0);
@@ -113,7 +113,7 @@ private:
 		// Loop through all IMU messages, and use them to move the state forward in time
 		// This uses the zero'th order quat, and then constant acceleration discrete
 		if (prop_data.size() > 1) {
-			for(size_t i=0; i<prop_data.size()-1; i++) {
+			for(size_t i=0; i < prop_data.size()-1; i++) {
 
 				// Time elapsed over interval
 				double dt = duration2double(prop_data[i+1].time-prop_data[i].time);
@@ -191,7 +191,7 @@ private:
 
 	// For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
 	static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
-		double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
+		double lambda = duration2double(timestamp - imu_1.time) / duration2double(imu_2.time - imu_1.time);
 		return imu_type {
 			timestamp,
 			(1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
