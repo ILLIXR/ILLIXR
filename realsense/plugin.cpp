@@ -135,8 +135,9 @@ public:
                 }
             }    
         };
+        
+    virtual ~realsense() override { pipe.stop(); }
 
-	virtual ~realsense() override { pipe.stop(); }
 
 private:
     typedef enum {

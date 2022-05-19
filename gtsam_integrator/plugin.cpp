@@ -22,7 +22,6 @@ using namespace ILLIXR;
 constexpr duration IMU_TTL {std::chrono::seconds{5}};
 
 using ImuBias = gtsam::imuBias::ConstantBias;
-
 class gtsam_integrator : public plugin {
 public:
     gtsam_integrator(std::string name_, phonebook* pb_)

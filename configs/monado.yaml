@@ -20,7 +20,7 @@ action:
   is_mainline : False
 
   monado:
-    path:
+    path: 
       git_repo : https://github.com/ILLIXR/monado_integration.git
       version  : "3.1"
 

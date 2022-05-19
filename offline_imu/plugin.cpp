@@ -81,4 +81,3 @@ private:
 };
 
 PLUGIN_MAIN(offline_imu)
-

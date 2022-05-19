@@ -191,7 +191,6 @@ private:
     Eigen::Vector3f align_trans;
     Eigen::Vector4f align_quat;
     double align_scale;
-    std::string path_to_alignment;
 };
 
 
