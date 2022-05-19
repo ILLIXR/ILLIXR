@@ -26,11 +26,6 @@ public:
 	}
 
 protected:
-	// virtual void _p_thread_setup() override {
-	// 	if (is_dynamic_scheduler() || is_static_scheduler()) {
-	// 		set_priority(get_tid(), 5);
-	// 	}
-	// }
 	virtual skip_option _p_should_skip() override {
 		if (_m_sensor_data_it != _m_sensor_data.end()) {
 			assert(dataset_now < _m_sensor_data_it->first);

@@ -26,12 +26,6 @@ public:
 		_m_log << "rt_pub,rt_trig,dt\n";
 	}
 
-	// virtual void _p_thread_setup() override {
-	// 	if (is_priority_scheduler()) {
-	// 		set_priority(get_tid(), 1);
-	// 	}
-	// }
-
 	virtual skip_option _p_should_skip() override {
 		if (true)
 			// next_row != _m_sensor_data.end() && next_row->second.cam0 && next_row->second.cam1
