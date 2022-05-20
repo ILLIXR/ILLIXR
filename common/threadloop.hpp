@@ -68,6 +68,15 @@ public:
         _m_thread.join();
     }
 
+    /**
+	 * @brief Stops the thread.
+	 *
+	 * A thread should call this if it wants to stop itself (due to out of data for example). 
+	 */ 
+	virtual void internal_stop() {
+	    _m_internal_stop.store(true); 
+	}
+
     virtual ~threadloop() override {
         assert(_m_stoplight->check_should_stop());
         assert(!_m_thread.joinable());
