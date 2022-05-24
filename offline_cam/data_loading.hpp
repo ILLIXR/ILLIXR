@@ -12,6 +12,12 @@
 
 typedef unsigned long long ullong;
 
+/*
+* Uncommenting this preprocessor macro makes the offline_cam load each data from the disk as it is needed.
+* Otherwise, we load all of them at the beginning, hold them in memory, and drop them in the queue as needed. 
+* Lazy loading has an artificial negative impact on performance which is absent from an online-sensor system.
+* Eager loading deteriorates the startup time and uses more memory.
+*/
 //#define LAZY
 
 class lazy_load_image {
