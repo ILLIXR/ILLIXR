@@ -297,10 +297,10 @@ private:
                      << filtered_pos.x() << ","
                      << filtered_pos.y() << ","
                      << filtered_pos.z() << ","
-                     << original_quaternion.w() << ","
-                     << original_quaternion.x() << ","
-                     << original_quaternion.y() << ","
-                     << original_quaternion.z() << std::endl;
+                     << new_quaternion.w() << ","
+                     << new_quaternion.x() << ","
+                     << new_quaternion.y() << ","
+                     << new_quaternion.z() << std::endl;
 
         std::cerr << std::fixed << input_values->last_cam_integration_time.time_since_epoch().count() / 1e9 << ","
                   << out_pose.x() << ","
