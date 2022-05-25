@@ -171,7 +171,7 @@ public:
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 			data_buffer->set_frame_id(frame_id);
-			data_buffer->set_cam_time(datum->time.time_since_epoch().count());
+			frame_id++;
 			
 			float created_to_sent = (_m_clock->now().time_since_epoch().count() - datum->created_time) / 1e6;
 			std::cout << "Created to send: " << created_to_sent << "\n";
