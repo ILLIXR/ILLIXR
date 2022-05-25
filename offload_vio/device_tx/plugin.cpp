@@ -143,6 +143,7 @@ public:
 private:
     std::unique_ptr<video_encoder> encoder = nullptr;
 	long previous_timestamp = 0;
+	int frame_id = 0;
 	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 
     const std::shared_ptr<switchboard>                     sb;
