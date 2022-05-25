@@ -16,6 +16,12 @@
 #include <gtsam/navigation/ImuFactor.h>
 #include <iomanip>
 #include <thread>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include <boost/smart_ptr/make_shared.hpp>
+#include <filesystem>
+#include <fstream>
+
+#include "third_party/filter.h"
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -35,6 +41,29 @@ public:
         sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
             callback(datum);
         });
+
+        if (!std::filesystem::create_directory(data_path)) {
+            std::cerr << "Failed to create data directory.";
+        }
+        raw_csv.open(data_path + "/imu_raw.csv");
+        filtered_csv.open(data_path + "/imu_filtered.csv");
+
+        const double frequency = 200;
+        const double mincutoff = 10;
+        const double beta = 1;
+        const double dcutoff = 10;
+
+        for (int i = 0; i < 7; ++i) {
+            filters.emplace_back(frequency,
+                                 Eigen::Array<double, 3, 1>{mincutoff, mincutoff, mincutoff},
+                                 Eigen::Array<double, 3, 1>{beta, beta, beta},
+                                 Eigen::Array<double, 3, 1>{dcutoff, dcutoff, dcutoff},
+                                 Eigen::Array<double, 3, 1>::Zero(),
+                                 Eigen::Array<double, 3, 1>::Ones(),
+                                 [](auto &in) {
+                                     return in.abs();
+                                 });
+        }
     }
 
     void callback(switchboard::ptr<const imu_type> datum) {
@@ -47,7 +76,12 @@ public:
     }
 
 private:
-    const std::shared_ptr<switchboard>   sb;
+    const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+    std::ofstream raw_csv;
+    std::ofstream filtered_csv;
+    std::vector <one_euro_filter<Eigen::Array<double,3,1>, double>> filters;
+
+    const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<RelativeClock> _m_clock;
 
     // IMU Data, Sequence Flag, and State Vars Needed
@@ -209,12 +243,64 @@ private:
         gtsam::NavState navstate_k = _pim_obj->predict();
         gtsam::Pose3    out_pose   = navstate_k.pose();
 
-#ifndef NDEBUG
-        std::cout << "Base Position (x, y, z) = " << input_values->position(0) << ", " << input_values->position(1) << ", "
+//#ifndef NDEBUG
+        std::cout << "Base Position (x, y, z) = "
+                  << input_values->position(0) << ", "
+                  << input_values->position(1) << ", "
                   << input_values->position(2) << std::endl;
 
-        std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
-#endif
+        std::cout << "New  Position (x, y, z) = "
+                  << out_pose.x() << ", "
+                  << out_pose.y() << ", "
+                  << out_pose.z() << std::endl;
+//#endif
+
+        auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
+
+        raw_csv << std::fixed << real_time.time_since_epoch().count() << ","
+                << out_pose.x() << ","
+                << out_pose.y() << ","
+                << out_pose.z() << ","
+                << out_pose.rotation().toQuaternion().w() << ","
+                << out_pose.rotation().toQuaternion().x() << ","
+                << out_pose.rotation().toQuaternion().y() << ","
+                << out_pose.rotation().toQuaternion().z() << std::endl;
+
+        auto original_quaternion = out_pose.rotation().toQuaternion();
+        Eigen::Matrix<double, 3, 1> rotation_angles = original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
+        Eigen::Matrix<double, 3, 1> filtered_angles = filters[6](rotation_angles.array(), seconds_since_epoch);
+        __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX())
+                * Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY())
+                * Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
+
+        auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
+
+        std::cout << "Filtered  Position (x, y, z) = "
+                  << filtered_pos.x() << ", "
+                  << filtered_pos.y() << ", "
+                  << filtered_pos.z() << std::endl;
+
+//        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+//                imu_raw_type {
+//                        prev_bias.gyroscope(),
+//                        prev_bias.accelerometer(),
+//                        bias.gyroscope(),
+//                        bias.accelerometer(),
+//                        out_pose.translation(),             /// Position
+//                        navstate_k.velocity(),              /// Velocity
+//                        out_pose.rotation().toQuaternion(), /// Eigen Quat
+//                        real_time
+//                }
+//        ));
+
+        filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
+                     << filtered_pos.x() << ","
+                     << filtered_pos.y() << ","
+                     << filtered_pos.z() << ","
+                     << original_quaternion.w() << ","
+                     << original_quaternion.x() << ","
+                     << original_quaternion.y() << ","
+                     << original_quaternion.z() << std::endl;
 
         std::cerr << std::fixed << input_values->last_cam_integration_time.time_since_epoch().count() / 1e9 << ","
                   << out_pose.x() << ","
@@ -226,17 +312,22 @@ private:
                   << out_pose.rotation().toQuaternion().z() << std::endl;
 
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
-            imu_raw_type {
-                prev_bias.gyroscope(),
-                prev_bias.accelerometer(),
-                bias.gyroscope(),
-                bias.accelerometer(),
-                out_pose.translation(),             /// Position
-                navstate_k.velocity(),              /// Velocity
-                out_pose.rotation().toQuaternion(), /// Eigen Quat
-				real_time
-            }
+                imu_raw_type {
+//                        filters[0](prev_bias.gyroscope().array(), seconds_since_epoch),
+//                        filters[1](prev_bias.accelerometer().array(), seconds_since_epoch),
+//                        filters[2](bias.gyroscope().array(), seconds_since_epoch),
+//                        filters[3](bias.accelerometer().array(), seconds_since_epoch),
+                        prev_bias.gyroscope(),
+                        prev_bias.accelerometer(),
+                        bias.gyroscope(),
+                        bias.accelerometer(),
+                        filtered_pos,             /// Position
+                        filters[5](navstate_k.velocity().array(), seconds_since_epoch),              /// Velocity
+                        new_quaternion, /// Eigen Quat
+                        real_time
+                }
         ));
+
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
