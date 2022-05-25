@@ -74,6 +74,7 @@ public:
 
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			data_buffer->set_frame_id(frame_id);
+			frame_id++;
 			
 			publisher.Send(*data_buffer);
 			delete data_buffer;
