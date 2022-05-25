@@ -31,7 +31,9 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
+        // , _m_true_imu_integrator_input{sb->get_reader<imu_integrator_input>("true_int_input")}
+        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+    {
         sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
             callback(datum);
         });
@@ -53,6 +55,7 @@ private:
     // IMU Data, Sequence Flag, and State Vars Needed
     switchboard::reader<imu_cam_type>         _m_imu_cam;
     switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
+    // switchboard::reader<imu_integrator_input> _m_true_imu_integrator_input;
 
     // Write IMU Biases for PP
     switchboard::writer<imu_raw_type> _m_imu_raw;
@@ -174,6 +177,7 @@ private:
             last_imu_offset = input_values->t_offset;
         } else {
             /// We already have a PimObject -> set the values given the current input
+            // _pim_obj->resetIntegrationAndSetBias(*true_input_values);
             _pim_obj->resetIntegrationAndSetBias(*input_values);
         }
 
@@ -214,12 +218,27 @@ private:
         std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
 #endif
 
-        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(),
-                                                                      bias.gyroscope(), bias.accelerometer(),
-                                                                      out_pose.translation(),             /// Position
-                                                                      navstate_k.velocity(),              /// Velocity
-                                                                      out_pose.rotation().toQuaternion(), /// Eigen Quat
-                                                                      real_time}));
+        // std::cerr << std::fixed << input_values->last_cam_integration_time.time_since_epoch().count() / 1e9 << ","
+        //           << out_pose.x() << ","
+        //           << out_pose.y() << ","
+        //           << out_pose.z() << ","
+        //           << out_pose.rotation().toQuaternion().w() << ","
+        //           << out_pose.rotation().toQuaternion().x() << ","
+        //           << out_pose.rotation().toQuaternion().y() << ","
+        //           << out_pose.rotation().toQuaternion().z() << std::endl;
+
+        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+            imu_raw_type {
+                prev_bias.gyroscope(),
+                prev_bias.accelerometer(),
+                bias.gyroscope(),
+                bias.accelerometer(),
+                out_pose.translation(),             /// Position
+                navstate_k.velocity(),              /// Velocity
+                out_pose.rotation().toQuaternion(), /// Eigen Quat
+				real_time
+            }
+        ));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

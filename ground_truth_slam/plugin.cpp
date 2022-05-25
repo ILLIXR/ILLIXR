@@ -13,14 +13,15 @@ using namespace ILLIXR;
 
 class ground_truth_slam : public plugin {
 public:
-    ground_truth_slam(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_true_pose{sb->get_writer<pose_type>("true_pose")}
-        , _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-        , _m_sensor_data{load_data()}
-        , _m_dataset_first_time{_m_sensor_data.cbegin()->first}
-        , _m_first_time{true} { }
+	ground_truth_slam(std::string name_, phonebook* pb_)
+		: plugin{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+		, _m_true_int_input{sb->get_writer<imu_integrator_input>("true_int_input")}
+		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
+		, _m_sensor_data{load_data()}
+		, _m_dataset_first_time{_m_sensor_data.cbegin()->first}
+		, _m_first_time{true}
+	{ }
 
     virtual void start() override {
         plugin::start();
@@ -40,6 +41,7 @@ public:
             return;
         }
 
+<<<<<<< HEAD
         switchboard::ptr<pose_type> true_pose =
             _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
@@ -50,21 +52,23 @@ public:
                   << " | "
                   << "Quat: (" << true_pose->orientation.w() << ", " << true_pose->orientation.x() << ", "
                   << true_pose->orientation.y() << "," << true_pose->orientation.z() << ")" << std::endl;
-#endif
-
+        );
+		
         /// Ground truth position offset is the first ground truth position
-        if (_m_first_time) {
-            _m_first_time = false;
-            _m_ground_truth_offset.put(
-                _m_ground_truth_offset.allocate<switchboard::event_wrapper<Eigen::Vector3f>>(true_pose->position));
-        }
+		if (_m_first_time) {
+			_m_first_time = false;
+			_m_ground_truth_offset.put(_m_ground_truth_offset.allocate<switchboard::event_wrapper<Eigen::Vector3f>>(
+				Eigen::Vector3f{it->second.position[0], it->second.position[1], it->second.position[2]}
+			));
+		}
 
-        _m_true_pose.put(std::move(true_pose));
-    }
+		_m_true_int_input.put(std::move(true_pose));
+	}
 
 private:
-    const std::shared_ptr<switchboard>                               sb;
-    switchboard::writer<pose_type>                                   _m_true_pose;
+	const std::shared_ptr<switchboard> sb;
+	switchboard::writer<imu_integrator_input> _m_true_int_input;
+>>>>>>> Modify GT reader to push out biases as well, modify integrator to use GT biases, debugging pose prediction
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
     const std::map<ullong, sensor_types>                             _m_sensor_data;
     ullong                                                           _m_dataset_first_time;
