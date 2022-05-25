@@ -73,6 +73,8 @@ public:
 			imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
 
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			data_buffer->set_frame_id(frame_id);
+			
 			publisher.Send(*data_buffer);
 			delete data_buffer;
 			data_buffer = new vio_input_proto::IMUCamVec();
@@ -81,6 +83,7 @@ public:
 
 private:
 	long previous_timestamp = 0;
+	int frame_id = 0;
 	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 
     const std::shared_ptr<switchboard> sb;

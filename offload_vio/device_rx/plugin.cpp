@@ -39,8 +39,8 @@ private:
 		double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
 		double sec_to_trans = (curr_time - vio_output.start_timestamp()) / 1e9;
 		// std::cout << "Seconds to receive pose (ms): " << sec_to_trans * 1e3 << std::endl;
-		std::cout << "Pose Transfer Time (ms): " << sec_to_trans_pose * 1e3 << std::endl;
-		std::cout << "Full Round trip (ms): " << sec_to_trans * 1e3 << std::endl;
+		std::cout << vio_output.frame_id() << ": Pose Transfer Time (ms): " << sec_to_trans_pose * 1e3 << std::endl;
+		std::cout << vio_output.frame_id() << ": Full Round trip (ms): " << sec_to_trans * 1e3 << std::endl;
 
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
