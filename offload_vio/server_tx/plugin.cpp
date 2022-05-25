@@ -36,6 +36,9 @@ public:
 
 
     void send_vio_output(switchboard::ptr<const pose_type_prof> datum) {
+		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		double sec_to_trans = (curr_time - datum->rec_time.time_since_epoch().count()) / 1e9;
+		std::cout << "Seconds to run VIO (ms): " << sec_to_trans * 1e3 << std::endl;
 
 		// Construct slow pose for output
 		vio_output_proto::SlowPose* protobuf_slow_pose = new vio_output_proto::SlowPose();
@@ -110,11 +113,10 @@ public:
 		vio_output_params->set_allocated_slow_pose(protobuf_slow_pose);
 		vio_output_params->set_allocated_imu_int_input(protobuf_imu_int_input);
 
-		// This line will get you the trasnfer time of the pose
-		vio_output_params->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-
 		// This will get the time elapsed of the full roundtrip loop
-		vio_output_params->set_real_timestamp(datum->start_time.time_since_epoch().count());
+		vio_output_params->set_start_timestamp(datum->start_time.time_since_epoch().count());
+		vio_output_params->set_end_server_timestamp(curr_time);
+
 
 		publisher.Send(*vio_output_params);
 		delete vio_output_params;
