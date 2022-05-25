@@ -119,6 +119,22 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
+		imu_integrator_input()
+			: last_cam_integration_time{time_point{}}
+			, t_offset{duration(std::chrono::milliseconds{-50})}
+			, params{.gyro_noise = 0.00016968,
+				.acc_noise = 0.002,
+				.gyro_walk = 1.9393e-05,
+				.acc_walk = 0.003,
+				.n_gravity = Eigen::Matrix<double,3,1>(0.0, 0.0, -9.81),
+				.imu_integration_sigma = 1.0,
+				.nominal_rate = 200.0,}
+			, biasAcc{Eigen::Vector3d{0, 0, 0}}
+			, biasGyro{Eigen::Vector3d{0, 0, 0}}
+			, position{Eigen::Vector3d{0, 0, 0}}
+			, velocity{Eigen::Vector3d{0, 0, 0}}
+			, quat{Eigen::Quaterniond{1, 0, 0, 0}}
+		{ }
 		imu_integrator_input(
 							 time_point last_cam_integration_time_,
 							 duration t_offset_,
