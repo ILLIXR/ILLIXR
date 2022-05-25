@@ -20,7 +20,8 @@
 
 using namespace ILLIXR;
 
-typedef pose_type sensor_types;
+// typedef pose_type sensor_types;
+typedef imu_integrator_input sensor_types;
 
 static std::map<ullong, sensor_types> load_data() {
     const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
@@ -39,12 +40,32 @@ static std::map<ullong, sensor_types> load_data() {
         ILLIXR::abort();
     }
 
-    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
-        ullong             t = std::stoull(row[0]);
-        Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
-        Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
-        data[t] = {{}, av, la};
-    }
+	for(CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+		ullong t = std::stoull(row[0]);
+		Eigen::Vector3d ba {std::stod(row[14]), std::stod(row[15]), std::stod(row[16])};
+		Eigen::Vector3d bg {std::stod(row[11]), std::stod(row[12]), std::stod(row[13])};
+		Eigen::Vector3d pos {std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
+		Eigen::Vector3d vel {std::stod(row[8]), std::stod(row[9]), std::stod(row[10])};
+		Eigen::Quaterniond rot {std::stod(row[4]), std::stod(row[5]), std::stod(row[6]), std::stod(row[7])};
+		data[t] = {
+			time_point{}, 
+			duration(std::chrono::milliseconds{-50}),
+			imu_params{
+				.gyro_noise = 0.00016968,
+				.acc_noise = 0.002,
+				.gyro_walk = 1.9393e-05,
+				.acc_walk = 0.003,
+				.n_gravity = Eigen::Matrix<double,3,1>(0.0, 0.0, -9.81),
+				.imu_integration_sigma = 1.0,
+				.nominal_rate = 200.0,
+			},
+			ba,
+			bg,
+			pos,
+			vel,
+			rot
+		};
+	}
 
     return data;
 }
