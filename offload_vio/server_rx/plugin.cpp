@@ -51,7 +51,8 @@ private:
 			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type_prof>(
 				imu_cam_type_prof {
 					time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
-					time_point{std::chrono::nanoseconds{vio_input.real_timestamp()}}, // Timestamp of the cam frame
+					time_point{std::chrono::nanoseconds{vio_input.real_timestamp()}}, // Timestamp of when the device sent the packet
+					time_point{std::chrono::nanoseconds{curr_time}}, // Timestamp of receive time of the packet
 					Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
 					Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()},
 					cam0,
