@@ -68,15 +68,6 @@ public:
             };
         }
 
-        // if (first_time) {
-        //     std::unique_lock lock {offset_mutex};
-        //     // check again, now that we have mutual exclusion
-        //     if (first_time) {
-        //         first_time = false;
-        //         offset = slow_pose->orientation.inverse();
-        //     }
-        // }
-
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (imu_raw == nullptr) {
 #ifndef NDEBUG
