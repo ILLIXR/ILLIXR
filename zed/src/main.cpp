@@ -223,7 +223,6 @@ protected:
             time_point{},
             time_point{},
             time_point{},
-            _m_clock->now().time_since_epoch().count(),
             av,
             la,
             img0,
