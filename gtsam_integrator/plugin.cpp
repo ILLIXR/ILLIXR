@@ -33,11 +33,11 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
+        , _m_imu_cam{sb->get_reader<imu_cam_type_prof>("imu_cam")}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
     {
-        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+        sb->schedule<imu_cam_type_prof>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type_prof> datum, size_t) {
             callback(datum);
         });
 
@@ -46,6 +46,7 @@ public:
         }
         raw_csv.open(data_path + "/imu_raw.csv");
         filtered_csv.open(data_path + "/imu_filtered.csv");
+        rpe_integrator_csv.open(data_path + "/rpe_integrator.csv");
 
         const double frequency = 200;
         const double mincutoff = 10;
@@ -65,7 +66,7 @@ public:
         }
     }
 
-    void callback(switchboard::ptr<const imu_cam_type> datum) {
+    void callback(switchboard::ptr<const imu_cam_type_prof> datum) {
 		_imu_vec.emplace_back(
 							  datum->time,
 							  datum->angular_v.cast<double>(),
@@ -73,7 +74,7 @@ public:
 							  );
 
         clean_imu_vec(datum->time);
-        propagate_imu_values(datum->time);
+        propagate_imu_values(datum->time, datum->dataset_time);
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -82,13 +83,14 @@ private:
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream raw_csv;
     std::ofstream filtered_csv;
+    std::ofstream rpe_integrator_csv;
     std::vector <one_euro_filter<Eigen::Array<double,3,1>, double>> filters;
 
     const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<RelativeClock> _m_clock;
 
     // IMU Data, Sequence Flag, and State Vars Needed
-    switchboard::reader<imu_cam_type> _m_imu_cam;
+    switchboard::reader<imu_cam_type_prof> _m_imu_cam;
     switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
     // Write IMU Biases for PP
@@ -201,7 +203,7 @@ private:
 	}
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-	void propagate_imu_values(time_point real_time) {
+	void propagate_imu_values(time_point real_time, time_point dataset_time) {
 		auto input_values = _m_imu_integrator_input.get_ro_nullable();
 
 		if (input_values == nullptr) {
@@ -257,7 +259,7 @@ private:
         gtsam::NavState navstate_k = _pim_obj->predict();
         gtsam::Pose3 out_pose = navstate_k.pose();
 
-//#ifndef NDEBUG
+#ifndef NDEBUG
         std::cout << "Base Position (x, y, z) = "
                   << input_values->position(0) << ", "
                   << input_values->position(1) << ", "
@@ -267,7 +269,7 @@ private:
                   << out_pose.x() << ", "
                   << out_pose.y() << ", "
                   << out_pose.z() << std::endl;
-//#endif
+#endif
 
         auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
 
@@ -289,11 +291,6 @@ private:
 
         auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
 
-        std::cout << "Filtered  Position (x, y, z) = "
-                  << filtered_pos.x() << ", "
-                  << filtered_pos.y() << ", "
-                  << filtered_pos.z() << std::endl;
-
 //        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
 //                imu_raw_type {
 //                        prev_bias.gyroscope(),
@@ -311,10 +308,19 @@ private:
                      << filtered_pos.x() << ","
                      << filtered_pos.y() << ","
                      << filtered_pos.z() << ","
-                     << new_quaternion.w() << ","
-                     << new_quaternion.x() << ","
-                     << new_quaternion.y() << ","
-                     << new_quaternion.z() << std::endl;
+                     << original_quaternion.w() << ","
+                     << original_quaternion.x() << ","
+                     << original_quaternion.y() << ","
+                     << original_quaternion.z() << std::endl;
+
+        rpe_integrator_csv << std::fixed << dataset_time.time_since_epoch().count() / 1e9 << " "
+                     << filtered_pos.x() << " "
+                     << filtered_pos.y() << " "
+                     << filtered_pos.z() << " "
+                     << original_quaternion.w() << " "
+                     << original_quaternion.x() << " "
+                     << original_quaternion.y() << " "
+                     << original_quaternion.z() << std::endl;
 
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
                 imu_raw_type {
@@ -328,7 +334,7 @@ private:
                         bias.accelerometer(),
                         filtered_pos,             /// Position
                         filters[5](navstate_k.velocity().array(), seconds_since_epoch),              /// Velocity
-                        new_quaternion, /// Eigen Quat
+                        original_quaternion, /// Eigen Quat
                         real_time
                 }
         ));
