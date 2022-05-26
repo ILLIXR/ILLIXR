@@ -198,7 +198,41 @@ protected:
                               sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI / 180),
                               sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI / 180)};
 
-        _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
+        std::optional<cv::Mat> img0  = std::nullopt;
+        std::optional<cv::Mat> img1  = std::nullopt;
+        std::optional<cv::Mat> depth = std::nullopt;
+        std::optional<cv::Mat> rgb   = std::nullopt;
+
+        switchboard::ptr<const cam_type> c = _m_cam_type.get_ro_nullable();
+        if (c && c->serial_no != last_serial_no) {
+            last_serial_no = c->serial_no;
+            img0           = c->img0;
+            img1           = c->img1;
+            depth          = c->depth;
+            rgb            = c->rgb;
+        }
+
+        it_log.log(record{__imu_cam_record,
+                          {
+                              {iteration_no},
+                              {bool(img0)},
+                          }});
+
+        _m_imu_cam.put(_m_imu_cam.allocate(
+            0,
+            imu_time_point,
+            time_point{},
+            time_point{},
+            time_point{},
+            av,
+            la,
+            img0,
+            img1
+		));
+
+        if (rgb && depth) {
+            _m_rgb_depth.put(_m_rgb_depth.allocate(imu_time_point, rgb, depth));
+        }
 
         switchboard::ptr<const cam_type_zed> c = _m_cam_reader.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
