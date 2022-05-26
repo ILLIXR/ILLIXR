@@ -20,6 +20,7 @@ const record_header imu_cam_record{
 
 class offline_imu_cam : public ILLIXR::threadloop {
 public:
+<<<<<<< HEAD
     offline_imu_cam(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , _m_sensor_data{load_data()}
@@ -30,6 +31,19 @@ public:
         , dataset_first_time{_m_sensor_data_it->first}
         , imu_cam_log{record_logger_}
         , camera_cvtfmt_log{record_logger_} { }
+=======
+	offline_imu_cam(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, _m_sensor_data{load_data()}
+		, _m_sensor_data_it{_m_sensor_data.cbegin()}
+		, _m_sb{pb->lookup_impl<switchboard>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
+		, _m_imu_cam{_m_sb->get_writer<imu_cam_type_prof>("imu_cam")}
+		, dataset_first_time{_m_sensor_data_it->first}
+		, imu_cam_log{record_logger_}
+		, camera_cvtfmt_log{record_logger_}
+	{ }
+>>>>>>> Add profiling for RPE
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -84,28 +98,37 @@ protected:
         }
 #endif /// NDEBUG
 
-        _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
-            imu_cam_type{time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)},
-                         (sensor_datum.imu0.value().angular_v).cast<float>(),
-                         (sensor_datum.imu0.value().linear_a).cast<float>(), cam0, cam1}));
+        _m_imu_cam.put(_m_imu_cam.allocate< imu_cam_type_prof>(
+             imu_cam_type_prof {
+				0,
+				time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)},
+				time_point{},
+				time_point{},
+				time_point{std::chrono::nanoseconds(dataset_now)},
+                (sensor_datum.imu0.value().angular_v).cast<float>(),
+                (sensor_datum.imu0.value().linear_a).cast<float>(),
+                cam0,
+                cam1
+            }
+        ));
 
         RAC_ERRNO_MSG("offline_imu_cam at bottom of iteration");
     }
 
 private:
-    const std::map<ullong, sensor_types>           _m_sensor_data;
-    std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
-    const std::shared_ptr<switchboard>             _m_sb;
-    std::shared_ptr<const RelativeClock>           _m_clock;
-    switchboard::writer<imu_cam_type>              _m_imu_cam;
+	const std::map<ullong, sensor_types> _m_sensor_data;
+	std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
+	const std::shared_ptr<switchboard> _m_sb;
+	std::shared_ptr<const RelativeClock> _m_clock;
+	switchboard::writer< imu_cam_type_prof> _m_imu_cam;
 
-    // Timestamp of the first IMU value from the dataset
-    ullong dataset_first_time;
-    // Current IMU timestamp
-    ullong dataset_now;
+	// Timestamp of the first IMU value from the dataset
+	ullong dataset_first_time;
+	// Current IMU timestamp
+	ullong dataset_now;
 
-    record_coalescer imu_cam_log;
-    record_coalescer camera_cvtfmt_log;
+	record_coalescer imu_cam_log;
+	record_coalescer camera_cvtfmt_log;
 };
 
 PLUGIN_MAIN(offline_imu_cam)
