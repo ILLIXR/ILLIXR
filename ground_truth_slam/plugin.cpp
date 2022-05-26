@@ -16,7 +16,7 @@ public:
 	ground_truth_slam(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, _m_true_int_input{sb->get_writer<imu_integrator_input>("true_int_input")}
+		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
 		, _m_dataset_first_time{_m_sensor_data.cbegin()->first}
@@ -41,10 +41,13 @@ public:
             return;
         }
 
-<<<<<<< HEAD
-        switchboard::ptr<pose_type> true_pose =
-            _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
-
+        switchboard::ptr<pose_type> true_pose = _m_true_pose.allocate<pose_type>(
+            pose_type {
+                time_point{datum->time},
+                it->second.position,
+                it->second.orientation
+            }
+        );
 #ifndef NDEBUG
         std::cout << "Ground truth pose was found at T: " << rounded_time << " | "
                   << "Pos: (" << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2]
@@ -52,23 +55,40 @@ public:
                   << " | "
                   << "Quat: (" << true_pose->orientation.w() << ", " << true_pose->orientation.x() << ", "
                   << true_pose->orientation.y() << "," << true_pose->orientation.z() << ")" << std::endl;
-        );
-		
+#endif
+        
+
+#ifndef NDEBUG
+		std::cout << "Ground truth pose was found at T: " << rounded_time
+				  << " | "
+				  << "Pos: ("
+				  << true_pose->position[0] << ", "
+				  << true_pose->position[1] << ", "
+				  << true_pose->position[2] << ")"
+				  << " | "
+				  << "Quat: ("
+				  << true_pose->orientation.w() << ", "
+				  << true_pose->orientation.x() << ", "
+				  << true_pose->orientation.y() << ","
+				  << true_pose->orientation.z() << ")"
+				  << std::endl;
+#endif
+
         /// Ground truth position offset is the first ground truth position
 		if (_m_first_time) {
 			_m_first_time = false;
 			_m_ground_truth_offset.put(_m_ground_truth_offset.allocate<switchboard::event_wrapper<Eigen::Vector3f>>(
-				Eigen::Vector3f{it->second.position[0], it->second.position[1], it->second.position[2]}
+			    true_pose->position
 			));
 		}
 
-		_m_true_int_input.put(std::move(true_pose));
+		_m_true_pose.put(std::move(true_pose));
 	}
 
 private:
 	const std::shared_ptr<switchboard> sb;
-	switchboard::writer<imu_integrator_input> _m_true_int_input;
->>>>>>> Modify GT reader to push out biases as well, modify integrator to use GT biases, debugging pose prediction
+	switchboard::writer<pose_type> _m_true_pose;
+
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
     const std::map<ullong, sensor_types>                             _m_sensor_data;
     ullong                                                           _m_dataset_first_time;
