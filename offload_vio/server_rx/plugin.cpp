@@ -65,7 +65,7 @@ private:
 	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {	
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
-		std::cout << vio_input.frame_id() << ": Seconds to transfer frame + IMU (ms): " << sec_to_trans * 1e3 << std::endl;
+		std::cout << vio_input.frame_id() << " 1 " << sec_to_trans * 1e3 << std::endl;
 
 		// Loop through all IMU values first then the cam frame	
 		for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
@@ -113,9 +113,9 @@ private:
 			));	
 		}
 
-		unsigned long long after_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		double sec_to_push = (after_time - curr_time) / 1e9;
-		std::cout << vio_input.frame_id() << ": Seconds to push data (ms): " << sec_to_push * 1e3 << std::endl;
+		// unsigned long long after_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		// double sec_to_push = (after_time - curr_time) / 1e9;
+		// std::cout << vio_input.frame_id() << ": Seconds to push data (ms): " << sec_to_push * 1e3 << std::endl;
 	}
 
 protected:

@@ -123,7 +123,7 @@ public:
 
 		unsigned long long after_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double sec_to_push = (after_time - curr_time) / 1e9;
-		std::cout << datum->frame_id << ": Seconds to form pose and send (ms): " << sec_to_push * 1e3 << std::endl;
+		std::cout << datum->frame_id << " 2 " << sec_to_push * 1e3 << std::endl;
     }
 
 private:
