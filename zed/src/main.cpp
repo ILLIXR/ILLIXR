@@ -141,7 +141,7 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_imu_cam{sb->get_writer<imu_cam_type_prof>("imu_cam")}
         , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
@@ -209,7 +209,17 @@ protected:
                               {bool(img0)},
                           }});
 
-        _m_imu_cam.put(_m_imu_cam.allocate(imu_time_point, av, la, img0, img1));
+        _m_imu_cam.put(_m_imu_cam.allocate(
+            0,
+            imu_time_point,
+            time_point{},
+            time_point{},
+            time_point{},
+            av,
+            la,
+            img0,
+            img1
+		));
 
         if (rgb && depth) {
             _m_rgb_depth.put(_m_rgb_depth.allocate(imu_time_point, rgb, depth));
@@ -226,9 +236,9 @@ private:
 
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_cam_type>          _m_imu_cam;
-    switchboard::reader<cam_type>              _m_cam_type;
-    switchboard::writer<rgb_depth_type>        _m_rgb_depth;
+	switchboard::writer<imu_cam_type_prof> _m_imu_cam;
+	switchboard::reader<cam_type> _m_cam_type;
+	switchboard::writer<rgb_depth_type> _m_rgb_depth;
 
     // IMU
     SensorsData sensors_data;
