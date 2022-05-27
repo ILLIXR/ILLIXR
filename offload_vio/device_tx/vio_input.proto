@@ -23,5 +23,6 @@ message IMUCamData
 message IMUCamVec {
   repeated IMUCamData imu_cam_data = 1;
   fixed64 real_timestamp = 2;
-  int32 frame_id = 3;
+  fixed64 dataset_timestamp = 3;
+  int32 frame_id = 4;
 }

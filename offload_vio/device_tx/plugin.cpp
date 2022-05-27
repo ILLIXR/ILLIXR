@@ -27,13 +27,13 @@ public:
     virtual void start() override {
         plugin::start();
 
-        sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+        sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
 			this->send_imu_cam_data(datum);
 		});
 	}
 
 
-    void send_imu_cam_data(switchboard::ptr<const imu_cam_type> datum) {
+    void send_imu_cam_data(switchboard::ptr<const imu_cam_type_prof> datum) {
 		// Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
             assert(previous_timestamp == 0);
@@ -73,6 +73,7 @@ public:
 			imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
 
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 			data_buffer->set_frame_id(frame_id);
 			frame_id++;
 			
