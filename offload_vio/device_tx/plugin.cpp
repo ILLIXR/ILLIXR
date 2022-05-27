@@ -54,8 +54,8 @@ public:
         });
         encoder->init();
 
-        sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-            this->send_imu_cam_data(datum);
+        sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
+			this->send_imu_cam_data(datum);
 		});
 	}
 
@@ -71,8 +71,8 @@ protected:
 
 public:
 
-    void send_imu_cam_data(switchboard::ptr<const imu_cam_type> datum) {
-        // Ensures that slam doesnt start before valid IMU readings come in
+    void send_imu_cam_data(switchboard::ptr<const imu_cam_type_prof> datum) {
+		// Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
             assert(previous_timestamp == 0);
             return;
