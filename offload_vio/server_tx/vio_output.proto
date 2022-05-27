@@ -49,5 +49,6 @@ message VIOOutput {
     IMUIntInput imu_int_input = 2;
     fixed64 start_timestamp = 3;
     fixed64 end_server_timestamp = 4;
-    int32 frame_id = 5;
+    fixed64 dataset_timestamp = 5;
+    int32 frame_id = 6;
 }
