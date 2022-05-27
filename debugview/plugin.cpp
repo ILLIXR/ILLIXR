@@ -58,21 +58,23 @@ static void glfw_error_callback(int error, const char* description) {
 
 class debugview : public threadloop {
 public:
-    // Public constructor, Spindle passes the phonebook to this
-    // constructor. In turn, the constructor fills in the private
-    // references to the switchboard plugs, so the plugin can read
-    // the data whenever it needs to.
-    debugview(std::string name_, phonebook* pb_)
-        : threadloop{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , pp{pb->lookup_impl<pose_prediction>()}
-        , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
-        , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-    { }
 
-    void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
-        if (datum != nullptr && datum->img0.has_value() && datum->img1.has_value()) {
-            last_datum_with_images = datum;
+	// Public constructor, Spindle passes the phonebook to this
+	// constructor. In turn, the constructor fills in the private
+	// references to the switchboard plugs, so the plugin can read
+	// the data whenever it needs to.
+	debugview(std::string name_, phonebook *pb_)
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+		, pp{pb->lookup_impl<pose_prediction>()}
+		, _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
+		, _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")}
+		//, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+	{}
+
+	void imu_cam_handler(switchboard::ptr<const imu_cam_type_prof> datum) {
+		if (datum != nullptr && datum->img0.has_value() && datum->img1.has_value()) {
+			last_datum_with_images = datum;
         }
     }
 
@@ -407,10 +409,10 @@ private:
 
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const imu_cam_type> last_datum_with_images;
-    // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
-    GLuint          camera_textures[2];
-    Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
+	switchboard::ptr<const imu_cam_type_prof> last_datum_with_images;
+	// std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
+	GLuint camera_textures[2];
+	Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
     GLuint demo_vao;
     GLuint demoShaderProgram;
@@ -434,13 +436,13 @@ public:
     virtual void start() override {
         RAC_ERRNO_MSG("debugview at the top of start()");
 
-        // The "imu_cam" topic is not really a topic, in the current implementation.
-        // It serves more as an event stream. Camera frames are only available on this topic
-        // the very split second they are made available. Subsequently published packets to this
-        // topic do not contain the camera frames.
-        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-            this->imu_cam_handler(datum);
-        });
+		// The "imu_cam" topic is not really a topic, in the current implementation.
+		// It serves more as an event stream. Camera frames are only available on this topic
+		// the very split second they are made available. Subsequently published packets to this
+		// topic do not contain the camera frames.
+   		sb->schedule<imu_cam_type_prof>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
+        	this->imu_cam_handler(datum);
+    	});
 
         if (!glfwInit()) {
             ILLIXR::abort("[debugview] Failed to initalize glfw");
