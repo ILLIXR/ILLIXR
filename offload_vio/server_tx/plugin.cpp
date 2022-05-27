@@ -116,6 +116,7 @@ public:
 		// This will get the time elapsed of the full roundtrip loop
 		vio_output_params->set_start_timestamp(datum->start_time.time_since_epoch().count());
 		vio_output_params->set_end_server_timestamp(curr_time);
+		vio_output_params->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 		vio_output_params->set_frame_id(datum->frame_id);
 
 		publisher.Send(*vio_output_params);
