@@ -115,9 +115,12 @@ public:
 
 		// This will get the time elapsed of the full roundtrip loop
 		vio_output_params->set_start_timestamp(datum->start_time.time_since_epoch().count());
-		vio_output_params->set_end_server_timestamp(curr_time);
 		vio_output_params->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 		vio_output_params->set_frame_id(datum->frame_id);
+
+		unsigned long long end_pose_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		vio_output_params->set_end_server_timestamp(end_pose_time);
+
 
 		publisher.Send(*vio_output_params);
 		delete vio_output_params;
