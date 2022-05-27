@@ -13,11 +13,16 @@ using namespace ILLIXR;
 class offload_reader : public plugin {
 public:
     offload_reader(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_pose{sb->get_writer<pose_type>("slow_pose")}
-        , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")} {
-        pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
+		: plugin{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+		, _m_pose{sb->get_writer<pose_type>("slow_pose_prof")}
+		, _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
+    { 
+		pose_type datum_pose_tmp{
+            time_point{},
+            Eigen::Vector3f{0, 0, 0},
+            Eigen::Quaternionf{1, 0, 0, 0}
+        };
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
