@@ -53,7 +53,7 @@ public:
         const double beta = 1;
         const double dcutoff = 10;
 
-        for (int i = 0; i < 7; ++i) {
+        for (int i = 0; i < 8; ++i) {
             filters.emplace_back(frequency,
                                  Eigen::Array<double, 3, 1>{mincutoff, mincutoff, mincutoff},
                                  Eigen::Array<double, 3, 1>{beta, beta, beta},
@@ -282,9 +282,19 @@ private:
                 << out_pose.rotation().toQuaternion().y() << ","
                 << out_pose.rotation().toQuaternion().z() << std::endl;
 
+        auto to_dregrees = [](double radians) -> double {
+            return radians * 180 / M_PI;
+        };
+
         auto original_quaternion = out_pose.rotation().toQuaternion();
         Eigen::Matrix<double, 3, 1> rotation_angles = original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
-        Eigen::Matrix<double, 3, 1> filtered_angles = filters[6](rotation_angles.array(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_sins = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_angles {atan2(filtered_sins[0], filtered_cosines[0]), atan2(filtered_sins[1], filtered_cosines[1]), atan2(filtered_sins[2], filtered_cosines[2])};
+        std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
+                  << to_dregrees(rotation_angles[2]) << "  --->  "
+                  << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
+                  << to_dregrees(filtered_angles[2]) << std::endl;
         __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX())
                 * Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY())
                 * Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
@@ -334,7 +344,7 @@ private:
                         bias.accelerometer(),
                         filtered_pos,             /// Position
                         filters[5](navstate_k.velocity().array(), seconds_since_epoch),              /// Velocity
-                        original_quaternion, /// Eigen Quat
+                        new_quaternion, /// Eigen Quat
                         real_time
                 }
         ));
