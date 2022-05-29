@@ -85,6 +85,8 @@ private:
     std::ofstream filtered_csv;
     std::ofstream rpe_integrator_csv;
     std::vector <one_euro_filter<Eigen::Array<double,3,1>, double>> filters;
+    bool has_prev = false;
+    Eigen::Matrix<double, 3, 1> prev_euler_angles;
 
     const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<RelativeClock> _m_clock;
@@ -290,11 +292,36 @@ private:
         Eigen::Matrix<double, 3, 1> rotation_angles = original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
         Eigen::Matrix<double, 3, 1> filtered_sins = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
         Eigen::Matrix<double, 3, 1> filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
-        Eigen::Matrix<double, 3, 1> filtered_angles {atan2(filtered_sins[0], filtered_cosines[0]), atan2(filtered_sins[1], filtered_cosines[1]), atan2(filtered_sins[2], filtered_cosines[2])};
+        Eigen::Matrix<double, 3, 1> filtered_angles{atan2(filtered_sins[0], filtered_cosines[0]),
+                                                    atan2(filtered_sins[1], filtered_cosines[1]),
+                                                    atan2(filtered_sins[2], filtered_cosines[2])};
+
+        if (has_prev && (abs(rotation_angles[0] - prev_euler_angles[0]) > M_PI / 2 || abs(rotation_angles[1] - prev_euler_angles[1]) > M_PI / 2 ||
+            abs(rotation_angles[2] - prev_euler_angles[2]) > M_PI / 2)) {
+            filters[6].clear();
+            filters[7].clear();
+            std::cout << "clear filter" << std::endl;
+//            std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
+//                      << to_dregrees(rotation_angles[2]) << "  --->  "
+//                      << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
+//                      << to_dregrees(filtered_angles[2]) << std::endl;
+
+            filtered_sins = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
+            filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
+            filtered_angles = {atan2(filtered_sins[0], filtered_cosines[0]),
+                            atan2(filtered_sins[1], filtered_cosines[1]),
+                            atan2(filtered_sins[2], filtered_cosines[2])};
+        } else {
+            has_prev = true;
+        }
+
         std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
                   << to_dregrees(rotation_angles[2]) << "  --->  "
                   << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
                   << to_dregrees(filtered_angles[2]) << std::endl;
+
+        prev_euler_angles = std::move(rotation_angles);
+
         __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX())
                 * Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY())
                 * Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());

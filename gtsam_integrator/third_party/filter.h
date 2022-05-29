@@ -68,6 +68,11 @@ struct one_euro_filter {
         return xfilt_(x, alpha(cutoff));
     }
 
+    void clear() {
+        xfilt_.hadprev = false;
+        dxfilt_.hadprev = false;
+    }
+
     double freq;
     T mincutoff, beta, dcutoff, zero, one;
     std::function<T(T&)> abs;
