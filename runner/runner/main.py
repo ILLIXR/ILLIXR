@@ -114,6 +114,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
+        ORB_SLAM_ROOT=config["action"]["orb_slam_path"],
         REALSENSE_CAM=str(realsense_cam_string),
     )
     env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
@@ -183,6 +184,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
             ILLIXR_ENABLE_PRE_SLEEP=str(enable_pre_sleep),
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
+            ORB_SLAM_ROOT=config["action"]["orb_slam_path"],
             REALSENSE_CAM=str(realsense_cam_string),
         ),
         check=True,
@@ -299,6 +301,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
+            ORB_SLAM_ROOT=config["action"]["orb_slam_path"],
             REALSENSE_CAM=str(realsense_cam_string),
             **env_monado,
         ),
