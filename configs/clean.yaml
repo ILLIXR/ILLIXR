@@ -27,6 +27,10 @@ plugin_groups:
       path:
         git_repo: https://github.com/ILLIXR/open_vins.git
         version: "3.1"
+    - name: ORB_SLAM3
+      path: 
+        git_repo: https://github.com/ILLIXR/ORB_SLAM3.git
+        version: "master"
     - path: gtsam_integrator
     - path: pose_prediction
     ## Other Plugins
