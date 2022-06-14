@@ -4,18 +4,18 @@ plugin_group:
   # - path: realsense/
   # - path: depthai/
   # - path: record_imu_cam/
-  - name: Kimera-VIO/
-    path:
-      git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-      version: "3.2"
+  # - name: Kimera-VIO/
+  #   path:
+  #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
+  #     version: "3.2"
   # - name: OpenVINS
   #   path:
   #     git_repo: https://github.com/ILLIXR/open_vins.git
   #     version: "3.1"
-  # - name: ORB_SLAM3
-  #   path: 
-  #     git_repo: https://github.com/ILLIXR/ORB_SLAM3.git
-  #     version: "master"
+  - name: ORB_SLAM3
+    path: 
+      git_repo: https://github.com/ILLIXR/ORB_SLAM3.git
+      version: "create-illixr-plugin"
   # - path: rk4_integrator/
   - path: gtsam_integrator/
   - path: pose_prediction/
