@@ -147,25 +147,62 @@ typedef struct {
     time_point predict_target_time;   // Time that prediction targeted.
 } fast_pose_type;
 
+// Used to identify which graphics API is being used (for swapchain construction)
+enum class graphics_api {
+	OPENGL,
+	VULKAN
+};
+
+typedef struct {
+	GLuint64 allocation_size;
+	GLsizei width, height;
+	int file_descriptor;
+} vk_image_handle;
+
+// This is used to share swapchain images between ILLIXR and Monado.
+// When Monado uses its GL pipeline, it's enough to just share a context during creation.
+// Otherwise, file descriptors are needed to share the images.
+struct image_handles : public switchboard::event {
+	graphics_api type;
+	
+	union {
+		std::vector<GLuint> gl_handles;
+		std::vector<vk_image_handle> vk_handles;
+	};
+
+	image_handles() {}
+	image_handles(std::vector<GLuint>&& gl_handles_)
+		: type{graphics_api::OPENGL}
+		, gl_handles{std::move(gl_handles_)}
+	{}
+
+	image_handles(std::vector<vk_image_handle>&& vk_handles_)
+		: type{graphics_api::VULKAN}
+		, vk_handles(std::move(vk_handles_)}
+	{}
+};
+
 // Using arrays as a swapchain
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-    std::array<GLuint, 2> texture_handles; // Does not change between swaps in swapchain
-    std::array<GLuint, 2> swap_indices;    // Which element of the swapchain
-    fast_pose_type        render_pose;     // The pose used when rendering this frame.
-    time_point            sample_time;
-    time_point            render_time;
-
-    rendered_frame() { }
-
-    rendered_frame(std::array<GLuint, 2>&& texture_handles_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
-                   time_point sample_time_, time_point render_time_)
-        : texture_handles{std::move(texture_handles_)}
-        , swap_indices{std::move(swap_indices_)}
-        , render_pose(render_pose_)
-        , sample_time(sample_time_)
-        , render_time(render_time_) { }
+	std::array<int, 2> texture_handles; // Does not change between swaps in swapchain
+	std::array<GLuint, 2> swap_indices; // Which element of the swapchain
+	fast_pose_type render_pose; // The pose used when rendering this frame.
+	time_point sample_time;
+	time_point render_time;
+	rendered_frame() { }
+	rendered_frame(std::array<int, 2>&& texture_handles_, 
+					std::array<GLuint, 2>&& swap_indices_,
+					fast_pose_type render_pose_,
+					time_point sample_time_,
+					time_point render_time_)
+		: texture_handles{std::move(texture_handles_)}
+		, swap_indices{std::move(swap_indices_)}
+		, render_pose(render_pose_)
+		, sample_time(sample_time_)
+		, render_time(render_time_)
+	{ }
 };
 
 struct hologram_input : public switchboard::event {

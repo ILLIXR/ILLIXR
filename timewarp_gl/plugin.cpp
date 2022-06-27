@@ -44,29 +44,46 @@ const record_header mtp_record{"mtp_record",
 
 class timewarp_gl : public threadloop {
 public:
-    // Public constructor, create_component passes Switchboard handles ("plugs")
-    // to this constructor. In turn, the constructor fills in the private
-    // references to the switchboard plugs, so the component can read the
-    // data whenever it needs to.
-    timewarp_gl(std::string name_, phonebook* pb_)
-        : threadloop{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , pp{pb->lookup_impl<pose_prediction>()}
-        , xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
-        , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
-        , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-        , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
-        , timewarp_gpu_logger{record_logger_}
-        , mtp_logger{record_logger_}
-        // TODO: Use #198 to configure this. Delete getenv_or.
-        // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
-        // Timewarp poses a "second channel" by which pose data can correct the video stream,
-        // which results in a "multipath" between the pose and the video stream.
-        // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} { }
+	// Public constructor, create_component passes Switchboard handles ("plugs")
+	// to this constructor. In turn, the constructor fills in the private
+	// references to the switchboard plugs, so the component can read the
+	// data whenever it needs to.
+	timewarp_gl(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+		, pp{pb->lookup_impl<pose_prediction>()}
+		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
+		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
+		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
+		, _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+		, _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
+		, timewarp_gpu_logger{record_logger_}
+		, mtp_logger{record_logger_}
+		  // TODO: Use #198 to configure this. Delete getenv_or.
+		  // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
+		  // Timewarp poses a "second channel" by which pose data can correct the video stream,
+		  // which results in a "multipath" between the pose and the video stream.
+		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
+		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
+		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+	{ 
+		sb->schedule<image_handles>(id, "image_handles", [this](switchboard::ptr<const image_handles> handles, std::size_t) {
+			if (handles->type == graphics_api::OPENGL) {
+				// If the graphics backend is OpenGL, Monado's OpenGL context should be
+				// shared with ILLIXR, so the buffers are the same. 
+				for (int i = 0; i < handles->gl_handles.size(); i++) {
+					this->_m_image_handles.push_back(handles->gl_handles[i]);
+				}
+			} else if (handles->type == graphics_api::VULKAN) {
+				// If the graphics backend is Vulkan, then we need to use the interop extensions
+				// to share the memory between the Vulkan objects and the GL buffers here.
+				this->VulkanGLInterop(handles->vk_handles);
+			}
+
+			this->swapchain_ready = true;
+		});
+	}
 
 private:
     const std::shared_ptr<switchboard>             sb;
@@ -87,8 +104,12 @@ private:
 
     static constexpr std::chrono::nanoseconds vsync_period{freq2period(DISPLAY_REFRESH_RATE)};
 
-    // Switchboard plug for application eye buffer.
-    switchboard::reader<rendered_frame> _m_eyebuffer;
+	// Shared image handles between ILLIXR and the application (?)
+	std::vector<GLuint> _m_image_handles;
+	bool swapchain_ready;
+
+	// Switchboard plug for application eye buffer.
+	switchboard::reader<rendered_frame> _m_eyebuffer;
 
     // Switchboard plug for sending hologram calls
     switchboard::writer<hologram_input> _m_hologram;
@@ -220,8 +241,32 @@ private:
         std::cout << "Texture image collecting time: " << time << "ms" << std::endl;
 #endif
 
-        return pixels;
-    }
+		return pixels;
+	}
+
+	void VulkanGLInterop(const std::vector<vk_image_handle>& vk_handles) {
+		[[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		assert(gl_result && "glXMakeCurrent should not fail");
+		assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
+
+		for (int i = 0; i < vk_handles.size(); i++) {
+			const vk_image_handle& vk_image = vk_handles[i];
+
+			// first get the memory handle of the vulkan object
+			GLuint memory_handle;
+			glCreateMemoryObjectsEXT(1, &memory_handle);
+			glImportMemoryFdEXT(memory_handle, vk_image.allocation_size, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_image.file_descriptor);
+
+			// then use the imported memory as the opengl texture
+			GLuint image_handle;
+			glGenTextures(1, &image_handle);
+			glBindTexture(GL_TEXTURE_2D, image_handle);
+			glTextureStorageMem2DEXT(image_handle, 1, GL_RGBA8, vk_image.width, vk_image.height, memory_handle, 0);
+			_m_image_handles.push_back(image_handle);
+		}
+	}
+
+	void BuildTimewarp(HMD::hmd_info_t* hmdInfo) {
 
     void BuildTimewarp(HMD::hmd_info_t* hmdInfo) {
         // Calculate the number of vertices+indices in the distortion mesh.
@@ -342,24 +387,24 @@ private:
 
 public:
     virtual skip_option _p_should_skip() override {
-        using namespace std::chrono_literals;
-        // Sleep for approximately 90% of the time until the next vsync.
-        // Scheduling granularity can't be assumed to be super accurate here,
-        // so don't push your luck (i.e. don't wait too long....) Tradeoff with
-        // MTP here. More you wait, closer to the display sync you sample the pose.
+		using namespace std::chrono_literals;
+		// Sleep for approximately 90% of the time until the next vsync.
+		// Scheduling granularity can't be assumed to be super accurate here,
+		// so don't push your luck (i.e. don't wait too long....) Tradeoff with
+		// MTP here. More you wait, closer to the display sync you sample the pose.
 
-        // TODO: poll GLX window events
-        std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
-        if (_m_eyebuffer.get_ro_nullable() != nullptr) {
-            return skip_option::run;
-        } else {
-            // Null means system is nothing has been pushed yet
-            // because not all components are initialized yet
-            return skip_option::skip_and_yield;
-        }
-    }
+		// TODO: poll GLX window events
+		std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
+		if (swapchain_ready && _m_eyebuffer.get_ro_nullable() != nullptr) {
+			return skip_option::run;
+		} else {
+			// Null means system is nothing has been pushed yet
+			// because not all components are initialized yet
+			return skip_option::skip_and_yield;
+		}
+	}
 
-    virtual void _p_thread_setup() override {
+	virtual void _p_thread_setup() override {
         RAC_ERRNO_MSG("timewarp_gl at start of _p_thread_setup");
 
         // Wait a vsync for gldemo to go first.
@@ -571,7 +616,7 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
 #ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
-            glBindTexture(GL_TEXTURE_2D, most_recent_frame->texture_handles[eye]);
+            glBindTexture(GL_TEXTURE_2D, _m_image_handles[most_recent_frame->texture_handles[eye]]);
 #endif
 
             // The distortion_positions_vbo GPU buffer already contains
