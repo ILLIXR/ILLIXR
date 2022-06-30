@@ -3,11 +3,14 @@
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/publisher.h>
 #include <opencv2/core/mat.hpp>
+#include <filesystem>
+#include <fstream>
 
 #include "vio_input.pb.h"
+#include "common/network/socket.hpp"
+#include "common/network/timestamp.hpp"
+#include "common/network/net_config.hpp"
 
 using namespace ILLIXR;
 
@@ -16,16 +19,28 @@ public:
     offload_writer(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
+		, server_addr(SERVER_IP, SERVER_PORT_1)
     { 
-		eCAL::Initialize(0, NULL, "VIO Device Transmitter");
-		publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
-		publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
-		publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
+		socket.set_reuseaddr();
+		socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
+		initial_timestamp();
+
+		if (!filesystem::exists(data_path)) {
+			if (!filesystem::create_directory(data_path)) {
+				std::cerr << "Failed to create data directory.";
+			}
+		}
+		
+		hashed_data.open(data_path + "/hash_device_tx.txt");
 	}
 
 
     virtual void start() override {
         plugin::start();
+
+		cout << "TEST: Connecting to " << server_addr.str(":") << endl;
+		socket.connect(server_addr);
+		cout << "Connected to " << server_addr.str(":") << endl;	
 
         sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
 			this->send_imu_cam_data(datum);
@@ -77,7 +92,19 @@ public:
 			data_buffer->set_frame_id(frame_id);
 			frame_id++;
 			
-			publisher.Send(*data_buffer);
+			// Prepare data delivery
+			string data_to_be_sent = data_buffer->SerializeAsString();
+			string delimitter = "END!";
+
+			auto start = timestamp();
+			socket.write(data_to_be_sent + delimitter);
+			auto send_duration = timestamp() - start;
+			// cout << "Send time = " << send_duration << endl;
+
+			hash<std::string> hasher;
+    		auto hash_result = hasher(data_to_be_sent);
+			hashed_data << frame_id << "\t" << hash_result << endl;
+
 			delete data_buffer;
 			data_buffer = new vio_input_proto::IMUCamVec();
 		}
@@ -87,9 +114,13 @@ private:
 	long previous_timestamp = 0;
 	int frame_id = 0;
 	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
-
     const std::shared_ptr<switchboard> sb;
-	eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec> publisher;
+
+	TCPSocket socket;
+	Address server_addr;
+
+	const string data_path = filesystem::current_path().string() + "/recorded_data";
+	std::ofstream hashed_data;
 };
 
 PLUGIN_MAIN(offload_writer)

@@ -3,10 +3,13 @@
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/publisher.h>
+#include <filesystem>
+#include <fstream>
 
 #include "vio_output.pb.h"
+#include "common/network/socket.hpp"
+#include "common/network/timestamp.hpp"
+#include "common/network/net_config.hpp"
 
 using namespace ILLIXR;
 
@@ -16,11 +19,19 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
+		, client_addr(CLIENT_IP, CLIENT_PORT_2)
     { 
-		eCAL::Initialize(0, NULL, "VIO Server Writer");
-		publisher = eCAL::protobuf::CPublisher<vio_output_proto::VIOOutput>("vio_output");
-		publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
-		publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
+		if (!filesystem::exists(data_path)) {
+			if (!std::filesystem::create_directory(data_path)) {
+				std::cerr << "Failed to create data directory.";
+			}
+		}
+
+		receiver_to_sender.open(data_path + "/receiver_to_sender_time.csv");
+		hashed.open(data_path + "/hash_server_tx.txt");
+
+		last_send_time = timestamp();
+		socket.bind(Address(SERVER_IP, SERVER_PORT_2));	
 	}
 
 
@@ -36,9 +47,14 @@ public:
 
 
     void send_vio_output(switchboard::ptr<const pose_type_prof> datum) {
+		// unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		// double sec_to_trans = (curr_time - datum->rec_time.time_since_epoch().count()) / 1e9;
+		// std::cout << datum->frame_id << ": Seconds to run VIO (ms): " << sec_to_trans * 1e3 << std::endl;
+
+		/* Logging */
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double sec_to_trans = (curr_time - datum->rec_time.time_since_epoch().count()) / 1e9;
-		std::cout << datum->frame_id << ": Seconds to run VIO (ms): " << sec_to_trans * 1e3 << std::endl;
+		receiver_to_sender << datum->frame_id << "," << datum->start_time.time_since_epoch().count() << "," << sec_to_trans * 1e3 << std::endl;
 
 		// Construct slow pose for output
 		vio_output_proto::SlowPose* protobuf_slow_pose = new vio_output_proto::SlowPose();
@@ -121,15 +137,31 @@ public:
 		unsigned long long end_pose_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		vio_output_params->set_end_server_timestamp(end_pose_time);
 
+		// Prepare data delivery
+		string data_to_be_sent = vio_output_params->SerializeAsString();
+		long int now = timestamp();
+		socket.sendto(client_addr, data_to_be_sent);
+		last_send_time = now;
 
-		publisher.Send(*vio_output_params);
+		hash<std::string> hasher;
+		auto hash_result = hasher(data_to_be_sent);
+
+		hashed << datum->frame_id << "\t" << hash_result << endl;
+
 		delete vio_output_params;
     }
 
 private:
     const std::shared_ptr<switchboard> sb;
 	switchboard::reader<imu_integrator_input> _m_imu_int_input;
-	eCAL::protobuf::CPublisher<vio_output_proto::VIOOutput> publisher;
+	
+	UDPSocket socket;
+	Address client_addr;
+	long int last_send_time;
+	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
+    std::ofstream receiver_to_sender;
+	std::ofstream hashed;
+
 };
 
 PLUGIN_MAIN(server_writer)

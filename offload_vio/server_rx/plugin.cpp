@@ -1,32 +1,91 @@
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/subscriber.h>
+#include <filesystem>
+#include <fstream>
 
 #include "vio_input.pb.h"
 
+#include "common/network/socket.hpp"
+#include "common/network/net_config.hpp"
+#include "common/network/timestamp.hpp"
+
 using namespace ILLIXR;
 
-class server_reader : public plugin {
+class server_reader : public threadloop {
 public:
 	server_reader(std::string name_, phonebook* pb_)
-		: plugin{name_, pb_}
+		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_writer<imu_cam_type_prof>("imu_cam")}
+		, server_addr(SERVER_IP, SERVER_PORT_1)
+		, buffer_str("")
     { 
-		eCAL::Initialize(0, NULL, "VIO Server Reader");
-		subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
-		subscriber.AddReceiveCallback(std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
+		if (!filesystem::exists(data_path)) {
+			if (!std::filesystem::create_directory(data_path)) {
+				std::cerr << "Failed to create data directory.";
+			}
+		}
+		
+		receive_time.open(data_path + "/receive_time.csv");
+		hashed_data.open(data_path + "/hash_server_rx.txt");
+		socket.set_reuseaddr();
+		socket.bind(server_addr);
+	}
+
+	virtual skip_option _p_should_skip() override {
+		return skip_option::run;
+    }
+
+	void _p_one_iteration() override {
+		if (read_socket == NULL) {
+			socket.listen();
+			cout << "Waiting for connection!" << endl;
+			read_socket = new TCPSocket( FileDescriptor( SystemCall( "accept", ::accept( socket.fd_num(), nullptr, nullptr) ) ) ); /* Blocking operation, waiting for client to connect */
+			cout << "Connection is established with " << read_socket->peer_address().str(":") << endl;
+		} else {
+			auto now = timestamp();
+			string delimitter = "END!";
+			string recv_data = read_socket->read(); /* Blocking operation, wait for the data to come */
+			buffer_str = buffer_str + recv_data;
+			if (recv_data.size() > 0) {
+				string::size_type end_position = buffer_str.find(delimitter);
+				while (end_position != string::npos) {
+					string before = buffer_str.substr(0, end_position);
+					buffer_str = buffer_str.substr(end_position + delimitter.size());
+					// cout << "Complete response = " << before.size() << endl;
+					// process the data
+					vio_input_proto::IMUCamVec vio_input;
+					bool success = vio_input.ParseFromString(before);
+					if (!success) {
+						cout << "Error parsing the protobuf, vio input size = " << before.size() << endl;
+					} else {
+						// cout << "Received the protobuf data!" << endl;
+						hash<std::string> hasher;
+						auto hash_result = hasher(before);
+						hashed_data << vio_input.frame_id() << "\t" << hash_result << endl;
+						ReceiveVioInput(vio_input);
+					}
+					end_position = buffer_str.find(delimitter);
+				}
+				cout << "Recv time = " << timestamp() - now << endl;
+			}
+		}
+	}
+
+	~server_reader() {
+		delete read_socket;
 	}
 
 private:
 	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {	
+
+		// Logging
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
-		std::cout << vio_input.frame_id() << ": Seconds to receive pose (ms): " << sec_to_trans * 1e3 << std::endl;
+		receive_time << vio_input.frame_id() << "," << vio_input.real_timestamp() << "," << sec_to_trans * 1e3 << std::endl;
 
 		// Loop through all IMU values first then the cam frame	
 		for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
@@ -71,7 +130,14 @@ private:
     const std::shared_ptr<switchboard> sb;
 	switchboard::writer<imu_cam_type_prof> _m_imu_cam;
 
-	eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec> subscriber;
+	TCPSocket socket;
+	TCPSocket * read_socket = NULL;
+	Address server_addr;
+	string buffer_str;
+
+	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
+	std::ofstream receive_time;
+	std::ofstream hashed_data;
 };
 
 PLUGIN_MAIN(server_reader)
