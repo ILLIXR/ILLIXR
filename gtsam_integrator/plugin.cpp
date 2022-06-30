@@ -41,9 +41,11 @@ public:
         sb->schedule<imu_cam_type_prof>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type_prof> datum, size_t) {
             callback(datum);
         });
-
-        if (!std::filesystem::create_directory(data_path)) {
-            std::cerr << "Failed to create data directory.";
+        std::cout << "Data path = " << data_path << std::endl;
+        if (!std::filesystem::exists(data_path)) {
+            if (!std::filesystem::create_directory(data_path)) {
+                std::cerr << "Failed to create data directory.";
+            }
         }
         raw_csv.open(data_path + "/imu_raw.csv");
         filtered_csv.open(data_path + "/imu_filtered.csv");
