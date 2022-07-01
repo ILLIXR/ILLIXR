@@ -1,5 +1,6 @@
 // clang-format off
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+#include <vulkan/vulkan.h>
 // clang-format on
 
 #include "common/data_format.hpp"
@@ -68,20 +69,28 @@ public:
 		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
 		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 	{ 
-		sb->schedule<image_handles>(id, "image_handles", [this](switchboard::ptr<const image_handles> handles, std::size_t) {
-			if (handles->type == graphics_api::OPENGL) {
+		swapchains_ready = false;
+		sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
+			if (handle->swapchain_index > 1) {
+				return;
+			}
+			
+			assert(handle->swapchain_index == 0 || handle->swapchain_index == 1);
+
+			if (handle->type == graphics_api::OPENGL) {
 				// If the graphics backend is OpenGL, Monado's OpenGL context should be
 				// shared with ILLIXR, so the buffers are the same. 
-				for (int i = 0; i < handles->gl_handles.size(); i++) {
-					this->_m_image_handles.push_back(handles->gl_handles[i]);
-				}
-			} else if (handles->type == graphics_api::VULKAN) {
+				this->_m_image_handles[handle->swapchain_index].push_back(handle->gl_handle);
+			} else if (handle->type == graphics_api::VULKAN) {
 				// If the graphics backend is Vulkan, then we need to use the interop extensions
 				// to share the memory between the Vulkan objects and the GL buffers here.
-				this->VulkanGLInterop(handles->vk_handles);
+				this->VulkanGLInterop(handle->vk_handle, handle->swapchain_index);
 			}
 
-			this->swapchain_ready = true;
+			if (this->_m_image_handles[0].size() == (size_t) handle->num_images &&
+				this->_m_image_handles[1].size() == (size_t) handle->num_images) {
+				this->swapchains_ready = true;
+			}
 		});
 	}
 
@@ -105,8 +114,8 @@ private:
     static constexpr std::chrono::nanoseconds vsync_period{freq2period(DISPLAY_REFRESH_RATE)};
 
 	// Shared image handles between ILLIXR and the application (?)
-	std::vector<GLuint> _m_image_handles;
-	bool swapchain_ready;
+	std::array<std::vector<GLuint>, 2> _m_image_handles; 
+	bool swapchains_ready;
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -244,26 +253,36 @@ private:
 		return pixels;
 	}
 
-	void VulkanGLInterop(const std::vector<vk_image_handle>& vk_handles) {
+	// this is the inverse of what they do in Monado
+	GLuint ConvertVkFormatToGL(uint64_t vk_format) {
+		switch (vk_format) {
+			case VK_FORMAT_R8G8B8A8_UNORM: return GL_RGBA8;
+			case VK_FORMAT_R8G8B8A8_SRGB:  return GL_SRGB8_ALPHA8;
+			default: return 0;
+		}
+	}
+
+	void VulkanGLInterop(const vk_image_handle& vk_handle, int swapchain_index) {
 		[[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 		assert(gl_result && "glXMakeCurrent should not fail");
 		assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
 
-		for (int i = 0; i < vk_handles.size(); i++) {
-			const vk_image_handle& vk_image = vk_handles[i];
+		// first get the memory handle of the vulkan object
+		GLuint memory_handle;
+		GLint dedicated = GL_TRUE;
+		glCreateMemoryObjectsEXT(1, &memory_handle);
+		assert(glIsMemoryObjectEXT(memory_handle) && "GL memory handle must be created correctly");
+		glMemoryObjectParameterivEXT(memory_handle, GL_DEDICATED_MEMORY_OBJECT_EXT, &dedicated);
+		glImportMemoryFdEXT(memory_handle, vk_handle.allocation_size, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.file_descriptor);
 
-			// first get the memory handle of the vulkan object
-			GLuint memory_handle;
-			glCreateMemoryObjectsEXT(1, &memory_handle);
-			glImportMemoryFdEXT(memory_handle, vk_image.allocation_size, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_image.file_descriptor);
-
-			// then use the imported memory as the opengl texture
-			GLuint image_handle;
-			glGenTextures(1, &image_handle);
-			glBindTexture(GL_TEXTURE_2D, image_handle);
-			glTextureStorageMem2DEXT(image_handle, 1, GL_RGBA8, vk_image.width, vk_image.height, memory_handle, 0);
-			_m_image_handles.push_back(image_handle);
-		}
+		// then use the imported memory as the opengl texture
+		GLuint format = ConvertVkFormatToGL(vk_handle.format);
+		assert(format != 0 && "Given VK format not handled!");
+		GLuint image_handle;
+		glGenTextures(1, &image_handle);
+		glBindTexture(GL_TEXTURE_2D, image_handle);
+		glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
+		_m_image_handles[swapchain_index].push_back(image_handle);
 	}
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo) {
@@ -395,7 +414,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
-		if (swapchain_ready && _m_eyebuffer.get_ro_nullable() != nullptr) {
+		if (swapchains_ready && _m_eyebuffer.get_ro_nullable() != nullptr) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
@@ -616,7 +635,9 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
 #ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
-            glBindTexture(GL_TEXTURE_2D, _m_image_handles[most_recent_frame->texture_handles[eye]]);
+            [[maybe_unused]] const bool isTexture = static_cast<bool>(glIsTexture(_m_image_handles[eye][most_recent_frame->texture_handles[eye]]));
+			assert(isTexture && "The requested image is not a texture!");
+			glBindTexture(GL_TEXTURE_2D, _m_image_handles[eye][most_recent_frame->texture_handles[eye]]);
 #endif
 
             // The distortion_positions_vbo GPU buffer already contains

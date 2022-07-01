@@ -149,36 +149,53 @@ typedef struct {
 
 // Used to identify which graphics API is being used (for swapchain construction)
 enum class graphics_api {
+	NOT_SET, // is there a better way to do this, to know when vector is empty at the moment?
 	OPENGL,
 	VULKAN
 };
 
-typedef struct {
+typedef struct vk_image_handle {
+	int file_descriptor;
+	GLuint64 format;
 	GLuint64 allocation_size;
 	GLsizei width, height;
-	int file_descriptor;
+
+	vk_image_handle(int fd_, GLuint64 format_, GLuint64 alloc_size, GLsizei width_, GLsizei height_)
+		: file_descriptor{fd_}
+		, format{format_}
+		, allocation_size{alloc_size}
+		, width{width_}
+		, height{height_}
+	{}
 } vk_image_handle;
 
 // This is used to share swapchain images between ILLIXR and Monado.
 // When Monado uses its GL pipeline, it's enough to just share a context during creation.
 // Otherwise, file descriptors are needed to share the images.
-struct image_handles : public switchboard::event {
+struct image_handle : public switchboard::event {
 	graphics_api type;
-	
 	union {
-		std::vector<GLuint> gl_handles;
-		std::vector<vk_image_handle> vk_handles;
+		GLuint gl_handle;
+		vk_image_handle vk_handle;
 	};
+	// is there a better way to do this? All it does is store 
+	// the total number of swapchain images (i.e. every event has the same number)
+	// and it's only used to check if timewarp_gl has completed creating the swapchain.
+	int num_images;
+	int swapchain_index; // decides whether it's the left or right
 
-	image_handles() {}
-	image_handles(std::vector<GLuint>&& gl_handles_)
+	image_handle(unsigned int gl_handle_, int num_images_, int swapchain_index_)
 		: type{graphics_api::OPENGL}
-		, gl_handles{std::move(gl_handles_)}
+		, gl_handle{gl_handle_}
+		, num_images{num_images_}
+		, swapchain_index{swapchain_index_}
 	{}
 
-	image_handles(std::vector<vk_image_handle>&& vk_handles_)
+	image_handle(int vk_fd_, GLuint64 format, GLuint64 alloc_size, GLsizei width_, GLsizei height_, int num_images_, int swapchain_index_)
 		: type{graphics_api::VULKAN}
-		, vk_handles(std::move(vk_handles_)}
+		, vk_handle{vk_fd_, format, alloc_size, width_, height_}
+		, num_images{num_images_}
+		, swapchain_index{swapchain_index_}
 	{}
 };
 
