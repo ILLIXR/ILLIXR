@@ -69,7 +69,8 @@ public:
 		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
 		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 	{ 
-		swapchains_ready = false;
+		image_handles_ready = false;
+		swapchain_ready = false;
 		sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
 			if (handle->swapchain_index > 1) {
 				return;
@@ -80,16 +81,12 @@ public:
 			if (handle->type == graphics_api::OPENGL) {
 				// If the graphics backend is OpenGL, Monado's OpenGL context should be
 				// shared with ILLIXR, so the buffers are the same. 
-				this->_m_image_handles[handle->swapchain_index].push_back(handle->gl_handle);
-			} else if (handle->type == graphics_api::VULKAN) {
-				// If the graphics backend is Vulkan, then we need to use the interop extensions
-				// to share the memory between the Vulkan objects and the GL buffers here.
-				this->VulkanGLInterop(handle->vk_handle, handle->swapchain_index);
+				this->_m_image_handles[handle->swapchain_index].push_back(*handle);
 			}
 
 			if (this->_m_image_handles[0].size() == (size_t) handle->num_images &&
 				this->_m_image_handles[1].size() == (size_t) handle->num_images) {
-				this->swapchains_ready = true;
+				this->image_handles_ready = true;
 			}
 		});
 	}
@@ -114,8 +111,9 @@ private:
     static constexpr std::chrono::nanoseconds vsync_period{freq2period(DISPLAY_REFRESH_RATE)};
 
 	// Shared image handles between ILLIXR and the application (?)
-	std::array<std::vector<GLuint>, 2> _m_image_handles; 
-	bool swapchains_ready;
+	std::array<std::vector<image_handle>, 2> _m_image_handles;
+	std::array<std::vector<GLuint>, 2> _m_swapchain; 
+	bool image_handles_ready, swapchain_ready;
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -282,7 +280,7 @@ private:
 		glGenTextures(1, &image_handle);
 		glBindTexture(GL_TEXTURE_2D, image_handle);
 		glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
-		_m_image_handles[swapchain_index].push_back(image_handle);
+		_m_swapchain[swapchain_index].push_back(image_handle);
 	}
 
 	void BuildTimewarp(HMD::hmd_info_t* hmdInfo) {
@@ -414,7 +412,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
-		if (swapchains_ready && _m_eyebuffer.get_ro_nullable() != nullptr) {
+		if (image_handles_ready && _m_eyebuffer.get_ro_nullable() != nullptr) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
@@ -560,9 +558,26 @@ public:
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
         assert(gl_result && "glXMakeCurrent should not fail");
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        glClearColor(0, 0, 0, 0);
+		if (!swapchain_ready) {
+			assert(image_handles_ready);
+
+			bool client_opengl = _m_image_handles[0][0].type == graphics_api::OPENGL;
+			for (int i = 0; i < 2; i++) {
+				int num_images = _m_image_handles[i][0].num_images;
+				for (int j = 0; j < num_images; j++) {
+					if (client_opengl) {
+						_m_swapchain[i].push_back(_m_image_handles[i][j].gl_handle);
+					} else {
+						VulkanGLInterop(_m_image_handles[i][j].vk_handle, i);
+					}
+				}
+			}
+			swapchain_ready = true;
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glClearColor(0, 0, 0, 0);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         RAC_ERRNO_MSG("timewarp_gl after glClear");
