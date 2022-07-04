@@ -251,10 +251,11 @@ private:
 	}
 
 	// this is the inverse of what they do in Monado
+	// is there a better way to handle this?
 	GLuint ConvertVkFormatToGL(uint64_t vk_format) {
 		switch (vk_format) {
 			case VK_FORMAT_R8G8B8A8_UNORM: return GL_RGBA8;
-			case VK_FORMAT_B8G8R8A8_SRGB: 	
+			case VK_FORMAT_B8G8R8A8_SRGB: // this is swapping the channels, maybe need to fix inside of shader?
 			case VK_FORMAT_R8G8B8A8_SRGB:  return GL_SRGB8_ALPHA8;
 			default: return 0;
 		}
