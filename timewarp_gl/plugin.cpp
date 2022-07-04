@@ -78,11 +78,10 @@ public:
 			
 			assert(handle->swapchain_index == 0 || handle->swapchain_index == 1);
 
-			if (handle->type == graphics_api::OPENGL) {
-				// If the graphics backend is OpenGL, Monado's OpenGL context should be
-				// shared with ILLIXR, so the buffers are the same. 
-				this->_m_image_handles[handle->swapchain_index].push_back(*handle);
-			}
+
+			// If the graphics backend is OpenGL, Monado's OpenGL context should be
+			// shared with ILLIXR, so the buffers are the same. 
+			this->_m_image_handles[handle->swapchain_index].push_back(*handle);
 
 			if (this->_m_image_handles[0].size() == (size_t) handle->num_images &&
 				this->_m_image_handles[1].size() == (size_t) handle->num_images) {
@@ -255,6 +254,7 @@ private:
 	GLuint ConvertVkFormatToGL(uint64_t vk_format) {
 		switch (vk_format) {
 			case VK_FORMAT_R8G8B8A8_UNORM: return GL_RGBA8;
+			case VK_FORMAT_B8G8R8A8_SRGB: 	
 			case VK_FORMAT_R8G8B8A8_SRGB:  return GL_SRGB8_ALPHA8;
 			default: return 0;
 		}
