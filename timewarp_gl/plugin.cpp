@@ -74,18 +74,8 @@ private:
     const std::shared_ptr<xlib_gl_extended_window> xwin;
     const std::shared_ptr<const RelativeClock>     _m_clock;
 
-    static constexpr int SCREEN_WIDTH  = ILLIXR::FB_WIDTH;
-    static constexpr int SCREEN_HEIGHT = ILLIXR::FB_HEIGHT;
-
-    static constexpr double DISPLAY_REFRESH_RATE  = 60.0;
-    static constexpr double FPS_WARNING_TOLERANCE = 0.5;
-
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
-    static constexpr double DELAY_FRACTION = 0.8;
-
-    static constexpr double RUNNING_AVG_ALPHA = 0.1;
-
-    static constexpr std::chrono::nanoseconds vsync_period{freq2period(DISPLAY_REFRESH_RATE)};
+    static constexpr double DELAY_FRACTION = 0.9;
 
     // Switchboard plug for application eye buffer.
     switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -107,7 +97,6 @@ private:
     time_point time_last_swap;
 
     HMD::hmd_info_t  hmd_info;
-    HMD::body_info_t body_info;
 
     // Eye sampler array
     GLuint eye_sampler_0;
@@ -149,10 +138,7 @@ private:
     Eigen::Matrix4f basicProjection;
 
     // Hologram call data
-    std::size_t _hologram_seq{0};
-
-    // Sequence number of offload data
-    long long _offload_seq{0};
+    ullong _hologram_seq{0};
 
     bool disable_warp;
 
@@ -169,48 +155,28 @@ private:
     duration offload_duration;
 
     GLubyte* readTextureImage() {
-        GLubyte* pixels = new GLubyte[SCREEN_WIDTH * SCREEN_HEIGHT * 3];
+        GLubyte* pixels = new GLubyte[display_width * display_height * 3];
 
         // Start timer
         time_point startGetTexTime = _m_clock->now();
 
         // Enable PBO buffer
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-        err = glGetError();
-        if (err) {
-            std::cerr << "Timewarp: glBindBuffer to PBO_buffer failed" << std::endl;
-        }
 
         // Read texture image to PBO buffer
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) 0);
-        err = glGetError();
-        if (err) {
-            std::cerr << "Timewarp: glGetTexImage failed" << std::endl;
-        }
 
         // Transfer texture image from GPU to Pinned Memory(CPU)
         GLubyte* ptr = (GLubyte*) glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
-        err          = glGetError();
-        if (err) {
-            std::cerr << "Timewarp: glMapNamedBuffer failed" << std::endl;
-        }
 
         // Copy texture to CPU memory
-        memcpy(pixels, ptr, SCREEN_WIDTH * SCREEN_HEIGHT * 3);
+        memcpy(pixels, ptr, display_width * display_height * 3);
 
         // Unmap the buffer
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-        err = glGetError();
-        if (err) {
-            std::cerr << "Timewarp: glUnmapBuffer failed" << std::endl;
-        }
 
         // Unbind the buffer
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-        err = glGetError();
-        if (err) {
-            std::cerr << "Timewarp: glBindBuffer to 0 failed" << std::endl;
-        }
 
         // Record the image collection time
         offload_duration = _m_clock->now() - startGetTexTime;
@@ -298,9 +264,7 @@ private:
             }
         }
         // Construct a basic perspective projection
-        math_util::projection_fov(&basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.1f, 0.0f);
-
-        RAC_ERRNO_MSG("timewarp_gl at bottom of build timewarp");
+        math_util::projection_fov(&basicProjection, display_fov_x, display_fov_x, display_fov_y, display_fov_y, 0.1f, 0.0f);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -331,7 +295,7 @@ private:
     // Get the estimated time of the next swap/next Vsync.
     // This is an estimate, used to wait until *just* before vsync.
     time_point GetNextSwapTimeEstimate() {
-        return time_last_swap + vsync_period;
+        return time_last_swap + display_period;
     }
 
     // Get the estimated amount of time to put the CPU thread to sleep,
@@ -348,7 +312,6 @@ public:
         // so don't push your luck (i.e. don't wait too long....) Tradeoff with
         // MTP here. More you wait, closer to the display sync you sample the pose.
 
-        // TODO: poll GLX window events
         std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
         if (_m_eyebuffer.get_ro_nullable() != nullptr) {
             return skip_option::run;
@@ -360,16 +323,13 @@ public:
     }
 
     virtual void _p_thread_setup() override {
-        RAC_ERRNO_MSG("timewarp_gl at start of _p_thread_setup");
-
         // Wait a vsync for gldemo to go first.
         // This first time_last_swap will be "out of phase" with actual vsync.
         // The second one should be on the dot, since we don't exit the first until actual vsync.
-        time_last_swap = _m_clock->now() + vsync_period;
+        time_last_swap = _m_clock->now() + display_period;
 
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(SCREEN_WIDTH, SCREEN_HEIGHT, &hmd_info);
-        HMD::GetDefaultBodyInfo(&body_info);
+        HMD::GetDefaultHmdInfo(display_width, display_height, &hmd_info);
 
         // Construct timewarp meshes and other data
         BuildTimewarp(&hmd_info);
@@ -379,11 +339,9 @@ public:
         assert(gl_result_0 && "glXMakeCurrent should not fail");
 
         // set swap interval for 1
-        RAC_ERRNO_MSG("timewarp_gl before vsync swap interval set");
         glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
         glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glXSwapIntervalEXT");
         glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
-        RAC_ERRNO_MSG("timewarp_gl after vsync swap interval set");
 
         // Init and verify GLEW
         glewExperimental      = GL_TRUE;
@@ -483,10 +441,8 @@ public:
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-            glBufferData(GL_PIXEL_PACK_BUFFER, SCREEN_WIDTH * SCREEN_HEIGHT * 3, 0, GL_STREAM_DRAW);
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_width * display_height * 3, 0, GL_STREAM_DRAW);
         }
-
-        RAC_ERRNO_MSG("timewarp_gl before glXMakeCurrent");
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");
@@ -497,12 +453,9 @@ public:
         assert(gl_result && "glXMakeCurrent should not fail");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        glViewport(0, 0, display_width, display_height);
         glClearColor(0, 0, 0, 0);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        RAC_ERRNO_MSG("timewarp_gl after glClear");
-
         glDepthFunc(GL_LEQUAL);
 
         switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
@@ -510,35 +463,26 @@ public:
         // Use the timewarp program
         glUseProgram(timewarpShaderProgram);
 
-        // Generate "starting" view matrix, from the pose
-        // sampled at the time of rendering the frame.
+        // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
         Eigen::Matrix4f viewMatrix   = Eigen::Matrix4f::Identity();
         viewMatrix.block(0, 0, 3, 3) = most_recent_frame->render_pose.pose.orientation.toRotationMatrix();
-        // math_util::view_from_quaternion(&viewMatrix, most_recent_frame->render_pose.pose.orientation);
 
-        // We simulate two asynchronous view matrices,
-        // one at the beginning of display refresh,
-        // and one at the end of display refresh.
-        // The distortion shader will lerp between
-        // these two predictive view transformations
-        // as it renders across the horizontal view,
+        // We simulate two asynchronous view matrices, one at the beginning of
+        // display refresh, and one at the end of display refresh. The
+        // distortion shader will lerp between these two predictive view
+        // transformations as it renders across the horizontal view,
         // compensating for display panel refresh delay (wow!)
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        // TODO: Right now, this samples the latest pose published to the "pose" topic.
-        // However, this should really be polling the high-frequency pose prediction topic,
-        // given a specified timestamp!
         const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
-        // TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
-        // and we don't need to visualize this right now (we also don't have prediction setup yet!)
+        // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for `display_period` later
         viewMatrixEnd = viewMatrixBegin;
 
-        // Calculate the timewarp transformation matrices.
-        // These are a product of the last-known-good view matrix
-        // and the predictive transforms.
+        // Calculate the timewarp transformation matrices. These are a product
+        // of the last-known-good view matrix and the predictive transforms.
         Eigen::Matrix4f timeWarpStartTransform4x4;
         Eigen::Matrix4f timeWarpEndTransform4x4;
 
@@ -616,6 +560,7 @@ public:
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
         }
 
+        glFinish();
         glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
@@ -626,21 +571,18 @@ public:
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
         }
 
-        if (time_since_render > vsync_period) {
+        if (time_since_render > display_period) {
             std::cout << "\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!" << std::endl;
         }
 #endif
         // Call Hologram
         _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
 
-        // Call swap buffers; when vsync is enabled, this will return to the CPU thread once
-        //     the buffers have been successfully swapped.
-        // TODO: GLX V SYNCH SWAP BUFFER
+        // Call swap buffers; when vsync is enabled, this will return to the
+        // CPU thread once the buffers have been successfully swapped.
         [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
-        RAC_ERRNO_MSG("timewarp_gl before glXSwapBuffers");
         glXSwapBuffers(xwin->dpy, xwin->win);
-        RAC_ERRNO_MSG("timewarp_gl after glXSwapBuffers");
 
         // The swap time needs to be obtained and published as soon as possible
         time_last_swap                              = _m_clock->now();
@@ -668,8 +610,7 @@ public:
 
             // Publish image and pose
             _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
-                texture_pose{static_cast<int>(++_offload_seq), /// TODO: Should texture_pose.seq be a long long too?
-                             offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
+                texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
                              most_recent_frame->render_pose.pose.orientation}));
         }
 
