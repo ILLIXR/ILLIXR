@@ -169,22 +169,13 @@ struct rendered_frame : public switchboard::event {
 };
 
 struct hologram_input : public switchboard::event {
-    int seq;
+    ullong seq;
 
     hologram_input() { }
 
-    hologram_input(int seq_)
+    hologram_input(ullong seq_)
         : seq{seq_} { }
 };
-
-typedef struct {
-    int seq;
-} imu_integrator_seq;
-
-/* I use "accel" instead of "3-vector" as a datatype, because
-this checks that you meant to use an acceleration in a certain
-place. */
-struct accel { };
 
 // High-level HMD specification, timewarp plugin
 // may/will calculate additional HMD info based on these specifications
@@ -203,7 +194,6 @@ struct hmd_physical_info {
 };
 
 struct texture_pose : public switchboard::event {
-    int                seq; /// TODO: Should texture_pose.seq be a long long
     duration           offload_duration;
     unsigned char*     image;
     time_point         pose_time;
@@ -213,10 +203,9 @@ struct texture_pose : public switchboard::event {
 
     texture_pose() { }
 
-    texture_pose(int seq_, duration offload_duration_, unsigned char* image_, time_point pose_time_, Eigen::Vector3f position_,
+    texture_pose(duration offload_duration_, unsigned char* image_, time_point pose_time_, Eigen::Vector3f position_,
                  Eigen::Quaternionf latest_quaternion_, Eigen::Quaternionf render_quaternion_)
-        : seq{seq_}
-        , offload_duration{offload_duration_}
+        : offload_duration{offload_duration_}
         , image{image_}
         , pose_time{pose_time_}
         , position{position_}
