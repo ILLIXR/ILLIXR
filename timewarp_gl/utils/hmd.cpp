@@ -121,7 +121,3 @@ void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixels
     hmd_info->chromaticAberration[2]    = 0.024f;
     hmd_info->chromaticAberration[3]    = 0.0f;
 }
-
-void HMD::GetDefaultBodyInfo(body_info_t* body_info) {
-    body_info->interpupillaryDistance = 0.0640f; // average interpupillary distance
-}
