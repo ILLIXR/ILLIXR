@@ -4,6 +4,7 @@ const char* const timeWarpChromaticVertexProgramGLSL =
     "#version " GLSL_VERSION "\n"
     "uniform highp mat4x4 TimeWarpStartTransform;\n"
     "uniform highp mat4x4 TimeWarpEndTransform;\n"
+    "uniform bool flipY;\n"
     "in highp vec3 vertexPosition;\n"
     "in highp vec2 vertexUv0;\n"
     "in highp vec2 vertexUv1;\n"
@@ -33,7 +34,13 @@ const char* const timeWarpChromaticVertexProgramGLSL =
     "	fragmentUv0 = curUv0.xy * ( 1.0 / max( curUv0.z, 0.00001 ) );\n"
     "	fragmentUv1 = curUv1.xy * ( 1.0 / max( curUv1.z, 0.00001 ) );\n"
     "	fragmentUv2 = curUv2.xy * ( 1.0 / max( curUv2.z, 0.00001 ) );\n"
-    "}\n";
+    "\n"
+	"	if (flipY) {\n"
+	"		fragmentUv0.y = 1 - fragmentUv0.y;\n"
+	"		fragmentUv1.y = 1 - fragmentUv1.y;\n"
+	"		fragmentUv2.y = 1 - fragmentUv2.y;\n"
+	"	}\n"
+	"}\n";
 
 const char* const timeWarpChromaticFragmentProgramGLSL =
     "#version " GLSL_VERSION "\n"

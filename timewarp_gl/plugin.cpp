@@ -109,7 +109,8 @@ private:
 
     static constexpr std::chrono::nanoseconds vsync_period{freq2period(DISPLAY_REFRESH_RATE)};
 
-	// Shared image handles between ILLIXR and the application (?)
+	// Shared image handles between ILLIXR and the application
+	graphics_api client_backend;
 	std::array<std::vector<image_handle>, 2> _m_image_handles;
 	std::array<std::vector<GLuint>, 2> _m_swapchain; 
 	bool image_handles_ready, swapchain_ready;
@@ -172,6 +173,8 @@ private:
     // transform matrices (3x4 uniforms)
     GLuint tw_start_transform_unif;
     GLuint tw_end_transform_unif;
+    // bool uniform to check if the Y axis needs to be inverted 
+	GLuint flip_y_unif;
     // Basic perspective projection matrix
     Eigen::Matrix4f basicProjection;
 
@@ -492,9 +495,11 @@ public:
         eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
         eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
 
-        // Config distortion mesh position vbo
-        glGenBuffers(1, &distortion_positions_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
+		flip_y_unif = glGetUniformLocation(timewarpShaderProgram, "flipY");
+
+		// Config distortion mesh position vbo
+		glGenBuffers(1, &distortion_positions_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
 
         const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices;
 
@@ -567,11 +572,11 @@ public:
 		if (!swapchain_ready) {
 			assert(image_handles_ready);
 
-			bool client_opengl = _m_image_handles[0][0].type == graphics_api::OPENGL;
+			client_backend = _m_image_handles[0][0].type;
 			for (int i = 0; i < 2; i++) {
 				int num_images = _m_image_handles[i][0].num_images;
 				for (int j = 0; j < num_images; j++) {
-					if (client_opengl) {
+					if (client_backend == graphics_api::OPENGL) {
 						_m_swapchain[i].push_back(_m_image_handles[i][j].gl_handle);
 					} else {
 						VulkanGLInterop(_m_image_handles[i][j].vk_handle, i);
@@ -633,6 +638,9 @@ public:
 
         glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*) (timeWarpStartTransform4x4.data()));
         glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE, (GLfloat*) (timeWarpEndTransform4x4.data()));
+
+        // Flip the Y axis if the client is using a Vulkan backend
+		glUniform1i(flip_y_unif, client_backend == graphics_api::VULKAN);
 
         // Debugging aid, toggle switch for rendering in the fragment shader
         glUniform1i(glGetUniformLocation(timewarpShaderProgram, "ArrayIndex"), 0);
