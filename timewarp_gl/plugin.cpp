@@ -252,10 +252,13 @@ private:
 
 	// this is the inverse of what they do in Monado
 	// is there a better way to handle this?
-	GLuint ConvertVkFormatToGL(uint64_t vk_format) {
+	GLuint ConvertVkFormatToGL(uint64_t vk_format, GLint swizzle_mask[]) {
 		switch (vk_format) {
 			case VK_FORMAT_R8G8B8A8_UNORM: return GL_RGBA8;
-			case VK_FORMAT_B8G8R8A8_SRGB: // this is swapping the channels, maybe need to fix inside of shader?
+			case VK_FORMAT_B8G8R8A8_SRGB: {
+				swizzle_mask[0] = GL_BLUE;
+				swizzle_mask[2] = GL_RED;
+			}
 			case VK_FORMAT_R8G8B8A8_SRGB:  return GL_SRGB8_ALPHA8;
 			default: return 0;
 		}
@@ -275,12 +278,14 @@ private:
 		glImportMemoryFdEXT(memory_handle, vk_handle.allocation_size, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.file_descriptor);
 
 		// then use the imported memory as the opengl texture
-		GLuint format = ConvertVkFormatToGL(vk_handle.format);
+		GLint swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};
+		GLuint format = ConvertVkFormatToGL(vk_handle.format, swizzle_mask);
 		assert(format != 0 && "Given VK format not handled!");
 		GLuint image_handle;
 		glGenTextures(1, &image_handle);
 		glBindTexture(GL_TEXTURE_2D, image_handle);
 		glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
+		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 		_m_swapchain[swapchain_index].push_back(image_handle);
 	}
 
