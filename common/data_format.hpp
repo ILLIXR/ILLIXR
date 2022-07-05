@@ -149,7 +149,6 @@ typedef struct {
 
 // Used to identify which graphics API is being used (for swapchain construction)
 enum class graphics_api {
-	NOT_SET, // is there a better way to do this, to know when vector is empty at the moment?
 	OPENGL,
 	VULKAN
 };
