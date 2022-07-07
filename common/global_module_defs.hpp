@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include "relative_clock.hpp"
 
 namespace ILLIXR {
-	
+
 // Display width in pixels
 static constexpr unsigned display_width = 2560;
 
@@ -34,9 +34,9 @@ static constexpr float ipd = 0.064f;
  * @brief Convert a string containing a (python) boolean to the bool type
  */
 inline bool str_to_bool(std::string var) {
-    return (var == "True")  ? true  :
-           (var == "False") ? false :
-           throw std::runtime_error("Invalid conversion from std::string to bool");
+    return (var == "True") ? true
+        : (var == "False") ? false
+                           : throw std::runtime_error("Invalid conversion from std::string to bool");
 }
 
 /// Temporary environment variable getter. Not needed once #198 is merged.
@@ -48,4 +48,4 @@ inline std::string getenv_or(std::string var, std::string default_) {
     }
 }
 
-} /// namespace ILLIXR
+} // namespace ILLIXR

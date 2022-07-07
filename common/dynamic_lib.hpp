@@ -1,19 +1,20 @@
 #pragma once
 
+#include <algorithm>
 #include <dlfcn.h>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <functional>
-#include <algorithm>
 
-#include "global_module_defs.hpp"
 #include "error_util.hpp"
+#include "global_module_defs.hpp"
 
 namespace ILLIXR {
 
 using void_ptr = std::unique_ptr<void, std::function<void(void*)>>;
+
 /*
 Usage:
     void* thing;
@@ -25,18 +26,11 @@ Usage:
 
 class dynamic_lib {
 private:
-    dynamic_lib(
-        void_ptr&& handle
-        , const std::string& lib_path = ""
-    ) : _m_handle{std::move(handle)}
-      , _m_lib_path{std::move(lib_path)}
-    { }
+    dynamic_lib(void_ptr&& handle, const std::string& lib_path = "")
+        : _m_handle{std::move(handle)}, _m_lib_path{std::move(lib_path)} { }
 
 public:
-    dynamic_lib(dynamic_lib&& other)
-        : _m_handle{std::move(other._m_handle)}
-        , _m_lib_path{std::move(other._m_lib_path)}
-    { }
+    dynamic_lib(dynamic_lib&& other) : _m_handle{std::move(other._m_handle)}, _m_lib_path{std::move(other._m_lib_path)} { }
 
     dynamic_lib& operator=(dynamic_lib&& other) {
         if (this != &other) {
@@ -67,23 +61,23 @@ public:
         RAC_ERRNO_MSG("dynamic_lib after dlopen");
 
         if ((error = dlerror()) || !handle) {
-            throw std::runtime_error{
-                "dlopen(\"" + std::string{path} + "\"): " + (error == nullptr ? "NULL" : std::string{error})
-            };
+            throw std::runtime_error{"dlopen(\"" + std::string{path} +
+                                     "\"): " + (error == nullptr ? "NULL" : std::string{error})};
         }
 
         return dynamic_lib{
-            void_ptr{handle, [](void* handle) {
-                RAC_ERRNO();
+            void_ptr{handle,
+                     [](void* handle) {
+                         RAC_ERRNO();
 
-                char* error;
-                int ret = dlclose(handle);
-                if ((error = dlerror()) || ret) {
-                    const std::string msg_error {"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
-                    std::cerr << "[dynamic_lib] " << msg_error << std::endl;
-                    throw std::runtime_error{msg_error};
-                }
-            }},
+                         char* error;
+                         int   ret = dlclose(handle);
+                         if ((error = dlerror()) || ret) {
+                             const std::string msg_error{"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
+                             std::cerr << "[dynamic_lib] " << msg_error << std::endl;
+                             throw std::runtime_error{msg_error};
+                         }
+                     }},
             std::string{path} /// Keep the dynamic lib name for debugging
         };
     }
@@ -94,14 +88,12 @@ public:
         char* error;
         void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
         if ((error = dlerror())) {
-            throw std::runtime_error{
-                "dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})
-            };
+            throw std::runtime_error{"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
         }
         return symbol;
     }
 
-    template <typename T>
+    template<typename T>
     const T get(const std::string& symbol_name) const {
         const void* obj = (*this)[symbol_name];
         // return reinterpret_cast<const T>((*this)[symbol_name]);
@@ -113,4 +105,4 @@ private:
     std::string _m_lib_path;
 };
 
-}
+} // namespace ILLIXR

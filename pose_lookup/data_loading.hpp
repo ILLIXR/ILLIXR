@@ -1,17 +1,15 @@
-#include <map>
+#include <eigen3/Eigen/Dense>
 #include <fstream>
-#include <string>
-#include <optional>
+#include <map>
 #include <math.h>
-
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-#include <eigen3/Eigen/Dense>
+#include <optional>
+#include <string>
 
-#include "csv_iterator.hpp"
 #include "common/error_util.hpp"
-
+#include "csv_iterator.hpp"
 
 // timestamp
 // p_RS_R_x [m], p_RS_R_y [m], p_RS_R_z [m]
@@ -24,30 +22,29 @@ using namespace ILLIXR;
 
 typedef pose_type sensor_types;
 
-static
-std::map<ullong, sensor_types>
-load_data() {
-	const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
-	if (!illixr_data_c_str) {
+static std::map<ullong, sensor_types> load_data() {
+    const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
+    if (!illixr_data_c_str) {
         ILLIXR::abort("Please define ILLIXR_DATA");
-	}
-	std::string illixr_data = std::string{illixr_data_c_str};
+    }
+    std::string illixr_data = std::string{illixr_data_c_str};
 
-	std::map<ullong, sensor_types> data;
+    std::map<ullong, sensor_types> data;
 
-	std::ifstream gt_file {illixr_data + "/state_groundtruth_estimate0/data.csv"};
+    std::ifstream gt_file{illixr_data + "/state_groundtruth_estimate0/data.csv"};
 
-	if (!gt_file.good()) {
-		std::cerr << "${ILLIXR_DATA}/state_groundtruth_estimate0/data.csv (" << illixr_data <<  "/state_groundtruth_estimate0/data.csv) is not a good path" << std::endl;
+    if (!gt_file.good()) {
+        std::cerr << "${ILLIXR_DATA}/state_groundtruth_estimate0/data.csv (" << illixr_data
+                  << "/state_groundtruth_estimate0/data.csv) is not a good path" << std::endl;
         ILLIXR::abort();
-	}
+    }
 
-	for(CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
-		ullong t = std::stoull(row[0]);
-		Eigen::Vector3f av {std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
-		Eigen::Quaternionf la {std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
-		data[t] = {{}, av, la};
-	}
+    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+        ullong             t = std::stoull(row[0]);
+        Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
+        Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
+        data[t] = {{}, av, la};
+    }
 
-	return data;
+    return data;
 }
