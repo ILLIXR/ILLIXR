@@ -50,15 +50,15 @@ ForEachMacros:
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
-    Priority:        1
+    Priority:        3
     SortPriority:    0
   - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
     Priority:        2
     SortPriority:    0
   - Regex:           '.*'
-    Priority:        3
+    Priority:        1
     SortPriority:    0
-IncludeIsMainRegex: '(Test)?$'
+IncludeIsMainRegex: ''
 IncludeIsMainSourceRegex: ''
 IndentCaseBlocks: false
 IndentCaseLabels: false
