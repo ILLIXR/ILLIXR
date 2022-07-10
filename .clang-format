@@ -49,15 +49,10 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
-    Priority:        3
-    SortPriority:    0
-  - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
-    Priority:        2
-    SortPriority:    0
-  - Regex:           '.*'
+  - Regex:           '^"'
     Priority:        1
-    SortPriority:    0
+  - Regex:           '^<'
+    Priority:        2
 IncludeIsMainRegex: ''
 IncludeIsMainSourceRegex: ''
 IndentCaseBlocks: false
