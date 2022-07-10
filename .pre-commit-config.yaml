@@ -1,4 +1,4 @@
-# clang-format
+# clang-format pre-commit hook
 repos:
     - repo: https://github.com/pre-commit/mirrors-clang-format
       rev: v14.0.6
@@ -7,7 +7,7 @@ repos:
             types_or: [c++, c, cuda]
             args: [--style=file]
 
-# CI
+# Run above hook automatically in CI (GitHub only for now)
 ci:
     autofix_commit_msg: |
         [pre-commit.ci] Run clang-format
