@@ -252,7 +252,7 @@ private:
 		return pixels;
 	}
 
-	GLuint ConvertVkFormatToGL(uint64_t vk_format, GLint swizzle_mask[]) {
+	GLuint ConvertVkFormatToGL(int64_t vk_format, GLint swizzle_mask[]) {
 		switch (vk_format) {
 			case VK_FORMAT_R8G8B8A8_UNORM: return GL_RGBA8;
 			case VK_FORMAT_B8G8R8A8_SRGB: {
@@ -572,7 +572,7 @@ public:
 			client_backend = _m_image_handles[0][0].type;
 			for (int eye = 0; eye < 2; eye++) {
 				uint32_t num_images = _m_image_handles[eye][0].num_images;
-				for (int image_index = 0; image_index < num_images; image_index++) {
+				for (uint32_t image_index = 0; image_index < num_images; image_index++) {
 					if (client_backend == graphics_api::OPENGL) {
 						_m_swapchain[eye].push_back(_m_image_handles[eye][image_index].gl_handle);
 					} else {
