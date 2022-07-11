@@ -16,6 +16,7 @@
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
 
+#include <atomic>
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -72,15 +73,12 @@ public:
 		image_handles_ready = false;
 		swapchain_ready = false;
 		sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
+			// only 2 swapchains (for the left and right eye) are supported for now.
 			if (handle->swapchain_index > 1) {
 				return;
 			}
 			
 			assert(handle->swapchain_index == 0 || handle->swapchain_index == 1);
-
-
-			// If the graphics backend is OpenGL, Monado's OpenGL context should be
-			// shared with ILLIXR, so the buffers are the same. 
 			this->_m_image_handles[handle->swapchain_index].push_back(*handle);
 
 			if (this->_m_image_handles[0].size() == (size_t) handle->num_images &&
@@ -111,9 +109,10 @@ private:
 
 	// Shared image handles between ILLIXR and the application
 	graphics_api client_backend;
+	std::atomic<bool> image_handles_ready;
+	bool swapchain_ready;
 	std::array<std::vector<image_handle>, 2> _m_image_handles;
 	std::array<std::vector<GLuint>, 2> _m_swapchain; 
-	bool image_handles_ready, swapchain_ready;
 
 	// Switchboard plug for application eye buffer.
 	switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -253,8 +252,6 @@ private:
 		return pixels;
 	}
 
-	// this is the inverse of what they do in Monado
-	// is there a better way to handle this?
 	GLuint ConvertVkFormatToGL(uint64_t vk_format, GLint swizzle_mask[]) {
 		switch (vk_format) {
 			case VK_FORMAT_R8G8B8A8_UNORM: return GL_RGBA8;
@@ -421,7 +418,7 @@ public:
 
 		// TODO: poll GLX window events
 		std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
-		if (image_handles_ready && _m_eyebuffer.get_ro_nullable() != nullptr) {
+		if (image_handles_ready.load() && _m_eyebuffer.get_ro_nullable() != nullptr) {
 			return skip_option::run;
 		} else {
 			// Null means system is nothing has been pushed yet
@@ -573,13 +570,13 @@ public:
 			assert(image_handles_ready);
 
 			client_backend = _m_image_handles[0][0].type;
-			for (int i = 0; i < 2; i++) {
-				int num_images = _m_image_handles[i][0].num_images;
-				for (int j = 0; j < num_images; j++) {
+			for (int eye = 0; eye < 2; eye++) {
+				uint32_t num_images = _m_image_handles[eye][0].num_images;
+				for (int image_index = 0; image_index < num_images; image_index++) {
 					if (client_backend == graphics_api::OPENGL) {
-						_m_swapchain[i].push_back(_m_image_handles[i][j].gl_handle);
+						_m_swapchain[eye].push_back(_m_image_handles[eye][image_index].gl_handle);
 					} else {
-						VulkanGLInterop(_m_image_handles[i][j].vk_handle, i);
+						VulkanGLInterop(_m_image_handles[eye][image_index].vk_handle, eye);
 					}
 				}
 			}
@@ -664,9 +661,9 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
 #ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
-            [[maybe_unused]] const bool isTexture = static_cast<bool>(glIsTexture(_m_image_handles[eye][most_recent_frame->texture_handles[eye]]));
+            [[maybe_unused]] const bool isTexture = static_cast<bool>(glIsTexture(_m_swapchain[eye][most_recent_frame->swapchain_indices[eye]]));
 			assert(isTexture && "The requested image is not a texture!");
-			glBindTexture(GL_TEXTURE_2D, _m_image_handles[eye][most_recent_frame->texture_handles[eye]]);
+			glBindTexture(GL_TEXTURE_2D, _m_swapchain[eye][most_recent_frame->swapchain_indices[eye]]);
 #endif
 
             // The distortion_positions_vbo GPU buffer already contains
