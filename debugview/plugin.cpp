@@ -1,3 +1,8 @@
+// clang-format off
+#include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
+#include <GLFW/glfw3.h> // Also loading first, just to be safe
+// clang-format on
+
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -5,13 +10,10 @@
 #include <functional>
 #include <string_view>
 
-// IMGUI Immediate-mode GUI library
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"

@@ -1,10 +1,13 @@
+// clang-format off
+#include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+// clang-format on
+
 #include <chrono>
 #include <future>
 #include <iostream>
 #include <thread>
 #include <cmath>
 #include <array>
-#include <GL/glew.h>
 #include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
