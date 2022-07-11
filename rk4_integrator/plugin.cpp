@@ -89,8 +89,8 @@ private:
         // 	cam_count++;
         // 	last_cam_time = input_values->last_cam_integration_time;
         // 	std::cout << "Num IMUs recieved since last cam: " << counter << " Diff between new cam and latest IMU: "
-        // 			  << timestamp - last_cam_time << " Expected IMUs recieved VS Actual: " << cam_count*10 << ", " << total_imu <<
-        // std::endl; 	counter = 0;
+        // 			  << timestamp - last_cam_time << " Expected IMUs recieved VS Actual: " << cam_count*10 << ", " << total_imu
+        // << std::endl; 	counter = 0;
         // }
         // counter++;
 
