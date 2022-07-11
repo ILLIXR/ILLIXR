@@ -155,11 +155,12 @@ enum class graphics_api {
 
 typedef struct vk_image_handle {
 	int file_descriptor;
-	GLuint64 format;
-	GLuint64 allocation_size;
-	GLsizei width, height;
+	int64_t format;
+	size_t allocation_size;
+	uint32_t width;
+	uint32_t height;
 
-	vk_image_handle(int fd_, GLuint64 format_, GLuint64 alloc_size, GLsizei width_, GLsizei height_)
+	vk_image_handle(int fd_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
 		: file_descriptor{fd_}
 		, format{format_}
 		, allocation_size{alloc_size}
@@ -177,20 +178,20 @@ struct image_handle : public switchboard::event {
 		GLuint gl_handle;
 		vk_image_handle vk_handle;
 	};
-	// is there a better way to do this? All it does is store 
-	// the total number of swapchain images (i.e. every event has the same number)
-	// and it's only used to check if timewarp_gl has completed creating the swapchain.
-	int num_images;
-	int swapchain_index; // decides whether it's the left or right
+	uint32_t num_images;
 
-	image_handle(unsigned int gl_handle_, int num_images_, int swapchain_index_)
+	// This decides whether it's the left or right swapchain,
+	// but it may be used in the future to support more composition layers as well.
+	uint32_t swapchain_index;
+
+	image_handle(GLuint gl_handle_, uint32_t num_images_, uint32_t swapchain_index_)
 		: type{graphics_api::OPENGL}
 		, gl_handle{gl_handle_}
 		, num_images{num_images_}
 		, swapchain_index{swapchain_index_}
 	{}
 
-	image_handle(int vk_fd_, GLuint64 format, GLuint64 alloc_size, GLsizei width_, GLsizei height_, int num_images_, int swapchain_index_)
+	image_handle(int vk_fd_, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_, uint32_t swapchain_index_)
 		: type{graphics_api::VULKAN}
 		, vk_handle{vk_fd_, format, alloc_size, width_, height_}
 		, num_images{num_images_}
@@ -202,18 +203,18 @@ struct image_handle : public switchboard::event {
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-	std::array<int, 2> texture_handles; // Does not change between swaps in swapchain
+	std::array<int, 2> swapchain_indices; // Index of image rendered for left and right swapchain
 	std::array<GLuint, 2> swap_indices; // Which element of the swapchain
 	fast_pose_type render_pose; // The pose used when rendering this frame.
 	time_point sample_time;
 	time_point render_time;
 	rendered_frame() { }
-	rendered_frame(std::array<int, 2>&& texture_handles_, 
+	rendered_frame(std::array<int, 2>&& swapchain_indices_, 
 					std::array<GLuint, 2>&& swap_indices_,
 					fast_pose_type render_pose_,
 					time_point sample_time_,
 					time_point render_time_)
-		: texture_handles{std::move(texture_handles_)}
+		: swapchain_indices{std::move(swapchain_indices_)}
 		, swap_indices{std::move(swap_indices_)}
 		, render_pose(render_pose_)
 		, sample_time(sample_time_)
