@@ -147,11 +147,6 @@ private:
     // PBO buffer for reading texture image
     GLuint PBO_buffer;
 
-    // Error code of OpenGL calls
-    // No other errors are recorded until glGetError is called
-    // The flag is reset to GL_NO_ERROR after a glGetError call
-    GLenum err;
-
     duration offload_duration;
 
     GLubyte* readTextureImage() {
