@@ -237,15 +237,15 @@ private:
 
     time_point lastTime;
 
-    int createSharedEyebuffer(GLuint* texture_handle) {
+    void createSharedEyebuffer(GLuint* texture_handle) {
         // Create the shared eye texture handle
         glGenTextures(1, texture_handle);
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
 
         // Set the texture parameters for the texture that the FBO will be mapped into
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_width, display_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
