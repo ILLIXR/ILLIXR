@@ -12,13 +12,13 @@ plugin_groups:
       #################################################################
 
       # Option 1: Uncomment if OpenVINS hasnt been fetched from remote (Default).
-      # - name: OpenVINS
-      #   path:
+      - name: OpenVINS
+        path: ../open_vins
       #      git_repo: https://github.com/ILLIXR/open_vins.git
       #      version: "offload-timing-stable"
 
       # Option 2: Uncomment if you made changes to OpenVINS and want those to be reflected in the subsequent ILLIXR runs.
-      - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
+      # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
 
       # Option 3: Uncomment if Kimera hasnt been fetched from remote.
       # - name: Kimera-VIO/
