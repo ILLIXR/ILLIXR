@@ -54,7 +54,9 @@ public:
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, pp{pb->lookup_impl<pose_prediction>()}
+#ifndef ILLIXR_MONADO_MAINLINE
 		, xwin{pb->lookup_impl<xlib_gl_extended_window>()}
+#endif
 		, _m_clock{pb->lookup_impl<RelativeClock>()}
 		, _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
 		, _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
@@ -70,6 +72,35 @@ public:
 		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
 		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 	{ 
+#ifndef ILLIXR_MONADO_MAINLINE
+		dpy = xwin->dpy;
+		root = xwin->win;
+		glc = xwin->glc;
+#else
+		GLint attr[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+        XVisualInfo *vi;
+		/* open display */
+        if (!(dpy = XOpenDisplay(NULL))) {
+                fprintf(stderr, "cannot connect to X server\n\n");
+                exit(1);
+        }
+ 
+        /* get root window */
+        root = DefaultRootWindow(dpy);
+ 
+        /* get visual matching attr */
+        if(!(vi = glXChooseVisual(dpy, 0, attr))) {
+                fprintf(stderr, "no appropriate visual found\n\n");
+                exit(1);
+        }
+ 
+        /* create a context using the root window */
+        if (!(glc = glXCreateContext(dpy, vi, NULL, GL_TRUE))){
+                fprintf(stderr, "failed to create context\n\n");
+                exit(1);
+        }
+#endif
+
 		image_handles_ready = false;
 		swapchain_ready = false;
 		sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
@@ -89,13 +120,19 @@ public:
 	}
 
 private:
-    const std::shared_ptr<switchboard>             sb;
-    const std::shared_ptr<pose_prediction>         pp;
-    const std::shared_ptr<xlib_gl_extended_window> xwin;
-    const std::shared_ptr<const RelativeClock>     _m_clock;
+	const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<pose_prediction> pp;
+#ifndef ILLIXR_MONADO_MAINLINE
+	const std::shared_ptr<xlib_gl_extended_window> xwin;
+#endif
+	const std::shared_ptr<const RelativeClock> _m_clock;
 
-    static constexpr int SCREEN_WIDTH  = ILLIXR::FB_WIDTH;
-    static constexpr int SCREEN_HEIGHT = ILLIXR::FB_HEIGHT;
+	Display *dpy;
+	Window root;
+	GLXContext glc;
+
+	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
+	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
 
     static constexpr double DISPLAY_REFRESH_RATE  = 60.0;
     static constexpr double FPS_WARNING_TOLERANCE = 0.5;
@@ -265,7 +302,7 @@ private:
 	}
 
 	void VulkanGLInterop(const vk_image_handle& vk_handle, int swapchain_index) {
-		[[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+		[[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
 		assert(gl_result && "glXMakeCurrent should not fail");
 		assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
 
@@ -442,22 +479,22 @@ public:
         // Construct timewarp meshes and other data
         BuildTimewarp(&hmd_info);
 
-        // includes setting swap interval
-        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
-        assert(gl_result_0 && "glXMakeCurrent should not fail");
+		// includes setting swap interval
+        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
+		assert(gl_result_0 && "glXMakeCurrent should not fail");
 
-        // set swap interval for 1
-        RAC_ERRNO_MSG("timewarp_gl before vsync swap interval set");
-        glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
-        glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glXSwapIntervalEXT");
-        glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
-        RAC_ERRNO_MSG("timewarp_gl after vsync swap interval set");
+		// set swap interval for 1
+		RAC_ERRNO_MSG("timewarp_gl before vsync swap interval set");
+		glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;		
+		glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");		
+		glXSwapIntervalEXT(dpy, root, 1);
+		RAC_ERRNO_MSG("timewarp_gl after vsync swap interval set");
 
-        // Init and verify GLEW
-        glewExperimental      = GL_TRUE;
-        const GLenum glew_err = glewInit();
-        if (glew_err != GLEW_OK) {
-            /// TODO: Clean up?
+		// Init and verify GLEW
+		glewExperimental      = GL_TRUE;
+		const GLenum glew_err = glewInit();
+		if (glew_err != GLEW_OK) {
+			/// TODO: Clean up?
             std::cerr << "[timewarp_gl] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
             ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
         }
@@ -558,13 +595,13 @@ public:
 
         RAC_ERRNO_MSG("timewarp_gl before glXMakeCurrent");
 
-        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
-        assert(gl_result_1 && "glXMakeCurrent should not fail");
-    }
+        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
+		assert(gl_result_1 && "glXMakeCurrent should not fail");
+	}
 
-    virtual void _p_one_iteration() override {
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
-        assert(gl_result && "glXMakeCurrent should not fail");
+	virtual void _p_one_iteration() override {
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
+		assert(gl_result && "glXMakeCurrent should not fail");
 
 		if (!swapchain_ready) {
 			assert(image_handles_ready);
@@ -730,8 +767,9 @@ public:
         // TODO: GLX V SYNCH SWAP BUFFER
         [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
+#ifndef ILLIXR_MONADO_MAINLINE
         RAC_ERRNO_MSG("timewarp_gl before glXSwapBuffers");
-        glXSwapBuffers(xwin->dpy, xwin->win);
+        glXSwapBuffers(dpy, root);
         RAC_ERRNO_MSG("timewarp_gl after glXSwapBuffers");
 
         // The swap time needs to be obtained and published as soon as possible
