@@ -35,12 +35,12 @@ const char* const timeWarpChromaticVertexProgramGLSL =
     "	fragmentUv1 = curUv1.xy * ( 1.0 / max( curUv1.z, 0.00001 ) );\n"
     "	fragmentUv2 = curUv2.xy * ( 1.0 / max( curUv2.z, 0.00001 ) );\n"
     "\n"
-	"	if (flipY) {\n"
-	"		fragmentUv0.y = 1 - fragmentUv0.y;\n"
-	"		fragmentUv1.y = 1 - fragmentUv1.y;\n"
-	"		fragmentUv2.y = 1 - fragmentUv2.y;\n"
-	"	}\n"
-	"}\n";
+    "	if (flipY) {\n"
+    "		fragmentUv0.y = 1 - fragmentUv0.y;\n"
+    "		fragmentUv1.y = 1 - fragmentUv1.y;\n"
+    "		fragmentUv2.y = 1 - fragmentUv2.y;\n"
+    "	}\n"
+    "}\n";
 
 const char* const timeWarpChromaticFragmentProgramGLSL =
     "#version " GLSL_VERSION "\n"

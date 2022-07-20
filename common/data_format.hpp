@@ -148,78 +148,73 @@ typedef struct {
 } fast_pose_type;
 
 // Used to identify which graphics API is being used (for swapchain construction)
-enum class graphics_api {
-	OPENGL,
-	VULKAN
-};
+enum class graphics_api { OPENGL, VULKAN };
 
 typedef struct vk_image_handle {
-	int file_descriptor;
-	int64_t format;
-	size_t allocation_size;
-	uint32_t width;
-	uint32_t height;
+    int      file_descriptor;
+    int64_t  format;
+    size_t   allocation_size;
+    uint32_t width;
+    uint32_t height;
 
-	vk_image_handle(int fd_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
-		: file_descriptor{fd_}
-		, format{format_}
-		, allocation_size{alloc_size}
-		, width{width_}
-		, height{height_}
-	{}
+    vk_image_handle(int fd_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
+        : file_descriptor{fd_}
+        , format{format_}
+        , allocation_size{alloc_size}
+        , width{width_}
+        , height{height_} { }
 } vk_image_handle;
 
 // This is used to share swapchain images between ILLIXR and Monado.
 // When Monado uses its GL pipeline, it's enough to just share a context during creation.
 // Otherwise, file descriptors are needed to share the images.
 struct image_handle : public switchboard::event {
-	graphics_api type;
-	union {
-		GLuint gl_handle;
-		vk_image_handle vk_handle;
-	};
-	uint32_t num_images;
+    graphics_api type;
 
-	// This decides whether it's the left or right swapchain,
-	// but it may be used in the future to support more composition layers as well.
-	uint32_t swapchain_index;
+    union {
+        GLuint          gl_handle;
+        vk_image_handle vk_handle;
+    };
 
-	image_handle(GLuint gl_handle_, uint32_t num_images_, uint32_t swapchain_index_)
-		: type{graphics_api::OPENGL}
-		, gl_handle{gl_handle_}
-		, num_images{num_images_}
-		, swapchain_index{swapchain_index_}
-	{}
+    uint32_t num_images;
 
-	image_handle(int vk_fd_, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_, uint32_t swapchain_index_)
-		: type{graphics_api::VULKAN}
-		, vk_handle{vk_fd_, format, alloc_size, width_, height_}
-		, num_images{num_images_}
-		, swapchain_index{swapchain_index_}
-	{}
+    // This decides whether it's the left or right swapchain,
+    // but it may be used in the future to support more composition layers as well.
+    uint32_t swapchain_index;
+
+    image_handle(GLuint gl_handle_, uint32_t num_images_, uint32_t swapchain_index_)
+        : type{graphics_api::OPENGL}
+        , gl_handle{gl_handle_}
+        , num_images{num_images_}
+        , swapchain_index{swapchain_index_} { }
+
+    image_handle(int vk_fd_, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_,
+                 uint32_t swapchain_index_)
+        : type{graphics_api::VULKAN}
+        , vk_handle{vk_fd_, format, alloc_size, width_, height_}
+        , num_images{num_images_}
+        , swapchain_index{swapchain_index_} { }
 };
 
 // Using arrays as a swapchain
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-	std::array<int, 2> swapchain_indices; // Index of image rendered for left and right swapchain
-	std::array<GLuint, 2> swap_indices; // Which element of the swapchain
-	fast_pose_type render_pose; // The pose used when rendering this frame.
-	time_point sample_time;
-	time_point render_time;
-	rendered_frame() { }
-	rendered_frame(std::array<int, 2>&& swapchain_indices_, 
-					std::array<GLuint, 2>&& swap_indices_,
-					fast_pose_type render_pose_,
-					time_point sample_time_,
-					time_point render_time_)
-		: swapchain_indices{std::move(swapchain_indices_)}
-		, swap_indices{std::move(swap_indices_)}
-		, render_pose(render_pose_)
-		, sample_time(sample_time_)
-		, render_time(render_time_)
-	{ }
+    std::array<int, 2>    swapchain_indices; // Index of image rendered for left and right swapchain
+    std::array<GLuint, 2> swap_indices;      // Which element of the swapchain
+    fast_pose_type        render_pose;       // The pose used when rendering this frame.
+    time_point            sample_time;
+    time_point            render_time;
+
+    rendered_frame() { }
+
+    rendered_frame(std::array<int, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
+                   time_point sample_time_, time_point render_time_)
+        : swapchain_indices{std::move(swapchain_indices_)}
+        , swap_indices{std::move(swap_indices_)}
+        , render_pose(render_pose_)
+        , sample_time(sample_time_)
+        , render_time(render_time_) { }
 };
 
 struct hologram_input : public switchboard::event {
