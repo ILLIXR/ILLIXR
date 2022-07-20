@@ -54,6 +54,7 @@ def build_one_plugin(
     config: Mapping[str, Any],
     plugin_config: Mapping[str, Any],
     test: bool = False,
+    is_mainline: bool = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -63,6 +64,9 @@ def build_one_plugin(
         os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
     targets = [plugin_so_name] + (["tests/run"] if test else [])
+
+    if is_mainline:
+        plugin_config["config"].update(ILLIXR_MONADO_MAINLINE="ON")
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
@@ -210,7 +214,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
         if is_mainline:
             plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
-        return build_one_plugin(config, plugin_config)
+        return build_one_plugin(config, plugin_config, is_mainline=is_mainline)
 
     plugin_paths: List[Path] = threading_map(
         process_plugin,
@@ -260,7 +264,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     else:
         ## Get the full path to the 'app' binary
         openxr_app_path     = None
-        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, False)
 
     ## Compile the OpenXR app if we received an 'app' with 'src_path'
     if openxr_app_path:
