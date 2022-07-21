@@ -32,6 +32,9 @@ public:
 		}
 		
 		hashed_data.open(data_path + "/hash_device_tx.txt");
+		frame_info.open(data_path + "/frame_info.csv");
+
+		frame_info << "frame_id,created_to_sent_time_ms,duration_to_send_ms,is_dropped" << endl;
 	}
 
 
@@ -73,13 +76,12 @@ public:
 		linear_accel->set_z(datum->linear_a.z());
 		imu_cam_data->set_allocated_linear_accel(linear_accel);
 
-      	if (!datum->img0.has_value() && !datum->img1.has_value()) {
+		if (!datum->img0.has_value() && !datum->img1.has_value()) {
 			imu_cam_data->set_rows(-1);
 			imu_cam_data->set_cols(-1);
-
 		} else {
 			cv::Mat img0{(datum->img0.value()).clone()};
-        	cv::Mat img1{(datum->img1.value()).clone()};
+			cv::Mat img1{(datum->img1.value()).clone()};
 
 			imu_cam_data->set_rows(img0.rows);
 			imu_cam_data->set_cols(img0.cols);
@@ -90,24 +92,41 @@ public:
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 			data_buffer->set_frame_id(frame_id);
-			frame_id++;
 			
 			// Prepare data delivery
 			string data_to_be_sent = data_buffer->SerializeAsString();
 			string delimitter = "END!";
 
-			auto start = timestamp();
-			socket.write(data_to_be_sent + delimitter);
-			auto send_duration = timestamp() - start;
-			// cout << "Send time = " << send_duration << endl;
+			float created_to_sent = (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - datum->created_time) / 1e6;
+			if (created_to_sent > 100) {
+				frame_info << frame_id << "," << created_to_sent << ",0,1" << endl;
+			} else {
+				auto start = timestamp();
+				socket.write(data_to_be_sent + delimitter);
+				auto send_duration = timestamp() - start;
+				frame_info << frame_id << "," << created_to_sent << "," << send_duration << ",0" << endl;
+
+				hash<std::string> hasher;
+				auto hash_result = hasher(data_to_be_sent);
+				hashed_data << frame_id << "\t" << hash_result << "\t" << data_buffer->dataset_timestamp() << endl;
+			}
+
+			// auto start = timestamp();
+			// socket.write(data_to_be_sent + delimitter);
+			// auto send_duration = timestamp() - start;
+			// cam_data_created_to_send_time << created_to_sent << endl;
+			// cout << "Frame id = " << frame_id << ", send time = " << send_duration << ", created_to_send = " << created_to_sent << endl;
 
 			hash<std::string> hasher;
-    		auto hash_result = hasher(data_to_be_sent);
-			hashed_data << frame_id << "\t" << hash_result << endl;
+			auto hash_result = hasher(data_to_be_sent);
+			hashed_data << frame_id << "\t" << hash_result << "\t" << data_buffer->dataset_timestamp() << endl;
+			
+			frame_id++;
 
 			delete data_buffer;
 			data_buffer = new vio_input_proto::IMUCamVec();
 		}
+		
     }
 
 private:
@@ -121,6 +140,7 @@ private:
 
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream hashed_data;
+	std::ofstream frame_info; 
 };
 
 PLUGIN_MAIN(offload_writer)
