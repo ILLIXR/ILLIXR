@@ -51,6 +51,8 @@ public:
         filtered_csv.open(data_path + "/imu_filtered.csv");
         rpe_integrator_csv.open(data_path + "/rpe_integrator.csv");
 
+        put_to_consume_delay_csv.open(data_path + "/imu_integrator_input_delay.csv");
+
         const double frequency = 200;
         const double mincutoff = 10;
         const double beta = 1;
@@ -90,6 +92,8 @@ private:
     std::vector <one_euro_filter<Eigen::Array<double,3,1>, double>> filters;
     bool has_prev = false;
     Eigen::Matrix<double, 3, 1> prev_euler_angles;
+
+	std::ofstream put_to_consume_delay_csv;
 
     const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<RelativeClock> _m_clock;
