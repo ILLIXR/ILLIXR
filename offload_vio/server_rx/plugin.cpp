@@ -31,6 +31,7 @@ public:
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_writer<imu_cam_type_prof>("imu_cam")}
+		, _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
 		, server_addr(SERVER_IP, SERVER_PORT_1)
 		, buffer_str("")
     { 
@@ -52,10 +53,13 @@ public:
 
 	void _p_one_iteration() override {
 		if (read_socket == NULL) {
+			_conn_signal.put(_conn_signal.allocate<connection_signal>(
+				connection_signal{true}
+			));
 			socket.listen();
-			cout << "Waiting for connection!" << endl;
+			cout << "server_rx: Waiting for connection!" << endl;
 			read_socket = new TCPSocket( FileDescriptor( SystemCall( "accept", ::accept( socket.fd_num(), nullptr, nullptr) ) ) ); /* Blocking operation, waiting for client to connect */
-			cout << "Connection is established with " << read_socket->peer_address().str(":") << endl;
+			cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
 		} else {
 			auto now = timestamp();
 			string delimitter = "END!";
@@ -77,11 +81,12 @@ public:
 						hash<std::string> hasher;
 						auto hash_result = hasher(before);
 						hashed_data << vio_input.frame_id() << "\t" << hash_result << endl;
+						cout << "Receive frame id = " << vio_input.frame_id() << endl;
 						ReceiveVioInput(vio_input);
 					}
 					end_position = buffer_str.find(delimitter);
 				}
-				cout << "Recv time = " << timestamp() - now << endl;
+				// cout << "Recv time = " << timestamp() - now << ", size = " << recv_data.size() << endl;
 			}
 		}
 	}
@@ -163,6 +168,7 @@ private:
 					time_point{std::chrono::nanoseconds{vio_input.real_timestamp()}}, // Timestamp of when the device sent the packet
 					time_point{std::chrono::nanoseconds{curr_time}}, // Timestamp of receive time of the packet
 					time_point{std::chrono::nanoseconds{vio_input.dataset_timestamp()}}, // Timestamp of the sensor data
+					0,
 					Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
 					Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()},
 					cam0,
@@ -189,6 +195,7 @@ private:
 
     const std::shared_ptr<switchboard> sb;
 	switchboard::writer<imu_cam_type_prof> _m_imu_cam;
+	switchboard::writer<connection_signal> _conn_signal;
 
 	TCPSocket socket;
 	TCPSocket * read_socket = NULL;
