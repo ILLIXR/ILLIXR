@@ -47,6 +47,9 @@ public:
 		}
 		
 		hashed_data.open(data_path + "/hash_device_tx.txt");
+		frame_info.open(data_path + "/frame_info.csv");
+
+		frame_info << "frame_id,created_to_sent_time_ms,duration_to_send_ms,is_dropped" << endl;
 	}
 
     virtual void start() override {
@@ -169,6 +172,7 @@ private:
 
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream hashed_data;
+	std::ofstream frame_info; 
 };
 
 PLUGIN_MAIN(offload_writer)

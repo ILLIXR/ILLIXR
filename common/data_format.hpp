@@ -48,6 +48,7 @@ namespace ILLIXR {
 		time_point start_time; // Time that the device sent the packet
 		time_point rec_time; // Time the device received the packet
 		time_point dataset_time; // Time from dataset
+		long int created_time; // Time the imu and camera data is put to the switchboard
 		Eigen::Vector3f angular_v;
 		Eigen::Vector3f linear_a;
 		std::optional<cv::Mat> img0;
@@ -57,6 +58,7 @@ namespace ILLIXR {
 					 time_point start_time_,
 					 time_point rec_time_,
 					 time_point dataset_time_,
+					 long int created_time_,
 					 Eigen::Vector3f angular_v_,
 					 Eigen::Vector3f linear_a_,
 					 std::optional<cv::Mat> img0_,
@@ -66,10 +68,19 @@ namespace ILLIXR {
 			, start_time{start_time_}
 			, rec_time{rec_time_}
 			, dataset_time{dataset_time_}
+			, created_time{created_time_} 
 			, angular_v{angular_v_}
 			, linear_a{linear_a_}
 			, img0{img0_}
 			, img1{img1_}
+		{ }
+	};
+
+	struct connection_signal : public switchboard::event {
+		bool start;
+
+		connection_signal(bool start_)
+			: start{start_}
 		{ }
 	};
 
@@ -127,6 +138,8 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
+		long int timestamp;
+
 		imu_integrator_input()
 			: last_cam_integration_time{time_point{}}
 			, t_offset{duration(std::chrono::milliseconds{-50})}
@@ -142,6 +155,7 @@ namespace ILLIXR {
 			, position{Eigen::Vector3d{0, 0, 0}}
 			, velocity{Eigen::Vector3d{0, 0, 0}}
 			, quat{Eigen::Quaterniond{1, 0, 0, 0}}
+			, timestamp{0}
 		{ }
 		imu_integrator_input(
 							 time_point last_cam_integration_time_,
@@ -161,6 +175,7 @@ namespace ILLIXR {
 			, position{position_}
 			, velocity{velocity_}
 			, quat{quat_}
+			, timestamp{0}
 		{ }
 	};
 

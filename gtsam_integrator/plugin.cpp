@@ -51,6 +51,8 @@ public:
         filtered_csv.open(data_path + "/imu_filtered.csv");
         rpe_integrator_csv.open(data_path + "/rpe_integrator.csv");
 
+        put_to_consume_delay_csv.open(data_path + "/imu_integrator_input_delay.csv");
+
         const double frequency = 200;
         const double mincutoff = 10;
         const double beta = 1;
@@ -90,6 +92,8 @@ private:
     std::vector <one_euro_filter<Eigen::Array<double,3,1>, double>> filters;
     bool has_prev = false;
     Eigen::Matrix<double, 3, 1> prev_euler_angles;
+
+	std::ofstream put_to_consume_delay_csv;
 
     const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<RelativeClock> _m_clock;
@@ -222,11 +226,12 @@ private:
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
-        // TODO last_imu_offset is 0, t_offset only take effects when it's negative.
-        // However, why would we want to integrate to a past time point rather than the current time point?
-        time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
-        // time_point time_end   = input_values->t_offset + real_time;
-        time_point time_end = real_time;
+        long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        double msec_delay = (now - input_values->timestamp);
+        put_to_consume_delay_csv << msec_delay << std::endl;
+
+		time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
+		time_point time_end = input_values->t_offset + real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
