@@ -31,15 +31,12 @@ private:
             std::optional<cv::Mat> cam1 = std::nullopt;
 
             if (curr_data.rows() != -1 && curr_data.cols() != -1) {
-                // Must do a deep copy of the received data (in the form of a string of bytes)
-                auto img0_copy = std::make_shared<std::string>(std::string(curr_data.img0_data()));
-                auto img1_copy = std::make_shared<std::string>(std::string(curr_data.img1_data()));
+                cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*)(curr_data.img0_data().data()));
+                cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*)(curr_data.img1_data().data()));
 
-                cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
-                cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
-
-                cam0 = std::make_optional<cv::Mat>(img0);
-                cam1 = std::make_optional<cv::Mat>(img1);
+				// clone() here awakes the ref counter inside cv::Mat and prevents a data race
+                cam0 = std::make_optional<cv::Mat>(img0.clone());
+                cam1 = std::make_optional<cv::Mat>(img1.clone());
             }
 
             _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(imu_cam_type{
