@@ -31,10 +31,10 @@ private:
             std::optional<cv::Mat> cam1 = std::nullopt;
 
             if (curr_data.rows() != -1 && curr_data.cols() != -1) {
-                cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*)(curr_data.img0_data().data()));
-                cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*)(curr_data.img1_data().data()));
+                cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img0_data().data()));
+                cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img1_data().data()));
 
-				// clone() here awakes the ref counter inside cv::Mat and prevents a data race
+                // clone() here awakes the ref counter inside cv::Mat and prevents a data race
                 cam0 = std::make_optional<cv::Mat>(img0.clone());
                 cam1 = std::make_optional<cv::Mat>(img1.clone());
             }
