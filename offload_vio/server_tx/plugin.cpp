@@ -19,7 +19,7 @@ public:
         eCAL::Initialize(0, NULL, "VIO Server Writer");
         publisher = eCAL::protobuf::CPublisher<vio_output_proto::VIOOutput>("vio_output");
         publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
-		publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
+        publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
     }
 
     // This schedule function cant go in the constructor because there seems to be an issue with
