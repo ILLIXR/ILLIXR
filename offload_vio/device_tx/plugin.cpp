@@ -18,6 +18,8 @@ public:
         , sb{pb->lookup_impl<switchboard>()} {
         eCAL::Initialize(0, NULL, "VIO Device Transmitter");
         publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
+		publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
+		publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
     }
 
     virtual void start() override {
