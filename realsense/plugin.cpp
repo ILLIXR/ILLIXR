@@ -30,7 +30,6 @@ public:
         cam_data.iteration   = -1;
         accel_data.iteration = -1;
         cfg.disable_all_streams();
-        configure_camera();
     }
 
     void callback(const rs2::frame& frame) {
@@ -39,7 +38,10 @@ public:
         // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
-
+        if(!_m_clock->has_started()){
+            // if the data arrived before the relative clock started, ignore
+            return;
+        }
         if (cam_select == D4XXI) {
             if (auto fs = frame.as<rs2::frameset>()) {
                 rs2::video_frame ir_frame_left  = fs.get_infrared_frame(1);
@@ -109,8 +111,8 @@ public:
                 rs2_vector        gyro_data = gyro.get_motion_data();
 
                 // IMU data
-                Eigen::Vector3f la = {accel.x, accel.y, accel.z};
-                Eigen::Vector3f av = {gyro_data.x, gyro_data.y, gyro_data.z};
+                Eigen::Vector3f la = {accel.z, accel.x, accel.y};
+                Eigen::Vector3f av = {gyro_data.z, gyro_data.x, gyro_data.y};
 
                 // Time as ullong (nanoseconds)
                 ullong imu_time = static_cast<ullong>(ts * 1000000);
@@ -118,7 +120,7 @@ public:
                     _m_first_imu_time  = imu_time;
                     _m_first_real_time = _m_clock->now();
                 }
-
+            
                 // Time as time_point
                 time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
@@ -145,7 +147,9 @@ public:
             }
         }
     };
-
+    virtual void start() override{
+        configure_camera();
+    }
     virtual ~realsense() override {
         pipe.stop();
     }
@@ -288,12 +292,14 @@ private:
             cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
             cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_BGR8, FPS_D4XX);
             cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Z16, FPS_D4XX);
+
             profiles = pipe.start(cfg, [&](const rs2::frame& frame) {
                 this->callback(frame);
             });
             profiles.get_device().first<rs2::depth_sensor>().set_option(
                 RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter to use stereo images for SLAM but degrades depth
                                                   // quality in low texture environments.
+          
         }
     }
 };
