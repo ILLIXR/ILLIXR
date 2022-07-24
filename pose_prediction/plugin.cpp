@@ -178,7 +178,7 @@ public:
         swapped_pose.position.z() = -pose.position.x();
 
         // Make any chanes to orientation of the output below
-        // For the VIO we are using (OpenVINS), the output orientation acts as though
+        // For the SLAM we are using (OpenVINS), the output orientation acts as though
         // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
         Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
 
