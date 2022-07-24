@@ -38,7 +38,7 @@ public:
         // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
-        if(!_m_clock->has_started()){
+        if (!_m_clock->has_started()) {
             // if the data arrived before the relative clock started, ignore
             return;
         }
@@ -120,7 +120,7 @@ public:
                     _m_first_imu_time  = imu_time;
                     _m_first_real_time = _m_clock->now();
                 }
-            
+
                 // Time as time_point
                 time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
@@ -147,9 +147,11 @@ public:
             }
         }
     };
-    virtual void start() override{
+
+    virtual void start() override {
         configure_camera();
     }
+
     virtual ~realsense() override {
         pipe.stop();
     }
@@ -299,7 +301,6 @@ private:
             profiles.get_device().first<rs2::depth_sensor>().set_option(
                 RS2_OPTION_EMITTER_ENABLED, 0.f); // disables IR emitter to use stereo images for SLAM but degrades depth
                                                   // quality in low texture environments.
-          
         }
     }
 };
