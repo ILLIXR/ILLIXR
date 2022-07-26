@@ -10,7 +10,7 @@ find_package(eCAL REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(OpenCV REQUIRED)
 
-add_library(plugin SHARED plugin.cpp)
+add_library(plugin SHARED plugin.cpp video_encoder.cpp)
 
 set(protobuf_files
     ${CMAKE_CURRENT_SOURCE_DIR}/vio_input.proto
@@ -26,3 +26,19 @@ target_link_libraries(${PROJECT_NAME}
   eCAL::core
   protobuf::libprotobuf
 )
+
+find_package(PkgConfig)
+pkg_search_module(GLIB REQUIRED glib-2.0)
+pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
+pkg_check_modules(GST_VIDEO REQUIRED gstreamer-video-1.0)
+pkg_check_modules(GST_AUDIO REQUIRED gstreamer-audio-1.0)
+
+include_directories(
+        /usr/lib64/glib-2.0/include
+        /usr/include/glib-2.0/
+        /usr/include/gstreamer-1.0
+        ${GLIB_INCLUDE_DIRS}
+)
+
+target_link_libraries(${PROJECT_NAME} ${GST_APP_LIBRARIES} ${GST_VIDEO_LIBRARIES} ${GST_AUDIO_LIBRARIES})
