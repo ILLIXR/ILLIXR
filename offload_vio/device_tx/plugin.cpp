@@ -1,3 +1,4 @@
+#include "common/threadloop.hpp"
 #include "common/plugin.hpp"
 
 #include "common/data_format.hpp"
@@ -9,26 +10,62 @@
 #include <ecal/msg/protobuf/publisher.h>
 #include <opencv2/core/mat.hpp>
 
+#include "video_encoder.h"
+#include <boost/lockfree/spsc_queue.hpp>
+
 using namespace ILLIXR;
 
-class offload_writer : public plugin {
+class offload_writer : public threadloop {
+private:
+    boost::lockfree::spsc_queue<uint64_t> queue {1000};
+    std::mutex mutex;
+    std::condition_variable cv;
+    GstMapInfo img0;
+    GstMapInfo img1;
+    bool img_ready = false;
+
 public:
     offload_writer(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()} {
-        eCAL::Initialize(0, NULL, "VIO Device Transmitter");
-        publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
-        publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
-        publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
-    }
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+    {
+		eCAL::Initialize(0, NULL, "VIO Device Transmitter");
+		publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
+	}
 
     virtual void start() override {
-        plugin::start();
+        threadloop::start();
+
+        encoder = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
+            queue.consume_one([&](uint64_t& timestamp) {
+                uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                std::cout << "=== latency: " << curr - timestamp << std::endl;
+            });
+            {
+                std::lock_guard<std::mutex> lock{mutex};
+                this->img0 = img0;
+                this->img1 = img1;
+                img_ready = true;
+            }
+            cv.notify_one();
+        });
+        encoder->init();
 
         sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-            this->send_imu_cam_data(datum);
-        });
+			this->send_imu_cam_data(datum);
+		});
+	}
+
+protected:
+    void _p_thread_setup() override {
+
     }
+
+    void _p_one_iteration() override {
+//        _encoder->start();
+    }
+
+public:
 
     void send_imu_cam_data(switchboard::ptr<const imu_cam_type> datum) {
         // Ensures that slam doesnt start before valid IMU readings come in
@@ -37,8 +74,8 @@ public:
             return;
         }
 
-        assert(datum->time.time_since_epoch().count() > previous_timestamp);
-        previous_timestamp = datum->time.time_since_epoch().count();
+//		assert(datum->time.time_since_epoch().count() > previous_timestamp);
+		previous_timestamp = datum->time.time_since_epoch().count();
 
         vio_input_proto::IMUCamData* imu_cam_data = data_buffer->add_imu_cam_data();
         imu_cam_data->set_timestamp(datum->time.time_since_epoch().count());
@@ -55,19 +92,29 @@ public:
         linear_accel->set_z(datum->linear_a.z());
         imu_cam_data->set_allocated_linear_accel(linear_accel);
 
-        if (!datum->img0.has_value() && !datum->img1.has_value()) {
-            imu_cam_data->set_rows(-1);
-            imu_cam_data->set_cols(-1);
+      	if (!datum->img0.has_value() && !datum->img1.has_value()) {
+			imu_cam_data->set_img0_size(-1);
+			imu_cam_data->set_img1_size(-1);
 
-        } else {
-            cv::Mat img0{(datum->img0.value()).clone()};
-            cv::Mat img1{(datum->img1.value()).clone()};
+		} else {
+			cv::Mat img0 = (datum->img0.value()).clone();
+			cv::Mat img1 = (datum->img1.value()).clone();
 
-            imu_cam_data->set_rows(img0.rows);
-            imu_cam_data->set_cols(img0.cols);
+            // get nanoseconds since epoch
+            uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            queue.push(curr);
+            encoder->enqueue(img0, img1);
+            std::unique_lock<std::mutex> lock{mutex};
+            cv.wait(lock, [this]() { return img_ready; });
+            img_ready = false;
 
-            imu_cam_data->set_img0_data((void*) img0.data, img0.rows * img0.cols);
-            imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
+			imu_cam_data->set_img0_size(this->img0.size);
+			imu_cam_data->set_img1_size(this->img1.size);
+
+			imu_cam_data->set_img0_data((void*) this->img0.data, this->img0.size);
+			imu_cam_data->set_img1_data((void*) this->img1.data, this->img1.size);
+
+            lock.unlock();
 
             publisher.Send(*data_buffer);
             delete data_buffer;
@@ -76,8 +123,9 @@ public:
     }
 
 private:
-    long                        previous_timestamp = 0;
-    vio_input_proto::IMUCamVec* data_buffer        = new vio_input_proto::IMUCamVec();
+    std::unique_ptr<video_encoder> encoder = nullptr;
+	long previous_timestamp = 0;
+	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
 
     const std::shared_ptr<switchboard>                     sb;
     eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec> publisher;
