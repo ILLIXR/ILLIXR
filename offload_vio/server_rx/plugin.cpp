@@ -1,5 +1,5 @@
-#include "common/plugin.hpp"
-
+#include "common/threadloop.hpp"
+#include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 #include "common/switchboard.hpp"
@@ -7,41 +7,114 @@
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
+#include <boost/lockfree/spsc_queue.hpp>
+#include <opencv2/highgui.hpp>
+
+#include "video_decoder.h"
 
 using namespace ILLIXR;
 
-class server_reader : public plugin {
+class server_reader : public threadloop {
+private:
+    std::unique_ptr<video_decoder> decoder;
+
+    boost::lockfree::spsc_queue<uint64_t> queue {1000};
+    std::mutex mutex;
+    std::condition_variable cv;
+    cv::Mat img0;
+    cv::Mat img1;
+    bool img_ready = false;
 public:
-    server_reader(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam{sb->get_writer<cam_type>("cam")} {
-        eCAL::Initialize(0, NULL, "VIO Server Reader");
-        subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
-        subscriber.AddReceiveCallback(std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
+	server_reader(std::string name_, phonebook* pb_)
+		: threadloop{name_, pb_}
+		, sb{pb->lookup_impl<switchboard>()}
+		, _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+    { 
+		eCAL::Initialize(0, NULL, "VIO Server Reader");
+		subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
+		subscriber.AddReceiveCallback(std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
+	}
+
+    void start() override {
+        threadloop::start();
+
+        decoder = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
+            std::cout << "callback" << std::endl;
+
+            queue.consume_one([&](uint64_t& timestamp) {
+                uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                std::cout << "=== latency: " << curr - timestamp << std::endl;
+            });
+            {
+                std::lock_guard<std::mutex> lock{mutex};
+                this->img0 = std::forward<cv::Mat>(img0);
+                this->img1 = std::forward<cv::Mat>(img1);
+                img_ready = true;
+            }
+            std::cout << "notify" << std::endl;
+            cv.notify_one();
+        });
+        decoder->init();
     }
 
 private:
-    void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
-        // Loop through all IMU values first then the cam frame
-        for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
-            vio_input_proto::IMUCamData curr_data = vio_input.imu_cam_data(i);
+	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
+        std::cout << "Received VIO input" << std::endl;
 
-            if (curr_data.rows() != -1 && curr_data.cols() != -1) {
-                cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img0_data().data()));
-                cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img1_data().data()));
+		// Loop through all IMU values first then the cam frame	
+		for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
+			vio_input_proto::IMUCamData curr_data = vio_input.imu_cam_data(i);
 
-                _m_cam.put(_m_cam.allocate<cam_type>(
-                    cam_type{time_point{std::chrono::nanoseconds{curr_data.timestamp()}}, img0.clone(), img1.clone()}));
-            }
+			std::optional<cv::Mat> cam0 = std::nullopt;
+			std::optional<cv::Mat> cam1 = std::nullopt;
 
-            _m_imu.put(_m_imu.allocate<imu_type>(imu_type{
-                time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
-                Eigen::Vector3d{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
-                Eigen::Vector3d{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()}}));
-        }
+			if (curr_data.img0_size() != -1 && curr_data.img1_size() != -1) {
+
+				// Must do a deep copy of the received data (in the form of a string of bytes)
+				auto img0_copy = std::string(curr_data.img0_data());
+				auto img1_copy = std::string(curr_data.img1_data());
+
+                std::cout << "img0 size: " << curr_data.img0_size() << std::endl;
+
+                uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                queue.push(curr);
+                decoder->enqueue(img0_copy, img1_copy);
+                std::unique_lock<std::mutex> lock{mutex};
+                cv.wait(lock, [this]() { return img_ready; });
+                img_ready = false;
+
+//				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
+//				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
+
+                cam0 = std::make_optional<cv::Mat>(std::move(img0));
+                cam1 = std::make_optional<cv::Mat>(std::move(img1));
+
+                std::cout << "unlock" << std::endl;
+                lock.unlock();
+			}
+
+			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+				imu_cam_type {
+					time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
+					Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
+					Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()},
+					cam0,
+					cam1
+				}
+			));	
+		}
+	}
+
+protected:
+    skip_option _p_should_skip() override {
+        return ILLIXR::threadloop::skip_option::skip_and_yield;
     }
+
+    void _p_one_iteration() override {
+
+    }
+
+private:
 
     const std::shared_ptr<switchboard> sb;
     switchboard::writer<imu_type>      _m_imu;
