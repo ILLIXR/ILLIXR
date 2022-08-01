@@ -4,7 +4,7 @@ project(plugin)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 find_package(eCAL REQUIRED)
 find_package(Protobuf REQUIRED)
