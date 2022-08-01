@@ -37,10 +37,16 @@ namespace ILLIXR {
         auto caps_filter_0 = gst_element_factory_make("capsfilter", "caps_filter0");
         auto caps_filter_1 = gst_element_factory_make("capsfilter", "caps_filter1");
 
-        auto encoder_img0 = gst_element_factory_make("nvh265enc", "encoder_img0");
-        auto encoder_img1 = gst_element_factory_make("nvh265enc", "encoder_img1");
+        auto nvvideoconvert_0 = gst_element_factory_make("nvvideoconvert", "nvvideoconvert0");
+        auto nvvideoconvert_1 = gst_element_factory_make("nvvideoconvert", "nvvideoconvert1");
 
-        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=GRAY8,width=752,height=480");
+        auto encoder_img0 = gst_element_factory_make("nvv4l2h264enc", "encoder_img0");
+        auto encoder_img1 = gst_element_factory_make("nvv4l2h264enc", "encoder_img1");
+
+        auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
+        auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
+
+        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=NV12,width=752,height=480,framerate=0/1");
         g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_8uc1, nullptr);
         g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
         gst_caps_unref(caps_8uc1);
@@ -50,10 +56,9 @@ namespace ILLIXR {
         g_object_set(G_OBJECT(caps_filter_1), "caps", caps_convert_to, nullptr);
         gst_caps_unref(caps_convert_to);
 
-        auto nvvidconv_0 = gst_element_factory_make("nvvideoconvert", "nvvidconv0");
-        auto nvvidconv_1 = gst_element_factory_make("nvvideoconvert", "nvvidconv1");
-
-        assert(nvvidconv_0 != nullptr);
+        // set bitrate
+        g_object_set(G_OBJECT(encoder_img0), "bitrate", 1100000, nullptr);
+        g_object_set(G_OBJECT(encoder_img1), "bitrate", 1100000, nullptr);
 
         g_object_set (G_OBJECT (_appsrc_img0),
                       "stream-type", 0,
@@ -66,6 +71,10 @@ namespace ILLIXR {
                       "is-live", TRUE,
                       nullptr);
 
+        // set iframeinterval to 1 to force I-frame every frame
+        // g_object_set(G_OBJECT(encoder_img0), "iframeinterval", 30, nullptr);
+        // g_object_set(G_OBJECT(encoder_img1), "iframeinterval", 30, nullptr);
+
 //        g_signal_connect (_appsrc_img1, "need-data", G_CALLBACK (cb_need_data), this);
 
         g_object_set(_appsink_img0, "emit-signals", TRUE, "sync", FALSE, nullptr);
@@ -77,12 +86,12 @@ namespace ILLIXR {
         _pipeline_img0 = gst_pipeline_new("pipeline_img0");
         _pipeline_img1 = gst_pipeline_new("pipeline_img1");
 
-        gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, nvvidconv_0, encoder_img0, caps_filter_0, videoconvert_0, _appsink_img0, nullptr);
-        gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, nvvidconv_1, encoder_img1, caps_filter_1, videoconvert_1, _appsink_img1, nullptr);
+        gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, nvvideoconvert_0, encoder_img0, h265parse_0, caps_filter_0, videoconvert_0, _appsink_img0, nullptr);
+        gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, nvvideoconvert_1, encoder_img1, h265parse_1, caps_filter_1, videoconvert_1, _appsink_img1, nullptr);
 
         // link elements
-        if (!gst_element_link_many(_appsrc_img0, videoconvert_0, caps_filter_0, encoder_img0, _appsink_img0, nullptr) ||
-            !gst_element_link_many(_appsrc_img1, videoconvert_1, caps_filter_1, encoder_img1, _appsink_img1, nullptr)) {
+        if (!gst_element_link_many(_appsrc_img0, nvvideoconvert_0, encoder_img0, _appsink_img0, nullptr) ||
+            !gst_element_link_many(_appsrc_img1, nvvideoconvert_1, encoder_img1, _appsink_img1, nullptr)) {
             abort("Failed to link elements");
         }
 
@@ -94,12 +103,18 @@ namespace ILLIXR {
         // push cv mat into appsrc
         // print img0 size
 
-        auto buffer_img0 = gst_buffer_new_wrapped_full(GST_MEMORY_FLAG_READONLY, img0.data,
-                                                       img0.cols * img0.rows * img0.channels(), 0,
-                                                       img0.cols * img0.rows * img0.channels(), nullptr, nullptr);
-        auto buffer_img1 = gst_buffer_new_wrapped_full(GST_MEMORY_FLAG_READONLY, img1.data,
-                                                       img1.cols * img1.rows * img1.channels(), 0,
-                                                       img1.cols * img1.rows * img1.channels(), nullptr, nullptr);
+        auto data_size = img0.cols * img0.rows * img0.channels();
+        int size = floor(data_size + ceil(img0.cols / 2.0) * ceil(img0.rows / 2.0) * 2);
+        auto fill_zero_size = size - data_size;
+
+        auto buffer_img0 = gst_buffer_new_and_alloc(size);
+        auto buffer_img1 = gst_buffer_new_and_alloc(size);
+
+        gst_buffer_fill (buffer_img0, 0, img0.data, data_size);
+        gst_buffer_fill (buffer_img1, 0, img1.data, data_size);
+
+        gst_buffer_memset(buffer_img0, data_size, 128, fill_zero_size);
+        gst_buffer_memset(buffer_img1, data_size, 0, fill_zero_size);
 
         GST_BUFFER_OFFSET(buffer_img0) = _num_samples;
         GST_BUFFER_OFFSET(buffer_img1) = _num_samples;
