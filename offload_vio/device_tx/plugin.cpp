@@ -18,6 +18,7 @@ using namespace ILLIXR;
 class offload_writer : public threadloop {
 private:
     boost::lockfree::spsc_queue<uint64_t> queue {1000};
+    std::vector<int32_t> sizes;
     std::mutex mutex;
     std::condition_variable cv;
     GstMapInfo img0;
@@ -39,7 +40,7 @@ public:
         encoder = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                std::cout << "=== latency: " << curr - timestamp << std::endl;
+                std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -52,7 +53,7 @@ public:
         encoder->init();
 
         sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-			this->send_imu_cam_data(datum);
+            this->send_imu_cam_data(datum);
 		});
 	}
 
@@ -62,6 +63,7 @@ protected:
     }
 
     void _p_one_iteration() override {
+        std::this_thread::sleep_for(std::chrono::hours(1));
 //        _encoder->start();
     }
 
@@ -100,16 +102,30 @@ public:
 			cv::Mat img0 = (datum->img0.value()).clone();
 			cv::Mat img1 = (datum->img1.value()).clone();
 
+            // size of img0
+            double img0_size = img0.total() * img0.elemSize();
+
             // get nanoseconds since epoch
             uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             queue.push(curr);
-            encoder->enqueue(img0, img1);
             std::unique_lock<std::mutex> lock{mutex};
+            encoder->enqueue(img0, img1);
             cv.wait(lock, [this]() { return img_ready; });
             img_ready = false;
 
 			imu_cam_data->set_img0_size(this->img0.size);
 			imu_cam_data->set_img1_size(this->img1.size);
+
+            sizes.push_back(this->img0.size);
+
+            // calculate average sizes
+            if (sizes.size() > 100) {
+                int32_t sum = 0;
+                for (auto& s : sizes) {
+                    sum += s;
+                }
+                std::cout << sizes.size() << " average size: " << img0_size / (sum / sizes.size()) << " " << sum / sizes.size() << std::endl;
+            }
 
 			imu_cam_data->set_img0_data((void*) this->img0.data, this->img0.size);
 			imu_cam_data->set_img1_data((void*) this->img1.data, this->img1.size);

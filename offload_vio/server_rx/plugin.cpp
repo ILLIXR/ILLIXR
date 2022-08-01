@@ -41,6 +41,10 @@ public:
         decoder = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
             std::cout << "callback" << std::endl;
 
+            // show img0
+            cv::imshow("img0", img0);
+            cv::waitKey(1);
+
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 std::cout << "=== latency: " << curr - timestamp << std::endl;
@@ -78,8 +82,8 @@ private:
 
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 queue.push(curr);
-                decoder->enqueue(img0_copy, img1_copy);
                 std::unique_lock<std::mutex> lock{mutex};
+                decoder->enqueue(img0_copy, img1_copy);
                 cv.wait(lock, [this]() { return img_ready; });
                 img_ready = false;
 
