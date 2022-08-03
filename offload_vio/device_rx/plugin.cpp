@@ -1,22 +1,27 @@
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
+#include <filesystem>
+#include <fstream>
 
 #include "vio_output.pb.h"
+#include "common/network/socket.hpp"
+#include "common/network/net_config.hpp"
 
 using namespace ILLIXR;
 
-class offload_reader : public plugin {
+class offload_reader : public threadloop {
 public:
     offload_reader(std::string name_, phonebook* pb_)
-		: plugin{name_, pb_}
+		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->get_writer<pose_type>("slow_pose")}
 		, _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
+		, server_addr(SERVER_IP, SERVER_PORT_2)
     { 
 		pose_type datum_pose_tmp{
             time_point{},
@@ -26,14 +31,76 @@ public:
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
-		eCAL::Initialize(0, NULL, "VIO Device Reader");
-		subscriber = eCAL::protobuf::CSubscriber<vio_output_proto::VIOOutput>("vio_output");
-		subscriber.AddReceiveCallback(std::bind(&offload_reader::ReceiveVioOutput, this, std::placeholders::_2));
+		if (!filesystem::exists(data_path)) {
+			if (!filesystem::create_directory(data_path)) {
+				std::cerr << "Failed to create data directory.";
+			}
+		}
+		
+		pose_transfer_csv.open(data_path + "/pose_transfer_time.csv");
+		roundtrip_csv.open(data_path + "/roundtrip_time.csv");
+		hashed.open(data_path + "/hash_device_rx.txt");
+
+		socket.set_reuseaddr();
+		socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
+		is_socket_connected = false;
+	}
+
+	virtual skip_option _p_should_skip() override {
+        if (!is_socket_connected) {
+			cout << "device_rx: Connecting to " << server_addr.str(":") << endl;
+			socket.connect(server_addr);
+			cout << "device_rx: Connected to " << server_addr.str(":") << endl;
+			is_socket_connected = true;
+		}
+		return skip_option::run;
+    }
+
+	void _p_one_iteration() override {
+		if (is_socket_connected) {
+			auto now = timestamp();
+			string delimitter = "END!";
+			string recv_data = socket.read(); /* Blocking operation, wait for the data to come */
+			if (recv_data.size() > 0) {
+				buffer_str = buffer_str + recv_data;
+				string::size_type end_position = buffer_str.find(delimitter);
+				while (end_position != string::npos) {
+					string before = buffer_str.substr(0, end_position);
+					buffer_str = buffer_str.substr(end_position + delimitter.size());
+			
+					// process the data
+					vio_output_proto::VIOOutput vio_output;
+					bool success = vio_output.ParseFromString(before);
+					if (success) {
+						// cout << "Received vio output (" << datagram.size() << " bytes) from " << client_addr.str(":") << endl;
+						ReceiveVioOutput(vio_output, before);
+					} else {
+						cout << "client_rx: Cannot parse VIO output!!" << endl;
+					}
+					end_position = buffer_str.find(delimitter);
+				}
+				cout << "Recv time = " << timestamp() - now << ", size = " << recv_data.size() << endl;
+			}
+		}
 	}
 
 private:
-	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {		
+	void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output, const string & str_data) {		
 		vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
+
+		/** Logging **/
+		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+		double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
+		pose_transfer_csv << vio_output.frame_id() << "," << vio_output.start_timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
+
+		double sec_to_trans = (curr_time - vio_output.start_timestamp()) / 1e9;
+		roundtrip_csv << vio_output.frame_id() << "," << vio_output.start_timestamp() << "," << sec_to_trans * 1e3 << std::endl;
+
+		hash<std::string> hasher;
+		auto hash_result = hasher(str_data);
+		hashed << vio_output.frame_id() << "\t" << hash_result << endl;
+
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
 			Eigen::Vector3f{
@@ -75,7 +142,9 @@ private:
 			Eigen::Quaterniond{imu_int_input.rotation().w(), imu_int_input.rotation().x(), imu_int_input.rotation().y(), imu_int_input.rotation().z()}
 		};
 
-		switchboard::ptr<imu_integrator_input> datum_imu_int =
+		datum_imu_int_tmp.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+		switchboard::ptr<imu_integrator_input> datum_imu_int = 
             _m_imu_integrator_input.allocate<imu_integrator_input>(std::move(datum_imu_int_tmp));
         _m_imu_integrator_input.put(std::move(datum_imu_int));
 	}
@@ -84,7 +153,15 @@ private:
 	switchboard::writer<pose_type> _m_pose;
 	switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
 
-	eCAL::protobuf::CSubscriber<vio_output_proto::VIOOutput> subscriber;
+	TCPSocket socket;
+	bool is_socket_connected;
+	Address server_addr;
+	string buffer_str;
+
+	const string data_path = filesystem::current_path().string() + "/recorded_data";
+	std::ofstream pose_transfer_csv;
+	std::ofstream roundtrip_csv;
+	std::ofstream hashed;
 };
 
 PLUGIN_MAIN(offload_reader)

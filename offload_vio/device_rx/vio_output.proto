@@ -47,4 +47,8 @@ message IMUIntInput {
 message VIOOutput {
     SlowPose slow_pose = 1;
     IMUIntInput imu_int_input = 2;
+    fixed64 start_timestamp = 3;
+    fixed64 end_server_timestamp = 4;
+    fixed64 dataset_timestamp = 5;
+    int32 frame_id = 6;
 }

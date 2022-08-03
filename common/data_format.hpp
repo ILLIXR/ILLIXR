@@ -43,6 +43,48 @@ namespace ILLIXR {
 		{ }
 	};
 
+	struct imu_cam_type_prof : public switchboard::event {
+		int frame_id;
+		time_point time;
+		time_point start_time; // Time that the device sent the packet
+		time_point rec_time; // Time the device received the packet
+		time_point dataset_time; // Time from dataset
+		long int created_time; // Time the imu and camera data is put to the switchboard
+		Eigen::Vector3f angular_v;
+		Eigen::Vector3f linear_a;
+		std::optional<cv::Mat> img0;
+		std::optional<cv::Mat> img1;
+		imu_cam_type_prof(int frame_id_,
+					 time_point time_,
+					 time_point start_time_,
+					 time_point rec_time_,
+					 time_point dataset_time_,
+					 long int created_time_,
+					 Eigen::Vector3f angular_v_,
+					 Eigen::Vector3f linear_a_,
+					 std::optional<cv::Mat> img0_,
+					 std::optional<cv::Mat> img1_)
+			: frame_id{frame_id_}
+			, time{time_}
+			, start_time{start_time_}
+			, rec_time{rec_time_}
+			, dataset_time{dataset_time_}
+			, created_time{created_time_} 
+			, angular_v{angular_v_}
+			, linear_a{linear_a_}
+			, img0{img0_}
+			, img1{img1_}
+		{ }
+	};
+
+	struct connection_signal : public switchboard::event {
+		bool start;
+
+		connection_signal(bool start_)
+			: start{start_}
+		{ }
+	};
+
 	struct imu_type {
 		time_point timestamp;
 		Eigen::Matrix<double, 3, 1> wm;
@@ -97,6 +139,25 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
+		long int timestamp;
+
+		imu_integrator_input()
+			: last_cam_integration_time{time_point{}}
+			, t_offset{duration(std::chrono::milliseconds{-50})}
+			, params{.gyro_noise = 0.00016968,
+				.acc_noise = 0.002,
+				.gyro_walk = 1.9393e-05,
+				.acc_walk = 0.003,
+				.n_gravity = Eigen::Matrix<double,3,1>(0.0, 0.0, -9.81),
+				.imu_integration_sigma = 1.0,
+				.nominal_rate = 200.0,}
+			, biasAcc{Eigen::Vector3d{0, 0, 0}}
+			, biasGyro{Eigen::Vector3d{0, 0, 0}}
+			, position{Eigen::Vector3d{0, 0, 0}}
+			, velocity{Eigen::Vector3d{0, 0, 0}}
+			, quat{Eigen::Quaterniond{1, 0, 0, 0}}
+			, timestamp{0}
+		{ }
 		imu_integrator_input(
 							 time_point last_cam_integration_time_,
 							 duration t_offset_,
@@ -115,6 +176,7 @@ namespace ILLIXR {
 			, position{position_}
 			, velocity{velocity_}
 			, quat{quat_}
+			, timestamp{0}
 		{ }
 	};
 
@@ -163,6 +225,40 @@ namespace ILLIXR {
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
 			: sensor_time{sensor_time_}
+			, position{position_}
+			, orientation{orientation_}
+		{ }
+	};
+
+	struct pose_type_prof : public switchboard::event {
+		int frame_id;
+		time_point sensor_time; // Recorded time of sensor data ingestion
+		time_point start_time; // Recorded time of transfer start
+		time_point rec_time; // When the server received the packet (in server time)
+		time_point dataset_time; // Sensor time
+		Eigen::Vector3f position;
+		Eigen::Quaternionf orientation;
+		pose_type_prof()
+			: frame_id{0}
+			, sensor_time{time_point{}}
+			, start_time{time_point{}}
+			, rec_time{time_point{}}
+			, dataset_time{time_point{}}
+			, position{Eigen::Vector3f{0, 0, 0}}
+			, orientation{Eigen::Quaternionf{1, 0, 0, 0}}
+		{ }
+		pose_type_prof(int frame_id_,
+				  time_point sensor_time_,
+				  time_point start_time_,
+				  time_point rec_time_,
+				  time_point dataset_time_,
+				  Eigen::Vector3f position_,
+				  Eigen::Quaternionf orientation_)
+			: frame_id{frame_id_}
+			, sensor_time{sensor_time_}
+			, start_time{start_time_}
+			, rec_time{rec_time_}
+			, dataset_time{dataset_time_}
 			, position{position_}
 			, orientation{orientation_}
 		{ }
