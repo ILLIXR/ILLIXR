@@ -162,7 +162,7 @@ public:
 			
 			float created_to_sent = (_m_clock->now().time_since_epoch().count() - datum->created_time) / 1e6;
 			std::cout << "Created to send: " << created_to_sent << "\n";
-			if ((float)rand()/RAND_MAX < 0.1) {
+			if (false) {
 				std::cout << "dropping " << drop_count++ << "\n";
 			} else {
 				// if ((float)rand()/RAND_MAX < 0.2) {std::cout << "dropping " << drop_count++ << "\n"; return;} // drop packets

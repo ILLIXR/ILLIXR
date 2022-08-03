@@ -44,6 +44,7 @@ public:
 		
 		receive_time.open(data_path + "/receive_time.csv");
 		hashed_data.open(data_path + "/hash_server_rx.txt");
+		dec_latency.open(data_path + "/dec.csv");
 		socket.set_reuseaddr();
 		socket.bind(server_addr);
 	}
@@ -108,7 +109,8 @@ public:
 
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                std::cout << "=== latency: " << curr - timestamp << std::endl;
+                std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
+				dec_latency << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -198,6 +200,7 @@ private:
 	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream receive_time;
 	std::ofstream hashed_data;
+	std::ofstream dec_latency;
 };
 
 PLUGIN_MAIN(server_reader)
