@@ -6,6 +6,8 @@
 #include <opencv2/core/mat.hpp>
 #include <filesystem>
 #include <fstream>
+#include <ctime>
+#include <cstdlib>
 
 #include "vio_input.pb.h"
 #include "common/network/socket.hpp"
@@ -19,7 +21,9 @@ public:
     offload_writer(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
 		, server_addr(SERVER_IP, SERVER_PORT_1)
+		, drop_count{0}
     { 
 		socket.set_reuseaddr();
 		socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
@@ -35,6 +39,7 @@ public:
 		frame_info.open(data_path + "/frame_info.csv");
 
 		frame_info << "frame_id,created_to_sent_time_ms,duration_to_send_ms,is_dropped" << endl;
+		std::srand(std::time(0));
 	}
 
 
@@ -93,16 +98,23 @@ public:
 			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 			data_buffer->set_frame_id(frame_id);
 			
-			// Prepare data delivery
-			string data_to_be_sent = data_buffer->SerializeAsString();
-			string delimitter = "END!";
-
-			float created_to_sent = (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - datum->created_time) / 1e6;
-			if (created_to_sent > 100) {
-				frame_info << frame_id << "," << created_to_sent << ",0,1" << endl;
+			float created_to_sent = (_m_clock->now().time_since_epoch().count() - datum->created_time) / 1e6;
+			std::cout << "Created to send: " << created_to_sent << "\n";
+			if ((float)rand()/RAND_MAX < 0.1) {
+				std::cout << "dropping " << drop_count++ << "\n";
 			} else {
+				// if ((float)rand()/RAND_MAX < 0.2) {std::cout << "dropping " << drop_count++ << "\n"; return;} // drop packets
+				
+				// Prepare data delivery
+				string data_to_be_sent = data_buffer->SerializeAsString();
+				// std::cout << "Packet size: " << data_to_be_sent.size() << "\n";
+				string delimitter = "END!";
+
+				// float created_to_sent = (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - datum->created_time) / 1e6;
+				// cout << "before write\n";
 				auto start = timestamp();
 				socket.write(data_to_be_sent + delimitter);
+				// cout << "after write\n";
 				auto send_duration = timestamp() - start;
 				frame_info << frame_id << "," << created_to_sent << "," << send_duration << ",0" << endl;
 
@@ -110,19 +122,7 @@ public:
 				auto hash_result = hasher(data_to_be_sent);
 				hashed_data << frame_id << "\t" << hash_result << "\t" << data_buffer->dataset_timestamp() << endl;
 			}
-
-			// auto start = timestamp();
-			// socket.write(data_to_be_sent + delimitter);
-			// auto send_duration = timestamp() - start;
-			// cam_data_created_to_send_time << created_to_sent << endl;
-			// cout << "Frame id = " << frame_id << ", send time = " << send_duration << ", created_to_send = " << created_to_sent << endl;
-
-			hash<std::string> hasher;
-			auto hash_result = hasher(data_to_be_sent);
-			hashed_data << frame_id << "\t" << hash_result << "\t" << data_buffer->dataset_timestamp() << endl;
-			
 			frame_id++;
-
 			delete data_buffer;
 			data_buffer = new vio_input_proto::IMUCamVec();
 		}
@@ -134,6 +134,7 @@ private:
 	int frame_id = 0;
 	vio_input_proto::IMUCamVec* data_buffer = new vio_input_proto::IMUCamVec();
     const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<RelativeClock> _m_clock;
 
 	TCPSocket socket;
 	Address server_addr;
@@ -141,6 +142,8 @@ private:
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream hashed_data;
 	std::ofstream frame_info; 
+
+	int drop_count;
 };
 
 PLUGIN_MAIN(offload_writer)

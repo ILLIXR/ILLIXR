@@ -1,6 +1,8 @@
 #include <chrono>
 #include <iomanip>
 #include <thread>
+#include <filesystem>
+#include <fstream>
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 #include "common/data_format.hpp"
@@ -19,16 +21,23 @@ public:
 		, _m_sensor_data{load_data()}
 		, _m_dataset_first_time{_m_sensor_data.cbegin()->first}
 		, _m_first_time{true}
-	{ }
+	{
+		if (!std::filesystem::exists(data_path)) {
+			if (!std::filesystem::create_directory(data_path)) {
+				std::cerr << "Failed to create data directory.";
+			}
+		}
+		truth_csv.open(data_path + "/truth.csv");
+	}
 
 	virtual void start() override {
 		plugin::start();
-		sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+		sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
 			this->feed_ground_truth(datum);
 		});
 	}
 
-	void feed_ground_truth(switchboard::ptr<const imu_cam_type> datum) {
+	void feed_ground_truth(switchboard::ptr<const imu_cam_type_prof> datum) {
 		ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
 		auto it = _m_sensor_data.find(rounded_time);
 
@@ -72,6 +81,14 @@ public:
 		}
 
 		_m_true_pose.put(std::move(true_pose));
+		truth_csv << datum->time.time_since_epoch().count() << ","
+				  << true_pose->position.x() << ","
+				  << true_pose->position.y() << ","
+				  << true_pose->position.z() << ","
+				  << true_pose->orientation.w() << ","
+				  << true_pose->orientation.x() << ","
+				  << true_pose->orientation.y() << ","
+				  << true_pose->orientation.z() << std::endl;
 	}
 
 private:
@@ -81,6 +98,9 @@ private:
 	const std::map<ullong, sensor_types> _m_sensor_data;
     ullong _m_dataset_first_time;
     bool _m_first_time;
+
+	const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+	std::ofstream truth_csv;
 };
 
 PLUGIN_MAIN(ground_truth_slam);
