@@ -184,15 +184,6 @@ private:
 		// std::cout << vio_input.frame_id() << ": Seconds to push data (ms): " << sec_to_push * 1e3 << std::endl;
 	}
 
-protected:
-    skip_option _p_should_skip() override {
-        return ILLIXR::threadloop::skip_option::skip_and_yield;
-    }
-
-    void _p_one_iteration() override {
-
-    }
-
 private:
 
     const std::shared_ptr<switchboard> sb;
