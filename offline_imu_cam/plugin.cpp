@@ -129,7 +129,7 @@ protected:
 				time_point{},
 				time_point{},
 				time_point{std::chrono::nanoseconds(dataset_now)},
-				std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count(),
+				_m_clock->now().time_since_epoch().count(), // std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count(),
                 (sensor_datum.imu0.value().angular_v).cast<float>(),
                 (sensor_datum.imu0.value().linear_a).cast<float>(),
                 cam0,
