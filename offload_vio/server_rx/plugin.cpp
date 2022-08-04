@@ -158,8 +158,8 @@ private:
 //				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
 //				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
 
-                cam0 = std::make_optional<cv::Mat>(std::move(img0));
-                cam1 = std::make_optional<cv::Mat>(std::move(img1));
+                cam0 = std::make_optional<cv::Mat>(img0.clone());
+                cam1 = std::make_optional<cv::Mat>(img0.clone());
 
                 std::cout << "unlock" << std::endl;
                 lock.unlock();
