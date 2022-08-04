@@ -52,6 +52,7 @@ public:
 		
 		hashed_data.open(data_path + "/hash_device_tx.txt");
 		frame_info.open(data_path + "/frame_info.csv");
+		enc_latency.open(data_path + "/enc.csv");
 
 		frame_info << "frame_id,created_to_sent_time_ms,duration_to_send_ms,is_dropped" << endl;
 		std::srand(std::time(0));
@@ -64,6 +65,7 @@ public:
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
+				enc_latency << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -97,6 +99,7 @@ protected:
 public:
 
     void send_imu_cam_data(switchboard::ptr<const imu_cam_type_prof> datum) {
+		std::cout << "start sending imu_cam\n";
 		// Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
             assert(previous_timestamp == 0);
@@ -125,14 +128,43 @@ public:
 			imu_cam_data->set_rows(-1);
 			imu_cam_data->set_cols(-1);
 		} else {
-			cv::Mat img0{(datum->img0.value()).clone()};
-			cv::Mat img1{(datum->img1.value()).clone()};
+			cv::Mat img0 = (datum->img0.value()).clone();
+			cv::Mat img1 = (datum->img1.value()).clone();
+
+            // size of img0
+            double img0_size = img0.total() * img0.elemSize();
+			std::cout << "rows: " << img0.rows << " cols: " << img0.cols << "\n";
+
+			std::cout << "start compression\n";
+            // get nanoseconds since epoch
+            uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            queue.push(curr);
+            std::unique_lock<std::mutex> lock{mutex};
+            encoder->enqueue(img0, img1);
+			std::cout << "after enqueue\n";
+            cv.wait(lock, [this]() { return img_ready; });
+			std::cout << "after wait\n";
+            img_ready = false;
+
+			imu_cam_data->set_img0_size(this->img0.size);
+			imu_cam_data->set_img1_size(this->img1.size);
+
+            sizes.push_back(this->img0.size);
+
+            // calculate average sizes
+            if (sizes.size() > 100) {
+                int32_t sum = 0;
+                for (auto& s : sizes) {
+                    sum += s;
+                }
+                std::cout << sizes.size() << " average size: " << img0_size / (sum / sizes.size()) << " " << sum / sizes.size() << std::endl;
+            }
 
 			imu_cam_data->set_rows(img0.rows);
 			imu_cam_data->set_cols(img0.cols);
 
-			imu_cam_data->set_img0_data((void*) img0.data, img0.rows * img0.cols);
-			imu_cam_data->set_img1_data((void*) img1.data, img1.rows * img1.cols);
+            lock.unlock();
+			std::cout << "after compression\n";
 
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
@@ -182,7 +214,8 @@ private:
 
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream hashed_data;
-	std::ofstream frame_info; 
+	std::ofstream frame_info;
+	std::ofstream enc_latency;
 
 	int drop_count;
 };
