@@ -104,8 +104,8 @@ public:
             std::cout << "callback" << std::endl;
 
             // show img0
-            cv::imshow("img0", img0);
-            cv::waitKey(1);
+            // cv::imshow("img0", img0);
+            // cv::waitKey(1);
 
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -159,7 +159,7 @@ private:
 //				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
 
                 cam0 = std::make_optional<cv::Mat>(img0.clone());
-                cam1 = std::make_optional<cv::Mat>(img0.clone());
+                cam1 = std::make_optional<cv::Mat>(img1.clone());
 
                 std::cout << "unlock" << std::endl;
                 lock.unlock();
