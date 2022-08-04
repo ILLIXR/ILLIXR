@@ -46,12 +46,12 @@ namespace ILLIXR {
         auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
         auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
 
-        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=NV12,width=752,height=480,framerate=0/1");
+        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=NV12,width=672,height=376,framerate=0/1"); // 752/480 for euroc
         g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_8uc1, nullptr);
         g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
         gst_caps_unref(caps_8uc1);
 
-        auto caps_convert_to = gst_caps_from_string("video/x-raw,format=NV12,width=752,height=480");
+        auto caps_convert_to = gst_caps_from_string("video/x-raw,format=NV12,width=672,height=376"); // 752/480 for euroc
         g_object_set(G_OBJECT(caps_filter_0), "caps", caps_convert_to, nullptr);
         g_object_set(G_OBJECT(caps_filter_1), "caps", caps_convert_to, nullptr);
         gst_caps_unref(caps_convert_to);
