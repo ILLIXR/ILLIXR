@@ -6,6 +6,7 @@
 #include "common/switchboard.hpp"
 #include "vio_input.pb.h"
 
+#include <opencv/cv.hpp>
 #include <opencv2/core/mat.hpp>
 #include <filesystem>
 #include <fstream>
@@ -53,6 +54,7 @@ public:
 		hashed_data.open(data_path + "/hash_device_tx.txt");
 		frame_info.open(data_path + "/frame_info.csv");
 		enc_latency.open(data_path + "/enc.csv");
+		time_srl.open(data_path + "/srl.csv");
 
 		frame_info << "frame_id,created_to_sent_time_ms,duration_to_send_ms,is_dropped" << endl;
 		std::srand(std::time(0));
@@ -65,7 +67,6 @@ public:
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
-				enc_latency << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -129,16 +130,23 @@ public:
 		} else {
 			cv::Mat img0 = (datum->img0.value()).clone();
 			cv::Mat img1 = (datum->img1.value()).clone();
+			// cv::imshow("img0", img0);
+			// cv::waitKey(1);
+			// cv::imshow("img1", img1);
+			// cv::waitKey(1);
+			// std::cout << "img0 rows: " << img0.rows << "img0 cols: " << img0.cols << std::endl;
 
             // size of img0
             double img0_size = img0.total() * img0.elemSize();
 
             // get nanoseconds since epoch
             uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			auto start_cmp = timestamp();
             queue.push(curr);
             std::unique_lock<std::mutex> lock{mutex};
             encoder->enqueue(img0, img1);
             cv.wait(lock, [this]() { return img_ready; });
+			enc_latency << frame_id << "," << datum->time.time_since_epoch().count() << "," << timestamp() - start_cmp << std::endl;
             img_ready = false;
 
 			imu_cam_data->set_img0_size(this->img0.size);
@@ -163,6 +171,7 @@ public:
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
 			data_buffer->set_frame_id(frame_id);
+			data_buffer->set_cam_time(datum->time.time_since_epoch().count());
 			
 			float created_to_sent = (_m_clock->now().time_since_epoch().count() - datum->created_time) / 1e6;
 			std::cout << "Created to send: " << created_to_sent << "\n";
@@ -172,7 +181,9 @@ public:
 				// if ((float)rand()/RAND_MAX < 0.2) {std::cout << "dropping " << drop_count++ << "\n"; return;} // drop packets
 				
 				// Prepare data delivery
+				auto start_srl = timestamp();
 				string data_to_be_sent = data_buffer->SerializeAsString();
+				time_srl << frame_id << "," << datum->time.time_since_epoch().count() << "," << timestamp() - start_srl << std::endl;
 				// std::cout << "Packet size: " << data_to_be_sent.size() << "\n";
 				string delimitter = "END!";
 
@@ -210,6 +221,7 @@ private:
 	std::ofstream hashed_data;
 	std::ofstream frame_info;
 	std::ofstream enc_latency;
+	std::ofstream time_srl;
 
 	int drop_count;
 };
