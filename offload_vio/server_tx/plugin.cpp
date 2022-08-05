@@ -154,12 +154,13 @@ public:
 			long int now = timestamp();
 			write_socket->write(data_to_be_sent + delimitter);
 			long int send_duration = timestamp() - now;
+			std::cout << "send_duration: " << send_duration << std::endl;
 			last_send_time = now;
 
-			hash<std::string> hasher;
-			auto hash_result = hasher(data_to_be_sent);
+			// hash<std::string> hasher;
+			// auto hash_result = hasher(data_to_be_sent);
 
-			hashed << datum->frame_id << "\t" << hash_result << endl;
+			// hashed << datum->frame_id << "\t" << hash_result << endl;
 
 			delete vio_output_params;
 		} else {

@@ -193,9 +193,9 @@ public:
 				auto send_duration = timestamp() - start;
 				frame_info << frame_id << "," << created_to_sent << "," << send_duration << ",0" << endl;
 
-				hash<std::string> hasher;
-				auto hash_result = hasher(data_to_be_sent);
-				hashed_data << frame_id << "\t" << hash_result << "\t" << data_buffer->dataset_timestamp() << endl;
+				// hash<std::string> hasher;
+				// auto hash_result = hasher(data_to_be_sent);
+				// hashed_data << frame_id << "\t" << hash_result << "\t" << data_buffer->dataset_timestamp() << endl;
 			}
 			frame_id++;
 			delete data_buffer;
