@@ -79,9 +79,9 @@ public:
 						cout << "Error parsing the protobuf, vio input size = " << before.size() << endl;
 					} else {
 						// cout << "Received the protobuf data!" << endl;
-						hash<std::string> hasher;
-						auto hash_result = hasher(before);
-						hashed_data << vio_input.frame_id() << "\t" << hash_result << endl;
+						// hash<std::string> hasher;
+						// auto hash_result = hasher(before);
+						// hashed_data << vio_input.frame_id() << "\t" << hash_result << endl;
 						cout << "Receive frame id = " << vio_input.frame_id() << endl;
 						ReceiveVioInput(vio_input);
 					}
