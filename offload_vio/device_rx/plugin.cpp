@@ -100,9 +100,9 @@ private:
 		double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
 		roundtrip_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
 
-		hash<std::string> hasher;
-		auto hash_result = hasher(str_data);
-		hashed << vio_output.frame_id() << "\t" << hash_result << endl;
+		// hash<std::string> hasher;
+		// auto hash_result = hasher(str_data);
+		// hashed << vio_output.frame_id() << "\t" << hash_result << endl;
 
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
