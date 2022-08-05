@@ -109,7 +109,6 @@ public:
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
-				dec_latency << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -129,7 +128,8 @@ private:
 		// Logging
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
-		receive_time << vio_input.frame_id() << "," << vio_input.real_timestamp() << "," << sec_to_trans * 1e3 << std::endl;
+		// receive_time << vio_input.frame_id() << "," << vio_input.real_timestamp() << "," << sec_to_trans * 1e3 << std::endl;
+		receive_time << vio_input.frame_id() << "," << vio_input.cam_time() << "," << sec_to_trans * 1e3 << std::endl;
 
 		// Loop through all IMU values first then the cam frame	
 		for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
@@ -146,12 +146,14 @@ private:
 
                 std::cout << "img0 size: " << curr_data.img0_size() << std::endl;
 
+				auto start_dcmp = timestamp();
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 queue.push(curr);
                 std::unique_lock<std::mutex> lock{mutex};
                 decoder->enqueue(img0_copy, img1_copy);
                 cv.wait(lock, [this]() { return img_ready; });
                 img_ready = false;
+				dec_latency << vio_input.frame_id() << "," << vio_input.cam_time() << "," << timestamp() - start_dcmp << std::endl;
 
 //				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
 //				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());

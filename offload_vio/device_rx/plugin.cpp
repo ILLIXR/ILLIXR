@@ -94,10 +94,10 @@ private:
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 		double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
-		pose_transfer_csv << vio_output.frame_id() << "," << vio_output.start_timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
+		pose_transfer_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
 
-		double sec_to_trans = (curr_time - vio_output.start_timestamp()) / 1e9;
-		roundtrip_csv << vio_output.frame_id() << "," << vio_output.start_timestamp() << "," << sec_to_trans * 1e3 << std::endl;
+		double sec_to_trans = (curr_time - slow_pose.timestamp()) / 1e9;
+		roundtrip_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
 
 		hash<std::string> hasher;
 		auto hash_result = hasher(str_data);
