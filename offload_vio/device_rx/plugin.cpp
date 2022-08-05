@@ -19,6 +19,7 @@ public:
     offload_reader(std::string name_, phonebook* pb_)
 		: threadloop{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
+		, _m_clock{pb->lookup_impl<RelativeClock>()}
 		, _m_pose{sb->get_writer<pose_type>("slow_pose")}
 		, _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
 		, server_addr(SERVER_IP, SERVER_PORT_2)
@@ -94,7 +95,7 @@ private:
 		double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
 		pose_transfer_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
 
-		double sec_to_trans = (curr_time - slow_pose.timestamp()) / 1e9;
+		double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
 		roundtrip_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
 
 		hash<std::string> hasher;
@@ -150,6 +151,7 @@ private:
 	}
 
     const std::shared_ptr<switchboard> sb;
+	const std::shared_ptr<RelativeClock> _m_clock;
 	switchboard::writer<pose_type> _m_pose;
 	switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
 
