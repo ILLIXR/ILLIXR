@@ -9,26 +9,28 @@
 
 namespace ILLIXR {
 
-// Display width in pixels
-static constexpr unsigned display_width = 2560;
+struct display_params {
+    // Display width in pixels
+    static constexpr unsigned width = 2560;
 
-// Display height in pixels
-static constexpr unsigned display_height = 1440;
+    // Display height in pixels
+    static constexpr unsigned height = 1440;
 
-// Display refresh rate in Hz
-static constexpr float display_frequency = 120.0f;
+    // Display refresh rate in Hz
+    static constexpr float frequency = 120.0f;
 
-// Display period in nanoseconds
-static constexpr duration display_period = freq2period(display_frequency);
+    // Display period in nanoseconds
+    static constexpr duration period = freq2period(frequency);
 
-// Display horizontal field-of-view in degrees
-static constexpr float display_fov_x = 45.0f;
+    // Display horizontal field-of-view in degrees
+    static constexpr float fov_x = 45.0f;
 
-// Display vertical field-of-view in degrees
-static constexpr float display_fov_y = 45.0f;
+    // Display vertical field-of-view in degrees
+    static constexpr float fov_y = 45.0f;
 
-// Inter-pupilary distance (ipd) in meters
-static constexpr float ipd = 0.064f;
+    // Inter-pupilary distance (ipd) in meters
+    static constexpr float ipd = 0.064f;
+};
 
 /**
  * @brief Convert a string containing a (python) boolean to the bool type

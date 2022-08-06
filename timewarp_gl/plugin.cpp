@@ -150,7 +150,7 @@ private:
     duration offload_duration;
 
     GLubyte* readTextureImage() {
-        GLubyte* pixels = new GLubyte[display_width * display_height * 3];
+        GLubyte* pixels = new GLubyte[display_params::width * display_params::height * 3];
 
         // Start timer
         time_point startGetTexTime = _m_clock->now();
@@ -165,7 +165,7 @@ private:
         GLubyte* ptr = (GLubyte*) glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
 
         // Copy texture to CPU memory
-        memcpy(pixels, ptr, display_width * display_height * 3);
+        memcpy(pixels, ptr, display_params::width * display_params::height * 3);
 
         // Unmap the buffer
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
@@ -259,7 +259,7 @@ private:
             }
         }
         // Construct a basic perspective projection
-        math_util::projection_fov(&basicProjection, display_fov_x, display_fov_x, display_fov_y, display_fov_y, 0.1f, 0.0f);
+        math_util::projection_fov(&basicProjection, display_params::fov_x, display_params::fov_x, display_params::fov_y, display_params::fov_y, 0.1f, 0.0f);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -290,7 +290,7 @@ private:
     // Get the estimated time of the next swap/next Vsync.
     // This is an estimate, used to wait until *just* before vsync.
     time_point GetNextSwapTimeEstimate() {
-        return time_last_swap + display_period;
+        return time_last_swap + display_params::period;
     }
 
     // Get the estimated amount of time to put the CPU thread to sleep,
@@ -321,10 +321,10 @@ public:
         // Wait a vsync for gldemo to go first.
         // This first time_last_swap will be "out of phase" with actual vsync.
         // The second one should be on the dot, since we don't exit the first until actual vsync.
-        time_last_swap = _m_clock->now() + display_period;
+        time_last_swap = _m_clock->now() + display_params::period;
 
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_width, display_height, &hmd_info);
+        HMD::GetDefaultHmdInfo(display_params::width, display_params::height, &hmd_info);
 
         // Construct timewarp meshes and other data
         BuildTimewarp(&hmd_info);
@@ -436,7 +436,7 @@ public:
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-            glBufferData(GL_PIXEL_PACK_BUFFER, display_width * display_height * 3, 0, GL_STREAM_DRAW);
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width * display_params::height * 3, 0, GL_STREAM_DRAW);
         }
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
@@ -448,7 +448,7 @@ public:
         assert(gl_result && "glXMakeCurrent should not fail");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, display_width, display_height);
+        glViewport(0, 0, display_params::width, display_params::height);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         glDepthFunc(GL_LEQUAL);
@@ -566,7 +566,7 @@ public:
             std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
         }
 
-        if (time_since_render > display_period) {
+        if (time_since_render > display_params::period) {
             std::cout << "\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!" << std::endl;
         }
 #endif

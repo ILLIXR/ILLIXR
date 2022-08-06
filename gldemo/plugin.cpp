@@ -49,7 +49,7 @@ public:
         if (next_vsync == nullptr) {
             // If no vsync data available, just sleep for roughly a vsync period.
             // We'll get synced back up later.
-            std::this_thread::sleep_for(display_period);
+            std::this_thread::sleep_for(display_params::period);
             return;
         }
 
@@ -60,7 +60,7 @@ public:
         }
 #endif
 
-        bool hasRenderedThisInterval = (now - lastTime) < display_period;
+        bool hasRenderedThisInterval = (now - lastTime) < display_params::period;
 
         // If less than one frame interval has passed since we last rendered...
         if (hasRenderedThisInterval) {
@@ -71,7 +71,7 @@ public:
             // If our sleep target is in the past, bump it forward
             // by a vsync period, so it's always in the future.
             while (wait_time < now) {
-                wait_time += display_period;
+                wait_time += display_params::period;
             }
 
 #ifndef NDEBUG
@@ -110,7 +110,7 @@ public:
 
         glUseProgram(demoShaderProgram);
         glBindVertexArray(demo_vao);
-        glViewport(0, 0, display_width, display_height);
+        glViewport(0, 0, display_params::width, display_params::height);
 
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
@@ -133,7 +133,7 @@ public:
 
         for (auto eye_idx = 0; eye_idx < 2; eye_idx++) {
             // Offset of eyeball from pose
-            auto eyeball = Eigen::Vector3f((eye_idx == LEFT_EYE ? -ipd / 2.0f : ipd / 2.0f), 0, 0);
+            auto eyeball = Eigen::Vector3f((eye_idx == LEFT_EYE ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
 
             // Apply head rotation to eyeball offset vector
             eyeball = head_rotation_matrix * eyeball;
@@ -248,7 +248,7 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_width, display_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width, display_params::height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
         // Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -262,8 +262,8 @@ private:
         glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
         glGenRenderbuffers(1, depth_target);
         glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, display_width, display_height);
-        // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_width, display_height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, display_params::width, display_params::height);
+        // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_params::width, display_params::height);
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -328,7 +328,7 @@ public:
         demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 
         // Construct a basic perspective projection
-        math_util::projection_fov(&basicProjection, display_fov_x, display_fov_x, display_fov_y, display_fov_y, 0.03f, 20.0f);
+        math_util::projection_fov(&basicProjection, display_params::fov_x, display_params::fov_x, display_params::fov_y, display_params::fov_y, 0.03f, 20.0f);
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");

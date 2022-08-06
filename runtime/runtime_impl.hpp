@@ -30,7 +30,7 @@ public:
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 #ifndef ILLIXR_MONADO_MAINLINE
         pb.register_impl<xlib_gl_extended_window>(
-            std::make_shared<xlib_gl_extended_window>(display_width, display_height, appGLCtx));
+            std::make_shared<xlib_gl_extended_window>(display_params::width, display_params::height, appGLCtx));
 #endif /// ILLIXR_MONADO_MAINLINE
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
