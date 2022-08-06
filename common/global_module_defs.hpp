@@ -4,6 +4,7 @@
 
 #include "relative_clock.hpp"
 
+#include <math.h>
 #include <stdexcept>
 #include <string>
 
@@ -11,10 +12,34 @@ namespace ILLIXR {
 
 struct display_params {
     // Display width in pixels
-    static constexpr unsigned width = 2560;
+    static constexpr unsigned width_pixels = 2560;
 
     // Display height in pixels
-    static constexpr unsigned height = 1440;
+    static constexpr unsigned height_pixels = 1440;
+
+    // Display width in meters
+    static constexpr float width_meters = 0.11047f;
+
+    // Display height in meters
+    static constexpr float height_meters = 0.06214f;
+
+    // Separation between lens centers in meters
+    static constexpr float lens_separation = width_meters / 2.0f;
+
+    // Vertical position of the lens in meters
+    static constexpr float lens_vertical_position = height_meters / 2.0f;
+
+    // Display horizontal field-of-view in degrees
+    static constexpr float fov_x = 90.0f;
+
+    // Display vertical field-of-view in degrees
+    static constexpr float fov_y = 90.0f;
+
+    // Meters per tangent angle at the center of the HMD (required by timewarp_gl's distortion correction)
+    static constexpr float meters_per_tan_angle = width_meters / (2 * (fov_x * M_PI / 180.0f));
+
+    // Inter-pupilary distance (ipd) in meters
+    static constexpr float ipd = 0.064f;
 
     // Display refresh rate in Hz
     static constexpr float frequency = 120.0f;
@@ -22,14 +47,8 @@ struct display_params {
     // Display period in nanoseconds
     static constexpr duration period = freq2period(frequency);
 
-    // Display horizontal field-of-view in degrees
-    static constexpr float fov_x = 45.0f;
-
-    // Display vertical field-of-view in degrees
-    static constexpr float fov_y = 45.0f;
-
-    // Inter-pupilary distance (ipd) in meters
-    static constexpr float ipd = 0.064f;
+    // Chromatic aberration constants
+    static constexpr float aberration[4] = {-0.016f, 0.0f, 0.024f, 0.0f};
 };
 
 /**

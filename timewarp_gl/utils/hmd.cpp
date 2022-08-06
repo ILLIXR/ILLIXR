@@ -91,7 +91,14 @@ void HMD::BuildDistortionMeshes(mesh_coord2d_t* distort_coords[NUM_EYES][NUM_COL
     }
 }
 
-void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixelsHigh, hmd_info_t& hmd_info) {
+void HMD::GetDefaultHmdInfo(const int displayPixelsWide,
+                            const int displayPixelsHigh,
+                            const float displayMetersWide,
+                            const float displayMetersHigh,
+                            const float lensSeparation,
+                            const float metersPerTanAngle,
+                            const float aberration[4],
+                            hmd_info_t& hmd_info) {
     hmd_info.displayPixelsWide = displayPixelsWide;
     hmd_info.displayPixelsHigh = displayPixelsHigh;
     hmd_info.tilePixelsWide    = 32;
@@ -100,10 +107,10 @@ void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixels
     hmd_info.eyeTilesHigh      = displayPixelsHigh / hmd_info.tilePixelsHigh;
     hmd_info.visiblePixelsWide = hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES;
     hmd_info.visiblePixelsHigh = hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh;
-    hmd_info.visibleMetersWide = 0.11047f * (hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / displayPixelsWide;
-    hmd_info.visibleMetersHigh = 0.06214f * (hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / displayPixelsHigh;
-    hmd_info.lensSeparationInMeters    = hmd_info.visibleMetersWide / NUM_EYES;
-    hmd_info.metersPerTanAngleAtCenter = 0.037f;
+    hmd_info.visibleMetersWide = displayMetersWide * (hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / displayPixelsWide;
+    hmd_info.visibleMetersHigh = displayMetersHigh * (hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / displayPixelsHigh;
+    hmd_info.lensSeparationInMeters    = lensSeparation;
+    hmd_info.metersPerTanAngleAtCenter = metersPerTanAngle;
     hmd_info.numKnots                  = 11;
     hmd_info.K[0]                      = 1.0f;
     hmd_info.K[1]                      = 1.021f;
@@ -116,8 +123,8 @@ void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixels
     hmd_info.K[8]                      = 1.368f;
     hmd_info.K[9]                      = 1.452f;
     hmd_info.K[10]                     = 1.560f;
-    hmd_info.chromaticAberration[0]    = -0.016f;
-    hmd_info.chromaticAberration[1]    = 0.0f;
-    hmd_info.chromaticAberration[2]    = 0.024f;
-    hmd_info.chromaticAberration[3]    = 0.0f;
+    hmd_info.chromaticAberration[0]    = aberration[0];
+    hmd_info.chromaticAberration[1]    = aberration[1];
+    hmd_info.chromaticAberration[2]    = aberration[2];
+    hmd_info.chromaticAberration[3]    = aberration[3];
 }

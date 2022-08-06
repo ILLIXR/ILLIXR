@@ -110,7 +110,7 @@ public:
 
         glUseProgram(demoShaderProgram);
         glBindVertexArray(demo_vao);
-        glViewport(0, 0, display_params::width, display_params::height);
+        glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
 
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
@@ -248,7 +248,7 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width, display_params::height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width_pixels, display_params::height_pixels, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
         // Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -262,8 +262,8 @@ private:
         glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
         glGenRenderbuffers(1, depth_target);
         glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, display_params::width, display_params::height);
-        // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_params::width, display_params::height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, display_params::width_pixels, display_params::height_pixels);
+        // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_params::width_pixels, display_params::height_pixels);
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -328,7 +328,8 @@ public:
         demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 
         // Construct a basic perspective projection
-        math_util::projection_fov(&basicProjection, display_params::fov_x, display_params::fov_x, display_params::fov_y, display_params::fov_y, 0.03f, 20.0f);
+        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, 0.03f, 20.0f);
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");

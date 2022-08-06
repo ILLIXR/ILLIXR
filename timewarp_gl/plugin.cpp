@@ -150,7 +150,8 @@ private:
     duration offload_duration;
 
     GLubyte* readTextureImage() {
-        GLubyte* pixels = new GLubyte[display_params::width * display_params::height * 3];
+        const unsigned memSize = display_params::width_pixels * display_params::height_pixels * 3;
+        GLubyte* pixels = new GLubyte[memSize];
 
         // Start timer
         time_point startGetTexTime = _m_clock->now();
@@ -165,7 +166,7 @@ private:
         GLubyte* ptr = (GLubyte*) glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
 
         // Copy texture to CPU memory
-        memcpy(pixels, ptr, display_params::width * display_params::height * 3);
+        memcpy(pixels, ptr, memSize);
 
         // Unmap the buffer
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
@@ -259,7 +260,8 @@ private:
             }
         }
         // Construct a basic perspective projection
-        math_util::projection_fov(&basicProjection, display_params::fov_x, display_params::fov_x, display_params::fov_y, display_params::fov_y, 0.1f, 0.0f);
+        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, 0.1f, 0.0f);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -324,7 +326,12 @@ public:
         time_last_swap = _m_clock->now() + display_params::period;
 
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_params::width, display_params::height, hmd_info);
+        //HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, hmd_info);
+
+        HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels,
+            display_params::width_meters, display_params::height_meters,
+            display_params::lens_separation, display_params::meters_per_tan_angle,
+            display_params::aberration, hmd_info);
 
         // Construct timewarp meshes and other data
         BuildTimewarp(hmd_info);
@@ -433,7 +440,7 @@ public:
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width * display_params::height * 3, 0, GL_STREAM_DRAW);
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, 0, GL_STREAM_DRAW);
         }
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
@@ -445,7 +452,7 @@ public:
         assert(gl_result && "glXMakeCurrent should not fail");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, display_params::width, display_params::height);
+        glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         glDepthFunc(GL_LEQUAL);
