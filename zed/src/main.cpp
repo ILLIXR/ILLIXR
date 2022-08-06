@@ -45,12 +45,13 @@ std::shared_ptr<Camera> start_camera() {
     // Cam setup
     InitParameters init_params;
     init_params.camera_resolution   = RESOLUTION::VGA;
-    init_params.coordinate_units    = UNIT::MILLIMETER;                           // for kf
+    init_params.coordinate_units    = UNIT::MILLIMETER;                           // For scene reconstruction
     init_params.coordinate_system   = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
     init_params.camera_fps          = 15;
     init_params.depth_mode          = DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization = true;
-    // init_params.depth_minimum_distance = 0.1;
+    init_params.depth_minimum_distance = 0.3;
+
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
     if (err != ERROR_CODE::SUCCESS) {
@@ -58,8 +59,8 @@ std::shared_ptr<Camera> start_camera() {
         zedm->close();
     }
 
-    // This is 4% of camera frame time, not 4 ms
-    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, 4);
+    // This is 8% of camera frame time, not 8 ms
+    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, 8);
 
     return zedm;
 }
