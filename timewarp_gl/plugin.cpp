@@ -342,7 +342,6 @@ public:
         glewExperimental      = GL_TRUE;
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            /// TODO: Clean up?
             std::cerr << "[timewarp_gl] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
             ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
         }
@@ -350,8 +349,6 @@ public:
         glEnable(GL_DEBUG_OUTPUT);
 
         glDebugMessageCallback(MessageCallback, 0);
-
-        // TODO: X window v-synch
 
         // Create and bind global VAO object
         glGenVertexArrays(1, &tw_vao);
