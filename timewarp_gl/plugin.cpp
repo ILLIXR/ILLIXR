@@ -184,27 +184,27 @@ private:
         return pixels;
     }
 
-    void BuildTimewarp(HMD::hmd_info_t* hmdInfo) {
+    void BuildTimewarp(HMD::hmd_info_t& hmdInfo) {
         // Calculate the number of vertices+indices in the distortion mesh.
-        num_distortion_vertices = (hmdInfo->eyeTilesHigh + 1) * (hmdInfo->eyeTilesWide + 1);
-        num_distortion_indices  = hmdInfo->eyeTilesHigh * hmdInfo->eyeTilesWide * 6;
+        num_distortion_vertices = (hmdInfo.eyeTilesHigh + 1) * (hmdInfo.eyeTilesWide + 1);
+        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6;
 
         // Allocate memory for the elements/indices array.
         distortion_indices.resize(num_distortion_indices);
 
         // This is just a simple grid/plane index array, nothing fancy.
         // Same for both eye distortions, too!
-        for (int y = 0; y < hmdInfo->eyeTilesHigh; y++) {
-            for (int x = 0; x < hmdInfo->eyeTilesWide; x++) {
-                const int offset = (y * hmdInfo->eyeTilesWide + x) * 6;
+        for (int y = 0; y < hmdInfo.eyeTilesHigh; y++) {
+            for (int x = 0; x < hmdInfo.eyeTilesWide; x++) {
+                const int offset = (y * hmdInfo.eyeTilesWide + x) * 6;
 
-                distortion_indices[offset + 0] = (GLuint) ((y + 0) * (hmdInfo->eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 1] = (GLuint) ((y + 1) * (hmdInfo->eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 2] = (GLuint) ((y + 0) * (hmdInfo->eyeTilesWide + 1) + (x + 1));
+                distortion_indices[offset + 0] = (GLuint) ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
+                distortion_indices[offset + 1] = (GLuint) ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
+                distortion_indices[offset + 2] = (GLuint) ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
 
-                distortion_indices[offset + 3] = (GLuint) ((y + 0) * (hmdInfo->eyeTilesWide + 1) + (x + 1));
-                distortion_indices[offset + 4] = (GLuint) ((y + 1) * (hmdInfo->eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 5] = (GLuint) ((y + 1) * (hmdInfo->eyeTilesWide + 1) + (x + 1));
+                distortion_indices[offset + 3] = (GLuint) ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
+                distortion_indices[offset + 4] = (GLuint) ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
+                distortion_indices[offset + 5] = (GLuint) ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
             }
         }
 
@@ -234,18 +234,18 @@ private:
         distortion_uv2.resize(num_elems_pos_uv);
 
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-            for (int y = 0; y <= hmdInfo->eyeTilesHigh; y++) {
-                for (int x = 0; x <= hmdInfo->eyeTilesWide; x++) {
-                    const int index = y * (hmdInfo->eyeTilesWide + 1) + x;
+            for (int y = 0; y <= hmdInfo.eyeTilesHigh; y++) {
+                for (int x = 0; x <= hmdInfo.eyeTilesWide; x++) {
+                    const int index = y * (hmdInfo.eyeTilesWide + 1) + x;
 
                     // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                     // The distortion is handled by the UVs, not the actual mesh coordinates!
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + eye + ((float) x / hmdInfo->eyeTilesWide));
+                        (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].y =
                         (-1.0f +
-                         2.0f * ((hmdInfo->eyeTilesHigh - (float) y) / hmdInfo->eyeTilesHigh) *
-                             ((float) (hmdInfo->eyeTilesHigh * hmdInfo->tilePixelsHigh) / hmdInfo->displayPixelsHigh));
+                         2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
+                             ((float) (hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / hmdInfo.displayPixelsHigh));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
 
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
@@ -324,10 +324,10 @@ public:
         time_last_swap = _m_clock->now() + display_params::period;
 
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_params::width, display_params::height, &hmd_info);
+        HMD::GetDefaultHmdInfo(display_params::width, display_params::height, hmd_info);
 
         // Construct timewarp meshes and other data
-        BuildTimewarp(&hmd_info);
+        BuildTimewarp(hmd_info);
 
         // includes setting swap interval
         [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
