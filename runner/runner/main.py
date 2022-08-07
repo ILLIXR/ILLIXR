@@ -37,6 +37,12 @@ root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").re
 cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
 
+# Environment variables for configuring the GPU
+env_gpu : Mapping[str, str] = dict(
+    __GL_MaxFramesAllowed="1", # Double buffer framebuffer
+    __GL_SYNC_TO_VBLANK="1",   # Block on vsync
+)
+
 
 def clean_one_plugin(config: Mapping[str, Any], plugin_config: Mapping[str, Any]) -> Path:
     profile = config["profile"]
@@ -115,6 +121,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
         REALSENSE_CAM=str(realsense_cam_string),
+        **env_gpu,
     )
     env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
     actual_cmd_list = list(
@@ -184,6 +191,7 @@ def load_tests(config: Mapping[str, Any]) -> None:
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
             REALSENSE_CAM=str(realsense_cam_string),
+            **env_gpu,
         ),
         check=True,
     )
@@ -281,7 +289,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         if not monado_target_path.exists():
             raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
 
-        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
+        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado, **env_gpu)
 
         ## Open the Monado service application in the background
         monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -301,6 +309,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             AUDIO_ROOT=config["action"]["audio_path"],
             REALSENSE_CAM=str(realsense_cam_string),
             **env_monado,
+            **env_gpu,
         ),
         check=True,
     )
