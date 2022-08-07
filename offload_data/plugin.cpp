@@ -111,7 +111,8 @@ private:
             std::string pose_name  = obj_dir + std::to_string(img_idx) + ".txt";
 
             // Write image
-            is_success = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3, container_it->image, 0);
+            is_success = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3,
+                                        container_it->image, 0);
             if (!is_success) {
                 ILLIXR::abort("Image create failed !!! ");
             }

@@ -91,14 +91,9 @@ void HMD::BuildDistortionMeshes(mesh_coord2d_t* distort_coords[NUM_EYES][NUM_COL
     }
 }
 
-void HMD::GetDefaultHmdInfo(const int displayPixelsWide,
-                            const int displayPixelsHigh,
-                            const float displayMetersWide,
-                            const float displayMetersHigh,
-                            const float lensSeparation,
-                            const float metersPerTanAngle,
-                            const float aberration[4],
-                            hmd_info_t& hmd_info) {
+void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixelsHigh, const float displayMetersWide,
+                            const float displayMetersHigh, const float lensSeparation, const float metersPerTanAngle,
+                            const float aberration[4], hmd_info_t& hmd_info) {
     hmd_info.displayPixelsWide = displayPixelsWide;
     hmd_info.displayPixelsHigh = displayPixelsHigh;
     hmd_info.tilePixelsWide    = 32;
@@ -107,9 +102,10 @@ void HMD::GetDefaultHmdInfo(const int displayPixelsWide,
     hmd_info.eyeTilesHigh      = displayPixelsHigh / hmd_info.tilePixelsHigh;
     hmd_info.visiblePixelsWide = hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES;
     hmd_info.visiblePixelsHigh = hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh;
-    hmd_info.visibleMetersWide = displayMetersWide * (hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / displayPixelsWide;
-    hmd_info.visibleMetersHigh = displayMetersHigh * (hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / displayPixelsHigh;
-    hmd_info.lensSeparationInMeters    = lensSeparation;
+    hmd_info.visibleMetersWide =
+        displayMetersWide * (hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / displayPixelsWide;
+    hmd_info.visibleMetersHigh      = displayMetersHigh * (hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / displayPixelsHigh;
+    hmd_info.lensSeparationInMeters = lensSeparation;
     hmd_info.metersPerTanAngleAtCenter = metersPerTanAngle;
     hmd_info.numKnots                  = 11;
     hmd_info.K[0]                      = 1.0f;

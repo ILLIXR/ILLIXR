@@ -96,7 +96,7 @@ private:
 
     time_point time_last_swap;
 
-    HMD::hmd_info_t  hmd_info;
+    HMD::hmd_info_t hmd_info;
 
     // Eye sampler array
     GLuint eye_sampler_0;
@@ -151,7 +151,7 @@ private:
 
     GLubyte* readTextureImage() {
         const unsigned memSize = display_params::width_pixels * display_params::height_pixels * 3;
-        GLubyte* pixels = new GLubyte[memSize];
+        GLubyte*       pixels  = new GLubyte[memSize];
 
         // Start timer
         time_point startGetTexTime = _m_clock->now();
@@ -262,7 +262,8 @@ private:
 
         // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z, rendering_params::far_z);
+                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+                                  rendering_params::far_z);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -327,10 +328,9 @@ public:
         time_last_swap = _m_clock->now() + display_params::period;
 
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels,
-            display_params::width_meters, display_params::height_meters,
-            display_params::lens_separation, display_params::meters_per_tan_angle,
-            display_params::aberration, hmd_info);
+        HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, display_params::width_meters,
+                               display_params::height_meters, display_params::lens_separation,
+                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 
         // Construct timewarp meshes and other data
         BuildTimewarp(hmd_info);
@@ -439,7 +439,8 @@ public:
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, 0, GL_STREAM_DRAW);
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, 0,
+                         GL_STREAM_DRAW);
         }
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
@@ -476,7 +477,8 @@ public:
         const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
-        // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for `display_period` later
+        // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
+        // `display_period` later
         viewMatrixEnd = viewMatrixBegin;
 
         // Calculate the timewarp transformation matrices. These are a product

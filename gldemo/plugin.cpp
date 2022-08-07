@@ -44,7 +44,7 @@ public:
         using namespace std::chrono_literals;
         switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();
         time_point                                                     now        = _m_clock->now();
-        time_point wait_time;
+        time_point                                                     wait_time;
 
         if (next_vsync == nullptr) {
             // If no vsync data available, just sleep for roughly a vsync period.
@@ -133,7 +133,8 @@ public:
 
         for (auto eye_idx = 0; eye_idx < 2; eye_idx++) {
             // Offset of eyeball from pose
-            auto eyeball = Eigen::Vector3f((eye_idx == LEFT_EYE ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
+            auto eyeball =
+                Eigen::Vector3f((eye_idx == LEFT_EYE ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
 
             // Apply head rotation to eyeball offset vector
             eyeball = head_rotation_matrix * eyeball;
@@ -183,8 +184,8 @@ public:
             // Somehow, C++ won't let me construct this object if I remove the `rendered_frame{` and `}`.
             // `allocate<rendered_frame>(...)` _should_ forward the arguments to rendered_frame's constructor, but I guess
             // not.
-            std::array<GLuint, 2>{eyeTextures[0], eyeTextures[1]}, std::array<GLuint, 2>{which_buffer, which_buffer},
-            fast_pose, fast_pose.predict_computed_time, lastTime}));
+            std::array<GLuint, 2>{eyeTextures[0], eyeTextures[1]}, std::array<GLuint, 2>{which_buffer, which_buffer}, fast_pose,
+            fast_pose.predict_computed_time, lastTime}));
 
         which_buffer = !which_buffer;
 
@@ -248,7 +249,8 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width_pixels, display_params::height_pixels, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width_pixels, display_params::height_pixels, 0, GL_RGB,
+                     GL_UNSIGNED_BYTE, 0);
 
         // Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -263,7 +265,8 @@ private:
         glGenRenderbuffers(1, depth_target);
         glBindRenderbuffer(GL_RENDERBUFFER, *depth_target);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, display_params::width_pixels, display_params::height_pixels);
-        // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_params::width_pixels, display_params::height_pixels);
+        // glRenderbufferStorageMultisample(GL_RENDERBUFFER, fboSampleCount, GL_DEPTH_COMPONENT, display_params::width_pixels,
+        // display_params::height_pixels);
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -329,7 +332,8 @@ public:
 
         // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z, rendering_params::far_z);
+                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+                                  rendering_params::far_z);
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");

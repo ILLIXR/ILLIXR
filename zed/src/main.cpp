@@ -44,12 +44,12 @@ std::shared_ptr<Camera> start_camera() {
 
     // Cam setup
     InitParameters init_params;
-    init_params.camera_resolution   = RESOLUTION::VGA;
-    init_params.coordinate_units    = UNIT::MILLIMETER;                           // For scene reconstruction
-    init_params.coordinate_system   = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps          = 15;
-    init_params.depth_mode          = DEPTH_MODE::PERFORMANCE;
-    init_params.depth_stabilization = true;
+    init_params.camera_resolution      = RESOLUTION::VGA;
+    init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
+    init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
+    init_params.camera_fps             = 15;
+    init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
+    init_params.depth_stabilization    = true;
     init_params.depth_minimum_distance = 0.3;
 
     // Open the camera

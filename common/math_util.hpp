@@ -5,7 +5,7 @@ namespace math_util {
     /// Calculates a projection matrix with the given tangent angles and clip planes
     void projection(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up,
                     float const tan_down, const float near_z, const float far_z) {
-        const float tan_width = tan_right - tan_left;
+        const float tan_width  = tan_right - tan_left;
         const float tan_height = tan_up - tan_down;
 
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
