@@ -10,6 +10,7 @@
 
 namespace ILLIXR {
 
+/// Display parameters
 struct display_params {
     // Display width in pixels
     static constexpr unsigned width_pixels = 2560;
@@ -49,6 +50,15 @@ struct display_params {
 
     // Chromatic aberration constants
     static constexpr float aberration[4] = {-0.016f, 0.0f, 0.024f, 0.0f};
+};
+
+/// Rendering parameters
+struct rendering_params {
+    // Near plane distance in meters
+    static constexpr float near_z = 0.1f;
+
+    // Far plane distance in meters
+    static constexpr float far_z = 20.0f;
 };
 
 /**

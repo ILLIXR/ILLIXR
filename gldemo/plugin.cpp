@@ -327,9 +327,9 @@ public:
 
         demoscene = ObjScene(std::string(obj_dir), "scene.obj");
 
-        // Construct a basic perspective projection
+        // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, 0.03f, 20.0f);
+            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z, rendering_params::far_z);
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");

@@ -259,9 +259,10 @@ private:
                 }
             }
         }
-        // Construct a basic perspective projection
+
+        // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, 0.1f, 0.0f);
+            display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z, rendering_params::far_z);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -326,8 +327,6 @@ public:
         time_last_swap = _m_clock->now() + display_params::period;
 
         // Generate reference HMD and physical body dimensions
-        //HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, hmd_info);
-
         HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels,
             display_params::width_meters, display_params::height_meters,
             display_params::lens_separation, display_params::meters_per_tan_angle,
