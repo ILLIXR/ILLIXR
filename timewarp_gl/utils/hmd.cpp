@@ -49,7 +49,8 @@ float HMD::EvaluateCatmullRomSpline(float value, float* K, int numKnots) {
     return res;
 }
 
-void HMD::BuildDistortionMeshes(std::array<std::array<mesh_coord2d_t*, NUM_COLOR_CHANNELS>, NUM_EYES> distort_coords, hmd_info_t& hmdInfo) {
+void HMD::BuildDistortionMeshes(std::array<std::array<mesh_coord2d_t*, NUM_COLOR_CHANNELS>, NUM_EYES> distort_coords,
+                                hmd_info_t&                                                           hmdInfo) {
     const float horizontalShiftMeters = (hmdInfo.lensSeparationInMeters / 2) - (hmdInfo.visibleMetersWide / 4);
     const float horizontalShiftView   = horizontalShiftMeters / (hmdInfo.visibleMetersWide / 2);
 
