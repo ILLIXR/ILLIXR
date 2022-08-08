@@ -14,7 +14,8 @@
 
 using namespace ILLIXR;
 
-cv::Mat slMat2cvMat(Mat& input);
+// Set exposure to 8% of camera frame time. This is an empirically determined number
+static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
 
 const record_header __imu_cam_record{"imu_cam",
                                      {
@@ -59,8 +60,7 @@ std::shared_ptr<Camera> start_camera() {
         zedm->close();
     }
 
-    // This is 8% of camera frame time, not 8 ms
-    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, 8);
+    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, EXPOSURE_TIME_PERCENT);
 
     return zedm;
 }

@@ -23,6 +23,9 @@
 
 using namespace ILLIXR;
 
+// Wake up 1 ms after vsync instead of exactly at vsync to account for scheduling uncertainty
+static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};
+
 class gldemo : public threadloop {
 public:
     // Public constructor, create_component passes Switchboard handles ("plugs")
@@ -41,7 +44,6 @@ public:
 
     // Essentially, a crude equivalent of XRWaitFrame.
     void wait_vsync() {
-        using namespace std::chrono_literals;
         switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();
         time_point                                                     now        = _m_clock->now();
         time_point                                                     wait_time;
@@ -66,7 +68,7 @@ public:
         if (hasRenderedThisInterval) {
             // We'll wait until the next vsync, plus a small delay time.
             // Delay time helps with some inaccuracies in scheduling.
-            wait_time = **next_vsync + std::chrono::milliseconds{2};
+            wait_time = **next_vsync + VSYNC_SAFETY_DELAY;
 
             // If our sleep target is in the past, bump it forward
             // by a vsync period, so it's always in the future.

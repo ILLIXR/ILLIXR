@@ -218,13 +218,12 @@ private:
         HMD::mesh_coord2d_t* const tw_mesh_base_ptr = tw_mesh_base_vec.data();
         assert(tw_mesh_base_ptr != nullptr && "Timewarp allocation should not fail");
 
-        // Set the distortion coordinates as a series of arrays
-        // that will be written into by the BuildDistortionMeshes() function.
-        HMD::mesh_coord2d_t* distort_coords[HMD::NUM_EYES][HMD::NUM_COLOR_CHANNELS] = {
-            {tw_mesh_base_ptr + 0 * num_distortion_vertices, tw_mesh_base_ptr + 1 * num_distortion_vertices,
-             tw_mesh_base_ptr + 2 * num_distortion_vertices},
+        // Set the distortion coordinates as a series of arrays that will be written into by BuildDistortionMeshes()
+        std::array<std::array<HMD::mesh_coord2d_t*, HMD::NUM_COLOR_CHANNELS>, HMD::NUM_EYES> distort_coords = {
+            {{tw_mesh_base_ptr + 0 * num_distortion_vertices, tw_mesh_base_ptr + 1 * num_distortion_vertices,
+             tw_mesh_base_ptr + 2 * num_distortion_vertices,},
             {tw_mesh_base_ptr + 3 * num_distortion_vertices, tw_mesh_base_ptr + 4 * num_distortion_vertices,
-             tw_mesh_base_ptr + 5 * num_distortion_vertices}};
+             tw_mesh_base_ptr + 5 * num_distortion_vertices,},}};
         HMD::BuildDistortionMeshes(distort_coords, hmdInfo);
 
         // Allocate memory for position and UV CPU buffers.
