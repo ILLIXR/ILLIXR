@@ -209,28 +209,15 @@ private:
             }
         }
 
-        // Allocate memory for the distortion coordinates.
-        // These are NOT the actual distortion mesh's vertices,
-        // they are calculated distortion grid coefficients
-        // that will be used to set the actual distortion mesh's UV space.
-        std::vector<HMD::mesh_coord2d_t> tw_mesh_base_vec;
-        tw_mesh_base_vec.resize(HMD::NUM_EYES * HMD::NUM_COLOR_CHANNELS * num_distortion_vertices);
-        HMD::mesh_coord2d_t* const tw_mesh_base_ptr = tw_mesh_base_vec.data();
-        assert(tw_mesh_base_ptr != nullptr && "Timewarp allocation should not fail");
-
-        // Set the distortion coordinates as a series of arrays that will be written into by BuildDistortionMeshes()
-        std::array<std::array<HMD::mesh_coord2d_t*, HMD::NUM_COLOR_CHANNELS>, HMD::NUM_EYES> distort_coords = {{
-            {
-                tw_mesh_base_ptr + 0 * num_distortion_vertices,
-                tw_mesh_base_ptr + 1 * num_distortion_vertices,
-                tw_mesh_base_ptr + 2 * num_distortion_vertices,
-            },
-            {
-                tw_mesh_base_ptr + 3 * num_distortion_vertices,
-                tw_mesh_base_ptr + 4 * num_distortion_vertices,
-                tw_mesh_base_ptr + 5 * num_distortion_vertices,
-            },
-        }};
+        // There are `num_distortion_vertices` distortion coordinates for each color channel (3) of each eye (2).
+        // These are NOT the coordinates of the distorted vertices. They are *coefficients* that will be used to
+        // offset the UV coordinates of the distortion mesh.
+        std::array<std::array<std::vector<HMD::mesh_coord2d_t>, HMD::NUM_COLOR_CHANNELS>, HMD::NUM_EYES> distort_coords;
+        for (auto& eye_coords : distort_coords) {
+            for (auto& channel_coords : eye_coords) {
+                channel_coords.resize(num_distortion_vertices);
+            }
+        }
         HMD::BuildDistortionMeshes(distort_coords, hmdInfo);
 
         // Allocate memory for position and UV CPU buffers.
