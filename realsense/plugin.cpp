@@ -111,13 +111,12 @@ public:
                 rs2_vector        gyro_data = gyro.get_motion_data();
 
                 // IMU data
-                //use inertial force
-                //Eigen::Vector3f la = {accel.z, -accel.x, -accel.y};
-                //Eigen::Vector3f av = {gyro_data.z,-gyro_data.x, -gyro_data.y};
-                
+                // use inertial force
+                // Eigen::Vector3f la = {accel.z, -accel.x, -accel.y};
+                // Eigen::Vector3f av = {gyro_data.z,-gyro_data.x, -gyro_data.y};
+
                 Eigen::Vector3f la = {accel.x, accel.y, accel.z};
                 Eigen::Vector3f av = {gyro_data.x, gyro_data.y, gyro_data.z};
-                
 
                 // Time as ullong (nanoseconds)
                 ullong imu_time = static_cast<ullong>(ts * 1000000);
@@ -218,14 +217,13 @@ private:
                     for (rs2::sensor sensor : sensors) {
                         std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
                         // Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and
-                        //check for stereo
+                        // check for stereo
                         std::string module_name = sensor.get_info(RS2_CAMERA_INFO_NAME);
-                        std::cout<<"module name: "<<module_name<<"\n";
-                        if(module_name=="Stereo Module")
-                        {
-                            std::cout<<"found depth sensor\n";
-                            sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE,0);
-                            sensor.set_option(RS2_OPTION_EXPOSURE,33000);
+                        std::cout << "module name: " << module_name << "\n";
+                        if (module_name == "Stereo Module") {
+                            std::cout << "found depth sensor\n";
+                            sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 0);
+                            sensor.set_option(RS2_OPTION_EXPOSURE, 33000);
                         }
                         // gyro
                         for (auto&& sp : stream_profiles) {
