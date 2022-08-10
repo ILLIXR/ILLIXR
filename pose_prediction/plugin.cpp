@@ -8,7 +8,7 @@
 #include <shared_mutex>
 
 using namespace ILLIXR;
-
+#define REALSENSE
 class pose_prediction_impl : public pose_prediction {
 public:
     pose_prediction_impl(const phonebook* const pb)
@@ -81,7 +81,15 @@ public:
                 .predict_target_time   = future_timestamp,
             };
         }
-
+        //disable pose prediction
+        //Eigen::Quaternionf test = imu_raw->quat.cast<float>();
+        //Eigen::Vector3f test_pos = imu_raw->pos.cast<float>();
+        //return fast_pose_type{
+        //        .pose                  = correct_pose(pose_type{_m_clock->now(),test_pos, test}),
+        //        .predict_computed_time = _m_clock->now(),
+        //        .predict_target_time   = future_timestamp,
+        //};
+        
         // slow_pose and imu_raw, do pose prediction
 
         double                                              dt = duration2double(future_timestamp - imu_raw->imu_time);
@@ -98,14 +106,18 @@ public:
                                           static_cast<float>(state_plus(6))},
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
-
+                          //Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(2)),
+                          //                   static_cast<float>(state_plus(0)), static_cast<float>(state_plus(1))}});
+                          //imu_raw->quat.cast<float>()});
         // Make the first valid fast pose be straight ahead.
         if (first_time) {
             std::unique_lock lock{offset_mutex};
             // check again, now that we have mutual exclusion
             if (first_time) {
                 first_time = false;
+                std::cout<<"this is called \n";
                 offset     = predicted_pose.orientation.inverse();
+                std::cout<<"Eigen: started\n";
             }
         }
 
@@ -132,6 +144,7 @@ public:
 
     Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
         std::shared_lock lock{offset_mutex};
+        //std::cout<<"Eigen w: "<<offset.w() << " x: "<<offset.x()<<" y: "<<offset.y()<<" z: "<<offset.z()<<std::endl;
         return orientation * offset;
     }
 
@@ -173,19 +186,45 @@ public:
         // Make any changes to the axes direction below
         // This is a mapping between the coordinate system of the current
         // SLAM (OpenVINS) we are using and the OpenGL system.
+#ifdef REALSENSE       
+        swapped_pose.position.x() = pose.position.x();
+        swapped_pose.position.y() = -pose.position.y();
+        swapped_pose.position.z() = -pose.position.z();
+        Eigen::Quaternionf raw_o(pose.orientation.w(), pose.orientation.x(), -pose.orientation.y(), -pose.orientation.z());
+#else
         swapped_pose.position.x() = -pose.position.y();
         swapped_pose.position.y() = pose.position.z();
         swapped_pose.position.z() = -pose.position.x();
+        Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
 
+#endif
         // Make any chanes to orientation of the output below
         // For the SLAM we are using (OpenVINS), the output orientation acts as though
         // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
-        Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
-
+#ifdef REALSENSE
+        swapped_pose.orientation = raw_o;
+        
+        pose_type intel_pose;
+        intel_pose.position.x() = swapped_pose.position.x();
+        intel_pose.position.y() = -swapped_pose.position.z();
+        intel_pose.position.z() = swapped_pose.position.y();
+        Eigen::Quaternionf intel_raw_o(pose.orientation.w(), pose.orientation.x(), -pose.orientation.y(), pose.orientation.z());
+        if(first_rotation && fast_pose_reliable()){
+            std::cout<<"set rotation\n";
+            first_rotation=false;
+            Eigen::Quaternionf intel_adjust = intel_raw_o * offset.inverse();
+            offset = intel_adjust.inverse();
+        }
+        Eigen::Quaternionf intel_offset = apply_offset(intel_raw_o);
+        
+        intel_pose.orientation = intel_offset; 
+        intel_pose.sensor_time = pose.sensor_time;
+        return intel_pose;
+#else
         swapped_pose.orientation = apply_offset(raw_o);
         swapped_pose.sensor_time = pose.sensor_time;
-
         return swapped_pose;
+#endif
     }
 
 private:
@@ -199,6 +238,7 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>>      _m_vsync_estimate;
     mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex;
+    mutable std::atomic<bool>                                        first_rotation{true};
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
@@ -206,7 +246,8 @@ private:
     std::pair<Eigen::Matrix<double, 13, 1>, time_point> predict_mean_rk4(double dt) const {
         // Pre-compute things
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro();
-
+        //Eigen::Vector3d gravity = {0.0,0.0, 9.8};
+        Eigen::Vector3d gravity = {0.0,0.0, 0.0};
         Eigen::Vector3d w_hat   = imu_raw->w_hat;
         Eigen::Vector3d a_hat   = imu_raw->a_hat;
         Eigen::Vector3d w_alpha = (imu_raw->w_hat2 - imu_raw->w_hat) / dt;
@@ -223,7 +264,7 @@ private:
         Eigen::Vector4d q0_dot = 0.5 * Omega(w_hat) * dq_0;
         Eigen::Vector3d p0_dot = v_0;
         Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, q_0));
-        Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
+        Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - gravity;
 
         Eigen::Vector4d k1_q = q0_dot * dt;
         Eigen::Vector3d k1_p = p0_dot * dt;
@@ -239,7 +280,7 @@ private:
         Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
         Eigen::Vector3d p1_dot = v_1;
         Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, q_0));
-        Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
+        Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - gravity;
 
         Eigen::Vector4d k2_q = q1_dot * dt;
         Eigen::Vector3d k2_p = p1_dot * dt;
@@ -253,7 +294,7 @@ private:
         Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
         Eigen::Vector3d p2_dot = v_2;
         Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, q_0));
-        Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
+        Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - gravity;
 
         Eigen::Vector4d k3_q = q2_dot * dt;
         Eigen::Vector3d k3_p = p2_dot * dt;
