@@ -11,6 +11,9 @@
 #include <filesystem>
 #include <fstream>
 
+#include <filesystem>
+#include <fstream>
+
 using namespace ILLIXR;
 
 const record_header imu_cam_record{
@@ -33,7 +36,7 @@ public:
 		, dataset_first_time{_m_sensor_data_it->first}
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
-
+		, initial_time{0}
 	{ 
 		initial_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		if (!std::filesystem::exists(data_path)) {

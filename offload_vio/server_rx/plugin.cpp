@@ -5,9 +5,12 @@
 #include "common/switchboard.hpp"
 #include "vio_input.pb.h"
 
+#include <boost/lockfree/spsc_queue.hpp>
+#include <opencv2/highgui.hpp>
 #include <filesystem>
 #include <fstream>
 
+#include "vio_input.pb.h"
 #include "video_decoder.h"
 
 #include "common/network/socket.hpp"
@@ -123,7 +126,8 @@ public:
     }
 
 private:
-	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {	
+	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
+        std::cout << "Received VIO input" << std::endl;	
 
 		// Logging
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();

@@ -4,14 +4,14 @@ plugin_group:
   # - path: realsense/
   # - path: depthai/
   # - path: record_imu_cam/
-#  - name: Kimera-VIO/
-#    path:
-#      git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-#      version: "3.2"
-  - name: OpenVINS
-    path:
-      git_repo: https://github.com/ILLIXR/open_vins.git
-      version: "integrator-filter"
+  # - name: Kimera-VIO/
+  #   path:
+  #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
+  #     version: "3.2"
+  # - name: OpenVINS
+  #   path:
+  #     git_repo: https://github.com/ILLIXR/open_vins.git
+  #     version: "offload_timing"
   # - path: rk4_integrator/
   - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
   - path: gtsam_integrator/

@@ -1,3 +1,9 @@
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <thread>
+
 #include "common/plugin.hpp"
 
 #include "common/data_format.hpp"
@@ -14,12 +20,12 @@
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
-#include <iomanip>
-#include <thread>
+
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
-#include <filesystem>
-#include <fstream>
+
+
+#include "third_party/filter.h"
 
 #include "third_party/filter.h"
 
@@ -358,15 +364,6 @@ private:
                      << original_quaternion.x() << " "
                      << original_quaternion.y() << " "
                      << original_quaternion.z() << std::endl;
-
-        std::cerr << std::fixed << input_values->last_cam_integration_time.time_since_epoch().count() / 1e9 << ","
-                  << out_pose.x() << ","
-                  << out_pose.y() << ","
-                  << out_pose.z() << ","
-                  << out_pose.rotation().toQuaternion().w() << ","
-                  << out_pose.rotation().toQuaternion().x() << ","
-                  << out_pose.rotation().toQuaternion().y() << ","
-                  << out_pose.rotation().toQuaternion().z() << std::endl;
 
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
                 imu_raw_type {

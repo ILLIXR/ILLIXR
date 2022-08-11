@@ -36,8 +36,14 @@ public:
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     virtual void start() override {
         plugin::start();
+=======
+	virtual void start() override {
+		plugin::start();
+		sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
+>>>>>>> 648ee3394187243ac3de7d8defd8f8bcb6346d05
 			this->feed_ground_truth(datum);
 		});
 	}

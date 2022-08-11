@@ -20,9 +20,10 @@ const int SERVER_PORT_2 = 2223;
 // local
 // const string CLIENT_IP = "127.0.0.1";
 // wifi
-// const string CLIENT_IP = "10.194.54.52";
+const string CLIENT_IP = "10.194.54.52";
+// const string CLIENT_IP = "100.64.0.1";
 // 5G
-const string CLIENT_IP = "192.168.87.128";
+// const string CLIENT_IP = "192.168.87.95";
 const int CLIENT_PORT_1 = 5002;
 const int CLIENT_PORT_2 = 5003;
 

@@ -1,6 +1,3 @@
-#include "common/plugin.hpp"
-
-#include "common/data_format.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -9,6 +6,7 @@
 #include <eigen3/Eigen/Dense>
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
+#include "common/plugin.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <shared_mutex>
@@ -112,6 +110,19 @@ public:
                                           static_cast<float>(state_plus(6))},
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
+
+        if (future_timestamp > last_pose_time) {
+            pred_pose_csv << future_timestamp.time_since_epoch().count() << ","
+                << predicted_pose.position.x() << ","
+                << predicted_pose.position.y() << ","
+                << predicted_pose.position.z() << ","
+                << predicted_pose.orientation.w() << ","
+                << predicted_pose.orientation.x() << ","
+                << predicted_pose.orientation.y() << ","
+                << predicted_pose.orientation.z() << std::endl;
+        }
+        last_pose = predicted_pose;
+        last_pose_time = future_timestamp;
 
         if (future_timestamp > last_pose_time) {
             pred_pose_csv << future_timestamp.time_since_epoch().count() << ","

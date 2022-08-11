@@ -15,8 +15,6 @@
 
 #include "video_encoder.h"
 #include <boost/lockfree/spsc_queue.hpp>
-
-#include "vio_input.pb.h"
 #include "common/network/socket.hpp"
 #include "common/network/timestamp.hpp"
 #include "common/network/net_config.hpp"
@@ -124,9 +122,10 @@ public:
 		linear_accel->set_z(datum->linear_a.z());
 		imu_cam_data->set_allocated_linear_accel(linear_accel);
 
-		if (!datum->img0.has_value() && !datum->img1.has_value()) {
-			imu_cam_data->set_rows(-1);
-			imu_cam_data->set_cols(-1);
+      	if (!datum->img0.has_value() && !datum->img1.has_value()) {
+			imu_cam_data->set_img0_size(-1);
+			imu_cam_data->set_img1_size(-1);
+
 		} else {
 			cv::Mat img0 = (datum->img0.value()).clone();
 			cv::Mat img1 = (datum->img1.value()).clone();
@@ -163,8 +162,8 @@ public:
                 std::cout << sizes.size() << " average size: " << img0_size / (sum / sizes.size()) << " " << sum / sizes.size() << std::endl;
             }
 
-			imu_cam_data->set_rows(img0.rows);
-			imu_cam_data->set_cols(img0.cols);
+			imu_cam_data->set_img0_data((void*) this->img0.data, this->img0.size);
+			imu_cam_data->set_img1_data((void*) this->img1.data, this->img1.size);
 
             lock.unlock();
 
