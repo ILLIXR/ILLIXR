@@ -41,7 +41,7 @@ cache_path.mkdir(parents=True, exist_ok=True)
 # Environment variables for configuring the GPU
 env_gpu : Mapping[str, str] = dict(
     __GL_MaxFramesAllowed="1", # Double buffer framebuffer
-    __GL_SYNC_TO_VBLANK="1",   # Block on vsync
+    __GL_SYNC_TO_VBLANK="0",   # Block on vsync
 )
 
 
@@ -330,6 +330,41 @@ def load_monado(config: Mapping[str, Any]) -> None:
                 },
             )
         )
+
+    if not openxr_app_bin_path.exists():
+        raise RuntimeError(f"{action_name} Failed to build openxr_app (mainline={is_mainline}, path={openxr_app_bin_path})")
+
+    if is_mainline:
+        monado_target_name : str  = "monado-service"
+        monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
+        monado_target_path : Path = monado_target_dir / monado_target_name
+
+        if not monado_target_path.exists():
+            raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
+
+        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado, **env_gpu)
+
+        ## Open the Monado service application in the background
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdout=PIPE)
+
+    ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    time.sleep(5)
+
+    subprocess_run(
+        [str(openxr_app_bin_path)],
+        env_override=dict(
+            ILLIXR_DEMO_DATA=str(demo_data_path),
+            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+            KIMERA_ROOT=config["action"]["kimera_path"],
+            AUDIO_ROOT=config["action"]["audio_path"],
+            REALSENSE_CAM=str(realsense_cam_string),
+            **env_monado,
+            **env_gpu,
+        ),
+        check=True,
     )
 
     ## Launch the Monado service before any OpenXR apps are opened

@@ -63,31 +63,6 @@ protected:
         }
     }
 
-	virtual skip_option _p_should_skip() override {
-		if (_m_sensor_data_it != _m_sensor_data.end()) {
-			dataset_now = _m_sensor_data_it->first;
-
-			auto sleep_time = time_point{std::chrono::nanoseconds{dataset_now - dataset_first_time}} - _m_clock->now();
-			// std::this_thread::sleep_for(
-			// 	time_point{std::chrono::nanoseconds{dataset_now - dataset_first_time}} - _m_clock->now()
-			// );
-
-			std::this_thread::sleep_for(sleep_time);
-
-			// std::cout << "Sleep for = " << sleep_time.count() / 1e6 << " ms" << std::endl;
-
-			if (_m_sensor_data_it->second.imu0) {
-				return skip_option::run;
-			} else {
-				++_m_sensor_data_it;
-				return skip_option::skip_and_yield;
-			}
-
-		} else {
-			return skip_option::stop;
-		}
-	}
-
 	virtual void _p_one_iteration() override {
 	    RAC_ERRNO_MSG("offline_imu_cam at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
