@@ -40,7 +40,7 @@ cache_path.mkdir(parents=True, exist_ok=True)
 # Environment variables for configuring the GPU
 env_gpu : Mapping[str, str] = dict(
     __GL_MaxFramesAllowed="1", # Double buffer framebuffer
-    __GL_SYNC_TO_VBLANK="1",   # Block on vsync
+    __GL_SYNC_TO_VBLANK="0",   # Block on vsync
 )
 
 
@@ -292,7 +292,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado, **env_gpu)
 
         ## Open the Monado service application in the background
-        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdout=PIPE)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(5)

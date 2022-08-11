@@ -27,8 +27,6 @@
 
 #include "third_party/filter.h"
 
-#include "third_party/filter.h"
-
 using namespace ILLIXR;
 // IMU sample time to live in seconds
 constexpr duration IMU_TTL{std::chrono::seconds{5}};
