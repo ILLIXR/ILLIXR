@@ -39,8 +39,6 @@ public:
 #endif
         /// A texture pose is present. Store it back to our container.
         _offload_data_container.push_back(datum);
-
-        RAC_ERRNO_MSG("offloaded_data");
     }
 
     virtual ~offload_data() override {
@@ -113,7 +111,8 @@ private:
             std::string pose_name  = obj_dir + std::to_string(img_idx) + ".txt";
 
             // Write image
-            is_success = stbi_write_png(image_name.c_str(), ILLIXR::FB_WIDTH, ILLIXR::FB_HEIGHT, 3, container_it->image, 0);
+            is_success = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3,
+                                        container_it->image, 0);
             if (!is_success) {
                 ILLIXR::abort("Image create failed !!! ");
             }
