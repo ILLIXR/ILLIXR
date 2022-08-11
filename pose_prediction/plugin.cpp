@@ -83,17 +83,18 @@ public:
             };
         }
         // disable pose prediction
-        // Eigen::Quaternionf test = imu_raw->quat.cast<float>();
-        // Eigen::Vector3f test_pos = imu_raw->pos.cast<float>();
-        // return fast_pose_type{
-        //         .pose                  = correct_pose(pose_type{_m_clock->now(),test_pos, test}),
-        //         .predict_computed_time = _m_clock->now(),
-        //         .predict_target_time   = future_timestamp,
-        // };
+	 pose_predict_enabled = false;
+         Eigen::Quaternionf test = imu_raw->quat.cast<float>();
+         Eigen::Vector3f test_pos = imu_raw->pos.cast<float>();
+         return fast_pose_type{
+                 .pose                  = correct_pose(pose_type{_m_clock->now(),test_pos, test}),
+                 .predict_computed_time = _m_clock->now(),
+                 .predict_target_time   = future_timestamp,
+         };
 
         // slow_pose and imu_raw, do pose prediction
 
-        double                                              dt = duration2double(future_timestamp - imu_raw->imu_time);
+        double dt = duration2double(future_timestamp - imu_raw->imu_time);
         std::pair<Eigen::Matrix<double, 13, 1>, time_point> predictor_result = predict_mean_rk4(dt);
 
         auto state_plus = predictor_result.first;
@@ -209,14 +210,16 @@ public:
         intel_pose.position.x() = swapped_pose.position.x();
         intel_pose.position.y() = -swapped_pose.position.z();
         intel_pose.position.z() = swapped_pose.position.y();
-        Eigen::Quaternionf intel_raw_o(pose.orientation.w(), pose.orientation.x(), -pose.orientation.y(), pose.orientation.z());
-        if (first_rotation && fast_pose_reliable()) {
+        Eigen::Quaternionf intel_raw_o(pose.orientation.w(), pose.orientation.x(), pose.orientation.z(), -pose.orientation.y());
+        if (first_rotation && fast_pose_reliable() && !pose_predict_enabled) {
             std::cout << "set rotation\n";
             first_rotation                  = false;
             Eigen::Quaternionf intel_adjust = intel_raw_o * offset.inverse();
+            //Eigen::Quaternionf intel_adjust = raw_o * offset.inverse();
             offset                          = intel_adjust.inverse();
         }
         Eigen::Quaternionf intel_offset = apply_offset(intel_raw_o);
+        //Eigen::Quaternionf intel_offset = apply_offset(raw_o);
 
         intel_pose.orientation = intel_offset;
         intel_pose.sensor_time = pose.sensor_time;
@@ -240,6 +243,7 @@ private:
     mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex;
     mutable std::atomic<bool>                                        first_rotation{true};
+    mutable std::atomic<bool>                                        pose_predict_enabled{true};
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
@@ -247,8 +251,10 @@ private:
     std::pair<Eigen::Matrix<double, 13, 1>, time_point> predict_mean_rk4(double dt) const {
         // Pre-compute things
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro();
-        // Eigen::Vector3d gravity = {0.0,0.0, 9.8};
-        Eigen::Vector3d gravity = {0.0, 0.0, 0.0};
+        //Eigen::Vector3d gravity = {0.0,0.0, 9.8};
+        //Eigen::Vector3d gravity = {0.0,9.8, 0.0};
+	//pyh: this works with passthrough integrator no pose prediction
+        Eigen::Vector3d gravity = {0.0,0.0, 0.0};
         Eigen::Vector3d w_hat   = imu_raw->w_hat;
         Eigen::Vector3d a_hat   = imu_raw->a_hat;
         Eigen::Vector3d w_alpha = (imu_raw->w_hat2 - imu_raw->w_hat) / dt;
