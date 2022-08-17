@@ -29,7 +29,8 @@ public:
 				std::cerr << "Failed to create data directory.";
 			}
 		}
-        pred_pose_csv.open(data_path + "/pred_pose.csv");
+        // pred_pose_csv.open(data_path + "/pred_pose.csv");
+        // pred_pose_imu_csv.open(data_path + "/pred_pose_imu.csv");
     }
 
     // No parameter get_fast_pose() should just predict to the next vsync
@@ -111,30 +112,25 @@ public:
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
 
-        if (future_timestamp > last_pose_time) {
-            pred_pose_csv << future_timestamp.time_since_epoch().count() << ","
-                << predicted_pose.position.x() << ","
-                << predicted_pose.position.y() << ","
-                << predicted_pose.position.z() << ","
-                << predicted_pose.orientation.w() << ","
-                << predicted_pose.orientation.x() << ","
-                << predicted_pose.orientation.y() << ","
-                << predicted_pose.orientation.z() << std::endl;
-        }
-        last_pose = predicted_pose;
-        last_pose_time = future_timestamp;
-
-        if (future_timestamp > last_pose_time) {
-            pred_pose_csv << future_timestamp.time_since_epoch().count() << ","
-                << predicted_pose.position.x() << ","
-                << predicted_pose.position.y() << ","
-                << predicted_pose.position.z() << ","
-                << predicted_pose.orientation.w() << ","
-                << predicted_pose.orientation.x() << ","
-                << predicted_pose.orientation.y() << ","
-                << predicted_pose.orientation.z() << std::endl;
-        }
-        last_pose = predicted_pose;
+        // if (future_timestamp > last_pose_time) {
+        //     pred_pose_csv << std::fixed << last_pose_time.time_since_epoch().count() << ","
+        //         << static_cast<float>(last_pose(4)) << ","
+        //         << static_cast<float>(last_pose(5)) << ","
+        //         << static_cast<float>(last_pose(6)) << ","
+        //         << static_cast<float>(last_pose(3)) << ","
+        //         << static_cast<float>(last_pose(0)) << ","
+        //         << static_cast<float>(last_pose(1)) << ","
+        //         << static_cast<float>(last_pose(2)) << std::endl;
+        // }
+        // pred_pose_imu_csv << std::fixed << future_timestamp.time_since_epoch().count() << ","
+        //     << predicted_pose.position.x() << ","
+        //     << predicted_pose.position.y() << ","
+        //     << predicted_pose.position.z() << ","
+        //     << predicted_pose.orientation.w() << ","
+        //     << predicted_pose.orientation.x() << ","
+        //     << predicted_pose.orientation.y() << ","
+        //     << predicted_pose.orientation.z() << std::endl;
+        last_pose = state_plus;
         last_pose_time = future_timestamp;
 
         // Make the first valid fast pose be straight ahead.
@@ -244,8 +240,9 @@ private:
 
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
 	mutable std::ofstream pred_pose_csv;
+    mutable std::ofstream pred_pose_imu_csv;
 
-    mutable pose_type last_pose;
+    mutable Eigen::Matrix<double, 13, 1> last_pose;
     mutable time_point last_pose_time;
     
 
