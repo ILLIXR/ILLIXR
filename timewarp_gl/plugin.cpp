@@ -25,6 +25,9 @@
 #include <thread>
 #include <vector>
 
+#include <filesystem>
+#include <fstream>
+
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
@@ -612,8 +615,34 @@ public:
         assert(gl_result_1 && "glXMakeCurrent should not fail");
     }
 
+<<<<<<< HEAD
     void _prepare_rendering() {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
+=======
+    virtual pose_type uncorrect_pose(const pose_type pose) const {
+        pose_type swapped_pose;
+
+        // Make any changes to the axes direction below
+        // This is a mapping between the coordinate system of the current
+        // SLAM (OpenVINS) we are using and the OpenGL system.
+        swapped_pose.position.x() = -pose.position.z();
+        swapped_pose.position.y() = -pose.position.x();
+        swapped_pose.position.z() = pose.position.y();
+
+        // Make any chanes to orientation of the output below
+        // For the dataset were currently using (EuRoC), the output orientation acts as though
+        // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
+        Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.z(), -pose.orientation.x(), pose.orientation.y());
+
+        swapped_pose.orientation = raw_o;
+        swapped_pose.sensor_time = pose.sensor_time;
+
+        return swapped_pose;
+    }
+
+    virtual void _p_one_iteration() override {
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+>>>>>>> print uncorrected pose
         assert(gl_result && "glXMakeCurrent should not fail");
 
         if (!rendering_ready) {
@@ -686,8 +715,22 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
+<<<<<<< HEAD
         const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
 
+=======
+        const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+        pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
+        pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
+                      << uncorrected_pose.position.x() << ","
+                      << uncorrected_pose.position.y() << ","
+                      << uncorrected_pose.position.z() << ","
+                      << uncorrected_pose.orientation.w() << ","
+                      << uncorrected_pose.orientation.x() << ","
+                      << uncorrected_pose.orientation.y() << ","
+                      << uncorrected_pose.orientation.z() << std::endl;
+        
+>>>>>>> print uncorrected pose
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
