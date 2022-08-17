@@ -52,7 +52,7 @@ public:
         put_to_consume_delay_csv.open(data_path + "/imu_integrator_input_delay.csv");
 
         const double frequency = 200;
-        const double mincutoff = 10;
+        const double mincutoff = 5;
         const double beta = 1;
         const double dcutoff = 10;
 
@@ -278,9 +278,9 @@ private:
                 << out_pose.rotation().toQuaternion().y() << ","
                 << out_pose.rotation().toQuaternion().z() << std::endl;
 
-        auto to_dregrees = [](double radians) -> double {
-            return radians * 180 / M_PI;
-        };
+        // auto to_dregrees = [](double radians) -> double {
+        //     return radians * 180 / M_PI;
+        // };
 
         auto original_quaternion = out_pose.rotation().toQuaternion();
         Eigen::Matrix<double, 3, 1> rotation_angles = original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
@@ -294,7 +294,7 @@ private:
             abs(rotation_angles[2] - prev_euler_angles[2]) > M_PI / 2)) {
             filters[6].clear();
             filters[7].clear();
-            std::cout << "clear filter" << std::endl;
+            // std::cout << "clear filter" << std::endl;
 //            std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
 //                      << to_dregrees(rotation_angles[2]) << "  --->  "
 //                      << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
@@ -309,10 +309,10 @@ private:
             has_prev = true;
         }
 
-        std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
-                  << to_dregrees(rotation_angles[2]) << "  --->  "
-                  << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
-                  << to_dregrees(filtered_angles[2]) << std::endl;
+        // std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
+        //           << to_dregrees(rotation_angles[2]) << "  --->  "
+        //           << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
+        //           << to_dregrees(filtered_angles[2]) << std::endl;
 
         prev_euler_angles = std::move(rotation_angles);
 
@@ -322,18 +322,26 @@ private:
 
         auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
 
-//        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
-//                imu_raw_type {
-//                        prev_bias.gyroscope(),
-//                        prev_bias.accelerometer(),
-//                        bias.gyroscope(),
-//                        bias.accelerometer(),
-//                        out_pose.translation(),             /// Position
-//                        navstate_k.velocity(),              /// Velocity
-//                        out_pose.rotation().toQuaternion(), /// Eigen Quat
-//                        real_time
-//                }
-//        ));
+    //    _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+    //            imu_raw_type {
+    //                    prev_bias.gyroscope(),
+    //                    prev_bias.accelerometer(),
+    //                    bias.gyroscope(),
+    //                    bias.accelerometer(),
+    //                    out_pose.translation(),             /// Position
+    //                    navstate_k.velocity(),              /// Velocity
+    //                    original_quaternion, /// Eigen Quat
+    //                    real_time
+    //            }
+    //    ));
+    //    filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
+    //                  << out_pose.translation().x() << ","
+    //                  << out_pose.translation().y() << ","
+    //                  << out_pose.translation().z() << ","
+    //                  << original_quaternion.w() << ","
+    //                  << original_quaternion.x() << ","
+    //                  << original_quaternion.y() << ","
+    //                  << original_quaternion.z() << std::endl;
 
         filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
                      << filtered_pos.x() << ","
