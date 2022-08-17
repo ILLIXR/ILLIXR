@@ -34,7 +34,7 @@ public:
 		}
 
 		receiver_to_sender.open(data_path + "/receiver_to_sender_time.csv");
-		hashed.open(data_path + "/hash_server_tx.txt");
+		// hashed.open(data_path + "/hash_server_tx.txt");
 
 		last_send_time = timestamp();
 	}
@@ -182,7 +182,7 @@ private:
 	long int last_send_time;
 	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
     std::ofstream receiver_to_sender;
-	std::ofstream hashed;
+	// std::ofstream hashed;
 
 };
 

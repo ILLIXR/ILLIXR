@@ -49,7 +49,7 @@ public:
 			}
 		}
 		
-		hashed_data.open(data_path + "/hash_device_tx.txt");
+		// hashed_data.open(data_path + "/hash_device_tx.txt");
 		frame_info.open(data_path + "/frame_info.csv");
 		enc_latency.open(data_path + "/enc.csv");
 		time_srl.open(data_path + "/srl.csv");
@@ -173,7 +173,7 @@ public:
 			data_buffer->set_cam_time(datum->time.time_since_epoch().count());
 			
 			float created_to_sent = (_m_clock->now().time_since_epoch().count() - datum->created_time) / 1e6;
-			std::cout << "Created to send: " << created_to_sent << "\n";
+			// std::cout << "Created to send: " << created_to_sent << "\n";
 			if (false) {
 				std::cout << "dropping " << drop_count++ << "\n";
 			} else {
@@ -217,7 +217,7 @@ private:
 	Address server_addr;
 
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
-	std::ofstream hashed_data;
+	// std::ofstream hashed_data;
 	std::ofstream frame_info;
 	std::ofstream enc_latency;
 	std::ofstream time_srl;
