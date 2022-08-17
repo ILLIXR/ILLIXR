@@ -42,7 +42,7 @@ public:
 		}
 		
 		receive_time.open(data_path + "/receive_time.csv");
-		hashed_data.open(data_path + "/hash_server_rx.txt");
+		// hashed_data.open(data_path + "/hash_server_rx.txt");
 		dec_latency.open(data_path + "/dec.csv");
 		socket.set_reuseaddr();
 		socket.bind(server_addr);
@@ -204,7 +204,7 @@ private:
 
 	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream receive_time;
-	std::ofstream hashed_data;
+	// std::ofstream hashed_data;
 	std::ofstream dec_latency;
 };
 
