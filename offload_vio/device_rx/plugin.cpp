@@ -42,7 +42,7 @@ public:
 		
 		pose_transfer_csv.open(data_path + "/pose_transfer_time.csv");
 		roundtrip_csv.open(data_path + "/roundtrip_time.csv");
-		hashed.open(data_path + "/hash_device_rx.txt");
+		// hashed.open(data_path + "/hash_device_rx.txt");
 
 		socket.set_reuseaddr();
 		socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
@@ -165,7 +165,7 @@ private:
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream pose_transfer_csv;
 	std::ofstream roundtrip_csv;
-	std::ofstream hashed;
+	// std::ofstream hashed;
 };
 
 PLUGIN_MAIN(offload_reader)
