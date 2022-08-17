@@ -37,6 +37,8 @@ public:
 		, imu_cam_log{record_logger_}
 		, camera_cvtfmt_log{record_logger_}
 		, initial_time{0}
+        // , frame_id{0}
+        // , imu_id{0}
 	{ 
 		initial_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		if (!std::filesystem::exists(data_path)) {
@@ -75,6 +77,7 @@ protected:
 #endif
         const sensor_types& sensor_datum = _m_sensor_data_it->second;
         ++_m_sensor_data_it;
+        // if (imu_id++ % 2 != 0 && !(sensor_datum.cam0)) return;
 
         imu_cam_log.log(record{imu_cam_record,
                                {
@@ -89,6 +92,10 @@ protected:
         std::optional<cv::Mat> cam1 =
             sensor_datum.cam1 ? std::make_optional<cv::Mat>(*(sensor_datum.cam1.value().load().release())) : std::nullopt;
         RAC_ERRNO_MSG("offline_imu_cam after cam1");
+
+        // cam0 = frame_id % 2 == 0 ? cam0 : std::nullopt;
+        // cam1 = frame_id % 2 == 0 ? cam1 : std::nullopt;
+        // frame_id++;
 
 #ifndef NDEBUG
         /// If debugging, assert the image is grayscale
@@ -142,6 +149,9 @@ private:
 	ullong initial_time;
 	const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
 	std::ofstream time_diff_csv;
+
+    // int frame_id;
+    // int imu_id;
 
 };
 
