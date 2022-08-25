@@ -2,7 +2,7 @@
 /* FauxPose/plugin.cpp                                                       */
 /*                                                                           */
 /* Created: 03/03/2022                                                       */
-/* Last Edited: 04/14/2022                                                   */
+/* Last Edited: 08/06/2022                                                   */
 /*                                                                           */
 /* An IlliXR plugin that publishes position tracking data ("pose")           */
 /*	 from a mathematical operation just to quickly produce some known    */
@@ -19,9 +19,6 @@
 /*   * (This version uploaded to ILLIXR github)                              */
 /*                                                                           */
 
-#include "common/phonebook.hpp"
-#include "common/plugin.hpp"
-#include "common/threadloop.hpp"
 #include "common/data_format.hpp"
 #include "common/pose_prediction.hpp"
 
@@ -35,22 +32,25 @@ public:
 	faux_pose_impl(const phonebook* const pb)
 		: sb{pb->lookup_impl<switchboard>()}
 	{
-		printf("[fauxpose] Starting Service\n");
-		RAC_ERRNO_MSG("[fauxpose] in service constructor");
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Starting Service\n";
+#endif
 
 		// Store the initial time
 		auto now = std::chrono::system_clock::now();
 		sim_start_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
 
-		// Set the faux-pose movement parameters
+		// Set an initial faux-pose location
+		//simulated_location = Eigen::Vector3f{0.0, 1.5, 0.0};
 		period = 0.5;
 		amplitude = 2.0;
 	}
 
 	// ********************************************************************
 	virtual ~faux_pose_impl() {
-		printf("[fauxpose] Ending Service\n");
-		RAC_ERRNO_MSG("[fauxpose] in service destructor");
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Ending Service\n";
+#endif
 	}
 
 	// ********************************************************************
@@ -71,7 +71,9 @@ public:
 	// ********************************************************************
 	virtual pose_type correct_pose([[maybe_unused]] const pose_type pose) const override {
 		pose_type simulated_pose;
-		printf("[fauxpose] Returning (zero) pose\n");
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Returning (zero) pose\n";
+#endif
 		return simulated_pose;
 	}
 
@@ -84,13 +86,16 @@ public:
 	virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override{
 		std::unique_lock lock {offset_mutex};
 		Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-		//std::cout << "pose_prediction: set_offset" << std::endl;
 		offset = raw_o.inverse();
 	}
 
 	// ********************************************************************
-	virtual fast_pose_type get_fast_pose() const override  {                                          
-			return get_fast_pose(std::chrono::system_clock::now());                                  
+	virtual fast_pose_type get_fast_pose() const override  {
+		// MHuzai:  In actual pose prediction, the semantics are that
+		//  we return the pose for next vsync, not now. I think we
+		//  should do the same here, unless your intent is different
+		//  with faux_pose.
+		return get_fast_pose(std::chrono::system_clock::now());
 	}
 
 	// ********************************************************************
@@ -110,20 +115,17 @@ public:
 		elapsed_time = time - sim_start_time;
 		sim_time = elapsed_time.count() * 0.000000001;
 
-		//printf("[fauxpose] time = %ld\n", std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		printf("[fauxpose] elapsed time = %ld (%lf)\n", elapsed_time.count(), sim_time);
-		//fprintf(stderr, "[fauxpose] ********* elapsed time = %ld (%lf)\n", elapsed_time.count(), sim_time);
-
 		// Calculate new pose values
 		//   Pose values are calculated from the passage of time to maintain consistency */
-		//fprintf(stderr, "FP: time.count is %ld\n", time.time_since_epoch());
 		simulated_pose.position[0] = amplitude * sin(sim_time * period);	// X
 		simulated_pose.position[1] = 1.5;					// Y
 		simulated_pose.position[2] = amplitude * cos(sim_time * period);	// Z
-		simulated_pose.orientation = Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0);	// W,X,Y,Z (No rotation)
+		simulated_pose.orientation = Eigen::Quaternionf(1.0, 0.0, 0.0, 0.0);	// (W,X,Y,Z) Facing forward
 
 		// Return the new pose
-		printf("[fauxpose] Returning pose\n");
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Returning pose\n";
+#endif
 		return fast_pose_type{
 			.pose = simulated_pose,
 			.predict_computed_time = std::chrono::system_clock::now(),
@@ -159,14 +161,16 @@ public:
 		pb->register_impl<pose_prediction>(
 			std::static_pointer_cast<pose_prediction>(std::make_shared<faux_pose_impl>(pb))
 		);
+#ifndef NDEBUG
 		printf("[fauxpose] Starting Plugin\n");
-		RAC_ERRNO_MSG("[fauxpose] in constructor");
+#endif
 	}
 
 	// ********************************************************************
 	virtual ~faux_pose() override {
-		printf("[fauxpose] Ending Plugin\n");
-		RAC_ERRNO_MSG("[fauxpose] in destructor");
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Ending Plugin\n";
+#endif
 	}
 };
 
