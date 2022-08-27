@@ -232,5 +232,10 @@ namespace ILLIXR {
         , position{position_}
         , latest_quaternion{latest_quaternion_}
         , render_quaternion{render_quaternion_} { }
+<<<<<<< HEAD
     };
 }
+=======
+};
+} // namespace ILLIXR
+>>>>>>> [pre-commit.ci] Run clang-format

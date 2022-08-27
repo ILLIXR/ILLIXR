@@ -71,11 +71,12 @@ public:
             auto rectifL    = rectifLeftQueue->tryGet<dai::ImgFrame>();
             auto rectifR    = rectifRightQueue->tryGet<dai::ImgFrame>();
 
-            ullong cam_time = static_cast<ullong>(std::chrono::time_point_cast<std::chrono::nanoseconds>(colorFrame->getTimestamp()).time_since_epoch().count()); 
+            ullong cam_time = static_cast<ullong>(
+                std::chrono::time_point_cast<std::chrono::nanoseconds>(colorFrame->getTimestamp()).time_since_epoch().count());
             if (!_m_first_cam_time) {
-                _m_first_cam_time = cam_time;
+                _m_first_cam_time      = cam_time;
                 _m_first_real_time_cam = _m_clock->now();
-			}
+            }
 
             time_point cam_time_point{*_m_first_real_time_cam + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
 
@@ -93,20 +94,9 @@ public:
             cv::Mat converted_depth;
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 
-            _m_cam.put(_m_cam.allocate<cam_type>(
-                {
-                    cam_time_point,
-                    cv::Mat{LeftOut},
-                    cv::Mat{RightOut}
-                }
-            ));
-            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-                {
-                    cam_time_point,
-                    cv::Mat{rgb_out},
-                    cv::Mat{converted_depth}
-                }
-            ));
+            _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, cv::Mat{LeftOut}, cv::Mat{RightOut}}));
+            _m_rgb_depth.put(
+                _m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_out}, cv::Mat{converted_depth}}));
         }
 
         std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> gyroTs;
@@ -196,7 +186,7 @@ private:
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;
 
-    std::optional<ullong> _m_first_cam_time;
+    std::optional<ullong>     _m_first_cam_time;
     std::optional<time_point> _m_first_real_time_cam;
 
     dai::Pipeline createCameraPipeline() {
