@@ -68,8 +68,7 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
-    { }
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
 
     void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
         if (datum != nullptr && datum->img0.has_value() && datum->img1.has_value()) {
@@ -221,27 +220,27 @@ public:
     bool load_camera_images() {
         RAC_ERRNO_MSG("debugview at start of load_camera_images");
 
-        cam = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue(); 
-		if (cam == nullptr) {
-			return false;
-		}
+        cam = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
+        if (cam == nullptr) {
+            return false;
+        }
 
-		glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-		cv::Mat img0{cam->img0.clone()};
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
-		camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
-		GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, GL_RED};
-		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+        glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+        cv::Mat img0{cam->img0.clone()};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
+        camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
+        GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
-		glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-		cv::Mat img1{cam->img1.clone()};    /// <- Adding this here to simulate the copy
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
-		camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
-		GLint swizzleMask1[] = {GL_RED, GL_RED, GL_RED, GL_RED};
-		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask1);
+        glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        cv::Mat img1{cam->img1.clone()}; /// <- Adding this here to simulate the copy
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
+        camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
+        GLint swizzleMask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask1);
 
-		RAC_ERRNO_MSG("debugview at end of load_camera_images");
-		return true;
+        RAC_ERRNO_MSG("debugview at end of load_camera_images");
+        return true;
     }
 
     Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
@@ -375,10 +374,10 @@ private:
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
 
-    switchboard::reader<pose_type>          _m_slow_pose;
-    switchboard::reader<imu_raw_type>       _m_fast_pose;
-    switchboard::buffered_reader<cam_type>  _m_cam;
-    GLFWwindow*                             gui_window;
+    switchboard::reader<pose_type>         _m_slow_pose;
+    switchboard::reader<imu_raw_type>      _m_fast_pose;
+    switchboard::buffered_reader<cam_type> _m_cam;
+    GLFWwindow*                            gui_window;
 
     uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 

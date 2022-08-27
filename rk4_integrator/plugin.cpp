@@ -18,20 +18,20 @@ constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}};
 
 class rk4_integrator : public plugin {
 public:
-	rk4_integrator(std::string name_, phonebook* pb_)
-		: plugin{name_, pb_}
-		, sb{pb->lookup_impl<switchboard>()}
-		, _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-		, _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-		sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
-			callback(datum);
-		});
-	}
+    rk4_integrator(std::string name_, phonebook* pb_)
+        : plugin{name_, pb_}
+        , sb{pb->lookup_impl<switchboard>()}
+        , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
+        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
+        sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
+            callback(datum);
+        });
+    }
 
-	void callback(switchboard::ptr<const imu_type> datum) {
-		_imu_vec.emplace_back(datum->time, datum->angular_v, datum->linear_a);
-		
-		clean_imu_vec(datum->time);
+    void callback(switchboard::ptr<const imu_type> datum) {
+        _imu_vec.emplace_back(datum->time, datum->angular_v, datum->linear_a);
+
+        clean_imu_vec(datum->time);
         propagate_imu_values(datum->time);
 
         RAC_ERRNO_MSG("rk4_integrator");
@@ -59,7 +59,7 @@ private:
         auto it0 = _imu_vec.begin();
         while (it0 != _imu_vec.end()) {
             if (timestamp - it0->time < IMU_SAMPLE_LIFETIME) {
-               break;
+                break;
             }
             it0 = _imu_vec.erase(it0);
         }

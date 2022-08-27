@@ -16,7 +16,7 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
-		, _m_cam{sb->get_writer<cam_type>("cam")} {
+        , _m_cam{sb->get_writer<cam_type>("cam")} {
         eCAL::Initialize(0, NULL, "VIO Server Reader");
         subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
         subscriber.AddReceiveCallback(std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
@@ -36,12 +36,10 @@ private:
                 cam0 = std::make_optional<cv::Mat>(img0.clone());
                 cam1 = std::make_optional<cv::Mat>(img1.clone());
 
-				_m_cam.put(_m_cam.allocate<cam_type>(cam_type {
-					time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
-					cam0,
-					cam1}));
+                _m_cam.put(_m_cam.allocate<cam_type>(
+                    cam_type{time_point{std::chrono::nanoseconds{curr_data.timestamp()}}, cam0, cam1}));
             }
-			
+
             _m_imu.put(_m_imu.allocate<imu_type>(imu_type{
                 time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
                 Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
@@ -50,8 +48,8 @@ private:
     }
 
     const std::shared_ptr<switchboard> sb;
-    switchboard::writer<imu_type> 	   _m_imu;
-	switchboard::writer<cam_type> 	   _m_cam; 
+    switchboard::writer<imu_type>      _m_imu;
+    switchboard::writer<cam_type>      _m_cam;
 
     eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec> subscriber;
 };

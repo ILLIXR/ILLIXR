@@ -22,6 +22,7 @@ using namespace ILLIXR;
 constexpr duration IMU_TTL{std::chrono::seconds{5}};
 
 using ImuBias = gtsam::imuBias::ConstantBias;
+
 class gtsam_integrator : public plugin {
 public:
     gtsam_integrator(std::string name_, phonebook* pb_)
@@ -109,7 +110,7 @@ private:
             const gtsam::Vector3 measured_acc{imu_input.linear_a.cast<double>()};
             const gtsam::Vector3 measured_omega{imu_input.angular_v.cast<double>()};
 
-			duration delta_t = imu_input_next.time - imu_input.time;
+            duration delta_t = imu_input_next.time - imu_input.time;
 
             _pim->integrateMeasurement(measured_acc, measured_omega, duration2double(delta_t));
         }
@@ -136,12 +137,12 @@ private:
     void clean_imu_vec(time_point timestamp) {
         auto imu_iterator = _imu_vec.begin();
 
-		// Since the vector is ordered oldest to latest, keep deleting until you
-		// hit a value less than 'IMU_TTL' seconds old
-		while (imu_iterator != _imu_vec.end()) {
-			if (timestamp - imu_iterator->time < IMU_TTL) {
-				break;
-			}
+        // Since the vector is ordered oldest to latest, keep deleting until you
+        // hit a value less than 'IMU_TTL' seconds old
+        while (imu_iterator != _imu_vec.end()) {
+            if (timestamp - imu_iterator->time < IMU_TTL) {
+                break;
+            }
 
             imu_iterator = _imu_vec.erase(imu_iterator);
         }
@@ -194,7 +195,7 @@ private:
 #endif
 
         for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
-            _pim_obj->integrateMeasurement(prop_data[i], prop_data[i+1]);
+            _pim_obj->integrateMeasurement(prop_data[i], prop_data[i + 1]);
 
             prev_bias = bias;
             bias      = _pim_obj->biasHat();
@@ -251,7 +252,7 @@ private:
         // Loop through and ensure we do not have an zero dt values
         // This would cause the noise covariance to be Infinity
         for (int i = 0; i < int(prop_data.size()) - 1; i++) {
-			// I need prop_data.size() - 1 to be signed, because it might equal -1.
+            // I need prop_data.size() - 1 to be signed, because it might equal -1.
             if (std::chrono::abs(prop_data[i + 1].time - prop_data[i].time) < std::chrono::nanoseconds{1}) {
                 prop_data.erase(prop_data.begin() + i);
                 i--;
@@ -262,14 +263,11 @@ private:
     }
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-	static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
-		double lambda = duration2double(timestamp - imu_1.time) / duration2double(imu_2.time - imu_1.time);
-		return imu_type {
-			timestamp,
-			(1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
-			(1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v
-		};
-	}
+    static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
+        double lambda = duration2double(timestamp - imu_1.time) / duration2double(imu_2.time - imu_1.time);
+        return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
+                        (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
+    }
 };
 
 PLUGIN_MAIN(gtsam_integrator)
