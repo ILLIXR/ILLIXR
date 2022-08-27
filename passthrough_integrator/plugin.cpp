@@ -14,8 +14,8 @@ public:
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
         sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
-			callback(datum);
-		});
+            callback(datum);
+        });
     }
 
     void callback(switchboard::ptr<const imu_type> datum) {
