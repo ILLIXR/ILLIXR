@@ -233,4 +233,4 @@ namespace ILLIXR {
         , latest_quaternion{latest_quaternion_}
         , render_quaternion{render_quaternion_} { }
     };
-}
+} 
