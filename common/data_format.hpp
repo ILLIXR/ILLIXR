@@ -215,29 +215,22 @@ namespace ILLIXR {
 	};
 
     struct texture_pose : public switchboard::event {
-        int seq; /// TODO: Should texture_pose.seq be a long long
-		duration offload_duration;
-        unsigned char *image;
-        time_point pose_time;
-        Eigen::Vector3f position;
+		duration 		   offload_duration;
+        unsigned char 	   *image;
+        time_point 		   pose_time;
+        Eigen::Vector3f    position;
         Eigen::Quaternionf latest_quaternion;
         Eigen::Quaternionf render_quaternion;
+
         texture_pose() { }
-        texture_pose(
-            int seq_,
-            duration offload_duration_,
-            unsigned char *image_,
-            time_point pose_time_,
-            Eigen::Vector3f position_,
-			Eigen::Quaternionf latest_quaternion_,
-            Eigen::Quaternionf render_quaternion_
-        ) : seq{seq_}
-          , offload_duration{offload_duration_}
-          , image{image_}
-          , pose_time{pose_time_}
-          , position{position_}
-          , latest_quaternion{latest_quaternion_}
-          , render_quaternion{render_quaternion_}
-        { }
+
+        texture_pose(duration offload_duration_, unsigned char* image_, time_point pose_time_, Eigen::Vector3f position_,
+                 Eigen::Quaternionf latest_quaternion_, Eigen::Quaternionf render_quaternion_)
+        : offload_duration{offload_duration_}
+        , image{image_}
+        , pose_time{pose_time_}
+        , position{position_}
+        , latest_quaternion{latest_quaternion_}
+        , render_quaternion{render_quaternion_} { }
     };
 }
