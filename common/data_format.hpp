@@ -211,5 +211,5 @@ struct texture_pose : public switchboard::event {
         , position{position_}
         , latest_quaternion{latest_quaternion_}
         , render_quaternion{render_quaternion_} { }
-	};
+};
 } // namespace ILLIXR
