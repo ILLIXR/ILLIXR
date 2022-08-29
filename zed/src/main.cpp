@@ -74,10 +74,10 @@ public:
     }
 
 private:
-    const std::shared_ptr<switchboard> sb;
+    const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<cam_type>              _m_cam; 
-	switchboard::writer<rgb_depth_type>        _m_rgb_depth;
+    switchboard::writer<cam_type>              _m_cam;
+    switchboard::writer<rgb_depth_type>        _m_rgb_depth;
     std::shared_ptr<Camera>                    zedm;
     Resolution                                 image_size;
     RuntimeParameters                          runtime_parameters;
@@ -93,8 +93,8 @@ private:
     cv::Mat depth_ocv;
     cv::Mat rgb_ocv;
 
-    std::optional<ullong> _m_first_cam_time;
-	std::optional<time_point> _m_first_real_time;
+    std::optional<ullong>     _m_first_cam_time;
+    std::optional<time_point> _m_first_real_time;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -112,11 +112,11 @@ protected:
         ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
 
         // Time as time_point
-		if (!_m_first_cam_time) {
-			_m_first_cam_time = cam_time;
-			_m_first_real_time = _m_clock->now();
-		}
-		time_point cam_time_point{*_m_first_real_time + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
+        if (!_m_first_cam_time) {
+            _m_first_cam_time  = cam_time;
+            _m_first_real_time = _m_clock->now();
+        }
+        time_point cam_time_point{*_m_first_real_time + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
 
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
@@ -124,21 +124,9 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        _m_cam.put(_m_cam.allocate<cam_type>(
-            {
-                cam_time_point,
-                cv::Mat{imageL_ocv},
-                cv::Mat{imageR_ocv}
-            }
-        )); 
+        _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}}));
 
-        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-            {
-                cam_time_point,
-                cv::Mat{rgb_ocv},
-                cv::Mat{depth_ocv}
-            }
-        ));
+        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -220,7 +208,7 @@ private:
 
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-	switchboard::writer<imu_type>              _m_imu;
+    switchboard::writer<imu_type>              _m_imu;
 
     // IMU
     SensorsData sensors_data;

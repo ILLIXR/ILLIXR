@@ -81,53 +81,43 @@ public:
         }
 
         if (auto fs = frame.as<rs2::frameset>()) {
-            double ts = fs.get_timestamp(); 
+            double ts       = fs.get_timestamp();
             ullong cam_time = static_cast<ullong>(ts * 1000000);
             if (!_m_first_cam_time) {
-                _m_first_cam_time = cam_time;
+                _m_first_cam_time      = cam_time;
                 _m_first_real_time_cam = _m_clock->now();
             }
             time_point cam_time_point{*_m_first_real_time_cam + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
             if (cam_select == D4XXI) {
-                rs2::video_frame ir_frame_left = fs.get_infrared_frame(1);
+                rs2::video_frame ir_frame_left  = fs.get_infrared_frame(1);
                 rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
-                rs2::video_frame depth_frame = fs.get_depth_frame();
-                rs2::video_frame rgb_frame = fs.get_color_frame();
-                cv::Mat ir_left = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*)ir_frame_left.get_data());
-                cv::Mat ir_right = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void *)ir_frame_right.get_data());
-                cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void *)rgb_frame.get_data());
-                cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void *)depth_frame.get_data());
+                rs2::video_frame depth_frame    = fs.get_depth_frame();
+                rs2::video_frame rgb_frame      = fs.get_color_frame();
+                cv::Mat          ir_left =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_left.get_data());
+                cv::Mat ir_right =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_right.get_data());
+                cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void*) rgb_frame.get_data());
+                cv::Mat depth =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void*) depth_frame.get_data());
                 cv::Mat converted_depth;
-                float depth_scale = pipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale(); // for converting measurements into millimeters
+                float   depth_scale = pipe.get_active_profile()
+                                        .get_device()
+                                        .first<rs2::depth_sensor>()
+                                        .get_depth_scale(); // for converting measurements into millimeters
                 depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                _m_cam.put(_m_cam.allocate<cam_type>(
-                    {
-                        cam_time_point,
-                        ir_left,
-                        ir_right
-                    }
-                ));
-                _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>(
-                    {
-                        cam_time_point,
-                        rgb,
-                        depth
-                    }
-                ));
-            } else if (cam_select == T26X){
-                rs2::video_frame fisheye_frame_left = fs.get_fisheye_frame(1);
+                _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, ir_left, ir_right}));
+                _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, rgb, depth}));
+            } else if (cam_select == T26X) {
+                rs2::video_frame fisheye_frame_left  = fs.get_fisheye_frame(1);
                 rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
-                cv::Mat fisheye_left = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*)fisheye_frame_left.get_data());
-                cv::Mat fisheye_right = cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void *)fisheye_frame_right.get_data());
-                _m_cam.put(_m_cam.allocate<cam_type>(
-                    {
-                        cam_time_point,
-                        fisheye_left,
-                        fisheye_right
-                    }
-                ));
+                cv::Mat          fisheye_left =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_left.get_data());
+                cv::Mat fisheye_right =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_right.get_data());
+                _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, fisheye_left, fisheye_right}));
             }
-        }    
+        }
     };
 
     virtual ~realsense() override {
