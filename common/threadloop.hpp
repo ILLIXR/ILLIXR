@@ -182,11 +182,11 @@ protected:
      * Check this before doing long-running computation; it makes termination more responsive.
      */
     bool should_terminate() {
-        return _m_terminate.load();
+        return _m_internal_stop.load();
     }
 
 private:
-    std::atomic<bool>                _m_terminate{false};
+    std::atomic<bool>                _m_internal_stop{false};
     std::thread                      _m_thread;
     std::shared_ptr<const Stoplight> _m_stoplight;
 };

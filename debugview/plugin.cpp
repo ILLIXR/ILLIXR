@@ -71,12 +71,6 @@ public:
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
     { }
 
-    void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
-        if (datum != nullptr && datum->img0.has_value() && datum->img1.has_value()) {
-            last_datum_with_images = datum;
-        }
-    }
-
     void draw_GUI() {
         RAC_ERRNO_MSG("debugview at start of draw_GUI");
 
@@ -393,7 +387,7 @@ private:
 
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const cam_type> last_datum_with_images;
+    switchboard::ptr<const cam_type> cam;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
