@@ -109,7 +109,7 @@ Read the [API documentation on _Switchboard_][32] for more information.
     style="width: 400px;"
 />
 
--   In the above figure, rectangles are plugins.
+-   In the above figure, ovals are plugins.
 
 -   Solid arrows from plugins to topics represent publishing.
 
