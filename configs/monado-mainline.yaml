@@ -39,6 +39,7 @@ action:
       XRT_BUILD_DRIVER_ARDUINO      : OFF
       XRT_BUILD_DRIVER_OHMD         : OFF
       XRT_BUILD_DRIVER_DAYDREAM     : OFF
+      XRT_BUILD_DRIVER_DEPTHAI      : OFF
       XRT_BUILD_DRIVER_DUMMY        : OFF
       XRT_BUILD_DRIVER_HDK          : OFF
       XRT_BUILD_DRIVER_HYDRA        : OFF
@@ -52,6 +53,7 @@ action:
       XRT_BUILD_DRIVER_HANDTRACKING : OFF
       XRT_BUILD_DRIVER_WMR          : OFF
       XRT_FEATURE_SERVICE           : ON
+      XRT_FEATURE_WINDOW_PEEK       : OFF
 
   openxr_app: !include "openxr_app.yaml"
 
