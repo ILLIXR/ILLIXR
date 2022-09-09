@@ -51,7 +51,7 @@ public:
 			cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
 		} else {
 			auto now = timestamp();
-			string delimitter = "AEND!";
+			string delimitter = "END!";
 			string recv_data = read_socket->read(); /* Blocking operation, wait for the data to come */
 			buffer_str = buffer_str + recv_data;
 			if (recv_data.size() > 0) {
