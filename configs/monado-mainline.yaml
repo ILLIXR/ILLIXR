@@ -35,7 +35,7 @@ action:
       XRT_HAVE_LIBUSB               : ON
       XRT_HAVE_LIBUVC               : ON
       XRT_HAVE_V4L2                 : ON
-      XRT_HAVE_SDL2                 : ON
+      XRT_HAVE_SDL2                 : OFF
       XRT_BUILD_DRIVER_ARDUINO      : OFF
       XRT_BUILD_DRIVER_OHMD         : OFF
       XRT_BUILD_DRIVER_DAYDREAM     : OFF
