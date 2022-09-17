@@ -98,7 +98,9 @@ public:
 			string delimitter = "END!";
 
 			float created_to_sent = (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - datum->created_time) / 1e6;
+			// For packet dropping experiments. To disable it, replace the condition with "false".
 			if (created_to_sent > 100) {
+				std::cout << "Created to Send > 100\n";
 				frame_info << frame_id << "," << created_to_sent << ",0,1" << endl;
 			} else {
 				auto start = timestamp();

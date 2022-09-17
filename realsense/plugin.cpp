@@ -24,7 +24,7 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_imu_cam{sb->get_writer<imu_cam_type_prof>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")}
         {
@@ -40,6 +40,11 @@ public:
             // This lock guarantees that concurrent invocations of `callback` are serialized.
             // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
             // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
+
+            // Temporary fix, better system-wide solution on the way!
+            if (!_m_clock->has_started()) {
+                return;
+            }
 
             if (cam_select == D4XXI){
                 if (auto fs = frame.as<rs2::frameset>()) {
@@ -132,9 +137,14 @@ public:
                     }
                     
                     // Submit to switchboard
-                    _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>(
+                    _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type_prof>(
                         {
+                            0,
                             imu_time_point,
+                            time_point{},
+                            time_point{},
+                            time_point{},
+                            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count(),
                             av,
                             la,
                             img0,
@@ -181,7 +191,7 @@ private:
 
 	const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_cam_type> _m_imu_cam;
+    switchboard::writer<imu_cam_type_prof> _m_imu_cam;
     switchboard::writer<rgb_depth_type> _m_rgb_depth;
     std::mutex mutex;
 	rs2::pipeline_profile profiles;
