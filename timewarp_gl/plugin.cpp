@@ -439,6 +439,21 @@ public:
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");
     }
+    void uncorrect_pose(const pose_type pose) const {
+        pose_type swapped_pose;
+        swapped_pose.position.x() = pose.position.x();
+        swapped_pose.position.y() = -pose.position.z();
+        swapped_pose.position.z() = pose.position.y();
+        Eigen::Quaternionf raw_o(pose.orientation.w(), pose.orientation.x(), -pose.orientation.z(), pose.orientation.y());
+        //pyh dump ori pose
+        //std::ofstream pose_output;
+        //pose_output.open("pose_ori.csv", std::ios::out | std::ios::app); 
+        //if(pose_output.is_open()){
+        //    long timestamp = pose.sensor_time.time_since_epoch().count()/1000000;
+        //    pose_output<<timestamp<<" "<<swapped_pose.position.x()<<" "<<swapped_pose.position.y()<<" "<<swapped_pose.position.z()<<" "<< raw_o.x()<<" "<<raw_o.y()<<" "<<raw_o.z()<<" "<<raw_o.w()<<"\n";
+        //}
+        //pose_output.close();
+    }
 
     virtual void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
@@ -468,6 +483,16 @@ public:
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
         const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+        //pyh dump corrected pose
+        //uncorrect_pose(latest_pose.pose);    
+        //std::ofstream pose_output;
+        //pose_output.open("pose_timewarp.csv", std::ios::out | std::ios::app);
+        //if(pose_output.is_open()){
+        //    long timestamp = latest_pose.pose.sensor_time.time_since_epoch().count()/1000000;
+        //    pose_output<< timestamp<<" "<< latest_pose.pose.position.x()<<" "<<latest_pose.pose.position.y()<<" "<<latest_pose.pose.position.z()<<" "<< latest_pose.pose.orientation.x()<<" "<<latest_pose.pose.orientation.y()<<" "<<latest_pose.pose.orientation.z()<<" "<<latest_pose.pose.orientation.w()<<"\n";
+        //}
+        //pose_output.close();
+
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
