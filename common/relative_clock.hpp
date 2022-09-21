@@ -116,9 +116,10 @@ public:
             std::chrono::nanoseconds{relative.time_since_epoch()}.count();
     }
 
-    bool has_started() const{
+    bool has_started() const {
         return _m_start > std::chrono::steady_clock::time_point{};
     }
+
     /**
      * @brief Starts Check if the clock has started.
      */

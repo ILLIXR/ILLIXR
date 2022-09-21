@@ -9,6 +9,7 @@
 using namespace ILLIXR;
 //comment the line to use for EuRoC and ZED Mini
 #define REALSENSE
+
 class pose_prediction_impl : public pose_prediction {
 public:
     pose_prediction_impl(const phonebook* const pb)
@@ -19,7 +20,7 @@ public:
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
-        }
+    }
 
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
@@ -231,7 +232,7 @@ private:
         // Pre-compute things
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro();
 #ifdef REALSENSE
-        Eigen::Vector3d gravity{0.0,0.0,0.0};
+        Eigen::Vector3d gravity{0.0, 0.0, 0.0};
 #else
         Eigen::Vector3d gravity{0.0,0.0,9.81};
 #endif

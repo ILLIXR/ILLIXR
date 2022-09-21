@@ -39,7 +39,6 @@ public:
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
         if (!_m_clock->has_started()) {
-            // if the data arrived before the relative clock started, ignore
             return;
         }
         if (cam_select == D4XXI) {
@@ -219,12 +218,11 @@ private:
                         // Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and
                         // check for stereo
                         std::string module_name = sensor.get_info(RS2_CAMERA_INFO_NAME);
-                        std::cout<<"module name: "<<module_name<<"\n";
-                        if(module_name=="Stereo Module")
-                        {
-                            std::cout<<"foudn stereo module\n";
-                            sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE,0);
-                            sensor.set_option(RS2_OPTION_EXPOSURE,8000);
+                        std::cout << "module name: " << module_name << "\n";
+                        if (module_name == "Stereo Module") {
+                            std::cout << "foudn stereo module\n";
+                            sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 0);
+                            sensor.set_option(RS2_OPTION_EXPOSURE, 8000);
                         }
                         for (auto&& sp : stream_profiles) {
                             if (sp.stream_type() == RS2_STREAM_GYRO) {
