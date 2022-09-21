@@ -7,7 +7,7 @@
 #include <eigen3/Eigen/Dense>
 #include <shared_mutex>
 using namespace ILLIXR;
-//comment the line to use for EuRoC and ZED Mini
+// comment the line to use for EuRoC and ZED Mini
 #define REALSENSE
 
 class pose_prediction_impl : public pose_prediction {
@@ -19,8 +19,7 @@ public:
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
-    }
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
 
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
@@ -34,6 +33,7 @@ public:
             return get_fast_pose(*vsync_estimate);
         }
     }
+
     virtual pose_type get_true_pose() const override {
         switchboard::ptr<const pose_type>                                   pose_ptr = _m_true_pose.get_ro_nullable();
         switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr =
@@ -82,17 +82,17 @@ public:
                 .predict_target_time   = future_timestamp,
             };
         }
-        //uncomment code to disable pose prediction
-        //Eigen::Quaternionf test = imu_raw->quat.cast<float>();
-        //Eigen::Vector3f test_pos = imu_raw->pos.cast<float>();
-        //return fast_pose_type{
-        //    .pose   = correct_pose(pose_type{_m_clock->now(),test_pos, test}),
-        //    .predict_computed_time = _m_clock->now(),
-        //    .predict_target_time   = future_timestamp,
-        //    };
-                                                                        
+        // uncomment code to disable pose prediction
+        // Eigen::Quaternionf test = imu_raw->quat.cast<float>();
+        // Eigen::Vector3f test_pos = imu_raw->pos.cast<float>();
+        // return fast_pose_type{
+        //     .pose   = correct_pose(pose_type{_m_clock->now(),test_pos, test}),
+        //     .predict_computed_time = _m_clock->now(),
+        //     .predict_target_time   = future_timestamp,
+        //     };
+
         // slow_pose and imu_raw, do pose prediction
-        double dt = duration2double(future_timestamp - imu_raw->imu_time);
+        double                                              dt = duration2double(future_timestamp - imu_raw->imu_time);
         std::pair<Eigen::Matrix<double, 13, 1>, time_point> predictor_result = predict_mean_rk4(dt);
 
         auto state_plus = predictor_result.first;
@@ -106,7 +106,7 @@ public:
                                           static_cast<float>(state_plus(6))},
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
-        
+
         // Make the first valid fast pose be straight ahead.
         if (first_time) {
             std::unique_lock lock{offset_mutex};
@@ -186,16 +186,16 @@ public:
         intel_pose.position.y() = pose.position.z();
         intel_pose.position.z() = -pose.position.y();
         Eigen::Quaternionf intel_raw_o(pose.orientation.w(), pose.orientation.x(), pose.orientation.z(), -pose.orientation.y());
-        //if needed, can apply another offset
-        //if(first_rotation && fast_pose_reliable()){
-        //    std::cout<<"set rotation\n";
-        //    first_rotation=false;
-        //    Eigen::Quaternionf intel_adjust = intel_raw_o * offset.inverse();
-        //    offset = intel_adjust.inverse();
-        //}
+        // if needed, can apply another offset
+        // if(first_rotation && fast_pose_reliable()){
+        //     std::cout<<"set rotation\n";
+        //     first_rotation=false;
+        //     Eigen::Quaternionf intel_adjust = intel_raw_o * offset.inverse();
+        //     offset = intel_adjust.inverse();
+        // }
         Eigen::Quaternionf intel_offset = apply_offset(intel_raw_o);
-        intel_pose.orientation = intel_offset;
-        intel_pose.sensor_time = pose.sensor_time;
+        intel_pose.orientation          = intel_offset;
+        intel_pose.sensor_time          = pose.sensor_time;
         return intel_pose;
 #else
         // Make any changes to the axes direction below
@@ -234,7 +234,7 @@ private:
 #ifdef REALSENSE
         Eigen::Vector3d gravity{0.0, 0.0, 0.0};
 #else
-        Eigen::Vector3d gravity{0.0,0.0,9.81};
+        Eigen::Vector3d gravity{0.0, 0.0, 9.81};
 #endif
         Eigen::Vector3d w_hat   = imu_raw->w_hat;
         Eigen::Vector3d a_hat   = imu_raw->a_hat;
