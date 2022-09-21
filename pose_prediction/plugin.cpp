@@ -39,11 +39,6 @@ public:
         }
     }
 
-    ~pose_prediction_impl() {
-        // pose_output_post.close();
-        // pose_output_post_offset.close();
-    }
-
     virtual pose_type get_true_pose() const override {
         switchboard::ptr<const pose_type>                                   pose_ptr = _m_true_pose.get_ro_nullable();
         switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr =
