@@ -1,6 +1,6 @@
 plugin_group:
-  #- path: offline_imu_cam/
-  #- path: zed/
+  # - path: offline_imu_cam/
+  # - path: zed/
   - path: realsense/
   # - path: depthai/
   # - path: record_imu_cam/
@@ -8,7 +8,6 @@ plugin_group:
   #  path:
   #    git_repo: https://github.com/ILLIXR/Kimera-VIO.git
   #    version: "3.2"
-  #- path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
   - name: OpenVINS
     path:
       git_repo: https://github.com/ILLIXR/open_vins.git

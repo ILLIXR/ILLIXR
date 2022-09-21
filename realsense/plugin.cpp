@@ -30,7 +30,6 @@ public:
         cam_data.iteration   = -1;
         accel_data.iteration = -1;
         cfg.disable_all_streams();
-        //configure_camera();
     }
 
     void callback(const rs2::frame& frame) {
@@ -39,8 +38,8 @@ public:
         // Even if the API does not invoke `callback` in parallel, this is still important for the memory-model.
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
-
-        if(!_m_clock->has_started()){
+        if (!_m_clock->has_started()) {
+            // if the data arrived before the relative clock started, ignore
             return;
         }
         if (cam_select == D4XXI) {
@@ -112,6 +111,10 @@ public:
                 rs2_vector        gyro_data = gyro.get_motion_data();
 
                 // IMU data
+                // use inertial force
+                // Eigen::Vector3f la = {accel.z, -accel.x, -accel.y};
+                // Eigen::Vector3f av = {gyro_data.z,-gyro_data.x, -gyro_data.y};
+
                 Eigen::Vector3f la = {accel.x, accel.y, accel.z};
                 Eigen::Vector3f av = {gyro_data.x, gyro_data.y, gyro_data.z};
 
@@ -149,9 +152,10 @@ public:
         }
     };
 
-    virtual void start() override{
+    virtual void start() override {
         configure_camera();
     }
+
     virtual ~realsense() override {
         pipe.stop();
     }
@@ -213,8 +217,7 @@ private:
                     for (rs2::sensor sensor : sensors) {
                         std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
                         // Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and
-                        // gyro
-                        //pyh check for stereo
+                        // check for stereo
                         std::string module_name = sensor.get_info(RS2_CAMERA_INFO_NAME);
                         std::cout<<"module name: "<<module_name<<"\n";
                         if(module_name=="Stereo Module")
@@ -303,6 +306,7 @@ private:
             cfg.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
             cfg.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_BGR8, FPS_D4XX);
             cfg.enable_stream(RS2_STREAM_DEPTH, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Z16, FPS_D4XX);
+
             profiles = pipe.start(cfg, [&](const rs2::frame& frame) {
                 this->callback(frame);
             });
