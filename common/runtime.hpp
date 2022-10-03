@@ -31,10 +31,6 @@ public:
     virtual ~runtime() = default;
 };
 
-#ifdef ILLIXR_MONADO_MAINLINE
-extern "C" runtime* runtime_factory();
-#else
 extern "C" runtime* runtime_factory(GLXContext appGLCtx);
-#endif /// ILLIXR_MONADO_MAINLINE
 
 } // namespace ILLIXR
