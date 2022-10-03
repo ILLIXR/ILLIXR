@@ -34,9 +34,9 @@ action:
   is_mainline : False
 
   monado:
-    path: ../monado_integration
-      # git_repo : https://github.com/ILLIXR/monado_integration.git
-      # version  : "offload-vio"
+    path:
+      git_repo : https://github.com/ILLIXR/monado_integration.git
+      version  : "offload-vio"
 
     config: # For CMake
       BUILD_WITH_LIBUDEV : "0"

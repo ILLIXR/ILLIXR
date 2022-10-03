@@ -223,6 +223,7 @@ protected:
             time_point{},
             time_point{},
             time_point{},
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count(),
             av,
             la,
             img0,
