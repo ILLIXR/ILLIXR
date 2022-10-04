@@ -228,6 +228,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
         XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
+        XRT_TRACING="true",
     )
 
     ## For CMake
@@ -264,7 +265,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     else:
         ## Get the full path to the 'app' binary
         openxr_app_path     = None
-        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, False)
+        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
 
     ## Compile the OpenXR app if we received an 'app' with 'src_path'
     if openxr_app_path:
@@ -288,44 +289,61 @@ def load_monado(config: Mapping[str, Any]) -> None:
         env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
 
         ## Open the Monado service application in the background
-        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        subprocess_run([str(monado_target_path)], env=env_monado_service)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(5)
 
-    subprocess_run(
-        [str(openxr_app_bin_path)],
-        env_override=dict(
-            ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
-            KIMERA_ROOT=config["action"]["kimera_path"],
-            AUDIO_ROOT=config["action"]["audio_path"],
-            REALSENSE_CAM=str(realsense_cam_string),
-            **env_monado,
-        ),
-        check=True,
+    actual_cmd_str = config["action"].get("command", "$cmd")
+    illixr_cmd_list = [str(openxr_app_bin_path), *map(str, plugin_paths)]
+    env_override=dict(
+        ILLIXR_DEMO_DATA=str(demo_data_path),
+        ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+        ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+        ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
+        ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+        KIMERA_ROOT=config["action"]["kimera_path"],
+        AUDIO_ROOT=config["action"]["audio_path"],
+        REALSENSE_CAM=str(realsense_cam_string),
+        **env_monado,
     )
-
-    if is_mainline:
-        ## Close and clean up the Monado service application
-        try:
-            outs, errs = monado_service_proc.communicate(timeout=1)
-        except subprocess.TimeoutExpired:
-            monado_service_proc.kill()
-            outs, errs = monado_service_proc.communicate()
-
-            ## Clean up leftover socket. It can only either be in $XDG_RUNTIME_DIR or /tmp
-            Path(env_monado_service['XDG_RUNTIME_DIR'] + "/monado_comp_ipc").unlink(missing_ok=True)
-            Path("/tmp/monado_comp_ipc").unlink(missing_ok=True)
-
-        print("\nstdout:\n")
-        sys.stdout.buffer.write(outs)
-
-        print("\nstderr:\n")
-        sys.stderr.buffer.write(errs)
+    env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
+    actual_cmd_list = list(
+        flatten1(
+            replace_all(
+                unflatten(shlex.split(actual_cmd_str)),
+                {
+                    ("$env_cmd",): [
+                        "env",
+                        "-C",
+                        Path(".").resolve(),
+                        *env_list,
+                        *illixr_cmd_list,
+                    ],
+                    ("$cmd",): illixr_cmd_list,
+                    ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
+                    ("$env",): env_list,
+                },
+            )
+        )
+    )
+    print(str(config["action"].get("ILLIXR_RUN_DURATION", 10)))
+    #subprocess_run(
+    #    [str(openxr_app_bin_path)],
+    #    env_override=dict(
+    #        ILLIXR_DEMO_DATA=str(demo_data_path),
+    #        ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+    #        ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+    #        ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+    #        ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+    #        KIMERA_ROOT=config["action"]["kimera_path"],
+    #        AUDIO_ROOT=config["action"]["audio_path"],
+    #        REALSENSE_CAM=str(realsense_cam_string),
+    #        **env_monado,
+    #    ),
+    #    check=True,
+    #)
 
 
 def clean_project(config: Mapping[str, Any]) -> None:
