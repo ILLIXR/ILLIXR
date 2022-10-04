@@ -54,9 +54,7 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-#ifndef ILLIXR_MONADO_MAINLINE
         , xwin{pb->lookup_impl<xlib_gl_extended_window>()}
-#endif
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
@@ -71,40 +69,19 @@ public:
         // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
         , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
-#ifndef ILLIXR_MONADO_MAINLINE
         dpy  = xwin->dpy;
         root = xwin->win;
         glc  = xwin->glc;
-#else
-        GLint        attr[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
-        XVisualInfo* vi;
-        /* open display */
-        if (!(dpy = XOpenDisplay(NULL))) {
-            fprintf(stderr, "cannot connect to X server\n\n");
-            exit(1);
-        }
-
-        /* get root window */
-        root = DefaultRootWindow(dpy);
-
-        /* get visual matching attr */
-        if (!(vi = glXChooseVisual(dpy, 0, attr))) {
-            fprintf(stderr, "no appropriate visual found\n\n");
-            exit(1);
-        }
-
-        /* create a context using the root window */
-        if (!(glc = glXCreateContext(dpy, vi, NULL, GL_TRUE))) {
-            fprintf(stderr, "failed to create context\n\n");
-            exit(1);
-        }
-#endif
 
         image_handles_ready = false;
         swapchain_ready     = false;
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
             // only 2 swapchains (for the left and right eye) are supported for now.
-            if (handle->swapchain_index > 1) {
+            if (handle->swapchain_index == 0) {
+                std::cout << "SWAPCHAIN 0 READY" << std::endl;
+            } else if (handle->swapchain_index == 1) {
+                std::cout << "SWAPCHAIN 1 READY" << std::endl;
+            } else {
                 return;
             }
 
@@ -114,16 +91,17 @@ public:
             if (this->_m_image_handles[0].size() == (size_t) handle->num_images &&
                 this->_m_image_handles[1].size() == (size_t) handle->num_images) {
                 this->image_handles_ready = true;
+                std::cout << "IMAGES READY" << std::endl;
             }
         });
+
+        std::cout << "Timewarp done!" << std::endl;
     }
 
 private:
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
-#ifndef ILLIXR_MONADO_MAINLINE
     const std::shared_ptr<xlib_gl_extended_window> xwin;
-#endif
     const std::shared_ptr<const RelativeClock> _m_clock;
 
     Display*   dpy;
@@ -613,6 +591,7 @@ public:
                     if (client_backend == graphics_api::OPENGL) {
                         _m_swapchain[eye].push_back(_m_image_handles[eye][image_index].gl_handle);
                     } else {
+                        std::cout << "CONVERTING IMAGES TO GL" << std::endl;
                         VulkanGLInterop(_m_image_handles[eye][image_index].vk_handle, eye);
                     }
                 }
@@ -768,11 +747,9 @@ public:
         // TODO: GLX V SYNCH SWAP BUFFER
         [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
-#ifndef ILLIXR_MONADO_MAINLINE
         RAC_ERRNO_MSG("timewarp_gl before glXSwapBuffers");
         glXSwapBuffers(dpy, root);
         RAC_ERRNO_MSG("timewarp_gl after glXSwapBuffers");
-#endif
 
         // The swap time needs to be obtained and published as soon as possible
         time_last_swap                              = _m_clock->now();
