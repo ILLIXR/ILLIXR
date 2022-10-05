@@ -285,15 +285,6 @@ private:
 
         auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
 
-        raw_csv << std::fixed << real_time.time_since_epoch().count() << ","
-                << out_pose.x() << ","
-                << out_pose.y() << ","
-                << out_pose.z() << ","
-                << out_pose.rotation().toQuaternion().w() << ","
-                << out_pose.rotation().toQuaternion().x() << ","
-                << out_pose.rotation().toQuaternion().y() << ","
-                << out_pose.rotation().toQuaternion().z() << std::endl;
-
         auto to_dregrees = [](double radians) -> double {
             return radians * 180 / M_PI;
         };
@@ -351,14 +342,23 @@ private:
 //                }
 //        ));
 
+        raw_csv << std::fixed << real_time.time_since_epoch().count() << ","
+                << out_pose.x() << ","
+                << out_pose.y() << ","
+                << out_pose.z() << ","
+                << original_quaternion.w() << ","
+                << original_quaternion.x() << ","
+                << original_quaternion.y() << ","
+                << original_quaternion.z() << std::endl;
+
         filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
                      << filtered_pos.x() << ","
                      << filtered_pos.y() << ","
                      << filtered_pos.z() << ","
-                     << original_quaternion.w() << ","
-                     << original_quaternion.x() << ","
-                     << original_quaternion.y() << ","
-                     << original_quaternion.z() << std::endl;
+                     << new_quaternion.w() << ","
+                     << new_quaternion.x() << ","
+                     << new_quaternion.y() << ","
+                     << new_quaternion.z() << std::endl;
 
         rpe_integrator_csv << std::fixed << dataset_time.time_since_epoch().count() / 1e9 << " "
                      << filtered_pos.x() << " "
