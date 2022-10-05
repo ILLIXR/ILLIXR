@@ -17,6 +17,9 @@
 #include "common/global_module_defs.hpp"
 #include "common/error_util.hpp"
 
+#include <filesystem>
+#include <fstream>
+
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display *dpy, GLXDrawable drawable, int interval);
@@ -64,13 +67,24 @@ public:
 		  // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
 		, disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
 		, enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
-	{ }
+	{ 
+		if (!std::filesystem::exists(data_path)) {
+                if (!std::filesystem::create_directory(data_path)) {
+                    std::cerr << "Failed to create data directory.";
+                }
+            }
+            pred_pose_csv.open(data_path + "/pred_pose.csv");
+	}
 
 private:
 	const std::shared_ptr<switchboard> sb;
 	const std::shared_ptr<pose_prediction> pp;
 	const std::shared_ptr<xlib_gl_extended_window> xwin;
 	const std::shared_ptr<const RelativeClock> _m_clock;
+	mutable std::shared_mutex offset_mutex;
+
+	const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+    mutable std::ofstream pred_pose_csv;
 
 	static constexpr int   SCREEN_WIDTH    = ILLIXR::FB_WIDTH;
 	static constexpr int   SCREEN_HEIGHT   = ILLIXR::FB_HEIGHT;
@@ -495,6 +509,32 @@ public:
 		assert(gl_result_1 && "glXMakeCurrent should not fail");
 	}
 
+	virtual pose_type uncorrect_pose(const pose_type pose) const {
+        pose_type swapped_pose;
+
+        // Make any changes to the axes direction below
+        // This is a mapping between the coordinate system of the current
+        // SLAM (OpenVINS) we are using and the OpenGL system.
+        swapped_pose.position.x() = -pose.position.z();
+        swapped_pose.position.y() = -pose.position.x();
+        swapped_pose.position.z() = pose.position.y();
+
+        // Make any chanes to orientation of the output below
+        // For the dataset were currently using (EuRoC), the output orientation acts as though
+        // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
+		Eigen::Quaternionf raw_o = apply_offset(pose.orientation);
+
+        swapped_pose.orientation = Eigen::Quaternionf(raw_o.w(), -raw_o.z(), -raw_o.x(), raw_o.y());
+        swapped_pose.sensor_time = pose.sensor_time;
+
+        return swapped_pose;
+    }
+
+	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+        std::shared_lock lock {offset_mutex};
+        return orientation * pp->get_offset().inverse();
+    }
+
 	virtual void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 		assert(gl_result && "glXMakeCurrent should not fail");
@@ -533,6 +573,17 @@ public:
 		// However, this should really be polling the high-frequency pose prediction topic,
 		// given a specified timestamp!
 		const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+		if (latest_pose.pose.position.x() != 0) {
+			pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
+			pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
+						<< uncorrected_pose.position.x() << ","
+						<< uncorrected_pose.position.y() << ","
+						<< uncorrected_pose.position.z() << ","
+						<< uncorrected_pose.orientation.w() << ","
+						<< uncorrected_pose.orientation.x() << ","
+						<< uncorrected_pose.orientation.y() << ","
+						<< uncorrected_pose.orientation.z() << std::endl;
+		}
 		viewMatrixBegin.block(0,0,3,3) = latest_pose.pose.orientation.toRotationMatrix();
 
 		// TODO: We set the "end" pose to the same as the beginning pose, because panel refresh is so tiny
