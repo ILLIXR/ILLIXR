@@ -7,6 +7,7 @@
 #include <gst/app/gstappsrc.h>
 #include <chrono>
 #include <thread>
+#include <stdlib.h>
 
 
 namespace ILLIXR {
@@ -46,19 +47,19 @@ namespace ILLIXR {
         auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
         auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
 
-        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=NV12,width=672,height=376,framerate=0/1"); // 752/480 for euroc
+        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=GRAY8,width=752,height=480,framerate=0/1"); // 752/480 for euroc
         g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_8uc1, nullptr);
         g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
         gst_caps_unref(caps_8uc1);
 
-        auto caps_convert_to = gst_caps_from_string("video/x-raw,format=NV12,width=672,height=376"); // 752/480 for euroc
+        auto caps_convert_to = gst_caps_from_string("video/x-raw,format=NV12,width=752,height=480"); // 752/480 for euroc
         g_object_set(G_OBJECT(caps_filter_0), "caps", caps_convert_to, nullptr);
         g_object_set(G_OBJECT(caps_filter_1), "caps", caps_convert_to, nullptr);
         gst_caps_unref(caps_convert_to);
 
         // set bitrate
-        g_object_set(G_OBJECT(encoder_img0), "bitrate", 1100000, nullptr);
-        g_object_set(G_OBJECT(encoder_img1), "bitrate", 1100000, nullptr);
+        g_object_set(G_OBJECT(encoder_img0), "bitrate", 524288, nullptr, 10);
+        g_object_set(G_OBJECT(encoder_img1), "bitrate", 524288, nullptr, 10);
 
         g_object_set (G_OBJECT (_appsrc_img0),
                       "stream-type", 0,
@@ -70,12 +71,6 @@ namespace ILLIXR {
                       "format", GST_FORMAT_BYTES,
                       "is-live", TRUE,
                       nullptr);
-
-        // set iframeinterval to 1 to force I-frame every frame
-        // g_object_set(G_OBJECT(encoder_img0), "iframeinterval", 30, nullptr);
-        // g_object_set(G_OBJECT(encoder_img1), "iframeinterval", 30, nullptr);
-
-//        g_signal_connect (_appsrc_img1, "need-data", G_CALLBACK (cb_need_data), this);
 
         g_object_set(_appsink_img0, "emit-signals", TRUE, "sync", FALSE, nullptr);
         g_object_set(_appsink_img1, "emit-signals", TRUE, "sync", FALSE, nullptr);
@@ -102,7 +97,6 @@ namespace ILLIXR {
     void video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
         // push cv mat into appsrc
         // print img0 size
-
         auto data_size = img0.cols * img0.rows * img0.channels();
         int size = floor(data_size + ceil(img0.cols / 2.0) * ceil(img0.rows / 2.0) * 2);
         auto fill_zero_size = size - data_size;
@@ -115,15 +109,15 @@ namespace ILLIXR {
 
         gst_buffer_memset(buffer_img0, data_size, 128, fill_zero_size);
         gst_buffer_memset(buffer_img1, data_size, 0, fill_zero_size);
+        // auto buffer_img0 = gst_buffer_new_wrapped_full(GST_MEMORY_FLAG_READONLY, img0.data,
+        //                                                data_size, 0,
+        //                                                data_size, nullptr, nullptr);
+        // auto buffer_img1 = gst_buffer_new_wrapped_full(GST_MEMORY_FLAG_READONLY, img1.data,
+        //                                                data_size, 0,
+        //                                                data_size, nullptr, nullptr);
 
         GST_BUFFER_OFFSET(buffer_img0) = _num_samples;
         GST_BUFFER_OFFSET(buffer_img1) = _num_samples;
-
-//        GST_BUFFER_TIMESTAMP (buffer_img0) = gst_util_uint64_scale(_num_samples, GST_SECOND, _sample_rate);
-//        GST_BUFFER_TIMESTAMP (buffer_img1) = gst_util_uint64_scale(_num_samples, GST_SECOND, _sample_rate);
-//
-//        GST_BUFFER_DURATION (buffer_img0) = gst_util_uint64_scale(1, GST_SECOND, _sample_rate);
-//        GST_BUFFER_DURATION (buffer_img1) = gst_util_uint64_scale(1, GST_SECOND, _sample_rate);
 
         _num_samples++;
 

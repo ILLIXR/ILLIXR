@@ -9,7 +9,7 @@ constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
 
 ILLIXR::runtime* r;
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
 /**
  * @brief A signal handler for SIGILL.
  *
@@ -18,6 +18,7 @@ ILLIXR::runtime* r;
  */
 static void sigill_handler(int sig) {
     assert(sig == SIGILL && "sigill_handler is for SIGILL");
+    std::cerr << "Received a ILL signal\n";
     std::raise(SIGSEGV);
 }
 
@@ -29,9 +30,15 @@ static void sigill_handler(int sig) {
  */
 static void sigabrt_handler(int sig) {
     assert(sig == SIGABRT && "sigabrt_handler is for SIGABRT");
-    std::raise(SIGSEGV);
+    std::cerr << "Received a ABORT signal\n";
+    // std::raise(SIGSEGV);
+    if (r) {
+        r->stop();
+    }
+    r->wait();
+    delete r;
 }
-#endif /// NDEBUG
+// #endif /// NDEBUG
 
 /**
  * @brief A signal handler for SIGINT.
@@ -41,8 +48,12 @@ static void sigabrt_handler(int sig) {
 static void sigint_handler([[maybe_unused]] int sig) {
     assert(sig == SIGINT && "sigint_handler is for SIGINT");
     if (r) {
+        std::cout << "sigint_handler is evoked\n";
         r->stop();
     }
+    r->wait(); // blocks until shutdown is r->stop()
+
+    delete r;
 }
 
 class cancellable_sleep {
@@ -71,11 +82,11 @@ int main(int argc, char* const* argv) {
     r = ILLIXR::runtime_factory(nullptr);
 #endif /// ILLIXR_MONADO_MAINLINE
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
     /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
     std::signal(SIGILL, sigill_handler);
     std::signal(SIGABRT, sigabrt_handler);
-#endif /// NDEBUG
+// #endif /// NDEBUG
 
     /// Shutting down method 1: Ctrl+C
     std::signal(SIGINT, sigint_handler);
@@ -98,6 +109,7 @@ int main(int argc, char* const* argv) {
     std::chrono::seconds run_duration = getenv("ILLIXR_RUN_DURATION")
         ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
         : ILLIXR_RUN_DURATION_DEFAULT;
+    std::cout << "run_duration is " << run_duration.count() << std::endl;
 
     RAC_ERRNO_MSG("main after creating runtime");
 

@@ -43,8 +43,12 @@ public:
         cam1_wt_file << "#timestamp [ns],filename" << std::endl;
 
         sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
-            this->dump_data(datum);
+            this->save_data(datum);
         });
+    }
+
+    void save_data(switchboard::ptr<const imu_cam_type_prof> datum) {
+        datums.push_back(datum);
     }
 
     void dump_data(switchboard::ptr<const imu_cam_type_prof> datum) {
@@ -74,6 +78,9 @@ public:
     }
 
     virtual ~record_imu_cam() override {
+        for (auto datum : datums) {
+            dump_data(datum);
+        }
         imu_wt_file.close();
         cam0_wt_file.close();
         cam1_wt_file.close();
@@ -94,6 +101,9 @@ private:
         boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
         return ILLIXR_DIR / "data_record";
     }
+
+    std::vector<switchboard::ptr<const imu_cam_type_prof>> datums;
+
 };
 
 // This line makes the plugin importable by Spindle

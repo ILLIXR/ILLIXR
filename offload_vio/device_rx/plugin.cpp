@@ -42,7 +42,6 @@ public:
 		
 		pose_transfer_csv.open(data_path + "/pose_transfer_time.csv");
 		roundtrip_csv.open(data_path + "/roundtrip_time.csv");
-		// hashed.open(data_path + "/hash_device_rx.txt");
 
 		socket.set_reuseaddr();
 		socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
@@ -82,7 +81,7 @@ public:
 					}
 					end_position = buffer_str.find(delimitter);
 				}
-				cout << "Recv time = " << timestamp() - now << ", size = " << recv_data.size() << endl;
+				// cout << "Recv time = " << timestamp() - now << ", size = " << recv_data.size() << endl;
 			}
 		}
 	}
@@ -99,10 +98,6 @@ private:
 
 		double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
 		roundtrip_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
-
-		// hash<std::string> hasher;
-		// auto hash_result = hasher(str_data);
-		// hashed << vio_output.frame_id() << "\t" << hash_result << endl;
 
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
@@ -165,7 +160,6 @@ private:
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream pose_transfer_csv;
 	std::ofstream roundtrip_csv;
-	// std::ofstream hashed;
 };
 
 PLUGIN_MAIN(offload_reader)

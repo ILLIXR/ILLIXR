@@ -23,15 +23,7 @@ public:
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    {
-        if (!std::filesystem::exists(data_path)) {
-			if (!std::filesystem::create_directory(data_path)) {
-				std::cerr << "Failed to create data directory.";
-			}
-		}
-        // pred_pose_csv.open(data_path + "/pred_pose.csv");
-        // pred_pose_imu_csv.open(data_path + "/pred_pose_imu.csv");
-    }
+    { }
 
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
@@ -112,24 +104,6 @@ public:
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
 
-        // if (future_timestamp > last_pose_time) {
-        //     pred_pose_csv << std::fixed << last_pose_time.time_since_epoch().count() << ","
-        //         << static_cast<float>(last_pose(4)) << ","
-        //         << static_cast<float>(last_pose(5)) << ","
-        //         << static_cast<float>(last_pose(6)) << ","
-        //         << static_cast<float>(last_pose(3)) << ","
-        //         << static_cast<float>(last_pose(0)) << ","
-        //         << static_cast<float>(last_pose(1)) << ","
-        //         << static_cast<float>(last_pose(2)) << std::endl;
-        // }
-        // pred_pose_imu_csv << std::fixed << future_timestamp.time_since_epoch().count() << ","
-        //     << predicted_pose.position.x() << ","
-        //     << predicted_pose.position.y() << ","
-        //     << predicted_pose.position.z() << ","
-        //     << predicted_pose.orientation.w() << ","
-        //     << predicted_pose.orientation.x() << ","
-        //     << predicted_pose.orientation.y() << ","
-        //     << predicted_pose.orientation.z() << std::endl;
         last_pose = state_plus;
         last_pose_time = future_timestamp;
 
@@ -237,10 +211,6 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
 	mutable std::shared_mutex offset_mutex;
-
-    const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
-	mutable std::ofstream pred_pose_csv;
-    mutable std::ofstream pred_pose_imu_csv;
 
     mutable Eigen::Matrix<double, 13, 1> last_pose;
     mutable time_point last_pose_time;

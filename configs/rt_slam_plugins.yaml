@@ -8,12 +8,12 @@ plugin_group:
   #   path:
   #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
   #     version: "3.2"
-  # - name: OpenVINS
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/open_vins.git
-  #     version: "offload_timing"
+  - name: OpenVINS
+    path: ../open_vins
+      # git_repo: https://github.com/ILLIXR/open_vins.git
+      # version: "offload_timing"
   # - path: rk4_integrator/
-  - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
+  # - path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
   - path: gtsam_integrator/
   # - path: passthrough_integrator/
   - path: pose_prediction/

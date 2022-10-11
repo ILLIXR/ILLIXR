@@ -18,6 +18,7 @@ message IMUCamData
   int32 img1_size = 5;
   bytes img0_data = 6;
   bytes img1_data = 7;
+  // bytes img0_full = 8;
 }
 
 message IMUCamVec {

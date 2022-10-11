@@ -44,6 +44,6 @@ action:
 
   # The default dataset is around 85s long.
   # If running with a headset or other datasets, adjust the duration accordingly.
-  ILLIXR_RUN_DURATION: 85
+  ILLIXR_RUN_DURATION: 90
 
 profile: opt

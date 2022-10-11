@@ -116,7 +116,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 600)),
+        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
@@ -207,10 +207,12 @@ def load_monado(config: Mapping[str, Any]) -> None:
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    # data_path = pathify(config["data"], root_dir, root_dir / os.getenv("ILLIXR_APP"), True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
+    run_duration = config["action"].get("ILLIXR_RUN_DURATION")
 
     is_mainline: bool = bool(config["action"]["is_mainline"])
     build_runtime(config, "so", is_mainline=is_mainline)
@@ -229,10 +231,12 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     env_monado: Mapping[str, str] = dict(
         ILLIXR_DATA=str(data_path),
+        # ILLIXR_DATA=os.getenv("ILLIXR_DATASET"),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
         XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
     )
+    # print(os.getenv("ILLIXR_DATASET"))
 
     ## For CMake
     monado_build_opts: Mapping[str, str] = dict(
@@ -264,11 +268,13 @@ def load_monado(config: Mapping[str, Any]) -> None:
     if "src_path" in openxr_app_obj["app"]:
         ## Pathify 'src_path' for compilation
         openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
-        openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
+        openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"] # os.getenv("ILLIXR_APP")
+        print(openxr_app_bin_path)
     else:
         ## Get the full path to the 'app' binary
         openxr_app_path     = None
         openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+        print(openxr_app_bin_path)
 
     ## Compile the OpenXR app if we received an 'app' with 'src_path'
     if openxr_app_path:
@@ -305,6 +311,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
             ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
             ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
             ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+            ILLIXR_RUN_DURATION=str(run_duration),
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
             REALSENSE_CAM=str(realsense_cam_string),

@@ -77,6 +77,7 @@ public:
                 }
             }
             pred_pose_csv.open(data_path + "/pred_pose.csv");
+			mtp_csv.open(data_path + "/mtp.csv");
         }
 
 private:
@@ -85,11 +86,16 @@ private:
     const std::shared_ptr<xlib_gl_extended_window> xwin;
     const std::shared_ptr<const RelativeClock>     _m_clock;
 
+	mutable std::atomic<bool> first_time{true};
+	mutable std::shared_mutex offset_mutex;
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     mutable std::ofstream pred_pose_csv;
+	mutable std::ofstream mtp_csv;
+    std::vector<long> pred_poses_timestamps;
+    std::vector<pose_type>pred_poses;
 
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
-    static constexpr double DELAY_FRACTION = 0.9;
+    static constexpr double DELAY_FRACTION = 0.7;
 
     // Switchboard plug for application eye buffer.
     switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -467,12 +473,31 @@ public:
         // Make any chanes to orientation of the output below
         // For the dataset were currently using (EuRoC), the output orientation acts as though
         // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
-        Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.z(), -pose.orientation.x(), pose.orientation.y());
+		Eigen::Quaternionf raw_o = apply_offset(pose.orientation);
 
-        swapped_pose.orientation = raw_o;
+        swapped_pose.orientation = Eigen::Quaternionf(raw_o.w(), -raw_o.z(), -raw_o.x(), raw_o.y());
         swapped_pose.sensor_time = pose.sensor_time;
 
         return swapped_pose;
+    }
+
+	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+        std::shared_lock lock {offset_mutex};
+        return orientation * pp->get_offset().inverse();
+    }
+
+    virtual void stop() override {
+        for (size_t i = 0; i < pred_poses_timestamps.size(); i++) {
+            pose_type p = pred_poses[i];
+            pred_pose_csv << std::fixed << pred_poses_timestamps[i] << ","
+				<< p.position.x() << ","
+				<< p.position.y() << ","
+				<< p.position.z() << ","
+				<< p.orientation.w() << ","
+				<< p.orientation.x() << ","
+				<< p.orientation.y() << ","
+				<< p.orientation.z() << std::endl;
+        }
     }
 
     virtual void _p_one_iteration() override {
@@ -503,15 +528,6 @@ public:
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
         const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
-        pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
-        pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
-                      << uncorrected_pose.position.x() << ","
-                      << uncorrected_pose.position.y() << ","
-                      << uncorrected_pose.position.z() << ","
-                      << uncorrected_pose.orientation.w() << ","
-                      << uncorrected_pose.orientation.x() << ","
-                      << uncorrected_pose.orientation.y() << ","
-                      << uncorrected_pose.orientation.z() << std::endl;
         
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
@@ -547,8 +563,8 @@ public:
         GLuint   query;
         GLuint64 elapsed_time = 0;
 
-        glGenQueries(1, &query);
-        glBeginQuery(GL_TIME_ELAPSED, query);
+        // glGenQueries(1, &query);
+        // glBeginQuery(GL_TIME_ELAPSED, query);
 
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
@@ -599,7 +615,7 @@ public:
         }
 
         glFinish();
-        glEndQuery(GL_TIME_ELAPSED);
+        // glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
         const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
@@ -629,6 +645,12 @@ public:
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
 
+        pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
+        if (uncorrected_pose.position.x() != 0) {
+            pred_poses_timestamps.push_back(latest_pose.predict_target_time.time_since_epoch().count());
+            pred_poses.push_back(uncorrected_pose);
+        }
+
         std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
         std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
         std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
@@ -651,6 +673,13 @@ public:
                 texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
                              most_recent_frame->render_pose.pose.orientation}));
         }
+		const double     latency_mtd       = duration2double<std::milli>(imu_to_display);
+		const double     latency_ptd       = duration2double<std::milli>(predict_to_display);
+		const double     latency_rtd       = duration2double<std::milli>(render_to_display);
+		// std::cout << "\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: " << latency_mtd << "ms" << std::endl;
+		// std::cout << "\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: " << latency_ptd << "ms" << std::endl;
+		// std::cout << "\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: " << latency_rtd << "ms" << std::endl;
+		// mtp_csv << latest_pose.pose.sensor_time.time_since_epoch().count() << "," << latency_mtd << std::endl;
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
@@ -671,24 +700,24 @@ public:
 
         // retrieving the recorded elapsed time
         // wait until the query result is available
-        int done = 0;
-        glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+        // int done = 0;
+        // glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
 
-        while (!done) {
-            std::this_thread::yield();
-            glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-        }
+        // while (!done) {
+        //     std::this_thread::yield();
+        //     glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+        // }
 
-        // get the query result
-        glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+        // // get the query result
+        // glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 
-        timewarp_gpu_logger.log(record{timewarp_gpu_record,
-                                       {
-                                           {iteration_no},
-                                           {gpu_start_wall_time},
-                                           {_m_clock->now()},
-                                           {std::chrono::nanoseconds(elapsed_time)},
-                                       }});
+        // timewarp_gpu_logger.log(record{timewarp_gpu_record,
+        //                                {
+        //                                    {iteration_no},
+        //                                    {gpu_start_wall_time},
+        //                                    {_m_clock->now()},
+        //                                    {std::chrono::nanoseconds(elapsed_time)},
+        //                                }});
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {

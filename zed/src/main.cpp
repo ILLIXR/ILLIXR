@@ -48,10 +48,10 @@ std::shared_ptr<Camera> start_camera() {
     init_params.camera_resolution      = RESOLUTION::VGA;
     init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
     init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps             = 15;
-    init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
-    init_params.depth_stabilization    = true;
-    init_params.depth_minimum_distance = 0.3;
+    init_params.camera_fps             = 30;
+    // init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
+    // init_params.depth_stabilization    = true;
+    // init_params.depth_minimum_distance = 0.3;
 
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
@@ -124,7 +124,7 @@ protected:
 
         _m_cam_type.put(_m_cam_type.allocate(
             // Make a copy, so that we don't have race
-            cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}, iteration_no));
+            cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()}, cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, iteration_no));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -159,7 +159,7 @@ protected:
     virtual skip_option _p_should_skip() override {
         zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
         if (sensors_data.imu.timestamp > last_imu_ts) {
-            std::this_thread::sleep_for(std::chrono::milliseconds{2});
+            // std::this_thread::sleep_for(std::chrono::milliseconds{2});
             return skip_option::run;
         } else {
             return skip_option::skip_and_yield;
