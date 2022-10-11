@@ -52,7 +52,7 @@ public:
         put_to_consume_delay_csv.open(data_path + "/imu_integrator_input_delay.csv");
 
         const double frequency = 200;
-        const double mincutoff = 5;
+        const double mincutoff = 10;
         const double beta = 1;
         const double dcutoff = 10;
 
@@ -82,6 +82,21 @@ public:
         RAC_ERRNO_MSG("gtsam_integrator");
     }
 
+    // virtual void stop() override {
+    //     std::cout << "gtsam_integrator destructor\n";
+    //     for (size_t i = 0; i < filtered_poses.size(); i++) {
+    //         pose_type p = filtered_poses[i];
+    //         filtered_csv << p.sensor_time.time_since_epoch().count() << "," << 
+    //                         p.position.x() << "," <<
+    //                         p.position.y() << "," << 
+    //                         p.position.z() << "," << 
+    //                         p.orientation.w() << "," <<
+    //                         p.orientation.x() << "," <<
+    //                         p.orientation.y() << "," <<
+    //                         p.orientation.z() << std::endl;
+    //     }
+    // }
+
 private:
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream raw_csv;
@@ -103,6 +118,8 @@ private:
     switchboard::writer<imu_raw_type> _m_imu_raw;
 
     std::vector<imu_type> _imu_vec;
+
+    // std::vector<pose_type> filtered_poses;
 
     [[maybe_unused]] time_point last_cam_time;
     duration                    last_imu_offset;
@@ -323,26 +340,9 @@ private:
 
         auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
 
-    //    _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
-    //            imu_raw_type {
-    //                    prev_bias.gyroscope(),
-    //                    prev_bias.accelerometer(),
-    //                    bias.gyroscope(),
-    //                    bias.accelerometer(),
-    //                    out_pose.translation(),             /// Position
-    //                    navstate_k.velocity(),              /// Velocity
-    //                    original_quaternion, /// Eigen Quat
-    //                    real_time
-    //            }
-    //    ));
-    //    filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
-    //                  << out_pose.translation().x() << ","
-    //                  << out_pose.translation().y() << ","
-    //                  << out_pose.translation().z() << ","
-    //                  << original_quaternion.w() << ","
-    //                  << original_quaternion.x() << ","
-    //                  << original_quaternion.y() << ","
-    //                  << original_quaternion.z() << std::endl;
+        // Eigen::Vector3d filtered_pos_ori = filtered_pos;
+        // Eigen::Quaterniond new_quaternion_ori = new_quaternion;
+        // filtered_poses.push_back(pose_type(real_time, filtered_pos.cast<float>(), new_quaternion.cast<float>()));
 
         filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
                      << filtered_pos.x() << ","
@@ -353,38 +353,16 @@ private:
                      << new_quaternion.y() << ","
                      << new_quaternion.z() << std::endl;
 
-        rpe_integrator_csv << std::fixed << dataset_time.time_since_epoch().count() / 1e9 << " "
-                     << filtered_pos.x() << " "
-                     << filtered_pos.y() << " "
-                     << filtered_pos.z() << " "
-                     << original_quaternion.w() << " "
-                     << original_quaternion.x() << " "
-                     << original_quaternion.y() << " "
-                     << original_quaternion.z() << std::endl;
-
-        std::cerr << std::fixed << input_values->last_cam_integration_time.time_since_epoch().count() / 1e9 << ","
-                  << out_pose.x() << ","
-                  << out_pose.y() << ","
-                  << out_pose.z() << ","
-                  << out_pose.rotation().toQuaternion().w() << ","
-                  << out_pose.rotation().toQuaternion().x() << ","
-                  << out_pose.rotation().toQuaternion().y() << ","
-                  << out_pose.rotation().toQuaternion().z() << std::endl;
-
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
                 imu_raw_type {
-//                        filters[0](prev_bias.gyroscope().array(), seconds_since_epoch),
-//                        filters[1](prev_bias.accelerometer().array(), seconds_since_epoch),
-//                        filters[2](bias.gyroscope().array(), seconds_since_epoch),
-//                        filters[3](bias.accelerometer().array(), seconds_since_epoch),
-                        prev_bias.gyroscope(),
-                        prev_bias.accelerometer(),
-                        bias.gyroscope(),
-                        bias.accelerometer(),
-                        filtered_pos,             /// Position
-                        filters[5](navstate_k.velocity().array(), seconds_since_epoch),              /// Velocity
-                        new_quaternion, /// Eigen Quat
-                        real_time
+                    prev_bias.gyroscope(),
+                    prev_bias.accelerometer(),
+                    bias.gyroscope(),
+                    bias.accelerometer(),
+                    filtered_pos,             /// Position
+                    filters[5](navstate_k.velocity().array(), seconds_since_epoch),              /// Velocity
+                    new_quaternion, /// Eigen Quat
+                    real_time
                 }
         ));
 
