@@ -100,7 +100,21 @@ public:
 				  << true_pose->orientation.x() << ","
 				  << true_pose->orientation.y() << ","
 				  << true_pose->orientation.z() << std::endl;
+		// true_poses.push_back(pose_type(datum->time, true_pose->position, true_pose->orientation));
 	}
+
+	// virtual void stop() override {
+	// 	for (pose_type p : true_poses) {
+	// 		truth_csv << p.sensor_time.time_since_epoch().count() << ","
+	// 			  << p.position.x() << ","
+	// 			  << p.position.y() << ","
+	// 			  << p.position.z() << ","
+	// 			  << p.orientation.w() << ","
+	// 			  << p.orientation.x() << ","
+	// 			  << p.orientation.y() << ","
+	// 			  << p.orientation.z() << std::endl;
+	// 	}
+	// }
 
 private:
 	const std::shared_ptr<switchboard> sb;
@@ -113,6 +127,8 @@ private:
 
 	const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
 	std::ofstream truth_csv;
+
+	// std::vector<pose_type> true_poses;
 };
 
 PLUGIN_MAIN(ground_truth_slam);

@@ -475,6 +475,25 @@ public:
         return swapped_pose;
     }
 
+	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+        std::shared_lock lock {offset_mutex};
+        return orientation * pp->get_offset().inverse();
+    }
+
+    // virtual void stop() override {
+    //     for (size_t i = 0; i < pred_poses_timestamps.size(); i++) {
+    //         pose_type p = pred_poses[i];
+    //         pred_pose_csv << std::fixed << pred_poses_timestamps[i] << ","
+	// 			<< p.position.x() << ","
+	// 			<< p.position.y() << ","
+	// 			<< p.position.z() << ","
+	// 			<< p.orientation.w() << ","
+	// 			<< p.orientation.x() << ","
+	// 			<< p.orientation.y() << ","
+	// 			<< p.orientation.z() << std::endl;
+    //     }
+    // }
+
     virtual void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
         assert(gl_result && "glXMakeCurrent should not fail");
@@ -628,6 +647,20 @@ public:
 
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
+
+        pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
+        if (uncorrected_pose.position.x() != 0) {
+            // pred_poses_timestamps.push_back(latest_pose.predict_target_time.time_since_epoch().count());
+            // pred_poses.push_back(uncorrected_pose);
+            pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
+                      << uncorrected_pose.position.x() << ","
+                      << uncorrected_pose.position.y() << ","
+                      << uncorrected_pose.position.z() << ","
+                      << uncorrected_pose.orientation.w() << ","
+                      << uncorrected_pose.orientation.x() << ","
+                      << uncorrected_pose.orientation.y() << ","
+                      << uncorrected_pose.orientation.z() << std::endl;
+        }
 
         std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
         std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
