@@ -63,7 +63,7 @@ public:
 			cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
 		} else {
 			auto now = timestamp();
-			string delimitter = "END!";
+			string delimitter = "EEND!";
 			string recv_data = read_socket->read(); /* Blocking operation, wait for the data to come */
 			buffer_str = buffer_str + recv_data;
 			if (recv_data.size() > 0) {
@@ -100,7 +100,7 @@ public:
         threadloop::start();
 
         decoder = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
-            std::cout << "callback" << std::endl;
+            // std::cout << "callback" << std::endl;
 
             // show img0
             // cv::imshow("img0", img0);
@@ -108,7 +108,7 @@ public:
 
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
+                // std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -116,14 +116,15 @@ public:
                 this->img1 = std::forward<cv::Mat>(img1);
                 img_ready = true;
             }
-            std::cout << "notify" << std::endl;
+            // std::cout << "notify" << std::endl;
             cv.notify_one();
         });
         decoder->init();
     }
 
 private:
-	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {	
+	void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
+        // std::cout << "Received VIO input" << std::endl;
 
 		// Logging
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -144,7 +145,7 @@ private:
 				auto img0_copy = std::string(curr_data.img0_data());
 				auto img1_copy = std::string(curr_data.img1_data());
 
-                std::cout << "img0 size: " << curr_data.img0_size() << std::endl;
+                // std::cout << "img0 size: " << curr_data.img0_size() << std::endl;
 
 				auto start_dcmp = timestamp();
                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -161,7 +162,7 @@ private:
                 cam0 = std::make_optional<cv::Mat>(img0.clone());
                 cam1 = std::make_optional<cv::Mat>(img1.clone());
 
-                std::cout << "unlock" << std::endl;
+                // std::cout << "unlock" << std::endl;
                 lock.unlock();
 			}
 
