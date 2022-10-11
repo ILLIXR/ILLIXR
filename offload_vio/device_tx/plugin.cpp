@@ -47,6 +47,7 @@ public:
 		
 		enc_latency.open(data_path + "/enc_latency.csv");
 		compression_csv.open(data_path + "/compression_info.csv");
+		compression_csv << "compression ratio" << "," << "size"<< "," << "average size" << std::endl;
 
 		socket.set_reuseaddr();
 		socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
@@ -154,8 +155,9 @@ public:
                 for (auto& s : sizes) {
                     sum += s;
                 }
-				ratios.push_back(img0_size / (sum / sizes.size()));
-				sizes_avg.push_back(sum / sizes.size());
+				// ratios.push_back(img0_size / (sum / sizes.size()));
+				// sizes_avg.push_back(sum / sizes.size());
+				compression_csv << img0_size / (sum / sizes.size()) << "," << this->img0.size << "," << sum / sizes.size() << std::endl;
                 // std::cout << sizes.size() << " compression ratio: " << img0_size / (sum / sizes.size()) << " average size " << sum / sizes.size() << std::endl;
             }
 
@@ -188,11 +190,11 @@ public:
 		}
     }
 
-	virtual void stop() override{
-		for (size_t i = 0; i < ratios.size(); i++) {
-			compression_csv << ratios[i] << "," << sizes[i] << "," << sizes_avg[i] << std::endl;
-		}
-	}
+	// virtual void stop() override{
+	// 	for (size_t i = 0; i < ratios.size(); i++) {
+	// 		compression_csv << ratios[i] << "," << sizes[i] << "," << sizes_avg[i] << std::endl;
+	// 	}
+	// }
 
 private:
     std::unique_ptr<video_encoder> encoder = nullptr;
@@ -207,8 +209,8 @@ private:
 
 	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream enc_latency;
-	std::vector<int> ratios;
-	std::vector<int> sizes_avg;
+	// std::vector<int> ratios;
+	// std::vector<int> sizes_avg;
 	std::ofstream compression_csv;
 };
 
