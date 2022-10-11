@@ -121,7 +121,7 @@ namespace ILLIXR {
     }
 
     GstFlowReturn video_decoder::cb_appsink(GstElement *sink) {
-        std::cout << "cb_appsink" << std::endl;
+        // std::cout << "cb_appsink" << std::endl;
 
         GstSample *sample;
         g_signal_emit_by_name(sink, "pull-sample", &sample);
@@ -138,10 +138,10 @@ namespace ILLIXR {
             }
 
             if (_img0_ready && _img1_ready) {
-                // _callback(cv::Mat(480, 752, CV_8UC1, _img0_map.data),
-                //           cv::Mat(480, 752,  CV_8UC1, _img1_map.data));
-                _callback(cv::Mat(376, 672, CV_8UC1, _img0_map.data),
-                          cv::Mat(376, 672,  CV_8UC1, _img1_map.data));
+                _callback(cv::Mat(480, 752, CV_8UC1, _img0_map.data),
+                          cv::Mat(480, 752,  CV_8UC1, _img1_map.data));
+                // _callback(cv::Mat(376, 672, CV_8UC1, _img0_map.data),
+                //           cv::Mat(376, 672,  CV_8UC1, _img1_map.data));
                 _img0_ready = false;
                 _img1_ready = false;
                 lock.unlock(); // unlock and notify the waiting thread to clean up
