@@ -51,10 +51,13 @@ public:
 			}
 		}
 		
-		// hashed_data.open(data_path + "/hash_device_tx.txt");
-		frame_info.open(data_path + "/frame_info.csv");
-		enc_latency.open(data_path + "/enc.csv");
-		time_srl.open(data_path + "/srl.csv");
+		enc_latency.open(data_path + "/enc_latency.csv");
+		compression_csv.open(data_path + "/compression_info.csv");
+		compression_csv << "compression ratio" << "," << "size"<< "," << "average size" << std::endl;
+
+		socket.set_reuseaddr();
+		socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
+		initial_timestamp();
 
 		frame_info << "frame_id,created_to_sent_time_ms,duration_to_send_ms,is_dropped" << endl;
 		std::srand(std::time(0));
@@ -160,7 +163,10 @@ public:
                 for (auto& s : sizes) {
                     sum += s;
                 }
-                std::cout << sizes.size() << " average size: " << img0_size / (sum / sizes.size()) << " " << sum / sizes.size() << std::endl;
+				// ratios.push_back(img0_size / (sum / sizes.size()));
+				// sizes_avg.push_back(sum / sizes.size());
+				compression_csv << img0_size / (sum / sizes.size()) << "," << this->img0.size << "," << sum / sizes.size() << std::endl;
+                // std::cout << sizes.size() << " compression ratio: " << img0_size / (sum / sizes.size()) << " average size " << sum / sizes.size() << std::endl;
             }
 
 			imu_cam_data->set_rows(img0.rows);
@@ -206,6 +212,12 @@ public:
 		
     }
 
+	// virtual void stop() override{
+	// 	for (size_t i = 0; i < ratios.size(); i++) {
+	// 		compression_csv << ratios[i] << "," << sizes[i] << "," << sizes_avg[i] << std::endl;
+	// 	}
+	// }
+
 private:
     std::unique_ptr<video_encoder> encoder = nullptr;
 	long previous_timestamp = 0;
@@ -221,9 +233,9 @@ private:
 	// std::ofstream hashed_data;
 	std::ofstream frame_info;
 	std::ofstream enc_latency;
-	std::ofstream time_srl;
-
-	int drop_count;
+	// std::vector<int> ratios;
+	// std::vector<int> sizes_avg;
+	std::ofstream compression_csv;
 };
 
 PLUGIN_MAIN(offload_writer)
