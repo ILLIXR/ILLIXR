@@ -24,7 +24,13 @@ public:
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
-		, _m_dataset_first_time{1403715523912143104}
+		, _m_dataset_first_time{1403715273262142976}
+		// vicon1 easy 1403715273262142976
+		// vicon1 medium 1403715523912143104
+		// vicon1 difficult 1403715886544058112
+		// vicon2 easy 1413393212225760512
+		// vicon2 medium 1413393885975760384
+		// vicon2 hard 1413394881555760384
 		, _m_first_time{true}
 	{
 		if (!std::filesystem::exists(data_path)) {
