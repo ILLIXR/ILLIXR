@@ -46,7 +46,7 @@ namespace ILLIXR {
         auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
         auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
 
-        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=NV12,width=672,height=376,framerate=0/1"); // 752/480 for euroc
+        auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=GRAY8,width=672,height=376,framerate=0/1"); // 752/480 for euroc
         g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_8uc1, nullptr);
         g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
         gst_caps_unref(caps_8uc1);
@@ -57,8 +57,17 @@ namespace ILLIXR {
         gst_caps_unref(caps_convert_to);
 
         // set bitrate
-        g_object_set(G_OBJECT(encoder_img0), "bitrate", 1100000, nullptr);
-        g_object_set(G_OBJECT(encoder_img1), "bitrate", 1100000, nullptr);
+        // g_object_set(G_OBJECT(encoder_img0), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
+        // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
+        // 50Mbps = 52428800
+        // 20Mbps = 20971520
+        // 10Mbps = 10485760
+        // 5Mbps = 5242880
+        // 2Mbps = 2097152
+        // 0.5Mbps = 524288
+        // 0.1Mbps = 104857
+        g_object_set(G_OBJECT(encoder_img0), "bitrate", 5242880, nullptr);
+        g_object_set(G_OBJECT(encoder_img1), "bitrate", 5242880, nullptr);
 
         g_object_set (G_OBJECT (_appsrc_img0),
                       "stream-type", 0,
