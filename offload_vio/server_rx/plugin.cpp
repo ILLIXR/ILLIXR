@@ -150,23 +150,34 @@ private:
 
                 // std::cout << "img0 size: " << curr_data.img0_size() << std::endl;
 
-				auto start_dcmp = timestamp();
-                uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                queue.push(curr);
-                std::unique_lock<std::mutex> lock{mutex};
-                decoder->enqueue(img0_copy, img1_copy);
-                cv.wait(lock, [this]() { return img_ready; });
-                img_ready = false;
-				dec_latency << vio_input.frame_id() << "," << vio_input.cam_time() << "," << timestamp() - start_dcmp << std::endl;
+				// With compression 
+// 				auto start_dcmp = timestamp();
+//                 uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+//                 queue.push(curr);
+//                 std::unique_lock<std::mutex> lock{mutex};
+//                 decoder->enqueue(img0_copy, img1_copy);
+//                 cv.wait(lock, [this]() { return img_ready; });
+//                 img_ready = false;
+// 				dec_latency << vio_input.frame_id() << "," << vio_input.cam_time() << "," << timestamp() - start_dcmp << std::endl;
 
-//				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
-//				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
+// //				cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, img0_copy->data());
+// //				cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, img1_copy->data());
 
-                cam0 = std::make_optional<cv::Mat>(img0.clone());
+//                 cam0 = std::make_optional<cv::Mat>(img0.clone());
+//                 cam1 = std::make_optional<cv::Mat>(img1.clone());
+
+//                 // std::cout << "unlock" << std::endl;
+//                 lock.unlock();
+				// With compression end
+
+				// Withoug compression
+				cv::Mat img0(480, 752, CV_8UC1, img0_copy->data());
+				cv::Mat img1(480, 752, CV_8UC1, img1_copy->data());
+
+				cam0 = std::make_optional<cv::Mat>(img0.clone());
                 cam1 = std::make_optional<cv::Mat>(img1.clone());
-
-                // std::cout << "unlock" << std::endl;
-                lock.unlock();
+				// Without compression end
+			
 			}
 
 			_m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type_prof>(

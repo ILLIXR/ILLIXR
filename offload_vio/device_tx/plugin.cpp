@@ -133,7 +133,7 @@ public:
             // size of img0
             double img0_size = img0.total() * img0.elemSize();
 
-			// WITH COMPRESSION
+			/** WITH COMPRESSION **/
             // get nanoseconds since epoch
             uint64_t curr = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			auto start_cmp = timestamp();
@@ -165,14 +165,15 @@ public:
 			imu_cam_data->set_img1_data((void*) this->img1.data, this->img1.size);
 
             lock.unlock();
-			// WITH COMPRESSION END
+			/** WITH COMPRESSION END **/
 
-			// NO COMPRESSION
+			/** NO COMPRESSION **/
 			// imu_cam_data->set_img0_size(img0_size);
 			// imu_cam_data->set_img1_size(img0_size);
 
 			// imu_cam_data->set_img0_data((void*) img0.data, img0_size);
 			// imu_cam_data->set_img1_data((void*) img1.data, img0_size);
+			/** No compression END **/
 
 			data_buffer->set_real_timestamp(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 			data_buffer->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
