@@ -66,6 +66,9 @@ protected:
 	virtual void _p_one_iteration() override {
 	    RAC_ERRNO_MSG("offline_imu_cam at start of _p_one_iteration");
 		assert(_m_sensor_data_it != _m_sensor_data.end());
+        
+        // std::cout << "first time = " << dataset_first_time << std::endl;
+
 #ifndef NDEBUG
         std::chrono::time_point<std::chrono::nanoseconds> tp_dataset_now{std::chrono::nanoseconds{dataset_now}};
         std::cerr << " IMU time: " << tp_dataset_now.time_since_epoch().count() << std::endl;
