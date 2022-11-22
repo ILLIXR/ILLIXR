@@ -41,12 +41,12 @@ public:
 		cam1_wt_file.open(cam1_file, std::ofstream::out);
 		cam1_wt_file << "#timestamp [ns],filename" << std::endl;
 
-		sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t){
+		sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t){
 			this->dump_data(datum);
 		});
 	}
 
-	void dump_data(switchboard::ptr<const imu_cam_type> datum) {
+	void dump_data(switchboard::ptr<const imu_cam_type_prof> datum) {
 		long timestamp = datum->time.time_since_epoch().count();
 		Eigen::Vector3f angular_v = datum->angular_v;
 		Eigen::Vector3f linear_a = datum->linear_a;
