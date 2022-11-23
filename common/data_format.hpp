@@ -200,7 +200,7 @@ struct image_handle : public switchboard::event {
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-    std::array<int, 2>    swapchain_indices; // Index of image rendered for left and right swapchain
+    std::array<GLuint, 2> swapchain_indices; // Index of image rendered for left and right swapchain
     std::array<GLuint, 2> swap_indices;      // Which element of the swapchain
     fast_pose_type        render_pose;       // The pose used when rendering this frame.
     time_point            sample_time;
@@ -208,7 +208,7 @@ struct rendered_frame : public switchboard::event {
 
     rendered_frame() { }
 
-    rendered_frame(std::array<int, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
+    rendered_frame(std::array<GLuint, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
                    time_point sample_time_, time_point render_time_)
         : swapchain_indices{std::move(swapchain_indices_)}
         , swap_indices{std::move(swap_indices_)}
