@@ -229,6 +229,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_COMP=plugin_paths_comp_arg,
         XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
         XRT_TRACING="true",
+        KIMERA_ROOT=config["action"]["kimera_path"],
+        AUDIO_ROOT=config["action"]["audio_path"],
     )
 
     ## For CMake

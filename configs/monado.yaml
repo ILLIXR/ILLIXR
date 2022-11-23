@@ -1,13 +1,6 @@
 plugin_groups:
-  - plugin_group:
-    - path: offline_imu_cam
-    - path: gtsam_integrator
-    - path: pose_prediction
-    - path: timewarp_gl
-    - name: OpenVINS
-      path:
-        git_repo : https://github.com/ILLIXR/open_vins.git
-        version  : "3.1"
+  - !include "rt_slam_plugins.yaml"
+  - !include "core_plugins.yaml"
 
 data:
   subpath: mav0
