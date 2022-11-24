@@ -34,10 +34,10 @@ public:
         Eigen::Matrix<double, 3, 1> w_hat2;
         Eigen::Matrix<double, 3, 1> a_hat2;
 
-        w_hat  = datum->angular_v.cast<double>() - input_values->biasGyro;
-        a_hat  = datum->linear_a.cast<double>() - input_values->biasAcc;
-        w_hat2 = datum->angular_v.cast<double>() - input_values->biasGyro;
-        a_hat2 = datum->linear_a.cast<double>() - input_values->biasAcc;
+        w_hat  = datum->angular_v - input_values->biasGyro;
+        a_hat  = datum->linear_a - input_values->biasAcc;
+        w_hat2 = datum->angular_v - input_values->biasGyro;
+        a_hat2 = datum->linear_a - input_values->biasAcc;
 
         _m_imu_raw.put(_m_imu_raw.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
                                            Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},

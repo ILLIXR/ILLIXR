@@ -112,13 +112,13 @@ private:
         if (prop_data.size() > 1) {
             for (size_t i = 0; i < prop_data.size() - 1; i++) {
                 // Time elapsed over interval
-                double dt = duration2double(prop_data[i + 1].timestamp - prop_data[i].timestamp);
+                double dt = duration2double(prop_data[i + 1].time - prop_data[i].time);
 
                 // Corrected imu measurements
-                w_hat  = prop_data[i].wm - input_values->biasGyro;
-                a_hat  = prop_data[i].am - input_values->biasAcc;
-                w_hat2 = prop_data[i + 1].wm - input_values->biasGyro;
-                a_hat2 = prop_data[i + 1].am - input_values->biasAcc;
+                w_hat  = prop_data[i].angular_v - input_values->biasGyro;
+                a_hat  = prop_data[i].linear_a - input_values->biasAcc;
+                w_hat2 = prop_data[i + 1].angular_v - input_values->biasGyro;
+                a_hat2 = prop_data[i + 1].linear_a - input_values->biasAcc;
 
                 // Compute the new state mean value
                 Eigen::Vector4d new_quat;
@@ -146,20 +146,20 @@ private:
 
         for (size_t i = 0; i < imu_data.size() - 1; i++) {
             // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
-            if (imu_data[i + 1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
+            if (imu_data[i + 1].time > time_begin && imu_data[i].time < time_begin) {
                 imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_begin);
                 prop_data.push_back(data);
                 continue;
             }
 
             // IMU is within time_begin and time_end
-            if (imu_data[i].timestamp >= time_begin && imu_data[i + 1].timestamp <= time_end) {
+            if (imu_data[i].time >= time_begin && imu_data[i + 1].time <= time_end) {
                 prop_data.push_back(imu_data[i]);
                 continue;
             }
 
             // IMU is past time_end
-            if (imu_data[i + 1].timestamp > time_end) {
+            if (imu_data[i + 1].time > time_end) {
                 imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_end);
                 prop_data.push_back(data);
                 break;
@@ -169,7 +169,7 @@ private:
         // Loop through and ensure we do not have an zero dt values
         // This would cause the noise covariance to be Infinity
         for (int i = 0; i < int(prop_data.size()) - 1; i++) {
-            if (std::chrono::abs(prop_data[i + 1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
+            if (std::chrono::abs(prop_data[i + 1].time - prop_data[i].time) < std::chrono::nanoseconds{1}) {
                 prop_data.erase(prop_data.begin() + i);
                 i--; // i can be negative, so use type int
             }
@@ -180,8 +180,8 @@ private:
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
     static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
-        double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
-        return imu_type{timestamp, (1 - lambda) * imu_1.am + lambda * imu_2.am, (1 - lambda) * imu_1.wm + lambda * imu_2.wm};
+        double lambda = duration2double(timestamp - imu_1.time) / duration2double(imu_2.time - imu_1.time);
+        return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a, (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
     }
 
     void predict_mean_rk4(Eigen::Vector4d quat, Eigen::Vector3d pos, Eigen::Vector3d vel, double dt,

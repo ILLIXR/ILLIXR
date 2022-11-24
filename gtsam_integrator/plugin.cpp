@@ -107,8 +107,8 @@ private:
         void integrateMeasurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept {
             assert(_pim != nullptr && "_pim shuold not be null");
 
-            const gtsam::Vector3 measured_acc{imu_input.linear_a.cast<double>()};
-            const gtsam::Vector3 measured_omega{imu_input.angular_v.cast<double>()};
+            const gtsam::Vector3 measured_acc{imu_input.linear_a};
+            const gtsam::Vector3 measured_omega{imu_input.angular_v};
 
             duration delta_t = imu_input_next.time - imu_input.time;
 

@@ -48,7 +48,7 @@ protected:
         _m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
 
         _m_imu.put(_m_imu.allocate<imu_type>(
-            imu_type{real_now, (sensor_datum.imu0.angular_v).cast<float>(), (sensor_datum.imu0.linear_a).cast<float>()}));
+            imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));
         ++_m_sensor_data_it;
     }
 
