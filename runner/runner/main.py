@@ -295,8 +295,6 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
         ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
-        KIMERA_ROOT=config["action"]["kimera_path"],
-        AUDIO_ROOT=config["action"]["audio_path"],
         REALSENSE_CAM=str(realsense_cam_string),
         **env_monado,
     )
