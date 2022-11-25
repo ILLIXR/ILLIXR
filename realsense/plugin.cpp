@@ -40,7 +40,7 @@ public:
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
 
-        // This callback function may start running before the relative clock is started. If that happens, the data 
+        // This callback function may start running before the relative clock is started. If that happens, the data
         // timestamps will be messed up. We therefore add this guard to ignore all data samples before the clock is started.
         if (!_m_clock->is_started()) {
             return;
@@ -73,7 +73,7 @@ public:
                 // Time as ullong (nanoseconds)
                 ullong imu_time = static_cast<ullong>(ts * 1000000);
                 if (!_m_first_imu_time) {
-                    _m_first_imu_time  = imu_time;
+                    _m_first_imu_time      = imu_time;
                     _m_first_real_time_imu = _m_clock->now();
                 }
 
