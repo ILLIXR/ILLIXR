@@ -17,10 +17,11 @@ enable_pre_sleep      : False
 
 action:
   name        : monado
-  is_mainline : True
 
   monado:
-    path: /home/jebbly/Desktop/ILLIXR/local/monado_integration
+    path:
+      git_repo : https://github.com/ILLIXR/monado_integration.git
+      version  : insert-illixr-compositor # Should be master after the monado_integration PR is merged
 
     config: # For CMake
       XRT_HAVE_LIBUDEV              : ON

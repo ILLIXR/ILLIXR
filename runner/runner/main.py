@@ -54,7 +54,6 @@ def build_one_plugin(
     config: Mapping[str, Any],
     plugin_config: Mapping[str, Any],
     test: bool = False,
-    is_mainline: bool = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -64,9 +63,7 @@ def build_one_plugin(
         os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
     targets = [plugin_so_name] + (["tests/run"] if test else [])
-
-    if is_mainline:
-        plugin_config["config"].update(ILLIXR_MONADO_MAINLINE="ON")
+    plugin_config["config"].update(ILLIXR_MONADO="ON")
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
@@ -78,8 +75,7 @@ def build_one_plugin(
 def build_runtime(
     config: Mapping[str, Any],
     suffix: str,
-    test: bool = False,
-    is_mainline: bool = False,
+    test: bool = False
 ) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
@@ -88,8 +84,7 @@ def build_runtime(
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
-    if is_mainline:
-        runtime_config.update(ILLIXR_MONADO_MAINLINE="ON")
+    runtime_config.update(ILLIXR_MONADO="ON")
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
@@ -207,14 +202,11 @@ def load_monado(config: Mapping[str, Any]) -> None:
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
-
-    is_mainline: bool = bool(config["action"]["is_mainline"])
-    build_runtime(config, "so", is_mainline=is_mainline)
+    build_runtime(config, "so")
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
-        if is_mainline:
-            plugin_config.update(ILLIXR_MONADO_MAINLINE="ON")
-        return build_one_plugin(config, plugin_config, is_mainline=is_mainline)
+        plugin_config.update(ILLIXR_MONADO="ON")
+        return build_one_plugin(config, plugin_config)
 
     plugin_paths: List[Path] = threading_map(
         process_plugin,
@@ -240,8 +232,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         **monado_config,
     )
 
-    if is_mainline:
-        monado_build_opts.update(ILLIXR_MONADO_MAINLINE="ON")
+    monado_build_opts.update(ILLIXR_MONADO="ON")
 
     ## Compile Monado
     cmake(
@@ -278,20 +269,19 @@ def load_monado(config: Mapping[str, Any]) -> None:
         )
 
     if not openxr_app_bin_path.exists():
-        raise RuntimeError(f"{action_name} Failed to build openxr_app (mainline={is_mainline}, path={openxr_app_bin_path})")
+        raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
 
-    if is_mainline:
-        monado_target_name : str  = "monado-service"
-        monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
-        monado_target_path : Path = monado_target_dir / monado_target_name
+    monado_target_name : str  = "monado-service"
+    monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
+    monado_target_path : Path = monado_target_dir / monado_target_name
 
-        if not monado_target_path.exists():
-            raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
+    if not monado_target_path.exists():
+        raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
 
-        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
+    env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
 
-        ## Open the Monado service application in the background
-        subprocess_run([str(monado_target_path)], env=env_monado_service)
+    ## Open the Monado service application in the background
+    subprocess_run([str(monado_target_path)], env=env_monado_service)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(5)
