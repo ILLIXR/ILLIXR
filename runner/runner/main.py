@@ -242,34 +242,34 @@ def load_monado(config: Mapping[str, Any]) -> None:
         env_override=env_monado,
     )
 
-    if not "openxr_app" in config["action"]:
-        raise RuntimeError(f"Missing 'openxr_app' property for action '{action_name}")
+    # if not "openxr_app" in config["action"]:
+    #     raise RuntimeError(f"Missing 'openxr_app' property for action '{action_name}")
 
-    openxr_app_obj    : Mapping[str, Any] = config["action"]["openxr_app"]
-    openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
+    # openxr_app_obj    : Mapping[str, Any] = config["action"]["openxr_app"]
+    # openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
 
-    openxr_app_path     : Optional[Path] # Forward declare type
-    openxr_app_bin_path : Path           # Forward declare type
+    # openxr_app_path     : Optional[Path] # Forward declare type
+    # openxr_app_bin_path : Path           # Forward declare type
 
-    if "src_path" in openxr_app_obj["app"]:
-        ## Pathify 'src_path' for compilation
-        openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
-        openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
-    else:
-        ## Get the full path to the 'app' binary
-        openxr_app_path     = None
-        openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+    # if "src_path" in openxr_app_obj["app"]:
+    #     ## Pathify 'src_path' for compilation
+    #     openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
+    #     openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
+    # else:
+    #     ## Get the full path to the 'app' binary
+    #     openxr_app_path     = None
+    #     openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
 
-    ## Compile the OpenXR app if we received an 'app' with 'src_path'
-    if openxr_app_path:
-        cmake(
-            openxr_app_path,
-            openxr_app_path / "build",
-            dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
-        )
+    # ## Compile the OpenXR app if we received an 'app' with 'src_path'
+    # if openxr_app_path:
+    #     cmake(
+    #         openxr_app_path,
+    #         openxr_app_path / "build",
+    #         dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
+    #     )
 
-    if not openxr_app_bin_path.exists():
-        raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
+    # if not openxr_app_bin_path.exists():
+    #     raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
 
     monado_target_name : str  = "monado-service"
     monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
@@ -278,22 +278,14 @@ def load_monado(config: Mapping[str, Any]) -> None:
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
 
-    env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado)
-
-    ## Open the Monado service application in the background
-    subprocess_run([str(monado_target_path)], env=env_monado_service)
-
-    ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(5)
-
+    ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
-    illixr_cmd_list = [str(openxr_app_bin_path), *map(str, plugin_paths)]
+    illixr_cmd_list = [str(monado_target_path), *map(str, plugin_paths)]
     env_override=dict(
         ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         REALSENSE_CAM=str(realsense_cam_string),
         **env_monado,
@@ -318,7 +310,22 @@ def load_monado(config: Mapping[str, Any]) -> None:
             )
         )
     )
-    print(str(config["action"].get("ILLIXR_RUN_DURATION", 10)))
+    log_stdout_str = config["action"].get("log_stdout", None)
+    log_stdout_ctx = cast(
+        ContextManager[Optional[BinaryIO]],
+        (open(log_stdout_str, "wb") if (log_stdout_str is not None) else noop_context(None)),
+    )
+    with log_stdout_ctx as log_stdout:
+        subprocess_run(
+            actual_cmd_list,
+            env_override=env_override,
+            stdout=log_stdout,
+            check=True,
+        )
+
+    ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    time.sleep(5)
+
     #subprocess_run(
     #    [str(openxr_app_bin_path)],
     #    env_override=dict(
