@@ -40,6 +40,11 @@ public:
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
 
+        // This callback function may start running before the relative clock is started. If that happens, the data 
+        // timestamps will be messed up. We therefore add this guard to ignore all data samples before the clock is started.
+        if (!_m_clock->is_started()) {
+            return;
+        }
         if (auto mf = frame.as<rs2::motion_frame>()) {
             std::string s = mf.get_profile().stream_name();
 
@@ -69,14 +74,14 @@ public:
                 ullong imu_time = static_cast<ullong>(ts * 1000000);
                 if (!_m_first_imu_time) {
                     _m_first_imu_time  = imu_time;
-                    _m_first_real_time = _m_clock->now();
+                    _m_first_real_time_imu = _m_clock->now();
                 }
 
                 // Time as time_point
-                time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
+                time_point imu_time_point{*_m_first_real_time_imu + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
                 // Submit to switchboard
-                _m_imu.put(_m_imu.allocate<imu_cam_type>({imu_time_point, av, la}));
+                _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
             }
         }
 

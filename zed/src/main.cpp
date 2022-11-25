@@ -195,7 +195,7 @@ protected:
         //                       {bool(img0)},
         //                   }}); // FIXME need to change the log format, separate for imu and cam
 
-        _m_imu.put(_m_imu.allocate<imu_type>(imu_time_point, av, la));
+        _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
 
         last_imu_ts = sensors_data.imu.timestamp;
 

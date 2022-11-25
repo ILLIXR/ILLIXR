@@ -107,7 +107,7 @@ public:
     static_assert(std::chrono::steady_clock::is_steady);
 
     time_point now() const {
-        assert(_m_start > std::chrono::steady_clock::time_point{} && "Can't call now() before this clock has been start()ed.");
+        assert(this->is_started() && "Can't call now() before this clock has been start()ed.");
         return time_point{std::chrono::steady_clock::now() - _m_start};
     }
 
@@ -121,6 +121,13 @@ public:
      */
     void start() {
         _m_start = std::chrono::steady_clock::now();
+    }
+
+    /**
+     * @brief Check if the clock is started.
+     */
+    bool is_started() const {
+        return _m_start > std::chrono::steady_clock::time_point{};
     }
 
 private:
