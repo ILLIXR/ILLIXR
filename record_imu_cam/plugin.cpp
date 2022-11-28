@@ -50,8 +50,8 @@ public:
 
     void dump_data(switchboard::ptr<const imu_type> datum) {
         long            timestamp = datum->time.time_since_epoch().count();
-        Eigen::Vector3f angular_v = datum->angular_v;
-        Eigen::Vector3f linear_a  = datum->linear_a;
+        Eigen::Vector3f angular_v = datum->angular_v.cast<float>();
+        Eigen::Vector3f linear_a  = datum->linear_a.cast<float>();
 
         // write imu0
         imu_wt_file << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2]
