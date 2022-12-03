@@ -19,9 +19,7 @@ public:
         , dataset_now{0}
         , imu_cam_log{record_logger_}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
-        , _m_log{"metrics/offline_imu.csv"} {
-        _m_log << "offline_imu_put\n";
-    }
+        { }
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -45,8 +43,6 @@ protected:
         time_point          real_now(std::chrono::duration<long, std::nano>{dataset_now - dataset_first_time});
         const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
-        _m_log << std::chrono::nanoseconds{std::chrono::steady_clock::now().time_since_epoch()}.count() << '\n';
-
         _m_imu.put(_m_imu.allocate<imu_type>(imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));
         ++_m_sensor_data_it;
     }
@@ -65,8 +61,6 @@ private:
     record_coalescer imu_cam_log;
 
     std::shared_ptr<RelativeClock> _m_rtc;
-
-    std::ofstream _m_log;
 };
 
 PLUGIN_MAIN(offline_imu)

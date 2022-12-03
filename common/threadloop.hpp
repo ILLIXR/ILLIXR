@@ -98,7 +98,7 @@ private:
         _m_stoplight->wait_for_ready();
         _p_thread_setup();
 
-        while (!_m_stoplight->check_should_stop()) {
+        while (!_m_stoplight->check_should_stop() && !should_terminate()) {
             skip_option s = _p_should_skip();
 
             switch (s) {
