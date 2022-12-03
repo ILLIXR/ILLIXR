@@ -21,8 +21,7 @@ public:
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
-        , next_row{_m_sensor_data.cbegin()}
-        { }
+        , next_row{_m_sensor_data.cbegin()} { }
 
     virtual skip_option _p_should_skip() override {
         if (true) {
@@ -35,25 +34,25 @@ public:
     virtual void _p_one_iteration() override {
         duration time_since_start = _m_rtc->now().time_since_epoch();
         // duration begin            = time_since_start;
-        ullong   lookup_time      = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
+        ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
         std::map<ullong, sensor_types>::const_iterator nearest_row;
 
         // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
         auto after_row = _m_sensor_data.upper_bound(lookup_time);
 
         if (after_row == _m_sensor_data.cend()) {
-    #ifndef NDEBUG
+#ifndef NDEBUG
             std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
                       << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
-    #endif
+#endif
             // We are running out of the dataset and the loop will stop next time
             internal_stop();
         } else if (after_row == _m_sensor_data.cbegin()) {
             // Will not happen!
-    #ifndef NDEBUG
+#ifndef NDEBUG
             std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
                       << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
-    #endif
+#endif
         } else {
             // Most recent
             next_row = after_row;
@@ -74,8 +73,9 @@ public:
                 img0,
                 img1,
             }));
-        } 
-        std::this_thread::sleep_for(std::chrono::nanoseconds(next_row->first - dataset_first_time - _m_rtc->now().time_since_epoch().count() - 2));
+        }
+        std::this_thread::sleep_for(
+            std::chrono::nanoseconds(next_row->first - dataset_first_time - _m_rtc->now().time_since_epoch().count() - 2));
     }
 
 private:

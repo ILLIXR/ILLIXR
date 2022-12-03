@@ -18,8 +18,7 @@ public:
         , dataset_first_time{_m_sensor_data_it->first}
         , dataset_now{0}
         , imu_cam_log{record_logger_}
-        , _m_rtc{pb->lookup_impl<RelativeClock>()}
-        { }
+        , _m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
 protected:
     virtual skip_option _p_should_skip() override {
