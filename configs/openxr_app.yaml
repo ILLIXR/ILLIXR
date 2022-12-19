@@ -3,4 +3,4 @@ app:
     git_repo : https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
     version  : master
   bin_subpath: build/openxr-example
-config: {}
+  config: {}

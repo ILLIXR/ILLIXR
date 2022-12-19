@@ -60,7 +60,8 @@ action:
       XRT_FEATURE_WINDOW_PEEK       : OFF
 
 
-  openxr_app: !include "openxr_app.yaml"
+  openxr_apps: 
+    - !include "openxr_app.yaml"
 
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
   audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
