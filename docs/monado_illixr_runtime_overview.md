@@ -24,6 +24,10 @@ As specified by [_OpenXR_][21], the OpenXR application initializes the OpenXR ru
     which is Monado in this case, as a shared library into its address space.
 Consult the OpenXR specifications and the OpenXR-SDK from Khronos Group for more details.
 
+Multiple OpenXR applications can be launched automatically by the configuration file. They can also
+    be launched manually by first setting the environment variable ``XR_RUNTIME_JSON`` to 
+    ``monado_integration/build/openxr_monado-dev.json``. At the moment, if the user would like to run
+    ``gdb`` on an OpenXR application, they should launch it manually with the appropriate arguments.
 
 ## Monado Device Probe and ILLIXR Initialization
 
