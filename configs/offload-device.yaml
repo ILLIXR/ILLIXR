@@ -41,4 +41,8 @@ action:
   # Capture stdout for metrics
   # log_stdout: metrics/output.log
 
+  # The default dataset is around 85s long.
+  # If running with a headset or other datasets, adjust the duration accordingly.
+  ILLIXR_RUN_DURATION: 85
+
 profile: opt

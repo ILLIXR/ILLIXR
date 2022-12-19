@@ -359,8 +359,15 @@ fi
 # If supported, add the keys and repository for CUDA (for GPU plugin support)
 if [ "${use_cuda}" = "yes" ]; then
     repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_name_cuda}/${arch_name_cuda}"
-    key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
-    add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
+    
+    # Install the keys from the repo using nvidia's key package
+    key_pkg_name_cuda="cuda-keyring_1.0-1_all.deb"
+    key_pkg_url_cuda="${repo_url_cuda}/${key_pkg_name_cuda}"
+    wget ${key_pkg_url_cuda}
+    sudo apt-get install -y -q "./${key_pkg_name_cuda}"
+    rm "./${key_pkg_name_cuda}"
+
+    add_repo "" "${repo_url_cuda}" "/"
 
     path_cmd_cuda='export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}'
     lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
