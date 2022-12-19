@@ -42,13 +42,13 @@ public:
 
         if (after_nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-            std::cerr << "Running out of the dataset! " 
+            std::cerr << "Running out of the dataset! "
                       << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
                       << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
 #endif
             // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
             // to be nearest_row to avoiding sleeping at the end.
-            nearest_row = std::prev(after_nearest_row, 1);
+            nearest_row       = std::prev(after_nearest_row, 1);
             after_nearest_row = nearest_row;
             // We are running out of the dataset and the loop will stop next time.
             internal_stop();
@@ -77,8 +77,8 @@ public:
                 img1,
             }));
         }
-        std::this_thread::sleep_for(
-            std::chrono::nanoseconds(after_nearest_row->first - dataset_first_time - _m_rtc->now().time_since_epoch().count() - 2));
+        std::this_thread::sleep_for(std::chrono::nanoseconds(after_nearest_row->first - dataset_first_time -
+                                                             _m_rtc->now().time_since_epoch().count() - 2));
     }
 
 private:

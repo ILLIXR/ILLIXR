@@ -1,5 +1,5 @@
-#include "common/error_util.hpp"
 #include "common/csv_iterator.hpp"
+#include "common/error_util.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <fstream>
