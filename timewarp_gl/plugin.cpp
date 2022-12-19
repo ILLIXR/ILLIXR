@@ -95,11 +95,11 @@ public:
     }
 
 private:
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<pose_prediction> pp;
+    const std::shared_ptr<switchboard>             sb;
+    const std::shared_ptr<pose_prediction>         pp;
     const std::shared_ptr<xlib_gl_extended_window> xwin;
-    const std::shared_ptr<const RelativeClock> _m_clock;
-    
+    const std::shared_ptr<const RelativeClock>     _m_clock;
+
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
     static constexpr double DELAY_FRACTION = 0.9;
 

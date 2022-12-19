@@ -208,8 +208,8 @@ struct rendered_frame : public switchboard::event {
 
     rendered_frame() { }
 
-    rendered_frame(std::array<GLuint, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
-                   time_point sample_time_, time_point render_time_)
+    rendered_frame(std::array<GLuint, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_,
+                   fast_pose_type render_pose_, time_point sample_time_, time_point render_time_)
         : swapchain_indices{std::move(swapchain_indices_)}
         , swap_indices{std::move(swap_indices_)}
         , render_pose(render_pose_)
