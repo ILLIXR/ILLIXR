@@ -32,18 +32,14 @@ private:
                 cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img0_data().data()));
                 cv::Mat img1(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img1_data().data()));
 
-                // clone() here awakes the ref counter inside cv::Mat and prevents a data race
-                cam0 = std::make_optional<cv::Mat>(img0.clone());
-                cam1 = std::make_optional<cv::Mat>(img1.clone());
-
                 _m_cam.put(_m_cam.allocate<cam_type>(
-                    cam_type{time_point{std::chrono::nanoseconds{curr_data.timestamp()}}, cam0, cam1}));
+                    cam_type{time_point{std::chrono::nanoseconds{curr_data.timestamp()}}, img0.clone(), img1.clone()}));
             }
 
             _m_imu.put(_m_imu.allocate<imu_type>(imu_type{
                 time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
-                Eigen::Vector3f{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
-                Eigen::Vector3f{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()}}));
+                Eigen::Vector3d{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
+                Eigen::Vector3d{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()}}));
         }
     }
 

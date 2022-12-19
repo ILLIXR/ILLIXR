@@ -8,11 +8,11 @@ plugin_group:
   - name: Kimera-VIO/
     path:
       git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-      version: "issue-50-separate-imu-cam"
+      version: "3.3"
   # - name: OpenVINS
   #   path:
   #     git_repo: https://github.com/ILLIXR/open_vins.git
-  #     version: "issue-50-separate-imu-cam"
+  #     version: "3.2"
   # - path: rk4_integrator/
   # - path: passthrough_integrator/
   - path: gtsam_integrator/
