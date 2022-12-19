@@ -189,12 +189,6 @@ protected:
                               sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI / 180),
                               sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI / 180)};
 
-        // it_log.log(record{__imu_cam_record,
-        //                   {
-        //                       {iteration_no},
-        //                       {bool(img0)},
-        //                   }}); // FIXME need to change the log format, separate for imu and cam
-
         _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
 
         last_imu_ts = sensors_data.imu.timestamp;
