@@ -3,9 +3,6 @@
 #include <eigen3/Eigen/Dense>
 #include <fstream>
 #include <map>
-#include <opencv2/core/mat.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
 #include <optional>
 #include <string>
 
