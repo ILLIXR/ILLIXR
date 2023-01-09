@@ -168,11 +168,6 @@ struct hologram_input : public switchboard::event {
         : seq{seq_} { }
 };
 
-/* I use "accel" instead of "3-vector" as a datatype, because
-this checks that you meant to use an acceleration in a certain
-place. */
-struct accel { };
-
 // High-level HMD specification, timewarp plugin
 // may/will calculate additional HMD info based on these specifications
 struct hmd_physical_info {
