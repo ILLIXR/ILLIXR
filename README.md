@@ -2,7 +2,7 @@
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/ILLIXR/community)
+![Discord](https://img.shields.io/discord/830812443189444698)
 
 <a href="https://youtu.be/GVcCW8WgEDY">
     <img
@@ -25,7 +25,7 @@ You can find the complete ILLIXR system [here][38].
 
 ILLIXR also provides its components in standalone configurations to enable architects and
     system designers to research each component in isolation.
-The standalone components are packaged together in the [v1-latest release][39] of ILLIXR. 
+The standalone components are packaged together in the [v3.1.0 release][39] of ILLIXR. 
 
 ILLIXR's modular and extensible runtime allows adding new components and swapping different
     implementations of a given component.
@@ -253,10 +253,10 @@ You can join
 [36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
 [37]:   http://illixr.org
 [38]:   https://github.com/ILLIXR/ILLIXR
-[39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v1-latest
+[39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
 [40]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
 [41]:   https://github.com/ILLIXR/ILLIXR/tree/master/realsense
-[42]:   https://www.nvidia.com/en-us/gtc/catalog/?search.primarytopic=option_1564595704881&search.sessiontype=option_1614028602338&search.primaryindustrysegment=option_1563402697134&search=An%20Open-Source%20Testbed#/
+[42]:   https://www.stereolabs.com/zed-mini/
 [43]:   https://youtu.be/ZY98lWksnpM
 [44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
 [45]:   https://youtu.be/GVcCW8WgEDY
