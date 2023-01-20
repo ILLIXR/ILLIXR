@@ -15,7 +15,8 @@ class offload_writer : public plugin {
 public:
     offload_writer(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()} {
+        , sb{pb->lookup_impl<switchboard>()}
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
         eCAL::Initialize(0, NULL, "VIO Device Transmitter");
         publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
         publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
@@ -25,12 +26,12 @@ public:
     virtual void start() override {
         plugin::start();
 
-        sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+        sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
             this->send_imu_cam_data(datum);
         });
     }
 
-    void send_imu_cam_data(switchboard::ptr<const imu_cam_type> datum) {
+    void send_imu_cam_data(switchboard::ptr<const imu_type> datum) {
         // Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
             assert(previous_timestamp == 0);
@@ -55,13 +56,15 @@ public:
         linear_accel->set_z(datum->linear_a.z());
         imu_cam_data->set_allocated_linear_accel(linear_accel);
 
-        if (!datum->img0.has_value() && !datum->img1.has_value()) {
+        switchboard::ptr<const cam_type> cam;
+        cam = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
+        if (cam == nullptr) {
             imu_cam_data->set_rows(-1);
             imu_cam_data->set_cols(-1);
 
         } else {
-            cv::Mat img0{(datum->img0.value()).clone()};
-            cv::Mat img1{(datum->img1.value()).clone()};
+            cv::Mat img0{cam->img0.clone()};
+            cv::Mat img1{cam->img1.clone()};
 
             imu_cam_data->set_rows(img0.rows);
             imu_cam_data->set_cols(img0.cols);
@@ -81,6 +84,8 @@ private:
 
     const std::shared_ptr<switchboard>                     sb;
     eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec> publisher;
+
+    switchboard::buffered_reader<cam_type> _m_cam;
 };
 
 PLUGIN_MAIN(offload_writer)

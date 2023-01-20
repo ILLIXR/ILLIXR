@@ -24,12 +24,12 @@ public:
 
     virtual void start() override {
         plugin::start();
-        sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+        sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
             this->feed_ground_truth(datum);
         });
     }
 
-    void feed_ground_truth(switchboard::ptr<const imu_cam_type> datum) {
+    void feed_ground_truth(switchboard::ptr<const imu_type> datum) {
         ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
         auto   it           = _m_sensor_data.find(rounded_time);
 

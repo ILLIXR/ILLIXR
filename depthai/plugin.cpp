@@ -19,7 +19,8 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_imu{sb->get_writer<imu_type>("imu")}
+        , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
         , device{createCameraPipeline()} {
 #ifndef NDEBUG
@@ -61,12 +62,6 @@ public:
         }
 #endif
 
-        // Images
-        std::optional<cv::Mat> img0  = std::nullopt;
-        std::optional<cv::Mat> img1  = std::nullopt;
-        std::optional<cv::Mat> rgb   = std::nullopt;
-        std::optional<cv::Mat> depth = std::nullopt;
-
         if (rectifR_go && rectifL_go && depth_go && color_go) {
 #ifndef NDEBUG
             all_count++;
@@ -75,6 +70,15 @@ public:
             auto depthFrame = depthQueue->tryGet<dai::ImgFrame>();
             auto rectifL    = rectifLeftQueue->tryGet<dai::ImgFrame>();
             auto rectifR    = rectifRightQueue->tryGet<dai::ImgFrame>();
+
+            ullong cam_time = static_cast<ullong>(
+                std::chrono::time_point_cast<std::chrono::nanoseconds>(colorFrame->getTimestamp()).time_since_epoch().count());
+            if (!_m_first_cam_time) {
+                _m_first_cam_time      = cam_time;
+                _m_first_real_time_cam = _m_clock->now();
+            }
+
+            time_point cam_time_point{*_m_first_real_time_cam + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
 
             cv::Mat color = cv::Mat(colorFrame->getHeight(), colorFrame->getWidth(), CV_8UC3, colorFrame->getData().data());
             cv::Mat rgb_out{color.clone()};
@@ -90,10 +94,9 @@ public:
             cv::Mat converted_depth;
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 
-            img0  = LeftOut;
-            img1  = RightOut;
-            rgb   = rgb_out;
-            depth = converted_depth;
+            _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, cv::Mat{LeftOut}, cv::Mat{RightOut}}));
+            _m_rgb_depth.put(
+                _m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_out}, cv::Mat{converted_depth}}));
         }
 
         std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> gyroTs;
@@ -133,24 +136,11 @@ public:
 #ifndef NDEBUG
             imu_pub++;
 #endif
-            _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>({
+            _m_imu.put(_m_imu.allocate<imu_type>({
                 imu_time_point,
                 av,
                 la,
-                img0,
-                img1,
             }));
-
-            if (rgb && depth) {
-#ifndef NDEBUG
-                rgbd_pub++;
-#endif
-                _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({
-                    imu_time_point,
-                    rgb,
-                    depth,
-                }));
-            }
         }
     }
 
@@ -167,7 +157,8 @@ public:
 private:
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_cam_type>          _m_imu_cam;
+    switchboard::writer<imu_type>              _m_imu;
+    switchboard::writer<cam_type>              _m_cam;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
     std::mutex                                 mutex;
 
@@ -194,6 +185,9 @@ private:
 
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;
+
+    std::optional<ullong>     _m_first_cam_time;
+    std::optional<time_point> _m_first_real_time_cam;
 
     dai::Pipeline createCameraPipeline() {
 #ifndef NDEBUG

@@ -16,6 +16,7 @@ public:
     record_imu_cam(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , record_data{get_record_data_path()}
         , cam0_data_dir{record_data / "cam0" / "data"}
         , cam1_data_dir{record_data / "cam1" / "data"} {
@@ -42,34 +43,30 @@ public:
         cam1_wt_file.open(cam1_file, std::ofstream::out);
         cam1_wt_file << "#timestamp [ns],filename" << std::endl;
 
-        sb->schedule<imu_cam_type>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
+        sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
             this->dump_data(datum);
         });
     }
 
-    void dump_data(switchboard::ptr<const imu_cam_type> datum) {
+    void dump_data(switchboard::ptr<const imu_type> datum) {
         long            timestamp = datum->time.time_since_epoch().count();
-        Eigen::Vector3f angular_v = datum->angular_v;
-        Eigen::Vector3f linear_a  = datum->linear_a;
+        Eigen::Vector3d angular_v = datum->angular_v;
+        Eigen::Vector3d linear_a  = datum->linear_a;
 
         // write imu0
         imu_wt_file << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2]
                     << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
-        // write cam0
-        std::optional<cv::Mat> cam0_data = datum->img0;
-        std::string            cam0_img  = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
-        if (cam0_data != std::nullopt) {
+        // write cam0 and cam1
+        switchboard::ptr<const cam_type> cam;
+        cam                  = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
+        std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
+        std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
+        if (cam != nullptr) {
             cam0_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-            cv::imwrite(cam0_img, cam0_data.value());
-        }
-
-        // write cam1
-        std::optional<cv::Mat> cam1_data = datum->img1;
-        std::string            cam1_img  = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
-        if (cam1_data != std::nullopt) {
+            cv::imwrite(cam0_img, cam->img0);
             cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-            cv::imwrite(cam1_img, cam1_data.value());
+            cv::imwrite(cam1_img, cam->img1);
         }
     }
 
@@ -84,6 +81,8 @@ private:
     std::ofstream                      cam0_wt_file;
     std::ofstream                      cam1_wt_file;
     const std::shared_ptr<switchboard> sb;
+
+    switchboard::buffered_reader<cam_type> _m_cam;
 
     const boost::filesystem::path record_data;
     const boost::filesystem::path cam0_data_dir;

@@ -29,16 +29,15 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+        sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
             callback(datum);
         });
     }
 
-    void callback(switchboard::ptr<const imu_cam_type> datum) {
-        _imu_vec.emplace_back(datum->time, datum->angular_v.cast<double>(), datum->linear_a.cast<double>());
+    void callback(switchboard::ptr<const imu_type> datum) {
+        _imu_vec.emplace_back(datum->time, datum->angular_v, datum->linear_a);
 
         clean_imu_vec(datum->time);
         propagate_imu_values(datum->time);
@@ -51,7 +50,6 @@ private:
     const std::shared_ptr<RelativeClock> _m_clock;
 
     // IMU Data, Sequence Flag, and State Vars Needed
-    switchboard::reader<imu_cam_type>         _m_imu_cam;
     switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
     // Write IMU Biases for PP
@@ -109,11 +107,10 @@ private:
         void integrateMeasurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept {
             assert(_pim != nullptr && "_pim shuold not be null");
 
-            const gtsam::Vector3 measured_acc{imu_input.am};
-            const gtsam::Vector3 measured_omega{imu_input.wm};
+            const gtsam::Vector3 measured_acc{imu_input.linear_a};
+            const gtsam::Vector3 measured_omega{imu_input.angular_v};
 
-            /// Delta T should be in seconds
-            duration delta_t = imu_input_next.timestamp - imu_input.timestamp;
+            duration delta_t = imu_input_next.time - imu_input.time;
 
             _pim->integrateMeasurement(measured_acc, measured_omega, duration2double(delta_t));
         }
@@ -143,7 +140,7 @@ private:
         // Since the vector is ordered oldest to latest, keep deleting until you
         // hit a value less than 'IMU_TTL' seconds old
         while (imu_iterator != _imu_vec.end()) {
-            if (timestamp - imu_iterator->timestamp < IMU_TTL) {
+            if (timestamp - imu_iterator->time < IMU_TTL) {
                 break;
             }
 
@@ -197,7 +194,7 @@ private:
         std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
 #endif
 
-        for (int i = 0; i < int(prop_data.size()) - 1; i++) {
+        for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
             _pim_obj->integrateMeasurement(prop_data[i], prop_data[i + 1]);
 
             prev_bias = bias;
@@ -232,20 +229,20 @@ private:
 
         for (std::size_t i = 0; i < imu_data.size() - 1; i++) {
             // If time_begin comes inbetween two IMUs (A and B), interpolate A forward to time_begin
-            if (imu_data[i + 1].timestamp > time_begin && imu_data[i].timestamp < time_begin) {
+            if (imu_data[i + 1].time > time_begin && imu_data[i].time < time_begin) {
                 imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_begin);
                 prop_data.push_back(data);
                 continue;
             }
 
             // IMU is within time_begin and time_end
-            if (imu_data[i].timestamp >= time_begin && imu_data[i + 1].timestamp <= time_end) {
+            if (imu_data[i].time >= time_begin && imu_data[i + 1].time <= time_end) {
                 prop_data.push_back(imu_data[i]);
                 continue;
             }
 
             // IMU is past time_end
-            if (imu_data[i + 1].timestamp > time_end) {
+            if (imu_data[i + 1].time > time_end) {
                 imu_type data = interpolate_imu(imu_data[i], imu_data[i + 1], time_end);
                 prop_data.push_back(data);
                 break;
@@ -256,7 +253,7 @@ private:
         // This would cause the noise covariance to be Infinity
         for (int i = 0; i < int(prop_data.size()) - 1; i++) {
             // I need prop_data.size() - 1 to be signed, because it might equal -1.
-            if (std::chrono::abs(prop_data[i + 1].timestamp - prop_data[i].timestamp) < std::chrono::nanoseconds{1}) {
+            if (std::chrono::abs(prop_data[i + 1].time - prop_data[i].time) < std::chrono::nanoseconds{1}) {
                 prop_data.erase(prop_data.begin() + i);
                 i--;
             }
@@ -267,8 +264,9 @@ private:
 
     // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
     static imu_type interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
-        double lambda = duration2double(timestamp - imu_1.timestamp) / duration2double(imu_2.timestamp - imu_1.timestamp);
-        return imu_type{timestamp, (1 - lambda) * imu_1.am + lambda * imu_2.am, (1 - lambda) * imu_1.wm + lambda * imu_2.wm};
+        double lambda = duration2double(timestamp - imu_1.time) / duration2double(imu_2.time - imu_1.time);
+        return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
+                        (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
     }
 };
 
