@@ -33,13 +33,8 @@ public:
 
 protected:
     virtual skip_option _p_should_skip() override {
-        // read cam data
-        color.readFrame(&colorFrame);
-        depth.readFrame(&depthFrame);
-        // get timestamp
-        assert(colorFrame.getTimestamp() != depthFrame.getTimestamp());
-        cam_time = colorFrame.getTimestamp() * 1000;
-
+        auto now = std::chrono::steady_clock::now();
+        cam_time = std::chrono::time_point_cast<std::chrono::milliseconds>(now).time_since_epoch().count();
         if (cam_time > last_ts) {
             std::this_thread::sleep_for(std::chrono::milliseconds{2});
             return skip_option::run;
@@ -49,7 +44,13 @@ protected:
     }
 
     virtual void _p_one_iteration() override {
-        RAC_ERRNO_MSG("zed at start of _p_one_iteration");
+        RAC_ERRNO_MSG("openni at start of _p_one_iteration");
+
+        // read cam data
+        color.readFrame(&colorFrame);
+        depth.readFrame(&depthFrame);
+        // get timestamp
+        assert(colorFrame.getTimestamp() != depthFrame.getTimestamp());
 
         // convert to cv format
         cv::Mat colorMat;
@@ -72,8 +73,8 @@ protected:
         time_point cam_time_point{_m_first_real_time + std::chrono::nanoseconds(cam_time - _m_first_time)};
         _m_rgb_depth.put(_m_rgb_depth.allocate(cam_time_point, colorMat, depthMat));
 
-        last_ts = colorFrame.getTimestamp() * 1000;
-        RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
+        last_ts = cam_time;
+        RAC_ERRNO_MSG("openni at end of _p_one_iteration");
     }
 
     bool camera_initialize() {
