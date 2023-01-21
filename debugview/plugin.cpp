@@ -252,10 +252,11 @@ public:
         camera_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-        cv::Mat depth{rgbd->depth.clone()};   
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT, depth.ptr());
+        cv::Mat depth{rgbd->depth.clone()};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
+                     depth.ptr());
         camera_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
-        GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, 1};
+        GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, 1};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
         RAC_ERRNO_MSG("debugview at end of load_rgb_depth");
@@ -413,7 +414,7 @@ private:
 
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const cam_type> cam;
+    switchboard::ptr<const cam_type>       cam;
     switchboard::ptr<const rgb_depth_type> rgbd;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
