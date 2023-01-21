@@ -41,12 +41,11 @@ struct imu_type : switchboard::event {
         , linear_a{linear_a_} { }
 };
 
-class rgb_depth_type : public switchboard::event {
+struct rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
     cv::Mat                     rgb;
     cv::Mat                     depth;
 
-public:
     rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
         : time{_time}
         , rgb{_rgb}

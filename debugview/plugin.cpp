@@ -68,6 +68,7 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+        , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
 
     void draw_GUI() {
@@ -237,6 +238,30 @@ public:
         return true;
     }
 
+    bool load_rgb_depth() {
+        RAC_ERRNO_MSG("debugview at start of load_rgb_depth");
+
+        rgbd = _m_rgb_depth.get_ro_nullable();
+        if (rgbd == nullptr) {
+            return false;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+        cv::Mat rgb{rgbd->rgb.clone()};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
+        camera_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
+
+        glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        cv::Mat depth{rgbd->depth.clone()};   
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT, depth.ptr());
+        camera_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
+        GLint swizzleMask[] = {GL_RED, GL_RED, GL_RED, 1};
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+
+        RAC_ERRNO_MSG("debugview at end of load_rgb_depth");
+        return true;
+    }
+
     Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
                                              const Eigen::Vector3f& positionOffset) {
         Eigen::Matrix4f headsetPosition;
@@ -288,6 +313,7 @@ public:
         mouse_velocity = mouse_velocity * 0.95;
 
         load_camera_images();
+        load_rgb_depth();
 
         glUseProgram(demoShaderProgram);
 
@@ -370,6 +396,7 @@ private:
 
     switchboard::reader<pose_type>         _m_slow_pose;
     switchboard::reader<imu_raw_type>      _m_fast_pose;
+    switchboard::reader<rgb_depth_type>    _m_rgb_depth;
     switchboard::buffered_reader<cam_type> _m_cam;
     GLFWwindow*                            gui_window;
 
@@ -387,6 +414,7 @@ private:
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
     switchboard::ptr<const cam_type> cam;
+    switchboard::ptr<const rgb_depth_type> rgbd;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
