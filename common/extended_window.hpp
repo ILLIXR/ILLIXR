@@ -25,7 +25,7 @@ public:
     Window     win;
     GLXContext glc;
 
-    xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context) {
+    xlib_gl_extended_window(int _width, int _height) {
         width  = _width;
         height = _height;
 
@@ -154,7 +154,7 @@ public:
             (glXCreateContextAttribsARBProc) glXGetProcAddressARB((const GLubyte*) "glXCreateContextAttribsARB");
         int context_attribs[] = {GLX_CONTEXT_MAJOR_VERSION_ARB, 3, GLX_CONTEXT_MINOR_VERSION_ARB, 3, None};
 
-        glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
+        glc = glXCreateContextAttribsARB(dpy, bestFbc, nullptr, True, context_attribs);
 
         // Sync to process errors
         RAC_ERRNO_MSG("extended_window before XSync");

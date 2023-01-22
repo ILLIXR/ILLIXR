@@ -20,12 +20,14 @@ using namespace ILLIXR;
 
 class runtime_impl : public runtime {
 public:
-    runtime_impl(GLXContext appGLCtx) {
+    runtime_impl() {
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
+#ifndef ILLIXR_MONADO
         pb.register_impl<xlib_gl_extended_window>(
-            std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, appGLCtx));
+            std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels));
+#endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
     }
@@ -125,7 +127,7 @@ private:
     std::vector<std::unique_ptr<plugin>> plugins;
 };
 
-extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
+extern "C" runtime* runtime_factory() {
     RAC_ERRNO_MSG("runtime_impl before creating the runtime");
-    return new runtime_impl{appGLCtx};
+    return new runtime_impl{};
 }

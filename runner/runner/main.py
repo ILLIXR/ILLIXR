@@ -60,6 +60,7 @@ def build_one_plugin(
     config: Mapping[str, Any],
     plugin_config: Mapping[str, Any],
     test: bool = False,
+    illixr_monado: bool = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -69,7 +70,8 @@ def build_one_plugin(
         os.symlink(common_path, path / "common")
     plugin_so_name = f"plugin.{profile}.so"
     targets = [plugin_so_name] + (["tests/run"] if test else [])
-    plugin_config["config"].update(ILLIXR_MONADO="ON")
+    if illixr_monado:
+        plugin_config["config"].update(ILLIXR_MONADO="ON")
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
@@ -81,7 +83,8 @@ def build_one_plugin(
 def build_runtime(
     config: Mapping[str, Any],
     suffix: str,
-    test: bool = False
+    test: bool = False,
+    illixr_monado: bool = False,
 ) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
@@ -90,7 +93,8 @@ def build_runtime(
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
-    runtime_config.update(ILLIXR_MONADO="ON")
+    if illixr_monado:
+        runtime_config.update(ILLIXR_MONADO="ON")
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
@@ -210,11 +214,11 @@ def load_monado(config: Mapping[str, Any]) -> None:
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
-    build_runtime(config, "so")
+    build_runtime(config, "so", illixr_monado = True)
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
         plugin_config.update(ILLIXR_MONADO="ON")
-        return build_one_plugin(config, plugin_config)
+        return build_one_plugin(config, plugin_config, illixr_monado=True)
 
     plugin_paths: List[Path] = threading_map(
         process_plugin,
@@ -227,7 +231,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_DATA=str(data_path),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
-        XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
+        XR_RUNTIME_JSON=str("/home/jebbly/Desktop/ILLIXR/.cache/paths/https%c%s%sgithub.com%sILLIXR%smonado_integration.git/build/openxr_monado-dev.json"),
         XRT_TRACING="true",
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
@@ -252,33 +256,34 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     ## Compile OpenXR apps
     openxr_app_bin_paths = []
-    for openxr_app_obj in config["action"]["openxr_apps"]:
-        openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
+    if (profile != "dbg"):
+        for openxr_app_obj in config["action"]["openxr_apps"]:
+            openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
 
-        openxr_app_path     : Optional[Path] # Forward declare type
-        openxr_app_bin_path : Path           # Forward declare type
+            openxr_app_path     : Optional[Path] # Forward declare type
+            openxr_app_bin_path : Path           # Forward declare type
 
-        if "src_path" in openxr_app_obj["app"]:
-            ## Pathify 'src_path' for compilation
-            openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
-            openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
-        else:
-            ## Get the full path to the 'app' binary
-            openxr_app_path     = None
-            openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+            if "src_path" in openxr_app_obj["app"]:
+                ## Pathify 'src_path' for compilation
+                openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
+                openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
+            else:
+                ## Get the full path to the 'app' binary
+                openxr_app_path     = None
+                openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, False)
 
-        ## Compile the OpenXR app if we received an 'app' with 'src_path'
-        if openxr_app_path:
-            cmake(
-                openxr_app_path,
-                openxr_app_path / "build",
-                dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
-            )
+            ## Compile the OpenXR app if we received an 'app' with 'src_path'
+            if openxr_app_path:
+                cmake(
+                    openxr_app_path,
+                    openxr_app_path / "build",
+                    dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
+                )
 
-        if not openxr_app_bin_path.exists():
-            raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
-        else:
-            openxr_app_bin_paths.append(openxr_app_bin_path);
+            if not openxr_app_bin_path.exists():
+                raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
+            else:
+                openxr_app_bin_paths.append(openxr_app_bin_path);
 
     monado_target_name : str  = "monado-service"
     monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
@@ -286,8 +291,6 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
-
-    print(str(monado_path / "build" / "openxr_monado-dev.json"));
 
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
@@ -326,24 +329,24 @@ def load_monado(config: Mapping[str, Any]) -> None:
     ## Launch the Monado service before any OpenXR apps are opened
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
-    ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(5)
+    # ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    # time.sleep(5)
 
-    ## Launch all OpenXR apps after the service is launched
-    for openxr_app_bin_path in openxr_app_bin_paths:
-        subprocess.Popen(
-           [str(openxr_app_bin_path)],
-           env=dict(
-               ILLIXR_DEMO_DATA=str(demo_data_path),
-               ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-               ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-               ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-               ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
-               REALSENSE_CAM=str(realsense_cam_string),
-               **env_monado,
-               **os.environ,
-           )
-        )
+    # ## Launch all OpenXR apps after the service is launched
+    # for openxr_app_bin_path in openxr_app_bin_paths:
+    #     subprocess.Popen(
+    #        [str(openxr_app_bin_path)],
+    #        env=dict(
+    #            ILLIXR_DEMO_DATA=str(demo_data_path),
+    #            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+    #            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+    #            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+    #            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+    #            REALSENSE_CAM=str(realsense_cam_string),
+    #            **env_monado,
+    #            **os.environ,
+    #        )
+    #     )
 
     ## Continue running the service until it closes
     while (monado_service_proc.poll() == None):

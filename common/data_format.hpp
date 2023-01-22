@@ -180,7 +180,8 @@ struct image_handle : public switchboard::event {
 
     // This decides whether it's the left or right swapchain,
     // but it may be used in the future to support more composition layers as well.
-    uint32_t swapchain_index;
+    // A value of -1 indicates that the image is the one to render to (from Monado).
+    int swapchain_index;
 
     image_handle(GLuint gl_handle_, uint32_t num_images_, uint32_t swapchain_index_)
         : type{graphics_api::OPENGL}
@@ -194,6 +195,18 @@ struct image_handle : public switchboard::event {
         , vk_handle{vk_fd_, format, alloc_size, width_, height_}
         , num_images{num_images_}
         , swapchain_index{swapchain_index_} { }
+};
+
+// Used to identify which graphics API is being used (for swapchain construction)
+enum class semaphore_usage { REPROJECTION_READY, PRESENT_READY };
+
+struct semaphore_handle : public switchboard::event {
+    int vk_handle;
+    semaphore_usage usage;
+
+    semaphore_handle(int vk_handle_, semaphore_usage usage_)
+        : vk_handle{vk_handle_}
+        , usage{usage_} {}
 };
 
 // Using arrays as a swapchain

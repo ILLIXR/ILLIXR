@@ -54,7 +54,6 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-        , xwin{pb->lookup_impl<xlib_gl_extended_window>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
@@ -69,6 +68,37 @@ public:
         // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
         , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
+#ifndef ILLIXR_MONADO
+        const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
+        dpy  = xwin->dpy;
+        root = xwin->win;
+        glc  = xwin->glc;
+#else
+        // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
+        std::cout << "Timewarp creating GL Context" << std::endl;
+        GLint        attr[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
+        XVisualInfo* vi;
+        /* open display */
+        if (!(dpy = XOpenDisplay(NULL))) {
+            fprintf(stderr, "cannot connect to X server\n\n");
+            exit(1);
+        }
+
+        /* get root window */
+        root = DefaultRootWindow(dpy);
+
+        /* get visual matching attr */
+        if (!(vi = glXChooseVisual(dpy, 0, attr))) {
+            fprintf(stderr, "no appropriate visual found\n\n");
+            exit(1);
+        }
+
+        /* create a context using the root window */
+        if (!(glc = glXCreateContext(dpy, vi, NULL, GL_TRUE))) {
+            fprintf(stderr, "failed to create context\n\n");
+            exit(1);
+        }
+#endif
         image_handles_ready = false;
         swapchain_ready     = false;
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
@@ -97,8 +127,12 @@ public:
 private:
     const std::shared_ptr<switchboard>             sb;
     const std::shared_ptr<pose_prediction>         pp;
-    const std::shared_ptr<xlib_gl_extended_window> xwin;
     const std::shared_ptr<const RelativeClock>     _m_clock;
+
+    // OpenGL objects
+    Display*   dpy;
+    Window     root;
+    GLXContext glc;
 
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
     static constexpr double DELAY_FRACTION = 0.9;
@@ -236,7 +270,7 @@ private:
     }
 
     void VulkanGLInterop(const vk_image_handle& vk_handle, int swapchain_index) {
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
         assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
 
@@ -404,13 +438,13 @@ public:
         BuildTimewarp(hmd_info);
 
         // includes setting swap interval
-        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result_0 && "glXMakeCurrent should not fail");
 
         // set swap interval for 1
         glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
         glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glXSwapIntervalEXT");
-        glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
+        glXSwapIntervalEXT(dpy, root, 1);
 
         // Init and verify GLEW
         glewExperimental      = GL_TRUE;
@@ -513,12 +547,12 @@ public:
                          GL_STREAM_DRAW);
         }
 
-        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
+        [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");
     }
 
     virtual void _p_one_iteration() override {
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
 
         if (!swapchain_ready) {
@@ -676,7 +710,9 @@ public:
         // CPU thread once the buffers have been successfully swapped.
         [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
-        glXSwapBuffers(xwin->dpy, xwin->win);
+#ifndef ILLIXR_MONADO
+        glXSwapBuffers(dpy, root);
+#endif
 
         // The swap time needs to be obtained and published as soon as possible
         time_last_swap                              = _m_clock->now();
