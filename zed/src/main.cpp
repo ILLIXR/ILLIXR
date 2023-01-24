@@ -145,8 +145,7 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , zedm{start_camera()}
-        , camera_thread_{"zed_camera_thread", pb_, zedm}
-        , it_log{record_logger_} {
+        , camera_thread_{"zed_camera_thread", pb_, zedm} {
         camera_thread_.start();
     }
 
@@ -207,9 +206,6 @@ private:
     // IMU
     SensorsData sensors_data;
     Timestamp   last_imu_ts = 0;
-
-    // Logger
-    record_coalescer it_log;
 
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;
