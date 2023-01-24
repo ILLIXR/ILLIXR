@@ -12,18 +12,6 @@
 
 namespace ILLIXR {
 
-const record_header __threadloop_iteration_header{
-    "threadloop_iteration",
-    {
-        {"plugin_id", typeid(std::size_t)},
-        {"iteration_no", typeid(std::size_t)},
-        {"skips", typeid(std::size_t)},
-        {"cpu_time_start", typeid(std::chrono::nanoseconds)},
-        {"cpu_time_stop", typeid(std::chrono::nanoseconds)},
-        {"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-        {"wall_time_stop", typeid(std::chrono::high_resolution_clock::time_point)},
-    }};
-
 /**
  * @brief A reusable threadloop for plugins.
  *
@@ -88,8 +76,6 @@ protected:
 
 private:
     void thread_main() {
-        record_coalescer it_log{record_logger_};
-        std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in
