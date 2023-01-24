@@ -152,8 +152,7 @@ public:
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
-        , camera_thread_{"zed_camera_thread", pb_, zedm}
-        , it_log{record_logger_} {
+        , camera_thread_{"zed_camera_thread", pb_, zedm} {
         camera_thread_.start();
     }
 
@@ -227,9 +226,6 @@ private:
     SensorsData sensors_data;
     Timestamp   last_imu_ts    = 0;
     std::size_t last_serial_no = 0;
-
-    // Logger
-    record_coalescer it_log;
 
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;
