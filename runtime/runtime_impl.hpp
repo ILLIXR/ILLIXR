@@ -8,8 +8,6 @@
 #include "common/stoplight.hpp"
 #include "common/switchboard.hpp"
 #include "noop_record_logger.hpp"
-#include "sqlite_record_logger.hpp"
-#include "stdout_record_logger.hpp"
 
 #include <cassert>
 #include <cerrno>
@@ -25,7 +23,6 @@ public:
         GLXContext appGLCtx
 #endif /// ILLIXR_MONADO_MAINLINE
     ) {
-        pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 #ifndef ILLIXR_MONADO_MAINLINE
