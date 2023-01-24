@@ -24,33 +24,6 @@ namespace ILLIXR {
 using plugin_id_t = std::size_t;
 
 /**
- * @Should be private to Switchboard.
- */
-const record_header __switchboard_callback_header{
-    "switchboard_callback",
-    {
-        {"plugin_id", typeid(plugin_id_t)},
-        {"topic_name", typeid(std::string)},
-        {"iteration_no", typeid(std::size_t)},
-        {"cpu_time_start", typeid(std::chrono::nanoseconds)},
-        {"cpu_time_stop", typeid(std::chrono::nanoseconds)},
-        {"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-        {"wall_time_stop", typeid(std::chrono::high_resolution_clock::time_point)},
-    }};
-
-/**
- * @Should be private to Switchboard.
- */
-const record_header __switchboard_topic_stop_header{"switchboard_topic_stop",
-                                                    {
-                                                        {"plugin_id", typeid(plugin_id_t)},
-                                                        {"topic_name", typeid(std::string)},
-                                                        {"enqueued", typeid(std::size_t)},
-                                                        {"dequeued", typeid(std::size_t)},
-                                                        {"idle_cycles", typeid(std::size_t)},
-                                                    }};
-
-/**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
  * topics).
  *
@@ -166,8 +139,6 @@ private:
         const std::string&                                    _m_topic_name;
         plugin_id_t                                           _m_plugin_id;
         std::function<void(ptr<const event>&&, std::size_t)>  _m_callback;
-        const std::shared_ptr<record_logger>                  _m_record_logger;
-        record_coalescer                                      _m_cb_log;
         moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue{8 /*max size estimate*/};
         moodycamel::ConsumerToken                             _m_ctok{_m_queue};
         static constexpr std::chrono::milliseconds            _m_queue_timeout{100};
@@ -196,23 +167,10 @@ private:
                 // Process event
                 // Also, record and log the time
                 _m_dequeued++;
-                auto cb_start_cpu_time  = thread_cpu_time();
                 auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
                 // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " <<
                 // this_event.use_count() << " v\n";
                 _m_callback(std::move(this_event), _m_dequeued);
-                if (_m_cb_log) {
-                    _m_cb_log.log(record{__switchboard_callback_header,
-                                         {
-                                             {_m_plugin_id},
-                                             {_m_topic_name},
-                                             {_m_dequeued},
-                                             {cb_start_cpu_time},
-                                             {thread_cpu_time()},
-                                             {cb_start_wall_time},
-                                             {std::chrono::high_resolution_clock::now()},
-                                         }});
-                }
             } else {
                 // Nothing to do.
                 _m_idle_cycles++;
@@ -233,28 +191,14 @@ private:
                 }
             }
 
-            // Log stats
-            if (_m_record_logger) {
-                _m_record_logger->log(record{__switchboard_topic_stop_header,
-                                             {
-                                                 {_m_plugin_id},
-                                                 {_m_topic_name},
-                                                 {_m_dequeued},
-                                                 {unprocessed},
-                                                 {_m_idle_cycles},
-                                             }});
-            }
         }
 
     public:
         topic_subscription(const std::string& topic_name, plugin_id_t plugin_id,
-                           std::function<void(ptr<const event>&&, std::size_t)> callback,
-                           std::shared_ptr<record_logger>                       record_logger_)
+                           std::function<void(ptr<const event>&&, std::size_t)> callback)
             : _m_topic_name{topic_name}
             , _m_plugin_id{plugin_id}
             , _m_callback{callback}
-            , _m_record_logger{record_logger_}
-            , _m_cb_log{record_logger_}
             , _m_thread{[this] {
                             this->thread_body();
                         },
@@ -330,7 +274,6 @@ private:
     private:
         const std::string                                   _m_name;
         const std::type_info&                               _m_ty;
-        const std::shared_ptr<record_logger>                _m_record_logger;
         std::atomic<size_t>                                 _m_latest_index;
         static constexpr std::size_t                        _m_latest_buffer_size = 256;
         std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
@@ -339,11 +282,9 @@ private:
         std::shared_mutex                                   _m_subscriptions_lock;
 
     public:
-        topic(std::string name, const std::type_info& ty, std::shared_ptr<record_logger> record_logger_)
+        topic(std::string name, const std::type_info& ty)
             : _m_name{name}
-            , _m_ty{ty}
-            , _m_record_logger{record_logger_}
-            , _m_latest_index{0} { }
+            , _m_ty{ty} { }
 
         const std::string& name() {
             return _m_name;
@@ -422,7 +363,7 @@ private:
             // Write on _m_subscriptions.
             // Must acquire unique state on _m_subscriptions_lock
             const std::unique_lock lock{_m_subscriptions_lock};
-            _m_subscriptions.emplace_back(_m_name, plugin_id, callback, _m_record_logger);
+            _m_subscriptions.emplace_back(_m_name, plugin_id, callback);
         }
 
         topic_buffer& get_buffer() {
@@ -586,7 +527,6 @@ public:
 private:
     std::unordered_map<std::string, topic> _m_registry;
     std::shared_mutex                      _m_registry_lock;
-    std::shared_ptr<record_logger>         _m_record_logger;
 
     template<typename specific_event>
     topic& try_register_topic(const std::string& topic_name) {
@@ -611,15 +551,14 @@ private:
 #endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{_m_registry_lock};
-        return _m_registry.try_emplace(topic_name, topic_name, typeid(specific_event), _m_record_logger).first->second;
+        return _m_registry.try_emplace(topic_name, topic_name, typeid(specific_event)).first->second;
     }
 
 public:
     /**
      * If @p pb is null, then logging is disabled.
      */
-    switchboard(const phonebook* pb)
-        : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
+    switchboard(const phonebook* pb) {}
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
