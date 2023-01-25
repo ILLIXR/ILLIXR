@@ -7,7 +7,6 @@
 #include "common/runtime.hpp"
 #include "common/stoplight.hpp"
 #include "common/switchboard.hpp"
-#include "noop_record_logger.hpp"
 
 #include <cassert>
 #include <cerrno>
