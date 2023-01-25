@@ -557,7 +557,7 @@ public:
     /**
      * If @p pb is null, then logging is disabled.
      */
-    switchboard(const phonebook* pb) {}
+    switchboard(const phonebook*) {}
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
