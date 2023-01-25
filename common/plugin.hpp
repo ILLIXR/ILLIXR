@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gen_guid.hpp"
 #include "phonebook.hpp"
 
 namespace ILLIXR {
@@ -48,6 +49,7 @@ protected:
     std::string                          name;
     const phonebook*                     pb;
     const std::shared_ptr<gen_guid>      gen_guid_;
+    const plugin_id_t                    id;
 };
 
 #define PLUGIN_MAIN(plugin_class)                                \
