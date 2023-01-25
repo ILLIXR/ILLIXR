@@ -4,23 +4,23 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
 ## Default Plugins
 
--   [`offline_imu_cam`][2]:
+-   [`offline_imu`][2] and [`offline_cam`][42]:
     Reads [_IMU_][36] data and images from files on disk, emulating a real sensor on the [_headset_][38]
         (feeds the application input measurements with timing similar to an actual IMU).
 
     Topic details:
 
-    -   *Publishes* `imu_cam_type` on `imu_cam` topic.
+    -   *Publishes* `imu_type` on `imu` topic and `cam_type` on `cam` topic respectively.
 
 -   [`ground_truth_slam`][3]:
-    Reads the [_ground truth_][34] from the same dataset as the `offline_imu_cam` plugin.
-    Ground truth data can be compared against the measurements from `offline_imu_cam` for accuracy.
-    Timing information is taken from the `offline_imu_cam` measurements/data.
+    Reads the [_ground truth_][34] from the same dataset as the `offline_imu` plugin.
+    Ground truth data can be compared against the measurements from `offline_imu` for accuracy.
+    Timing information is taken from the `offline_imu` measurements/data.
 
     Topic details:
 
     -   *Publishes* `pose_type` on `true_pose` topic.
-    -   Asynchronously *reads* `imu_cam_type` on `imu_cam` topic.
+    -   Synchronously *reads* `imu_type` on `imu` topic.
 
 -   [`kimera_vio`][10]:
     Runs Kimera-VIO ([upstream][1]) on the input, and outputs the [_headset's_][38] [_pose_][37].
@@ -31,7 +31,8 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
     -   *Publishes* `pose_type` on `slow_pose` topic.
     -   *Publishes* `imu_integrator_input` on `imu_integrator_input` topic.
-    -   Synchronously *reads*/*subscribes* to `imu_cam_type` on `imu_cam` topic.
+    -   Synchronously *reads*/*subscribes* to `imu_type` on `imu` topic.
+    -   Asynchronously *reads* buffered `cam_type` on `cam` topic in its publishing order.
 
 -   [`gtsam_integrator`][12]:
     Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] pose to provide a
@@ -40,7 +41,8 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     Topic details:
 
     -   *Publishes* `imu_raw_type` on `imu_raw` topic.
-    -   Synchronously *reads/subscribes* to `imu_cam_type` on `imu_cam` topic.
+    -   Synchronously *reads/subscribes* to `imu_type` on `imu` topic.
+    -   Asynchronously *reads* buffered `cam_type` on `cam` topic in its publishing order.
     -   Asynchronously *reads* `imu_integrator_input` on `imu_integrator_input` topic.
 
 -   [`pose_prediction`][17]:
@@ -88,7 +90,8 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   *Calls* `pose_prediction`.
     -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
     -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
-    -   Synchronously *reads* `imu_cam` on `imu_cam` topic.
+    -   Synchronously *reads* `imu` on `imu` topic.
+    -   Asynchronously *reads* buffered `cam_type` on `cam` topic.
 
 -   [`audio_pipeline`][8]:
     Launches a thread for [binaural][19] recording and one for binaural playback.
@@ -173,12 +176,13 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
 -   [`zed`][22]:
     Reads images and [_IMU_][36] measurements from the [ZED Mini][24].
-    Unlike `offline_imu_cam`, `zed` additionally has RGB and [_depth_][34] data.
+    Unlike `offline_imu/cam`, `zed` additionally has RGB and [_depth_][34] data.
     Note that this plugin implements two threads: one for the camera, and one for the IMU.
 
     Topic details:
 
-    -   *Publishes* `imu_cam_type` on `imu_cam` topic.
+    -   *Publishes* `imu_type` on `imu` topic.
+    -   *Publishes* `cam_type` on `cam` topic.
     -   *Publishes* `rgb_depth_type` on `rgb_depth` topic.
 
 -   [`realsense`][23]:
@@ -194,7 +198,8 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [//]: # (- References -)
 
 [1]:    https://github.com/MIT-SPARK/Kimera-VIO
-[2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu_cam
+[2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu
+[42]:   https://github.com/ILLIXR/ILLIXR/tree/master/offline_cam
 [3]:    https://github.com/ILLIXR/ILLIXR/tree/master/ground_truth_slam
 [4]:    https://github.com/ILLIXR/open_vins
 [5]:    https://github.com/ILLIXR/ILLIXR/tree/master/gldemo
