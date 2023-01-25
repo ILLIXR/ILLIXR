@@ -169,7 +169,6 @@ private:
                 // Process event
                 // Also, record and log the time
                 _m_dequeued++;
-                auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
                 // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " <<
                 // this_event.use_count() << " v\n";
                 _m_callback(std::move(this_event), _m_dequeued);
