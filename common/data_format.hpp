@@ -148,7 +148,10 @@ typedef struct {
 } fast_pose_type;
 
 // Used to identify which graphics API is being used (for swapchain construction)
-enum class graphics_api { OPENGL, VULKAN };
+enum class graphics_api { OPENGL, VULKAN, TBD };
+
+// Used to distinguish between different image handles
+enum class swapchain_usage { LEFT_SWAPCHAIN, RIGHT_SWAPCHAIN, RENDER };
 
 typedef struct vk_image_handle {
     int      file_descriptor;
@@ -177,28 +180,24 @@ struct image_handle : public switchboard::event {
     };
 
     uint32_t num_images;
+    swapchain_usage usage;
 
-    // This decides whether it's the left or right swapchain,
-    // but it may be used in the future to support more composition layers as well.
-    // A value of -1 indicates that the image is the one to render to (from Monado).
-    int swapchain_index;
-
-    image_handle(GLuint gl_handle_, uint32_t num_images_, uint32_t swapchain_index_)
+    image_handle(GLuint gl_handle_, uint32_t num_images_, swapchain_usage usage_)
         : type{graphics_api::OPENGL}
         , gl_handle{gl_handle_}
         , num_images{num_images_}
-        , swapchain_index{swapchain_index_} { }
+        , usage{usage_} { }
 
     image_handle(int vk_fd_, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_,
-                 uint32_t swapchain_index_)
+                 swapchain_usage usage_)
         : type{graphics_api::VULKAN}
         , vk_handle{vk_fd_, format, alloc_size, width_, height_}
         , num_images{num_images_}
-        , swapchain_index{swapchain_index_} { }
+        , usage{usage_} { }
 };
 
 // Used to identify which graphics API is being used (for swapchain construction)
-enum class semaphore_usage { REPROJECTION_READY, PRESENT_READY };
+enum class semaphore_usage { REPROJECTION_READY, PRESENTATION_READY };
 
 struct semaphore_handle : public switchboard::event {
     int vk_handle;

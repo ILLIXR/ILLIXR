@@ -23,6 +23,9 @@
 #include <thread>
 #include <vector>
 
+// Manually defined, should replace later
+#define ILLIXR_MONADO
+
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
@@ -99,29 +102,72 @@ public:
             exit(1);
         }
 #endif
+        client_backend      = graphics_api::TBD;
+        rendering_ready     = false;
         image_handles_ready = false;
-        swapchain_ready     = false;
+#ifdef ILLIXR_MONADO
+        semaphore_handles_ready    = false;
+#else
+        semaphore_handles_ready    = true;
+#endif
+
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
             // only 2 swapchains (for the left and right eye) are supported for now.
-            if (handle->swapchain_index == 0) {
-                std::cout << "SWAPCHAIN 0 READY" << std::endl;
-            } else if (handle->swapchain_index == 1) {
-                std::cout << "SWAPCHAIN 1 READY" << std::endl;
-            } else {
-                return;
+            switch (handle->usage) {
+                case swapchain_usage::LEFT_SWAPCHAIN: {
+                    this->_m_eye_image_handles[0].push_back(*handle);
+                    this->_m_eye_swapchains_size[0] = handle->num_images;
+                    break;
+                }
+                case swapchain_usage::RIGHT_SWAPCHAIN: {
+                    this->_m_eye_image_handles[1].push_back(*handle);
+                    this->_m_eye_swapchains_size[1] = handle->num_images;
+                    break;
+                }
+                case swapchain_usage::RENDER: {
+                    this->_m_render_image_handles.push_back(*handle);
+                    this->_m_render_swapchain_size = handle->num_images;
+                    break;
+                }
+                default: {
+                    std::cout << "Invalid swapchain usage provided" << std::endl;
+                    break;
+                }
             }
 
-            assert(handle->swapchain_index == 0 || handle->swapchain_index == 1);
-            this->_m_image_handles[handle->swapchain_index].push_back(*handle);
+            if (client_backend == graphics_api::TBD) {
+                client_backend = handle->type;
+            } else {
+                assert(client_backend == handle->type);
+            }
 
-            if (this->_m_image_handles[0].size() == (size_t) handle->num_images &&
-                this->_m_image_handles[1].size() == (size_t) handle->num_images) {
+            if (this->_m_eye_image_handles[0].size() == this->_m_eye_swapchains_size[0] &&
+                this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1]) {
+#ifdef ILLIXR_MONADO
+                this->image_handles_ready = (this->_m_render_image_handles.size() == this->_m_render_swapchain_size);
+#else
                 this->image_handles_ready = true;
-                std::cout << "IMAGES READY" << std::endl;
+#endif
             }
         });
 
-        std::cout << "Timewarp done!" << std::endl;
+        sb->schedule<semaphore_handle>(id, "semaphore_handle", [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
+            // We need one semaphore to indicate when the reprojection is ready, and another when it's done
+            switch (handle->usage) {
+                case semaphore_usage::REPROJECTION_READY: {
+                    _m_semaphore_handles[0] = *handle;
+                    break;
+                }
+                case semaphore_usage::PRESENTATION_READY: {
+                    _m_semaphore_handles[1] = *handle;
+                    break;
+                }
+                default: {
+                    std::cout << "Invalid semaphore usage provided" << std::endl;
+                    break;
+                }
+            }
+        });
     }
 
 private:
@@ -137,12 +183,26 @@ private:
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
     static constexpr double DELAY_FRACTION = 0.9;
 
-    // Shared image handles between ILLIXR and the application
+    // Shared objects between ILLIXR and the application (either gldemo or Monado)
+    bool                                     rendering_ready;
     graphics_api                             client_backend;
     std::atomic<bool>                        image_handles_ready;
-    bool                                     swapchain_ready;
-    std::array<std::vector<image_handle>, 2> _m_image_handles;
-    std::array<std::vector<GLuint>, 2>       _m_swapchain;
+    std::atomic<bool>                        semaphore_handles_ready;
+
+    // Left and right eye images
+    std::array<std::vector<image_handle>, 2> _m_eye_image_handles;
+    std::array<std::vector<GLuint>, 2>       _m_eye_swapchains;
+    std::array<size_t, 2>                    _m_eye_swapchains_size;
+
+    // Another texture is needed to render to (for Monado)
+    std::vector<image_handle>                _m_render_image_handles;
+    std::vector<GLuint>                      _m_render_swapchain;
+    size_t                                   _m_render_swapchain_size;
+    // TO-DO: Need a separate framebuffer for Monado
+
+    // Semaphores to synchronize between Monado and ILLIXR
+    std::array<semaphore_handle, 2>          _m_semaphore_handles;
+    std::array<GLuint, 2>                    _m_semaphores;
 
     // Switchboard plug for application eye buffer.
     switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -269,7 +329,7 @@ private:
         }
     }
 
-    void VulkanGLInterop(const vk_image_handle& vk_handle, int swapchain_index) {
+    void ImportVulkanImage(const vk_image_handle& vk_handle, swapchain_usage usage) {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
         assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
@@ -278,20 +338,63 @@ private:
         GLuint memory_handle;
         GLint  dedicated = GL_TRUE;
         glCreateMemoryObjectsEXT(1, &memory_handle);
-        assert(glIsMemoryObjectEXT(memory_handle) && "GL memory handle must be created correctly");
         glMemoryObjectParameterivEXT(memory_handle, GL_DEDICATED_MEMORY_OBJECT_EXT, &dedicated);
         glImportMemoryFdEXT(memory_handle, vk_handle.allocation_size, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.file_descriptor);
 
         // then use the imported memory as the opengl texture
         GLint  swizzle_mask[4] = {GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA};
         GLuint format          = ConvertVkFormatToGL(vk_handle.format, swizzle_mask);
-        assert(format != 0 && "Given VK format not handled!");
+        assert(format != 0 && "Given Vulkan format not handled!");
         GLuint image_handle;
         glGenTextures(1, &image_handle);
         glBindTexture(GL_TEXTURE_2D, image_handle);
         glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
-        _m_swapchain[swapchain_index].push_back(image_handle);
+        
+        switch (usage) {
+            case swapchain_usage::LEFT_SWAPCHAIN: {
+                _m_eye_swapchains[0].push_back(image_handle);
+                break;
+            }
+            case swapchain_usage::RIGHT_SWAPCHAIN: {
+                _m_eye_swapchains[1].push_back(image_handle);
+                break;
+            }
+            case swapchain_usage::RENDER: {
+                _m_render_swapchain.push_back(image_handle);
+                // may need more framebuffer setup here
+                break;
+            }
+            default: {
+                assert(false && "Invalid swapchain usage");
+                break;
+            }
+        }
+    }
+
+    void ImportVulkanSemaphore(const semaphore_handle& vk_handle) {
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
+        assert(gl_result && "glXMakeCurrent should not fail");
+        assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
+
+        GLuint semaphore_handle;
+        glGenSemaphoresEXT(1, &semaphore_handle);
+        glImportSemaphoreFdEXT(semaphore_handle, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.vk_handle);
+
+        switch (vk_handle.usage) {
+            case semaphore_usage::REPROJECTION_READY: {
+                _m_semaphores[0] = semaphore_handle;
+                break;
+            }
+            case semaphore_usage::PRESENTATION_READY: {
+                _m_semaphores[1] = semaphore_handle;
+                break;
+            }
+            default: {
+                assert(false && "Invalid semaphore usage");
+                break;
+            }
+        }
     }
 
     void BuildTimewarp(HMD::hmd_info_t& hmdInfo) {
@@ -415,6 +518,10 @@ public:
 
         std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
         if (image_handles_ready.load() && _m_eyebuffer.get_ro_nullable() != nullptr) {
+            if (!semaphore_handles_ready.load()) {
+                return skip_option::skip_and_yield;
+            }
+
             return skip_option::run;
         } else {
             // Null means system is nothing has been pushed yet
@@ -555,23 +662,27 @@ public:
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
 
-        if (!swapchain_ready) {
+        if (!rendering_ready) {
             assert(image_handles_ready);
 
-            client_backend = _m_image_handles[0][0].type;
             for (int eye = 0; eye < 2; eye++) {
-                uint32_t num_images = _m_image_handles[eye][0].num_images;
+                uint32_t num_images = _m_eye_image_handles[eye][0].num_images;
                 for (uint32_t image_index = 0; image_index < num_images; image_index++) {
+                    image_handle image = _m_eye_image_handles[eye][image_index];
                     if (client_backend == graphics_api::OPENGL) {
-                        _m_swapchain[eye].push_back(_m_image_handles[eye][image_index].gl_handle);
+                        _m_eye_swapchains[eye].push_back(image.gl_handle);
                     } else {
-                        std::cout << "CONVERTING IMAGES TO GL" << std::endl;
-                        VulkanGLInterop(_m_image_handles[eye][image_index].vk_handle, eye);
+                        ImportVulkanImage(image.vk_handle, image.usage);
                     }
                 }
             }
-            swapchain_ready = true;
+
+#ifdef ILLIXR_MONADO
+            // TO-DO: If we're using Monado, we also need to setup the framebuffer and the semaphores.
+#endif
+            rendering_ready = true;
         }
+
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
