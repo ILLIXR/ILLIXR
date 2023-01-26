@@ -252,33 +252,34 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     ## Compile OpenXR apps
     openxr_app_bin_paths = []
-    for openxr_app_obj in config["action"]["openxr_apps"]:
-        openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
+    if (profile != "dbg"):
+        for openxr_app_obj in config["action"]["openxr_apps"]:
+            openxr_app_config : Mapping[str, str] = openxr_app_obj.get("config", {})
 
-        openxr_app_path     : Optional[Path] # Forward declare type
-        openxr_app_bin_path : Path           # Forward declare type
+            openxr_app_path     : Optional[Path] # Forward declare type
+            openxr_app_bin_path : Path           # Forward declare type
 
-        if "src_path" in openxr_app_obj["app"]:
-            ## Pathify 'src_path' for compilation
-            openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
-            openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
-        else:
-            ## Get the full path to the 'app' binary
-            openxr_app_path     = None
-            openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, False)
+            if "src_path" in openxr_app_obj["app"]:
+                ## Pathify 'src_path' for compilation
+                openxr_app_path     = pathify(openxr_app_obj["app"]["src_path"], root_dir, cache_path, True , True)
+                openxr_app_bin_path = openxr_app_path / openxr_app_obj["app"]["bin_subpath"]
+            else:
+                ## Get the full path to the 'app' binary
+                openxr_app_path     = None
+                openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, False)
 
-        ## Compile the OpenXR app if we received an 'app' with 'src_path'
-        if openxr_app_path:
-            cmake(
-                openxr_app_path,
-                openxr_app_path / "build",
-                dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
-            )
+            ## Compile the OpenXR app if we received an 'app' with 'src_path'
+            if openxr_app_path:
+                cmake(
+                    openxr_app_path,
+                    openxr_app_path / "build",
+                    dict(CMAKE_BUILD_TYPE=cmake_profile, **openxr_app_config),
+                )
 
-        if not openxr_app_bin_path.exists():
-            raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
-        else:
-            openxr_app_bin_paths.append(openxr_app_bin_path);
+            if not openxr_app_bin_path.exists():
+                raise RuntimeError(f"{action_name} Failed to build openxr_app, path={openxr_app_bin_path})")
+            else:
+                openxr_app_bin_paths.append(openxr_app_bin_path)
 
     monado_target_name : str  = "monado-service"
     monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
