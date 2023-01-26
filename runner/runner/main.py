@@ -32,7 +32,7 @@ from yamlinclude import YamlIncludeConstructor
 # black -l 90 main.py
 # mypy --strict --ignore-missing-imports main.py
 
-root_dir = relative_to((Path(__file__).parent / "../..").resolve(), Path(".").resolve())
+root_dir = (Path(__file__).parent / "../..").resolve()
 
 cache_path = root_dir / ".cache" / "paths"
 cache_path.mkdir(parents=True, exist_ok=True)
@@ -265,7 +265,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         else:
             ## Get the full path to the 'app' binary
             openxr_app_path     = None
-            openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, True)
+            openxr_app_bin_path = pathify(openxr_app_obj["app"], root_dir, cache_path, True, False)
 
         ## Compile the OpenXR app if we received an 'app' with 'src_path'
         if openxr_app_path:
@@ -286,8 +286,6 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
-
-    print(str(monado_path / "build" / "openxr_monado-dev.json"));
 
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
