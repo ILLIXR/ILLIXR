@@ -154,10 +154,6 @@ public:
         sb->schedule<semaphore_handle>(id, "semaphore_handle", [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
             // We need one semaphore to indicate when the reprojection is ready, and another when it's done
             switch (handle->usage) {
-                case semaphore_usage::REPROJECTION_READY: {
-                    _m_semaphore_handles[0] = *handle;
-                    break;
-                }
                 case semaphore_usage::PRESENTATION_READY: {
                     _m_semaphore_handles[1] = *handle;
                     break;
@@ -198,11 +194,11 @@ private:
     std::vector<image_handle>                _m_render_image_handles;
     std::vector<GLuint>                      _m_render_swapchain;
     size_t                                   _m_render_swapchain_size;
-    // TO-DO: Need a separate framebuffer for Monado
+    GLuint                                   _m_monado_target;
 
     // Semaphores to synchronize between Monado and ILLIXR
-    std::array<semaphore_handle, 2>          _m_semaphore_handles;
-    std::array<GLuint, 2>                    _m_semaphores;
+    semaphore_handle          _m_semaphore_handle;
+    GLuint                    _m_semaphore;
 
     // Switchboard plug for application eye buffer.
     switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -382,12 +378,8 @@ private:
         glImportSemaphoreFdEXT(semaphore_handle, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.vk_handle);
 
         switch (vk_handle.usage) {
-            case semaphore_usage::REPROJECTION_READY: {
-                _m_semaphores[0] = semaphore_handle;
-                break;
-            }
             case semaphore_usage::PRESENTATION_READY: {
-                _m_semaphores[1] = semaphore_handle;
+                _m_semaphore = semaphore_handle;
                 break;
             }
             default: {
@@ -679,6 +671,14 @@ public:
 
 #ifdef ILLIXR_MONADO
             // TO-DO: If we're using Monado, we also need to setup the framebuffer and the semaphores.
+            for (uint32_t image_index = 0; image_index < _m_render_swapchain_size, image_index++) {
+                image_handle image = _m_render_image_handles[image_index];
+                ImportVulkanImage(image.vk_handle, image.usage);
+            }
+            glGenFramebuffers(1, &_m_monado_target);
+            glBindFramebuffer();
+
+            ImportVulkanSemaphore(_m_semaphore_handle);
 #endif
             rendering_ready = true;
         }

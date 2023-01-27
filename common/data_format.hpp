@@ -197,7 +197,7 @@ struct image_handle : public switchboard::event {
 };
 
 // Used to identify which graphics API is being used (for swapchain construction)
-enum class semaphore_usage { REPROJECTION_READY, PRESENTATION_READY };
+enum class semaphore_usage { PRESENTATION_READY };
 
 struct semaphore_handle : public switchboard::event {
     int vk_handle;
