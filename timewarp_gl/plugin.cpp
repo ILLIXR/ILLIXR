@@ -13,6 +13,7 @@
 #include "common/switchboard.hpp"
 #include "common/threadloop.hpp"
 #include "shaders/basic_shader.hpp"
+#include "shaders/landscape_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
 
@@ -22,9 +23,6 @@
 #include <iostream>
 #include <thread>
 #include <vector>
-
-// Manually defined, should replace later
-#define ILLIXR_MONADO
 
 using namespace ILLIXR;
 
@@ -130,6 +128,7 @@ public:
                     this->_m_eye_swapchains_size[1] = handle->num_images;
                     break;
                 }
+#ifdef ILLIXR_MONADO
                 case swapchain_usage::LEFT_RENDER: {
                     this->_m_eye_output_handles[0] = *handle;
                     left_output_ready = true;
@@ -140,6 +139,7 @@ public:
                     right_output_ready = true;
                     break;
                 }
+#endif
                 default: {
                     std::cout << "Invalid swapchain usage provided" << std::endl;
                     break;
@@ -159,6 +159,7 @@ public:
             }
         });
 
+#ifdef ILLIXR_MONADO
         sb->schedule<semaphore_handle>(id, "semaphore_handle", [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
             // We need one semaphore to indicate when the reprojection is ready, and another when it's done
             static bool left_semaphore_ready = false, right_semaphore_ready = false;
@@ -181,6 +182,7 @@ public:
                 this->semaphore_handles_ready = true;
             }
         });
+#endif
     }
 
 private:
@@ -207,16 +209,16 @@ private:
     std::array<std::vector<GLuint>, 2>       _m_eye_swapchains;
     std::array<size_t, 2>                    _m_eye_swapchains_size;
 
-    // Another texture is needed to render to (for Monado)
-    std::array<image_handle, 2>              _m_eye_output_handles;
-
     // Intermediate timewarp framebuffers for left and right eye textures
     std::array<GLuint, 2>                    _m_eye_output_textures;
     std::array<GLuint, 2>                    _m_eye_framebuffers;
 
+#ifdef ILLIXR_MONADO
     // Semaphores to synchronize between Monado and ILLIXR
+    std::array<image_handle, 2>              _m_eye_output_handles;
     std::array<semaphore_handle, 2>          _m_semaphore_handles;
     std::array<GLuint, 2>                    _m_semaphores;
+#endif
 
     // Switchboard plug for application eye buffer.
     switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -234,6 +236,8 @@ private:
     record_coalescer mtp_logger;
 
     GLuint timewarpShaderProgram;
+    GLuint landscapeShaderProgram;
+    GLuint landscape_vao;
 
     time_point time_last_swap;
 
@@ -389,6 +393,7 @@ private:
         }
     }
 
+#ifdef ILLIXR_MONADO
     void ImportVulkanSemaphore(const semaphore_handle& vk_handle) {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
@@ -413,6 +418,7 @@ private:
             }
         }
     }
+#endif
 
     void BuildTimewarp(HMD::hmd_info_t& hmdInfo) {
         // Calculate the number of vertices+indices in the distortion mesh.
@@ -582,6 +588,30 @@ public:
 
         glDebugMessageCallback(MessageCallback, 0);
 
+        // Setup the shader to composite the left and right eyes
+        landscapeShaderProgram = init_and_link(landscapeVertexShader, landscapeFragmentShader);
+        glGenVertexArrays(1, &landscape_vao);
+        glBindVertexArray(landscape_vao);
+
+        GLuint vertex_buffer = 0;
+        glGenBuffers(1, &vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+        glEnableVertexAttribArray(0);
+
+        GLuint texcoord_buffer = 0;
+        glGenBuffers(1, &texcoord_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, texcoord_buffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quad_texcoords), quad_texcoords, GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+        glEnableVertexAttribArray(1);
+
+        GLuint index_buffer = 0;
+        glGenBuffers(1, &index_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quad_indices), quad_indices, GL_STATIC_DRAW);
+
         // Create and bind global VAO object
         glGenVertexArrays(1, &tw_vao);
         glBindVertexArray(tw_vao);
@@ -593,7 +623,6 @@ public:
         timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
 #endif
         // Acquire attribute and uniform locations from the compiled and linked shader program
-
         distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
         distortion_uv0_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv0");
         distortion_uv1_attr = glGetAttribLocation(timewarpShaderProgram, "vertexUv1");
@@ -709,7 +738,7 @@ public:
                 _m_eye_output_textures[eye] = eye_output_texture;
 
                 glBindTexture(GL_TEXTURE_2D, eye_output_texture);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_width, m_height, 0, GL_RGBA, GL_FLOAT, NULL);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, display_params::width_pixels * 0.5f, display_params::height_pixels * 0.5f, 0, GL_RGBA, GL_FLOAT, NULL);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #endif
@@ -796,11 +825,15 @@ public:
 
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
+            // Choose the appropriate texture to render to
+            glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
+            glClear(GL_COLOR_BUFFER_BIT);
+
 #ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
             [[maybe_unused]] const bool isTexture =
-                static_cast<bool>(glIsTexture(_m_swapchain[eye][most_recent_frame->swapchain_indices[eye]]));
+                static_cast<bool>(glIsTexture(_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]));
             assert(isTexture && "The requested image is not a texture!");
-            glBindTexture(GL_TEXTURE_2D, _m_swapchain[eye][most_recent_frame->swapchain_indices[eye]]);
+            glBindTexture(GL_TEXTURE_2D, _m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]);
 #endif
 
             // The distortion_positions_vbo GPU buffer already contains
@@ -839,8 +872,6 @@ public:
             glUniform1i(tw_eye_index_unif, eye);
 #endif
 
-            // Here, we render to different 
-
             // Interestingly, the element index buffer is identical for both eyes, and is
             // reused for both eyes. Therefore glDrawElements can be immediately called,
             // with the UV and position buffers correctly offset.
@@ -869,7 +900,20 @@ public:
         // CPU thread once the buffers have been successfully swapped.
         [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
+        // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, _m_eye_framebuffers[0]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, _m_eye_framebuffers[1]);
+
+        glUseProgram(landscapeShaderProgram);
+        glUniform1i(glGetUniformLocation(landscapeShaderProgram, "leftTexture"), 0);
+        glUniform1i(glGetUniformLocation(landscapeShaderProgram, "rightTexture"), 1);
+        
+        glBindVertexArray(landscape_vao);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         glXSwapBuffers(dpy, root);
 #endif
 
