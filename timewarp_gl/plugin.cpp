@@ -113,6 +113,12 @@ public:
 
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
             // only 2 swapchains (for the left and right eye) are supported for now.
+#ifdef ILLIXR_MONADO
+            static bool left_output_ready = false, right_output_ready = false;
+#else
+            static bool left_output_ready = true, right_output_ready = true;
+#endif
+        
             switch (handle->usage) {
                 case swapchain_usage::LEFT_SWAPCHAIN: {
                     this->_m_eye_image_handles[0].push_back(*handle);
@@ -124,9 +130,14 @@ public:
                     this->_m_eye_swapchains_size[1] = handle->num_images;
                     break;
                 }
-                case swapchain_usage::RENDER: {
-                    this->_m_render_image_handles.push_back(*handle);
-                    this->_m_render_swapchain_size = handle->num_images;
+                case swapchain_usage::LEFT_RENDER: {
+                    this->_m_eye_output_handles[0] = *handle;
+                    left_output_ready = true;
+                    break;
+                }
+                case swapchain_usage::RIGHT_RENDER: {
+                    this->_m_eye_output_handles[1] = *handle;
+                    right_output_ready = true;
                     break;
                 }
                 default: {
@@ -142,19 +153,21 @@ public:
             }
 
             if (this->_m_eye_image_handles[0].size() == this->_m_eye_swapchains_size[0] &&
-                this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1]) {
-#ifdef ILLIXR_MONADO
-                this->image_handles_ready = (this->_m_render_image_handles.size() == this->_m_render_swapchain_size);
-#else
+                this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1] &&
+                left_output_ready && right_output_ready) {
                 this->image_handles_ready = true;
-#endif
             }
         });
 
         sb->schedule<semaphore_handle>(id, "semaphore_handle", [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
             // We need one semaphore to indicate when the reprojection is ready, and another when it's done
+            static bool left_semaphore_ready = false, right_semaphore_ready = false;
             switch (handle->usage) {
-                case semaphore_usage::PRESENTATION_READY: {
+                case semaphore_usage::LEFT_RENDER_COMPLETE: {
+                    _m_semaphore_handles[0] = *handle;
+                    break;
+                }
+                case semaphore_usage::RIGHT_RENDER_COMPLETE: {
                     _m_semaphore_handles[1] = *handle;
                     break;
                 }
@@ -162,6 +175,10 @@ public:
                     std::cout << "Invalid semaphore usage provided" << std::endl;
                     break;
                 }
+            }
+
+            if (left_semaphore_ready && right_semaphore_ready) {
+                this->semaphore_handles_ready = true;
             }
         });
     }
@@ -191,14 +208,15 @@ private:
     std::array<size_t, 2>                    _m_eye_swapchains_size;
 
     // Another texture is needed to render to (for Monado)
-    std::vector<image_handle>                _m_render_image_handles;
-    std::vector<GLuint>                      _m_render_swapchain;
-    size_t                                   _m_render_swapchain_size;
-    GLuint                                   _m_monado_target;
+    std::array<image_handle, 2>              _m_eye_output_handles;
+
+    // Intermediate timewarp framebuffers for left and right eye textures
+    std::array<GLuint, 2>                    _m_eye_output_textures;
+    std::array<GLuint, 2>                    _m_eye_framebuffers;
 
     // Semaphores to synchronize between Monado and ILLIXR
-    semaphore_handle          _m_semaphore_handle;
-    GLuint                    _m_semaphore;
+    std::array<semaphore_handle, 2>          _m_semaphore_handles;
+    std::array<GLuint, 2>                    _m_semaphores;
 
     // Switchboard plug for application eye buffer.
     switchboard::reader<rendered_frame> _m_eyebuffer;
@@ -356,9 +374,12 @@ private:
                 _m_eye_swapchains[1].push_back(image_handle);
                 break;
             }
-            case swapchain_usage::RENDER: {
-                _m_render_swapchain.push_back(image_handle);
-                // may need more framebuffer setup here
+            case swapchain_usage::LEFT_RENDER: {
+                _m_eye_output_textures[0] = image_handle;
+                break;
+            }
+            case swapchain_usage::RIGHT_RENDER: {
+                _m_eye_output_textures[1] = image_handle;
                 break;
             }
             default: {
@@ -376,10 +397,14 @@ private:
         GLuint semaphore_handle;
         glGenSemaphoresEXT(1, &semaphore_handle);
         glImportSemaphoreFdEXT(semaphore_handle, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.vk_handle);
-
+    
         switch (vk_handle.usage) {
-            case semaphore_usage::PRESENTATION_READY: {
-                _m_semaphore = semaphore_handle;
+            case semaphore_usage::LEFT_RENDER_COMPLETE: {
+                _m_semaphores[0] = semaphore_handle;
+                break;
+            }
+            case semaphore_usage::RIGHT_RENDER_COMPLETE: {
+                _m_semaphores[1] = semaphore_handle;
                 break;
             }
             default: {
@@ -669,17 +694,38 @@ public:
                 }
             }
 
+            // If we're using Monado, we need to import the eye output textures to render to.
+            // Otherwise with native, we can directly create the textures.
+            for (int eye = 0; eye < 2; eye++) {
 #ifdef ILLIXR_MONADO
-            // TO-DO: If we're using Monado, we also need to setup the framebuffer and the semaphores.
-            for (uint32_t image_index = 0; image_index < _m_render_swapchain_size, image_index++) {
-                image_handle image = _m_render_image_handles[image_index];
+                image_handle image = _m_eye_output_handles[eye];
                 ImportVulkanImage(image.vk_handle, image.usage);
-            }
-            glGenFramebuffers(1, &_m_monado_target);
-            glBindFramebuffer();
 
-            ImportVulkanSemaphore(_m_semaphore_handle);
+                // Each eye also has an associated semaphore
+                ImportVulkanSemaphore(_m_semaphore_handles[eye]);
+#else
+                GLuint eye_output_texture;
+                glGenTextures(1, &eye_output_texture);
+                _m_eye_output_textures[eye] = eye_output_texture;
+
+                glBindTexture(GL_TEXTURE_2D, eye_output_texture);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_width, m_height, 0, GL_RGBA, GL_FLOAT, NULL);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #endif
+                
+                // Once the eye output textures are created, we bind them to the framebuffer
+                GLuint framebuffer;
+                glGenFramebuffers(1, &framebuffer);
+                _m_eye_framebuffers[eye] = framebuffer;
+
+                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _m_eye_output_textures[eye], 0);
+
+                uint32_t attachment = GL_COLOR_ATTACHMENT0;
+                glDrawBuffers(1, &attachment);
+            }
+
             rendering_ready = true;
         }
 
@@ -792,6 +838,8 @@ public:
             // Each eye has its own layer.
             glUniform1i(tw_eye_index_unif, eye);
 #endif
+
+            // Here, we render to different 
 
             // Interestingly, the element index buffer is identical for both eyes, and is
             // reused for both eyes. Therefore glDrawElements can be immediately called,

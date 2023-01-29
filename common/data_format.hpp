@@ -151,7 +151,7 @@ typedef struct {
 enum class graphics_api { OPENGL, VULKAN, TBD };
 
 // Used to distinguish between different image handles
-enum class swapchain_usage { LEFT_SWAPCHAIN, RIGHT_SWAPCHAIN, RENDER };
+enum class swapchain_usage { LEFT_SWAPCHAIN, RIGHT_SWAPCHAIN, LEFT_RENDER, RIGHT_RENDER };
 
 typedef struct vk_image_handle {
     int      file_descriptor;
@@ -197,7 +197,7 @@ struct image_handle : public switchboard::event {
 };
 
 // Used to identify which graphics API is being used (for swapchain construction)
-enum class semaphore_usage { PRESENTATION_READY };
+enum class semaphore_usage { LEFT_RENDER_COMPLETE, RIGHT_RENDER_COMPLETE };
 
 struct semaphore_handle : public switchboard::event {
     int vk_handle;
