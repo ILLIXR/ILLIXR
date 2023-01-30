@@ -70,9 +70,6 @@ private:
     // Switchboard plug for publishing offloaded data
     switchboard::writer<texture_pose> _m_offload_data;
 
-    record_coalescer timewarp_gpu_logger;
-    record_coalescer mtp_logger;
-
     GLuint timewarpShaderProgram;
 
     time_point time_last_swap;
