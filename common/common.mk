@@ -17,7 +17,7 @@ endif
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
-DBG_FLAGS ?= -Og -g $(MONADO_FLAGS) -Wall -Wextra -Werror -rdynamic
+DBG_FLAGS ?= -Og -g $(MONADO_FLAGS) -Wall -Wextra -rdynamic
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic
