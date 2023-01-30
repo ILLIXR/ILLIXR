@@ -470,7 +470,7 @@ private:
                     // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                     // The distortion is handled by the UVs, not the actual mesh coordinates!
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
+                        (-1.0f + 2.0f * ((float) x / hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].y =
                         (-1.0f +
                          2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
@@ -826,7 +826,7 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             // Choose the appropriate texture to render to
-            glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0); //_m_eye_framebuffers[eye]);
             glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
             glClearColor(1.0, 0.0, 0.0, 0);
             glClear(GL_COLOR_BUFFER_BIT);
@@ -901,22 +901,22 @@ public:
 
         // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glDepthFunc(GL_LEQUAL);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[0]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[1]);
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
+        // glClearColor(0, 0, 0, 0);
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        // glDepthFunc(GL_LEQUAL);
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[0]);
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[1]);
 
-        glUseProgram(landscapeShaderProgram);
-        glUniform1i(glGetUniformLocation(landscapeShaderProgram, "leftTexture"), 0);
-        glUniform1i(glGetUniformLocation(landscapeShaderProgram, "rightTexture"), 1);
+        // glUseProgram(landscapeShaderProgram);
+        // glUniform1i(glGetUniformLocation(landscapeShaderProgram, "leftTexture"), 0);
+        // glUniform1i(glGetUniformLocation(landscapeShaderProgram, "rightTexture"), 1);
         
-        glBindVertexArray(landscape_vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        // glBindVertexArray(landscape_vao);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glFinish();
         glEndQuery(GL_TIME_ELAPSED);
