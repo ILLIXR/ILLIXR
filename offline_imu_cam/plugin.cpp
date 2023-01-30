@@ -18,10 +18,9 @@ public:
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , _m_sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
+        , _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
         , dataset_first_time{_m_sensor_data_it->first}
-        , imu_cam_log{record_logger_}
-        , camera_cvtfmt_log{record_logger_} { }
-
+        {}
 protected:
     virtual skip_option _p_should_skip() override {
         if (_m_sensor_data_it != _m_sensor_data.end()) {
