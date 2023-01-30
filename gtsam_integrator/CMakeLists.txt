@@ -9,6 +9,6 @@ find_package(GTSAMCMakeTools REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED)
 
-add_definitions(-Wall -Wextra -Werror)
+add_definitions(-Wall -Wextra)
 target_include_directories(plugin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GTSAM_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${BOOST_INCLUDE_DIR})
 target_link_libraries(plugin PRIVATE gtsam)
