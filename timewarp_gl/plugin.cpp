@@ -878,7 +878,7 @@ public:
 
         // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
-        
+        // Blit the left and right color buffers onto the default color buffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[0]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glBlitFramebuffer(
