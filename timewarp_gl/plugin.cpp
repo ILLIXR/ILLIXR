@@ -738,7 +738,7 @@ public:
                 _m_eye_output_textures[eye] = eye_output_texture;
 
                 glBindTexture(GL_TEXTURE_2D, eye_output_texture);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, display_params::width_pixels * 0.5f, display_params::height_pixels * 0.5f, 0, GL_RGBA, GL_FLOAT, NULL);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, display_params::width_pixels * 0.5f, display_params::height_pixels, 0, GL_RGBA, GL_FLOAT, NULL);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #endif
@@ -749,6 +749,7 @@ public:
                 _m_eye_framebuffers[eye] = framebuffer;
 
                 glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+                glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[eye]);
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _m_eye_output_textures[eye], 0);
 
                 uint32_t attachment = GL_COLOR_ATTACHMENT0;
@@ -758,12 +759,11 @@ public:
             rendering_ready = true;
         }
 
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        glDepthFunc(GL_LEQUAL);
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
+        // glClearColor(0, 0, 0, 0);
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        // glDepthFunc(GL_LEQUAL);
 
         switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
 
@@ -827,6 +827,8 @@ public:
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             // Choose the appropriate texture to render to
             glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
+            glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
+            glClearColor(1.0, 0.0, 0.0, 0);
             glClear(GL_COLOR_BUFFER_BIT);
 
 #ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
@@ -878,9 +880,6 @@ public:
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
         }
 
-        glFinish();
-        glEndQuery(GL_TIME_ELAPSED);
-
 #ifndef NDEBUG
         const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
 
@@ -903,10 +902,14 @@ public:
         // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, _m_eye_framebuffers[0]);
+        glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[0]);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, _m_eye_framebuffers[1]);
+        glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[1]);
 
         glUseProgram(landscapeShaderProgram);
         glUniform1i(glGetUniformLocation(landscapeShaderProgram, "leftTexture"), 0);
@@ -914,6 +917,10 @@ public:
         
         glBindVertexArray(landscape_vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        glFinish();
+        glEndQuery(GL_TIME_ELAPSED);
+
         glXSwapBuffers(dpy, root);
 #endif
 

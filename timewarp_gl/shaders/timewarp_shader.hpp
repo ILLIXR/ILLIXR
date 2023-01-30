@@ -17,7 +17,7 @@ const char* const timeWarpChromaticVertexProgramGLSL =
     "{\n"
     "	gl_Position = vec4( vertexPosition, 1.0 );\n"
     "\n"
-    "	float displayFraction = vertexPosition.x * 0.5 + 0.5;\n" // landscape left-to-right
+    "	float displayFraction = vertexPosition.x * 1.0;\n" // landscape left-to-right
     "\n"
     "	vec3 startUv0 = (TimeWarpStartTransform * vec4( vertexUv0, -1, 1 )).xyz;\n"
     "	vec3 startUv1 = (TimeWarpStartTransform * vec4( vertexUv1, -1, 1 )).xyz;\n"
