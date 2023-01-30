@@ -13,7 +13,6 @@
 #include "common/switchboard.hpp"
 #include "common/threadloop.hpp"
 #include "shaders/basic_shader.hpp"
-#include "shaders/landscape_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
 
@@ -236,8 +235,6 @@ private:
     record_coalescer mtp_logger;
 
     GLuint timewarpShaderProgram;
-    GLuint landscapeShaderProgram;
-    GLuint landscape_vao;
 
     time_point time_last_swap;
 
@@ -588,30 +585,6 @@ public:
 
         glDebugMessageCallback(MessageCallback, 0);
 
-        // Setup the shader to composite the left and right eyes
-        landscapeShaderProgram = init_and_link(landscapeVertexShader, landscapeFragmentShader);
-        glGenVertexArrays(1, &landscape_vao);
-        glBindVertexArray(landscape_vao);
-
-        GLuint vertex_buffer = 0;
-        glGenBuffers(1, &vertex_buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vertices), quad_vertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(0);
-
-        GLuint texcoord_buffer = 0;
-        glGenBuffers(1, &texcoord_buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, texcoord_buffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quad_texcoords), quad_texcoords, GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(1);
-
-        GLuint index_buffer = 0;
-        glGenBuffers(1, &index_buffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quad_indices), quad_indices, GL_STATIC_DRAW);
-
         // Create and bind global VAO object
         glGenVertexArrays(1, &tw_vao);
         glBindVertexArray(tw_vao);
@@ -738,7 +711,7 @@ public:
                 _m_eye_output_textures[eye] = eye_output_texture;
 
                 glBindTexture(GL_TEXTURE_2D, eye_output_texture);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, display_params::width_pixels * 0.5f, display_params::height_pixels, 0, GL_RGBA, GL_FLOAT, NULL);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, display_params::width_pixels * 0.5f, display_params::height_pixels, 0, GL_RGB, GL_FLOAT, NULL);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #endif
@@ -748,7 +721,7 @@ public:
                 glGenFramebuffers(1, &framebuffer);
                 _m_eye_framebuffers[eye] = framebuffer;
 
-                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+                glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
                 glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[eye]);
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _m_eye_output_textures[eye], 0);
 
@@ -811,13 +784,13 @@ public:
 #ifndef USE_ALT_EYE_FORMAT
         // Bind the shared texture handle
         glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
-#endif
+#endif 
 
         glBindVertexArray(tw_vao);
 
         auto gpu_start_wall_time = _m_clock->now();
 
-        GLuint   query;
+        GLuint   query = 0;
         GLuint64 elapsed_time = 0;
 
         glGenQueries(1, &query);
@@ -826,10 +799,11 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             // Choose the appropriate texture to render to
-            glBindFramebuffer(GL_FRAMEBUFFER, 0); //_m_eye_framebuffers[eye]);
+            glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
             glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
-            glClearColor(1.0, 0.0, 0.0, 0);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClearColor(1.0, 1.0, 1.0, 1.0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            glDepthFunc(GL_LEQUAL);
 
 #ifdef USE_ALT_EYE_FORMAT // If we're using Monado-style buffers we need to rebind eyebuffers.... eugh!
             [[maybe_unused]] const bool isTexture =
@@ -847,25 +821,25 @@ public:
             // GPU data for each eye.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
             glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0,
-                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
             glEnableVertexAttribArray(distortion_pos_attr);
 
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
             glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0,
-                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv0_attr);
 
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
             glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0,
-                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv1_attr);
 
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
             glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0,
-                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv2_attr);
 
 #ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
@@ -879,6 +853,9 @@ public:
             // with the UV and position buffers correctly offset.
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
         }
+
+        glFinish();
+        glEndQuery(GL_TIME_ELAPSED);
 
 #ifndef NDEBUG
         const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
@@ -901,26 +878,18 @@ public:
 
         // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
-        // glClearColor(0, 0, 0, 0);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        // glDepthFunc(GL_LEQUAL);
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[0]);
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_2D, _m_eye_output_textures[1]);
-
-        // glUseProgram(landscapeShaderProgram);
-        // glUniform1i(glGetUniformLocation(landscapeShaderProgram, "leftTexture"), 0);
-        // glUniform1i(glGetUniformLocation(landscapeShaderProgram, "rightTexture"), 1);
         
-        // glBindVertexArray(landscape_vao);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-        glFinish();
-        glEndQuery(GL_TIME_ELAPSED);
-
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[0]);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(
+        0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, 0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[1]);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
+        glBlitFramebuffer(
+        0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glXSwapBuffers(dpy, root);
 #endif
 

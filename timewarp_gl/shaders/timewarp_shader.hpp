@@ -17,7 +17,7 @@ const char* const timeWarpChromaticVertexProgramGLSL =
     "{\n"
     "	gl_Position = vec4( vertexPosition, 1.0 );\n"
     "\n"
-    "	float displayFraction = vertexPosition.x * 1.0;\n" // landscape left-to-right
+    "	float displayFraction = 0.5 * vertexPosition.x * 0.5;\n" // landscape left-to-right
     "\n"
     "	vec3 startUv0 = (TimeWarpStartTransform * vec4( vertexUv0, -1, 1 )).xyz;\n"
     "	vec3 startUv1 = (TimeWarpStartTransform * vec4( vertexUv1, -1, 1 )).xyz;\n"
@@ -49,13 +49,12 @@ const char* const timeWarpChromaticFragmentProgramGLSL =
     "in mediump vec2 fragmentUv0;\n"
     "in mediump vec2 fragmentUv1;\n"
     "in mediump vec2 fragmentUv2;\n"
-    "out lowp vec4 outColor;\n"
+    "layout (location = 0) out vec3 outColor;\n"
     "void main()\n"
     "{\n"
     "	outColor.r = texture( Texture, vec3( fragmentUv0, ArrayLayer ) ).r;\n"
     "	outColor.g = texture( Texture, vec3( fragmentUv1, ArrayLayer ) ).g;\n"
     "	outColor.b = texture( Texture, vec3( fragmentUv2, ArrayLayer ) ).b;\n"
-    "	outColor.a = 1.0;\n"
     "}\n";
 
 const char* const timeWarpChromaticFragmentProgramGLSL_Alternative = "#version " GLSL_VERSION "\n"
@@ -64,11 +63,10 @@ const char* const timeWarpChromaticFragmentProgramGLSL_Alternative = "#version "
                                                                      "in mediump vec2 fragmentUv0;\n"
                                                                      "in mediump vec2 fragmentUv1;\n"
                                                                      "in mediump vec2 fragmentUv2;\n"
-                                                                     "out lowp vec4 outColor;\n"
+                                                                     "layout (location = 0) out vec3 outColor;\n"
                                                                      "void main()\n"
                                                                      "{\n"
                                                                      "	outColor.r = texture( Texture, fragmentUv0 ).r;\n"
                                                                      "	outColor.g = texture( Texture, fragmentUv1 ).g;\n"
                                                                      "	outColor.b = texture( Texture, fragmentUv2 ).b;\n"
-                                                                     "	outColor.a = 1.0;\n"
                                                                      "}\n";
