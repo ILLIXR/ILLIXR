@@ -21,6 +21,19 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+class switchboard_data_marker {
+public:
+    size_t serial_no;
+    std::string topic_name;
+
+    switchboard_data_marker(size_t serial_no_, std::string topic_name_)
+        : serial_no{serial_no_}
+        , topic_name{std::move(topic_name_)}
+        {}
+};
+
+
+
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
  * topics).
