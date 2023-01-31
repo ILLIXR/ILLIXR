@@ -203,4 +203,13 @@ struct texture_pose : public switchboard::event {
         , latest_quaternion{latest_quaternion_}
         , render_quaternion{render_quaternion_} { }
 };
+
+class gpu_log {
+public:
+    GLuint64 elapsed_time;
+    gpu_log(GLuint64 elapsed_time_)
+        : elapsed_time{elapsed_time_}
+    {}
+};
+
 } // namespace ILLIXR
