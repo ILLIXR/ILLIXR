@@ -13,13 +13,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
-#if __has_include("cpu_timer.hpp")
-    #include "cpu_timer.hpp"
-#else
-static std::chrono::nanoseconds thread_cpu_time() {
-    return {};
-}
-#endif
+#include "cpu_timer/cpu_timer.hpp"
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "managed_thread.hpp"
 
@@ -166,6 +160,7 @@ private:
             std::int64_t     timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
             // Note the use of timed blocking wait
             if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
+                CPU_TIMER_TIME_BLOCK("callback");
                 // Process event
                 // Also, record and log the time
                 _m_dequeued++;
@@ -218,6 +213,7 @@ private:
          * Thread-safe
          */
         void enqueue(ptr<const event>&& this_event) {
+            CPU_TIMER_TIME_FUNCTION();
             if (_m_thread.get_state() == managed_thread::state::running) {
                 [[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
                 assert(ret);
@@ -298,6 +294,7 @@ private:
          */
         ptr<const event> get() const {
             size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
+            CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<switchboard_data_marker>(idx, _m_name));
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
@@ -332,6 +329,7 @@ private:
             size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
+            CPU_TIMER_TIME_EVENT_INFO(false, false, "put", cpu_timer::make_type_eraser<switchboard_data_marker>(index, _m_name));
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock

@@ -190,6 +190,26 @@ protected:
 
         _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
 
+        std::optional<cv::Mat> img0  = std::nullopt;
+        std::optional<cv::Mat> img1  = std::nullopt;
+        std::optional<cv::Mat> depth = std::nullopt;
+        std::optional<cv::Mat> rgb   = std::nullopt;
+
+        switchboard::ptr<const cam_type> c = _m_cam_type.get_ro_nullable();
+        if (c && c->serial_no != last_serial_no) {
+            last_serial_no = c->serial_no;
+            img0           = c->img0;
+            img1           = c->img1;
+            depth          = c->depth;
+            rgb            = c->rgb;
+        }
+
+        _m_imu_cam.put(_m_imu_cam.allocate(imu_time_point, av, la, img0, img1));
+
+        if (rgb && depth) {
+            _m_rgb_depth.put(_m_rgb_depth.allocate(imu_time_point, rgb, depth));
+        }
+
         last_imu_ts = sensors_data.imu.timestamp;
 
         RAC_ERRNO_MSG("zed_imu at end of _p_one_iteration");

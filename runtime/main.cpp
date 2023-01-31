@@ -1,5 +1,6 @@
 #include "common/global_module_defs.hpp"
 #include "runtime_impl.hpp"
+#include "common/cpu_timer/cpu_timer.hpp"
 
 #include <csignal>
 #include <unistd.h> /// Not portable
@@ -65,6 +66,7 @@ private:
 };
 
 int main(int argc, char* const* argv) {
+    CPU_TIMER_TIME_FUNCTION();
 #ifdef ILLIXR_MONADO_MAINLINE
     r = ILLIXR::runtime_factory();
 #else
