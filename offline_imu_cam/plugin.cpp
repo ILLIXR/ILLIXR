@@ -1,4 +1,5 @@
 #include "common/data_format.hpp"
+#include "common/cpu_timer/cpu_timer.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/relative_clock.hpp"
 #include "common/switchboard.hpp"
@@ -53,6 +54,7 @@ protected:
 #ifndef NDEBUG
         /// If debugging, assert the image is grayscale
         if (cam0.has_value() && cam1.has_value()) {
+            CPU_TIMER_TIME_BLOCK("load_camera_data");
             const int num_ch0 = cam0.value().channels();
             const int num_ch1 = cam1.value().channels();
             assert(num_ch0 == 1 && "Data from lazy_load_image should be grayscale");

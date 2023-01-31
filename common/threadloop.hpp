@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cpu_timer.hpp"
+#include "cpu_timer/cpu_timer.hpp"
 #include "error_util.hpp"
 #include "plugin.hpp"
 #include "stoplight.hpp"
@@ -85,6 +85,7 @@ private:
         _p_thread_setup();
 
         while (!_m_stoplight->check_should_stop() && !should_terminate()) {
+            CPU_TIMER_TIME_BLOCK("_p_should_skip");
             skip_option s = _p_should_skip();
 
             switch (s) {
@@ -96,6 +97,7 @@ private:
                 ++skip_no;
                 break;
             case skip_option::run: {
+                CPU_TIMER_TIME_BLOCK("_p_one_iteration");
                 auto iteration_start_cpu_time  = thread_cpu_time();
                 auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
