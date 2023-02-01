@@ -4,9 +4,9 @@
 #include "common/plugin.hpp"
 
 #include "common/data_format.hpp"
+#include "common/matrix.hpp"
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
-#include "common/matrix.hpp"
 
 #include <chrono>
 #include <eigen3/Eigen/Dense>

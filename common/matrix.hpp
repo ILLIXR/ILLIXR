@@ -54,13 +54,10 @@ static const inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<d
 /**
  * @brief Returns a JPL quaternion from a rotation matrix
  *
- * This is based on the equation 74 in [Indirect Kalman Filter for 3D Attitude Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf).
- * In the implementation, we have 4 statements so that we avoid a division by zero and
- * instead always divide by the largest diagonal element. This all comes from the
- * definition of a rotation matrix, using the diagonal elements and an off-diagonal.
- * \f{align*}{
- *  \mathbf{R}(\bar{q})=
- *  \begin{bmatrix}
+ * This is based on the equation 74 in [Indirect Kalman Filter for 3D Attitude
+ * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf). In the implementation, we have 4 statements so that we avoid a
+ * division by zero and instead always divide by the largest diagonal element. This all comes from the definition of a rotation
+ * matrix, using the diagonal elements and an off-diagonal. \f{align*}{ \mathbf{R}(\bar{q})= \begin{bmatrix}
  *  q_1^2-q_2^2-q_3^2+q_4^2 & 2(q_1q_2+q_3q_4) & 2(q_1q_3-q_2q_4) \\
  *  2(q_1q_2-q_3q_4) & -q_2^2+q_2^2-q_3^2+q_4^2 & 2(q_2q_3+q_1q_4) \\
  *  2(q_1q_3+q_2q_4) & 2(q_2q_3-q_1q_4) & -q_1^2-q_2^2+q_3^2+q_4^2
@@ -70,9 +67,9 @@ static const inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<d
  * @param[in] rot 3x3 rotation matrix
  * @return 4x1 quaternion
  */
-static const inline Eigen::Matrix<double, 4, 1> rot_2_quat(const Eigen::Matrix<double, 3, 3> &rot) {
+static const inline Eigen::Matrix<double, 4, 1> rot_2_quat(const Eigen::Matrix<double, 3, 3>& rot) {
     Eigen::Matrix<double, 4, 1> q;
-    double T = rot.trace();
+    double                      T = rot.trace();
     if ((rot(0, 0) >= T) && (rot(0, 0) >= rot(1, 1)) && (rot(0, 0) >= rot(2, 2))) {
         q(0) = sqrt((1 + (2 * rot(0, 0)) - T) / 4);
         q(1) = (1 / (4 * q(0))) * (rot(0, 1) + rot(1, 0));
@@ -103,7 +100,6 @@ static const inline Eigen::Matrix<double, 4, 1> rot_2_quat(const Eigen::Matrix<d
     return q;
 }
 
-
 /**
  * @brief Multiply two JPL quaternions
  *
@@ -123,7 +119,7 @@ static const inline Eigen::Matrix<double, 4, 1> rot_2_quat(const Eigen::Matrix<d
  * @return 4x1 resulting p*q quaternion
  */
 static const inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
-                                                                const Eigen::Matrix<double, 4, 1>& p) {
+                                                              const Eigen::Matrix<double, 4, 1>& p) {
     Eigen::Matrix<double, 4, 1> q_t;
     Eigen::Matrix<double, 4, 4> Qm;
     // create big L matrix
@@ -160,18 +156,18 @@ static const inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matri
  * @param[in] w 3x1 vector we will take the exponential of
  * @return SO(3) rotation matrix
  */
-static const inline Eigen::Matrix<double, 3, 3> exp_so3(const Eigen::Matrix<double, 3, 1> &w) {
+static const inline Eigen::Matrix<double, 3, 3> exp_so3(const Eigen::Matrix<double, 3, 1>& w) {
     // get theta
-    Eigen::Matrix<double, 3, 3> w_x = skew_x(w);
-    double theta = w.norm();
+    Eigen::Matrix<double, 3, 3> w_x   = skew_x(w);
+    double                      theta = w.norm();
     // Handle small angle values
     double A, B;
-    if(theta < 1e-12) {
+    if (theta < 1e-12) {
         A = 1;
         B = 0.5;
     } else {
-        A = sin(theta)/theta;
-        B = (1-cos(theta))/(theta*theta);
+        A = sin(theta) / theta;
+        B = (1 - cos(theta)) / (theta * theta);
     }
     // compute so(3) rotation
     Eigen::Matrix<double, 3, 3> R;

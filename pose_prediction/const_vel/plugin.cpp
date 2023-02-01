@@ -1,14 +1,13 @@
 #include "common/plugin.hpp"
 
 #include "common/data_format.hpp"
+#include "common/matrix.hpp"
 #include "common/phonebook.hpp"
+#include "common/plugin.hpp"
 #include "common/pose_prediction.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <shared_mutex>
-#include "common/data_format.hpp"
-#include "common/plugin.hpp"
-#include "common/matrix.hpp"
 
 using namespace ILLIXR;
 
