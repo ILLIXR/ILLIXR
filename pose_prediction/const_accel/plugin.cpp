@@ -61,9 +61,9 @@ public:
         if (slow_pose == nullptr) {
             // No slow pose, return identity pose
             return fast_pose_type{
-                .pose = correct_pose(pose_type{}),
+                .pose                  = correct_pose(pose_type{}),
                 .predict_computed_time = _m_clock->now(),
-                .predict_target_time = future_timestamp,
+                .predict_target_time   = future_timestamp,
             };
         }
 
@@ -90,20 +90,12 @@ public:
         // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
         auto predictor_imu_time = predictor_result.second;
 
-        pose_type predicted_pose = correct_pose({
-            predictor_imu_time,
-            Eigen::Vector3f{
-                static_cast<float>(state_plus(4)),
-                static_cast<float>(state_plus(5)),
-                static_cast<float>(state_plus(6))
-            },
-            Eigen::Quaternionf{
-                static_cast<float>(state_plus(3)),
-                static_cast<float>(state_plus(0)),
-                static_cast<float>(state_plus(1)),
-                static_cast<float>(state_plus(2))
-            }
-        });
+        pose_type predicted_pose =
+            correct_pose({predictor_imu_time,
+                          Eigen::Vector3f{static_cast<float>(state_plus(4)), static_cast<float>(state_plus(5)),
+                                          static_cast<float>(state_plus(6))},
+                          Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
+                                             static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
 
         // Make the first valid fast pose be straight ahead.
         if (first_time) {
@@ -118,11 +110,8 @@ public:
         // Several timestamps are logged:
         // - the prediction compute time (time when this prediction was computed, i.e., now)
         // - the prediction target (the time that was requested for this pose.)
-        return fast_pose_type {
-            .pose = predicted_pose,
-            .predict_computed_time = _m_clock->now(),
-            .predict_target_time = future_timestamp
-        };
+        return fast_pose_type{
+            .pose = predicted_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = future_timestamp};
     }
 
     virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
@@ -204,9 +193,9 @@ private:
     switchboard::reader<imu_raw_type>                                _m_imu_raw;
     switchboard::reader<pose_type>                                   _m_true_pose;
     switchboard::reader<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
-    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
-	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::shared_mutex offset_mutex;
+    switchboard::reader<switchboard::event_wrapper<time_point>>      _m_vsync_estimate;
+    mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
+    mutable std::shared_mutex                                        offset_mutex;
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state and the time associated with the
@@ -399,13 +388,9 @@ private:
 class const_accel_predictor_plugin : public plugin {
 public:
     const_accel_predictor_plugin(const std::string& name, phonebook* pb)
-        : plugin{name, pb}
-    {
+        : plugin{name, pb} {
         pb->register_impl<pose_prediction>(
-            std::static_pointer_cast<pose_prediction>(
-                std::make_shared<const_accel_predictor_impl>(pb)
-            )
-        );
+            std::static_pointer_cast<pose_prediction>(std::make_shared<const_accel_predictor_impl>(pb)));
     }
 };
 
