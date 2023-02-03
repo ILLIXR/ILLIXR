@@ -165,10 +165,12 @@ public:
             switch (handle->usage) {
                 case semaphore_usage::LEFT_RENDER_COMPLETE: {
                     _m_semaphore_handles[0] = *handle;
+                    left_semaphore_ready = true;
                     break;
                 }
                 case semaphore_usage::RIGHT_RENDER_COMPLETE: {
                     _m_semaphore_handles[1] = *handle;
+                    right_semaphore_ready = true;
                     break;
                 }
                 default: {
@@ -852,6 +854,11 @@ public:
             // reused for both eyes. Therefore glDrawElements can be immediately called,
             // with the UV and position buffers correctly offset.
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
+
+#ifdef ILLIXR_MONADO
+            GLenum dstLayout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
+	        glSignalSemaphoreEXT(_m_semaphores[eye], 0, nullptr, 1, &_m_eye_output_textures[eye], &dstLayout);
+#endif
         }
 
         glFinish();

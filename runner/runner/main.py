@@ -329,24 +329,25 @@ def load_monado(config: Mapping[str, Any]) -> None:
     ## Launch the Monado service before any OpenXR apps are opened
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
-    # ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    # time.sleep(5)
+    ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    time.sleep(5)
 
-    # ## Launch all OpenXR apps after the service is launched
-    # for openxr_app_bin_path in openxr_app_bin_paths:
-    #     subprocess.Popen(
-    #        [str(openxr_app_bin_path)],
-    #        env=dict(
-    #            ILLIXR_DEMO_DATA=str(demo_data_path),
-    #            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-    #            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-    #            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-    #            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
-    #            REALSENSE_CAM=str(realsense_cam_string),
-    #            **env_monado,
-    #            **os.environ,
-    #        )
-    #     )
+    ## Launch all OpenXR apps after the service is launched
+    for openxr_app_bin_path in openxr_app_bin_paths:
+        subprocess.Popen(
+           [str(openxr_app_bin_path)],
+           env=dict(
+               ILLIXR_DEMO_DATA=str(demo_data_path),
+               ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+               ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+               ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+               ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+               REALSENSE_CAM=str(realsense_cam_string),
+               IPC_IGNORE_VERSION="1",
+               **env_monado,
+               **os.environ,
+           )
+        )
 
     ## Continue running the service until it closes
     while (monado_service_proc.poll() == None):
