@@ -24,10 +24,10 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
+        , _m_imu{sb->get_writer<imu_type>("imu")}
+        , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
-        cam_data.iteration   = -1;
         accel_data.iteration = -1;
         cfg.disable_all_streams();
         configure_camera();
@@ -40,53 +40,11 @@ public:
         // Without this lock, prior invocations of `callback` are not necessarily "happens-before" ordered, so accessing
         // persistent variables constitutes a data-race, which is undefined behavior in the C++ memory model.
 
-        if (cam_select == D4XXI) {
-            if (auto fs = frame.as<rs2::frameset>()) {
-                rs2::video_frame ir_frame_left  = fs.get_infrared_frame(1);
-                rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
-                rs2::video_frame depth_frame    = fs.get_depth_frame();
-                rs2::video_frame rgb_frame      = fs.get_color_frame();
-                cv::Mat          ir_left =
-                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_left.get_data());
-                cv::Mat ir_right =
-                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_right.get_data());
-                cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void*) rgb_frame.get_data());
-                cv::Mat depth =
-                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void*) depth_frame.get_data());
-                cv::Mat converted_depth;
-                float   depth_scale = pipe.get_active_profile()
-                                        .get_device()
-                                        .first<rs2::depth_sensor>()
-                                        .get_depth_scale(); // for converting measurements into millimeters
-                depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                cam_data = cam_type{
-                    .img0      = cv::Mat{ir_left},
-                    .img1      = cv::Mat{ir_right},
-                    .rgb       = cv::Mat{rgb},
-                    .depth     = cv::Mat{converted_depth},
-                    .iteration = iteration_cam,
-                };
-                iteration_cam++;
-            }
+        // This callback function may start running before the relative clock is started. If that happens, the data
+        // timestamps will be messed up. We therefore add this guard to ignore all data samples before the clock is started.
+        if (!_m_clock->is_started()) {
+            return;
         }
-
-        else if (cam_select == T26X) {
-            if (auto fs = frame.as<rs2::frameset>()) {
-                rs2::video_frame fisheye_frame_left  = fs.get_fisheye_frame(1);
-                rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
-                cv::Mat          fisheye_left =
-                    cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_left.get_data());
-                cv::Mat fisheye_right =
-                    cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_right.get_data());
-                cam_data = cam_type{
-                    .img0      = cv::Mat{fisheye_left},
-                    .img1      = cv::Mat{fisheye_right},
-                    .iteration = iteration_cam,
-                };
-                iteration_cam++;
-            }
-        }
-
         if (auto mf = frame.as<rs2::motion_frame>()) {
             std::string s = mf.get_profile().stream_name();
 
@@ -115,33 +73,54 @@ public:
                 // Time as ullong (nanoseconds)
                 ullong imu_time = static_cast<ullong>(ts * 1000000);
                 if (!_m_first_imu_time) {
-                    _m_first_imu_time  = imu_time;
-                    _m_first_real_time = _m_clock->now();
+                    _m_first_imu_time      = imu_time;
+                    _m_first_real_time_imu = _m_clock->now();
                 }
 
                 // Time as time_point
-                time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
-
-                // Images
-                std::optional<cv::Mat> img0  = std::nullopt;
-                std::optional<cv::Mat> img1  = std::nullopt;
-                std::optional<cv::Mat> rgb   = std::nullopt;
-                std::optional<cv::Mat> depth = std::nullopt;
-
-                if (last_iteration_cam != cam_data.iteration) {
-                    last_iteration_cam = cam_data.iteration;
-                    img0               = cam_data.img0;
-                    img1               = cam_data.img1;
-                    rgb                = cam_data.rgb;
-                    depth              = cam_data.depth;
-                }
+                time_point imu_time_point{*_m_first_real_time_imu + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
                 // Submit to switchboard
-                _m_imu_cam.put(_m_imu_cam.allocate<imu_cam_type>({imu_time_point, av, la, img0, img1}));
+                _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
+            }
+        }
 
-                if (rgb && depth) {
-                    _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, rgb, depth}));
-                }
+        if (auto fs = frame.as<rs2::frameset>()) {
+            double ts       = fs.get_timestamp();
+            ullong cam_time = static_cast<ullong>(ts * 1000000);
+            if (!_m_first_cam_time) {
+                _m_first_cam_time      = cam_time;
+                _m_first_real_time_cam = _m_clock->now();
+            }
+            time_point cam_time_point{*_m_first_real_time_cam + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
+            if (cam_select == D4XXI) {
+                rs2::video_frame ir_frame_left  = fs.get_infrared_frame(1);
+                rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
+                rs2::video_frame depth_frame    = fs.get_depth_frame();
+                rs2::video_frame rgb_frame      = fs.get_color_frame();
+                cv::Mat          ir_left =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_left.get_data());
+                cv::Mat ir_right =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_right.get_data());
+                cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void*) rgb_frame.get_data());
+                cv::Mat depth =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void*) depth_frame.get_data());
+                cv::Mat converted_depth;
+                float   depth_scale = pipe.get_active_profile()
+                                        .get_device()
+                                        .first<rs2::depth_sensor>()
+                                        .get_depth_scale(); // for converting measurements into millimeters
+                depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
+                _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, ir_left, ir_right}));
+                _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, rgb, depth}));
+            } else if (cam_select == T26X) {
+                rs2::video_frame fisheye_frame_left  = fs.get_fisheye_frame(1);
+                rs2::video_frame fisheye_frame_right = fs.get_fisheye_frame(2);
+                cv::Mat          fisheye_left =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_left.get_data());
+                cv::Mat fisheye_right =
+                    cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_right.get_data());
+                _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, fisheye_left, fisheye_right}));
             }
         }
     };
@@ -151,14 +130,6 @@ public:
     }
 
 private:
-    typedef struct {
-        cv::Mat img0;
-        cv::Mat img1;
-        cv::Mat rgb;
-        cv::Mat depth;
-        int     iteration;
-    } cam_type;
-
     typedef enum { UNSUPPORTED, D4XXI, T26X } cam_enum;
 
     typedef struct {
@@ -168,27 +139,28 @@ private:
 
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_cam_type>          _m_imu_cam;
+    switchboard::writer<imu_type>              _m_imu;
+    switchboard::writer<cam_type>              _m_cam;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
     std::mutex                                 mutex;
     rs2::pipeline_profile                      profiles;
     rs2::pipeline                              pipe;
     rs2::config                                cfg;
 
-    cam_type cam_data;
     cam_enum cam_select{UNSUPPORTED};
     bool     D4XXI_found{false};
     bool     T26X_found{false};
 
     accel_type  accel_data;
-    int         iteration_cam        = 0;
-    int         iteration_accel      = 0;
-    int         last_iteration_cam   = -1;
-    int         last_iteration_accel = -1;
+    int         iteration_accel = 0;
+    int         last_iteration_accel;
     std::string realsense_cam;
 
     std::optional<ullong>     _m_first_imu_time;
-    std::optional<time_point> _m_first_real_time;
+    std::optional<time_point> _m_first_real_time_imu;
+
+    std::optional<ullong>     _m_first_cam_time;
+    std::optional<time_point> _m_first_real_time_cam;
 
     void find_supported_devices(rs2::device_list devices) {
         bool gyro_found{false};

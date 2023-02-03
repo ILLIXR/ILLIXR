@@ -23,21 +23,6 @@ const record_header __imu_cam_record{"imu_cam",
                                          {"has_camera", typeid(bool)},
                                      }};
 
-struct cam_type : public switchboard::event {
-    cam_type(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
-        : img0{_img0}
-        , img1{_img1}
-        , rgb{_rgb}
-        , depth{_depth}
-        , serial_no{_serial_no} { }
-
-    cv::Mat     img0;
-    cv::Mat     img1;
-    cv::Mat     rgb;
-    cv::Mat     depth;
-    std::size_t serial_no;
-};
-
 std::shared_ptr<Camera> start_camera() {
     std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
 
@@ -70,7 +55,9 @@ public:
     zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_cam_type{sb->get_writer<cam_type>("cam_type")}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
+        , _m_cam{sb->get_writer<cam_type>("cam")}
+        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{zedm_}
         , image_size{zedm->getCameraInformation().camera_configuration.resolution} {
         runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
@@ -87,12 +74,14 @@ public:
     }
 
 private:
-    const std::shared_ptr<switchboard> sb;
-    switchboard::writer<cam_type>      _m_cam_type;
-    std::shared_ptr<Camera>            zedm;
-    Resolution                         image_size;
-    RuntimeParameters                  runtime_parameters;
-    std::size_t                        serial_no{0};
+    const std::shared_ptr<switchboard>         sb;
+    const std::shared_ptr<const RelativeClock> _m_clock;
+    switchboard::writer<cam_type>              _m_cam;
+    switchboard::writer<rgb_depth_type>        _m_rgb_depth;
+    std::shared_ptr<Camera>                    zedm;
+    Resolution                                 image_size;
+    RuntimeParameters                          runtime_parameters;
+    std::size_t                                serial_no{0};
 
     Mat imageL_zed;
     Mat imageR_zed;
@@ -103,6 +92,9 @@ private:
     cv::Mat imageR_ocv;
     cv::Mat depth_ocv;
     cv::Mat rgb_ocv;
+
+    std::optional<ullong>     _m_first_cam_time;
+    std::optional<time_point> _m_first_real_time;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -116,15 +108,25 @@ protected:
     virtual void _p_one_iteration() override {
         RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
+        // Time as ullong (nanoseconds)
+        ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
+
+        // Time as time_point
+        if (!_m_first_cam_time) {
+            _m_first_cam_time  = cam_time;
+            _m_first_real_time = _m_clock->now();
+        }
+        time_point cam_time_point{*_m_first_real_time + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
+
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        _m_cam_type.put(_m_cam_type.allocate(
-            // Make a copy, so that we don't have race
-            cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}, iteration_no));
+        _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}}));
+
+        _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -141,9 +143,7 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
-        , _m_cam_type{sb->get_reader<cam_type>("cam_type")}
-        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
+        , _m_imu{sb->get_writer<imu_type>("imu")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_} {
@@ -189,31 +189,7 @@ protected:
                               sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI / 180),
                               sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI / 180)};
 
-        std::optional<cv::Mat> img0  = std::nullopt;
-        std::optional<cv::Mat> img1  = std::nullopt;
-        std::optional<cv::Mat> depth = std::nullopt;
-        std::optional<cv::Mat> rgb   = std::nullopt;
-
-        switchboard::ptr<const cam_type> c = _m_cam_type.get_ro_nullable();
-        if (c && c->serial_no != last_serial_no) {
-            last_serial_no = c->serial_no;
-            img0           = c->img0;
-            img1           = c->img1;
-            depth          = c->depth;
-            rgb            = c->rgb;
-        }
-
-        it_log.log(record{__imu_cam_record,
-                          {
-                              {iteration_no},
-                              {bool(img0)},
-                          }});
-
-        _m_imu_cam.put(_m_imu_cam.allocate(imu_time_point, av, la, img0, img1));
-
-        if (rgb && depth) {
-            _m_rgb_depth.put(_m_rgb_depth.allocate(imu_time_point, rgb, depth));
-        }
+        _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
 
         last_imu_ts = sensors_data.imu.timestamp;
 
@@ -226,15 +202,11 @@ private:
 
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_cam_type>          _m_imu_cam;
-    switchboard::reader<cam_type>              _m_cam_type;
-    switchboard::writer<rgb_depth_type>        _m_rgb_depth;
+    switchboard::writer<imu_type>              _m_imu;
 
     // IMU
     SensorsData sensors_data;
     Timestamp   last_imu_ts = 0;
-
-    std::size_t last_serial_no{0};
 
     // Logger
     record_coalescer it_log;

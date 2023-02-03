@@ -284,6 +284,35 @@ private:
         }
     };
 
+    class topic_buffer {
+    private:
+        moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue{8 /*max size estimate*/};
+        moodycamel::ConsumerToken                             _m_ctok{_m_queue};
+        std::atomic<size_t>                                   _m_queue_size{0};
+
+    public:
+        topic_buffer() {
+            printf("topic buffer created");
+        }
+
+        void enqueue(ptr<const event>&& this_event) {
+            _m_queue_size++;
+            [[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
+            assert(ret);
+        }
+
+        size_t size() const {
+            return _m_queue_size;
+        }
+
+        ptr<const event> dequeue() {
+            ptr<const event> obj;
+            _m_queue_size--;
+            _m_queue.wait_dequeue(_m_ctok, obj);
+            return obj;
+        }
+    };
+
     /**
      * @brief Represents a topic
      *
@@ -307,6 +336,7 @@ private:
         static constexpr std::size_t                        _m_latest_buffer_size = 256;
         std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
         std::list<topic_subscription>                       _m_subscriptions;
+        std::list<topic_buffer>                             _m_buffers;
         std::shared_mutex                                   _m_subscriptions_lock;
 
     public:
@@ -373,6 +403,13 @@ private:
                 ptr<const event> event_ptr_copy{this_event};
                 ts.enqueue(std::move(event_ptr_copy));
             }
+
+            for (topic_buffer& ts : _m_buffers) {
+                // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " <<
+                // this_event->use_count() << " ^\n";
+                ptr<const event> event_ptr_copy{this_event};
+                ts.enqueue(std::move(event_ptr_copy));
+            }
             // std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " <<
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
@@ -387,6 +424,12 @@ private:
             // Must acquire unique state on _m_subscriptions_lock
             const std::unique_lock lock{_m_subscriptions_lock};
             _m_subscriptions.emplace_back(_m_name, plugin_id, callback, _m_record_logger);
+        }
+
+        topic_buffer& get_buffer() {
+            const std::unique_lock lock{_m_subscriptions_lock};
+            _m_buffers.emplace_back();
+            return _m_buffers.back();
         }
 
         /**
@@ -468,6 +511,32 @@ public:
              */
             ptr<const specific_event> this_specific_event = get_ro();
             return std::make_shared<specific_event>(*this_specific_event);
+        }
+    };
+
+    template<typename specific_event>
+    class buffered_reader {
+    private:
+        topic&        _m_topic;
+        size_t        serial_no = 0;
+        topic_buffer& _m_tb;
+
+    public:
+        buffered_reader(topic& topic)
+            : _m_topic{topic}
+            , _m_tb{_m_topic.get_buffer()} { }
+
+        size_t size() const {
+            return _m_tb.size();
+        }
+
+        ptr<const specific_event> dequeue() {
+            // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
+            // serial_no));
+            serial_no++;
+            ptr<const event>          this_event          = _m_tb.dequeue();
+            ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+            return this_specific_event;
         }
     };
 
@@ -597,6 +666,11 @@ public:
     template<typename specific_event>
     reader<specific_event> get_reader(const std::string& topic_name) {
         return reader<specific_event>{try_register_topic<specific_event>(topic_name)};
+    }
+
+    template<typename specific_event>
+    buffered_reader<specific_event> get_buffered_reader(const std::string& topic_name) {
+        return buffered_reader<specific_event>{try_register_topic<specific_event>(topic_name)};
     }
 
     /**

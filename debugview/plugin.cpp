@@ -68,13 +68,7 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-    { }
-
-    void imu_cam_handler(switchboard::ptr<const imu_cam_type> datum) {
-        if (datum != nullptr && datum->img0.has_value() && datum->img1.has_value()) {
-            last_datum_with_images = datum;
-        }
-    }
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
 
     void draw_GUI() {
         RAC_ERRNO_MSG("debugview at start of draw_GUI");
@@ -220,40 +214,24 @@ public:
     bool load_camera_images() {
         RAC_ERRNO_MSG("debugview at start of load_camera_images");
 
-        if (last_datum_with_images == nullptr) {
+        cam = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
+        if (cam == nullptr) {
             return false;
         }
 
-        if (last_datum_with_images->img0.has_value()) {
-            glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-            cv::Mat img0{last_datum_with_images->img0.value().clone()};
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
-            camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
-            GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
-            glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
-        } else {
-            std::cerr << "img0 has no value!" << std::endl;
-            glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE,
-                         &(test_pattern[0][0]));
-            glFlush();
-            camera_texture_sizes[0] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
-        }
+        glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+        cv::Mat img0{cam->img0.clone()};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
+        camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
+        GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
-        if (last_datum_with_images->img1.has_value()) {
-            glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-            cv::Mat img1{last_datum_with_images->img1.value().clone()}; /// <- Adding this here to simulate the copy
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
-            camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
-            GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
-            glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
-        } else {
-            glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE,
-                         &(test_pattern[0][0]));
-            glFlush();
-            camera_texture_sizes[1] = Eigen::Vector2i(TEST_PATTERN_WIDTH, TEST_PATTERN_HEIGHT);
-        }
+        glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        cv::Mat img1{cam->img1.clone()}; /// <- Adding this here to simulate the copy
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
+        camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
+        GLint swizzleMask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask1);
 
         RAC_ERRNO_MSG("debugview at end of load_camera_images");
         return true;
@@ -390,9 +368,10 @@ private:
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
 
-    switchboard::reader<pose_type>    _m_slow_pose;
-    switchboard::reader<imu_raw_type> _m_fast_pose;
-    GLFWwindow*                       gui_window;
+    switchboard::reader<pose_type>         _m_slow_pose;
+    switchboard::reader<imu_raw_type>      _m_fast_pose;
+    switchboard::buffered_reader<cam_type> _m_cam;
+    GLFWwindow*                            gui_window;
 
     uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
 
@@ -407,7 +386,7 @@ private:
 
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const imu_cam_type> last_datum_with_images;
+    switchboard::ptr<const cam_type> cam;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
@@ -433,14 +412,6 @@ public:
     // Debug view application overrides _p_start to control its own lifecycle/scheduling.
     virtual void start() override {
         RAC_ERRNO_MSG("debugview at the top of start()");
-
-        // The "imu_cam" topic is not really a topic, in the current implementation.
-        // It serves more as an event stream. Camera frames are only available on this topic
-        // the very split second they are made available. Subsequently published packets to this
-        // topic do not contain the camera frames.
-        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, std::size_t) {
-            this->imu_cam_handler(datum);
-        });
 
         if (!glfwInit()) {
             ILLIXR::abort("[debugview] Failed to initalize glfw");
