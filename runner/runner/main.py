@@ -20,11 +20,13 @@ from util import (
     make,
     noop_context,
     pathify,
+    pathify_path_vars
     relative_to,
     replace_all,
     subprocess_run,
     threading_map,
     unflatten,
+    flatten_maps_list,
 )
 from yamlinclude import YamlIncludeConstructor
 
@@ -98,11 +100,9 @@ def build_runtime(
 
 def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
-    demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
-    enable_offload_flag = config["enable_offload"]
-    enable_alignment_flag = config["enable_alignment"]
-    realsense_cam_string = config["realsense_cam"]
+    consts_map: Mapping[str, str] = flatten_maps_list(config["constants"])
+    consts_map_pathified = pathify_path_vars(consts_map, root_dir, cache_path, True, True)
+    
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
@@ -111,17 +111,10 @@ def load_native(config: Mapping[str, Any]) -> None:
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(
-        ILLIXR_DATA=str(data_path),
-        ILLIXR_DEMO_DATA=str(demo_data_path),
-        ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-        ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-        ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
-        ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
-        REALSENSE_CAM=str(realsense_cam_string),
         **env_gpu,
+        **consts_map_pathified,
     )
     env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
     actual_cmd_list = list(
@@ -159,13 +152,10 @@ def load_native(config: Mapping[str, Any]) -> None:
 
 def load_tests(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe", test=True)
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
-    demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
-    enable_offload_flag = config["enable_offload"]
-    enable_alignment_flag = config["enable_alignment"]
+    consts_map: Mapping[str, str] = flatten_maps_list(config["constants"])
+    consts_map_pathified = pathify_path_vars(consts_map, root_dir, cache_path, True, True)
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
     make(Path("common"), ["tests/run"], env_override=env_override)
-    realsense_cam_string = config["realsense_cam"]
     plugin_paths = threading_map(
         lambda plugin_config: build_one_plugin(config, plugin_config, test=True),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
@@ -174,24 +164,22 @@ def load_tests(config: Mapping[str, Any]) -> None:
 
     ## If pre-sleep is enabled, the application will pause and wait for a gdb process.
     ## If enabled, disable 'catchsegv' so that gdb can catch segfaults.
-    enable_pre_sleep : bool      = config["enable_pre_sleep"]
-    cmd_list_tail    : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
-    cmd_list         : List[str] = (["catchsegv"] if not enable_pre_sleep else list()) + cmd_list_tail
-
+    cmd_list_tail : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
+    cmd_list      : List[str]
+    if "ENABLE_PRE_SLEEP" in consts_map_pathified:
+        enable_pre_sleep : bool = bool(consts_map_pathified["ENABLE_PRE_SLEEP"])
+        cmd_list = ["catchsegv"] + cmd_list_tail
+    else:
+        cmd_list = cmd_list_tail
+        
     subprocess_run(
         cmd_list,
         env_override=dict(
-            ILLIXR_DATA=str(data_path),
-            ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
-            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-            ILLIXR_ENABLE_PRE_SLEEP=str(enable_pre_sleep),
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
             REALSENSE_CAM=str(realsense_cam_string),
             **env_gpu,
+            **consts_map_pathified,
         ),
         check=True,
     )
@@ -199,18 +187,16 @@ def load_tests(config: Mapping[str, Any]) -> None:
 
 def load_monado(config: Mapping[str, Any]) -> None:
     action_name = config["action"]["name"]
-
+    consts_map = flatten_maps_list(config["constants"])
+    consts_map_pathified = pathify_path_vars(consts_map, root_dir, cache_path, True, True)
+    
     profile = config["profile"]
     cmake_profile = "Debug" if profile == "dbg" else "RelWithDebInfo"
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
-    demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
-    enable_offload_flag = config["enable_offload"]
-    enable_alignment_flag = config["enable_alignment"]
-    realsense_cam_string = config["realsense_cam"]
+    openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)
 
     is_mainline: bool = bool(config["action"]["is_mainline"])
     build_runtime(config, "so", is_mainline=is_mainline)
@@ -300,16 +286,11 @@ def load_monado(config: Mapping[str, Any]) -> None:
     subprocess_run(
         [str(openxr_app_bin_path)],
         env_override=dict(
-            ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
             KIMERA_ROOT=config["action"]["kimera_path"],
             AUDIO_ROOT=config["action"]["audio_path"],
-            REALSENSE_CAM=str(realsense_cam_string),
             **env_monado,
             **env_gpu,
+            **consts_map_pathified,
         ),
         check=True,
     )
@@ -361,16 +342,6 @@ def make_docs(config: Mapping[str, Any]) -> None:
         capture_output=False,
     )
 
-
-actions = {
-    "native": load_native,
-    "monado": load_monado,
-    "tests": load_tests,
-    "clean": clean_project,
-    "docs": make_docs,
-}
-
-
 def run_config(config_path: Path) -> None:
     """Parse a YAML config file, returning the validated ILLIXR system config."""
     YamlIncludeConstructor.add_to_loader_class(
@@ -387,9 +358,17 @@ def run_config(config_path: Path) -> None:
     jsonschema.validate(instance=config, schema=config_schema)
     fill_defaults(config, config_schema)
 
-    action = config["action"]["name"]
+    action_name = config["action"]["name"]
 
-    if action not in actions:
+    actions = {
+        "native": load_native,
+        "monado": load_monado,
+        "tests": load_tests,
+        "clean": clean_project,
+        "docs": make_docs,
+    }
+    
+    if action_name not in actions:
         raise RuntimeError(f"No such action: {action}")
     actions[action](config)
 

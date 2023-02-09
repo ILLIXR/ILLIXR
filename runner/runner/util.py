@@ -49,6 +49,18 @@ from tqdm import tqdm
 
 V = TypeVar("V")
 
+def flatten_maps_list(
+    maps: List[Mapping[str, V]], key_prefix: str = ""
+) -> Mapping[str, V]:
+    """
+    Take a list of maps, returning a single map with every mapping found with
+    each key name updated with the (optionally) provided key prefix
+    """
+    flat_map: Dict[str, V] = dict()
+    for m in maps:
+        for k, v in m.items():
+            flat_map[key_prefix + k] = v
+    return flat_map
 
 def flatten1(it: Iterable[Iterable[V]]) -> Iterable[V]:
     """Flatten 1 level of iterables"""
@@ -234,7 +246,7 @@ def threading_imap_unordered(
             except queue.Empty:
                 pass
             else:
-                if result[0] == "elem":
+                if result[0] == "elem" and not isinstance(result[1], BaseException):
                     tqdm.write(str(result[1]))
                     yield cast(V, result[1])
                 elif result[0] == "exception":
@@ -332,7 +344,7 @@ class TqdmOutputFile(Generic[AnyStr]):
     @staticmethod
     def from_url(url: str, desc: Optional[str] = None) -> TqdmOutputFile[bytes]:
         resp = urllib.request.urlopen(url)
-        length = int(resp.getheader('content-length'))
+        length = int(resp.getheader("content-length"))
         return TqdmOutputFile(cast(IO[bytes], resp), length, desc)
 
 
@@ -443,8 +455,11 @@ Returns:
         else:
             return ret
     elif "archive_path" in path_descr:
-        archive_path = pathify(
-            path_descr["archive_path"], base, cache_path, True, False
+        archive_path = pathify(path_descr["archive_path"], base, cache_path, True, False)
+        cache_key = (
+            archive_path.relative_to(cache_path)
+            if is_relative_to(archive_path, cache_path)
+            else str(archive_path)
         )
         cache_key = archive_path.relative_to(cache_path) if is_relative_to(archive_path, cache_path) else str(archive_path)
         cache_dest = cache_path / escape_fname(str(cache_key))
@@ -554,3 +569,31 @@ def cmake(
         env_override=env_override,
     )
     make(build_path, ["all"], parallelism=parallelism, env_override=env_override)
+
+def pathify_path_vars(
+    vars_map: Mapping[str, str],
+    base: Path,
+    cache_path: Path,
+    should_exist: bool,
+    should_dir: bool,
+    key_suffix: str = "_PATH",
+) -> Mapping[str, str]:
+    """
+    For each variable mapping, pathify the (path) value of the entry if the key
+    name ends in `key_suffix` (default: "_PATH")
+    """
+
+    def path_fun(tup: Tuple[str, str]) -> Tuple[str, str]:
+        k, v = tup
+        if k.endswith(key_suffix):
+            path: Path # Forward declare type
+            try:
+                path = pathify(v, base, cache_path, should_exist, should_dir)
+            except ValueError:
+                ## Path does not yet exist. Assuming it is an output (to be generated later).
+                path = pathify(v, base, cache_path, False, False)
+            return (k, str(path))
+        else:
+            return (k, v)
+
+    return dict(map(path_fun, vars_map.items())
