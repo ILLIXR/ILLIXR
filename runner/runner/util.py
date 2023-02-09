@@ -596,4 +596,4 @@ def pathify_path_vars(
         else:
             return (k, v)
 
-    return dict(map(path_fun, vars_map.items())
+    return dict(map(path_fun, vars_map.items()))

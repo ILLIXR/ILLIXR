@@ -20,7 +20,7 @@ from util import (
     make,
     noop_context,
     pathify,
-    pathify_path_vars
+    pathify_path_vars,
     relative_to,
     replace_all,
     subprocess_run,
@@ -370,7 +370,8 @@ def run_config(config_path: Path) -> None:
     
     if action_name not in actions:
         raise RuntimeError(f"No such action: {action}")
-    actions[action](config)
+    
+    actions[action_name](config)
 
 
 if __name__ == "__main__":

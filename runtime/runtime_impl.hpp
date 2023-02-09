@@ -104,6 +104,18 @@ public:
         pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
     }
 
+    virtual long get_run_duration() const noexcept override {
+		return _m_run_duration;
+	}
+
+    virtual unsigned int get_pre_sleep_duration() const noexcept override {
+        return _m_pre_sleep_duration;
+    }
+
+    virtual bool get_enable_pre_sleep() const noexcept override {
+        return _m_enable_pre_sleep;
+    }
+
     virtual ~runtime_impl() override {
         if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
             stop();
