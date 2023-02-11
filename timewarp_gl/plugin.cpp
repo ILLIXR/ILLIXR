@@ -70,9 +70,9 @@ public:
         , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
-        dpy  = xwin->dpy;
-        root = xwin->win;
-        glc  = xwin->glc;
+        dpy                                                 = xwin->dpy;
+        root                                                = xwin->win;
+        glc                                                 = xwin->glc;
 #else
         // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
         std::cout << "Timewarp creating GL Context" << std::endl;
@@ -103,46 +103,46 @@ public:
         rendering_ready     = false;
         image_handles_ready = false;
 #ifdef ILLIXR_MONADO
-        semaphore_handles_ready    = false;
+        semaphore_handles_ready = false;
 #else
-        semaphore_handles_ready    = true;
+        semaphore_handles_ready = true;
 #endif
 
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
-            // only 2 swapchains (for the left and right eye) are supported for now.
+        // only 2 swapchains (for the left and right eye) are supported for now.
 #ifdef ILLIXR_MONADO
             static bool left_output_ready = false, right_output_ready = false;
 #else
             static bool left_output_ready = true, right_output_ready = true;
 #endif
-        
+
             switch (handle->usage) {
-                case swapchain_usage::LEFT_SWAPCHAIN: {
-                    this->_m_eye_image_handles[0].push_back(*handle);
-                    this->_m_eye_swapchains_size[0] = handle->num_images;
-                    break;
-                }
-                case swapchain_usage::RIGHT_SWAPCHAIN: {
-                    this->_m_eye_image_handles[1].push_back(*handle);
-                    this->_m_eye_swapchains_size[1] = handle->num_images;
-                    break;
-                }
+            case swapchain_usage::LEFT_SWAPCHAIN: {
+                this->_m_eye_image_handles[0].push_back(*handle);
+                this->_m_eye_swapchains_size[0] = handle->num_images;
+                break;
+            }
+            case swapchain_usage::RIGHT_SWAPCHAIN: {
+                this->_m_eye_image_handles[1].push_back(*handle);
+                this->_m_eye_swapchains_size[1] = handle->num_images;
+                break;
+            }
 #ifdef ILLIXR_MONADO
-                case swapchain_usage::LEFT_RENDER: {
-                    this->_m_eye_output_handles[0] = *handle;
-                    left_output_ready = true;
-                    break;
-                }
-                case swapchain_usage::RIGHT_RENDER: {
-                    this->_m_eye_output_handles[1] = *handle;
-                    right_output_ready = true;
-                    break;
-                }
+            case swapchain_usage::LEFT_RENDER: {
+                this->_m_eye_output_handles[0] = *handle;
+                left_output_ready              = true;
+                break;
+            }
+            case swapchain_usage::RIGHT_RENDER: {
+                this->_m_eye_output_handles[1] = *handle;
+                right_output_ready             = true;
+                break;
+            }
 #endif
-                default: {
-                    std::cout << "Invalid swapchain usage provided" << std::endl;
-                    break;
-                }
+            default: {
+                std::cout << "Invalid swapchain usage provided" << std::endl;
+                break;
+            }
             }
 
             if (client_backend == graphics_api::TBD) {
@@ -152,44 +152,46 @@ public:
             }
 
             if (this->_m_eye_image_handles[0].size() == this->_m_eye_swapchains_size[0] &&
-                this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1] &&
-                left_output_ready && right_output_ready) {
+                this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1] && left_output_ready &&
+                right_output_ready) {
                 this->image_handles_ready = true;
             }
         });
 
 #ifdef ILLIXR_MONADO
-        sb->schedule<semaphore_handle>(id, "semaphore_handle", [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
-            // We need one semaphore to indicate when the reprojection is ready, and another when it's done
-            static bool left_semaphore_ready = false, right_semaphore_ready = false;
-            switch (handle->usage) {
-                case semaphore_usage::LEFT_RENDER_COMPLETE: {
-                    _m_semaphore_handles[0] = *handle;
-                    left_semaphore_ready = true;
-                    break;
-                }
-                case semaphore_usage::RIGHT_RENDER_COMPLETE: {
-                    _m_semaphore_handles[1] = *handle;
-                    right_semaphore_ready = true;
-                    break;
-                }
-                default: {
-                    std::cout << "Invalid semaphore usage provided" << std::endl;
-                    break;
-                }
-            }
+        sb->schedule<semaphore_handle>(id, "semaphore_handle",
+                                       [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
+                                           // We need one semaphore to indicate when the reprojection is ready, and another when
+                                           // it's done
+                                           static bool left_semaphore_ready = false, right_semaphore_ready = false;
+                                           switch (handle->usage) {
+                                           case semaphore_usage::LEFT_RENDER_COMPLETE: {
+                                               _m_semaphore_handles[0] = *handle;
+                                               left_semaphore_ready    = true;
+                                               break;
+                                           }
+                                           case semaphore_usage::RIGHT_RENDER_COMPLETE: {
+                                               _m_semaphore_handles[1] = *handle;
+                                               right_semaphore_ready   = true;
+                                               break;
+                                           }
+                                           default: {
+                                               std::cout << "Invalid semaphore usage provided" << std::endl;
+                                               break;
+                                           }
+                                           }
 
-            if (left_semaphore_ready && right_semaphore_ready) {
-                this->semaphore_handles_ready = true;
-            }
-        });
+                                           if (left_semaphore_ready && right_semaphore_ready) {
+                                               this->semaphore_handles_ready = true;
+                                           }
+                                       });
 #endif
     }
 
 private:
-    const std::shared_ptr<switchboard>             sb;
-    const std::shared_ptr<pose_prediction>         pp;
-    const std::shared_ptr<const RelativeClock>     _m_clock;
+    const std::shared_ptr<switchboard>         sb;
+    const std::shared_ptr<pose_prediction>     pp;
+    const std::shared_ptr<const RelativeClock> _m_clock;
 
     // OpenGL objects
     Display*   dpy;
@@ -200,10 +202,10 @@ private:
     static constexpr double DELAY_FRACTION = 0.9;
 
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
-    bool                                     rendering_ready;
-    graphics_api                             client_backend;
-    std::atomic<bool>                        image_handles_ready;
-    std::atomic<bool>                        semaphore_handles_ready;
+    bool              rendering_ready;
+    graphics_api      client_backend;
+    std::atomic<bool> image_handles_ready;
+    std::atomic<bool> semaphore_handles_ready;
 
     // Left and right eye images
     std::array<std::vector<image_handle>, 2> _m_eye_image_handles;
@@ -211,14 +213,14 @@ private:
     std::array<size_t, 2>                    _m_eye_swapchains_size;
 
     // Intermediate timewarp framebuffers for left and right eye textures
-    std::array<GLuint, 2>                    _m_eye_output_textures;
-    std::array<GLuint, 2>                    _m_eye_framebuffers;
+    std::array<GLuint, 2> _m_eye_output_textures;
+    std::array<GLuint, 2> _m_eye_framebuffers;
 
 #ifdef ILLIXR_MONADO
     // Semaphores to synchronize between Monado and ILLIXR
-    std::array<image_handle, 2>              _m_eye_output_handles;
-    std::array<semaphore_handle, 2>          _m_semaphore_handles;
-    std::array<GLuint, 2>                    _m_semaphores;
+    std::array<image_handle, 2>     _m_eye_output_handles;
+    std::array<semaphore_handle, 2> _m_semaphore_handles;
+    std::array<GLuint, 2>           _m_semaphores;
 #endif
 
     // Switchboard plug for application eye buffer.
@@ -367,28 +369,28 @@ private:
         glBindTexture(GL_TEXTURE_2D, image_handle);
         glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
-        
+
         switch (usage) {
-            case swapchain_usage::LEFT_SWAPCHAIN: {
-                _m_eye_swapchains[0].push_back(image_handle);
-                break;
-            }
-            case swapchain_usage::RIGHT_SWAPCHAIN: {
-                _m_eye_swapchains[1].push_back(image_handle);
-                break;
-            }
-            case swapchain_usage::LEFT_RENDER: {
-                _m_eye_output_textures[0] = image_handle;
-                break;
-            }
-            case swapchain_usage::RIGHT_RENDER: {
-                _m_eye_output_textures[1] = image_handle;
-                break;
-            }
-            default: {
-                assert(false && "Invalid swapchain usage");
-                break;
-            }
+        case swapchain_usage::LEFT_SWAPCHAIN: {
+            _m_eye_swapchains[0].push_back(image_handle);
+            break;
+        }
+        case swapchain_usage::RIGHT_SWAPCHAIN: {
+            _m_eye_swapchains[1].push_back(image_handle);
+            break;
+        }
+        case swapchain_usage::LEFT_RENDER: {
+            _m_eye_output_textures[0] = image_handle;
+            break;
+        }
+        case swapchain_usage::RIGHT_RENDER: {
+            _m_eye_output_textures[1] = image_handle;
+            break;
+        }
+        default: {
+            assert(false && "Invalid swapchain usage");
+            break;
+        }
         }
     }
 
@@ -401,20 +403,20 @@ private:
         GLuint semaphore_handle;
         glGenSemaphoresEXT(1, &semaphore_handle);
         glImportSemaphoreFdEXT(semaphore_handle, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.vk_handle);
-    
+
         switch (vk_handle.usage) {
-            case semaphore_usage::LEFT_RENDER_COMPLETE: {
-                _m_semaphores[0] = semaphore_handle;
-                break;
-            }
-            case semaphore_usage::RIGHT_RENDER_COMPLETE: {
-                _m_semaphores[1] = semaphore_handle;
-                break;
-            }
-            default: {
-                assert(false && "Invalid semaphore usage");
-                break;
-            }
+        case semaphore_usage::LEFT_RENDER_COMPLETE: {
+            _m_semaphores[0] = semaphore_handle;
+            break;
+        }
+        case semaphore_usage::RIGHT_RENDER_COMPLETE: {
+            _m_semaphores[1] = semaphore_handle;
+            break;
+        }
+        default: {
+            assert(false && "Invalid semaphore usage");
+            break;
+        }
         }
     }
 #endif
@@ -595,7 +597,7 @@ public:
         timewarpShaderProgram =
             init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
 #else
-        timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
+        timewarpShaderProgram   = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
 #endif
         // Acquire attribute and uniform locations from the compiled and linked shader program
         distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
@@ -713,11 +715,12 @@ public:
                 _m_eye_output_textures[eye] = eye_output_texture;
 
                 glBindTexture(GL_TEXTURE_2D, eye_output_texture);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, display_params::width_pixels * 0.5f, display_params::height_pixels, 0, GL_RGB, GL_FLOAT, NULL);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, display_params::width_pixels * 0.5f, display_params::height_pixels, 0,
+                               GL_RGB, GL_FLOAT, NULL);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #endif
-                
+
                 // Once the eye output textures are created, we bind them to the framebuffer
                 GLuint framebuffer;
                 glGenFramebuffers(1, &framebuffer);
@@ -786,13 +789,13 @@ public:
 #ifndef USE_ALT_EYE_FORMAT
         // Bind the shared texture handle
         glBindTexture(GL_TEXTURE_2D_ARRAY, most_recent_frame->texture_handle);
-#endif 
+#endif
 
         glBindVertexArray(tw_vao);
 
         auto gpu_start_wall_time = _m_clock->now();
 
-        GLuint   query = 0;
+        GLuint   query        = 0;
         GLuint64 elapsed_time = 0;
 
         glGenQueries(1, &query);
@@ -823,25 +826,25 @@ public:
             // GPU data for each eye.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_positions_vbo);
             glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0,
-                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
+                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord3d_t)));
             glEnableVertexAttribArray(distortion_pos_attr);
 
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv0_vbo);
             glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0,
-                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv0_attr);
 
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv1_vbo);
             glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0,
-                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv1_attr);
 
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
             glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0,
-                                (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
+                                  (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv2_attr);
 
 #ifndef USE_ALT_EYE_FORMAT // If we are using normal ILLIXR-format eyebuffers
@@ -857,7 +860,7 @@ public:
 
 #ifdef ILLIXR_MONADO
             GLenum dstLayout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
-	        glSignalSemaphoreEXT(_m_semaphores[eye], 0, nullptr, 1, &_m_eye_output_textures[eye], &dstLayout);
+            glSignalSemaphoreEXT(_m_semaphores[eye], 0, nullptr, 1, &_m_eye_output_textures[eye], &dstLayout);
 #endif
         }
 
@@ -888,14 +891,15 @@ public:
         // Blit the left and right color buffers onto the default color buffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[0]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBlitFramebuffer(
-        0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, 0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        
+        glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, 0, 0,
+                          display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[1]);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
-        glBlitFramebuffer(
-        0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels,
+                          display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels,
+                          GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glXSwapBuffers(dpy, root);
 #endif

@@ -311,9 +311,11 @@ public:
         // ^ The above comment seems to be related non-Monado style eyebuffers,
         // ^ which seem to no longer be used.
         createSharedEyebuffer(&(eyeTextures[0]));
-        _m_image_handle.put(_m_image_handle.allocate<image_handle>(image_handle{eyeTextures[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
+        _m_image_handle.put(
+            _m_image_handle.allocate<image_handle>(image_handle{eyeTextures[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
         createSharedEyebuffer(&(eyeTextures[1]));
-        _m_image_handle.put(_m_image_handle.allocate<image_handle>(image_handle{eyeTextures[1], 1, swapchain_usage::RIGHT_SWAPCHAIN}));
+        _m_image_handle.put(
+            _m_image_handle.allocate<image_handle>(image_handle{eyeTextures[1], 1, swapchain_usage::RIGHT_SWAPCHAIN}));
 
         // Initialize FBO and depth targets, attaching to the frame handle
         createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
