@@ -212,11 +212,11 @@ public:
         if (use_rgbd) {
             ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
             if (use_cam)
-                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350), ImGuiCond_Once,
-                                    ImVec2(1.0f, 1.0f));
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350),
+                                        ImGuiCond_Once, ImVec2(1.0f, 1.0f));
             else
                 ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
-                                    ImVec2(1.0f, 1.0f));
+                                        ImVec2(1.0f, 1.0f));
             ImGui::Begin("Onboard RGBD views");
             auto windowSize     = ImGui::GetWindowSize();
             auto verticalOffset = ImGui::GetCursorPos().y;
@@ -239,7 +239,8 @@ public:
             return false;
         }
 
-        if (!use_cam) use_cam = true;
+        if (!use_cam)
+            use_cam = true;
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
         cv::Mat img0{cam->img0.clone()};
@@ -267,7 +268,8 @@ public:
             return false;
         }
 
-        if(!use_rgbd) use_rgbd = true;
+        if (!use_rgbd)
+            use_rgbd = true;
 
         glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
         cv::Mat rgb{rgbd->rgb.clone()};
@@ -279,7 +281,7 @@ public:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
                      depth.ptr());
         rgbd_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
-        GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, 1};
+        GLint swizzleMask[]   = {GL_RED, GL_RED, GL_RED, 1};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
         RAC_ERRNO_MSG("debugview at end of load_rgb_depth");
@@ -439,8 +441,8 @@ private:
 
     switchboard::ptr<const cam_type>       cam;
     switchboard::ptr<const rgb_depth_type> rgbd;
-    bool use_cam = false;
-    bool use_rgbd = false;
+    bool                                   use_cam  = false;
+    bool                                   use_rgbd = false;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
