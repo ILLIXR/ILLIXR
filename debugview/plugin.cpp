@@ -196,16 +196,35 @@ public:
                     camera_texture_sizes[1].y(), camera_textures[1]);
         ImGui::End();
 
-        ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
-                                ImVec2(1.0f, 1.0f));
-        ImGui::Begin("Onboard camera views");
-        auto windowSize     = ImGui::GetWindowSize();
-        auto verticalOffset = ImGui::GetCursorPos().y;
-        ImGui::Image((void*) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
-        ImGui::SameLine();
-        ImGui::Image((void*) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
-        ImGui::End();
+        if (use_cam) {
+            ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
+                                    ImVec2(1.0f, 1.0f));
+            ImGui::Begin("Onboard camera views");
+            auto windowSize     = ImGui::GetWindowSize();
+            auto verticalOffset = ImGui::GetCursorPos().y;
+            ImGui::Image((void*) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::SameLine();
+            ImGui::Image((void*) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::End();
+        }
+
+        if (use_rgbd) {
+            ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
+            if (use_cam)
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350), ImGuiCond_Once,
+                                    ImVec2(1.0f, 1.0f));
+            else
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
+                                    ImVec2(1.0f, 1.0f));
+            ImGui::Begin("Onboard RGBD views");
+            auto windowSize     = ImGui::GetWindowSize();
+            auto verticalOffset = ImGui::GetCursorPos().y;
+            ImGui::Image((void*) (intptr_t) rgbd_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::SameLine();
+            ImGui::Image((void*) (intptr_t) rgbd_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::End();
+        }
 
         ImGui::Render();
 
@@ -219,6 +238,8 @@ public:
         if (cam == nullptr) {
             return false;
         }
+
+        if (!use_cam) use_cam = true;
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
         cv::Mat img0{cam->img0.clone()};
@@ -246,16 +267,18 @@ public:
             return false;
         }
 
-        glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+        if(!use_rgbd) use_rgbd = true;
+
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
         cv::Mat rgb{rgbd->rgb.clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
-        camera_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
+        rgbd_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
 
-        glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[1]);
         cv::Mat depth{rgbd->depth.clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
                      depth.ptr());
-        camera_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
+        rgbd_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
         GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, 1};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
@@ -416,9 +439,13 @@ private:
 
     switchboard::ptr<const cam_type>       cam;
     switchboard::ptr<const rgb_depth_type> rgbd;
+    bool use_cam = false;
+    bool use_rgbd = false;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
+    GLuint          rgbd_textures[2];
+    Eigen::Vector2i rgbd_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
     GLuint demo_vao;
     GLuint demoShaderProgram;
@@ -536,6 +563,14 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glGenTextures(2, &(rgbd_textures[0]));
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[1]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
