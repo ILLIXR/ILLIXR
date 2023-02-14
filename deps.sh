@@ -116,3 +116,10 @@ export script_path_depthai="scripts/install_depthai.sh"
 export parent_dir_depthai="${opt_dir}"
 export dep_prompt_depthai="Install DepthAI from source"
 export dep_ver_depthai="v2.5.0"
+
+## OpenNI
+export dep_name_openni="OpenNI"
+export script_path_openni="scripts/install_openni.sh"
+export parent_dir_openni="${opt_dir}"
+export dep_prompt_openni="Install OpenNI from source"
+export dep_ver_openni="master"

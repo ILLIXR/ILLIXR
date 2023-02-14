@@ -239,7 +239,7 @@ sudo chown "${USER}:" "${opt_dir}"
 
 echo "The user will now be prompted to install the following dependencies and optional features:
   Binary packages (via apt-get), Docker, CUDA, OpenCV, Vulkan,
-  gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3), DepthAI
+  gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3), DepthAI, OpenNI
 " # End echo
 
 if y_or_n "Add apt-get sources list/keys and install necessary packages"; then
@@ -387,6 +387,14 @@ prompt_install \
     "${dep_prompt_depthai}" \
     "${dep_ver_depthai}"
 
+prompt_install \
+    "${dep_name_openni}" \
+    "${deps_log_dir}" \
+    "${script_path_openni}" \
+    "${parent_dir_openni}" \
+    "${dep_prompt_openni}" \
+    "${dep_ver_openni}"
+    
 ## Load new library paths
 sudo ldconfig
 
