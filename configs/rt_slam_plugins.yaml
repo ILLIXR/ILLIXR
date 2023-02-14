@@ -11,8 +11,10 @@ plugin_group:
       version: "3.3"
   # - name: OpenVINS
   #   path:
-  #     git_repo: https://github.com/ILLIXR/open_vins.git
-  #     version: "3.2"
+  #     subpath: ILLIXR 
+  #     relative_to:
+  #       git_repo: https://github.com/ILLIXR/open_vins.git
+  #       version: "upstream-OpenVINS"
   # - path: rk4_integrator/
   # - path: passthrough_integrator/
   - path: gtsam_integrator/
