@@ -148,6 +148,7 @@ pkg_dep_list_math=(
     libparmetis-dev
     libatlas-base-dev
     libeigen3-dev
+    libceres-dev
 ) # End list
 
 pkg_dep_list_nogroup=(
