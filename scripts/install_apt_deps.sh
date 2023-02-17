@@ -234,8 +234,8 @@ if [ "${distro_name}" = "ubuntu" ] && ([ "${distro_version}" = "18.04" ] || [ "$
                     pkg_dep_groups+=" realsense_anyarch"
                     pkg_dep_groups+=" realsense_x86_64"
                     ;;
-        aarch64)    use_realsense="yes"
-                    pkg_dep_groups+=" realsense_anyarch"
+        aarch64)    use_realsense="no"
+                    # pkg_dep_groups+=" realsense_anyarch"
                     ;;
         *)          print_warning "Unsupported arch '${arch_name}' for Intel RealSense."
                     exit 1

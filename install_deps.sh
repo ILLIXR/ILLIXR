@@ -242,16 +242,20 @@ echo "The user will now be prompted to install the following dependencies and op
   gtest, qemu, OpenXR-SDK, gtsam, opengv, DBoW2, Kimera-RPGO, Conda (miniconda3), DepthAI
 " # End echo
 
+arch_name=$(uname --machine)
+
 if y_or_n "Add apt-get sources list/keys and install necessary packages"; then
-    if y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
+    if [ ! "${arch_name}" = aarch64 ] && y_or_n "^^^^  Also install Docker (docker-ce) for local CI/CD debugging support"; then
         export use_docker="yes"
     fi
-    pmt_msg_warn_cuda="Also automate install of CUDA 11 (cuda) for GPU plugin support on Ubuntu (_only_!)"
-    pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, "
-    pmt_msg_warn_cuda+="or if a supported GPU is not found)"
-    if y_or_n "^^^^  ${pmt_msg_warn_cuda}"; then
-        export use_cuda="yes"
-    fi
+    if [ ! "${arch_name}" = aarch64 ]; then
+   	  pmt_msg_warn_cuda="Also automate install of CUDA 11 (cuda) for GPU plugin support on Ubuntu (_only_!)"
+   	  pmt_msg_warn_cuda+="\n(This script will _not_ install the package on non-Ubuntu distributions, "
+   	  pmt_msg_warn_cuda+="or if a supported GPU is not found)"
+   	  if y_or_n "^^^^  ${pmt_msg_warn_cuda}"; then
+   	      export use_cuda="yes"
+   	  fi
+   	fi
 
     if [ "${enable_quiet}" = "no" ]; then
         . "${script_path_apt}"
@@ -311,13 +315,15 @@ prompt_install \
     "${dep_prompt_gtest}" \
     "${dep_ver_gtest}"
 
-prompt_install \
-    "${dep_name_qemu}" \
-    "${deps_log_dir}" \
-    "${script_path_qemu}" \
-    "${parent_dir_qemu}" \
-    "${dep_prompt_qemu}" \
-    "${dep_ver_qemu}"
+if [ ! "${arch_name}" = aarch64 ]; then
+  prompt_install \
+      "${dep_name_qemu}" \
+      "${deps_log_dir}" \
+      "${script_path_qemu}" \
+      "${parent_dir_qemu}" \
+      "${dep_prompt_qemu}" \
+      "${dep_ver_qemu}"
+fi
 
 # if [ ! -d Vulkan-Loader ]; then
 #   echo "Next: Install Vulkan Loader from source"
@@ -424,6 +430,9 @@ if [ ! -d "${env_config_parent_dir}" ]; then
 fi
 
 cmd_conda="${src_dir_conda}/bin/conda"
+if [ "${arch_name}" = aarch64 ]; then
+	env_config_path="runner/environment-aarch64.yml"
+fi
 if [ -f "${cmd_conda}" ]; then
     echo "Found a manual conda installation. Creating a project-specific virtual environment."
     "${cmd_conda}" env create --force -f "${env_config_path}"

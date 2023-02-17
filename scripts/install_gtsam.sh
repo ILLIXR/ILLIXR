@@ -65,7 +65,8 @@ cmake \
     -D GTSAM_USE_SYSTEM_EIGEN=ON \
     -D GTSAM_POSE3_EXPMAP=ON \
     -D GTSAM_ROT3_EXPMAP=ON \
-    -D GTSAM_WITH_EIGEN_UNSUPPORTED=ON
+    -D GTSAM_WITH_EIGEN_UNSUPPORTED=ON \
+    -D GTSAM_BUILD_WITH_MARCH_NATIVE=OFF
 make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install

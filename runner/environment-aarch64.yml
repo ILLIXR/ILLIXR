@@ -1,0 +1,22 @@
+########
+# To add packages to this file:
+#
+#     . $HOME/miniconda3/etc/profile.d/conda.sh
+#     conda deactivate
+#     conda activate illixr-runner
+#     conda install $package # where $packages is the name of a package in Conda Forge
+#     conda env export > runner/environment.yml
+#
+# Please be a good citizen and also copy/resotre this block comment!!
+########
+name: illixr-runner
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - click=8.0.4
+  - jsonschema=4.17.3
+  - pyyaml=6.0
+  - pip:
+    - pyyaml-include==1.3
+prefix: /opt/ILLIXR/miniconda3/envs/illixr-runner

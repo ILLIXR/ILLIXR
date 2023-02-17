@@ -37,7 +37,7 @@ script_path="${src_dir}/miniconda.sh"
 ### Checks ###
 
 case "${arch_name}" in
-    x86_64)
+    x86_64|aarch64)
         check_cmd_conda=$(conda --version 2>/dev/null)
         if [ "$?" -eq 0 ]; then
             ## Conda found
