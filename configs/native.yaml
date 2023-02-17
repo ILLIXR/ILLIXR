@@ -26,7 +26,7 @@ action:
   name: native
 
   # run in GDB:
-  command: gdb -q --args $cmd
+  # command: gdb -q --args $cmd
 
   # Print cmd for external use:
   # command: printf %s\n $env_cmd
@@ -34,4 +34,4 @@ action:
   # Capture stdout for metrics
   # log_stdout: metrics/output.log
 
-profile: dbg
+profile: opt

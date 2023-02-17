@@ -19,7 +19,9 @@ action:
   name        : monado
 
   monado:
-    path: /home/jebbly/Desktop/ILLIXR/local/monado_integration
+    path:
+      git_repo : https://github.com/ILLIXR/monado_integration.git
+      version  : "add-timewarp-semaphore" # Note: this should be changed to master when the corresponding branch is merged
 
     config: # For CMake
       XRT_HAVE_LIBUDEV              : ON
@@ -64,6 +66,6 @@ action:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
   audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
 
-  command: gdb -q --args $cmd
+  # command: gdb -q --args $cmd
 
-profile: dbg
+profile: opt
