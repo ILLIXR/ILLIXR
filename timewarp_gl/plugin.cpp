@@ -892,9 +892,10 @@ public:
                           display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[1]);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
-        glBlitFramebuffer(
-        0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels,
+                          display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels,
+                          GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glXSwapBuffers(dpy, root);
 #endif
