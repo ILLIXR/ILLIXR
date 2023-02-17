@@ -737,12 +737,6 @@ public:
             rendering_ready = true;
         }
 
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
-        // glClearColor(0, 0, 0, 0);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        // glDepthFunc(GL_LEQUAL);
-
         switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
 
         // Use the timewarp program
@@ -888,6 +882,9 @@ public:
 
         // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
+
         // Blit the left and right color buffers onto the default color buffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[0]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -895,12 +892,10 @@ public:
                           display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[1]);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels,
-                          display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels,
-                          GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
+        glBlitFramebuffer(
+        0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glXSwapBuffers(dpy, root);
 #endif
 
