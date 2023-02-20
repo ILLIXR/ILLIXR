@@ -14,7 +14,7 @@ data:
       download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 demo_data: demo_data/
 
-enable_offload:   False
+enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False
 enable_pre_sleep: False
@@ -22,9 +22,15 @@ enable_pre_sleep: False
 
 action:
   kimera_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%sKimera-VIO.git/
-  audio_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
-  openvins_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
+  audio_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
   name: native
+
+  # OpenVINS sensor configuration:
+  #   - Path is where we will load configs from
+  #   - Sensor is what config we should load (e.g. euroc_mav, rs_t265, rs_d455, ...)
+  openvins_sensor: euroc_mav
+  openvins_path: pose_openvins/
+  #  openvins_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
 
   # run in GDB:
   # command: gdb -q --args $cmd

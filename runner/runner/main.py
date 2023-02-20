@@ -120,6 +120,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
         OPENVINS_ROOT=config["action"]["openvins_path"],
+        OPENVINS_SENSOR=config["action"]["openvins_sensor"],
         AUDIO_ROOT=config["action"]["audio_path"],
         REALSENSE_CAM=str(realsense_cam_string),
         **env_gpu,
