@@ -116,3 +116,11 @@ export script_path_depthai="scripts/install_depthai.sh"
 export parent_dir_depthai="${opt_dir}"
 export dep_prompt_depthai="Install DepthAI from source"
 export dep_ver_depthai="v2.5.0"
+
+
+## OpenVINS
+export dep_name_openvins="open_vins"
+export script_path_openvins="scripts/install_openvins.sh"
+export parent_dir_openvins="${opt_dir}"
+export dep_prompt_openvins="Install OpenVINS from source"
+export dep_ver_openvins="illixr"

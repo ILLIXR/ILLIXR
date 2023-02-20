@@ -387,6 +387,14 @@ prompt_install \
     "${dep_prompt_depthai}" \
     "${dep_ver_depthai}"
 
+prompt_install \
+    "${dep_name_openvins}" \
+    "${deps_log_dir}" \
+    "${script_path_openvins}" \
+    "${parent_dir_openvins}" \
+    "${dep_prompt_openvins}" \
+    "${dep_ver_openvins}"
+
 ## Load new library paths
 sudo ldconfig
 
