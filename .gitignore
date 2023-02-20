@@ -13,3 +13,9 @@ metrics/
 install/
 .deps
 data_record/
+
+# editors
+.idea/
+cmake-build-*
+.vscode
+*.*~
