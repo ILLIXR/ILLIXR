@@ -109,7 +109,7 @@ public:
         double           time_imu  = duration2double(datum->time.time_since_epoch());
         ov_core::ImuData imu_datum = {time_imu, datum->angular_v, datum->linear_a};
         ov_system->feed_measurement_imu(imu_datum);
-        // PRINT_WARNING(BLUE "imu = %.15f\n" RESET, imu_datum.timestamp);
+        // PRINT_WARNING(BLUE "imu = %.8f\n" RESET, imu_datum.timestamp);
 
         // Predict the state to this time (fast..)!!
         if (ov_system->initialized()) {
@@ -134,6 +134,7 @@ public:
                 _m_pose_fast.put(_m_pose_fast.allocate(
                     w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
                     Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)}, datum->time));
+                // PRINT_WARNING(BLUE "fast pub = %.8f\n" RESET, time_imu);
             }
         }
 
@@ -172,9 +173,14 @@ public:
         cam_datum.sensor_ids.push_back(1);
         cam_datum.images.push_back(cam->img0.clone());
         cam_datum.images.push_back(cam->img1.clone());
-        cam_datum.masks.push_back(cv::Mat::zeros(cam->img0.rows, cam->img0.cols, CV_8UC1));
-        cam_datum.masks.push_back(cv::Mat::zeros(cam->img1.rows, cam->img1.cols, CV_8UC1));
-        // PRINT_WARNING(BLUE "camera = %.15f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
+        if (ov_system->get_params().use_mask) {
+            cam_datum.masks.push_back(ov_system->get_params().masks.at(0));
+            cam_datum.masks.push_back(ov_system->get_params().masks.at(1));
+        } else {
+            cam_datum.masks.push_back(cv::Mat::zeros(cam->img0.rows, cam->img0.cols, CV_8UC1));
+            cam_datum.masks.push_back(cv::Mat::zeros(cam->img0.rows, cam->img0.cols, CV_8UC1));
+        }
+        // PRINT_WARNING(BLUE "camera = %.8f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
 
         // Append it to our queue of images (this is blocking...)
         {
@@ -183,7 +189,7 @@ public:
             std::sort(camera_queue.begin(), camera_queue.end());
         };
 
-        // Lets multi thread it!
+        // Lets multi-thread it!
         ov_update_running = true;
         std::thread thread([&] {
             // Lock on the queue (prevents new images from appending)
@@ -228,9 +234,9 @@ public:
                     assert(isfinite(swapped_pos[2]));
 
                     // Debug display of tracks
-                    cv::Mat imgout = ov_system->get_historical_viz_image();
-                    cv::imshow("Active Tracks", imgout);
-                    cv::waitKey(1);
+                    // cv::Mat imgout = ov_system->get_historical_viz_image();
+                    // cv::imshow("Active Tracks", imgout);
+                    // cv::waitKey(1);
 
                     // Push back this pose to our "slow" pose topic
                     time_point time_of_update(from_seconds(camera_queue.at(0).timestamp));
@@ -266,8 +272,8 @@ public:
 
         // If we are single threaded, then run single threaded
         // Otherwise detach this thread so it runs in the background!
-        thread.join();
-        // thread.detach();
+        // thread.join();
+        thread.detach();
     }
 
 private:
