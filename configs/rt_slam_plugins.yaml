@@ -18,5 +18,5 @@ plugin_group:
   - path: pose_openvins/
 #  - path: rk4_integrator/
 #  - path: passthrough_integrator/
-  - path: gtsam_integrator/
+#  - path: gtsam_integrator/
   - path: pose_prediction/

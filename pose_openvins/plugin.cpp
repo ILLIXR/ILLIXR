@@ -26,8 +26,9 @@
 #include "common/relative_clock.hpp"
 #include "common/switchboard.hpp"
 #include "core/VioManager.h"
+#include "state/Propagator.h"
 #include "state/State.h"
-#include "utils/dataset_reader.h"
+#include "utils/quat_ops.h"
 
 #include <algorithm>
 #include <boost/filesystem.hpp>
@@ -57,6 +58,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
+        , _m_pose_fast{sb->get_writer<imu_raw_type>("imu_raw")}
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , ov_update_running(false)
@@ -108,6 +110,32 @@ public:
         ov_core::ImuData imu_datum = {time_imu, datum->angular_v, datum->linear_a};
         ov_system->feed_measurement_imu(imu_datum);
         // PRINT_WARNING(BLUE "imu = %.15f\n" RESET, imu_datum.timestamp);
+
+        // Predict the state to this time (fast..)!!
+        if (ov_system->initialized()) {
+            std::shared_ptr<State>        state      = ov_system->get_state();
+            Eigen::Matrix<double, 13, 1>  state_plus = Eigen::Matrix<double, 13, 1>::Zero();
+            Eigen::Matrix<double, 12, 12> cov_plus   = Eigen::Matrix<double, 12, 12>::Zero();
+            if (ov_system->get_propagator()->fast_state_propagate(state, time_imu, state_plus, cov_plus)) {
+                // Velocity from fast predict are in the body frame
+                // This re-rotate it into the global frame of reference v_IiinG
+                Eigen::Matrix<double, 4, 1> curr_quat = state_plus.block(0, 0, 4, 1);
+                Eigen::Matrix<double, 3, 1> curr_pos  = state_plus.block(4, 0, 3, 1);
+                Eigen::Matrix<double, 3, 1> curr_vel =
+                    ov_core::quat_2_Rot(curr_quat).transpose() * state_plus.block(7, 0, 3, 1);
+
+                // TODO: can we get a better second IMU by storing? is this important?
+                Eigen::Matrix<double, 3, 1> w_hat  = imu_datum.wm;
+                Eigen::Matrix<double, 3, 1> a_hat  = imu_datum.am;
+                Eigen::Matrix<double, 3, 1> w_hat2 = imu_datum.wm;
+                Eigen::Matrix<double, 3, 1> a_hat2 = imu_datum.am;
+
+                // Publish
+                _m_pose_fast.put(_m_pose_fast.allocate(
+                    w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
+                    Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)}, datum->time));
+            }
+        }
 
         // Get the async buffer next camera
         if (_m_cam.size() == 0)
@@ -199,6 +227,7 @@ public:
                     assert(isfinite(swapped_pos[1]));
                     assert(isfinite(swapped_pos[2]));
 
+                    // Debug display of tracks
                     cv::Mat imgout = ov_system->get_historical_viz_image();
                     cv::imshow("Active Tracks", imgout);
                     cv::waitKey(1);
@@ -246,6 +275,7 @@ private:
     const std::shared_ptr<switchboard>        sb;
     std::shared_ptr<RelativeClock>            _m_rtc;
     switchboard::writer<pose_type>            _m_pose;
+    switchboard::writer<imu_raw_type>         _m_pose_fast;
     switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
 
     // Subscriber / sensor information
