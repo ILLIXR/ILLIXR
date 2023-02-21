@@ -20,7 +20,7 @@ data:
   subpath: "."
   relative_to:
     archive_path:
-      download_url_gdrive: '1vmNanhgR0N5iMSFUejojmRVjWwIbJ9P7'
+      download_url_gdrive: '1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV'
 demo_data: demo_data/
 
 enable_offload: False
@@ -35,7 +35,7 @@ action:
   name: native
 
   # How long to run the program before ending processing (default 60)
-  ILLIXR_RUN_DURATION: 999
+  ILLIXR_RUN_DURATION: 60
 
   # OpenVINS sensor configuration:
   #   - Path is where we will load configs from
