@@ -34,9 +34,40 @@ state0.csv
 
 
 
+## Adding a New Sensor
+
+To add a new sensor the user should first perform calibration of it to find the intrinsics.
+The high level can be found on the [OpenVINS documentation](https://docs.openvins.com/gs-calibration.html), but they are as follows:
+
+- Record a 10-24hr dataset of just the IMU and process it
+  - Use https://github.com/ori-drs/allan_variance_ros
+  - Example script is [located here](https://github.com/rpng/ar_table_dataset/blob/master/calibrate_imu.sh)
+- Record and calibrate the camera intrinsics using [Kalibr](https://github.com/ethz-asl/kalibr)
+  - Record a datset with a calibration aprilgrid board (don't use a checkerboard)
+  - Process it (you can downsample the framerate to 10hz with `--bag-freq 10.0`)
+  - Example script is [located here](https://github.com/rpng/ar_table_dataset/blob/master/calibrate_camera_static.sh)
+- Record and calibrate the camera to IMU extrinsics using [Kalibr](https://github.com/ethz-asl/kalibr)
+  - Needs to be very dynamic and excite all axes of the IMU and be high framerate
+  - Example script is [located here](https://github.com/rpng/ar_table_dataset/blob/master/calibrate_camera_dynamic.sh)
+- Now you can create a config directory with the following:
+  - `your_sensor/estimator_config.yaml` - Copy this from the `eruoc_mav`, you shouldn't need to make any large changes besides camera number
+  - `your_sensor/kalibr_imu_chain.yaml` - Needs to be created using the Kalibr output (the tabs need to be fixed and `%YAML:1.0` added to the top)
+  - `your_sensor/kalibr_imucam_chain.yaml` - Needs to be created using the Kalibr output (the tabs need to be fixed and `%YAML:1.0` added to the top)
+- Update `openvins_sensor: euroc_mav` to point to your new sensor folder with `openvins_sensor: your_sensor`
+
+
+
 ## Credit
 
-Thank you the RPNG Group for the wonderful project. Credits are also due to those who authored, contributed, and maintained this plugin: [Rishi Deshai](https://github.com/therishidesai), 
-[Giordano Salvador](https://github.com/e3m3), [Jeffrey Zhang](https://github.com/JeffreyZh4ng), [Mohammed Huzaifa](https://github.com/mhuzai), [Jae Lee](https://github.com/Hyjale), [Samuel Grayson](https://github.com/charmoniumQ), [Qinjun Jiang](https://github.com/qinjunj), and [Henry Che](https://github.com/hungdche). 
+Thank you the RPNG Group for the wonderful project.
+Credits are also due to those who authored, contributed, and maintained this plugin:
+[Rishi Deshai](https://github.com/therishidesai), 
+[Giordano Salvador](https://github.com/e3m3),
+[Jeffrey Zhang](https://github.com/JeffreyZh4ng),
+[Mohammed Huzaifa](https://github.com/mhuzai),
+[Jae Lee](https://github.com/Hyjale),
+[Samuel Grayson](https://github.com/charmoniumQ),
+[Qinjun Jiang](https://github.com/qinjunj),
+and [Henry Che](https://github.com/hungdche). 
 
 
