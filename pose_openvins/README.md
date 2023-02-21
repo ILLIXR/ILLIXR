@@ -14,7 +14,7 @@
 
 ## Converting ROS Bags
 
-- This will use [Kalibr](https://github.com/ethz-asl/kalibr)
+- This will use [Kalibr](https://github.com/ethz-asl/kalibr) so ensure you have built it
 - Example data is the D455 from [ar_table_dataset](https://github.com/rpng/ar_table_dataset)
 ```
 rosrun kalibr kalibr_bagextractor \
