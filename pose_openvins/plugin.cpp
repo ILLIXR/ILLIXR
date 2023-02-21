@@ -173,19 +173,26 @@ public:
         ov_core::CameraData cam_datum;
         cam_datum.timestamp = time_cam;
         cam_datum.sensor_ids.push_back(0);
-        cam_datum.sensor_ids.push_back(1);
         cam_datum.images.push_back(cam->img0.clone());
-        cam_datum.images.push_back(cam->img1.clone());
         if (ov_system->get_params().use_mask) {
             assert(ov_system->get_params().masks.at(0).rows == cam->img0.rows);
             assert(ov_system->get_params().masks.at(0).cols == cam->img0.cols);
-            assert(ov_system->get_params().masks.at(1).rows == cam->img1.rows);
-            assert(ov_system->get_params().masks.at(1).cols == cam->img1.cols);
             cam_datum.masks.push_back(ov_system->get_params().masks.at(0));
-            cam_datum.masks.push_back(ov_system->get_params().masks.at(1));
         } else {
             cam_datum.masks.push_back(cv::Mat::zeros(cam->img0.rows, cam->img0.cols, CV_8UC1));
-            cam_datum.masks.push_back(cv::Mat::zeros(cam->img0.rows, cam->img0.cols, CV_8UC1));
+        }
+
+        // If we have a stereo image we should append it too...
+        if (!cam->img1.empty() && ov_system->get_params().state_options.num_cameras > 1) {
+            cam_datum.sensor_ids.push_back(1);
+            cam_datum.images.push_back(cam->img1.clone());
+            if (ov_system->get_params().use_mask) {
+                assert(ov_system->get_params().masks.at(1).rows == cam->img1.rows);
+                assert(ov_system->get_params().masks.at(1).cols == cam->img1.cols);
+                cam_datum.masks.push_back(ov_system->get_params().masks.at(1));
+            } else {
+                cam_datum.masks.push_back(cv::Mat::zeros(cam->img1.rows, cam->img1.cols, CV_8UC1));
+            }
         }
         // PRINT_WARNING(BLUE "camera = %.8f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
 

@@ -1,26 +1,38 @@
-**Part of [ILLIXR](https://github.com/ILLIXR/ILLIXR), the Illinois Extended Reality Benchmark Suite.**
-
 # Getting Started with OpenVINS
 
 ## Building OpenVINS
 
-Standalone OpenVINS compilation:
+1. Install OpenVINS as a global library using the `scripts/install_openvins.sh`
+2. From there, the [Makefile](Makefile) will build and link to the `libov_msckf_lib.so`
+3. Configure the plugin to be used and the config
+    - Enable `- path: pose_openvins/` in your plugin group
+    - In actions, set `openvins_path: pose_openvins/` path to where the config files are located
+    - In actions, set `openvins_sensor: euroc_mav` the name of the config file (e.g. euroc_mav, rs_t265, rs_d455, ...)
+4. Run ILLIXR as normal now!
 
+
+
+## Converting ROS Bags
+
+- This will use [Kalibr](https://github.com/ethz-asl/kalibr)
+- Example data is the D455 from [ar_table_dataset](https://github.com/rpng/ar_table_dataset)
 ```
-git clone https://github.com/ILLIXR/open_vins.git
-cd open_vins/ILLIXR/
-make [opt|dbg]
+rosrun kalibr kalibr_bagextractor \
+    --bag table_01.bag \
+    --image-topics /d455/color/image_raw \
+    --imu-topics /d455/imu \
+    --output-folder table_01/.
+```
+- From here you can generate a groundtruth with [vicon2gt](https://github.com/rpng/vicon2gt/) and name it `state0.csv`
+- The final folder structure should be:
+```
+cam0/
+cam1/ (optional)
+imu0.csv
+state0.csv
 ```
 
-## Running OpenVINS Standalone
 
-Now to run OpenVINS Standalone do the following:
-```
-cd build/[RelWithDebInfo|Debug]
-./run_illixr_stal <path_to_config> <path_to_cam0> <path_to_cam1> <path_to_imu0> <path_to_cam0_images> <path_to_cam1_images>
-```
-
-When running OpenVINS we assume the data is formatted in the [EUROC Dataset standard](https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets).
 
 ## Credit
 
