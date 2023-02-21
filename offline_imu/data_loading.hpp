@@ -27,18 +27,34 @@ static std::map<ullong, sensor_types> load_data() {
 
     std::map<ullong, sensor_types> data;
 
-    const std::string imu0_subpath = "/imu0/data.csv";
-    std::ifstream     imu0_file{illixr_data + imu0_subpath};
-    if (!imu0_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << imu0_subpath << " (" << illixr_data << imu0_subpath << ") is not a good path"
+    const std::string imu0_subpath_asl    = "/imu0/data.csv";
+    const std::string imu0_subpath_kalibr = "/imu0.csv";
+    std::ifstream     imu0_file_asl{illixr_data + imu0_subpath_asl};
+    std::ifstream     imu0_file_kalibr{illixr_data + imu0_subpath_kalibr};
+    if (!imu0_file_asl.good() && !imu0_file_kalibr.good()) {
+        std::cerr << "${ILLIXR_DATA}" << imu0_subpath_asl << " (" << illixr_data << imu0_subpath_asl << ") is not a good path"
                   << std::endl;
+        std::cerr << "${ILLIXR_DATA}" << imu0_subpath_kalibr << " (" << illixr_data << imu0_subpath_kalibr
+                  << ") is not a good path" << std::endl;
         ILLIXR::abort();
     }
-    for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
-        ullong          t = std::stoull(row[0]);
-        Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
-        Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
-        data[t].imu0 = {av, la};
+
+    if (imu0_file_asl.good()) {
+        for (CSVIterator row{imu0_file_asl, 1}; row != CSVIterator{}; ++row) {
+            ullong          t = std::stoull(row[0]);
+            Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
+            Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
+            data[t].imu0 = {av, la};
+        }
+    }
+
+    if (imu0_file_kalibr.good()) {
+        for (CSVIterator row{imu0_file_kalibr, 1}; row != CSVIterator{}; ++row) {
+            ullong          t = std::stoull(row[0]);
+            Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
+            Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
+            data[t].imu0 = {av, la};
+        }
     }
 
     return data;

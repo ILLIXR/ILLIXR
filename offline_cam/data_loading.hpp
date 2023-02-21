@@ -1,6 +1,7 @@
 #include "common/csv_iterator.hpp"
 
 #include <eigen3/Eigen/Dense>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <opencv2/core/mat.hpp>
@@ -29,6 +30,9 @@ public:
         _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 #endif
     }
+
+    lazy_load_image(const cv::Mat& _m_mat_data)
+        : _m_mat(_m_mat_data) { }
 
     cv::Mat load() const {
 #ifdef LAZY
@@ -59,29 +63,50 @@ static std::map<ullong, sensor_types> load_data() {
 
     std::map<ullong, sensor_types> data;
 
-    const std::string cam0_subpath = "/cam0/data.csv";
-    std::ifstream     cam0_file{illixr_data + cam0_subpath};
-    if (!cam0_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << cam0_subpath << " (" << illixr_data << cam0_subpath << ") is not a good path"
-                  << std::endl;
-        ILLIXR::abort();
-    }
-    for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
-        ullong t     = std::stoull(row[0]);
-        data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
+    // First try to load the Kalibr folder of images if we have that...
+    const std::string cam0_subpath_asl    = "/cam0/data.csv";
+    const std::string cam0_subpath_kalibr = "/cam0/";
+    std::ifstream     cam0_file_asl{illixr_data + cam0_subpath_asl};
+    if (!cam0_file_asl.good() && std::filesystem::exists(illixr_data + cam0_subpath_kalibr) &&
+        std::filesystem::is_directory(illixr_data + cam0_subpath_kalibr)) {
+        for (const auto& entry : std::filesystem::directory_iterator(illixr_data + cam0_subpath_kalibr)) {
+            ullong t     = std::stoull(std::filesystem::path(entry).filename().stem());
+            data[t].cam0 = {entry.path()};
+            data[t].cam1 = {cv::Mat()};
+        }
     }
 
-    const std::string cam1_subpath = "/cam1/data.csv";
-    std::ifstream     cam1_file{illixr_data + cam1_subpath};
-    if (!cam1_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << cam1_subpath << " (" << illixr_data << cam1_subpath << ") is not a good path"
+    // Otherwise fallback on using the data.csv file
+    if (!cam0_file_asl.good() && data.empty()) {
+        std::cerr << "${ILLIXR_DATA}" << cam0_subpath_asl << " (" << illixr_data << cam0_subpath_asl << ") is not a good path"
                   << std::endl;
         ILLIXR::abort();
     }
-    for (CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
-        ullong      t     = std::stoull(row[0]);
-        std::string fname = row[1];
-        data[t].cam1      = {illixr_data + "/cam1/data/" + row[1]};
+    for (CSVIterator row{cam0_file_asl, 1}; row != CSVIterator{}; ++row) {
+        ullong t     = std::stoull(row[0]);
+        data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
+        data[t].cam1 = {cv::Mat()};
+    }
+
+    // First try to load the Kalibr folder of images if we have that...
+    const std::string cam1_subpath_asl    = "/cam1/data.csv";
+    const std::string cam1_subpath_kalibr = "/cam1/";
+    std::ifstream     cam1_file_asl{illixr_data + cam1_subpath_asl};
+    if (!cam1_file_asl.good() && std::filesystem::exists(illixr_data + cam1_subpath_kalibr) &&
+        std::filesystem::is_directory(illixr_data + cam1_subpath_kalibr)) {
+        for (const auto& entry : std::filesystem::directory_iterator(illixr_data + cam1_subpath_kalibr)) {
+            ullong t     = std::stoull(std::filesystem::path(entry).filename().stem());
+            data[t].cam1 = {entry.path()};
+        }
+    }
+
+    // Otherwise fallback on using the data.csv file
+    if (cam1_file_asl.good()) {
+        for (CSVIterator row{cam1_file_asl, 1}; row != CSVIterator{}; ++row) {
+            ullong      t     = std::stoull(row[0]);
+            std::string fname = row[1];
+            data[t].cam1      = {illixr_data + "/cam1/data/" + row[1]};
+        }
     }
 
     return data;
