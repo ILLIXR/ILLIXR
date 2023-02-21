@@ -169,6 +169,53 @@ public:
             return;
         camera_last_timestamp = time_cam;
 
+        // If we have initialized then we should report the current pose
+        // NOTE: This needs to be in our main thread as it seems the switchboard has mutex problems
+        if (ov_system->initialized()) {
+            // Get the pose returned from SLAM
+            std::shared_ptr<State> ov_state = ov_system->get_state();
+            time_point             time_of_update(from_seconds(ov_state->_timestamp));
+            Eigen::Vector4d        quat   = ov_state->_imu->quat();
+            Eigen::Vector3d        vel    = ov_state->_imu->vel();
+            Eigen::Vector3d        pose   = ov_state->_imu->pos();
+            Eigen::Vector3d        bias_g = ov_state->_imu->bias_g();
+            Eigen::Vector3d        bias_a = ov_state->_imu->bias_a();
+
+            // OpenVINS has the rotation R_GtoIi in its state in JPL quaterion
+            // We thus switch it to hamilton quaternions by simply flipping the order of xyzw
+            // This results in the rotation R_IitoG being reported along with the p_IiinG (e.g. SE(3) pose)
+            Eigen::Vector3f    swapped_pos = Eigen::Vector3f{float(pose(0)), float(pose(1)), float(pose(2))};
+            Eigen::Quaternionf swapped_rot = Eigen::Quaternionf{float(quat(3)), float(quat(0)), float(quat(1)), float(quat(2))};
+            Eigen::Quaterniond swapped_rot2 = Eigen::Quaterniond{(quat(3)), (quat(0)), (quat(1)), (quat(2))};
+            assert(isfinite(swapped_rot.w()));
+            assert(isfinite(swapped_rot.x()));
+            assert(isfinite(swapped_rot.y()));
+            assert(isfinite(swapped_rot.z()));
+            assert(isfinite(swapped_pos[0]));
+            assert(isfinite(swapped_pos[1]));
+            assert(isfinite(swapped_pos[2]));
+
+            // Push back this pose to our "slow" pose topic
+            _m_pose.put(_m_pose.allocate(time_of_update, swapped_pos, swapped_rot));
+
+            // Also send this information with biases and velocity to the fast IMU integrator
+            // TODO: these IMU noises should be coming from the configuration yaml of OpenVINS...
+            // TODO: these might be discrete noises, thus would need to be converted from OpenVINS continuous-time
+            // TODO: https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model#the-noise-model-parameters-in-kalibr
+            imu_params params = {
+                .gyro_noise            = 0.00016968,
+                .acc_noise             = 0.002,
+                .gyro_walk             = 1.9393e-05,
+                .acc_walk              = 0.003,
+                .n_gravity             = Eigen::Matrix<double, 3, 1>(0.0, 0.0, -9.81),
+                .imu_integration_sigma = 1.0,
+                .nominal_rate          = 200.0,
+            };
+            auto dt = from_seconds(ov_state->_calib_dt_CAMtoIMU->value()(0));
+            _m_imu_integrator_input.put(
+                _m_imu_integrator_input.allocate(time_of_update, dt, params, bias_a, bias_g, pose, vel, swapped_rot2));
+        }
+
         // Create the camera data type from switchboard data
         ov_core::CameraData cam_datum;
         cam_datum.timestamp = time_cam;
@@ -221,53 +268,6 @@ public:
 
                 // Debug testing for what is the update is very very slow...
                 // usleep(0.1 * 1e6);
-
-                // If we have initialized then we should report the current pose
-                if (ov_system->initialized()) {
-                    // Get the pose returned from SLAM
-                    std::shared_ptr<State> ov_state = ov_system->get_state();
-                    Eigen::Vector4d        quat     = ov_state->_imu->quat();
-                    Eigen::Vector3d        vel      = ov_state->_imu->vel();
-                    Eigen::Vector3d        pose     = ov_state->_imu->pos();
-                    Eigen::Vector3d        bias_g   = ov_state->_imu->bias_g();
-                    Eigen::Vector3d        bias_a   = ov_state->_imu->bias_a();
-
-                    // OpenVINS has the rotation R_GtoIi in its state in JPL quaterion
-                    // We thus switch it to hamilton quaternions by simply flipping the order of xyzw
-                    // This results in the rotation R_IitoG being reported along with the p_IiinG (e.g. SE(3) pose)
-                    Eigen::Vector3f    swapped_pos = Eigen::Vector3f{float(pose(0)), float(pose(1)), float(pose(2))};
-                    Eigen::Quaternionf swapped_rot =
-                        Eigen::Quaternionf{float(quat(3)), float(quat(0)), float(quat(1)), float(quat(2))};
-                    Eigen::Quaterniond swapped_rot2 = Eigen::Quaterniond{(quat(3)), (quat(0)), (quat(1)), (quat(2))};
-                    assert(isfinite(swapped_rot.w()));
-                    assert(isfinite(swapped_rot.x()));
-                    assert(isfinite(swapped_rot.y()));
-                    assert(isfinite(swapped_rot.z()));
-                    assert(isfinite(swapped_pos[0]));
-                    assert(isfinite(swapped_pos[1]));
-                    assert(isfinite(swapped_pos[2]));
-
-                    // Push back this pose to our "slow" pose topic
-                    time_point time_of_update(from_seconds(camera_queue.at(0).timestamp));
-                    _m_pose.put(_m_pose.allocate(time_of_update, swapped_pos, swapped_rot));
-
-                    // Also send this information with biases and velocity to the fast IMU integrator
-                    // TODO: these IMU noises should be coming from the configuration yaml of OpenVINS...
-                    // TODO: these might be discrete noises, thus would need to be converted from OpenVINS continuous-time
-                    // TODO: https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model#the-noise-model-parameters-in-kalibr
-                    imu_params params = {
-                        .gyro_noise            = 0.00016968,
-                        .acc_noise             = 0.002,
-                        .gyro_walk             = 1.9393e-05,
-                        .acc_walk              = 0.003,
-                        .n_gravity             = Eigen::Matrix<double, 3, 1>(0.0, 0.0, -9.81),
-                        .imu_integration_sigma = 1.0,
-                        .nominal_rate          = 200.0,
-                    };
-                    auto dt = from_seconds(ov_state->_calib_dt_CAMtoIMU->value()(0));
-                    _m_imu_integrator_input.put(
-                        _m_imu_integrator_input.allocate(datum->time, dt, params, bias_a, bias_g, pose, vel, swapped_rot2));
-                }
 
                 // Debug display of tracks
                 cv::Mat imgout = ov_system->get_historical_viz_image();
