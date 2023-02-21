@@ -68,7 +68,8 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
+        , _m_cam_vins{sb->get_buffered_reader<cam_type>("vins")} { }
 
     void draw_GUI() {
         RAC_ERRNO_MSG("debugview at start of draw_GUI");
@@ -193,17 +194,26 @@ public:
                     camera_texture_sizes[0].y(), camera_textures[0]);
         ImGui::Text("	Camera1: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes[1].x(),
                     camera_texture_sizes[1].y(), camera_textures[1]);
+        ImGui::Text("	Vins0: (%d, %d) \n		GL texture handle: %d", camera_texture_sizes_vins[0].x(),
+                    camera_texture_sizes_vins[0].y(), camera_textures_vins[0]);
         ImGui::End();
 
         ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
                                 ImVec2(1.0f, 1.0f));
-        ImGui::Begin("Onboard camera views");
+        ImGui::Begin("Onboard Camera Views");
         auto windowSize     = ImGui::GetWindowSize();
         auto verticalOffset = ImGui::GetCursorPos().y;
         ImGui::Image((void*) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
         ImGui::SameLine();
         ImGui::Image((void*) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+        ImGui::End();
+
+        ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - windowSize.y),
+                                ImGuiCond_Once, ImVec2(1.0f, 1.0f));
+        ImGui::Begin("Visual-Inertial Tracking");
+        ImGui::Image((void*) (intptr_t) camera_textures_vins[0], ImVec2(windowSize.x, windowSize.y - verticalOffset * 2));
         ImGui::End();
 
         ImGui::Render();
@@ -215,24 +225,32 @@ public:
         RAC_ERRNO_MSG("debugview at start of load_camera_images");
 
         cam = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
-        if (cam == nullptr) {
-            return false;
+        if (cam != nullptr) {
+            glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
+            cv::Mat img0{cam->img0.clone()};
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
+            camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
+            GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
+            glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+
+            glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+            cv::Mat img1{cam->img1.clone()}; /// <- Adding this here to simulate the copy
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
+            camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
+            GLint swizzleMask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
+            glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask1);
         }
 
-        glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-        cv::Mat img0{cam->img0.clone()};
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
-        camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
-        GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
-        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+        cam_vins = _m_cam_vins.size() == 0 ? nullptr : _m_cam_vins.dequeue();
+        if (cam_vins != nullptr) {
+            glBindTexture(GL_TEXTURE_2D, camera_textures_vins[0]);
+            cv::Mat img0{cam_vins->img0.clone()}; /// <- Adding this here to simulate the copy
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img0.cols, img0.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, img0.ptr());
+            camera_texture_sizes_vins[0] = Eigen::Vector2i(img0.cols, img0.rows);
+        }
 
-        glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-        cv::Mat img1{cam->img1.clone()}; /// <- Adding this here to simulate the copy
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
-        camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
-        GLint swizzleMask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
-        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask1);
-
+        if (cam == nullptr && cam_vins == nullptr)
+            return false;
         RAC_ERRNO_MSG("debugview at end of load_camera_images");
         return true;
     }
@@ -371,6 +389,7 @@ private:
     switchboard::reader<pose_type>         _m_slow_pose;
     switchboard::reader<imu_raw_type>      _m_fast_pose;
     switchboard::buffered_reader<cam_type> _m_cam;
+    switchboard::buffered_reader<cam_type> _m_cam_vins;
     GLFWwindow*                            gui_window;
 
     uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
@@ -390,6 +409,10 @@ private:
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
+
+    switchboard::ptr<const cam_type> cam_vins;
+    GLuint                           camera_textures_vins[1];
+    Eigen::Vector2i                  camera_texture_sizes_vins[1] = {Eigen::Vector2i::Zero()};
 
     GLuint demo_vao;
     GLuint demoShaderProgram;
@@ -506,6 +529,11 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glGenTextures(1, &(camera_textures_vins[0]));
+        glBindTexture(GL_TEXTURE_2D, camera_textures_vins[0]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

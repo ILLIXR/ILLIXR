@@ -25,6 +25,9 @@ action:
   audio_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
   name: native
 
+  # how long to run the program before ending processing (default 60)
+  ILLIXR_RUN_DURATION: 60
+
   # OpenVINS sensor configuration:
   #   - Path is where we will load configs from
   #   - Sensor is what config we should load (e.g. euroc_mav, rs_t265, rs_d455, ...)
@@ -34,6 +37,7 @@ action:
 
   # run in GDB:
   # command: gdb -q --args $cmd
+  # command: gdb -q -ex run --args $cmd
 
   # Print cmd for external use:
   # command: printf %s\n $env_cmd

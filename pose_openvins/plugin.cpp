@@ -61,6 +61,7 @@ public:
         , _m_pose_fast{sb->get_writer<imu_raw_type>("imu_raw")}
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
+        , _m_cam_pub{sb->get_writer<cam_type>("vins")}
         , ov_update_running(false)
         , root_path{getenv("OPENVINS_ROOT")}
         , sensor_name{getenv("OPENVINS_SENSOR")} {
@@ -95,7 +96,6 @@ public:
 
     /**
      * @brief Callback when we have a new IMU message
-     *
      *
      * @param datum IMU data packet from the switchboard
      * @param iteration_no TODO: what is this? not sure...
@@ -174,6 +174,10 @@ public:
         cam_datum.images.push_back(cam->img0.clone());
         cam_datum.images.push_back(cam->img1.clone());
         if (ov_system->get_params().use_mask) {
+            assert(ov_system->get_params().masks.at(0).rows == cam->img0.rows);
+            assert(ov_system->get_params().masks.at(0).cols == cam->img0.cols);
+            assert(ov_system->get_params().masks.at(1).rows == cam->img1.rows);
+            assert(ov_system->get_params().masks.at(1).cols == cam->img1.cols);
             cam_datum.masks.push_back(ov_system->get_params().masks.at(0));
             cam_datum.masks.push_back(ov_system->get_params().masks.at(1));
         } else {
@@ -187,7 +191,7 @@ public:
             std::lock_guard<std::mutex> lck(camera_queue_mtx);
             camera_queue.push_back(cam_datum);
             std::sort(camera_queue.begin(), camera_queue.end());
-        };
+        }
 
         // Lets multi-thread it!
         ov_update_running = true;
@@ -233,11 +237,6 @@ public:
                     assert(isfinite(swapped_pos[1]));
                     assert(isfinite(swapped_pos[2]));
 
-                    // Debug display of tracks
-                    // cv::Mat imgout = ov_system->get_historical_viz_image();
-                    // cv::imshow("Active Tracks", imgout);
-                    // cv::waitKey(1);
-
                     // Push back this pose to our "slow" pose topic
                     time_point time_of_update(from_seconds(camera_queue.at(0).timestamp));
                     _m_pose.put(_m_pose.allocate(time_of_update, swapped_pos, swapped_rot));
@@ -256,6 +255,26 @@ public:
                     auto dt = from_seconds(ov_state->_calib_dt_CAMtoIMU->value()(0));
                     _m_imu_integrator_input.put(
                         _m_imu_integrator_input.allocate(datum->time, dt, params, bias_a, bias_g, pose, vel, swapped_rot2));
+                }
+
+                // Debug display of tracks
+                cv::Mat imgout = ov_system->get_historical_viz_image();
+                if (!imgout.empty()) {
+                    // Append the current tracking rate to the image
+                    // TODO: can this be clean up to look nicer?
+                    auto              rT0_2          = boost::posix_time::microsec_clock::local_time();
+                    double            viz_track_rate = 1.0 / ((rT0_2 - rT0_1).total_microseconds() * 1e-6);
+                    std::stringstream stream;
+                    stream << std::fixed << std::setprecision(1) << viz_track_rate;
+                    std::string rate = stream.str() + "hz";
+                    cv::putText(imgout, rate, cv::Point(60, imgout.rows - 60), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5,
+                                cv::Scalar(0, 255, 0), 2);
+
+                    // Finally publish it
+                    time_point time_of_update(from_seconds(camera_queue.at(0).timestamp));
+                    _m_cam_pub.put(_m_cam_pub.allocate<cam_type>({time_of_update, imgout, cv::Mat()}));
+                    // cv::imshow("Active Tracks", imgout);
+                    // cv::waitKey(1);
                 }
 
                 // We are done with this image!
@@ -284,9 +303,9 @@ private:
     switchboard::writer<imu_raw_type>         _m_pose_fast;
     switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
 
-    // Subscriber / sensor information
-    // switchboard::ptr<const cam_type>       cam_buffer;
+    // Camera subscriber and tracking image publisher
     switchboard::buffered_reader<cam_type> _m_cam;
+    switchboard::writer<cam_type>          _m_cam_pub;
 
     // OpenVINS related
     std::shared_ptr<VioManager> ov_system;

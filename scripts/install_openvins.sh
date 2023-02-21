@@ -45,10 +45,10 @@ cmake \
     -D CMAKE_CXX_COMPILER="${CXX}" \
     -D CMAKE_BUILD_TYPE="${build_type}" \
     -D CMAKE_INSTALL_PREFIX="${prefix_dir}"
-make -C "${build_dir}" -j "6"
+make -C "${build_dir}" -j "${illixr_nproc}"
 
 ## Install
-sudo make -C "${build_dir}" -j "6" install
+sudo make -C "${build_dir}" -j "${illixr_nproc}" install
 
 ## Log
 log_dependency "${dep_name}" "${deps_log_dir}" "${src_dir}" "${dep_ver}"
