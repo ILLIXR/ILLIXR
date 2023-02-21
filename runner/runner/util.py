@@ -428,6 +428,18 @@ Returns:
                 with cache_dest.open('wb') as outfileobj:
                     shutil.copyfileobj(infileobj, cast(IO[bytes], outfileobj))
             return cache_dest
+    elif "download_url_gdrive" in path_descr:
+        id = path_descr["download_url_gdrive"]
+        cache_dest = cache_path / escape_fname(id + ".zip")
+        if should_dir:
+            raise ValueError(f"{path_descr} points to a file (because of the download_url_gdrive scheme) not a dir")
+        elif cache_dest.exists():
+            return cache_dest
+        else:
+            import gdown #pip install gdown
+            gdown.download(id=id, output=str(cache_dest), quiet=False, fuzzy=True)
+            # unzip_with_progress(cache_dest, cache_dest_unzip, f"Unzipping {truncate(str(cache_dest), DISPLAY_PATH_LENGTH)}")
+            return cache_dest
     elif "subpath" in path_descr:
         ret = cast(Path,
             pathify(path_descr["relative_to"], base, cache_path, True, True)
@@ -447,7 +459,7 @@ Returns:
             path_descr["archive_path"], base, cache_path, True, False
         )
         cache_key = archive_path.relative_to(cache_path) if is_relative_to(archive_path, cache_path) else str(archive_path)
-        cache_dest = cache_path / escape_fname(str(cache_key))
+        cache_dest = cache_path / escape_fname("EXTRACTED_" + str(cache_key))
         if not should_dir:
             raise ValueError(
                 f"{path_descr} points to a dir (because of the archive_path scheme) not a file"

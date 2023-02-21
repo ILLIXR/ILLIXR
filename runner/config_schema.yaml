@@ -52,6 +52,14 @@ definitions:
       - type: object
         additionalProperties: false
         required:
+          - download_url_gdrive
+        properties:
+          download_url_gdrive:
+            type: string
+            description: drive ID to download
+      - type: object
+        additionalProperties: false
+        required:
           - subpath
           - relative_to
         properties:

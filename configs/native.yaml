@@ -12,7 +12,15 @@ plugin_groups:
 #  relative_to:
 #    archive_path:
 #      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-data: "/home/patrick/datasets/rpng_plane/table_01/"
+data:
+  # table_01: 1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV (0.6gb)
+  # table_02: 1c0m9AnPAPNDmnRQ4-3cWUEQreiUDwswN (0.9gb)
+  # table_03: 1vmNanhgR0N5iMSFUejojmRVjWwIbJ9P7 (2.0gb)
+  # table_04: 1j7fW-reWtbe18CtZHqWV2Cuu1_cbbEwu (1.8gb)
+  subpath: "."
+  relative_to:
+    archive_path:
+      download_url_gdrive: '1vmNanhgR0N5iMSFUejojmRVjWwIbJ9P7'
 demo_data: demo_data/
 
 enable_offload: False
@@ -26,15 +34,14 @@ action:
   audio_path: .cache/paths/https%c%s%sgithub.com%sILLIXR%saudio_pipeline.git/
   name: native
 
-  # how long to run the program before ending processing (default 60)
-  ILLIXR_RUN_DURATION: 60
+  # How long to run the program before ending processing (default 60)
+  ILLIXR_RUN_DURATION: 999
 
   # OpenVINS sensor configuration:
   #   - Path is where we will load configs from
   #   - Sensor is what config we should load (e.g. euroc_mav, rs_t265, rs_d455, ...)
   openvins_sensor: rs_d455
   openvins_path: pose_openvins/
-  #  openvins_path:  .cache/paths/https%c%s%sgithub.com%sILLIXR%sopen_vins.git/
 
   # run in GDB:
   # command: gdb -q --args $cmd
