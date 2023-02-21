@@ -72,12 +72,10 @@ public:
             feed_imu_cam(datum, iteration_no);
         });
 
-        // TODO: we should load the whole config from the user
+        // Load our parser and the user's verbosity
         boost::filesystem::path config_path = root_path / "config" / sensor_name / "estimator_config.yaml";
-
-        // Verbosity
-        auto        parser    = std::make_shared<ov_core::YamlParser>(config_path.string());
-        std::string verbosity = "INFO";
+        auto                    parser      = std::make_shared<ov_core::YamlParser>(config_path.string());
+        std::string             verbosity   = "INFO";
         parser->parse_config("verbosity", verbosity);
         ov_core::Printer::setPrintLevel(verbosity);
 
@@ -96,6 +94,11 @@ public:
 
     /**
      * @brief Callback when we have a new IMU message
+     *
+     * The IMU should always append to OpenVINS feed function and not be blocked by update.
+     * Additionally, we publish a "fast pose" on the "imu_raw" topic for the headset.
+     * If we are not processing any images currently we will create an async thread and call update.
+     * After update we publish the updated pose along with the visualization image.
      *
      * @param datum IMU data packet from the switchboard
      * @param iteration_no TODO: what is this? not sure...
@@ -243,6 +246,8 @@ public:
 
                     // Also send this information with biases and velocity to the fast IMU integrator
                     // TODO: these IMU noises should be coming from the configuration yaml of OpenVINS...
+                    // TODO: these might be discrete noises, thus would need to be converted from OpenVINS continuous-time
+                    // TODO: https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model#the-noise-model-parameters-in-kalibr
                     imu_params params = {
                         .gyro_noise            = 0.00016968,
                         .acc_noise             = 0.002,
@@ -319,7 +324,7 @@ private:
     std::mutex                      camera_queue_mtx;
     double                          camera_last_timestamp = -1.0;
 
-    // How to get the configration information
+    // How to get the configuration information
     boost::filesystem::path root_path;
     std::string             sensor_name;
 };
