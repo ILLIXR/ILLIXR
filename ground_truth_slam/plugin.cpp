@@ -30,14 +30,17 @@ public:
     }
 
     void feed_ground_truth(switchboard::ptr<const imu_type> datum) {
-        ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
-        auto   it           = _m_sensor_data.find(rounded_time);
-
-        if (it == _m_sensor_data.end()) {
+        ullong       rounded_time     = datum->time.time_since_epoch().count() + _m_dataset_first_time;
+        auto         it               = _m_sensor_data.lower_bound(rounded_time);
+        const ullong min_time_diff_ns = 1e+8;
+        if (it == _m_sensor_data.end() || it->first - rounded_time > min_time_diff_ns) {
 #ifndef NDEBUG
             std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
 #endif
             return;
+        }
+        if (rounded_time != it->first) {
+            rounded_time = it->first;
         }
 
         switchboard::ptr<pose_type> true_pose =
