@@ -2,17 +2,17 @@
 
 #pragma once
 
+#include "phonebook.hpp"
 #include "relative_clock.hpp"
 
+#include <cstdint>
+#include <cstdlib>
+#include <functional>
+#include <iostream>
 #include <math.h>
 #include <stdexcept>
 #include <string>
-#include <iostream>
-#include <cstdlib>
-#include <cstdint>
 #include <string_view>
-#include <functional>
-#include "phonebook.hpp"
 
 namespace ILLIXR {
 
@@ -67,7 +67,6 @@ struct rendering_params {
     static constexpr float far_z = 20.0f;
 };
 
-
 // ********************************DELETE WHEN FINISHED *****************************
 /**
  * @brief Convert a string containing a (python) boolean to the bool type
@@ -86,6 +85,7 @@ inline std::string getenv_or(std::string var, std::string default_) {
         return default_;
     }
 }
+
 // ********************************DELETE WHEN FINISHED *****************************
 
 /*--- Declarations ---*/
@@ -95,10 +95,9 @@ inline std::string getenv_or(std::string var, std::string default_) {
  * _X: The literal text (i.e. variable name) to be stringified
  */
 #ifndef STRINGIFY
-#define STRINGIFY_HELP(_X) #_X
-#define STRINGIFY(_X) STRINGIFY_HELP(_X)
+    #define STRINGIFY_HELP(_X) #_X
+    #define STRINGIFY(_X)      STRINGIFY_HELP(_X)
 #endif // STRINGIFY
-
 
 /**
  * (Macro expansion) Function used to convert to a type from a string
@@ -107,14 +106,12 @@ inline std::string getenv_or(std::string var, std::string default_) {
  * _SUFFIX: The suffix to be applied for the std::sto.. function called
  */
 #ifndef DECLARE_TO_FUNC
-#define DECLARE_TO_FUNC(_TYPE, _SUFFIX)     \
-template<>                                  \
-_TYPE to(const std::string& value_str)      \
-{                                           \
-    return std::sto##_SUFFIX(value_str);    \
-}
+    #define DECLARE_TO_FUNC(_TYPE, _SUFFIX)      \
+        template<>                               \
+        _TYPE to(const std::string& value_str) { \
+            return std::sto##_SUFFIX(value_str); \
+        }
 #endif // DECLARE_TO_FUNC
-
 
 /**
  * @brief (Macro expansion) Function used to declare constants used by modules
@@ -160,28 +157,23 @@ _TYPE to(const std::string& value_str)      \
  * TODO: Support destructor body
  */
 #ifndef DECLARE_CONST
-#define DECLARE_CONST(_NAME, _TYPE, _FROM_STR, _VALUE)                  \
-class DECL_##_NAME : public const_decl<_TYPE>                           \
-{                                                                       \
-public:                                                                 \
-    using type          = const_decl<_TYPE>::type;                      \
-    using from_str_func = const_decl<_TYPE>::from_str_func;             \
-                                                                        \
-    DECL_##_NAME(                                                       \
-        const std::string& var_name,                                    \
-        from_str_func from_str,                                         \
-        type var_default                                                \
-    ) : const_decl<_TYPE>{var_name, from_str, var_default}              \
-    { }                                                                 \
-                                                                        \
-    DECL_##_NAME(const DECL_##_NAME& other) noexcept                    \
-        : const_decl<_TYPE>{other}                                      \
-    { }                                                                 \
-};                                                                      \
-DECL_##_NAME::from_str_func from_str_##_NAME { _FROM_STR };             \
-DECL_##_NAME _NAME { STRINGIFY(_NAME), from_str_##_NAME, _VALUE }
+    #define DECLARE_CONST(_NAME, _TYPE, _FROM_STR, _VALUE)                                      \
+        class DECL_##_NAME : public const_decl<_TYPE> {                                         \
+        public:                                                                                 \
+            using type          = const_decl<_TYPE>::type;                                      \
+            using from_str_func = const_decl<_TYPE>::from_str_func;                             \
+                                                                                                \
+            DECL_##_NAME(const std::string& var_name, from_str_func from_str, type var_default) \
+                : const_decl<_TYPE>{var_name, from_str, var_default} { }                        \
+                                                                                                \
+            DECL_##_NAME(const DECL_##_NAME& other) noexcept                                    \
+                : const_decl<_TYPE>{other} { }                                                  \
+        };                                                                                      \
+        DECL_##_NAME::from_str_func from_str_##_NAME{_FROM_STR};                                \
+        DECL_##_NAME                _NAME {                                                     \
+            STRINGIFY(_NAME), from_str_##_NAME, _VALUE                           \
+        }
 #endif // DECLARE_CONST
-
 
 /**
  * @brief A template base class for constant definitions
@@ -192,23 +184,18 @@ DECL_##_NAME _NAME { STRINGIFY(_NAME), from_str_##_NAME, _VALUE }
  * default value fetched via const accessors
  */
 template<typename T>
-class const_decl
-{
+class const_decl {
 public:
-    using type = T;
-    using from_str_func = std::function< type (const std::string&) >;
+    using type          = T;
+    using from_str_func = std::function<type(const std::string&)>;
 
     virtual ~const_decl() = default;
 
-    const_decl(
-        const std::string& var_name,
-        from_str_func from_str,
-        type var_default
-    ) : _m_name{var_name}
-      , _m_from_str{from_str}
-      , _m_default{var_default}
-    {
-        const std::string value_str { value_str_from_env(_m_name.c_str()) };
+    const_decl(const std::string& var_name, from_str_func from_str, type var_default)
+        : _m_name{var_name}
+        , _m_from_str{from_str}
+        , _m_default{var_default} {
+        const std::string value_str{value_str_from_env(_m_name.c_str())};
         _m_value = (value_str.empty()) ? _m_default : _m_from_str(value_str);
 #ifndef NDEBUG
         _m_value_str = value_str;
@@ -223,24 +210,22 @@ public:
 #ifndef NDEBUG
         , _m_value_str{other._m_value_str}
 #endif // NDEBUG
-    { }
+    {
+    }
 
     const_decl(const_decl<type>&& other) noexcept; // Immovable
 
     /*--- Accessors ---*/
 
-    const std::string& name() const noexcept
-    {
+    const std::string& name() const noexcept {
         return _m_name;
     }
 
-    const type& value() const noexcept
-    {
+    const type& value() const noexcept {
         return _m_value;
     }
 
-    const type& value_default() const noexcept
-    {
+    const type& value_default() const noexcept {
         return _m_default;
     }
 
@@ -253,14 +238,11 @@ private:
      *
      * Returns a std::string containing the constant's stringified value
      */
-    static std::string value_str_from_env(const char* const var_name) noexcept
-    {
-        const char* const c_str {std::getenv(var_name)};
+    static std::string value_str_from_env(const char* const var_name) noexcept {
+        const char* const c_str{std::getenv(var_name)};
 #ifndef NDEBUG
-        std::cout << "value_str_from_env(" << var_name << "): " << c_str
-                  << std::endl
-                  << var_name << " is null? " << ((c_str == nullptr) ? "true" : "false")
-                  << std::endl;
+        std::cout << "value_str_from_env(" << var_name << "): " << c_str << std::endl
+                  << var_name << " is null? " << ((c_str == nullptr) ? "true" : "false") << std::endl;
 #endif // NDEBUG
         return (c_str == nullptr) ? std::string{""} : std::string{c_str};
     }
@@ -268,24 +250,21 @@ private:
     /*--- Private members ---*/
 
     const std::string _m_name;
-    from_str_func _m_from_str;
-    const type _m_default;
-    type _m_value;
+    from_str_func     _m_from_str;
+    const type        _m_default;
+    type              _m_value;
 
 #ifndef NDEBUG
     std::string _m_value_str;
 #endif // NDEBUG
 };
 
-
-
 /**
  * @brief A class for constant declarations and their type conversions
  *
  * See DECLARE_CONST and 'common/const_decls.hpp' for usage details
  */
-class const_registry : public phonebook::service
-{
+class const_registry : public phonebook::service {
 public:
     ~const_registry() = default;
 
@@ -294,14 +273,12 @@ public:
     using RawPath = std::string;
 
     template<typename T>
-    static const T& noop(const T& obj) noexcept
-    {
+    static const T& noop(const T& obj) noexcept {
         return obj;
     }
 
     template<typename T>
-    static T copy(const T& obj) noexcept
-    {
+    static T copy(const T& obj) noexcept {
         return obj;
     }
 
@@ -310,24 +287,22 @@ public:
 
     /*--- Wrappers needed for a single argument for the `std::sto..` functions ---*/
 
-    DECLARE_TO_FUNC(int,          i);
+    DECLARE_TO_FUNC(int, i);
     DECLARE_TO_FUNC(unsigned int, ul);
-    DECLARE_TO_FUNC(long,         l);
-    DECLARE_TO_FUNC(double,       d);
+    DECLARE_TO_FUNC(long, l);
+    DECLARE_TO_FUNC(double, d);
 
     template<> /// Function is static via template specialization
-    bool to(const std::string& value_str)
-    {
+    bool to(const std::string& value_str) {
         /// Converting from Python-style bools
-        return (value_str == "True")  ? true  :
-               (value_str == "False") ? false :
-               throw std::runtime_error("Invalid conversion from std::string to bool");
+        return (value_str == "True") ? true
+            : (value_str == "False") ? false
+                                     : throw std::runtime_error("Invalid conversion from std::string to bool");
     }
 
     /*--- Constant declarations ---*/
 
 #include "const_decls.hpp"
-
 };
 
 } // namespace ILLIXR

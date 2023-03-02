@@ -1,7 +1,8 @@
 #include "common/global_module_defs.hpp"
 #include "runtime_impl.hpp"
-#include <memory>
+
 #include <csignal>
+#include <memory>
 #include <unistd.h> /// Not portable
 
 ILLIXR::runtime* r;
@@ -80,13 +81,13 @@ int main(int argc, char* const* argv) {
 #ifndef NDEBUG
     /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
     /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
-     /// a configurable command (e.g., 'configs/ci.yaml')
+    /// a configurable command (e.g., 'configs/ci.yaml')
     if (r->get_enable_pre_sleep()) {
         const pid_t pid = getpid();
-        const auto pre_sleep_duration {r->get_pre_sleep_duration()};
+        const auto  pre_sleep_duration{r->get_pre_sleep_duration()};
         std::cout << "[main] Pre-sleep enabled." << std::endl
                   << "[main] PID: " << pid << std::endl
-                  << "[main] Sleeping for " << pre_sleep_duration  << " seconds ..." << std::endl;
+                  << "[main] Sleeping for " << pre_sleep_duration << " seconds ..." << std::endl;
         sleep(pre_sleep_duration);
         std::cout << "[main] Resuming ..." << std::endl;
     }
@@ -104,7 +105,7 @@ int main(int argc, char* const* argv) {
     cancellable_sleep cs;
     std::thread       th{[&] {
         /// Shutting down method 2: Run timer
-        const std::chrono::seconds run_duration {r->get_run_duration()};
+        const std::chrono::seconds run_duration{r->get_run_duration()};
         cs.sleep(run_duration);
         r->stop();
     }};

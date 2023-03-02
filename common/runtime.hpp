@@ -29,12 +29,12 @@ public:
     virtual void stop() = 0;
 
     virtual ~runtime() = default;
-	
-	virtual long get_run_duration() const noexcept = 0;
 
-	virtual unsigned int get_pre_sleep_duration() const noexcept = 0;
+    virtual long get_run_duration() const noexcept = 0;
 
-	virtual bool get_enable_pre_sleep() const noexcept = 0;
+    virtual unsigned int get_pre_sleep_duration() const noexcept = 0;
+
+    virtual bool get_enable_pre_sleep() const noexcept = 0;
 };
 
 #ifdef ILLIXR_MONADO_MAINLINE
