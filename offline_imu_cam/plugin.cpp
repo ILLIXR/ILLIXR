@@ -1,5 +1,5 @@
-#include "common/data_format.hpp"
 #include "common/cpu_timer/cpu_timer.hpp"
+#include "common/data_format.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/relative_clock.hpp"
 #include "common/switchboard.hpp"
@@ -20,8 +20,8 @@ public:
         , _m_sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_cam{_m_sb->get_writer<imu_cam_type>("imu_cam")}
-        , dataset_first_time{_m_sensor_data_it->first}
-        {}
+        , dataset_first_time{_m_sensor_data_it->first} { }
+
 protected:
     virtual skip_option _p_should_skip() override {
         if (_m_sensor_data_it != _m_sensor_data.end()) {
@@ -81,7 +81,6 @@ private:
     ullong dataset_first_time;
     // Current IMU timestamp
     ullong dataset_now;
-
 };
 
 PLUGIN_MAIN(offline_imu_cam)

@@ -76,7 +76,6 @@ protected:
 
 private:
     void thread_main() {
-
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in
         // some setup functions, and RelativeClock is only guaranteed to be
