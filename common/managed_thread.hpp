@@ -1,10 +1,11 @@
 #pragma once
 
+#include "cpu_timer/cpu_timer.hpp"
+
 #include <atomic>
 #include <cassert>
 #include <functional>
 #include <thread>
-#include "cpu_timer/cpu_timer.hpp"
 
 namespace ILLIXR {
 
