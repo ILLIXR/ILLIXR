@@ -1,5 +1,8 @@
 #pragma once
 
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "cpu_timer/cpu_timer.hpp"
+#include "managed_thread.hpp"
 #include "phonebook.hpp"
 
 #include <array>
@@ -13,9 +16,6 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
-#include "cpu_timer/cpu_timer.hpp"
-#include "concurrentqueue/blockingconcurrentqueue.hpp"
-#include "managed_thread.hpp"
 
 namespace ILLIXR {
 
@@ -23,16 +23,13 @@ using plugin_id_t = std::size_t;
 
 class switchboard_data_marker {
 public:
-    size_t serial_no;
+    size_t      serial_no;
     std::string topic_name;
 
     switchboard_data_marker(size_t serial_no_, std::string topic_name_)
         : serial_no{serial_no_}
-        , topic_name{std::move(topic_name_)}
-        {}
+        , topic_name{std::move(topic_name_)} { }
 };
-
-
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -199,7 +196,6 @@ private:
                     this_event.reset();
                 }
             }
-
         }
 
     public:
@@ -306,7 +302,7 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-            size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
+            size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
             CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<switchboard_data_marker>(idx, _m_name));
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
@@ -342,7 +338,8 @@ private:
             size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
-            CPU_TIMER_TIME_EVENT_INFO(false, false, "put", cpu_timer::make_type_eraser<switchboard_data_marker>(index, _m_name));
+            CPU_TIMER_TIME_EVENT_INFO(false, false, "put",
+                                      cpu_timer::make_type_eraser<switchboard_data_marker>(index, _m_name));
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
@@ -568,7 +565,7 @@ public:
     /**
      * If @p pb is null, then logging is disabled.
      */
-    switchboard(const phonebook*) {}
+    switchboard(const phonebook*) { }
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
