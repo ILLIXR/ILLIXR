@@ -25,7 +25,7 @@ typedef pose_type sensor_types;
 static std::map<ullong, sensor_types> load_data(const std::string& data_path, const std::string& subpath) {
     std::map<ullong, sensor_types> data;
 
-     std::ifstream gt_file {data_path + "/" + subpath};
+    std::ifstream gt_file{data_path + "/" + subpath};
 
     if (!gt_file.good()) {
         std::cerr << "'" << data_path << subpath << "' is not a good path" << std::endl;

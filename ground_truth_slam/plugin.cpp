@@ -64,7 +64,7 @@ public:
     }
 
 private:
-    const std::shared_ptr<const_registry> cr;
+    const std::shared_ptr<const_registry>                            cr;
     const std::shared_ptr<switchboard>                               sb;
     switchboard::writer<pose_type>                                   _m_true_pose;
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;

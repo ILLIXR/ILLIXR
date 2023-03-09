@@ -181,11 +181,11 @@ private:
     bool     D4XXI_found{false};
     bool     T26X_found{false};
 
-    accel_type  accel_data;
-    int         iteration_cam        = 0;
-    int         iteration_accel      = 0;
-    int         last_iteration_cam   = -1;
-    int         last_iteration_accel = -1;
+    accel_type accel_data;
+    int        iteration_cam        = 0;
+    int        iteration_accel      = 0;
+    int        last_iteration_cam   = -1;
+    int        last_iteration_accel = -1;
 
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;

@@ -390,8 +390,8 @@ public:
 private:
     const std::shared_ptr<const_registry> cr;
 
-	using CR = ILLIXR::const_registry;
-	const CR::DECL_DEMO_OBJ_PATH::type _m_obj_dir;
+    using CR = ILLIXR::const_registry;
+    const CR::DECL_DEMO_OBJ_PATH::type _m_obj_dir;
     // GLFWwindow * const glfw_context;
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;

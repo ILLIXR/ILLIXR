@@ -27,9 +27,9 @@ public:
         , percent{0}
         , img_idx{0}
         , _m_enable_offload{cr->ENABLE_OFFLOAD.value()}
-		, _m_fb_width{cr->FB_WIDTH.value()}
-		, _m_fb_height{cr->FB_HEIGHT.value()}
-		, _m_obj_dir{cr->OFFLOAD_PATH.value()}
+        , _m_fb_width{cr->FB_WIDTH.value()}
+        , _m_fb_height{cr->FB_HEIGHT.value()}
+        , _m_obj_dir{cr->OFFLOAD_PATH.value()}
         , is_success{true} /// TODO: Set with #198
         , obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
         sb->schedule<texture_pose>(id, "texture_pose", [&](switchboard::ptr<const texture_pose> datum, size_t) {
@@ -57,20 +57,20 @@ public:
     }
 
 private:
-    const std::shared_ptr<const_registry> cr;
+    const std::shared_ptr<const_registry>             cr;
     const std::shared_ptr<switchboard>                sb;
     std::vector<long>                                 _time_seq;
     std::vector<switchboard::ptr<const texture_pose>> _offload_data_container;
 
-    int         percent;
-    int         img_idx;
+    int percent;
+    int img_idx;
     using CR = ILLIXR::const_registry;
     const CR::DECL_ENABLE_OFFLOAD::type _m_enable_offload;
     const CR::DECL_FB_WIDTH::type       _m_fb_width;
     const CR::DECL_FB_HEIGHT::type      _m_fb_height;
-	const CR::DECL_OFFLOAD_PATH::type   _m_obj_dir;
-    bool        is_success;
-    std::string obj_dir;
+    const CR::DECL_OFFLOAD_PATH::type   _m_obj_dir;
+    bool                                is_success;
+    std::string                         obj_dir;
 
     void writeMetadata(std::vector<long> _time_seq) {
         double mean  = std::accumulate(_time_seq.begin(), _time_seq.end(), 0.0) / _time_seq.size();
