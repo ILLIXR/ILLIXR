@@ -195,7 +195,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     cmake_profile = "Debug" if profile == "dbg" else "RelWithDebInfo"
 
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
-    # data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    data_path = pathify(config["data"], root_dir, cache_path, True, True)
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
     openxr_app_path = pathify(config["action"]["openxr_app"]["path"], root_dir, cache_path, True, True)

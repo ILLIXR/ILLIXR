@@ -22,20 +22,14 @@ using namespace ILLIXR;
 
 typedef pose_type sensor_types;
 
-static std::map<ullong, sensor_types> load_data() {
-    const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
-    if (!illixr_data_c_str) {
-        ILLIXR::abort("Please define ILLIXR_DATA");
-    }
-    const std::string subpath     = "/state_groundtruth_estimate0/data.csv";
-    std::string       illixr_data = std::string{illixr_data_c_str};
-
+static std::map<ullong, sensor_types> load_data(const std::string& data_path, const std::string& subpath) {
+	
     std::map<ullong, sensor_types> data;
 
-    std::ifstream gt_file{illixr_data + subpath};
+	std::ifstream gt_file {data_path + "/" + subpath};
 
     if (!gt_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << subpath << " (" << illixr_data << subpath << ") is not a good path" << std::endl;
+        std::cerr << "'" << data_path << subpath << "' is not a good path" << std::endl;
         ILLIXR::abort();
     }
 

@@ -22,11 +22,12 @@ class realsense : public plugin {
 public:
     realsense(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
+        , cr{pb->lookup_impl<const_registry>()}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_cam{sb->get_writer<imu_cam_type>("imu_cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
+        , _m_realsense_cam{cr->REALSENSE_CAM.value()} {
         cam_data.iteration   = -1;
         accel_data.iteration = -1;
         cfg.disable_all_streams();
@@ -185,10 +186,12 @@ private:
     int         iteration_accel      = 0;
     int         last_iteration_cam   = -1;
     int         last_iteration_accel = -1;
-    std::string realsense_cam;
 
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;
+
+    using CR = ILLIXR::const_registry;
+    const CR::DECL_REALSENSE_CAM::type _m_realsense_cam;
 
     void find_supported_devices(rs2::device_list devices) {
         bool gyro_found{false};
@@ -244,7 +247,7 @@ private:
         // This plugin assumes only one device should be connected to the system. If multiple supported devices are found the
         // preference is to choose D4XX with IMU over T26X systems.
         find_supported_devices(devices);
-        if (realsense_cam.compare("auto") == 0) {
+        if (_m_realsense_cam.compare("auto") == 0) {
             if (D4XXI_found) {
                 cam_select = D4XXI;
 #ifndef NDEBUG
@@ -256,12 +259,12 @@ private:
                 std::cout << "Setting cam_select: T26X" << std::endl;
 #endif
             }
-        } else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found) {
+        } else if ((_m_realsense_cam.compare("D4XX") == 0) && D4XXI_found) {
             cam_select = D4XXI;
 #ifndef NDEBUG
             std::cout << "Setting cam_select: D4XX" << std::endl;
 #endif
-        } else if ((realsense_cam.compare("T26X") == 0) && T26X_found) {
+        } else if ((_m_realsense_cam.compare("T26X") == 0) && T26X_found) {
             cam_select = T26X;
 #ifndef NDEBUG
             std::cout << "Setting cam_select: T26X" << std::endl;

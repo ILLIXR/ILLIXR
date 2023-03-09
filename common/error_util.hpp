@@ -38,12 +38,12 @@ inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[m
                                    [[maybe_unused]] const std::string& function, [[maybe_unused]] const std::string& msg = "") {
 #ifndef NDEBUG
     if (errno > 0) {
-        if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
+        // if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
             std::cerr << "|| Errno was set: " << errno << " @ " << file << ":" << line << "[" << function << "]" << std::endl;
             if (!msg.empty()) {
                 std::cerr << "|> Message: " << msg << std::endl;
             }
-        }
+        // }
         errno = 0;
     }
 #endif /// NDEBUG

@@ -50,29 +50,37 @@ public:
     // data whenever it needs to.
     timewarp_gl(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
+        , cr{pb->lookup_impl<const_registry>()}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
         , xwin{pb->lookup_impl<xlib_gl_extended_window>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
+        , _m_screen_width{cr->FB_WIDTH.value()}
+		, _m_screen_height{cr->FB_HEIGHT.value()}
+		, _m_display_refresh_rate{cr->REFRESH_RATE.value()}
+		// , _m_vsync_period{static_cast<std::size_t>(NANO_SEC/_m_display_refresh_rate)}
+
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
+        , _m_disable_timewarp{cr->DISABLE_TIMEWARP.value()}
+		, _m_enable_offload{cr->ENABLE_OFFLOAD.value()}
         , timewarp_gpu_logger{record_logger_}
-        , mtp_logger{record_logger_}
-        // TODO: Use #198 to configure this. Delete getenv_or.
-        // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
-        // Timewarp poses a "second channel" by which pose data can correct the video stream,
-        // which results in a "multipath" between the pose and the video stream.
-        // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} { }
+        , mtp_logger{record_logger_} { }
 
 private:
+    const std::shared_ptr<const_registry> cr;
     const std::shared_ptr<switchboard>             sb;
     const std::shared_ptr<pose_prediction>         pp;
     const std::shared_ptr<xlib_gl_extended_window> xwin;
     const std::shared_ptr<const RelativeClock>     _m_clock;
+    using CR = ILLIXR::const_registry;
+	const CR::DECL_FB_WIDTH::type     _m_screen_width;
+	const CR::DECL_FB_HEIGHT::type    _m_screen_height;
+	const CR::DECL_REFRESH_RATE::type _m_display_refresh_rate;
+
+	// const std::chrono::nanoseconds _m_vsync_period;
 
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
     static constexpr double DELAY_FRACTION = 0.9;
@@ -88,6 +96,9 @@ private:
 
     // Switchboard plug for publishing offloaded data
     switchboard::writer<texture_pose> _m_offload_data;
+
+    const CR::DECL_DISABLE_TIMEWARP::type _m_disable_timewarp;
+	const CR::DECL_ENABLE_OFFLOAD::type   _m_enable_offload;
 
     record_coalescer timewarp_gpu_logger;
     record_coalescer mtp_logger;
@@ -139,10 +150,6 @@ private:
 
     // Hologram call data
     ullong _hologram_seq{0};
-
-    bool disable_warp;
-
-    bool enable_offload;
 
     // PBO buffer for reading texture image
     GLuint PBO_buffer;
@@ -428,7 +435,7 @@ public:
         assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
 
-        if (enable_offload) {
+        if (_m_enable_offload) {
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
@@ -467,7 +474,7 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+        const fast_pose_type latest_pose  = _m_disable_timewarp ? most_recent_frame->render_pose : pp->get_fast_pose();
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -597,7 +604,7 @@ public:
                                   {render_to_display},
                               }});
 
-        if (enable_offload) {
+        if (_m_enable_offload) {
             // Read texture image from texture buffer
             GLubyte* image = readTextureImage();
 

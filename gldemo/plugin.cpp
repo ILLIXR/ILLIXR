@@ -35,6 +35,12 @@ public:
 
     gldemo(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
+        , cr{pb->lookup_impl<const_registry>()}
+		, _m_eye_texture_width{cr->FB_WIDTH.value()}
+		, _m_eye_texture_height{cr->FB_HEIGHT.value()}
+		, _m_display_refresh_rate{cr->REFRESH_RATE.value()}
+		, _m_obj_dir{cr->DEMO_OBJ_PATH.value()}
+		// , _m_vsync_period{static_cast<std::size_t>(NANO_SEC/_m_display_refresh_rate)}
         , xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
@@ -206,6 +212,15 @@ public:
 #endif
 
 private:
+    const std::shared_ptr<const_registry> cr;
+
+	using CR = ILLIXR::const_registry;
+	const CR::DECL_FB_WIDTH::type      _m_eye_texture_width;
+	const CR::DECL_FB_HEIGHT::type     _m_eye_texture_height;
+	const CR::DECL_REFRESH_RATE::type  _m_display_refresh_rate;
+	const CR::DECL_DEMO_OBJ_PATH::type _m_obj_dir;
+
+	// const std::chrono::nanoseconds _m_vsync_period;
     const std::unique_ptr<const xlib_gl_extended_window>              xwin;
     const std::shared_ptr<switchboard>                                sb;
     const std::shared_ptr<pose_prediction>                            pp;
@@ -324,13 +339,7 @@ public:
         projectionAttr   = glGetUniformLocation(demoShaderProgram, "u_projection");
         colorUniform     = glGetUniformLocation(demoShaderProgram, "u_color");
 
-        // Load/initialize the demo scene
-        char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-        if (obj_dir == nullptr) {
-            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
-        }
-
-        demoscene = ObjScene(std::string(obj_dir), "scene.obj");
+        demoscene = ObjScene(_m_obj_dir, "scene.obj");
 
         // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,

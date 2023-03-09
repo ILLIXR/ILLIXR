@@ -64,6 +64,8 @@ public:
     // the data whenever it needs to.
     debugview(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
+        , cr{pb->lookup_impl<const_registry>()}
+        , _m_obj_dir{cr->DEMO_OBJ_PATH.value()}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
@@ -386,6 +388,10 @@ public:
     }
 
 private:
+    const std::shared_ptr<const_registry> cr;
+
+	using CR = ILLIXR::const_registry;
+	const CR::DECL_DEMO_OBJ_PATH::type _m_obj_dir;
     // GLFWwindow * const glfw_context;
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
@@ -515,13 +521,9 @@ public:
         RAC_ERRNO_MSG("debugview after glGetUniformLocation");
 
         // Load/initialize the demo scene.
-        char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-        if (obj_dir == nullptr) {
-            ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
-        }
 
-        demoscene = ObjScene(std::string(obj_dir), "scene.obj");
-        headset   = ObjScene(std::string(obj_dir), "headset.obj");
+        demoscene = ObjScene(_m_obj_dir, "scene.obj");
+        headset   = ObjScene(_m_obj_dir, "headset.obj");
 
         // Generate fun test pattern for missing camera images.
         for (unsigned x = 0; x < TEST_PATTERN_WIDTH; x++) {
