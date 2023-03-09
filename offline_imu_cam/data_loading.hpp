@@ -58,7 +58,7 @@ static std::map<ullong, sensor_types> load_data(const std::string& data_path) {
     const std::string cam0_subpath = "/cam0/data.csv";
     std::ifstream     cam0_file{data_path + cam0_subpath};
     if (!cam0_file.good()) {
-        std::cerr << "'" << data_path << cam0_subpath  << "' is not a good path" << std::endl;
+        std::cerr << "'" << data_path << cam0_subpath << "' is not a good path" << std::endl;
         ILLIXR::abort();
     }
     for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
