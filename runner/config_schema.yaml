@@ -178,3 +178,12 @@ properties:
     default: auto
     type: string
     description: "When realsense plugin is used, this argument selects the model to use. Currently supports 'auto', 'D4XX' series that have IMU, and 'T26X'. 'auto' will select device based on supported IMU streams or T26X presence, prefering D4XX series with IMU"
+  constants:
+    type: array
+    default: []
+    items:
+      type: object
+      default: {}
+      additionalProperties:
+        $ref: '#/definitions/path'
+      description: A map of constant names to their set (stringified) values. The value can be destringified at application run-time.

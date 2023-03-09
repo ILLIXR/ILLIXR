@@ -17,6 +17,7 @@
 #define USE_ALT_EYE_FORMAT
 
 namespace ILLIXR {
+
 using ullong = unsigned long long;
 
 struct cam_type : switchboard::event {
@@ -30,24 +31,24 @@ struct cam_type : switchboard::event {
         , img1{_img1} { }
 };
 
-struct imu_type : switchboard::event {
-    time_point      time;
-    Eigen::Vector3d angular_v;
-    Eigen::Vector3d linear_a;
+struct imu_type {
+    time_point                  timestamp;
+    Eigen::Matrix<double, 3, 1> wm;
+    Eigen::Matrix<double, 3, 1> am;
 
-    imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
-        : time{time_}
-        , angular_v{angular_v_}
-        , linear_a{linear_a_} { }
+    imu_type(time_point timestamp_, Eigen::Matrix<double, 3, 1> wm_, Eigen::Matrix<double, 3, 1> am_)
+        : timestamp{timestamp_}
+        , wm{wm_}
+        , am{am_} { }
 };
 
 class rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
-    cv::Mat                     rgb;
-    cv::Mat                     depth;
+    std::optional<cv::Mat>      rgb;
+    std::optional<cv::Mat>      depth;
 
 public:
-    rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
+    rgb_depth_type(time_point _time, std::optional<cv::Mat> _rgb, std::optional<cv::Mat> _depth)
         : time{_time}
         , rgb{_rgb}
         , depth{_depth} { }
@@ -160,11 +161,11 @@ struct rendered_frame : public switchboard::event {
 };
 
 struct hologram_input : public switchboard::event {
-    uint seq;
+    ullong seq;
 
     hologram_input() { }
 
-    hologram_input(uint seq_)
+    hologram_input(ullong seq_)
         : seq{seq_} { }
 };
 
