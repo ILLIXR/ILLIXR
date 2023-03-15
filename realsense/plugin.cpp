@@ -9,8 +9,8 @@
 
 using namespace ILLIXR;
 
-static constexpr int IMAGE_WIDTH_D4XX  = 640;
-static constexpr int IMAGE_HEIGHT_D4XX = 480;
+static constexpr int IMAGE_WIDTH_D4XX  = 848; // 848 or 640
+static constexpr int IMAGE_HEIGHT_D4XX = 480; // always 480
 static constexpr int FPS_D4XX          = 30;
 static constexpr int GYRO_RATE_D4XX    = 400; // 200 or 400
 static constexpr int ACCEL_RATE_D4XX   = 250; // 63 or 250

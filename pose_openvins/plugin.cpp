@@ -58,11 +58,14 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
+#if ENABLE_OPENVINS_PREDICT
         , _m_pose_fast{sb->get_writer<imu_raw_type>("imu_raw")}
+#endif
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , _m_cam_pub{sb->get_writer<cam_type>("vins")}
         , ov_update_running(false)
+        , new_state_valid(false)
         , root_path{getenv("OPENVINS_ROOT")}
         , sensor_name{getenv("OPENVINS_SENSOR")} {
         // Create subscriber for our IMU
@@ -112,8 +115,10 @@ public:
         double           time_imu  = duration2double(datum->time.time_since_epoch());
         ov_core::ImuData imu_datum = {time_imu, datum->angular_v, datum->linear_a};
         ov_system->feed_measurement_imu(imu_datum);
-        // PRINT_WARNING(BLUE "imu = %.8f\n" RESET, imu_datum.timestamp);
+        PRINT_WARNING(BLUE "imu = %.8f (%.1f HZ)\n" RESET, imu_datum.timestamp, 1.0 / (time_imu - last_imu_time));
+        last_imu_time = time_imu;
 
+#if ENABLE_OPENVINS_PREDICT
         // Predict the state to this time (fast..)!!
         if (ov_system->initialized()) {
             std::shared_ptr<State>        state      = ov_system->get_state();
@@ -140,6 +145,7 @@ public:
                 // PRINT_WARNING(BLUE "fast pub = %.8f\n" RESET, time_imu);
             }
         }
+#endif
 
         // Get the async buffer next camera
         if (_m_cam.size() == 0)
@@ -165,21 +171,21 @@ public:
         // Check if we should drop this image
         double time_cam   = duration2double(cam->time.time_since_epoch());
         double time_delta = 1.0 / ov_system->get_params().track_frequency;
-        if (time_cam < camera_last_timestamp + time_delta)
+        if (time_cam < ov_update_last_timestamp + time_delta)
             return;
-        camera_last_timestamp = time_cam;
+        ov_update_last_timestamp = time_cam;
 
         // If we have initialized then we should report the current pose
         // NOTE: This needs to be in our main thread as it seems the switchboard has mutex problems
-        if (ov_system->initialized()) {
-            // Get the pose returned from SLAM
-            std::shared_ptr<State> ov_state = ov_system->get_state();
-            time_point             time_of_update(from_seconds(ov_state->_timestamp));
-            Eigen::Vector4d        quat   = ov_state->_imu->quat();
-            Eigen::Vector3d        vel    = ov_state->_imu->vel();
-            Eigen::Vector3d        pose   = ov_state->_imu->pos();
-            Eigen::Vector3d        bias_g = ov_state->_imu->bias_g();
-            Eigen::Vector3d        bias_a = ov_state->_imu->bias_a();
+        if (ov_system->initialized() && new_state_valid) {
+            // Get the pose returned from SLAM's last update
+            std::lock_guard<std::mutex> lck(new_state_mtx);
+            time_point                  time_of_update(from_seconds(new_state_time));
+            Eigen::Vector4d             quat   = new_state.block(0, 0, 4, 1);
+            Eigen::Vector3d             pose   = new_state.block(4, 0, 3, 1);
+            Eigen::Vector3d             vel    = new_state.block(7, 0, 3, 1);
+            Eigen::Vector3d             bias_g = new_state.block(10, 0, 3, 1);
+            Eigen::Vector3d             bias_a = new_state.block(13, 0, 3, 1);
 
             // OpenVINS has the rotation R_GtoIi in its state in JPL quaterion
             // We thus switch it to hamilton quaternions by simply flipping the order of xyzw
@@ -199,21 +205,18 @@ public:
             _m_pose.put(_m_pose.allocate(time_of_update, swapped_pos, swapped_rot));
 
             // Also send this information with biases and velocity to the fast IMU integrator
-            // TODO: these IMU noises should be coming from the configuration yaml of OpenVINS...
-            // TODO: these might be discrete noises, thus would need to be converted from OpenVINS continuous-time
-            // TODO: https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model#the-noise-model-parameters-in-kalibr
             imu_params params = {
-                .gyro_noise            = 0.00016968,
-                .acc_noise             = 0.002,
-                .gyro_walk             = 1.9393e-05,
-                .acc_walk              = 0.003,
-                .n_gravity             = Eigen::Matrix<double, 3, 1>(0.0, 0.0, -9.81),
+                .gyro_noise            = ov_system->get_params().imu_noises.sigma_w,
+                .acc_noise             = ov_system->get_params().imu_noises.sigma_a,
+                .gyro_walk             = ov_system->get_params().imu_noises.sigma_wb,
+                .acc_walk              = ov_system->get_params().imu_noises.sigma_ab,
+                .n_gravity             = Eigen::Matrix<double, 3, 1>(0.0, 0.0, -ov_system->get_params().gravity_mag),
                 .imu_integration_sigma = 1.0,
                 .nominal_rate          = 200.0,
             };
-            auto dt = from_seconds(ov_state->_calib_dt_CAMtoIMU->value()(0));
-            _m_imu_integrator_input.put(
-                _m_imu_integrator_input.allocate(time_of_update, dt, params, bias_a, bias_g, pose, vel, swapped_rot2));
+            _m_imu_integrator_input.put(_m_imu_integrator_input.allocate(time_of_update, from_seconds(new_state_camdt), params,
+                                                                         bias_a, bias_g, pose, vel, swapped_rot2));
+            new_state_valid = false;
         }
 
         // Create the camera data type from switchboard data
@@ -241,39 +244,42 @@ public:
                 cam_datum.masks.push_back(cv::Mat::zeros(cam->img1.rows, cam->img1.cols, CV_8UC1));
             }
         }
-        // PRINT_WARNING(BLUE "camera = %.8f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
-
-        // Append it to our queue of images (this is blocking...)
-        {
-            std::lock_guard<std::mutex> lck(camera_queue_mtx);
-            camera_queue.push_back(cam_datum);
-            std::sort(camera_queue.begin(), camera_queue.end());
-        }
+        ov_update_camera_queue.push_back(cam_datum);
+        std::sort(ov_update_camera_queue.begin(), ov_update_camera_queue.end());
+        PRINT_WARNING(BLUE "camera = %.8f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
 
         // Lets multi-thread it!
         ov_update_running = true;
         std::thread thread([&] {
-            // Lock on the queue (prevents new images from appending)
-            std::lock_guard<std::mutex> lck(camera_queue_mtx);
-
             // Loop through our queue and see if we are able to process any of our camera measurements
             // We are able to process if we have at least one IMU measurement greater than the camera time
             double timestamp_imu_inC = time_imu - ov_system->get_state()->_calib_dt_CAMtoIMU->value()(0);
-            while (!camera_queue.empty() && camera_queue.at(0).timestamp < timestamp_imu_inC) {
-                auto   rT0_1     = boost::posix_time::microsec_clock::local_time();
-                double update_dt = 100.0 * (timestamp_imu_inC - camera_queue.at(0).timestamp);
+            while (!ov_update_camera_queue.empty() && ov_update_camera_queue.at(0).timestamp < timestamp_imu_inC) {
+                auto   cam_datum_new = ov_update_camera_queue.at(0);
+                auto   rT0_1         = boost::posix_time::microsec_clock::local_time();
+                double update_dt     = 100.0 * (timestamp_imu_inC - cam_datum_new.timestamp);
 
                 // Actually do our update!
-                ov_system->feed_measurement_camera(camera_queue.at(0));
+                ov_system->feed_measurement_camera(cam_datum_new);
+                PRINT_WARNING(BLUE "update = %.8f (%zu in queue)\n" RESET, cam_datum_new.timestamp,
+                              ov_update_camera_queue.size());
+
+                // Save the state if we have initialized the system
+                std::lock_guard<std::mutex> lck(new_state_mtx);
+                if (ov_system->initialized()) {
+                    new_state       = ov_system->get_state()->_imu->value();
+                    new_state_time  = ov_system->get_state()->_timestamp;
+                    new_state_camdt = ov_system->get_state()->_calib_dt_CAMtoIMU->value()(0);
+                    new_state_valid = true;
+                }
 
                 // Debug testing for what is the update is very very slow...
                 // usleep(0.1 * 1e6);
 
                 // Debug display of tracks
+                // TODO: can this be clean up to look nicer?
                 cv::Mat imgout = ov_system->get_historical_viz_image();
                 if (!imgout.empty()) {
-                    // Append the current tracking rate to the image
-                    // TODO: can this be clean up to look nicer?
                     auto              rT0_2          = boost::posix_time::microsec_clock::local_time();
                     double            viz_track_rate = 1.0 / ((rT0_2 - rT0_1).total_microseconds() * 1e-6);
                     std::stringstream stream;
@@ -281,16 +287,76 @@ public:
                     std::string rate = stream.str() + "hz";
                     cv::putText(imgout, rate, cv::Point(60, imgout.rows - 60), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5,
                                 cv::Scalar(0, 255, 0), 2);
+                    // _m_cam_pub.put(
+                    //     _m_cam_pub.allocate<cam_type>({time_point(from_seconds(cam_datum_new.timestamp)), imgout,
+                    //     cv::Mat()}));
 
-                    // Finally publish it
-                    time_point time_of_update(from_seconds(camera_queue.at(0).timestamp));
-                    _m_cam_pub.put(_m_cam_pub.allocate<cam_type>({time_of_update, imgout, cv::Mat()}));
-                    // cv::imshow("Active Tracks", imgout);
-                    // cv::waitKey(1);
+                    // Get the current tracks in this frame
+                    double                                      active_tracks_time1 = -1;
+                    double                                      active_tracks_time2 = -1;
+                    std::unordered_map<size_t, Eigen::Vector3d> active_tracks_posinG;
+                    std::unordered_map<size_t, Eigen::Vector3d> active_tracks_uvd;
+                    cv::Mat                                     active_cam0_image;
+                    ov_system->get_active_tracks(active_tracks_time1, active_tracks_posinG, active_tracks_uvd);
+                    ov_system->get_active_image(active_tracks_time2, active_cam0_image);
+                    if (active_tracks_time1 != -1 &&
+                        ov_system->get_state()->_clones_IMU.find(active_tracks_time1) !=
+                            ov_system->get_state()->_clones_IMU.end() &&
+                        active_tracks_time1 == active_tracks_time2) {
+                        Eigen::Vector4d quat = ov_system->get_state()->_clones_IMU.at(active_tracks_time1)->quat();
+                        Eigen::Vector3d pos  = ov_system->get_state()->_clones_IMU.at(active_tracks_time1)->pos();
+                        // Create the images we will populate with the depths
+                        std::pair<int, int> wh_pair      = {active_cam0_image.cols, active_cam0_image.rows};
+                        cv::Mat             depthmap     = cv::Mat::zeros(wh_pair.second, wh_pair.first, CV_16UC1);
+                        cv::Mat             depthmap_viz = active_cam0_image;
+
+                        // Loop through all points and append
+                        for (const auto& feattimes : active_tracks_uvd) {
+                            // Get this feature information
+                            size_t          featid = feattimes.first;
+                            Eigen::Vector3d uvd    = active_tracks_uvd.at(featid);
+
+                            // Skip invalid points
+                            double dw = 4;
+                            if (uvd(0) < dw || uvd(0) > wh_pair.first - dw || uvd(1) < dw || uvd(1) > wh_pair.second - dw) {
+                                continue;
+                            }
+
+                            // Append the depth
+                            // NOTE: scaled by 1000 to fit the 16U
+                            // NOTE: access order is y,x (stupid opencv convention stuff)
+                            depthmap.at<uint16_t>((int) uvd(1), (int) uvd(0)) = (uint16_t) (1000 * uvd(2));
+
+                            // Taken from LSD-SLAM codebase segment into 0-4 meter segments:
+                            // https://github.com/tum-vision/lsd_slam/blob/d1e6f0e1a027889985d2e6b4c0fe7a90b0c75067/lsd_slam_core/src/util/globalFuncs.cpp#L87-L96
+                            float id = 1.0f / (float) uvd(2);
+                            float r  = (0.0f - id) * 255 / 1.0f;
+                            if (r < 0)
+                                r = -r;
+                            float g = (1.0f - id) * 255 / 1.0f;
+                            if (g < 0)
+                                g = -g;
+                            float b = (2.0f - id) * 255 / 1.0f;
+                            if (b < 0)
+                                b = -b;
+                            uchar      rc = r < 0 ? 0 : (r > 255 ? 255 : r);
+                            uchar      gc = g < 0 ? 0 : (g > 255 ? 255 : g);
+                            uchar      bc = b < 0 ? 0 : (b > 255 ? 255 : b);
+                            cv::Scalar color(255 - rc, 255 - gc, 255 - bc);
+
+                            // Small square around the point (note the above bound check needs to take into account this width)
+                            cv::Point p0(uvd(0) - dw, uvd(1) - dw);
+                            cv::Point p1(uvd(0) + dw, uvd(1) + dw);
+                            cv::rectangle(depthmap_viz, p0, p1, color, -1);
+                        }
+
+                        _m_cam_pub.put(_m_cam_pub.allocate<cam_type>(
+                            {time_point(from_seconds(cam_datum_new.timestamp)), depthmap_viz, cv::Mat()}));
+                    }
                 }
 
                 // We are done with this image!
-                camera_queue.pop_front();
+                ov_update_camera_queue.pop_front();
                 auto   rT0_2      = boost::posix_time::microsec_clock::local_time();
                 double time_total = (rT0_2 - rT0_1).total_microseconds() * 1e-6;
                 PRINT_INFO(BLUE "[TIME]: %.4f seconds total (%.1f hz, %.2f ms behind)\n" RESET, time_total, 1.0 / time_total,
@@ -301,18 +367,19 @@ public:
             ov_update_running = false;
         });
 
-        // If we are single threaded, then run single threaded
-        // Otherwise detach this thread so it runs in the background!
-        // thread.join();
+        // We detach this thread so it runs in the background!
+        // It is important that we do not lose any IMU messages...
         thread.detach();
     }
 
 private:
     // ILLIXR glue and publishers
-    const std::shared_ptr<switchboard>        sb;
-    std::shared_ptr<RelativeClock>            _m_rtc;
-    switchboard::writer<pose_type>            _m_pose;
-    switchboard::writer<imu_raw_type>         _m_pose_fast;
+    const std::shared_ptr<switchboard> sb;
+    std::shared_ptr<RelativeClock>     _m_rtc;
+    switchboard::writer<pose_type>     _m_pose;
+#if ENABLE_OPENVINS_PREDICT
+    switchboard::writer<imu_raw_type> _m_pose_fast;
+#endif
     switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
 
     // Camera subscriber and tracking image publisher
@@ -327,9 +394,17 @@ private:
     // exactly one IMU measurement with timestamp newer than the camera measurement
     // This also handles out-of-order camera measurements, which is rare, but
     // a nice feature to have for general robustness to bad camera drivers.
-    std::deque<ov_core::CameraData> camera_queue;
-    std::mutex                      camera_queue_mtx;
-    double                          camera_last_timestamp = -1.0;
+    double                          ov_update_last_timestamp = -1.0;
+    std::deque<ov_core::CameraData> ov_update_camera_queue;
+    double                          last_imu_time = -1.0;
+
+    // If we have a new state this will be stored here and published by the next IMU
+    // We need to do this as switchboard seems to not like async threads..
+    std::atomic<bool> new_state_valid;
+    std::mutex        new_state_mtx;
+    Eigen::VectorXd   new_state;
+    double            new_state_time;
+    double            new_state_camdt;
 
     // How to get the configuration information
     boost::filesystem::path root_path;

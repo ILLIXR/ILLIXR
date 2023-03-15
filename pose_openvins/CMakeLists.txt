@@ -15,6 +15,10 @@ find_package(Ceres REQUIRED)
 set(OPENVINS_INCLUDE_DIR /usr/local/include/open_vins/)
 set(OPENVINS_LIBRARIES ov_msckf_lib)
 
+# if we should compile openvins to predict a "fast" odometry pose
+#add_definitions(-DENABLE_OPENVINS_PREDICT=0)
+add_definitions(-DENABLE_OPENVINS_PREDICT=1)
+
 #add_definitions(-Wall -Wextra -Werror)
 target_include_directories(plugin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR} ${BOOST_INCLUDE_DIR} ${OPENVINS_INCLUDE_DIR})
 target_link_libraries(plugin PRIVATE ${CERES_LIBRARIES} ${OPENVINS_LIBRARIES})

@@ -1,6 +1,6 @@
 %YAML:1.0 # need to specify the file type at the top!
 
-verbosity: "ERROR" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
+verbosity: "WARNING" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
 
 use_fej: true # if first-estimate Jacobians should be used (enable for good consistency)
 use_imuavg: true # if using discrete integration, if we should average sequential IMU measurements to "smooth" it
@@ -42,7 +42,7 @@ init_imu_thresh: 1.5 # threshold for variance of the accelerometer to detect a "
 init_max_disparity: 10.0 # max disparity to consider the platform stationary (dependent on resolution)
 init_max_features: 75 # how many features to track during initialization (saves on computation)
 
-init_dyn_use: false # if dynamic initialization should be used
+init_dyn_use: true # if dynamic initialization should be used
 init_dyn_mle_opt_calib: false # if we should optimize calibration during intialization (not recommended)
 init_dyn_mle_max_iter: 50 # how many iterations the MLE refinement should use (zero to skip the MLE)
 init_dyn_mle_max_time: 0.05 # how many seconds the MLE should be completed in
@@ -86,7 +86,7 @@ min_px_dist: 15 # distance between features (features near each other provide le
 knn_ratio: 0.70 # descriptor knn threshold for the top two descriptor matches
 track_frequency: 31.0 # frequency we will perform feature tracking at (in frames per second / hertz)
 downsample_cameras: false # will downsample image in half if true
-num_opencv_threads: 4 # -1: auto, 0-1: serial, >1: number of threads
+num_opencv_threads: 2 # -1: auto, 0-1: serial, >1: number of threads
 histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE
 
 # aruco tag tracker for the system
@@ -99,11 +99,11 @@ downsize_aruco: true
 # ==================================================================
 
 # camera noises and chi-squared threshold multipliers
-up_msckf_sigma_px: 2
+up_msckf_sigma_px: 1
 up_msckf_chi2_multipler: 1
-up_slam_sigma_px: 2
+up_slam_sigma_px: 1
 up_slam_chi2_multipler: 1
-up_aruco_sigma_px: 2
+up_aruco_sigma_px: 1
 up_aruco_chi2_multipler: 1
 
 # masks for our images

@@ -11,7 +11,7 @@ plugin_groups:
 #  subpath: mav0
 #  relative_to:
 #    archive_path:
-#      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip' #euroc_mav
+#      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 data:
   # table_01: 1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV (0.6gb)
   # table_02: 1c0m9AnPAPNDmnRQ4-3cWUEQreiUDwswN (0.9gb)
@@ -20,7 +20,7 @@ data:
   subpath: "."
   relative_to:
     archive_path:
-      download_url_gdrive: '1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV' # rs_d455
+      download_url_gdrive: '1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV'
 demo_data: demo_data/
 
 enable_offload: False
@@ -39,8 +39,8 @@ action:
 
   # OpenVINS sensor configuration:
   #   - Path is where we will load configs from
-  #   - Sensor is what config we should load (e.g. euroc_mav, rs_t265, rs_d455, ...)
-  openvins_sensor: rs_d455
+  #   - Sensor is what config we should load (e.g. euroc_mav, rs_t265, rs_d455_color, rs_d455_stereo, ...)
+  openvins_sensor: rs_d455_stereo
   openvins_path: pose_openvins/
 
   # run in GDB:

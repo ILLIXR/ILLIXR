@@ -1,13 +1,13 @@
 %YAML:1.0 # need to specify the file type at the top!
 
-verbosity: "ERROR" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
+verbosity: "WARNING" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
 
 use_fej: true # if first-estimate Jacobians should be used (enable for good consistency)
 use_imuavg: true # if using discrete integration, if we should average sequential IMU measurements to "smooth" it
 use_rk4int: true # if rk4 integration should be used (overrides imu averaging)
 
 use_stereo: true # if we have more than 1 camera, if we should try to track stereo constraints between pairs
-max_cameras: 1 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (all mono tracking)
+max_cameras: 2 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (all mono tracking)
 
 calib_cam_extrinsics: true # if the transform between camera and IMU should be optimized R_ItoC, p_CinI
 calib_cam_intrinsics: true # if camera intrinsics should be optimized (focal, center, distortion)
@@ -78,7 +78,7 @@ filepath_gt: "/tmp/ov_groundtruth.txt"
 # our front-end feature tracking parameters
 # we have a KLT and descriptor based (KLT is better implemented...)
 use_klt: true # if true we will use KLT, otherwise use a ORB descriptor + robust matching
-num_pts: 100 # number of points (per camera) we will extract and try to track
+num_pts: 200 # number of points (per camera) we will extract and try to track
 fast_threshold: 30 # threshold for fast extraction (warning: lower threshs can be expensive)
 grid_x: 5 # extraction sub-grid count for horizontal direction (uniform tracking)
 grid_y: 5 # extraction sub-grid count for vertical direction (uniform tracking)
@@ -88,6 +88,13 @@ track_frequency: 31.0 # frequency we will perform feature tracking at (in frames
 downsample_cameras: false # will downsample image in half if true
 num_opencv_threads: 2 # -1: auto, 0-1: serial, >1: number of threads
 histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE
+
+fi_min_dist: 0.01
+fi_max_dist: 20.0
+fi_max_baseline: 999999
+fi_max_cond_number: 99990000
+#fi_max_runs: 10
+#fi_triangulate_1d: false
 
 # aruco tag tracker for the system
 # DICT_6X6_1000 from https://chev.me/arucogen/

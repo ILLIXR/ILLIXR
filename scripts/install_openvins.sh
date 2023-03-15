@@ -29,7 +29,7 @@ if [ -z "${dep_ver}" ]; then
     dep_ver="${dep_ver_openvins}"
 fi
 
-repo_url="https://github.com/goldbattle/open_vins.git"
+repo_url="https://github.com/rpng/open_vins.git"
 build_dir="${src_dir}/build"
 
 ### Fetch, build and install ###
