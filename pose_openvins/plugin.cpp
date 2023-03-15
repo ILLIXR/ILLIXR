@@ -115,7 +115,7 @@ public:
         double           time_imu  = duration2double(datum->time.time_since_epoch());
         ov_core::ImuData imu_datum = {time_imu, datum->angular_v, datum->linear_a};
         ov_system->feed_measurement_imu(imu_datum);
-        PRINT_WARNING(BLUE "imu = %.8f (%.1f HZ)\n" RESET, imu_datum.timestamp, 1.0 / (time_imu - last_imu_time));
+        PRINT_ALL(BLUE "imu = %.8f (%.1f HZ)\n" RESET, imu_datum.timestamp, 1.0 / (time_imu - last_imu_time));
         last_imu_time = time_imu;
 
 #if ENABLE_OPENVINS_PREDICT
@@ -142,7 +142,7 @@ public:
                 _m_pose_fast.put(_m_pose_fast.allocate(
                     w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
                     Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)}, datum->time));
-                // PRINT_WARNING(BLUE "fast pub = %.8f\n" RESET, time_imu);
+                // PRINT_ALL(BLUE "fast pub = %.8f\n" RESET, time_imu);
             }
         }
 #endif
@@ -167,13 +167,6 @@ public:
         // The visualization of the state, images, and features will be synchronous with the update!
         if (ov_update_running)
             return;
-
-        // Check if we should drop this image
-        double time_cam   = duration2double(cam->time.time_since_epoch());
-        double time_delta = 1.0 / ov_system->get_params().track_frequency;
-        if (time_cam < ov_update_last_timestamp + time_delta)
-            return;
-        ov_update_last_timestamp = time_cam;
 
         // If we have initialized then we should report the current pose
         // NOTE: This needs to be in our main thread as it seems the switchboard has mutex problems
@@ -219,6 +212,13 @@ public:
             new_state_valid = false;
         }
 
+        // Check if we should drop this image
+        double time_cam   = duration2double(cam->time.time_since_epoch());
+        double time_delta = 1.0 / ov_system->get_params().track_frequency;
+        if (time_cam < ov_update_last_timestamp + time_delta)
+            return;
+        ov_update_last_timestamp = time_cam;
+
         // Create the camera data type from switchboard data
         ov_core::CameraData cam_datum;
         cam_datum.timestamp = time_cam;
@@ -246,7 +246,7 @@ public:
         }
         ov_update_camera_queue.push_back(cam_datum);
         std::sort(ov_update_camera_queue.begin(), ov_update_camera_queue.end());
-        PRINT_WARNING(BLUE "camera = %.8f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
+        PRINT_ALL(BLUE "camera = %.8f (%zu in queue)\n" RESET, cam_datum.timestamp, _m_cam.size());
 
         // Lets multi-thread it!
         ov_update_running = true;
@@ -261,8 +261,7 @@ public:
 
                 // Actually do our update!
                 ov_system->feed_measurement_camera(cam_datum_new);
-                PRINT_WARNING(BLUE "update = %.8f (%zu in queue)\n" RESET, cam_datum_new.timestamp,
-                              ov_update_camera_queue.size());
+                PRINT_ALL(BLUE "update = %.8f (%zu in queue)\n" RESET, cam_datum_new.timestamp, ov_update_camera_queue.size());
 
                 // Save the state if we have initialized the system
                 std::lock_guard<std::mutex> lck(new_state_mtx);
@@ -287,72 +286,8 @@ public:
                     std::string rate = stream.str() + "hz";
                     cv::putText(imgout, rate, cv::Point(60, imgout.rows - 60), cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5,
                                 cv::Scalar(0, 255, 0), 2);
-                    // _m_cam_pub.put(
-                    //     _m_cam_pub.allocate<cam_type>({time_point(from_seconds(cam_datum_new.timestamp)), imgout,
-                    //     cv::Mat()}));
-
-                    // Get the current tracks in this frame
-                    double                                      active_tracks_time1 = -1;
-                    double                                      active_tracks_time2 = -1;
-                    std::unordered_map<size_t, Eigen::Vector3d> active_tracks_posinG;
-                    std::unordered_map<size_t, Eigen::Vector3d> active_tracks_uvd;
-                    cv::Mat                                     active_cam0_image;
-                    ov_system->get_active_tracks(active_tracks_time1, active_tracks_posinG, active_tracks_uvd);
-                    ov_system->get_active_image(active_tracks_time2, active_cam0_image);
-                    if (active_tracks_time1 != -1 &&
-                        ov_system->get_state()->_clones_IMU.find(active_tracks_time1) !=
-                            ov_system->get_state()->_clones_IMU.end() &&
-                        active_tracks_time1 == active_tracks_time2) {
-                        Eigen::Vector4d quat = ov_system->get_state()->_clones_IMU.at(active_tracks_time1)->quat();
-                        Eigen::Vector3d pos  = ov_system->get_state()->_clones_IMU.at(active_tracks_time1)->pos();
-                        // Create the images we will populate with the depths
-                        std::pair<int, int> wh_pair      = {active_cam0_image.cols, active_cam0_image.rows};
-                        cv::Mat             depthmap     = cv::Mat::zeros(wh_pair.second, wh_pair.first, CV_16UC1);
-                        cv::Mat             depthmap_viz = active_cam0_image;
-
-                        // Loop through all points and append
-                        for (const auto& feattimes : active_tracks_uvd) {
-                            // Get this feature information
-                            size_t          featid = feattimes.first;
-                            Eigen::Vector3d uvd    = active_tracks_uvd.at(featid);
-
-                            // Skip invalid points
-                            double dw = 4;
-                            if (uvd(0) < dw || uvd(0) > wh_pair.first - dw || uvd(1) < dw || uvd(1) > wh_pair.second - dw) {
-                                continue;
-                            }
-
-                            // Append the depth
-                            // NOTE: scaled by 1000 to fit the 16U
-                            // NOTE: access order is y,x (stupid opencv convention stuff)
-                            depthmap.at<uint16_t>((int) uvd(1), (int) uvd(0)) = (uint16_t) (1000 * uvd(2));
-
-                            // Taken from LSD-SLAM codebase segment into 0-4 meter segments:
-                            // https://github.com/tum-vision/lsd_slam/blob/d1e6f0e1a027889985d2e6b4c0fe7a90b0c75067/lsd_slam_core/src/util/globalFuncs.cpp#L87-L96
-                            float id = 1.0f / (float) uvd(2);
-                            float r  = (0.0f - id) * 255 / 1.0f;
-                            if (r < 0)
-                                r = -r;
-                            float g = (1.0f - id) * 255 / 1.0f;
-                            if (g < 0)
-                                g = -g;
-                            float b = (2.0f - id) * 255 / 1.0f;
-                            if (b < 0)
-                                b = -b;
-                            uchar      rc = r < 0 ? 0 : (r > 255 ? 255 : r);
-                            uchar      gc = g < 0 ? 0 : (g > 255 ? 255 : g);
-                            uchar      bc = b < 0 ? 0 : (b > 255 ? 255 : b);
-                            cv::Scalar color(255 - rc, 255 - gc, 255 - bc);
-
-                            // Small square around the point (note the above bound check needs to take into account this width)
-                            cv::Point p0(uvd(0) - dw, uvd(1) - dw);
-                            cv::Point p1(uvd(0) + dw, uvd(1) + dw);
-                            cv::rectangle(depthmap_viz, p0, p1, color, -1);
-                        }
-
-                        _m_cam_pub.put(_m_cam_pub.allocate<cam_type>(
-                            {time_point(from_seconds(cam_datum_new.timestamp)), depthmap_viz, cv::Mat()}));
-                    }
+                    _m_cam_pub.put(
+                        _m_cam_pub.allocate<cam_type>({time_point(from_seconds(cam_datum_new.timestamp)), imgout, cv::Mat()}));
                 }
 
                 // We are done with this image!

@@ -15,9 +15,9 @@ imu0:
   # Inflated values (to account for unmodelled effects)
   #  - white noise multiplied by 5
   #  - bias random walk multiplied by 10
-  accelerometer_noise_density: 0.00732082098
+  accelerometer_noise_density: 0.0732082098
   accelerometer_random_walk: 0.0006696534319519138
-  gyroscope_noise_density: 0.00054166825
+  gyroscope_noise_density: 0.0054166825
   gyroscope_random_walk: 1.1687657234840692e-05
   model: calibrated
   rostopic: /t265/imu
