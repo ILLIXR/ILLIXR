@@ -1,6 +1,8 @@
 #include "common/cpu_timer/cpu_timer.hpp"
 #include "common/global_module_defs.hpp"
 #include "runtime_impl.hpp"
+#include "common/cpu_timer/cpu_timer.hpp"
+#include "frame_logger2.hpp"
 
 #include <csignal>
 #include <unistd.h> /// Not portable
