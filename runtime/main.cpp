@@ -66,6 +66,11 @@ private:
 };
 
 int main(int argc, char* const* argv) {
+    {
+        static boost::filesystem::path metrics {"metrics"};
+        boost::filesystem::create_directory(metrics);
+    }
+    setup_frame_logger();
     CPU_TIMER_TIME_FUNCTION();
 #ifdef ILLIXR_MONADO_MAINLINE
     r = ILLIXR::runtime_factory();
