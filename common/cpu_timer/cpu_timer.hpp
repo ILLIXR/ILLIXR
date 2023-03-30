@@ -45,7 +45,6 @@
  * [2]: https://stackoverflow.com/questions/42189976/calculate-system-time-using-rdtsc
  *
  */
-#include "../error_util.hpp"
 #include "cpu_timer_internal.hpp"
 #include "global_state.hpp"
 
