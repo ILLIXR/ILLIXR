@@ -1,5 +1,5 @@
 #include "common/plugin.hpp"
-
+#include "common/error_util.hpp"
 #include "common/data_format.hpp"
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
