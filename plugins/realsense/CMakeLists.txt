@@ -10,3 +10,4 @@ add_definitions(-Wall -Wextra -Werror -Wno-format-extra-args -std=c++17 -g -O3)
 add_library(plugin SHARED plugin.cpp)
 target_link_libraries(plugin ${DEPENDENCIES} ${OpenCV_LIBRARIES} ${realsense2_LIBRARY})
 
+install(TARGETS plugin DESTINATION lib)

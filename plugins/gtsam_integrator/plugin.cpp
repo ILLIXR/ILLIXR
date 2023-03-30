@@ -4,11 +4,9 @@
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 
-#include <boost/smart_ptr/make_shared.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <chrono>
 #include <eigen3/Eigen/Dense>
-#include <gtsam/base/Matrix.h>
+#include <gtsam/config.h>
 #include <gtsam/base/Vector.h>
 #include <gtsam/navigation/AHRSFactor.h>
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
@@ -16,6 +14,7 @@
 #include <gtsam/navigation/ImuFactor.h>
 #include <iomanip>
 #include <thread>
+#include <memory>
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -83,7 +82,7 @@ private:
             _params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
             _params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-            _pim = new pim_t{boost::make_shared<pim_t::Params>(std::move(_params)), _imu_bias};
+            _pim = new pim_t{std::make_shared<pim_t::Params>(std::move(_params)), _imu_bias};
             resetIntegrationAndSetBias(imu_int_input);
         }
 
