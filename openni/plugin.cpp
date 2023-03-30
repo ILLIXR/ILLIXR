@@ -94,7 +94,6 @@ protected:
         if (rc != openni::STATUS_OK)
             printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
 
-#ifndef NDEBUG
         // get depth options
         const openni::SensorInfo*               depthInfo  = device.getSensorInfo(openni::SENSOR_DEPTH);
         const openni::Array<openni::VideoMode>& modesDepth = depthInfo->getSupportedVideoModes();
@@ -105,7 +104,6 @@ protected:
         rc = depth.setVideoMode(modesDepth[4]);
         if (openni::STATUS_OK != rc)
             std::cout << "error: depth fromat not supprted..." << std::endl;
-#endif
         // start depth stream
         rc = depth.start();
         if (rc != openni::STATUS_OK)
@@ -117,7 +115,6 @@ protected:
         if (rc != openni::STATUS_OK)
             printf("Couldn't find color stream:\n%s\n", openni::OpenNI::getExtendedError());
 
-#ifndef NDEBUG
         // get color options
         const openni::SensorInfo*               colorInfo  = device.getSensorInfo(openni::SENSOR_COLOR);
         const openni::Array<openni::VideoMode>& modesColor = colorInfo->getSupportedVideoModes();
@@ -128,7 +125,6 @@ protected:
         rc = color.setVideoMode(modesColor[9]);
         if (openni::STATUS_OK != rc)
             std::cout << "error: color format not supprted..." << std::endl;
-#endif
         // start color stream
         rc = color.start();
         if (rc != openni::STATUS_OK)
