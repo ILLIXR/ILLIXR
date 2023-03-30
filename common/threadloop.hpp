@@ -97,8 +97,6 @@ private:
                 break;
             case skip_option::run: {
                 CPU_TIMER_TIME_BLOCK("_p_one_iteration");
-                auto iteration_start_cpu_time  = thread_cpu_time();
-                auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
                 RAC_ERRNO();
                 _p_one_iteration();
