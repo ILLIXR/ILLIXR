@@ -204,6 +204,7 @@ protected:
             _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>({imu_time_point, cv::Mat{c->img0}, cv::Mat{c->img1}}));
             _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb}, cv::Mat{c->depth}}));
             last_serial_no = c->serial_no;
+            CPU_TIMER_TIME_BLOCK("load_camera");
         }
 
         last_imu_ts = sensors_data.imu.timestamp;
