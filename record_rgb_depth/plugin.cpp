@@ -35,16 +35,17 @@ public:
         depth_wt_file << "#timestamp [ns],filename" << std::endl;
 
         sb->schedule<rgb_depth_type>(id, "rgb_depth", [&](switchboard::ptr<const rgb_depth_type> datum, std::size_t) {
-			this->dump_data(datum);
-		});
+            this->dump_data(datum);
+        });
     }
 
     void dump_data(switchboard::ptr<const rgb_depth_type> datum) {
-        if (!datum) return;
+        if (!datum)
+            return;
         long timestamp = datum->time.time_since_epoch().count();
 
         // write rgb and depth
-        std::string rgb_img = rgb_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
+        std::string rgb_img   = rgb_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         std::string depth_img = depth_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         rgb_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
         cv::imwrite(rgb_img, datum->rgb);
