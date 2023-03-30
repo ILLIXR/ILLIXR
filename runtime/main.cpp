@@ -1,7 +1,6 @@
 #include "common/cpu_timer/cpu_timer.hpp"
 #include "common/global_module_defs.hpp"
 #include "runtime_impl.hpp"
-#include "common/cpu_timer/cpu_timer.hpp"
 #include "frame_logger2.hpp"
 
 #include <csignal>
@@ -68,12 +67,14 @@ private:
 };
 
 int main(int argc, char* const* argv) {
+    CPU_TIMER_TIME_FUNCTION();
     {
         static boost::filesystem::path metrics {"metrics"};
         boost::filesystem::create_directory(metrics);
     }
+   
     setup_frame_logger();
-    CPU_TIMER_TIME_FUNCTION();
+
 #ifdef ILLIXR_MONADO_MAINLINE
     r = ILLIXR::runtime_factory();
 #else
