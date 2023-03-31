@@ -163,6 +163,7 @@ pkg_dep_list_nogroup=(
     libssl-dev
     libsdl2-dev
     mkdocs
+    default-jdk
 ) # End list
 
 # List of selected/optional package dependencies for the ILLIXR project,

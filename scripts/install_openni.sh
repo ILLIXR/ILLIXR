@@ -34,5 +34,8 @@ repo_url="https://github.com/structureio/OpenNI2.git"
 ## Fetch
 git clone --depth 1 --branch "${dep_ver}" "${repo_url}" "${src_dir}"
 
+## make
+make -C "${src_dir}" -j "${illixr_nproc}"
+
 ## Log
 log_dependency "${dep_name}" "${deps_log_dir}" "${src_dir}" "${dep_ver}"
