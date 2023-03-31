@@ -1,0 +1,4 @@
+add_subdirectory(device_rx)
+add_subdirectory(device_tx)
+add_subdirectory(server_rx)
+add_subdirectory(server_tx)
