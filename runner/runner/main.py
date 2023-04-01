@@ -231,7 +231,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_DATA=str(data_path),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
-        XR_RUNTIME_JSON=str("/home/jebbly/Desktop/ILLIXR/.cache/paths/https%c%s%sgithub.com%sILLIXR%smonado_integration.git/build/openxr_monado-dev.json"),
+        XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
         XRT_TRACING="true",
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
