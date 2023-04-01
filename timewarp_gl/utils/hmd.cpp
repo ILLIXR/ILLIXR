@@ -78,9 +78,9 @@ void HMD::BuildDistortionMeshes(
 
                 // When we use Monado, let Monado handle the distortion correction.
 #ifndef ILLIXR_MONADO
-                const float rsq           = theta[0] * theta[0] + theta[1] * theta[1];
-                const float scale         = HMD::EvaluateCatmullRomSpline(rsq, hmdInfo.K, hmdInfo.numKnots);
-                
+                const float rsq   = theta[0] * theta[0] + theta[1] * theta[1];
+                const float scale = HMD::EvaluateCatmullRomSpline(rsq, hmdInfo.K, hmdInfo.numKnots);
+
                 const float chromaScale[] = {
                     scale * (1.0f + hmdInfo.chromaticAberration[0] + rsq * hmdInfo.chromaticAberration[1]), scale,
                     scale * (1.0f + hmdInfo.chromaticAberration[2] + rsq * hmdInfo.chromaticAberration[3])};

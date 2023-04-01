@@ -360,7 +360,7 @@ private:
         // then use the imported memory as the opengl texture.
         // since we're writing to an intermediate texture that's the same memory format as Monado's layer renderer,
         // there's no need to reformat anything.
-        GLuint format          = ConvertVkFormatToGL(vk_handle.format);
+        GLuint format = ConvertVkFormatToGL(vk_handle.format);
         assert(format != 0 && "Given Vulkan format not handled!");
         GLuint image_handle;
         glGenTextures(1, &image_handle);
