@@ -200,7 +200,7 @@ namespace ILLIXR {
 				int rc = 0;
 				if (false) {
 				} else if (&var.get_type() == &type_INTEGER) {	
-				auto data = std::get<int64_t>(var.get_data());
+				        auto data = std::get<int64_t>(var.get_data());
 					rc = sqlite3_bind_int64(_m_stmt, var.get_id() + 1, data);
 				} else if (&var.get_type() == &type_REAL) {
 					auto data = std::get<double>(var.get_data());
