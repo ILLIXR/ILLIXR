@@ -271,7 +271,7 @@ if(USE_KIMERA_VIO)
 
     ExternalProject_Add(Kimera_VIO
             GIT_REPOSITORY https://github.com/ILLIXR/Kimera-VIO.git
-            GIT_TAG 37cdaac341334deac83433a428b829c777ec69af
+            GIT_TAG 7dbb46db916aff048b43d78ee4c15ce147cad958
             GIT_SUBMODULES_RECURSE TRUE
             DEPENDS KimeraRPGO DBoW2 GTSAM opengv
             PREFIX ${CMAKE_BINARY_DIR}/kimera_vio
