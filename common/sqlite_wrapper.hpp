@@ -207,13 +207,7 @@ namespace ILLIXR {
 					rc = sqlite3_bind_double(_m_stmt, var.get_id() + 1, data);
 				} else if (&var.get_type() == &type_TEXT) {
 					const auto& data = std::get<std::string_view>(var.get_data());
-                                        //std::cout << "\t\tMVM, data.size(): " << data.size() << std::endl;
-                                        //std::cout << "\t\tMVM, data.substr(0, 100): " << data.substr(0, 100) << std::endl;
-                                        //std::cout << "\t\tMVM, data.at(0): " << data.at(0) << std::endl;
-                                        //std::cout << "\t\tMVM, data.data(): " << data.data() << std::endl;
-                                        //std::cout << "\t\tMVM, std::string{data}: " << std::string{data} << std::endl;
-					//rc = sqlite3_bind_text(_m_stmt, var.get_id() + 1, data.data(), data.size(), SQLITE_STATIC);
-					rc = sqlite3_bind_text(_m_stmt, var.get_id() + 1, "dummy_string", 13 , SQLITE_STATIC);
+					rc = sqlite3_bind_text(_m_stmt, var.get_id() + 1, data.data(), data.size(), SQLITE_STATIC);
 				} else if (&var.get_type() == &type_BLOB) {
 					const auto& data = std::get<std::vector<char>>(var.get_data());
 					rc = sqlite3_bind_blob(_m_stmt, var.get_id() + 1, data.data(), data.size(), SQLITE_TRANSIENT);
