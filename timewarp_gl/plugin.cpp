@@ -605,7 +605,8 @@ public:
 
         // get the query result
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-        CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<gpu_log>(elapsed_time));
+        //CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<gpu_log>(elapsed_time));
+        CPU_TIMER_TIME_EVENT();
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {

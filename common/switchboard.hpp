@@ -302,8 +302,9 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-            size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
-            CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<switchboard_data_marker>(idx, _m_name));
+            size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
+            //CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<switchboard_data_marker>(idx, _m_name));
+            CPU_TIMER_TIME_EVENT();
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
@@ -338,9 +339,9 @@ private:
             size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
-            CPU_TIMER_TIME_EVENT_INFO(false, false, "put",
-                                      cpu_timer::make_type_eraser<switchboard_data_marker>(index, _m_name));
+            //CPU_TIMER_TIME_EVENT_INFO(false, false, "put", cpu_timer::make_type_eraser<switchboard_data_marker>(index, _m_name));
 
+            CPU_TIMER_TIME_EVENT();
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
             std::unique_lock lock{_m_subscriptions_lock};
