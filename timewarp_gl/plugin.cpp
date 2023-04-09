@@ -168,22 +168,22 @@ public:
                                            switch (handle->usage) {
                                            case semaphore_usage::LEFT_LSR_READY: {
                                                _m_semaphore_handles[0][0] = *handle;
-                                               left_lsr_ready    = true;
+                                               left_lsr_ready             = true;
                                                break;
                                            }
                                            case semaphore_usage::RIGHT_LSR_READY: {
                                                _m_semaphore_handles[1][0] = *handle;
-                                               right_lsr_ready   = true;
+                                               right_lsr_ready            = true;
                                                break;
                                            }
                                            case semaphore_usage::LEFT_LSR_COMPLETE: {
                                                _m_semaphore_handles[0][1] = *handle;
-                                               left_lsr_complete    = true;
+                                               left_lsr_complete          = true;
                                                break;
                                            }
                                            case semaphore_usage::RIGHT_LSR_COMPLETE: {
                                                _m_semaphore_handles[1][1] = *handle;
-                                               right_lsr_complete   = true;
+                                               right_lsr_complete         = true;
                                                break;
                                            }
                                            default: {
@@ -192,8 +192,7 @@ public:
                                            }
                                            }
 
-                                           if (left_lsr_ready && right_lsr_ready &&
-                                               left_lsr_complete && right_lsr_complete) {
+                                           if (left_lsr_ready && right_lsr_ready && left_lsr_complete && right_lsr_complete) {
                                                this->semaphore_handles_ready = true;
                                            }
                                        });
@@ -229,7 +228,7 @@ private:
     std::array<GLuint, 2> _m_eye_framebuffers;
 
 #ifdef ILLIXR_MONADO
-    std::array<image_handle, 2>     _m_eye_output_handles;
+    std::array<image_handle, 2> _m_eye_output_handles;
 
     // Semaphores to synchronize between Monado and ILLIXR
     // Left and right; ready and complete.
@@ -822,7 +821,8 @@ public:
             // Choose the appropriate texture to render to
 #ifdef ILLIXR_MONADO
             // GLenum src_layout = GL_LAYOUT_COLOR_ATTACHMENT_EXT;
-            // glWaitSemaphoreEXT(_m_semaphores[eye][0], 0, nullptr, 1, &_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]], &src_layout);
+            // glWaitSemaphoreEXT(_m_semaphores[eye][0], 0, nullptr, 1,
+            // &_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]], &src_layout);
 #endif
             glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
             glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
