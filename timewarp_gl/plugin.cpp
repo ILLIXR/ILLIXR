@@ -163,16 +163,27 @@ public:
                                        [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
                                            // We need one semaphore to indicate when the reprojection is ready, and another when
                                            // it's done
-                                           static bool left_semaphore_ready = false, right_semaphore_ready = false;
+                                           static bool left_lsr_ready = false, right_lsr_ready = false;
+                                           static bool left_lsr_complete = false, right_lsr_complete = false;
                                            switch (handle->usage) {
-                                           case semaphore_usage::LEFT_RENDER_COMPLETE: {
-                                               _m_semaphore_handles[0] = *handle;
-                                               left_semaphore_ready    = true;
+                                           case semaphore_usage::LEFT_LSR_READY: {
+                                               _m_semaphore_handles[0][0] = *handle;
+                                               left_lsr_ready    = true;
                                                break;
                                            }
-                                           case semaphore_usage::RIGHT_RENDER_COMPLETE: {
-                                               _m_semaphore_handles[1] = *handle;
-                                               right_semaphore_ready   = true;
+                                           case semaphore_usage::RIGHT_LSR_READY: {
+                                               _m_semaphore_handles[1][0] = *handle;
+                                               right_lsr_ready   = true;
+                                               break;
+                                           }
+                                           case semaphore_usage::LEFT_LSR_COMPLETE: {
+                                               _m_semaphore_handles[0][1] = *handle;
+                                               left_lsr_complete    = true;
+                                               break;
+                                           }
+                                           case semaphore_usage::RIGHT_LSR_COMPLETE: {
+                                               _m_semaphore_handles[1][1] = *handle;
+                                               right_lsr_complete   = true;
                                                break;
                                            }
                                            default: {
@@ -181,7 +192,8 @@ public:
                                            }
                                            }
 
-                                           if (left_semaphore_ready && right_semaphore_ready) {
+                                           if (left_lsr_ready && right_lsr_ready &&
+                                               left_lsr_complete && right_lsr_complete) {
                                                this->semaphore_handles_ready = true;
                                            }
                                        });
@@ -217,10 +229,12 @@ private:
     std::array<GLuint, 2> _m_eye_framebuffers;
 
 #ifdef ILLIXR_MONADO
-    // Semaphores to synchronize between Monado and ILLIXR
     std::array<image_handle, 2>     _m_eye_output_handles;
-    std::array<semaphore_handle, 2> _m_semaphore_handles;
-    std::array<GLuint, 2>           _m_semaphores;
+
+    // Semaphores to synchronize between Monado and ILLIXR
+    // Left and right; ready and complete.
+    std::array<std::array<semaphore_handle, 2>, 2> _m_semaphore_handles;
+    std::array<std::array<GLuint, 2>, 2>           _m_semaphores;
 #endif
 
     // Switchboard plug for application eye buffer.
@@ -402,12 +416,24 @@ private:
         glImportSemaphoreFdEXT(semaphore_handle, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.vk_handle);
 
         switch (vk_handle.usage) {
-        case semaphore_usage::LEFT_RENDER_COMPLETE: {
-            _m_semaphores[0] = semaphore_handle;
+        case semaphore_usage::LEFT_LSR_READY: {
+            _m_semaphores[0][0] = semaphore_handle;
+            std::cout << "LEFT LSR READY HANDLE" << std::endl;
             break;
         }
-        case semaphore_usage::RIGHT_RENDER_COMPLETE: {
-            _m_semaphores[1] = semaphore_handle;
+        case semaphore_usage::RIGHT_LSR_READY: {
+            _m_semaphores[1][0] = semaphore_handle;
+            std::cout << "RIGHT LSR READY HANDLE" << std::endl;
+            break;
+        }
+        case semaphore_usage::LEFT_LSR_COMPLETE: {
+            _m_semaphores[0][1] = semaphore_handle;
+            std::cout << "LEFT LSR COMPLETE HANDLE" << std::endl;
+            break;
+        }
+        case semaphore_usage::RIGHT_LSR_COMPLETE: {
+            _m_semaphores[1][1] = semaphore_handle;
+            std::cout << "RIGHT LSR COMPLETE HANDLE" << std::endl;
             break;
         }
         default: {
@@ -538,11 +564,7 @@ public:
         // MTP here. More you wait, closer to the display sync you sample the pose.
 
         std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
-        if (image_handles_ready.load() && _m_eyebuffer.get_ro_nullable() != nullptr) {
-            if (!semaphore_handles_ready.load()) {
-                return skip_option::skip_and_yield;
-            }
-
+        if (image_handles_ready.load() && semaphore_handles_ready.load() && _m_eyebuffer.get_ro_nullable() != nullptr) {
             return skip_option::run;
         } else {
             // Null means system is nothing has been pushed yet
@@ -704,8 +726,10 @@ public:
                 image_handle image = _m_eye_output_handles[eye];
                 ImportVulkanImage(image.vk_handle, image.usage);
 
-                // Each eye also has an associated semaphore
-                ImportVulkanSemaphore(_m_semaphore_handles[eye]);
+                // Each eye also has an associated semaphore for ready and complete
+                for (int usage = 0; usage < 2; usage++) {
+                    ImportVulkanSemaphore(_m_semaphore_handles[eye][usage]);
+                }
 #else
                 GLuint eye_output_texture;
                 glGenTextures(1, &eye_output_texture);
@@ -735,6 +759,7 @@ public:
         }
 
         switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
+        std::cout << "TIMEWARP STARTING" << std::endl;
 
         // Use the timewarp program
         glUseProgram(timewarpShaderProgram);
@@ -795,6 +820,10 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             // Choose the appropriate texture to render to
+#ifdef ILLIXR_MONADO
+            // GLenum src_layout = GL_LAYOUT_COLOR_ATTACHMENT_EXT;
+            // glWaitSemaphoreEXT(_m_semaphores[eye][0], 0, nullptr, 1, &_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]], &src_layout);
+#endif
             glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
             glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
             glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -850,13 +879,15 @@ public:
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
 
 #ifdef ILLIXR_MONADO
-            GLenum dstLayout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
-            glSignalSemaphoreEXT(_m_semaphores[eye], 0, nullptr, 1, &_m_eye_output_textures[eye], &dstLayout);
+            GLenum dst_layout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
+            glSignalSemaphoreEXT(_m_semaphores[eye][1], 0, nullptr, 1, &_m_eye_output_textures[eye], &dst_layout);
 #endif
         }
 
         glFinish();
         glEndQuery(GL_TIME_ELAPSED);
+
+        std::cout << "TIMEWARP COMPLETE" << std::endl;
 
 #ifndef NDEBUG
         const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;

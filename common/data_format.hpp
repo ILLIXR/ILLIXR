@@ -203,7 +203,7 @@ struct image_handle : public switchboard::event {
 };
 
 // Used to identify which graphics API is being used (for swapchain construction)
-enum class semaphore_usage { LEFT_RENDER_COMPLETE, RIGHT_RENDER_COMPLETE, NA };
+enum class semaphore_usage { LEFT_LSR_READY, RIGHT_LSR_READY, LEFT_LSR_COMPLETE, RIGHT_LSR_COMPLETE, NA };
 
 struct semaphore_handle : public switchboard::event {
     int             vk_handle;
