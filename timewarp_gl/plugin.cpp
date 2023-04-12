@@ -14,6 +14,7 @@
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
+#include "common/frame_info.hpp"
 
 #include <chrono>
 #include <future>
@@ -605,8 +606,7 @@ public:
 
         // get the query result
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-        //CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<gpu_log>(elapsed_time));
-        CPU_TIMER_TIME_EVENT();
+        CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<FrameInfo>("","gpu_log",elapsed_time));
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
