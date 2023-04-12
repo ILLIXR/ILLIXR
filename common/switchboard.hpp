@@ -16,6 +16,10 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include "cpu_timer/cpu_timer.hpp"
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "managed_thread.hpp"
+#include "frame_info.hpp"
 
 namespace ILLIXR {
 
@@ -303,8 +307,7 @@ private:
          */
         ptr<const event> get() const {
             size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
-            //CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<switchboard_data_marker>(idx, _m_name));
-            CPU_TIMER_TIME_EVENT();
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, idx-1));
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
@@ -339,9 +342,8 @@ private:
             size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
-            //CPU_TIMER_TIME_EVENT_INFO(false, false, "put", cpu_timer::make_type_eraser<switchboard_data_marker>(index, _m_name));
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, index-1));
 
-            CPU_TIMER_TIME_EVENT();
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
             std::unique_lock lock{_m_subscriptions_lock};
@@ -479,8 +481,8 @@ public:
         }
 
         ptr<const specific_event> dequeue() {
-            // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
-            // serial_no));
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
+             serial_no));
             serial_no++;
             ptr<const event>          this_event          = _m_tb.dequeue();
             ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
