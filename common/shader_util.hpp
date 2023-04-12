@@ -20,8 +20,8 @@ static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_u
         /// Don't show message if severity level is notification. Non-fatal.
         return;
     }
-    //std::cerr << "GL CALLBACK: " << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "") << " type = 0x" << std::hex << type
-    //          << std::dec << ", severity = 0x" << std::hex << severity << std::dec << ", message = " << message << std::endl;
+    std::cerr << "GL CALLBACK: " << (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "") << " type = 0x" << std::hex << type
+              << std::dec << ", severity = 0x" << std::hex << severity << std::dec << ", message = " << message << std::endl;
     // https://www.khronos.org/opengl/wiki/Debug_Output#Message_Components
     if (severity == GL_DEBUG_SEVERITY_HIGH) {
         /// Fatal error if severity level is high.

@@ -35,7 +35,7 @@ public:
 
         if (it == _m_sensor_data.end()) {
 #ifndef NDEBUG
-            //std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+            std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
 #endif
             return;
         }
@@ -44,14 +44,12 @@ public:
             _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
 #ifndef NDEBUG
-        /*
         std::cout << "Ground truth pose was found at T: " << rounded_time << " | "
                   << "Pos: (" << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2]
                   << ")"
                   << " | "
                   << "Quat: (" << true_pose->orientation.w() << ", " << true_pose->orientation.x() << ", "
                   << true_pose->orientation.y() << "," << true_pose->orientation.z() << ")" << std::endl;
-        */
 #endif
 
         /// Ground truth position offset is the first ground truth position

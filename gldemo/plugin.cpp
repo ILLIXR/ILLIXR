@@ -58,7 +58,7 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
-            //std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
+            std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
         }
 #endif
 
@@ -79,7 +79,7 @@ public:
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
                 double wait_in = duration2double<std::milli>(wait_time - now);
-                //std::cout << "\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in " << wait_in << "ms" << std::endl;
+                std::cout << "\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in " << wait_in << "ms" << std::endl;
             }
 #endif
             // Perform the sleep.
@@ -89,7 +89,7 @@ public:
         } else {
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
-                //std::cout << "\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately." << std::endl;
+                std::cout << "\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately." << std::endl;
             }
 #endif
         }
@@ -175,8 +175,8 @@ public:
         const double fps              = 1.0 / frame_duration_s;
 
         if (log_count > LOG_PERIOD) {
-            //std::cout << "\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer " << which_buffer
-            //          << ", frametime: " << frame_duration_s << ", FPS: " << fps << std::endl;
+            std::cout << "\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer " << which_buffer
+                      << ", frametime: " << frame_duration_s << ", FPS: " << fps << std::endl;
         }
 #endif
         lastTime = _m_clock->now();
