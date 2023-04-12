@@ -118,12 +118,7 @@ namespace ILLIXR {
 		}
 		virtual void thread_stop(cpu_timer::Stack& stack) override {
 			std::lock_guard<std::mutex> lock {frame_logger_mutex};
-                        try {
-			    frame_loggers.at(stack.get_id())->process(stack.drain_finished());
-                        }
-                        catch (std::out_of_range) {
-                            std::cout << "MVM, stack.get_id(): " << stack.get_id() << " not in frame_loggers! " << std::endl;
-                        }
+			frame_loggers.at(stack.get_id())->process(stack.drain_finished());
 		}
 	};
 
