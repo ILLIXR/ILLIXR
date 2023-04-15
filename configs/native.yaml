@@ -7,20 +7,20 @@ plugin_groups:
       - path: offload_data/
   - !include "core_plugins.yaml"
 
-#data:
-#  subpath: mav0
-#  relative_to:
-#    archive_path:
-#      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
 data:
-  # table_01: 1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV (0.6gb)
-  # table_02: 1c0m9AnPAPNDmnRQ4-3cWUEQreiUDwswN (0.9gb)
-  # table_03: 1vmNanhgR0N5iMSFUejojmRVjWwIbJ9P7 (2.0gb)
-  # table_04: 1j7fW-reWtbe18CtZHqWV2Cuu1_cbbEwu (1.8gb)
-  subpath: "."
+  subpath: mav0
   relative_to:
     archive_path:
-      download_url_gdrive: '1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV'
+      download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+#data:
+#  subpath: "."
+#  relative_to:
+#    archive_path:
+#      # table_01: 1IhJKCf5L9DjOEMbKt53WxamqNh92ogKV (0.6gb)
+#      # table_02: 1c0m9AnPAPNDmnRQ4-3cWUEQreiUDwswN (0.9gb)
+#      # table_03: 1vmNanhgR0N5iMSFUejojmRVjWwIbJ9P7 (2.0gb)
+#      # table_04: 1j7fW-reWtbe18CtZHqWV2Cuu1_cbbEwu (1.8gb)
+#      download_url_gdrive: '1vmNanhgR0N5iMSFUejojmRVjWwIbJ9P7'
 demo_data: demo_data/
 
 enable_offload: False
@@ -35,12 +35,13 @@ action:
   name: native
 
   # How long to run the program before ending processing (default 60)
-  ILLIXR_RUN_DURATION: 60
+  ILLIXR_RUN_DURATION: 600
 
   # OpenVINS sensor configuration:
   #   - Path is where we will load configs from
   #   - Sensor is what config we should load (e.g. euroc_mav, rs_t265, rs_d455_color, rs_d455_stereo, ...)
-  openvins_sensor: rs_d455_stereo
+  #   - AR table datasets leverage the "rs_d455_color" template
+  openvins_sensor: euroc_mav
   openvins_path: pose_openvins/
 
   # run in GDB:
