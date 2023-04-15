@@ -1,7 +1,8 @@
-# Getting Started with OpenVINS
+# Getting Started with [OpenVINS](https://github.com/rpng/open_vins/)
 
 ## Building OpenVINS
 
+0. The main repository is located at https://github.com/rpng/open_vins/
 1. Install OpenVINS as a global library using the `scripts/install_openvins.sh`
 2. From there, the [Makefile](Makefile) will build and link to the `libov_msckf_lib.so`
 3. Configure the plugin to be used and the config
@@ -69,5 +70,20 @@ Credits are also due to those who authored, contributed, and maintained this plu
 [Samuel Grayson](https://github.com/charmoniumQ),
 [Qinjun Jiang](https://github.com/qinjunj),
 and [Henry Che](https://github.com/hungdche). 
+
+
+The linked OpenVINS code was written by the [Robot Perception and Navigation Group (RPNG)](https://sites.udel.edu/robot/) at the University of Delaware.
+If you have any issues with the code please open an issue on [their github page](https://github.com/rpng/open_vins/) with relevant implementation details and references.
+For researchers that have leveraged or compared to this plugin component, please cite the following:
+```
+@Conference{Geneva2020ICRA,
+  Title      = {{OpenVINS}: A Research Platform for Visual-Inertial Estimation},
+  Author     = {Patrick Geneva and Kevin Eckenhoff and Woosik Lee and Yulin Yang and Guoquan Huang},
+  Booktitle  = {Proc. of the IEEE International Conference on Robotics and Automation},
+  Year       = {2020},
+  Address    = {Paris, France},
+  Url        = {\url{https://github.com/rpng/open_vins}}
+}
+```
 
 
