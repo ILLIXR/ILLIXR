@@ -25,66 +25,75 @@ else()
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 endif()
 
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
-
+include(CMakeDependentOption)
 project(ILLIXR VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -DGLSL_VERSION='\"330 core\"' -fPIC")
 set(CMAKE_CXX_FLAGE_RELEASE "-O3 -DNDEBUG -Wall -Wextra -DGLSL_VERSION='\"330 core\"' -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -DGLSL_VERSION='\"330 core\"' -fPIC")
-set(CMAKE_INSTALL_PREFIX "/home/friedel/ilxr")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
+set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}")
+set(BUILD_GROUP "ALL" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, NONE")
 
-option(BUILD_NATIVE "" OFF)
-option(BUILD_WITH_MONADO "" OFF)
-option(BUILD_CI "" OFF)
+set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data pose_prediction realsense timewarp_gl)
+set(EXT_PLUGIN_LIST kimera_vio audio_pipeline openxr_app orb_slam monado)
 
-
-set(RT_SLAM_PLUGINS OFF)
-set(USE_OFFLINE_CAM OFF)
-set(USE_OFFLINE_IMU OFF)
-set(USE_KIMERA_VIO OFF)
-set(USE_GTSAM_INTEGRATOR OFF)
-set(USE_POSE_PREDICTION OFF)
-
-set(USE_GROUND_TRUTH_SLAM OFF)
-set(USE_GLDEMO OFF)
-set(USE_DEBUGVIEW OFF)
-set(USE_OFFLOAD_DATA OFF)
+# plugins, only exposed if BUILD_GROUP is OFF
+foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
+    string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+    cmake_dependent_option(${ITEM_UPPER} "" OFF "BUILD_GROUP STREQUAL NONE" OFF)
+endforeach()
 
 set(CORE_PLUGINS OFF)
-set(USE_TIMEWARP OFF)
-set(USE_AUDIO_PIPELINE OFF)
+set(RT_SLAM_PLUGINS OFF)
 
-set(USE_MONADO OFF)
-set(USE_OPENXR_APP OFF)
-
-set(USE_DEPTHAI OFF)
 #STILL NEED DEMO DATA
-if(BUILD_NATIVE)
+if(BUILD_GROUP STREQUAL "NATIVE")
     set(RT_SLAM_PLUGINS ON)
     set(USE_GROUND_TRUTH_SLAM ON)
     set(USE_GLDEMO ON)
     set(USE_DEBUGVIEW ON)
     set(USE_OFFLOAD_DATA ON)
     set(CORE_PLUGINS ON)
-elseif(BUILD_CI)
+    set(USE_ORB_SLAM ON)
+elseif(BUILD_GROUP STREQUAL "CI")
     set(RT_SLAM_PLUGINS ON)
     set(USE_GROUND_TRUTH_SLAM ON)
     set(USE_GLDEMO ON)
     set(CORE_PLUGINS ON)
-    set(USE_AUDIO_PLUGIN ON)
-elseif(BUILD_WITH_MONADO)
+elseif(BUILD_GROUP STREQUAL "MONADO")
     set(RT_SLAM_PLUGINS ON)
     set(CORE_PLUGINS ON)
     set(USE_MONADO ON)
     set(USE_OPENXR_APP ON)
-elseif(BUILD_TESTS)
+elseif(BUILD_GROUP STREQUAL "TESTS")
     set(USE_AUDIO_PIPELINE ON)
     set(USE_KIMERA_VIO ON)
+elseif(BUILD_GROUP STREQUAL "ALL")
+    set(RT_SLAM_PLUGINS ON)
+    set(CORE_PLUGINS ON)
+    set(USE_GROUND_TRUTH_SLAM ON)
+    set(USE_GLDEMO ON)
+    set(USE_DEBUGVIEW ON)
+    set(USE_OFFLOAD_DATA ON)
+    set(USE_ORB_SLAM ON)
+    set(USE_AUDIO_PLUGIN ON)
+    set(USE_MONADO ON)
+    set(USE_OPENXR_APP ON)
+    set(USE_KIMERA_VIO ON)
+else()
+    set(SUBTARGETS No)
+    foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
+        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+        if(${ITEM_UPPER})
+            set(SUBTARGETS Yes)
+        endif()
+    endforeach()
+    if(NOT SUBTARGETS)
+        message(WARNING "BUILD_GROUP is not defined and no Plugins were selected. Only the main binary will be built.")
+    endif()
 endif()
-
 
 if(RT_SLAM_PLUGINS)
     set(USE_OFFLINE_CAM ON)
@@ -95,7 +104,7 @@ if(RT_SLAM_PLUGINS)
 endif()
 
 if(CORE_PLUGINS)
-    set(USE_TIMEWARP ON)
+    set(USE_TIMEWARP_GL ON)
     set(USE_AUDIO_PIPELINE ON)
 endif()
 
@@ -103,24 +112,13 @@ find_package(LLVM REQUIRED CONFIG)
 find_package(Clang REQUIRED CONFIG)
 find_package(PkgConfig REQUIRED)
 
-# Use given `clang` toolchain.
-#set(CMAKE_CXX_COMPILER "${LLVM_TOOLS_BINARY_DIR}/clang++")
-#set(CMAKE_C_COMPILER "${LLVM_TOOLS_BINARY_DIR}/clang")
-
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source build prohibited.")
 endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 
-include(FetchContent)
 include(ExternalProject)
-###### SET AS DEPENDENT
-option(BUILD_DBOW2 "Download and build DBow2 as part of this build" OFF)
-option(BUILD_DEPTHAI "Download and build depthai as part of this build" OFF)
-option(BUILD_KIMERA "Download and build Kimera as part of this build" OFF)
-option(USE_REALSENSE "Make sure librealsense is available" OFF)
-option(BUILD_TESTS "Build the tests" ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
 
@@ -128,32 +126,59 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
 
 # opencv
 find_package(OpenCV REQUIRED CONFIG)
-
-#git
-find_package(Git REQUIRED)
-
+if (${OpenCV_VERSION_MAJOR} EQUAL 4)
+    set(USE_V4_CODE Yes)
+else()
+    set(USE_V4_CODE No)
+endif()
 #glew
 find_package(GLEW REQUIRED)
 
+pkg_check_modules(glu REQUIRED glu)
+
+find_package(SQLite3 REQUIRED)
+
+find_package(X11 REQUIRED)
+
+pkg_check_modules(gl REQUIRED gl)
+
+#plugin dependencies
+
+#git
+if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM OR USE_KIMERA_VIO OR USE_AUDIO_PIPELINE OR USE_MONADO OR USE_OPENXR_APP)
+    find_package(Git REQUIRED)
+endif()
+
 #googletest
-if (BUILD_TESTS)
+if (BUILD_GROUP STREQUAL "TESTS")
     find_package(GTest REQUIRED)
-endif(BUILD_TESTS)
+endif()
 
 #boost     CHECK USES (offload_data)
-find_package(Boost REQUIRED COMPONENTS filesystem)
+if(USE_OFFLOAD_DATA)
+    find_package(Boost REQUIRED COMPONENTS filesystem)
+elseif(USE_ORB_SLAM)
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+endif()
 
 #eigen3     #gtsam_integrator
-find_package(Eigen3 REQUIRED)
+if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM)
+    find_package(Eigen3 REQUIRED)
+endif()
 
 #find_path(FREEGLUT_INCLUDE_DIR "GL/freeglut.h")
 #if (NOT FREEGLUT_INCLUDE_DIR)
 #    message(FATAL_ERROR "Could not locate freeglut.h, please be sure freeglut3-dev is installed")
 #endif(NOT FREEGLUT_INCLUDE_DIR)
 
+set(EXTERNAL_LIBRARIES "")
 
-pkg_check_modules(glu REQUIRED glu)
-
+macro(get_external proj)
+    list(APPEND EXTERNAL_LIBRARIES "${proj}")
+    set(${proj}_EXTERNAL No)
+    set(${proj}_DEP_STR "")
+    include(cmake/Get${proj}.cmake)
+endmacro()
 #pkg_check_modules(hidapi-hidraw REQUIRED hidapi-hidraw)
 
 #pkg_check_modules(hidapi-libusb REQUIRED hidapi-libusb)
@@ -163,178 +188,58 @@ if(USE_REALSENSE)
     find_package(realsense2-gl REQUIRED)
 endif(USE_REALSENSE)
 
-
-find_package(SQLite3 REQUIRED)
-
-find_package(X11 REQUIRED)
-
-pkg_check_modules(gl REQUIRED gl)
-
-EXTERNALPROJECT_ADD(GTSAM
-        GIT_REPOSITORY https://github.com/ILLIXR/gtsam.git
-        GIT_TAG 9a7d05459a88c27c65b93ea75b68fa1bc0fc0e4b
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DGTSAM_WITH_TBB=OFF -DGTSAM_USE_SYSTEM_EIGEN=ON -DGTSAM_POSE3_EXPMAP=ON -DGTSAM_ROT3_EXPMAP=ON -DGTSAM_WITH_EIGEN_UNSUPPORTED=ON -DGTSAM_BUILD_TESTS=OFF -DGTSAM_BUILD_EXAMPLES_ALWAYS=OFF
-        INSTALL_COMMAND make install && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libgtsam${CMAKE_BUILD_TYPE}.so ${CMAKE_INSTALL_PREFIX}/lib/libgtsam.so && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libgtsam_unstable${CMAKE_BUILD_TYPE}.so ${CMAKE_INSTALL_PREFIX}/lib/libgtsam_unstable.so)
-set(GTSAM_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
-
-EXTERNALPROJECT_GET_PROPERTY(GTSAM install_dir)
-add_library(gtsam SHARED IMPORTED)
-set_property(TARGET gtsam PROPERTY IMPORTED_LOCATION ${install_dir}/src/GTSAM-build/gtsam/libgtsam${CMAKE_BUILD_TYPE}.so)
-add_dependencies(gtsam GTSAM)
+if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
+    get_external(GTSAM)
+endif()
 
 add_executable(main.opt.exe runtime/main.cpp)
 target_include_directories(main.opt.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(main.opt.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs)
 
-if(USE_OFFLINE_IMU)
-    add_subdirectory(plugins/offline_imu)
-endif()
-if(USE_OFFLINE_CAM)
-    add_subdirectory(plugins/offline_cam)
-endif()
-if(USE_GROUND_TRUTH_SLAM)
-    add_subdirectory(plugins/ground_truth_slam)
-endif()
-if(USE_POSE_PREDICTION)
-    add_subdirectory(plugins/pose_prediction)
-endif()
-if(USE_GLDEMO)
-    add_subdirectory(plugins/gldemo)
-endif()
-add_subdirectory(plugins/offload_data)
+foreach(ITEM IN LISTS PLUGIN_LIST)
+    string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+    if(${ITEM_UPPER})
+        add_subdirectory(plugins/${ITEM})
+    endif()
+endforeach()
 
-if(USE_TIMEWARP)
-    add_subdirectory(plugins/timewarp_gl)
+if(USE_KIMERA_VIO OR USE_ORB_SLAM)
+    get_external(DBoW2)
 endif()
 
-if(USE_GTSAM_INTEGRATOR)
-    add_subdirectory(plugins/gtsam_integrator)
-endif()
-if(USE_DEPTHAI)
-    add_subdirectory(plugins/depthai)
+if(USE_ORB_SLAM)
+    #include(cmake/GetPangolin.cmake)
+    get_external(Pangolin)
+    get_external(g2o)
+    get_external(Sophus)
+    include(cmake/GetORB_SLAM.cmake)
 endif()
 
 if(USE_KIMERA_VIO)
-    EXTERNALPROJECT_ADD(opengv
-            GIT_REPOSITORY https://github.com/laurentkneip/opengv.git
-            GIT_TAG 91f4b19c73450833a40e463ad3648aae80b3a7f3
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            )
-
-    # DBoW2
-    if(BUILD_DBOW2)
-        EXTERNALPROJECT_ADD(DBoW2
-                GIT_REPOSITORY https://github.com/dorian3d/DBoW2.git
-                GIT_TAG 3924753db6145f12618e7de09b7e6b258db93c6e
-                CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                )
-
-    else(BUILD_DBOW2)
-        find_package(DBoW2 CONFIG)
-        if(NOT DBoW2_FOUND)
-            message(FATAL_ERROR "Could not find a package configuration file provided by \"DBoW2\" with any of the following names:
-        DBoW2Config.cmake
-        dbow2-config.cmake
-    Add the installation prefix of \"DBoW2\" to CMAKE_PREFIX_PATH or set \
-    \"DBoW2_DIR\" to a directory containing one of the above files or \
-     add -DBUILD_DBOW2=ON to the cmake command line to download and \
-     build it with this project.")
-        endif(NOT DBoW2_FOUND)
-    endif(BUILD_DBOW2)
-
-    #Kimera
-    if (BUILD_KIMERA)
-        ExternalProject_Add(KimeraRPGO
-             URL https://github.com/MIT-SPARK/Kimera-RPGO/archive/refs/tags/dec-2020.tar.gz
-             URL_HASH MD5=26ac6e1525523b88d555e61ca74da34b
-             DEPENDS GTSAM
-             PREFIX ${CMAKE_BINARY_DIR}/kimerarpgo
-             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        )
-    #EXTERNALPROJECT_ADD_STEPDEPENDENCIES(KimeraRPGO configure GTSAM)
-    #EXTERNALPROJECT_ADD_STEPDEPENDENCIES(KimeraRPGO build GTSAM)
-
-    else(BUILD_KIMERA)
-        find_package(KimeraRPGO)
-        if(NOT KimeraRPGO_FOUND)
-            message(FATAL_ERROR "Could not find a package configuration file provided by \"KimeraRPGO\" with any of the following names:
-            KimeraRPGOConfig.cmake
-            KimeraRPGO-config.cmake
-        Add the installation prefix of \"KimeraRPGO\" to CMAKE_PREFIX_PATH or set \
-        \"KimeraRPGO_DIR\" to a directory containing one of the above files or \
-         add -DBUILD_KIMERA=ON to the cmake command line to download and \
-         build it with this project.")
-        endif(NOT KimeraRPGO_FOUND)
-
-    endif(BUILD_KIMERA)
-
-
-    ExternalProject_Add(Kimera_VIO
-            GIT_REPOSITORY https://github.com/ILLIXR/Kimera-VIO.git
-            GIT_TAG 7dbb46db916aff048b43d78ee4c15ce147cad958
-            GIT_SUBMODULES_RECURSE TRUE
-            DEPENDS KimeraRPGO DBoW2 GTSAM opengv
-            PREFIX ${CMAKE_BINARY_DIR}/kimera_vio
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}  -DCMAKE_SHARED_LINKER_FLAGS=-L${CMAKE_INSTALL_PREFIX}/lib -DCMAKE_EXE_LINKER_FLAGS=-L${CMAKE_INSTALL_PREFIX}/lib -DBUILD_TESTING=OFF -DBUILD_TESTS=OFF
-            )
-
-    #EXTERNALPROJECT_ADD_STEPDEPENDENCIES(Kimera_VIO configure KimeraRPGO GTSAM opengv DBoW2)
-    #EXTERNALPROJECT_ADD_STEPDEPENDENCIES(Kimera_VIO build KimeraRPGO GTSAM opengv DBoW2)
+    get_external(opengv)
+    get_external(KimeraRPGO)
+    include(cmake/GetKimera_vio.cmake)
 endif()
 
 if(USE_AUDIO_PIPELINE)
-    ExternalProject_Add(Audio_Pipeline
-            GIT_REPOSITORY https://github.com/ILLIXR/audio_pipeline.git
-            GIT_TAG 960283cea2c724b73f7cd26ee972a3e5d92c82d0
-            PREFIX ${CMAKE_BINARY_DIR}/audio_pipeline
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DILLIXR_INTEGRATION=ON -DILLIXR_ROOT=${PROJECT_SOURCE_DIR}/runtime
-            )
+    get_external(PortAudio)
+    get_external(SpatialAudio)
+    include(cmake/GetAudioPipeline.cmake)
 endif()
 
 if(USE_MONADO)
-    #glslang
-    pkg_check_modules(glslang REQUIRED glslang)
-    find_package(gflags REQUIRED)
-    find_package(JPEG REQUIRED)
-    find_package(PNG REQUIRED)
-    find_package(TIFF REQUIRED)
-    pkg_check_modules(udev REQUIRED udev)
-    pkg_check_modules(wayland-server REQUIRED wayland-server)
-    pkg_check_modules(x11-xcb REQUIRED x11-xcb)
-    pkg_check_modules(xcb-glx REQUIRED xcb-glx)
-    pkg_check_modules(xcb-randr REQUIRED xcb-randr)
-    pkg_check_modules(xkbcommon REQUIRED xkbcommon)
-    pkg_check_modules(xrandr REQUIRED xrandr)
-    find_package(OpenXR REQUIRED)
-    find_package(Vulkan REQUIRED)
-
-    pkg_check_modules(libusb-1.0 REQUIRED libusb-1.0)
-
-    EXTERNALPROJECT_ADD(Monado
-            GIT_REPOSITORY https://github.com/ILLIXR/monado_integration.git
-            GIT_TAG 5b91cfc4779d04fcb7742fc9137cdf572aa0fc4b
-            PREFIX ${CMAKE_BINARY_DIR}/monado
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DILLIXR_PATH=${CMAKE_SOURCE_DIR}/runtime -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_LIBUSB=0 -DBUILD_WITH_LIBUVC=0 -DBUILD_WITH_NS=0 -DBUILD_WITH_PSMV=0 -DBUILD_WITH_PSVR=0 -DBUILD_WITH_OPENHMD=0 -DBUILD_WITH_VIVE=0
-            )
+    include(cmake/GetMonado.cmake)
 endif()
 
 if(USE_OPENXR_APP)
-    find_package(SDL2 REQUIRED)
-
-    EXTERNALPROJECT_ADD(OpenXR_App
-            GIT_REPOSITORY https://gitlab.freedesktop.org/monado/demos/openxr-simple-example.git
-            GIT_TAG 94f1a764dd736b23657ff01464ec1518771e8cdc
-            PREFIX ${CMAKE_BINARY_DIR}/OpenXR_APP
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            )
+    include(cmake/GetOpenXR_APP.cmake)
 endif()
-
-message("${CMAKE_SOURCE_DIR}/.cache")
 
 #file(DOWNLOAD http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip V1_02_medium.zip SHOW_PROGRESS)
 
 install(TARGETS main.opt.exe DESTINATION bin)
 
+include(cmake/ConfigurationSummary.cmake)
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
