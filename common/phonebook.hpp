@@ -6,6 +6,7 @@
 #include <shared_mutex>
 #include <stdexcept>
 #include <typeindex>
+#include <mutex>
 #include <unordered_map>
 
 namespace ILLIXR {
