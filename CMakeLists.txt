@@ -108,8 +108,8 @@ if(CORE_PLUGINS)
     set(USE_AUDIO_PIPELINE ON)
 endif()
 
-find_package(LLVM REQUIRED CONFIG)
-find_package(Clang REQUIRED CONFIG)
+#find_package(LLVM REQUIRED CONFIG)
+#find_package(Clang REQUIRED CONFIG)
 find_package(PkgConfig REQUIRED)
 
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
