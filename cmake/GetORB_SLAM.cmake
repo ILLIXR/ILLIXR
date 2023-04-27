@@ -1,6 +1,6 @@
 EXTERNALPROJECT_ADD(ORB_Slam
         GIT_REPOSITORY https://github.com/ILLIXR/ORB_SLAM3.git
-        GIT_TAG e9a0cac07ca778c5863c1737c92548575cc0fc26
+        GIT_TAG 24e5ffd366174d6f0964e97db9484147b681b9bd
         PREFIX ${CMAKE_BINARY_DIR}/_deps/ORB_Slam
         DEPENDS ${DBoW2_DEP_STR} ${Pangolin_DEP_STR} ${g2o_DEP_STR} ${Sophus_DEP_STR}
         BUILD_COMMAND cmake --build . -j1
