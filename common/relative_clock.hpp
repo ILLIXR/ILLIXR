@@ -102,7 +102,7 @@ public:
     using rep                       = _clock_rep;
     using period                    = _clock_period;
     using duration                  = _clock_duration;
-    using time_point                = time_point;
+    //using time_point                = time_point;
     static constexpr bool is_steady = true;
     static_assert(std::chrono::steady_clock::is_steady);
 
