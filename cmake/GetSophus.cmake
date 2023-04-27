@@ -1,5 +1,6 @@
 find_package(Sophus 1.22 QUIET)
 if (NOT Sophus_FOUND)
+    find_package(fmt REQUIRED)
     EXTERNALPROJECT_ADD(Sophus
             GIT_REPOSITORY https://github.com/strasdat/Sophus.git
             GIT_TAG 1.22.10
