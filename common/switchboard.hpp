@@ -306,8 +306,9 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
+            size_t serial_no = _m_latest_index.load();
             size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
-            CPU_TIMER_TIME_EVENT_INFO(true, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, idx-1));
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no-1));
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
@@ -338,11 +339,12 @@ private:
             assert(this_event.unique() ||
                    this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
 
+            size_t serial_no = _m_latest_index.load() + 1;
             /* The pointer that this gets exchanged with needs to get dropped. */
             size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
-            CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, index-1));
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no));
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
