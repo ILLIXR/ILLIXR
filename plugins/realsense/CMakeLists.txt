@@ -1,5 +1,7 @@
 # OpenCV
-find_package(OpenCV REQUIRED)
+if(NOT OpenCV_FOUND)
+    find_package(OpenCV REQUIRED)
+endif()
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Intel RealSense

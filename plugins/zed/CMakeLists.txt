@@ -15,7 +15,9 @@ SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 find_package(Threads REQUIRED)
 find_package(ZED 3 REQUIRED)
-find_package(OpenCV REQUIRED)
+if(NOT HAVE_CENTOS)
+	find_package(OpenCV REQUIRED)
+endif()
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 include_directories(${CUDA_INCLUDE_DIRS})
