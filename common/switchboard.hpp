@@ -174,7 +174,7 @@ private:
             std::int64_t     timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
             // Note the use of timed blocking wait
             if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
-                CPU_TIMER_TIME_BLOCK("callback");
+                CPU_TIMER_TIME_BLOCK_INFO("callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic_name,0));
                 // Process event
                 // Also, record and log the time
                 _m_dequeued++;
