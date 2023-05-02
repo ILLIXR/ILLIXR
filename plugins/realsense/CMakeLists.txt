@@ -1,13 +1,14 @@
-# OpenCV
+# CMake file for building realsense plugin for ILLIXR
+# Required packages:
+#   realsense (development)
+#   OpenCV including the viz module  (development)
 
 # Intel RealSense
 find_package(realsense2 REQUIRED)
 include_directories("${realsense2_INCLUDE_DIR}")
 add_library(plugin SHARED plugin.cpp)
 
-if(NOT HAVE_CENTOS)
-    find_package(OpenCV REQUIRED)
-else()
+if(BUILD_OPENCV)
     add_dependencies(plugin OpenCV_Viz)
 endif()
 include_directories(${OpenCV_INCLUDE_DIRS})

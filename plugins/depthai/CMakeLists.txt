@@ -33,9 +33,8 @@ find_package(depthai CONFIG REQUIRED)
 
 # OpenCV
 add_library(plugin SHARED plugin.cpp)
-if(NOT HAVE_CENTOS)
-    find_package(OpenCV REQUIRED)
-else()
+
+if(BUILD_OPENCV)
     add_dependencies(plugin OpenCV_Viz)
 endif()
 

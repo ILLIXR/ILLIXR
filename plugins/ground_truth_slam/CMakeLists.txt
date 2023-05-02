@@ -1,7 +1,6 @@
 add_library(plugin.ground_truth_slam SHARED plugin.cpp)
-if(NOT HAVE_CENTOS)
-    find_package(OpenCV REQUIRED)
-else()
+
+if(BUILD_OPENCV)
     add_dependencies(plugin.ground_truth_slam OpenCV_Viz)
 endif()
 

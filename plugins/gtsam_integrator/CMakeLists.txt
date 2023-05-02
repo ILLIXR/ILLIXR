@@ -1,4 +1,4 @@
-if(NOT ${Eigen3_FOUND})
+if(NOT Eigen3_FOUND)
     find_package(Eigen3 REQUIRED)
 endif()
 
@@ -6,9 +6,8 @@ add_library(plugin.gtsam_integrator SHARED plugin.cpp)
 if(NOT GTSAM_FOUND)
     add_dependencies(plugin.gtsam_integrator gtsam)
 endif()
-if(NOT HAVE_CENTOS)
-    find_package(OpenCV REQUIRED)
-else()
+
+if(BUILD_OPENCV)
     add_dependencies(plugin.gtsam_integrator OpenCV_Viz)
 endif()
 

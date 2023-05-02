@@ -1,7 +1,6 @@
 add_library(plugin.offline_imu SHARED plugin.cpp)
-if(NOT HAVE_CENTOS)
-    find_package(OpenCV REQUIRED)
-else()
+
+if(BUILD_OPENCV)
     add_dependencies(plugin.offline_imu OpenCV_Viz)
 endif()
 target_compile_features(plugin.offline_imu PRIVATE cxx_std_17)

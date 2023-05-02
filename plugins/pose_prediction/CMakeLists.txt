@@ -1,7 +1,10 @@
+# CMake file for building pose_prediction plugin for ILLIXR
+# Required packages:
+#   OpenCV including the viz module  (development)
+
 add_library(plugin.pose_prediction SHARED plugin.cpp)
-if(NOT HAVE_CENTOS)
-    find_package(OpenCV REQUIRED)
-else()
+
+if(BUILD_OPENCV)
     add_dependencies(plugin.pose_prediction OpenCV_Viz)
 endif()
 target_compile_features(plugin.pose_prediction PRIVATE cxx_std_17)
