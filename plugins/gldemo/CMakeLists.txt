@@ -15,6 +15,12 @@ if(NOT ${gl_FOUND})
 endif()
 
 add_library(plugin.gldemo SHARED plugin.cpp)
+if(NOT HAVE_CENTOS)
+    find_package(OpenCV REQUIRED)
+else()
+    add_dependencies(plugin.gldemo OpenCV_Viz)
+endif()
+
 target_include_directories(plugin.gldemo PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(plugin.gldemo ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES})
 target_compile_features(plugin.gldemo PRIVATE cxx_std_17)

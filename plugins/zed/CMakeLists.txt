@@ -15,14 +15,10 @@ SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 find_package(Threads REQUIRED)
 find_package(ZED 3 REQUIRED)
-if(NOT HAVE_CENTOS)
-	find_package(OpenCV REQUIRED)
-endif()
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 include_directories(${CUDA_INCLUDE_DIRS})
 include_directories(${ZED_INCLUDE_DIRS})
-include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 link_directories(${ZED_LIBRARY_DIR})
@@ -33,6 +29,13 @@ FILE(GLOB_RECURSE SRC_FILES src/main.cpp)
 FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
 
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
-
 add_library(plugin SHARED ${HDR_FILES} ${SRC_FILES})
+
+if(NOT HAVE_CENTOS)
+	find_package(OpenCV REQUIRED)
+else()
+	add_dependencies(plugin OpenCV_Viz)
+endif()
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES} Threads::Threads)

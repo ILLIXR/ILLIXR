@@ -15,12 +15,15 @@ if(NOT ${gl_FOUND})
 endif()
 
 find_package(glfw3 REQUIRED)
-if(NOT ${OpenCV_FOUND})
-    find_package(OpenCV REQUIRED)
-endif()
-
 file(GLOB_RECURSE DEBUGVIEW_SOURCES "./*.cpp")
 add_library(plugin.debugview SHARED ${DEBUGVIEW_SOURCES})
+
+if(NOT HAVE_CENTOS)
+    find_package(OpenCV REQUIRED)
+else()
+    add_dependencies(plugin.debugview OpenCV_Viz)
+endif()
+
 target_include_directories(plugin.debugview PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR})
 target_link_libraries(plugin.debugview ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} dl pthread)
 target_compile_features(plugin.debugview PRIVATE cxx_std_17)

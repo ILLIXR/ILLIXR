@@ -32,11 +32,16 @@ endif(BUILD_DEPTHAI)
 find_package(depthai CONFIG REQUIRED)
 
 # OpenCV
-find_package(OpenCV REQUIRED )
+add_library(plugin SHARED plugin.cpp)
+if(NOT HAVE_CENTOS)
+    find_package(OpenCV REQUIRED)
+else()
+    add_dependencies(plugin OpenCV_Viz)
+endif()
+
 include_directories(${OpenCV_INCLUDE_DIRS} ${DepthAI_INCLUDE_DIRS})
 
 add_definitions(-Wall -Wextra -Werror -Wno-format-extra-args -std=c++17 -g -O3)
-add_library(plugin SHARED plugin.cpp)
 target_link_libraries(plugin PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE depthai::core)
 
 install(TARGETS plugin DESTINATION lib)
