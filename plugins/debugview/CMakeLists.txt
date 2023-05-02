@@ -19,7 +19,7 @@ file(GLOB_RECURSE DEBUGVIEW_SOURCES "./*.cpp")
 add_library(plugin.debugview SHARED ${DEBUGVIEW_SOURCES})
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.debugview OpenCV_Viz)
+    add_dependencies(plugin.debugview OPENCV_LIBRARY)
 endif()
 
 target_include_directories(plugin.debugview PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR})

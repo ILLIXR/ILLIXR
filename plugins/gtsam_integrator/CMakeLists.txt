@@ -8,7 +8,7 @@ if(NOT GTSAM_FOUND)
 endif()
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.gtsam_integrator OpenCV_Viz)
+    add_dependencies(plugin.gtsam_integrator OPENCV_LIBRARY)
 endif()
 
 
