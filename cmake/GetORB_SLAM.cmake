@@ -4,7 +4,7 @@ if(HAVE_CENTOS)
 endif()
 EXTERNALPROJECT_ADD(ORB_Slam
         GIT_REPOSITORY https://github.com/ILLIXR/ORB_SLAM3.git
-        GIT_TAG f79372d50626a84adb0504edd717c5a63231097f
+        GIT_TAG 53c17d69a7069909c41505a6e76ef1fba0a08467
         PREFIX ${CMAKE_BINARY_DIR}/_deps/ORB_Slam
         DEPENDS ${DBoW2_DEP_STR} ${Pangolin_DEP_STR} ${g2o_DEP_STR} ${Sophus_DEP_STR} ${OpenCV_DEP_STR}
         BUILD_COMMAND cmake --build . -j1
