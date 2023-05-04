@@ -76,12 +76,14 @@ private:
             ILLIXR::abort("Failed to get Vulkan graphics queue. Error: " + graphics_queue_ret.error().message());
         }
         graphics_queue = graphics_queue_ret.value();
+        graphics_queue_family = vkb_device.get_queue_index(vkb::QueueType::graphics).value();
 
         auto present_queue_ret = vkb_device.get_queue(vkb::QueueType::present);
         if (!present_queue_ret) {
             ILLIXR::abort("Failed to get Vulkan present queue. Error: " + present_queue_ret.error().message());
         }
         present_queue = present_queue_ret.value();
+        present_queue_family = vkb_device.get_queue_index(vkb::QueueType::present).value();
 
         vkb::SwapchainBuilder swapchain_builder{vkb_device};
         auto swapchain_ret = swapchain_builder.set_desired_format({VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR})

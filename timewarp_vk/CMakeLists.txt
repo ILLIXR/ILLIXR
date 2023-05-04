@@ -11,7 +11,7 @@ message(STATUS "glslc: ${glslc_executable}")
 
 find_package(glm REQUIRED)
 
-find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
+find_program(glslc_executable NAMES glslc)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
         "shaders/*.frag"

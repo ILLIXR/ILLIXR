@@ -2,6 +2,7 @@
 #define TIMEWARP_VK_VULKAN_UTILS_H
 
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -43,6 +44,39 @@ public:
         VmaAllocator allocator;
         vmaCreateAllocator(&allocatorCreateInfo, &allocator);
         return allocator;
+    }
+
+    static VkCommandBuffer begin_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool) {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool        = vk_command_pool;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer commandBuffer;
+        vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer);
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+        return commandBuffer;
+    }
+
+    static VkCommandBuffer end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue, VkCommandBuffer vk_command_buffer) {
+        vkEndCommandBuffer(vk_command_buffer);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers    = &vk_command_buffer;
+
+        vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(vk_queue);
+
+        vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
     }
 };
 

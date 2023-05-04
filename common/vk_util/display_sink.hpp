@@ -1,3 +1,4 @@
+#include <cstdint>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include "third_party/VkBootstrap.h"
@@ -19,6 +20,8 @@ public:
     VkDevice                 vk_device;
     VkQueue                  graphics_queue;
     VkQueue                  present_queue;
+    uint32_t                 graphics_queue_family;
+    uint32_t                 present_queue_family;
     VkSwapchainKHR           vk_swapchain;
     VkExtent2D               swapchain_extent;
     std::vector<VkImage>     swapchain_images;
