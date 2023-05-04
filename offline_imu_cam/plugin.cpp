@@ -67,11 +67,11 @@ protected:
                                }});
 
         std::optional<cv::Mat> cam0 =
-            sensor_datum.cam0 ? std::make_optional<cv::Mat>(*(sensor_datum.cam0.value().load())) : std::nullopt;
+            sensor_datum.cam0 ? std::make_optional<cv::Mat>(*(sensor_datum.cam0.value().load().release())) : std::nullopt;
         RAC_ERRNO_MSG("offline_imu_cam after cam0");
 
         std::optional<cv::Mat> cam1 =
-            sensor_datum.cam1 ? std::make_optional<cv::Mat>(*(sensor_datum.cam1.value().load())) : std::nullopt;
+            sensor_datum.cam1 ? std::make_optional<cv::Mat>(*(sensor_datum.cam1.value().load().release())) : std::nullopt;
         RAC_ERRNO_MSG("offline_imu_cam after cam1");
 
 #ifndef NDEBUG
