@@ -53,6 +53,8 @@ set(BUILD_GROUP "ALL" CACHE STRING "Which components to build: ALL, NATIVE, MONA
 set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data pose_prediction realsense timewarp_gl)
 set(EXT_PLUGIN_LIST kimera_vio audio_pipeline openxr_app orb_slam monado)
 
+link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
+
 # plugins, only exposed if BUILD_GROUP is OFF
 foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
@@ -146,6 +148,7 @@ if(HAVE_CENTOS)
     set(INTERNAL_OPENCV ${CMAKE_INSTALL_PREFIX}/lib/cmake/opencv4)
     find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
+	message("Building OpenCV")
         include(cmake/GetOpenCV_Viz.cmake)
         set(USE_V4_CODE Yes)
         add_dependencies(main.opt.exe OpenCV_Viz)

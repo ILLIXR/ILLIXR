@@ -9,7 +9,7 @@ endif()
 add_library(plugin.offload_data SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.offload_data OPENCV_LIBRARY)
+    add_dependencies(plugin.offload_data OpenCV_Viz)
 endif()
 target_include_directories(plugin.offload_data PRIVATE ${Boost_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(plugin.offload_data boost_filesystem ${OpenCV_LIBRARIES})

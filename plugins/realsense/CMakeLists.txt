@@ -9,7 +9,7 @@ include_directories("${realsense2_INCLUDE_DIR}")
 add_library(plugin SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin OPENCV_LIBRARY)
+    add_dependencies(plugin OpenCV_Viz)
 endif()
 include_directories(${OpenCV_INCLUDE_DIRS})
 

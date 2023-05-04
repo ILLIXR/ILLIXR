@@ -1,7 +1,7 @@
 add_library(plugin.ground_truth_slam SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.ground_truth_slam OPENCV_LIBRARY)
+    add_dependencies(plugin.ground_truth_slam OpenCV_Viz)
 endif()
 
 target_compile_features(plugin.ground_truth_slam PRIVATE cxx_std_17)
