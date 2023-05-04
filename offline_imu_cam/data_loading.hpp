@@ -23,7 +23,7 @@ public:
     lazy_load_image(const std::string& path)
         : _m_path(path) { }
 
-    std::unique_ptr<cv::Mat> load() const {
+    cv::Mat load() const {
         auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_GRAYSCALE)}};
         assert(!img->empty());
         return img;
