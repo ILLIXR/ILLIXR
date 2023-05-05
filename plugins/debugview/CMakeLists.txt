@@ -19,7 +19,7 @@ file(GLOB_RECURSE DEBUGVIEW_SOURCES "./*.cpp")
 add_library(plugin.debugview${ILLIXR_BUILD_SUFFIX} SHARED ${DEBUGVIEW_SOURCES})
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.debugview OpenCV_Viz)
+    add_dependencies(plugin.debugview${ILLIXR_BUILD_SUFFIX} OpenCV_Viz)
     message("DEPENDS")
 endif()
 

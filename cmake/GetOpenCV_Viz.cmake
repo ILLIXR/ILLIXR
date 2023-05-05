@@ -7,10 +7,6 @@ EXTERNALPROJECT_ADD(OpenCV_Viz
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_JAVA=OFF -DWITH_OPENGL=ON -DWITH_VTK=ON -DOPENCV_EXTRA_MODULES_PATH=${CMAKE_BINARY_DIR}/_deps/OpenCV_Viz/src/OpenCV_Viz/opencv_contrib/modules
         )
 
-#ExternalProject_Get_Property(OpenCV_Viz INSTALL_DIR)
-#set(OPENCV_INSTALL_DIR ${INSTALL_DIR})
-#add_library(OPENCV_LIBRARY SHARED IMPORTED GLOBAL)
-#set_property(TARGET OPENCV_LIBRARY PROPERTY IMPORTED_LOCATION ${OPENCV_INSTALL_DIR}/lib/libopencvviz.so)
 set(OpenCV_FOUND 1)
 set(OpenCV_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/opencv4)
 set(OpenCV_LIBRARIES opencv_alphamat;opencv_dpm;opencv_imgproc;opencv_reg;opencv_video;opencv_aruco;opencv_face;opencv_intensity_transform;opencv_rgbd;opencv_videoio;opencv_barcode;opencv_features2d;opencv_line_descriptor;opencv_saliency;opencv_videostab;opencv_bgsegm;opencv_flann;opencv_mcc;opencv_sfm;opencv_viz;opencv_bioinspired;opencv_freetype;opencv_ml;opencv_shape;opencv_wechat_qrcode;opencv_ca3d;opencv_fuzzy;opencv_objdetect;opencv_stereo;opencv_xfeatures2d;opencv_cca;opencv_gapi;opencv_optflow;opencv_stitching;opencv_ximgproc;opencv_core;opencv_hdf;opencv_phase_unwrapping;opencv_structured_light;opencv_xobjdetect;opencv_datasets;opencv_hfs;opencv_photo;opencv_superres;opencv_xphoto;opencv_dnn;opencv_highgui;opencv_plot;opencv_surface_matching;opencv_dnn_objdetect;opencv_img_hash;opencv_quality;opencv_text;opencv_dnn_superres;opencv_imgcodecs;opencv_rapid;opencv_tracking)
