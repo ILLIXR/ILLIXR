@@ -9,7 +9,7 @@
 #include <cassert>
 #include <cerrno>
 #include <chrono>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -29,8 +29,8 @@ public:
     sqlite3pp::database prep_db() {
         RAC_ERRNO_MSG("sqlite_record_logger at start of prep_db");
 
-        if (!std::experimental::filesystem::exists(dir)) {
-            std::experimental::filesystem::create_directory(dir);
+        if (!std::filesystem::exists(dir)) {
+            std::filesystem::create_directory(dir);
         }
 
         const std::string path = dir / (table_name + std::string{".sqlite"});
@@ -193,7 +193,7 @@ public:
     }
 
 private:
-    static const std::experimental::filesystem::path dir;
+    static const std::filesystem::path dir;
     const record_header&                             rh;
     std::string                                      table_name;
     sqlite3pp::database                              db;
@@ -204,7 +204,7 @@ private:
     std::thread                                      thread;
 };
 
-const std::experimental::filesystem::path sqlite_thread::dir{"metrics"};
+const std::filesystem::path sqlite_thread::dir{"metrics"};
 
 class sqlite_record_logger : public record_logger {
 private:

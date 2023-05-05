@@ -1,3 +1,30 @@
+########################################################################################
+#
+# This is the install script for ILLIXR
+# This will compile the main ILLIXR binary along with any requested plugins.
+# The currently supported plugins are:
+#   audio_pipeline, debugview, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio,
+#   monado, offline_cam, offline_imu, offload_data, openxr_app, orb_slam, pose_prediction,
+#   realsense, timewarp_gl
+#
+# In addition to the standard CMake options, the following arguments can be used:
+#
+# BUILD_GROUP [ALL|NATIVE|MONADO|CI|TESTS|NONE] : which subgroup of plugins are to be built
+#     ALL : all plugins, this is the default
+#     NATIVE : audio_pipeline, debugview, gldemo, gtsam_integrator, ground_truth_slam,
+#              kimera_vio, offline_imu, offline_cam, offload_data, pose_prediction, timewarp_gl
+#     MONADO : audio_pipeline, gtsam_integrator, kimera_vio, monado, offline_imu, offline_cam,
+#              openxr_app, pose_prediction, timewarp_gl
+#     CI : audio_pipeline, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio,
+#          offline_imu, offline_cam, pose_prediction,  timewarp_gl
+#     NONE : no group is built, individual plugins can be selected
+#
+# To build specific plugins use the following format:
+#   USE_<PLUGIN>=ON
+# where <PLUGIN> is the name of the plugin in upper case.
+#
+########################################################################################
+
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_VERBOSE_MAKEFILE True)
 if (POLICY CMP0048)
@@ -39,10 +66,20 @@ else()
 endif()
 
 include(CMakeDependentOption)
+include(ExternalProject)
+
 project(ILLIXR VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
+set(ILLIXR_BUILD_SUFFIX "")
+if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+    set(ILLIXR_BUILD_SUFFIX ".dgb")
+elseif(CMAKE_BUILD_TYPE MATCHES RELEASE)
+    set(ILLIXR_BUILD_SUFFIX ".opt")
+elseif(CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
+    set(ILLIXR_BUILD_SUFFIX ".optdbg")
+endif()
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGE_RELEASE "-O3 -DNDEBUG -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -fPIC")
@@ -122,8 +159,6 @@ if(CORE_PLUGINS)
     set(USE_AUDIO_PIPELINE ON)
 endif()
 
-#find_package(LLVM REQUIRED CONFIG)
-#find_package(Clang REQUIRED CONFIG)
 find_package(PkgConfig REQUIRED)
 
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -132,18 +167,25 @@ endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 
-include(ExternalProject)
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
-
+##############
 # dependencies
+##############
 
+##############
 # opencv
-add_executable(main.opt.exe runtime/main.cpp)
+#
+# If building on centos system, opencv must be built from scratch to get the viz module
+# which is not supplied by the centos repos
+##############
+add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
+add_executable(main${ILLIXR_BUILD_SUFFIX}.exe runtime/main.cpp)
 set(BUILDING_OPENCV No)
 set(OpenCV_DEP_STR "")
 if(HAVE_CENTOS)
     set(INTERNAL_OPENCV ${CMAKE_INSTALL_PREFIX}/lib/cmake/opencv4)
+    # see if it has been built yet
     find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
         include(cmake/GetOpenCV_Viz.cmake)
@@ -164,7 +206,7 @@ if(DEFINED OpenCV_VERSION_MAJOR)
         set(USE_V4_CODE No)
     endif()
 endif()
-#glew
+
 find_package(GLEW REQUIRED)
 
 pkg_check_modules(glu REQUIRED glu)
@@ -175,46 +217,37 @@ find_package(X11 REQUIRED)
 
 pkg_check_modules(gl REQUIRED gl)
 
-#plugin dependencies
+#############
+# plugin specific dependencies
+#############
 
-#git
 if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM OR USE_KIMERA_VIO OR USE_AUDIO_PIPELINE OR USE_MONADO OR USE_OPENXR_APP)
     find_package(Git REQUIRED)
 endif()
 
-#googletest
 if (BUILD_GROUP STREQUAL "TESTS")
     find_package(GTest REQUIRED)
 endif()
 
-#boost     CHECK USES (offload_data)
 if(USE_OFFLOAD_DATA)
     find_package(Boost REQUIRED COMPONENTS filesystem)
 elseif(USE_ORB_SLAM)
     find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 endif()
 
-#eigen3     #gtsam_integrator
 if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM)
     find_package(Eigen3 REQUIRED)
 endif()
 
-#find_path(FREEGLUT_INCLUDE_DIR "GL/freeglut.h")
-#if (NOT FREEGLUT_INCLUDE_DIR)
-#    message(FATAL_ERROR "Could not locate freeglut.h, please be sure freeglut3-dev is installed")
-#endif(NOT FREEGLUT_INCLUDE_DIR)
-
 set(EXTERNAL_LIBRARIES "")
 
+# check for 3rd party dependencies that are not parts of OS repos
 macro(get_external proj)
     list(APPEND EXTERNAL_LIBRARIES "${proj}")
     set(${proj}_EXTERNAL No)
     set(${proj}_DEP_STR "")
     include(cmake/Get${proj}.cmake)
 endmacro()
-#pkg_check_modules(hidapi-hidraw REQUIRED hidapi-hidraw)
-
-#pkg_check_modules(hidapi-libusb REQUIRED hidapi-libusb)
 
 if(USE_REALSENSE)
     find_package(realsense2 REQUIRED)
@@ -225,9 +258,10 @@ if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
     get_external(GTSAM)
 endif()
 
-target_include_directories(main.opt.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(main.opt.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs)
+target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs)
 
+# set any plugins that are being built
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     if(${ITEM_UPPER})
@@ -235,12 +269,12 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     endif()
 endforeach()
 
+# external plugins
 if(USE_KIMERA_VIO OR USE_ORB_SLAM)
     get_external(DBoW2)
 endif()
 
 if(USE_ORB_SLAM)
-    #include(cmake/GetPangolin.cmake)
     get_external(Pangolin)
     get_external(g2o)
     get_external(Sophus)
@@ -266,10 +300,10 @@ endif()
 if(USE_OPENXR_APP)
     include(cmake/GetOpenXR_APP.cmake)
 endif()
+option(DATA_FILE "The data file to get" "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
+file(DOWNLOAD ${DATA_FILE} data.zip SHOW_PROGRESS)
 
-#file(DOWNLOAD http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip V1_02_medium.zip SHOW_PROGRESS)
-
-install(TARGETS main.opt.exe DESTINATION bin)
+install(TARGETS main${ILLIXR_BUILD_SUFFIX}.exe DESTINATION bin)
 
 include(cmake/ConfigurationSummary.cmake)
 #get_cmake_property(_variableNames VARIABLES)

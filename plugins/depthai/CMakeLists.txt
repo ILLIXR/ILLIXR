@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.2)
 project(depthai_plugin)
 # depthai
 if(BUILD_DEPTHAI)
@@ -32,15 +31,15 @@ endif(BUILD_DEPTHAI)
 find_package(depthai CONFIG REQUIRED)
 
 # OpenCV
-add_library(plugin SHARED plugin.cpp)
+add_library(plugin.depthai${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin OpenCV_Viz)
+    add_dependencies(plugin.depthai${ILLIXR_BUILD_SUFFIX} OpenCV_Viz)
 endif()
 
 include_directories(${OpenCV_INCLUDE_DIRS} ${DepthAI_INCLUDE_DIRS})
 
 add_definitions(-Wall -Wextra -Werror -Wno-format-extra-args -std=c++17 -g -O3)
-target_link_libraries(plugin PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE depthai::core)
+target_link_libraries(plugin.depthai${ILLIXR_BUILD_SUFFIX} PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE depthai::core)
 
-install(TARGETS plugin DESTINATION lib)
+install(TARGETS plugin.depthai${ILLIXR_BUILD_SUFFIX} DESTINATION lib)

@@ -14,14 +14,14 @@ if(NOT gl_FOUND)
     pkg_check_modules(gl REQUIRED gl)
 endif()
 
-add_library(plugin.gldemo SHARED plugin.cpp)
+add_library(plugin.gldemo${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.gldemo OPENCV_LIBRARY)
+    add_dependencies(plugin.gldemo${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
 endif()
 
-target_include_directories(plugin.gldemo PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(plugin.gldemo ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES})
-target_compile_features(plugin.gldemo PRIVATE cxx_std_17)
+target_include_directories(plugin.gldemo${ILLIXR_BUILD_SUFFIX} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(plugin.gldemo${ILLIXR_BUILD_SUFFIX} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES})
+target_compile_features(plugin.gldemo${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)
 
-install(TARGETS plugin.gldemo DESTINATION lib)
+install(TARGETS plugin.gldemo${ILLIXR_BUILD_SUFFIX} DESTINATION lib)

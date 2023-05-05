@@ -1,0 +1,228 @@
+<html>
+<head>
+<title>ILLIXR Configuration</title>
+</head>
+<body>
+<table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
+<table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
+<P>
+    ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+<P>
+<div id="notes"></div>
+Package installation:<br>
+<div id="output" style="border: 1px solid black;"></div>
+<P>
+    Cmake command:<br>
+<div id="cmake" style="border: 1px solid black;"></div>
+<script>
+    const dependencies = {};
+    const plugs = {};
+    const operatingSystems = {};
+    const groups = [];
+    var selectedOS = "";
+    var selectedOSv = "";
+    const plugins = new Set();
+    async function loadModules(){
+        // read text from URL location
+        let url = 'https://astrochem.web.illinois.edu/modules.json';
+        await fetch(url)
+            .then(response => response.json())
+            .then(json => {
+                for(var os of json.systems) {
+                    operatingSystems[os.name] = os.versions;
+                }
+
+                for(var item of json.dependencies) {
+                    var nm = "";
+                    for(var i in item){
+                        nm = i;
+                    }
+                    dependencies[nm] = {'pkg': item[nm].pkg,
+                        'plugins' : []};
+                }
+                for(var item of json.plugins) {
+                    plugins.add(item.name);
+                    plugs[item.name] = item.cmake_flag;
+                    for(var dep of item.dependencies) {
+                        dependencies[dep].plugins.push(item.name);
+                    }
+                }
+                for(var grp of json.groups) {
+                    groups.push(grp.name);
+                    groups[grp.name] = [];
+                    for(var plug of grp.plugins) {
+                        groups[grp.name].push(plug);
+                    }
+                }
+            });
+    }
+
+    function updateSudo() {
+        let sudoLine = "";
+        let notes = document.getElementById("notes");
+        if(selectedOS == "Ubuntu") {
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev";
+            notes.style.border = "";
+            notes.innerHTML = "";
+        } else if(selectedOS == "Fedora") {
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel";
+            notes.style.border = "";
+            innerHTML = "";
+        } else {
+            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel";
+            notes.style.border = "1px solid black";
+            notes.innerHTML = "<P>Notes:<br>Centos does not provide a complete version of OpenCV in their repos, in particular the 'viz' component is missing. You will need to install the VTK-devel package and compile OpenCV from source, be sure that the 'viz' component is built.";
+        }
+
+        for(var m in dependencies) {
+            var checked = false;
+            for(var p of dependencies[m].plugins) {
+                checked ||= document.getElementById(p).checked;
+            }
+            if(checked) {
+                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv];
+            }
+        }
+        document.getElementById("output").innerHTML = sudoLine;
+
+        cmakeLine = "cmake ..";
+        var group_check = false;
+        if(document.getElementById("ALL_plugins").checked) {
+            cmakeLine += " -DBUILD_GROUP=ALL";
+            group_check = true;
+        } else {
+            for(var g of groups) {
+                if(document.getElementById("group_" + g).checked) {
+                    cmakeLine += " -DBUILD_GROUP=" + g.toUpperCase();
+                    group_check = true;
+                    break;
+                }
+            }
+        }
+        if(!group_check) {
+            for(var p of plugins) {
+                if(document.getElementById(p).checked) {
+                    cmakeLine += " -D" + plugs[p];
+                }
+            }
+        }
+        document.getElementById("cmake").innerHTML = cmakeLine;
+
+    }
+
+    function updateOS(os_str) {
+        const items = os_str.split(".");
+        selectedOS = items[0];
+        selectedOSv = items[1];
+        updateSudo();
+    }
+    function checkAll() {
+        for(var p of plugins) {
+            document.getElementById(p).checked = document.getElementById("ALL_plugins").checked;
+        }
+        updateSudo();
+    }
+    function checkGroup(group_name) {
+        for(var p of plugins) {
+            var setChecked = false;
+            for(var pl of groups[group_name]) {
+                if(p == pl) {
+                    setChecked = true;
+                    break;
+                }
+            }
+            document.getElementById(p).checked = setChecked;
+        }
+        updateSudo();
+    }
+
+    function updateChecked() {
+        document.getElementById("None_plugins").checked = true;
+        updateSudo();
+    }
+    async function setUpPage() {
+        await loadModules();
+        let osref = document.getElementById("operating_system");
+        let osrow = osref.insertRow(-1);
+        for(var x in operatingSystems) {
+            var txt = x + ":";
+            for(var ver of operatingSystems[x]) {
+                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "." + ver + "' name='os_choice' value='" + x + "." + ver + "' onclick='updateOS(this.value);'>" + ver;
+            }
+            let cell = osrow.insertCell(-1);
+            cell.innerHTML = txt;
+        }
+        selectedOS = "Ubuntu";
+        selectedOSv = "22";
+        document.getElementById(selectedOS + "." + selectedOSv).checked = true;
+        let tabRef = document.getElementById("listing_table");
+        let count = 0;
+        let currentRow = tabRef.insertRow(-1);
+
+        let groupcell = currentRow.insertCell(-1);
+        groupcell.appendChild(document.createTextNode("Groups:"));
+        let all_cell = currentRow.insertCell(-1);
+        let all_check = document.createElement("INPUT");
+        all_check.setAttribute("type", "radio");
+        all_check.setAttribute("onclick", "checkAll();");
+        all_check.setAttribute("id", "ALL_plugins");
+        all_check.setAttribute("value", "ALL_plugins");
+        all_check.setAttribute("name", "group_selection");
+        let all_label = document.createElement("LABEL");
+        all_label.setAttribute("for", "ALL_plugins");
+        all_label.appendChild(document.createTextNode("All"));
+        all_cell.appendChild(all_check);
+        all_cell.appendChild(all_label);
+
+        for(var g of groups) {
+            let cell = currentRow.insertCell(-1);
+            let radio = document.createElement("INPUT");
+            radio.setAttribute("type", "radio");
+            radio.setAttribute("onclick", "checkGroup('" +  g + "');");
+            radio.setAttribute("id", "group_" + g);
+            radio.setAttribute("value", "group_" + g);
+            radio.setAttribute("name", "group_selection");
+            let label = document.createElement("LABEL");
+            label.setAttribute("for", "group_" + g);
+            label.appendChild(document.createTextNode(g));
+            cell.appendChild(radio);
+            cell.appendChild(label);
+        }
+        let none_cell = currentRow.insertCell(-1);
+        let none_check = document.createElement("INPUT");
+        none_check.setAttribute("type", "radio");
+        none_check.setAttribute("onclick", "updateSudo();");
+        none_check.setAttribute("id", "None_plugins");
+        none_check.setAttribute("value", "None_plugins");
+        none_check.setAttribute("name", "group_selection");
+        none_check.checked = true;
+        let none_label = document.createElement("LABEL");
+        none_label.setAttribute("for", "None_plugins");
+        none_label.appendChild(document.createTextNode("None"));
+        none_cell.appendChild(none_check);
+        none_cell.appendChild(none_label);
+
+        currentRow = tabRef.insertRow(-1);
+        for(const dep of plugins) {
+            if(count >= 5) {
+                currentRow = tabRef.insertRow(-1);
+                count = 0;
+            }
+            let cell = currentRow.insertCell(-1);
+            let x = document.createElement("INPUT");
+            x.setAttribute("type", "checkbox");
+            x.setAttribute("onclick", "updateChecked();");
+            x.setAttribute("id", dep);
+            let y = document.createElement("LABEL");
+            y.setAttribute("for", dep);
+            y.appendChild(document.createTextNode(dep));
+            cell.appendChild(x);
+            cell.appendChild(y);
+            count += 1;
+        }
+        updateSudo();
+    }
+    window.onload = setUpPage();
+</script>
+</body>
+</html>
