@@ -103,7 +103,7 @@ int main(int argc, char* const* argv) {
 
     std::vector<std::string> lib_paths;
     std::transform(argv + 1, argv + argc, std::back_inserter(lib_paths), [](const char* arg) {
-        return "lib" + std::string{arg} + ILLIXR_BUILD_SUFFIX + ".so";
+        return "lib" + std::string{arg} + "ILLIXR_BUILD_SUFFIX" + ".so";
     });
     RAC_ERRNO_MSG("main before loading dynamic libraries");
     r->load_so(lib_paths);
