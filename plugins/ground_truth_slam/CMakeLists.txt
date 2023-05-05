@@ -2,6 +2,7 @@ add_library(plugin.ground_truth_slam${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
     add_dependencies(plugin.ground_truth_slam${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
+    add_dependencies(plugin.ground_truth_slam OpenCV_Viz)
 endif()
 
 target_compile_features(plugin.ground_truth_slam${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)

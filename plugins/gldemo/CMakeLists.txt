@@ -17,7 +17,7 @@ endif()
 add_library(plugin.gldemo${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.gldemo${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
+    add_dependencies(plugin.gldemo OpenCV_Viz)
 endif()
 
 target_include_directories(plugin.gldemo${ILLIXR_BUILD_SUFFIX} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})

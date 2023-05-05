@@ -2,6 +2,7 @@ add_library(plugin.offline_imu${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
     add_dependencies(plugin.offline_imu${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
+    add_dependencies(plugin.offline_imu OpenCV_Viz)
 endif()
 target_compile_features(plugin.offline_imu${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)
 target_include_directories(plugin.offline_imu${ILLIXR_BUILD_SUFFIX} PRIVATE ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})

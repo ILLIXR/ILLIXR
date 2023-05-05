@@ -9,6 +9,7 @@ include_directories("${realsense2_INCLUDE_DIR}")
 add_library(plugin.realsense${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
+    add_dependencies(plugin OpenCV_Viz)
     add_dependencies(plugin.realsense${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
 endif()
 include_directories(${OpenCV_INCLUDE_DIRS})

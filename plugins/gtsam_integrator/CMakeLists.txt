@@ -9,6 +9,7 @@ endif()
 
 if(BUILD_OPENCV)
     add_dependencies(plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
+    add_dependencies(plugin.gtsam_integrator OpenCV_Viz)
 endif()
 
 
