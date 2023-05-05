@@ -92,11 +92,10 @@ public:
     timewarp_vk(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
+        , ds{pb->lookup_impl<display_sink>()}
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
-    void initialize(std::shared_ptr<display_sink> ds) {
-        this->ds = ds;
-
+    void initialize() {
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
@@ -711,13 +710,12 @@ class timewarp_vk_plugin : public plugin {
 public:
     timewarp_vk_plugin(const std::string& name, phonebook* pb)
         : plugin{name, pb},
-        tw{std::make_shared<timewarp_vk>(pb)},
-        ds{pb->lookup_impl<display_sink>()} {
+        tw{std::make_shared<timewarp_vk>(pb)} {
         pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
     }
 
     virtual void start() override {
-        tw->initialize(ds);
+        tw->initialize();
     }
 
 private:
