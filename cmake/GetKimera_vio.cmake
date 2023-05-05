@@ -4,7 +4,7 @@ if(HAVE_CENTOS)
 endif()
 ExternalProject_Add(Kimera_VIO
         GIT_REPOSITORY https://github.com/ILLIXR/Kimera-VIO.git
-        GIT_TAG d8d2331781418a45358a9e4713f62b49574cc3f5
+        GIT_TAG f408dc1629c71192fc5ab296d3f00e08334910fc
         GIT_SUBMODULES_RECURSE TRUE
         DEPENDS ${KimeraRPGO_DEP_STR} ${DBoW2_DEP_STR} ${GTSAM_DEP_STR} ${opengv_DEP_STR} ${OpenCV_DEP_STR}
         PREFIX ${CMAKE_BINARY_DIR}/_deps/kimera_vio
