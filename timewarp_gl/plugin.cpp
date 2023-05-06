@@ -740,8 +740,6 @@ public:
 
         glBindVertexArray(tw_vao);
 
-        auto gpu_start_wall_time = _m_clock->now();
-
         GLuint   query        = 0;
         GLuint64 elapsed_time = 0;
 
@@ -820,7 +818,7 @@ public:
         glEndQuery(GL_TIME_ELAPSED);
 
         std::cout << "TIMEWARP COMPLETE" << std::endl;
-        
+
         // Call Hologram
         _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
 
