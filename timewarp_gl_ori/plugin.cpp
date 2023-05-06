@@ -27,18 +27,47 @@ using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
 
-class timewarp_gl : public plugin {
+const record_header timewarp_gpu_record{"timewarp_gpu",
+                                        {
+                                            {"iteration_no", typeid(std::size_t)},
+                                            {"wall_time_start", typeid(time_point)},
+                                            {"wall_time_stop", typeid(time_point)},
+                                            {"gpu_time_duration", typeid(std::chrono::nanoseconds)},
+                                        }};
+
+const record_header mtp_record{"mtp_record",
+                               {
+                                   {"iteration_no", typeid(std::size_t)},
+                                   {"vsync", typeid(time_point)},
+                                   {"imu_to_display", typeid(std::chrono::nanoseconds)},
+                                   {"predict_to_display", typeid(std::chrono::nanoseconds)},
+                                   {"render_to_display", typeid(std::chrono::nanoseconds)},
+                               }};
+
+class timewarp_gl : public threadloop {
 public:
     // Public constructor, create_component passes Switchboard handles ("plugs")
     // to this constructor. In turn, the constructor fills in the private
     // references to the switchboard plugs, so the component can read the
     // data whenever it needs to.
     timewarp_gl(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
+        , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
+        , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
+        , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+        , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
+        , timewarp_gpu_logger{record_logger_}
+        , mtp_logger{record_logger_}
+        // TODO: Use #198 to configure this. Delete getenv_or.
+        // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
+        // Timewarp poses a "second channel" by which pose data can correct the video stream,
+        // which results in a "multipath" between the pose and the video stream.
+        // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
+        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
+        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
@@ -126,11 +155,6 @@ public:
                 this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1] && left_output_ready &&
                 right_output_ready) {
                 this->image_handles_ready = true;
-                this->_setup();
-                _prepare_rendering();
-                sb->schedule<rendered_frame>(id, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
-                    this->warp(datum);
-                });
             }
         });
 
@@ -185,6 +209,9 @@ private:
     Window     root;
     GLXContext glc;
 
+    // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
+    static constexpr double DELAY_FRACTION = 0.9;
+
     // Shared objects between ILLIXR and the application (either gldemo or Monado)
     bool              rendering_ready;
     graphics_api      client_backend;
@@ -209,8 +236,20 @@ private:
     std::array<std::array<GLuint, 2>, 2>           _m_semaphores;
 #endif
 
+    // Switchboard plug for application eye buffer.
+    switchboard::reader<rendered_frame> _m_eyebuffer;
+
     // Switchboard plug for sending hologram calls
     switchboard::writer<hologram_input> _m_hologram;
+
+    // Switchboard plug for publishing vsync estimates
+    switchboard::writer<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
+
+    // Switchboard plug for publishing offloaded data
+    switchboard::writer<texture_pose> _m_offload_data;
+
+    record_coalescer timewarp_gpu_logger;
+    record_coalescer mtp_logger;
 
     GLuint timewarpShaderProgram;
 
@@ -263,6 +302,8 @@ private:
     ullong _hologram_seq{0};
 
     bool disable_warp;
+
+    bool enable_offload;
 
     // PBO buffer for reading texture image
     GLuint PBO_buffer;
@@ -514,7 +555,29 @@ private:
     }
 
 public:
-    void _setup() {
+    virtual skip_option _p_should_skip() override {
+        using namespace std::chrono_literals;
+        // Sleep for approximately 90% of the time until the next vsync.
+        // Scheduling granularity can't be assumed to be super accurate here,
+        // so don't push your luck (i.e. don't wait too long....) Tradeoff with
+        // MTP here. More you wait, closer to the display sync you sample the pose.
+
+        std::this_thread::sleep_for(EstimateTimeToSleep(DELAY_FRACTION));
+        if (image_handles_ready.load() && semaphore_handles_ready.load() && _m_eyebuffer.get_ro_nullable() != nullptr) {
+            return skip_option::run;
+        } else {
+            // Null means system is nothing has been pushed yet
+            // because not all components are initialized yet
+            return skip_option::skip_and_yield;
+        }
+    }
+
+    virtual void _p_thread_setup() override {
+        // Wait a vsync for gldemo to go first.
+        // This first time_last_swap will be "out of phase" with actual vsync.
+        // The second one should be on the dot, since we don't exit the first until actual vsync.
+        time_last_swap = _m_clock->now() + display_params::period;
+
         // Generate reference HMD and physical body dimensions
         HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, display_params::width_meters,
                                display_params::height_meters, display_params::lens_separation,
@@ -528,7 +591,6 @@ public:
         assert(gl_result_0 && "glXMakeCurrent should not fail");
 
         // set swap interval for 1
-        // TODO do we still need this if timewarp is not doing the presenting?
         glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
         glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glXSwapIntervalEXT");
         glXSwapIntervalEXT(dpy, root, 1);
@@ -625,11 +687,19 @@ public:
         assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
 
+        if (enable_offload) {
+            // Config PBO for texture image collection
+            glGenBuffers(1, &PBO_buffer);
+            glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, 0,
+                         GL_STREAM_DRAW);
+        }
+
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");
     }
 
-    void _prepare_rendering() {
+    virtual void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
 
@@ -686,10 +756,8 @@ public:
 
             rendering_ready = true;
         }
-    }
 
-    void warp(switchboard::ptr<const rendered_frame> most_recent_frame) {
-        assert(semaphore_handles_ready && rendering_ready);
+        switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
         std::cout << "TIMEWARP STARTING" << std::endl;
 
         // Use the timewarp program
@@ -820,13 +888,25 @@ public:
         glEndQuery(GL_TIME_ELAPSED);
 
         std::cout << "TIMEWARP COMPLETE" << std::endl;
-        
+
+#ifndef NDEBUG
+        const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
+
+        if (log_count > LOG_PERIOD) {
+            const double time_since_render_ms_d = duration2double<std::milli>(time_since_render);
+            std::cout << "\033[1;36m[TIMEWARP]\033[0m Time since render: " << time_since_render_ms_d << "ms" << std::endl;
+        }
+
+        if (time_since_render > display_params::period) {
+            std::cout << "\033[0;31m[TIMEWARP: CRITICAL]\033[0m Stale frame!" << std::endl;
+        }
+#endif
         // Call Hologram
         _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
 
         // Call swap buffers; when vsync is enabled, this will return to the
         // CPU thread once the buffers have been successfully swapped.
-        // [[maybe_unused]] time_point time_before_swap = _m_clock->now();
+        [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
         // If we're not using Monado, we want to composite the left and right buffers into one
 #ifndef ILLIXR_MONADO
@@ -848,6 +928,53 @@ public:
         glXSwapBuffers(dpy, root);
 #endif
 
+        // The swap time needs to be obtained and published as soon as possible
+        time_last_swap                              = _m_clock->now();
+        [[maybe_unused]] time_point time_after_swap = time_last_swap;
+
+        // Now that we have the most recent swap time, we can publish the new estimate.
+        _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
+
+        std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
+        std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
+        std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
+
+        mtp_logger.log(record{mtp_record,
+                              {
+                                  {iteration_no},
+                                  {time_last_swap},
+                                  {imu_to_display},
+                                  {predict_to_display},
+                                  {render_to_display},
+                              }});
+
+        if (enable_offload) {
+            // Read texture image from texture buffer
+            GLubyte* image = readTextureImage();
+
+            // Publish image and pose
+            _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
+                texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
+                             most_recent_frame->render_pose.pose.orientation}));
+        }
+
+#ifndef NDEBUG
+        if (log_count > LOG_PERIOD) {
+            const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
+            const double     latency_mtd       = duration2double<std::milli>(imu_to_display);
+            const double     latency_ptd       = duration2double<std::milli>(predict_to_display);
+            const double     latency_rtd       = duration2double<std::milli>(render_to_display);
+            const time_point time_next_swap    = GetNextSwapTimeEstimate();
+            const double     timewarp_estimate = duration2double<std::milli>(time_next_swap - time_last_swap);
+
+            std::cout << "\033[1;36m[TIMEWARP]\033[0m Swap time: " << time_swap << "ms" << std::endl
+                      << "\033[1;36m[TIMEWARP]\033[0m Motion-to-display latency: " << latency_mtd << "ms" << std::endl
+                      << "\033[1;36m[TIMEWARP]\033[0m Prediction-to-display latency: " << latency_ptd << "ms" << std::endl
+                      << "\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: " << latency_rtd << "ms" << std::endl
+                      << "Next swap in: " << timewarp_estimate << "ms in the future" << std::endl;
+        }
+#endif
+
         // retrieving the recorded elapsed time
         // wait until the query result is available
         int done = 0;
@@ -860,6 +987,14 @@ public:
 
         // get the query result
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+
+        timewarp_gpu_logger.log(record{timewarp_gpu_record,
+                                       {
+                                           {iteration_no},
+                                           {gpu_start_wall_time},
+                                           {_m_clock->now()},
+                                           {std::chrono::nanoseconds(elapsed_time)},
+                                       }});
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
