@@ -1,9 +1,9 @@
 plugin_groups:
-  # - !include "rt_slam_plugins.yaml"
+  - !include "rt_slam_plugins.yaml"
   - plugin_group:
       - path: display_vk/
       - path: timewarp_vk/
-#      - path: vkdemo/
+      - path: vkdemo/
 data:
   subpath: mav0
   relative_to:

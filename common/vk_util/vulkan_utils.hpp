@@ -1,7 +1,19 @@
 #ifndef TIMEWARP_VK_VULKAN_UTILS_H
 #define TIMEWARP_VK_VULKAN_UTILS_H
 
+#include <cstdint>
 #include <stdexcept>
+#include <vector>
+#include <fstream>
+#include <iostream>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtx/hash.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -65,7 +77,7 @@ public:
         return commandBuffer;
     }
 
-    static VkCommandBuffer end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue, VkCommandBuffer vk_command_buffer) {
+    static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue, VkCommandBuffer vk_command_buffer) {
         vkEndCommandBuffer(vk_command_buffer);
 
         VkSubmitInfo submitInfo{};
@@ -77,6 +89,46 @@ public:
         vkQueueWaitIdle(vk_queue);
 
         vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
+    }
+
+    static VkCommandPool create_command_pool(VkDevice device, uint32_t queue_family_index) {
+        VkCommandPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
+        poolInfo.queueFamilyIndex = queue_family_index;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+        VkCommandPool command_pool;
+        if (vkCreateCommandPool(device, &poolInfo, nullptr, &command_pool) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create command pool!");
+        }
+        return command_pool;
+    }
+
+    static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool command_pool) {
+        VkCommandBufferAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO };
+        allocInfo.commandPool = command_pool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer command_buffer;
+        vkAllocateCommandBuffers(device, &allocInfo, &command_buffer);
+        return command_buffer;
+    }
+
+    static std::vector<char> read_file(std::string path) {
+        std::ifstream file(path, std::ios::ate | std::ios::binary);
+
+        if (!file.is_open()) {
+            throw std::runtime_error("failed to open file!");
+        }
+
+        size_t fileSize = (size_t) file.tellg();
+        std::vector<char> buffer(fileSize);
+
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+
+        file.close();
+        return buffer;
     }
 };
 

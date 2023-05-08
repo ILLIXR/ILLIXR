@@ -34,7 +34,7 @@ add_custom_target(
         DEPENDS ${SPIRV_BINARY_FILES}
 )
 
-add_library(timewarp_vk SHARED plugin.cpp)
+add_library(timewarp_vk SHARED plugin.cpp utils/hmd.cpp)
 add_dependencies(timewarp_vk Shaders)
 set_target_properties(timewarp_vk PROPERTIES OUTPUT_NAME "plugin")
 
