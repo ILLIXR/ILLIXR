@@ -25,8 +25,88 @@
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
+#define VK_ASSERT_SUCCESS(x) \
+{ \
+    VkResult result = (x); \
+    if (result != VK_SUCCESS) { \
+        std::cerr << "Vulkan error: " << vulkan_utils::error_string(result) << std::endl; \
+        throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result)); \
+    } \
+}
+
 class vulkan_utils {
 public:
+    static std::string error_string(VkResult err_code) {
+        switch (err_code) {
+            case VK_NOT_READY:
+                return "VK_NOT_READY";
+            case VK_TIMEOUT:
+                return "VK_TIMEOUT";
+            case VK_EVENT_SET:
+                return "VK_EVENT_SET";
+            case VK_EVENT_RESET:
+                return "VK_EVENT_RESET";
+            case VK_INCOMPLETE:
+                return "VK_INCOMPLETE";
+            case VK_ERROR_OUT_OF_HOST_MEMORY:
+                return "VK_ERROR_OUT_OF_HOST_MEMORY";
+            case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                return "VK_ERROR_OUT_OF_DEVICE_MEMORY";
+            case VK_ERROR_INITIALIZATION_FAILED:
+                return "VK_ERROR_INITIALIZATION_FAILED";
+            case VK_ERROR_DEVICE_LOST:
+                return "VK_ERROR_DEVICE_LOST";
+            case VK_ERROR_MEMORY_MAP_FAILED:
+                return "VK_ERROR_MEMORY_MAP_FAILED";
+            case VK_ERROR_LAYER_NOT_PRESENT:
+                return "VK_ERROR_LAYER_NOT_PRESENT";
+            case VK_ERROR_EXTENSION_NOT_PRESENT:
+                return "VK_ERROR_EXTENSION_NOT_PRESENT";
+            case VK_ERROR_FEATURE_NOT_PRESENT:
+                return "VK_ERROR_FEATURE_NOT_PRESENT";
+            case VK_ERROR_INCOMPATIBLE_DRIVER:
+                return "VK_ERROR_INCOMPATIBLE_DRIVER";
+            case VK_ERROR_TOO_MANY_OBJECTS:
+                return "VK_ERROR_TOO_MANY_OBJECTS";
+            case VK_ERROR_FORMAT_NOT_SUPPORTED:
+                return "VK_ERROR_FORMAT_NOT_SUPPORTED";
+            case VK_ERROR_FRAGMENTED_POOL:
+                return "VK_ERROR_FRAGMENTED_POOL";
+            case VK_ERROR_UNKNOWN:
+                return "VK_ERROR_UNKNOWN";
+            case VK_ERROR_OUT_OF_POOL_MEMORY:
+                return "VK_ERROR_OUT_OF_POOL_MEMORY";
+            case VK_ERROR_INVALID_EXTERNAL_HANDLE:
+                return "VK_ERROR_INVALID_EXTERNAL_HANDLE";
+            case VK_ERROR_FRAGMENTATION:
+                return "VK_ERROR_FRAGMENTATION";
+            case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS:
+                return "VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS";
+            case VK_ERROR_SURFACE_LOST_KHR:
+                return "VK_ERROR_SURFACE_LOST_KHR";
+            case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+                return "VK_ERROR_NATIVE_WINDOW_IN_USE_KHR";
+            case VK_SUBOPTIMAL_KHR:
+                return "VK_SUBOPTIMAL_KHR";
+            case VK_ERROR_OUT_OF_DATE_KHR:
+                return "VK_ERROR_OUT_OF_DATE_KHR";
+            case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
+                return "VK_ERROR_INCOMPATIBLE_DISPLAY_KHR";
+            case VK_ERROR_VALIDATION_FAILED_EXT:    
+                return "VK_ERROR_VALIDATION_FAILED_EXT";
+            case VK_ERROR_INVALID_SHADER_NV:
+                return "VK_ERROR_INVALID_SHADER_NV";
+            case VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT:
+                return "VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT";
+            case VK_ERROR_NOT_PERMITTED_EXT:
+                return "VK_ERROR_NOT_PERMITTED_EXT";
+            case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:
+                return "VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT";
+            default:
+                return "UNKNOWN_ERROR";
+        }
+    }
+
     static VkShaderModule create_shader_module(VkDevice device, std::vector<char>&& code) {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -34,9 +114,7 @@ public:
         createInfo.pCode    = reinterpret_cast<const uint32_t*>(code.data());
 
         VkShaderModule shaderModule;
-        if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create shader module!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule));
 
         return shaderModule;
     }
@@ -54,7 +132,7 @@ public:
         allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
 
         VmaAllocator allocator;
-        vmaCreateAllocator(&allocatorCreateInfo, &allocator);
+        VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator));
         return allocator;
     }
 
@@ -66,27 +144,27 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer);
+        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer));
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &beginInfo));
 
         return commandBuffer;
     }
 
     static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue, VkCommandBuffer vk_command_buffer) {
-        vkEndCommandBuffer(vk_command_buffer);
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer));
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers    = &vk_command_buffer;
 
-        vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(vk_queue);
+        VK_ASSERT_SUCCESS(vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE));
+        VK_ASSERT_SUCCESS(vkQueueWaitIdle(vk_queue));
 
         vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
     }
@@ -97,9 +175,7 @@ public:
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         VkCommandPool command_pool;
-        if (vkCreateCommandPool(device, &poolInfo, nullptr, &command_pool) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create command pool!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateCommandPool(device, &poolInfo, nullptr, &command_pool));
         return command_pool;
     }
 
@@ -110,7 +186,7 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer command_buffer;
-        vkAllocateCommandBuffers(device, &allocInfo, &command_buffer);
+        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(device, &allocInfo, &command_buffer));
         return command_buffer;
     }
 

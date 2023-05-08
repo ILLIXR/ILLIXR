@@ -28,6 +28,12 @@
 
 #include "utils/hmd.hpp"
 
+#ifndef NDEBUG
+#define SHADER_FOLDER "timewarp_vk/build/Debug/shaders"
+#else
+#define SHADER_FOLDER "timewarp_vk/build/Release/shaders"
+#endif
+
 using namespace ILLIXR;
 
 struct Vertex {
@@ -175,7 +181,7 @@ private:
 
         VkBuffer staging_buffer;
         VmaAllocation staging_alloc;
-        vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr));
 
         VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
         buffer_info.size = sizeof(Vertex) * num_distortion_vertices;
@@ -185,7 +191,7 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation vertex_alloc;
-        vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr));
 
         std::vector<Vertex> vertices;
         vertices.resize(num_distortion_vertices);
@@ -197,7 +203,7 @@ private:
         }
 
         void *mapped_data;
-        vmaMapMemory(vma_allocator, staging_alloc, &mapped_data);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
         memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
@@ -221,7 +227,7 @@ private:
 
         VkBuffer staging_buffer;
         VmaAllocation staging_alloc;
-        vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr));
 
         VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
         buffer_info.size = sizeof(uint32_t) * num_distortion_indices;
@@ -231,10 +237,10 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation index_alloc;
-        vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr));
 
         void *mapped_data;
-        vmaMapMemory(vma_allocator, staging_alloc, &mapped_data);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
@@ -277,9 +283,7 @@ private:
         samplerInfo.minLod = 0.f;
         samplerInfo.maxLod = 0.f;
 
-        if (vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create texture sampler!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler));
     }
 
     void create_descriptor_set_layout() {
@@ -301,9 +305,7 @@ private:
         layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
         layoutInfo.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
-        if (vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout) != VK_SUCCESS) {
-            ILLIXR::abort("failed to create descriptor set layout!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout));
     }
 
     void create_uniform_buffer() {
@@ -316,7 +318,7 @@ private:
         createInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
         createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-        vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info));
     }
 
     void create_descriptor_pool() {
@@ -329,28 +331,24 @@ private:
         VkDescriptorPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes = poolSizes.data();
-        poolInfo.maxSets = buffer_pool[0].size();
+        poolInfo.maxSets = buffer_pool[0].size() * 2;
 
-        if (vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool) != VK_SUCCESS) {
-            ILLIXR::abort("failed to create descriptor pool!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool));
     }
 
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            VkDescriptorSetLayout layouts[] = { descriptor_set_layout };
+            std::vector<VkDescriptorSetLayout> layouts = { buffer_pool[0].size(), descriptor_set_layout };
             VkDescriptorSetAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
             allocInfo.descriptorPool = descriptor_pool;
-            allocInfo.descriptorSetCount = buffer_pool.size();
-            allocInfo.pSetLayouts = layouts;
+            allocInfo.descriptorSetCount = buffer_pool[0].size();
+            allocInfo.pSetLayouts = layouts.data();
 
-            descriptor_sets[eye].resize(buffer_pool.size());
-            if (vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()) != VK_SUCCESS) {
-                ILLIXR::abort("failed to allocate descriptor sets!");
-            }
+            descriptor_sets[eye].resize(buffer_pool[0].size());
+            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()));
 
-            for (size_t i = 0; i < buffer_pool.size(); i++) {
+            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
                 VkDescriptorBufferInfo bufferInfo = {};
                 bufferInfo.buffer = uniform_buffer;
                 bufferInfo.offset = 0;
@@ -391,8 +389,9 @@ private:
 
         VkDevice device = ds->vk_device;
 
-        VkShaderModule vert = vulkan_utils::create_shader_module(device, vulkan_utils::read_file("timewarp_vk/build/shaders/tw.vert.spv"));
-        VkShaderModule frag = vulkan_utils::create_shader_module(device, vulkan_utils::read_file("timewarp_vk/build/shaders/tw.frag.spv"));
+        auto folder = std::string(SHADER_FOLDER);
+        VkShaderModule vert = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.vert.spv"));
+        VkShaderModule frag = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -481,9 +480,7 @@ private:
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &descriptor_set_layout;
 
-        if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout) != VK_SUCCESS) {
-            ILLIXR::abort("Failed to create pipeline layout");
-        }
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout));
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -502,9 +499,7 @@ private:
         pipelineInfo.renderPass = render_pass;
         pipelineInfo.subpass = 0;
 
-        if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
-            ILLIXR::abort("Failed to create graphics pipeline");
-        }
+        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline));
 
         vkDestroyShaderModule(device, vert, nullptr);
         vkDestroyShaderModule(device, frag, nullptr);

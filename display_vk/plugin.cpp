@@ -101,7 +101,11 @@ private:
         // 2. we can't recover from them anyway
         swapchain_images      = vkb_swapchain.get_images().value();
         swapchain_image_views = vkb_swapchain.get_image_views().value();
+        swapchain_image_format = vkb_swapchain.image_format;
         swapchain_extent      = vkb_swapchain.extent;
+
+        std::cout << "present_mode: " << vkb_swapchain.present_mode << std::endl;
+        std::cout << "swapchain_extent: " << swapchain_extent.width << " " << swapchain_extent.height << std::endl;
         
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }

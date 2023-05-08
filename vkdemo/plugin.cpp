@@ -26,6 +26,12 @@
 
 using namespace ILLIXR;
 
+#ifndef NDEBUG
+#define SHADER_FOLDER "vkdemo/build/Debug/shaders"
+#else
+#define SHADER_FOLDER "vkdemo/build/Release/shaders"
+#endif
+
 struct Vertex {
     glm::vec3 pos;
     glm::vec2 uv;
@@ -75,7 +81,6 @@ class vkdemo : public app {
 public:
     vkdemo(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
-        , pp{pb->lookup_impl<pose_prediction>()}
         , ds{pb->lookup_impl<display_sink>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
@@ -107,24 +112,28 @@ public:
         create_pipeline(render_pass, subpass);
     }
 
+    virtual void update_uniforms(const fast_pose_type fp) override {
+        update_uniform(fp, 0);
+        update_uniform(fp, 1);
+    }
+
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
-        update_uniform(eye);
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer vertexBuffers[] = {vertex_buffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_set, 0,
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye], 0,
                                 nullptr);
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     }
 
 private:
 
-    void update_uniform(int eye) {
+    void update_uniform(const fast_pose_type& fp, int eye) {
         Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
-        auto pose = pp->get_fast_pose().pose;
+        auto pose = fp.pose;
 
         Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
@@ -149,7 +158,7 @@ private:
         auto view_matrix = eye_matrix.inverse();
 
         auto model_view = view_matrix * modelMatrix;
-        UniformBufferObject *ubo = (UniformBufferObject *) uniform_buffer_allocation_info.pMappedData;
+        UniformBufferObject *ubo = (UniformBufferObject *) uniform_buffer_allocation_infos[eye].pMappedData;
         memcpy(&ubo->model_view, &model_view, sizeof(model_view));
         memcpy(&ubo->proj, &basic_projection, sizeof(basic_projection));
     }
@@ -165,21 +174,22 @@ private:
         layout_info.bindingCount = 1;
         layout_info.pBindings = &ubo_layout_binding;
 
-        if (vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout));
     }
 
     void create_uniform_buffers() {
-        VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        buffer_info.size = sizeof(UniformBufferObject);
-        buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+        for (auto i = 0; i < 2; i++) {
+            VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+            buffer_info.size = sizeof(UniformBufferObject);
+            buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-        VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-        alloc_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+            VmaAllocationCreateInfo alloc_info = {};
+            alloc_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+            alloc_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-        vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &uniform_buffer, &uniform_buffer_allocation, &uniform_buffer_allocation_info);
+            VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &uniform_buffers[i], &uniform_buffer_allocations[i],
+                            &uniform_buffer_allocation_infos[i]));
+        }
     }
 
     void create_descriptor_pool() {
@@ -190,38 +200,38 @@ private:
         VkDescriptorPoolCreateInfo pool_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
         pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
         pool_info.pPoolSizes = pool_sizes.data();
-        pool_info.maxSets = 1;
+        pool_info.maxSets = 2;
 
-        if (vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor pool!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool));
     }
 
     void create_descriptor_set() {
-        VkDescriptorSetLayout layouts[] = { descriptor_set_layout };
+        VkDescriptorSetLayout layouts[] = { descriptor_set_layout, descriptor_set_layout };
         VkDescriptorSetAllocateInfo alloc_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
         alloc_info.descriptorPool = descriptor_pool;
-        alloc_info.descriptorSetCount = 1;
+        alloc_info.descriptorSetCount = 2;
         alloc_info.pSetLayouts = layouts;
 
-        if (vkAllocateDescriptorSets(ds->vk_device, &alloc_info, &descriptor_set) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate descriptor set!");
+        VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &alloc_info, descriptor_sets.data()));
+
+        std::array<VkDescriptorBufferInfo, 2> buffer_infos = {};
+        for (auto i = 0; i < 2; i++) {
+            buffer_infos[i].buffer = uniform_buffers[i];
+            buffer_infos[i].offset = 0;
+            buffer_infos[i].range = sizeof(UniformBufferObject);
         }
 
-        VkDescriptorBufferInfo buffer_info = {};
-        buffer_info.buffer = uniform_buffer;
-        buffer_info.offset = 0;
-        buffer_info.range = sizeof(UniformBufferObject);
+        std::array<VkWriteDescriptorSet, 2> descriptor_writes = {};
 
-        std::array<VkWriteDescriptorSet, 1> descriptor_writes = {};
-
-        descriptor_writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptor_writes[0].dstSet = descriptor_set;
-        descriptor_writes[0].dstBinding = 0;
-        descriptor_writes[0].dstArrayElement = 0;
-        descriptor_writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptor_writes[0].descriptorCount = 1;
-        descriptor_writes[0].pBufferInfo = &buffer_info;
+        for (auto i = 0; i < 2; i++) {
+            descriptor_writes[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptor_writes[i].dstSet = descriptor_sets[i];
+            descriptor_writes[i].dstBinding = 0;
+            descriptor_writes[i].dstArrayElement = 0;
+            descriptor_writes[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptor_writes[i].descriptorCount = 1;
+            descriptor_writes[i].pBufferInfo = &buffer_infos[i];
+        }
 
         vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr);
     }
@@ -275,7 +285,7 @@ private:
 
         VkBuffer staging_buffer;
         VmaAllocation staging_buffer_allocation;
-        vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_buffer_allocation, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_buffer_allocation, nullptr));
 
         VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
         buffer_info.size = sizeof(vertices[0]) * vertices.size();
@@ -285,10 +295,10 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
-        vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &buffer_allocation, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &buffer_allocation, nullptr));
 
         void* mapped_data;
-        vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data));
         memcpy(mapped_data, vertices.data(), sizeof(vertices[0]) * vertices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
@@ -312,7 +322,7 @@ private:
 
         VkBuffer staging_buffer;
         VmaAllocation staging_buffer_allocation;
-        vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_buffer_allocation, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_buffer_allocation, nullptr));
 
         VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
         buffer_info.size = sizeof(indices[0]) * indices.size();
@@ -322,10 +332,10 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
-        vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr);
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr));
 
         void* mapped_data;
-        vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data));
         memcpy(mapped_data, indices.data(), sizeof(indices[0]) * indices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
@@ -343,8 +353,9 @@ private:
             throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
         }
 
-        VkShaderModule vert = vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file("vkdemo/build/shaders/demo.vert.spv"));
-        VkShaderModule frag = vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file("vkdemo/build/shaders/demo.frag.spv"));
+        auto folder = std::string(SHADER_FOLDER);
+        VkShaderModule vert = vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.vert.spv"));
+        VkShaderModule frag = vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO };
         vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -415,9 +426,16 @@ private:
         pipeline_layout_info.setLayoutCount = 1;
         pipeline_layout_info.pSetLayouts = &descriptor_set_layout;
 
-        if (vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout) != VK_SUCCESS) {
-            throw std::runtime_error("timewarp_vk::create_pipeline: failed to create pipeline layout");
-        }
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout));
+
+        VkPipelineDepthStencilStateCreateInfo depth_stencil = { VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO };
+        depth_stencil.depthTestEnable = VK_TRUE;
+        depth_stencil.depthWriteEnable = VK_TRUE;
+        depth_stencil.depthCompareOp = VK_COMPARE_OP_LESS;
+        depth_stencil.depthBoundsTestEnable = VK_FALSE;
+        depth_stencil.minDepthBounds = 0.0f;
+        depth_stencil.maxDepthBounds = 1.0f;
+        depth_stencil.stencilTestEnable = VK_FALSE;
 
         VkGraphicsPipelineCreateInfo pipeline_info = { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
         pipeline_info.stageCount = 2;
@@ -428,13 +446,12 @@ private:
         pipeline_info.pRasterizationState = &rasterizer;
         pipeline_info.pMultisampleState = &multisampling;
         pipeline_info.pColorBlendState = &color_blending;
+        pipeline_info.pDepthStencilState = &depth_stencil;
         pipeline_info.layout = pipeline_layout;
         pipeline_info.renderPass = render_pass;
         pipeline_info.subpass = subpass;
 
-        if (vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS) {
-            throw std::runtime_error("timewarp_vk::create_pipeline: failed to create graphics pipeline");
-        }
+        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline));
 
         vkDestroyShaderModule(ds->vk_device, vert, nullptr);
         vkDestroyShaderModule(ds->vk_device, frag, nullptr);
@@ -457,11 +474,12 @@ private:
     VkCommandBuffer command_buffer;
 
     VkDescriptorSetLayout descriptor_set_layout;
-    VkBuffer uniform_buffer;
-    VmaAllocation uniform_buffer_allocation;
-    VmaAllocationInfo uniform_buffer_allocation_info;
     VkDescriptorPool descriptor_pool;
-    VkDescriptorSet descriptor_set;
+    std::array<VkDescriptorSet, 2> descriptor_sets;
+
+    std::array<VkBuffer, 2> uniform_buffers;
+    std::array<VmaAllocation, 2> uniform_buffer_allocations;
+    std::array<VmaAllocationInfo, 2> uniform_buffer_allocation_infos;
 
     VkBuffer vertex_buffer;
     VkBuffer index_buffer;

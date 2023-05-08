@@ -4,6 +4,7 @@ plugin_groups:
       - path: display_vk/
       - path: timewarp_vk/
       - path: vkdemo/
+      - path: native_renderer/
 data:
   subpath: mav0
   relative_to:

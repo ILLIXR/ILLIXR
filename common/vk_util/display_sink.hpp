@@ -23,6 +23,7 @@ public:
     uint32_t                 graphics_queue_family;
     uint32_t                 present_queue_family;
     VkSwapchainKHR           vk_swapchain;
+    VkFormat                 swapchain_image_format;
     VkExtent2D               swapchain_extent;
     std::vector<VkImage>     swapchain_images;
     std::vector<VkImageView> swapchain_image_views;
