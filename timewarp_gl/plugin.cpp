@@ -167,12 +167,12 @@ public:
                                            switch (handle->usage) {
                                            case semaphore_usage::LEFT_LSR_COMPLETE: {
                                                _m_semaphore_handles[0] = *handle;
-                                               left_lsr_complete          = true;
+                                               left_lsr_complete       = true;
                                                break;
                                            }
                                            case semaphore_usage::RIGHT_LSR_COMPLETE: {
                                                _m_semaphore_handles[1] = *handle;
-                                               right_lsr_complete         = true;
+                                               right_lsr_complete      = true;
                                                break;
                                            }
                                            default: {
@@ -705,7 +705,7 @@ public:
                 ImportVulkanImage(image.vk_handle, image.usage);
 
                 // Each eye also has an associated semaphore for complete
-                    ImportVulkanSemaphore(_m_semaphore_handles[eye]);
+                ImportVulkanSemaphore(_m_semaphore_handles[eye]);
 #else
                 GLuint eye_output_texture;
                 glGenTextures(1, &eye_output_texture);
