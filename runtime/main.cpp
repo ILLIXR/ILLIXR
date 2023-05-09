@@ -1,7 +1,7 @@
 #include "common/cpu_timer/cpu_timer.hpp"
 #include "common/global_module_defs.hpp"
-#include "runtime_impl.hpp"
 #include "frame_logger2.hpp"
+#include "runtime_impl.hpp"
 
 #include <csignal>
 #include <unistd.h> /// Not portable
@@ -68,10 +68,10 @@ private:
 
 int main(int argc, char* const* argv) {
     {
-        static boost::filesystem::path metrics {"metrics"};
+        static boost::filesystem::path metrics{"metrics"};
         boost::filesystem::create_directory(metrics);
     }
-   
+
     setup_frame_logger();
     CPU_TIMER_TIME_FUNCTION();
 
