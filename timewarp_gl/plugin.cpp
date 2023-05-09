@@ -337,11 +337,33 @@ private:
 
     GLuint ConvertVkFormatToGL(int64_t vk_format) {
         switch (vk_format) {
+        case VK_FORMAT_R8G8B8_UNORM:
+            return GL_RGB8;
+        case VK_FORMAT_R8G8B8_SRGB:
+            return GL_SRGB8;
         case VK_FORMAT_R8G8B8A8_UNORM:
             return GL_RGBA8;
         case VK_FORMAT_B8G8R8A8_SRGB:
         case VK_FORMAT_R8G8B8A8_SRGB:
             return GL_SRGB8_ALPHA8;
+        case VK_FORMAT_A2B10G10R10_UNORM_PACK32:
+            return GL_RGB10_A2;
+        case VK_FORMAT_R16G16B16_UNORM:
+            return GL_RGB16;
+        case VK_FORMAT_R16G16B16_SFLOAT:
+            return GL_RGB16F;
+        case VK_FORMAT_R16G16B16A16_UNORM:
+            return GL_RGBA16;
+        case VK_FORMAT_R16G16B16A16_SFLOAT:
+            return GL_RGBA16F;
+        case VK_FORMAT_D16_UNORM:
+            return GL_DEPTH_COMPONENT16;
+        case VK_FORMAT_D32_SFLOAT:
+            return GL_DEPTH_COMPONENT32F;
+        case VK_FORMAT_D24_UNORM_S8_UINT:
+            return GL_DEPTH24_STENCIL8;
+        case VK_FORMAT_D32_SFLOAT_S8_UINT:
+            return GL_DEPTH32F_STENCIL8;
         default:
             return 0;
         }
@@ -735,7 +757,7 @@ public:
         }
 
         switchboard::ptr<const rendered_frame> most_recent_frame = _m_eyebuffer.get_ro();
-        std::cout << "TIMEWARP STARTING" << std::endl;
+        // std::cout << "TIMEWARP STARTING" << std::endl;
 
         // Use the timewarp program
         glUseProgram(timewarpShaderProgram);
@@ -859,7 +881,7 @@ public:
         glFinish();
         glEndQuery(GL_TIME_ELAPSED);
 
-        std::cout << "TIMEWARP COMPLETE" << std::endl;
+        // std::cout << "TIMEWARP COMPLETE" << std::endl;
 
 #ifndef NDEBUG
         const duration time_since_render = _m_clock->now() - most_recent_frame->render_time;
