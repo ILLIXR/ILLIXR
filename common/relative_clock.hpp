@@ -99,10 +99,10 @@ inline bool operator!=(const time_point& lhs, const time_point& rhs) {
  */
 class RelativeClock : public phonebook::service {
 public:
-    using rep                       = _clock_rep;
-    using period                    = _clock_period;
-    using duration                  = _clock_duration;
-    //using time_point                = time_point;
+    using rep      = _clock_rep;
+    using period   = _clock_period;
+    using duration = _clock_duration;
+    // using time_point                = time_point;
     static constexpr bool is_steady = true;
     static_assert(std::chrono::steady_clock::is_steady);
 

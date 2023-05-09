@@ -2,6 +2,7 @@
 
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
 #include "cpu_timer/cpu_timer.hpp"
+#include "frame_info.hpp"
 #include "managed_thread.hpp"
 #include "phonebook.hpp"
 
@@ -16,10 +17,6 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
-#include "cpu_timer/cpu_timer.hpp"
-#include "concurrentqueue/blockingconcurrentqueue.hpp"
-#include "managed_thread.hpp"
-#include "frame_info.hpp"
 
 namespace ILLIXR {
 
@@ -174,7 +171,7 @@ private:
             std::int64_t     timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
             // Note the use of timed blocking wait
             if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
-                CPU_TIMER_TIME_BLOCK_INFO("callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic_name,0));
+                CPU_TIMER_TIME_BLOCK_INFO("callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic_name, 0));
                 // Process event
                 // Also, record and log the time
                 _m_dequeued++;
@@ -306,14 +303,14 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-            size_t serial_no = _m_latest_index.load();
+            size_t           serial_no  = _m_latest_index.load();
             size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
             // this_event.use_count() << "v \n";
             // }
-            CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no-1));
+            CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no - 1));
             return this_event;
         }
 
@@ -483,8 +480,8 @@ public:
         }
 
         ptr<const specific_event> dequeue() {
-            CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
-             serial_no));
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "callback",
+                                      cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(), serial_no));
             serial_no++;
             ptr<const event>          this_event          = _m_tb.dequeue();
             ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);

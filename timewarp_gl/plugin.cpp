@@ -5,6 +5,7 @@
 #include "common/data_format.hpp"
 #include "common/error_util.hpp"
 #include "common/extended_window.hpp"
+#include "common/frame_info.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/math_util.hpp"
 #include "common/pose_prediction.hpp"
@@ -14,7 +15,6 @@
 #include "shaders/basic_shader.hpp"
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
-#include "common/frame_info.hpp"
 
 #include <chrono>
 #include <future>
@@ -606,7 +606,7 @@ public:
 
         // get the query result
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-        CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<FrameInfo>("","gpu_log",elapsed_time));
+        CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<FrameInfo>("", "gpu_log", elapsed_time));
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
