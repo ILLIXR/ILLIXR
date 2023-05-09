@@ -308,12 +308,12 @@ private:
         ptr<const event> get() const {
             size_t serial_no = _m_latest_index.load();
             size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
-            CPU_TIMER_TIME_EVENT_INFO(true, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no-1));
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
             // this_event.use_count() << "v \n";
             // }
+            CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no-1));
             return this_event;
         }
 
