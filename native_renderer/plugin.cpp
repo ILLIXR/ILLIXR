@@ -257,7 +257,7 @@ private:
         attchmentDescriptions[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         attchmentDescriptions[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         attchmentDescriptions[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        attchmentDescriptions[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        attchmentDescriptions[0].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         attchmentDescriptions[1].format = VK_FORMAT_D32_SFLOAT;
         attchmentDescriptions[1].samples = VK_SAMPLE_COUNT_1_BIT;

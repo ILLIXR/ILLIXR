@@ -148,6 +148,9 @@ def load_native(config: Mapping[str, Any]) -> None:
         ContextManager[Optional[BinaryIO]],
         (open(log_stdout_str, "wb") if (log_stdout_str is not None) else noop_context(None)),
     )
+    print(f"[Run] {[shlex.quote(shlex.join(illixr_cmd_list))]}")
+    print(f"[Env] {env_override}")
+    # return
     with log_stdout_ctx as log_stdout:
         subprocess_run(
             actual_cmd_list,

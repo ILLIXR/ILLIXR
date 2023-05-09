@@ -1,3 +1,4 @@
+#include <vulkan/vulkan_core.h>
 #define VMA_IMPLEMENTATION
 #include "common/vk_util/vulkan_utils.hpp"
 #include "common/vk_util/display_sink.hpp"
@@ -38,7 +39,18 @@ private:
                                 .require_api_version(1, 2)
                                 .request_validation_layers()
                                 .enable_validation_layers()
-                                .use_default_debug_messenger()
+                                .set_debug_callback (
+                                    [] (VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                                        VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                        void *pUserData) 
+                                        -> VkBool32 {
+                                            auto severity = vkb::to_string_message_severity (messageSeverity);
+                                            auto type = vkb::to_string_message_type (messageType);
+                                            printf ("[%s: %s] %s\n", severity, type, pCallbackData->pMessage);
+                                            return VK_FALSE;
+                                        }
+                                )
                                 .build();
         if (!instance_ret) {
             ILLIXR::abort("Failed to create Vulkan instance. Error: " + instance_ret.error().message());
@@ -64,6 +76,8 @@ private:
 
         vkb::DeviceBuilder device_builder{physical_device};
 
+        VkPhysicalDeviceFeatures2 features{};
+        // enable anisotropic filtering
         auto device_ret = device_builder.build();
         if (!device_ret) {
             ILLIXR::abort("Failed to create Vulkan device. Error: " + device_ret.error().message());

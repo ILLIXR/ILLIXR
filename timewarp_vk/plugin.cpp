@@ -159,12 +159,12 @@ public:
 
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye][buffer_ind], 0, nullptr);
-            VkDeviceSize offsets[] = {num_distortion_vertices * eye * sizeof(Vertex)};
-            vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
             vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-            vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * eye, 0);
         }
     }
 
@@ -172,7 +172,7 @@ private:
 
     void create_vertex_buffer() {
         VkBufferCreateInfo staging_buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        staging_buffer_info.size = sizeof(Vertex) * num_distortion_vertices;
+        staging_buffer_info.size = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
         VmaAllocationCreateInfo staging_alloc_info = {};
@@ -184,7 +184,7 @@ private:
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr));
 
         VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        buffer_info.size = sizeof(Vertex) * num_distortion_vertices;
+        buffer_info.size = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
         VmaAllocationCreateInfo alloc_info = {};
@@ -194,8 +194,8 @@ private:
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr));
 
         std::vector<Vertex> vertices;
-        vertices.resize(num_distortion_vertices);
-        for (size_t i = 0; i < num_distortion_vertices; i++) {
+        vertices.resize(num_distortion_vertices * HMD::NUM_EYES);
+        for (size_t i = 0; i < num_distortion_vertices * HMD::NUM_EYES; i++) {
             vertices[i].pos = { distortion_positions[i].x, distortion_positions[i].y, distortion_positions[i].z };
             vertices[i].uv0 = { distortion_uv0[i].u, distortion_uv0[i].v };
             vertices[i].uv1 = { distortion_uv1[i].u, distortion_uv1[i].v };
@@ -204,12 +204,12 @@ private:
 
         void *mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
-        memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices);
+        memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
         VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy copy_region = {};
-        copy_region.size = sizeof(Vertex) * num_distortion_vertices;
+        copy_region.size = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer, staging_buffer, vertex_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
 
@@ -558,7 +558,7 @@ private:
                     distortion_positions[eye * num_distortion_vertices + index].x =
                         (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].y =
-                        (-1.0f +
+                        -(-1.0f +
                          2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
                              ((float) (hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / hmdInfo.displayPixelsHigh));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;

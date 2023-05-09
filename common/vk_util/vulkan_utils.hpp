@@ -38,7 +38,7 @@ class vulkan_utils {
 public:
     static std::string error_string(VkResult err_code) {
         switch (err_code) {
-            case VK_NOT_READY:
+        case VK_NOT_READY:
                 return "VK_NOT_READY";
             case VK_TIMEOUT:
                 return "VK_TIMEOUT";
@@ -205,6 +205,27 @@ public:
 
         file.close();
         return buffer;
+    }
+
+    static void copy_buffer_to_image(VkDevice vk_device, VkQueue vk_queue, VkCommandPool vk_command_pool, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+        VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);
+
+        VkBufferImageCopy region{};
+        region.bufferOffset      = 0;
+        region.bufferRowLength   = 0;
+        region.bufferImageHeight = 0;
+
+        region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel       = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount     = 1;
+
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = {width, height, 1};
+
+        vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+        end_one_time_command(vk_device, vk_command_pool, vk_queue, command_buffer);
     }
 };
 

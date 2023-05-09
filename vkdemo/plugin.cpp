@@ -1,3 +1,7 @@
+#include <cassert>
+#include <cstdint>
+#include <iterator>
+#include <sys/types.h>
 #define VMA_IMPLEMENTATION
 #include "common/data_format.hpp"
 #include "common/error_util.hpp"
@@ -11,6 +15,9 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "common/gl_util/lib/tiny_obj_loader.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "common/gl_util/lib/stb_image.h"
 
 #include <array>
 #include <chrono>
@@ -64,6 +71,23 @@ struct Vertex {
     }
 };
 
+struct Texture {
+    VkImage image;
+    VmaAllocation image_memory;
+    VkImageView image_view;
+};
+
+struct Model {
+    int texture_index;
+    uint32_t vertex_offset;
+    uint32_t index_offset;
+    uint32_t index_count;
+};
+
+struct ModelPushConstant {
+    int texture_index;
+};
+
 namespace std {
     template<> struct hash<Vertex> {
         size_t operator()(Vertex const& vertex) const {
@@ -92,15 +116,19 @@ public:
             this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
 
-        load_model();
         command_pool = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
         command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        load_model();
+        bake_models();
+        create_texture_sampler();
         create_descriptor_set_layout();
         create_uniform_buffers();
         create_descriptor_pool();
         create_descriptor_set();
         create_vertex_buffer();
         create_index_buffer();
+        vertices.clear();
+        indices.clear();
 
         // Construct perspective projection matrix
         math_util::projection_fov(&basic_projection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
@@ -125,7 +153,14 @@ public:
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye], 0,
                                 nullptr);
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+        
+        for (auto& model : models) {
+            ModelPushConstant push_constant{};
+            push_constant.texture_index = texture_map[model.texture_index];
+            vkCmdPushConstants(commandBuffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0,
+                               sizeof(ModelPushConstant), &push_constant);
+            vkCmdDrawIndexed(commandBuffer, model.index_count, 1, model.index_offset, 0, 0);
+        }
     }
 
 private:
@@ -157,10 +192,30 @@ private:
         // Objects' "view matrix" is inverse of eye matrix.
         auto view_matrix = eye_matrix.inverse();
 
-        auto model_view = view_matrix * modelMatrix;
+        Eigen::Matrix4f model_view = view_matrix * modelMatrix;
+        // print model view matrix
+        std::cout << "model view matrix: " << std::endl;
+        std::cout << model_view << std::endl;
+        std::cout << "basic projection matrix: " << std::endl;
+        std::cout << basic_projection << std::endl;
+
         UniformBufferObject *ubo = (UniformBufferObject *) uniform_buffer_allocation_infos[eye].pMappedData;
         memcpy(&ubo->model_view, &model_view, sizeof(model_view));
         memcpy(&ubo->proj, &basic_projection, sizeof(basic_projection));
+    }
+
+    void bake_models() {
+        for (auto i = 0; i < textures.size(); i++) {
+            if (textures[i].image_view == VK_NULL_HANDLE) {
+                continue;
+            }
+            VkDescriptorImageInfo image_info = {};
+            image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            image_info.imageView = textures[i].image_view;
+            image_info.sampler = nullptr;
+            texture_map.insert(std::make_pair(i, image_infos.size()));
+            image_infos.push_back(image_info);
+        }
     }
 
     void create_descriptor_set_layout() {
@@ -170,9 +225,25 @@ private:
         ubo_layout_binding.descriptorCount = 1;
         ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+        VkDescriptorSetLayoutBinding sampler_layout_binding = {};
+        sampler_layout_binding.binding = 1;
+        sampler_layout_binding.descriptorCount = 1;
+        sampler_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+        sampler_layout_binding.pImmutableSamplers = nullptr;
+        sampler_layout_binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        VkDescriptorSetLayoutBinding sampled_image_layout_binding = {};
+        sampled_image_layout_binding.binding = 2;
+        sampled_image_layout_binding.descriptorCount = texture_map.size();
+        sampled_image_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        sampled_image_layout_binding.pImmutableSamplers = nullptr;
+        sampled_image_layout_binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
         VkDescriptorSetLayoutCreateInfo layout_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
-        layout_info.bindingCount = 1;
-        layout_info.pBindings = &ubo_layout_binding;
+        layout_info.bindingCount = 3;
+        VkDescriptorSetLayoutBinding bindings[] = {ubo_layout_binding, sampler_layout_binding,
+                                                   sampled_image_layout_binding};
+        layout_info.pBindings = bindings;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout));
     }
@@ -205,6 +276,24 @@ private:
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool));
     }
 
+    void create_texture_sampler() {
+        VkSamplerCreateInfo sampler_info = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
+        sampler_info.magFilter = VK_FILTER_LINEAR;
+        sampler_info.minFilter = VK_FILTER_LINEAR;
+        sampler_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        sampler_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        sampler_info.anisotropyEnable = VK_FALSE;
+        // sampler_info.maxAnisotropy = 16;
+        sampler_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        sampler_info.unnormalizedCoordinates = VK_FALSE;
+        sampler_info.compareEnable = VK_FALSE;
+        sampler_info.compareOp = VK_COMPARE_OP_ALWAYS;
+        sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &sampler_info, nullptr, &texture_sampler));
+    }
+
     void create_descriptor_set() {
         VkDescriptorSetLayout layouts[] = { descriptor_set_layout, descriptor_set_layout };
         VkDescriptorSetAllocateInfo alloc_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
@@ -234,6 +323,173 @@ private:
         }
 
         vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr);
+
+        std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
+        for (auto i = 0; i < 2; i++) {
+            VkWriteDescriptorSet descriptor_write = { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+            descriptor_write.dstSet = descriptor_sets[i];
+            descriptor_write.dstBinding = 1;
+            descriptor_write.dstArrayElement = 0;
+            descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+            descriptor_write.descriptorCount = 1;
+            VkDescriptorImageInfo image_info = { texture_sampler };
+            descriptor_write.pImageInfo = &image_info;
+            image_descriptor_writes.push_back(descriptor_write);
+
+            assert(image_infos.size() > 0);
+            descriptor_write = { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+            descriptor_write.dstSet = descriptor_sets[i];
+            descriptor_write.dstBinding = 2;
+            descriptor_write.dstArrayElement = 0;
+            descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            descriptor_write.descriptorCount = static_cast<uint32_t>(image_infos.size());
+            descriptor_write.pImageInfo = image_infos.data();
+            image_descriptor_writes.push_back(descriptor_write);
+        }
+
+        vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(image_descriptor_writes.size()), image_descriptor_writes.data(), 0, nullptr);
+    }
+
+    void load_texture(std::string path, int i) {
+        int width, height, channels;
+        auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+        std::cout << "Loaded texture " << path << " with dimensions " << width << "x" << height << " and " << channels << " channels" << std::endl;
+        if (data == nullptr) {
+            throw std::runtime_error("Failed to load texture image!");
+        }
+
+        // add alpha channel if image has no alpha channel
+        if (channels == 3) {
+            auto new_data = new unsigned char[width * height * 4];
+            for (auto y = 0; y < height; y++) {
+                for (auto x = 0; x < width; x++) {
+                    new_data[(y * width + x) * 4 + 0] = data[(y * width + x) * 3 + 0];
+                    new_data[(y * width + x) * 4 + 1] = data[(y * width + x) * 3 + 1];
+                    new_data[(y * width + x) * 4 + 2] = data[(y * width + x) * 3 + 2];
+                    new_data[(y * width + x) * 4 + 3] = 255;
+                }
+            }
+            stbi_image_free(data);
+            data = new_data;
+            channels = 4;
+        }
+
+        VkDeviceSize image_size = width * height * channels;
+
+        VkBuffer staging_buffer;
+        VmaAllocation staging_buffer_allocation;
+        VmaAllocationInfo staging_buffer_allocation_info;
+
+        VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+        buffer_info.size = image_size;
+        buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+        VmaAllocationCreateInfo alloc_info = {};
+        alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
+        alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
+                            &staging_buffer_allocation_info));
+        
+        memcpy(staging_buffer_allocation_info.pMappedData, data, static_cast<size_t>(image_size));
+
+        stbi_image_free(data);
+
+        VkImageCreateInfo image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+        image_info.imageType = VK_IMAGE_TYPE_2D;
+        image_info.extent.width = static_cast<uint32_t>(width);
+        image_info.extent.height = static_cast<uint32_t>(height);
+        image_info.extent.depth = 1;
+        image_info.mipLevels = 1;
+        image_info.arrayLayers = 1;
+        image_info.format = VK_FORMAT_R8G8B8A8_SRGB;
+        image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+        image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        image_info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+
+        VmaAllocationCreateInfo image_alloc_info = {};
+        image_alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+        VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &image_alloc_info, &textures[i].image, &textures[i].image_memory,
+                            nullptr));
+
+        image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
+                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        
+        vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->graphics_queue, command_pool, staging_buffer, textures[i].image, width, height);
+
+        image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                                
+        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
+
+        VkImageViewCreateInfo view_info = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
+        view_info.image = textures[i].image;
+        view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        view_info.format = VK_FORMAT_R8G8B8A8_SRGB;
+        view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        view_info.subresourceRange.baseMipLevel = 0;
+        view_info.subresourceRange.levelCount = 1;
+        view_info.subresourceRange.baseArrayLayer = 0;
+        view_info.subresourceRange.layerCount = 1;
+
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view));
+    }
+
+    void image_layout_transition(VkImage image, VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout) {
+        VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+
+        VkImageMemoryBarrier barrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+        barrier.oldLayout = old_layout;
+        barrier.newLayout = new_layout;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = image;
+
+        if (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+        } else {
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        }
+
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = 1;
+
+        VkPipelineStageFlags source_stage;
+        VkPipelineStageFlags destination_stage;
+
+        if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED && new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+            source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+                   new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+            source_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED &&
+                   new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                                    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+            source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destination_stage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        } else {
+            throw std::invalid_argument("Unsupported layout transition!");
+        }
+
+        vkCmdPipelineBarrier(command_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
     }
 
     void load_model() {
@@ -243,13 +499,26 @@ private:
         std::string warn, err;
 
         auto path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + "scene.obj";
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str())) {
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), std::getenv("ILLIXR_DEMO_DATA"))) {
             throw std::runtime_error(warn + err);
         }
 
-        std::unordered_map<Vertex, uint32_t> unique_vertices{};
+        textures.resize(materials.size());
 
+        for (auto i = 0; i < materials.size(); i++) {
+            auto material = materials[i];
+            if (material.diffuse_texname.length() > 0) {
+                auto path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + material.diffuse_texname;
+                load_texture(path, i);
+            }
+        }
+
+        std::cout << "Loaded " << textures.size() << " textures" << std::endl;
+
+        std::unordered_map<Vertex, uint32_t> unique_vertices{};
         for (const auto& shape : shapes) {
+            Model model{};
+            model.index_offset = static_cast<uint32_t>(indices.size());
             for (const auto& index : shape.mesh.indices) {
                 Vertex vertex{};
 
@@ -271,6 +540,13 @@ private:
 
                 indices.push_back(unique_vertices[vertex]);
             }
+            if (shape.mesh.material_ids.size() > 0) {
+                model.texture_index = shape.mesh.material_ids[0];
+            } else {
+                model.texture_index = -1;
+            }
+            model.index_count = static_cast<uint32_t>(shape.mesh.indices.size());
+            models.push_back(model);
         }
     }
 
@@ -426,6 +702,14 @@ private:
         pipeline_layout_info.setLayoutCount = 1;
         pipeline_layout_info.pSetLayouts = &descriptor_set_layout;
 
+        VkPushConstantRange push_constant_range = {};
+        push_constant_range.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        push_constant_range.offset = 0;
+        push_constant_range.size = sizeof(ModelPushConstant);
+
+        pipeline_layout_info.pushConstantRangeCount = 1;
+        pipeline_layout_info.pPushConstantRanges = &push_constant_range;
+
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout));
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil = { VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO };
@@ -464,6 +748,7 @@ private:
     const switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 
     Eigen::Matrix4f basic_projection;
+    std::vector<Model> models;
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
 
@@ -485,6 +770,11 @@ private:
     VkBuffer index_buffer;
 
     VkPipelineLayout pipeline_layout;
+
+    std::vector<VkDescriptorImageInfo> image_infos;
+    std::vector<Texture> textures;
+    VkSampler texture_sampler;
+    std::map<uint32_t, uint32_t> texture_map;
 };
 
 class vkdemo_plugin : public plugin {
