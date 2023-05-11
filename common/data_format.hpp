@@ -248,6 +248,13 @@ struct hologram_input : public switchboard::event {
         : seq{seq_} { }
 };
 
+struct signal_to_quad : public switchboard::event {
+    ullong seq;
+
+    signal_to_quad(ullong seq_)
+        : seq{seq_} { }
+};
+
 // High-level HMD specification, timewarp plugin
 // may/will calculate additional HMD info based on these specifications
 struct hmd_physical_info {

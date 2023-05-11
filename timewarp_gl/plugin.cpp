@@ -38,7 +38,8 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
+        , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
+        , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")} {
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
@@ -73,11 +74,11 @@ public:
         client_backend      = graphics_api::TBD;
         rendering_ready     = false;
         image_handles_ready = false;
-#ifdef ILLIXR_MONADO
-        semaphore_handles_ready = false;
-#else
-        semaphore_handles_ready = true;
-#endif
+// #ifdef ILLIXR_MONADO
+//         semaphore_handles_ready = false;
+// #else
+//         semaphore_handles_ready = true;
+// #endif
 
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
         // only 2 swapchains (for the left and right eye) are supported for now.
@@ -125,43 +126,16 @@ public:
             if (this->_m_eye_image_handles[0].size() == this->_m_eye_swapchains_size[0] &&
                 this->_m_eye_image_handles[1].size() == this->_m_eye_swapchains_size[1] && left_output_ready &&
                 right_output_ready) {
-                this->image_handles_ready = true;
-                this->_setup();
-                _prepare_rendering();
-                sb->schedule<rendered_frame>(id, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
-                    this->warp(datum);
-                });
+                this->image_handles_ready = true; 
             }
         });
+        
+        this->_setup();
+        
+        sb->schedule<rendered_frame>(id, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
+            this->warp(datum);
+        });
 
-#ifdef ILLIXR_MONADO
-        sb->schedule<semaphore_handle>(id, "semaphore_handle",
-                                       [this](switchboard::ptr<const semaphore_handle> handle, std::size_t) {
-                                           // We need one semaphore to indicate when the reprojection is ready, and another when
-                                           // it's done
-                                           static bool left_lsr_complete = false, right_lsr_complete = false;
-                                           switch (handle->usage) {
-                                           case semaphore_usage::LEFT_LSR_COMPLETE: {
-                                               _m_semaphore_handles[0] = *handle;
-                                               left_lsr_complete          = true;
-                                               break;
-                                           }
-                                           case semaphore_usage::RIGHT_LSR_COMPLETE: {
-                                               _m_semaphore_handles[1] = *handle;
-                                               right_lsr_complete         = true;
-                                               break;
-                                           }
-                                           default: {
-                                               std::cout << "Invalid semaphore usage provided" << std::endl;
-                                               break;
-                                           }
-                                           }
-
-                                           if (left_lsr_complete && right_lsr_complete) {
-                                               this->semaphore_handles_ready = true;
-                                           }
-                                       });
-#endif
     }
 
 private:
@@ -178,7 +152,7 @@ private:
     bool              rendering_ready;
     graphics_api      client_backend;
     std::atomic<bool> image_handles_ready;
-    std::atomic<bool> semaphore_handles_ready;
+    // std::atomic<bool> semaphore_handles_ready;
 
     // Left and right eye images
     std::array<std::vector<image_handle>, 2> _m_eye_image_handles;
@@ -194,12 +168,13 @@ private:
 
     // Semaphores to synchronize between Monado and ILLIXR
     // Left and right; ready and complete.
-    std::array<semaphore_handle, 2> _m_semaphore_handles;
-    std::array<GLuint, 2>           _m_semaphores;
+    // std::array<std::array<semaphore_handle, 2>, 2> _m_semaphore_handles;
+    // std::array<std::array<GLuint, 2>, 2>           _m_semaphores;
 #endif
 
     // Switchboard plug for sending hologram calls
     switchboard::writer<hologram_input> _m_hologram;
+    switchboard::writer<signal_to_quad> _m_signal_quad;
 
     GLuint timewarpShaderProgram;
 
@@ -250,6 +225,7 @@ private:
 
     // Hologram call data
     ullong _hologram_seq{0};
+    ullong _signal_quad_seq{0};
 
     bool disable_warp;
 
@@ -351,33 +327,6 @@ private:
         }
         }
     }
-
-#ifdef ILLIXR_MONADO
-    void ImportVulkanSemaphore(const semaphore_handle& vk_handle) {
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
-        assert(gl_result && "glXMakeCurrent should not fail");
-        assert(GLEW_EXT_memory_object_fd && "[timewarp_gl] Missing object memory extensions for Vulkan-GL interop");
-
-        GLuint semaphore_handle;
-        glGenSemaphoresEXT(1, &semaphore_handle);
-        glImportSemaphoreFdEXT(semaphore_handle, GL_HANDLE_TYPE_OPAQUE_FD_EXT, vk_handle.vk_handle);
-
-        switch (vk_handle.usage) {
-        case semaphore_usage::LEFT_LSR_COMPLETE: {
-            _m_semaphores[0] = semaphore_handle;
-            break;
-        }
-        case semaphore_usage::RIGHT_LSR_COMPLETE: {
-            _m_semaphores[1] = semaphore_handle;
-            break;
-        }
-        default: {
-            assert(false && "Invalid semaphore usage");
-            break;
-        }
-        }
-    }
-#endif
 
     void BuildTimewarp(HMD::hmd_info_t& hmdInfo) {
         // Calculate the number of vertices+indices in the distortion mesh.
@@ -633,9 +582,6 @@ public:
 #ifdef ILLIXR_MONADO
                 image_handle image = _m_eye_output_handles[eye];
                 ImportVulkanImage(image.vk_handle, image.usage);
-
-                // Each eye also has an associated semaphore for complete.
-                ImportVulkanSemaphore(_m_semaphore_handles[eye]);
 #else
                 GLuint eye_output_texture;
                 glGenTextures(1, &eye_output_texture);
@@ -666,10 +612,8 @@ public:
     }
 
     void warp(switchboard::ptr<const rendered_frame> most_recent_frame) {
-        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
-        assert(gl_result_0 && "glXMakeCurrent should not fail");
-
-        assert(semaphore_handles_ready && rendering_ready);
+        if (!rendering_ready) _prepare_rendering();
+        assert(this->image_handles_ready && rendering_ready);
         std::cout << "TIMEWARP STARTING" << std::endl;
 
         // Use the timewarp program
@@ -729,6 +673,11 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             // Choose the appropriate texture to render to
+// #ifdef ILLIXR_MONADO
+//             // GLenum src_layout = GL_LAYOUT_COLOR_ATTACHMENT_EXT;
+//             // glWaitSemaphoreEXT(_m_semaphores[eye][0], 0, nullptr, 1,
+//             // &_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]], &src_layout);
+// #endif
             glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
             glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
             glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -783,16 +732,19 @@ public:
             // with the UV and position buffers correctly offset.
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
 
-#ifdef ILLIXR_MONADO
-            GLenum dst_layout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
-            glSignalSemaphoreEXT(_m_semaphores[eye], 0, nullptr, 1, &_m_eye_output_textures[eye], &dst_layout);
-#endif
+// #ifdef ILLIXR_MONADO
+//             GLenum dst_layout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
+//             glSignalSemaphoreEXT(_m_semaphores[eye][1], 0, nullptr, 1, &_m_eye_output_textures[eye], &dst_layout);
+// #endif
         }
 
         glFinish();
         glEndQuery(GL_TIME_ELAPSED);
 
         std::cout << "TIMEWARP COMPLETE" << std::endl;
+
+        // signal quad layer in Monado
+        _m_signal_quad.put(_m_signal_quad.allocate<signal_to_quad>(++_signal_quad_seq));
 
         // Call Hologram
         _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
