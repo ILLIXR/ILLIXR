@@ -177,9 +177,18 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
 
+add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
+add_executable(main${ILLIXR_BUILD_SUFFIX}.exe runtime/main.cpp)
+
 ##############
 # dependencies
 ##############
+
+##############
+# yaml parser
+##############
+
+include(cmake/GetYamlcpp.cmake)
 
 ##############
 # opencv
@@ -187,8 +196,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 # If building on centos system, opencv must be built from scratch to get the viz module
 # which is not supplied by the centos repos
 ##############
-add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
-add_executable(main${ILLIXR_BUILD_SUFFIX}.exe runtime/main.cpp)
 set(BUILDING_OPENCV No)
 set(OpenCV_DEP_STR "")
 if(HAVE_CENTOS)
@@ -196,10 +203,10 @@ if(HAVE_CENTOS)
     # see if it has been built yet
     find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
-	message("Building OpenCV")
+	    message("Building OpenCV")
         include(cmake/GetOpenCV_Viz.cmake)
         set(USE_V4_CODE Yes)
-        add_dependencies(main.opt.exe OpenCV_Viz)
+        add_dependencies(main${ILLIXR_BUILD_SUFFIX}.exe OpenCV_Viz)
         set(OpenCV_DEP_STR OpenCV_Viz)
         set(INTERNAL_OPENCV ${OpenCV_DIR})
         set(BUILD_OPENCV Yes)
@@ -267,8 +274,8 @@ if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
     get_external(GTSAM)
 endif()
 
-target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs)
+target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS})
+target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs ${yaml-cpp_LINK_LIBRARIES})
 
 # set any plugins that are being built
 foreach(ITEM IN LISTS PLUGIN_LIST)
