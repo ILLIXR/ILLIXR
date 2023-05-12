@@ -73,8 +73,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
 set(ILLIXR_BUILD_SUFFIX "")
-
-if(CMAKE_BUILD_TYPE MATCHES "")
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    message("REL")
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
