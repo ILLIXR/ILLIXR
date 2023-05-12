@@ -559,8 +559,6 @@ public:
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, root, glc));
         assert(gl_result && "glXMakeCurrent should not fail");
 
-        assert(semaphore_handles_ready.load());
-
         if (!rendering_ready) {
             assert(image_handles_ready);
 
