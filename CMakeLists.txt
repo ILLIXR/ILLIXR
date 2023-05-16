@@ -42,9 +42,9 @@ endif()
 set(BUILDING_ILLIXR Yes)
 
 set(PACKAGE_NAME "ILLIXR")
-set(PACKAGE_STRING "ILLIXR 1.0.0")
-set(PACKAGE_VERSION_MAJOR "1")
-set(PACKAGE_VERSION_MINOR "0")
+set(PACKAGE_STRING "ILLIXR 3.2.0")
+set(PACKAGE_VERSION_MAJOR "3")
+set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
@@ -90,10 +90,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGE_RELEASE "-O3 -DNDEBUG -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -fPIC")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
-set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}")
+set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake")
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 set(BUILD_GROUP "ALL" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, NONE")
 
-set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data pose_prediction realsense timewarp_gl)
+set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data pose_prediction realsense timewarp_gl passthrough_integrator pose_lookup rk4_integrator offload_vio)
 set(EXT_PLUGIN_LIST kimera_vio audio_pipeline openxr_app orb_slam monado)
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
@@ -130,17 +131,10 @@ elseif(BUILD_GROUP STREQUAL "TESTS")
     set(USE_AUDIO_PIPELINE ON)
     set(USE_KIMERA_VIO ON)
 elseif(BUILD_GROUP STREQUAL "ALL")
-    set(RT_SLAM_PLUGINS ON)
-    set(CORE_PLUGINS ON)
-    set(USE_GROUND_TRUTH_SLAM ON)
-    set(USE_GLDEMO ON)
-    set(USE_DEBUGVIEW ON)
-    set(USE_OFFLOAD_DATA ON)
-    set(USE_ORB_SLAM ON)
-    set(USE_AUDIO_PLUGIN ON)
-    set(USE_MONADO ON)
-    set(USE_OPENXR_APP ON)
-    set(USE_KIMERA_VIO ON)
+    foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
+        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+        set(${ITEM_UPPER} ON)
+    endforeach()
 else()
     set(SUBTARGETS No)
     foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
@@ -178,7 +172,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
 
 add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
-add_executable(main${ILLIXR_BUILD_SUFFIX}.exe runtime/main.cpp)
+add_executable(main${ILLIXR_BUILD_SUFFIX}.exe src/main.cpp)
 
 ##############
 # dependencies
@@ -233,6 +227,8 @@ find_package(X11 REQUIRED)
 
 pkg_check_modules(gl REQUIRED gl)
 
+find_package(Eigen3 REQUIRED)
+
 #############
 # plugin specific dependencies
 #############
@@ -245,15 +241,17 @@ if (BUILD_GROUP STREQUAL "TESTS")
     find_package(GTest REQUIRED)
 endif()
 
-if(USE_OFFLOAD_DATA)
-    find_package(Boost REQUIRED COMPONENTS filesystem)
-elseif(USE_ORB_SLAM)
+if(USE_ORB_SLAM)
     find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+elseif(USE_OFFLOAD_DATA OR USE_RECORD_IMU_CAM)
+    find_package(Boost REQUIRED COMPONENTS filesystem)
 endif()
 
-if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM)
-    find_package(Eigen3 REQUIRED)
-endif()
+if(USE_REALSENSE)
+    find_package(realsense2 REQUIRED)
+    find_package(realsense2-gl REQUIRED)
+endif(USE_REALSENSE)
+
 
 set(EXTERNAL_LIBRARIES "")
 
@@ -265,13 +263,21 @@ macro(get_external proj)
     include(cmake/Get${proj}.cmake)
 endmacro()
 
-if(USE_REALSENSE)
-    find_package(realsense2 REQUIRED)
-    find_package(realsense2-gl REQUIRED)
-endif(USE_REALSENSE)
+if(USE_OFFLOAD_VIO)
+    get_external(eCAL)
+    find_package(Protobuf REQUIRED)
+endif()
 
 if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
     get_external(GTSAM)
+endif()
+
+if(USE_DEPTHAI)
+    get_external(DepthAI)
+endif()
+
+if(USE_DEBUGVIEW)
+    find_package(glfw3 REQUIRED)
 endif()
 
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS})
@@ -316,6 +322,7 @@ endif()
 if(USE_OPENXR_APP)
     include(cmake/GetOpenXR_APP.cmake)
 endif()
+
 option(DATA_FILE "The data file to get" "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 file(DOWNLOAD ${DATA_FILE} data.zip SHOW_PROGRESS)
 

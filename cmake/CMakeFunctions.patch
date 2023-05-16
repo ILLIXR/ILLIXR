@@ -1,0 +1,11 @@
+--- CMakeLists.txt.orig	2023-05-16 13:27:43.881006966 -0500
++++ CMakeLists.txt	2023-05-16 13:28:47.097147684 -0500
+@@ -8,7 +8,7 @@
+ # Variable definitions
+ set(cmake_functions_install_cmake_dir   cmake)
+ else (MSVC)
+-set(cmake_functions_install_cmake_dir   lib/cmake/${PROJECT_NAME}-${PROJECT_VERSION})
++set(cmake_functions_install_cmake_dir   lib/cmake/${PROJECT_NAME})
+ endif (MSVC)
+ set(cmake_functions_config              ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake)
+ set(cmake_functions_config_version      ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}ConfigVersion.cmake)
