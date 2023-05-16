@@ -1,5 +1,9 @@
-add_library(plugin.pose_lookup${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
-target_include_directories(plugin.pose_lookup${ILLIXR_BUILD_SUFFIX} PRIVATE ${ILLIXR_SOURCE_DIR})
-target_compile_features(plugin.pose_lookup${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)
+set(PLUGIN_NAME plugin.pose_lookup${ILLIXR_BUILD_SUFFIX})
 
-install(TARGETS plugin.pose_lookup${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+
+target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR} ${Eigen3_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES})
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

@@ -1,24 +1,22 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
-project(plugin)
+set(PLUGIN_NAME plugin.offload_vio.server_tx${ILLIXR_BUILD_SUFFIX})
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-find_package(eCAL REQUIRED)
-find_package(Protobuf REQUIRED)
-
-add_library(plugin SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
 set(protobuf_files
     ${CMAKE_CURRENT_SOURCE_DIR}/vio_output.proto
 )
 
-target_include_directories(plugin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS})
 
-PROTOBUF_TARGET_CPP(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
+PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
 
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PLUGIN_NAME}
   eCAL::core
   protobuf::libprotobuf
 )
+
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

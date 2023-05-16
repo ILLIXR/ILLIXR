@@ -1,19 +1,12 @@
-# CMake file for building record_imu_cam plugin for ILLIXR
-# Required packages:
-#   boost (development)
-#   OpenCV including the viz module  (development)
+set(PLUGIN_NAME plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX})
 
-if(NOT ${Boost_FOUND})
-    find_package(Boost REQUIRED COMPONENTS filesystem)
-endif()
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
-add_library(plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
 if(BUILD_OPENCV)
-    add_dependencies(plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX} OPENCV_LIBRARY)
-    add_dependencies(plugin.record_imu_cam OpenCV_Viz)
+    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()
-target_include_directories(plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX} PRIVATE ${BOOST_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR})
-target_link_libraries(plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX} ${OpenCV_LIBRARIES} boost_filesystem)
-target_compile_features(plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)
+target_include_directories(${PLUGIN_NAME} PRIVATE ${BOOST_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${Eigen3_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} boost_filesystem ${Eigen3_LIBRARIES})
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

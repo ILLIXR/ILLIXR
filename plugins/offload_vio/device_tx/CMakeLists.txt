@@ -1,28 +1,28 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
-project(plugin)
+set(PLUGIN_NAME plugin.offload_vio.device_tx${ILLIXR_BUILD_SUFFIX})
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Release)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
-find_package(eCAL REQUIRED)
-find_package(Protobuf REQUIRED)
-find_package(OpenCV REQUIRED)
-
-add_library(plugin SHARED plugin.cpp)
+if(BUILD_OPENCV)
+    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
+endif()
 
 set(protobuf_files
     ${CMAKE_CURRENT_SOURCE_DIR}/vio_input.proto
 )
-PROTOBUF_TARGET_CPP(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
+PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
 
-include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS})
 link_directories(${OpenCV_LIBRARY_DIRS})
 
-target_include_directories(plugin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME}
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(${PLUGIN_NAME}
   ${OpenCV_LIBS}
   eCAL::core
   protobuf::libprotobuf
 )
+
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

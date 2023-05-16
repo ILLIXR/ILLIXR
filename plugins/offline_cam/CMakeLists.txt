@@ -1,11 +1,12 @@
+set(PLUGIN_NAME plugin.offline_cam${ILLIXR_BUILD_SUFFIX})
 
-add_library(plugin.offline_cam${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.offline_cam${ILLIXR_BUILD_SUFFIX} OpenCV_Viz)
+    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()
-target_include_directories(plugin.offline_cam${ILLIXR_BUILD_SUFFIX} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR})
-target_link_libraries(plugin.offline_cam${ILLIXR_BUILD_SUFFIX} ${OpenCV_LIBRARIES})
-target_compile_features(plugin.offline_cam${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)
+target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${Eigen3_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES})
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS plugin.offline_cam${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

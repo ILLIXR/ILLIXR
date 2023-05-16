@@ -2,8 +2,7 @@
 # SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fsanitize=thread")
 # SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
-SET(CMAKE_CXX_STANDARD 17)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 OLD)
@@ -36,6 +35,6 @@ if(NOT HAVE_CENTOS)
 else()
 	add_dependencies(plugin OpenCV_Viz)
 endif()
-include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS})
 
-target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES} Threads::Threads)
+target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} Threads::Threads)

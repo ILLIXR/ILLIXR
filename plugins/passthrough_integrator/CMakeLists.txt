@@ -1,10 +1,9 @@
-if(NOT ${Eigen3_FOUND})
-    find_package(Eigen3 REQUIRED)
-endif()
+set(PLUGIN_NAME plugin.passthrough_integrator${ILLIXR_BUILD_SUFFIX})
 
-add_library(plugin.passthrough_integrator SHARED plugin.cpp)
-target_include_directories(plugin.passthrough_integrator PRIVATE ${Eigen3_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR})
-target_link_libraries(plugin.passthrough_integrator ${Eigen3_LIBRARIES})
-target_compile_features(plugin.passthrough_integrator PRIVATE cxx_std_17)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
-install(TARGETS plugin.passthrough_integrator DESTINATION lib)
+target_include_directories(${PLUGIN_NAME} PRIVATE ${Eigen3_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR})
+target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES})
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

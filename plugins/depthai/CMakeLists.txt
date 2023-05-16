@@ -1,45 +1,17 @@
-project(depthai_plugin)
-# depthai
-if(BUILD_DEPTHAI)
-    #FetchContent_Declare(depthai
-    #        URL https://github.com/luxonis/depthai-core/archive/refs/tags/v2.20.2.tar.gz
-    #        URL_HASH MD5=ce7a671af71d850c4c36edc36d4595e9
-    #        FIND_PACKAGE_ARGS CONFIG)
+set(PLUGIN_NAME plugin.depthai${ILLIXR_BUILD_SUFFIX})
 
-    #FetchContent_MakeAvailable(depthai)
-    #    ExternalProject_Add(depthai
-    #            URL https://github.com/luxonis/depthai-core/archive/refs/tags/v2.20.2.tar.gz
-    #            URL_HASH MD5=ce7a671af71d850c4c36edc36d4595e9
-    #            PREFIX ${CMAKE_BINARY_DIR}/depthai
-    #            CMAKE_ARGS -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-    #            )
-
-else(BUILD_DEPTHAI)
-    find_package(depthai CONFIG)
-    #    if(NOT depthai_FOUND)
-    #        message(FATAL_ERROR "Could not find a package configuration file provided by \"depthai\" with any of the following names:
-    #    depthaiConfig.cmake
-    #    depthai-config.cmake
-    #Add the installation prefix of \"depthai\" to CMAKE_PREFIX_PATH or set \
-    #\"depthai_DIR\" to a directory containing one of the above files or \
-    # add -DBUILD_DEPTHAI=ON to the cmake command line to download and \
-    # build it with this project.")
-    #    endif(NOT depthai_FOUND)
-endif(BUILD_DEPTHAI)
-
-# Add depthai-core dependency
-find_package(depthai CONFIG REQUIRED)
-
-# OpenCV
-add_library(plugin.depthai${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.depthai${ILLIXR_BUILD_SUFFIX} OpenCV_Viz)
+    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()
+if(DepthAI_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} DepthAI_ext)
+endif()
+include_directories(${PLUGIN_NAME} ${DepthAI_INCLUDE_DIRS})
 
-include_directories(${OpenCV_INCLUDE_DIRS} ${DepthAI_INCLUDE_DIRS})
+add_definitions(-Werror -Wno-format-extra-args)
+target_link_libraries(${PLUGIN_NAME} PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE ${DepthAI_LIBRARIES})
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-add_definitions(-Wall -Wextra -Werror -Wno-format-extra-args -std=c++17 -g -O3)
-target_link_libraries(plugin.depthai${ILLIXR_BUILD_SUFFIX} PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE depthai::core)
-
-install(TARGETS plugin.depthai${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

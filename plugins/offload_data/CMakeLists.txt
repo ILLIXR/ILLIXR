@@ -1,18 +1,13 @@
-# CMake file for building offload_data plugin for ILLIXR
-# Required packages:
-#   boost (development)
-#   OpenCV including the viz module  (development)
 
-if(NOT ${Boost_FOUND})
-    find_package(Boost REQUIRED)
-endif()
-add_library(plugin.offload_data${ILLIXR_BUILD_SUFFIX} SHARED plugin.cpp)
+set(PLUGIN_NAME plugin.offload_data${ILLIXR_BUILD_SUFFIX})
+
+add_library(${PLUGIN_NAME} SHARED plugin.cpp)
 
 if(BUILD_OPENCV)
-    add_dependencies(plugin.offload_data${ILLIXR_BUILD_SUFFIX} OpenCV_Viz)
+    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()
-target_include_directories(plugin.offload_data${ILLIXR_BUILD_SUFFIX} PRIVATE ${Boost_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(plugin.offload_data${ILLIXR_BUILD_SUFFIX} boost_filesystem ${OpenCV_LIBRARIES})
-target_compile_features(plugin.offload_data${ILLIXR_BUILD_SUFFIX} PRIVATE cxx_std_17)
+target_include_directories(${PLUGIN_NAME} PRIVATE ${Boost_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} boost_filesystem ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES})
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
-install(TARGETS plugin.offload_data${ILLIXR_BUILD_SUFFIX} DESTINATION lib)
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
