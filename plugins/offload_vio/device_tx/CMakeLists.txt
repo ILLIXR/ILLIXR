@@ -11,17 +11,28 @@ endif()
 set(protobuf_files
     ${CMAKE_CURRENT_SOURCE_DIR}/vio_input.proto
 )
-PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
 
-include_directories(${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS})
-link_directories(${OpenCV_LIBRARY_DIRS})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS})
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${PLUGIN_NAME}
-  ${OpenCV_LIBS}
-  eCAL::core
-  protobuf::libprotobuf
-)
+if(eCAL_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} eCAL_ext)
+    include(../protoc_generate_cpp.cmake)
+    PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
+    target_link_libraries(${PLUGIN_NAME}
+            ${OpenCV_LIBS}
+            ${eCAL_LIBRARIES}
+            protobuf::libprotobuf
+            )
+
+else()
+    PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
+    target_link_libraries(${PLUGIN_NAME}
+            ${OpenCV_LIBS}
+            eCAL::core
+            protobuf::libprotobuf
+            )
+endif()
+
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 

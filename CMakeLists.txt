@@ -94,7 +94,7 @@ set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 set(BUILD_GROUP "ALL" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, NONE")
 
-set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data pose_prediction realsense timewarp_gl passthrough_integrator pose_lookup rk4_integrator offload_vio)
+set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data offload_vio passthrough_integrator pose_lookup pose_prediction realsense record_imu_cam rk4_integrator timewarp_gl)
 set(EXT_PLUGIN_LIST kimera_vio audio_pipeline openxr_app orb_slam monado)
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
@@ -233,7 +233,7 @@ find_package(Eigen3 REQUIRED)
 # plugin specific dependencies
 #############
 
-if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM OR USE_KIMERA_VIO OR USE_AUDIO_PIPELINE OR USE_MONADO OR USE_OPENXR_APP)
+if(USE_GTSAM_INTEGRATOR OR USE_ORB_SLAM OR USE_KIMERA_VIO OR USE_AUDIO_PIPELINE OR USE_MONADO OR USE_OPENXR_APP OR USE_OFFLOAD_VIO)
     find_package(Git REQUIRED)
 endif()
 

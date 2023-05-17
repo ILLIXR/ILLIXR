@@ -3,7 +3,7 @@ find_package(eCAL QUIET)
 if(eCAL_FOUND)
     set(eCAL_VERSION "5.11.2")
 else()
-    EXTERNALPROJECT_ADD(eCAL
+    EXTERNALPROJECT_ADD(eCAL_ext
             GIT_REPOSITORY https://github.com/eclipse-ecal/ecal.git
             GIT_TAG df71cc5a7aea31e963a40be9b0989b1aa9490d87
             PREFIX ${CMAKE_BINARY_DIR}/_deps/eCAL
@@ -11,7 +11,7 @@ else()
             PATCH_COMMAND patch -p0 thirdparty/cmake_functions/CMakeLists.txt < ${PROJECT_SOURCE_DIR}/cmake/CMakeFunctions.patch
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DECAL_THIRDPARTY_BUILD_PROTOBUF=OFF -DECAL_THIRDPARTY_BUILD_CURL=OFF -DECAL_THIRDPARTY_BUILD_HDF5=OFF -DECAL_THIRDPARTY_BUILD_QWT=OFF -DBUILD_SHARED_LIBS=ON
             )
-    set(eCAL_DEP_STR "eCAL")
+    set(eCAL_DEP_STR "eCAL_ext")
     set(eCAL_EXTERNAL Yes)
     set(eCAL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
     set(eCAL_LIBRARIES ecal_core;ecal_core_pb)
