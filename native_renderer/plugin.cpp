@@ -1,6 +1,9 @@
 #include <cassert>
+#include <cstdint>
+#include <opencv2/core/hal/interface.h>
 #include <ratio>
 #include <sys/types.h>
+#include <vector>
 #define VMA_IMPLEMENTATION
 #include "common/data_format.hpp"
 #include "common/error_util.hpp"
@@ -51,7 +54,8 @@ public:
             create_offscreen_target(&offscreen_images[i], &offscreen_image_allocations[i], &offscreen_image_views[i], &offscreen_framebuffers[i]);
         }
         command_pool = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        app_command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        timewarp_command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         create_sync_objects();
         create_app_pass();
         create_timewarp_pass();
@@ -76,9 +80,18 @@ public:
 
         auto fast_pose = pp->get_fast_pose();
         src->update_uniforms(fast_pose);
-        tw->update_uniforms(fast_pose);
-        VK_ASSERT_SUCCESS(vkResetCommandBuffer(command_buffer, 0));
+        VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0));
         record_command_buffer(swapchain_image_index);
+
+        const uint64_t ignored = 0;
+        const uint64_t default_value = timeline_semaphore_value;
+        const uint64_t fired_value = timeline_semaphore_value + 1;
+        timeline_semaphore_value += 1;
+        VkTimelineSemaphoreSubmitInfo timeline_submit_info = { VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO };
+        timeline_submit_info.waitSemaphoreValueCount = 1;
+        timeline_submit_info.pWaitSemaphoreValues = &ignored;
+        timeline_submit_info.signalSemaphoreValueCount = 1;
+        timeline_submit_info.pSignalSemaphoreValues = &fired_value;
 
         VkSubmitInfo submit_info = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
         VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
@@ -86,15 +99,35 @@ public:
         submit_info.pWaitSemaphores = &image_available_semaphore;
         submit_info.pWaitDstStageMask = wait_stages;
         submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &command_buffer;
+        submit_info.pCommandBuffers = &app_command_buffer;
         submit_info.signalSemaphoreCount = 1;
-        submit_info.pSignalSemaphores = &render_finished_semaphore;
+        submit_info.pSignalSemaphores = &app_render_finished_semaphore;
+        submit_info.pNext = &timeline_submit_info;
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, frame_fence));
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, nullptr));
+
+        VkSemaphoreWaitInfo wait_info = { VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO };
+        wait_info.semaphoreCount = 1;
+        wait_info.pSemaphores = &app_render_finished_semaphore;
+        wait_info.pValues = &fired_value;
+        VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX));
+        
+        // for DRM, get vsync estimate
+        std::this_thread::sleep_for(display_params::period / 6.0 * 5);
+
+        tw->update_uniforms(fast_pose);
+        VkSubmitInfo timewarp_submit_info = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
+        timewarp_submit_info.waitSemaphoreCount = 0;
+        timewarp_submit_info.commandBufferCount = 1;
+        timewarp_submit_info.pCommandBuffers = &timewarp_command_buffer;
+        timewarp_submit_info.signalSemaphoreCount = 1;
+        timewarp_submit_info.pSignalSemaphores = &timewarp_render_finished_semaphore;
+
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence));
 
         VkPresentInfoKHR present_info = { VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
         present_info.waitSemaphoreCount = 1;
-        present_info.pWaitSemaphores = &render_finished_semaphore;
+        present_info.pWaitSemaphores = &timewarp_render_finished_semaphore;
         present_info.swapchainCount = 1;
         present_info.pSwapchains = &ds->vk_swapchain;
         present_info.pImageIndices = &swapchain_image_index;
@@ -106,7 +139,7 @@ public:
             VK_ASSERT_SUCCESS(ret);
         }
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
             std::cout << "FPS: " << fps << std::endl;
             fps = 0;
@@ -114,7 +147,7 @@ public:
         } else {
             fps++;
         }
-#endif
+// #endif
     }
 private:
 
@@ -149,7 +182,7 @@ private:
 
     void record_command_buffer(uint32_t swapchain_image_index) {
         VkCommandBufferBeginInfo begin_info = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(command_buffer, &begin_info));
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info));
 
         for (auto eye = 0; eye < 2; eye++) {
             VkRenderPassBeginInfo render_pass_info = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
@@ -166,11 +199,14 @@ private:
             render_pass_info.clearValueCount = clear_values.size();
             render_pass_info.pClearValues = clear_values.data();
 
-            vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-            src->record_command_buffer(command_buffer, eye);
-            vkCmdEndRenderPass(command_buffer);
+            vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+            src->record_command_buffer(app_command_buffer, eye);
+            vkCmdEndRenderPass(app_command_buffer);
         }
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer));
 
+        VkCommandBufferBeginInfo timewarp_begin_info = { VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info));
         {
             VkRenderPassBeginInfo render_pass_info = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
             assert(timewarp_pass != VK_NULL_HANDLE);
@@ -185,20 +221,29 @@ private:
             render_pass_info.clearValueCount = 1;
             render_pass_info.pClearValues = &clear_value;
             
-            vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-            tw->record_command_buffer(command_buffer, 0);
-            vkCmdEndRenderPass(command_buffer);
+            vkCmdBeginRenderPass(timewarp_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+            tw->record_command_buffer(timewarp_command_buffer, 0);
+            vkCmdEndRenderPass(timewarp_command_buffer);
         }
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(command_buffer));
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer));
     }
 
     void create_sync_objects() {
+        VkSemaphoreTypeCreateInfo timeline_semaphore_info = { VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO };
+        timeline_semaphore_info.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE;
+        timeline_semaphore_info.initialValue = 0;
+
+        VkSemaphoreCreateInfo create_info = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+        create_info.pNext = &timeline_semaphore_info;
+
+        vkCreateSemaphore(ds->vk_device, &create_info, nullptr, &app_render_finished_semaphore);
+
         VkSemaphoreCreateInfo semaphore_info = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
         VkFenceCreateInfo fence_info = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
         fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
+        
         VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &image_available_semaphore));
-        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &render_finished_semaphore));
+        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore));
         VK_ASSERT_SUCCESS(vkCreateFence(ds->vk_device, &fence_info, nullptr, &frame_fence));
     }
 
@@ -381,7 +426,8 @@ private:
     const switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 
     VkCommandPool command_pool;
-    VkCommandBuffer command_buffer;
+    VkCommandBuffer app_command_buffer;
+    VkCommandBuffer timewarp_command_buffer;
 
     std::array<VkImage, 2> depth_images;
     std::array<VmaAllocation, 2> depth_image_allocations;
@@ -398,8 +444,11 @@ private:
     VkRenderPass timewarp_pass;
 
     VkSemaphore image_available_semaphore;
-    VkSemaphore render_finished_semaphore;
+    VkSemaphore app_render_finished_semaphore;
+    VkSemaphore timewarp_render_finished_semaphore;
     VkFence frame_fence;
+
+    uint64_t timeline_semaphore_value = 1;
 
     int fps;
     time_point last_fps_update;

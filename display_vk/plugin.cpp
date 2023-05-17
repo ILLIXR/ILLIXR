@@ -94,8 +94,12 @@ private:
 
         vkb::DeviceBuilder device_builder{physical_device};
 
+        // enable timeline semaphore
+        VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES };
+        timeline_semaphore_features.timelineSemaphore = VK_TRUE;
+
         // enable anisotropic filtering
-        auto device_ret = device_builder.build();
+        auto device_ret = device_builder.add_pNext(&timeline_semaphore_features).build();
         if (!device_ret) {
             ILLIXR::abort("Failed to create Vulkan device. Error: " + device_ret.error().message());
         }
