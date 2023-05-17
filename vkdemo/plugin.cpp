@@ -193,11 +193,6 @@ private:
         auto view_matrix = eye_matrix.inverse();
 
         Eigen::Matrix4f model_view = view_matrix * modelMatrix;
-        // print model view matrix
-        std::cout << "model view matrix: " << std::endl;
-        std::cout << model_view << std::endl;
-        std::cout << "basic projection matrix: " << std::endl;
-        std::cout << basic_projection << std::endl;
 
         UniformBufferObject *ubo = (UniformBufferObject *) uniform_buffer_allocation_infos[eye].pMappedData;
         memcpy(&ubo->model_view, &model_view, sizeof(model_view));

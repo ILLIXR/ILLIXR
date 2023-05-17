@@ -20,6 +20,23 @@ public:
         setup_vk();
     }
 
+    virtual void recreate_swapchain() override {
+        vkb::SwapchainBuilder swapchain_builder{vkb_device};
+        auto swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
+                                 .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+                                 .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
+                                 .build();
+        if (!swapchain_ret) {
+            ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
+        }
+        vkb_swapchain = swapchain_ret.value();
+        vk_swapchain = vkb_swapchain.swapchain;
+        swapchain_images      = vkb_swapchain.get_images().value();
+        swapchain_image_views = vkb_swapchain.get_image_views().value();
+        swapchain_image_format = vkb_swapchain.image_format;
+        swapchain_extent      = vkb_swapchain.extent;
+    }
+
 private:
     void setup_glfw() {
         if (!glfwInit()) {
@@ -66,6 +83,7 @@ private:
         auto physical_device_ret = selector.set_surface(vk_surface)
                                        .set_minimum_version(1, 1)
                                        .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
+                                    //    .add_required_extension(VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME)
                                        .select();
 
         if (!physical_device_ret) {
@@ -76,7 +94,6 @@ private:
 
         vkb::DeviceBuilder device_builder{physical_device};
 
-        VkPhysicalDeviceFeatures2 features{};
         // enable anisotropic filtering
         auto device_ret = device_builder.build();
         if (!device_ret) {
@@ -101,7 +118,7 @@ private:
 
         vkb::SwapchainBuilder swapchain_builder{vkb_device};
         auto swapchain_ret = swapchain_builder.set_desired_format({VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR})
-                                 .set_desired_present_mode(VK_PRESENT_MODE_MAILBOX_KHR)
+                                 .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
                                  .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
                                  .build();
         if (!swapchain_ret) {

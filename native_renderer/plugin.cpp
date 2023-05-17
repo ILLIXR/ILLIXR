@@ -1,4 +1,5 @@
 #include <cassert>
+#include <ratio>
 #include <sys/types.h>
 #define VMA_IMPLEMENTATION
 #include "common/data_format.hpp"
@@ -39,7 +40,8 @@ public:
         , tw{pb->lookup_impl<timewarp>()}
         , src{pb->lookup_impl<app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
+        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+        , last_fps_update{std::chrono::duration<long, std::nano>{0}} { }
 
     void _p_thread_setup() override {
         for (auto i = 0; i < 2; i++) {
@@ -63,8 +65,15 @@ public:
     void _p_one_iteration() override {
         VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX));
         uint32_t swapchain_image_index;
-        VK_ASSERT_SUCCESS(vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore, VK_NULL_HANDLE, &swapchain_image_index));
+        auto ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore, VK_NULL_HANDLE, &swapchain_image_index));
+        if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
+            ds->recreate_swapchain();
+            return;
+        } else {
+            VK_ASSERT_SUCCESS(ret);
+        }
         VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence));
+
         auto fast_pose = pp->get_fast_pose();
         src->update_uniforms(fast_pose);
         tw->update_uniforms(fast_pose);
@@ -90,9 +99,33 @@ public:
         present_info.pSwapchains = &ds->vk_swapchain;
         present_info.pImageIndices = &swapchain_image_index;
 
-        VK_ASSERT_SUCCESS(vkQueuePresentKHR(ds->graphics_queue, &present_info));
+        ret = (vkQueuePresentKHR(ds->graphics_queue, &present_info));
+        if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
+            ds->recreate_swapchain();
+        } else {
+            VK_ASSERT_SUCCESS(ret);
+        }
+
+#ifndef NDEBUG
+        if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
+            std::cout << "FPS: " << fps << std::endl;
+            fps = 0;
+            last_fps_update = _m_clock->now();
+        } else {
+            fps++;
+        }
+#endif
     }
 private:
+
+    void recreate_swapchain() {
+        vkDeviceWaitIdle(ds->vk_device);
+        for (auto& framebuffer : swapchain_framebuffers) {
+            vkDestroyFramebuffer(ds->vk_device, framebuffer, nullptr);
+        }
+        ds->recreate_swapchain();
+        create_swapchain_framebuffers();
+    }
 
     void create_swapchain_framebuffers() {
         swapchain_framebuffers.resize(ds->swapchain_image_views.size());
@@ -128,7 +161,7 @@ private:
             render_pass_info.renderArea.extent = ds->swapchain_extent;
 
             std::array<VkClearValue, 2> clear_values = {};
-            clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+            clear_values[0].color = { 1.0f, 1.0f, 1.0f, 1.0f };
             clear_values[1].depthStencil = { 1.0f, 0 };
             render_pass_info.clearValueCount = clear_values.size();
             render_pass_info.pClearValues = clear_values.data();
@@ -367,5 +400,8 @@ private:
     VkSemaphore image_available_semaphore;
     VkSemaphore render_finished_semaphore;
     VkFence frame_fence;
+
+    int fps;
+    time_point last_fps_update;
 };
 PLUGIN_MAIN(native_renderer)

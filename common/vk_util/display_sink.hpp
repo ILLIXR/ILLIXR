@@ -11,6 +11,8 @@ using namespace ILLIXR;
 
 class display_sink : public phonebook::service {
 public:
+
+    virtual void recreate_swapchain() = 0;
     virtual ~display_sink() { }
 
     GLFWwindow*              window;
