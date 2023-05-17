@@ -193,15 +193,15 @@ public:
     }
 
 private:
-    static const std::filesystem::path dir;
-    const record_header&                             rh;
-    std::string                                      table_name;
-    sqlite3pp::database                              db;
-    std::string                                      insert_str;
-    sqlite3pp::command                               insert_cmd;
-    moodycamel::BlockingConcurrentQueue<record>      queue;
-    std::atomic<bool>                                terminate{false};
-    std::thread                                      thread;
+    static const std::filesystem::path          dir;
+    const record_header&                        rh;
+    std::string                                 table_name;
+    sqlite3pp::database                         db;
+    std::string                                 insert_str;
+    sqlite3pp::command                          insert_cmd;
+    moodycamel::BlockingConcurrentQueue<record> queue;
+    std::atomic<bool>                           terminate{false};
+    std::thread                                 thread;
 };
 
 const std::filesystem::path sqlite_thread::dir{"metrics"};

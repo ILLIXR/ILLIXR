@@ -1,5 +1,5 @@
-#include "illixr/error_util.hpp"
 #include "csv_iterator.hpp"
+#include "illixr/error_util.hpp"
 
 #include <cassert>
 #include <eigen3/Eigen/Dense>

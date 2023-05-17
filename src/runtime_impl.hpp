@@ -19,7 +19,8 @@
 
 using namespace ILLIXR;
 
-template<typename T> std::vector<T> operator+(const std::vector<T>&a, const std::vector<T>& b) {
+template<typename T>
+std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
     std::vector<T> c = a;
     c.insert(c.end(), b.begin(), b.end());
     return c;

@@ -6,15 +6,15 @@
 
 #include <chrono>
 #include <eigen3/Eigen/Dense>
-#include <gtsam/config.h>
 #include <gtsam/base/Vector.h>
+#include <gtsam/config.h>
 #include <gtsam/navigation/AHRSFactor.h>
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
 #include <iomanip>
-#include <thread>
 #include <memory>
+#include <thread>
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds

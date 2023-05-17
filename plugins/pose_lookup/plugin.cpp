@@ -1,10 +1,10 @@
 #include "illixr/plugin.hpp"
 
+#include "data_loading.hpp"
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
-#include "data_loading.hpp"
 #include "utils.hpp"
 
 #include <cmath>

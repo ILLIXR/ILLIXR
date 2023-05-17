@@ -1,9 +1,9 @@
+#include "data_loading.hpp"
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "data_loading.hpp"
 
 #include <cassert>
 #include <ratio>
