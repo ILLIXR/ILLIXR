@@ -1,9 +1,9 @@
-#include "common/plugin.hpp"
+#include "illixr/plugin.hpp"
 
-#include "common/data_format.hpp"
-#include "common/global_module_defs.hpp"
-#include "common/phonebook.hpp"
-#include "common/pose_prediction.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
 #include "data_loading.hpp"
 #include "utils.hpp"
 

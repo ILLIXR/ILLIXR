@@ -1,4 +1,4 @@
-#include "common/error_util.hpp"
+#include "illixr/error_util.hpp"
 #include "csv_iterator.hpp"
 
 #include <eigen3/Eigen/Dense>

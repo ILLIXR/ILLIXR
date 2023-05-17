@@ -1,8 +1,8 @@
-#include "common/data_format.hpp"
-#include "common/managed_thread.hpp"
-#include "common/relative_clock.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/managed_thread.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 #include "data_loading.hpp"
 
 using namespace ILLIXR;

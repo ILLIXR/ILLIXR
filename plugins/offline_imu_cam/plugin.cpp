@@ -1,8 +1,8 @@
-#include "common/data_format.hpp"
-#include "common/global_module_defs.hpp"
-#include "common/relative_clock.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 #include "data_loading.hpp"
 
 #include <cassert>

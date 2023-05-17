@@ -1,7 +1,7 @@
-#include "common/plugin.hpp"
+#include "illixr/plugin.hpp"
 
-#include "common/data_format.hpp"
-#include "common/switchboard.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <boost/filesystem.hpp>
 #include <fstream>

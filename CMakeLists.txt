@@ -98,7 +98,7 @@ set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offl
 set(EXT_PLUGIN_LIST kimera_vio audio_pipeline openxr_app orb_slam monado)
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
-
+include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 # plugins, only exposed if BUILD_GROUP is OFF
 foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
@@ -280,7 +280,7 @@ if(USE_DEBUGVIEW)
     find_package(glfw3 REQUIRED)
 endif()
 
-target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS})
+target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs ${yaml-cpp_LINK_LIBRARIES})
 
 # set any plugins that are being built

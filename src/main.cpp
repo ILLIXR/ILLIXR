@@ -1,4 +1,4 @@
-#include "common/global_module_defs.hpp"
+#include "illixr/global_module_defs.hpp"
 #include "runtime_impl.hpp"
 #include "cxxopts.hpp"
 #include "yaml-cpp/yaml.h"

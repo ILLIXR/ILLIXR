@@ -3,9 +3,9 @@
 #include <opencv2/opencv.hpp> // Include OpenCV API
 
 // ILLIXR includes
-#include "common/data_format.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
 

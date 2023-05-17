@@ -1,10 +1,10 @@
-#include "common/plugin.hpp"
+#include "illixr/plugin.hpp"
 
-#include "common/data_format.hpp"
-#include "common/phonebook.hpp"
-#include "common/pose_prediction.hpp"
-#include "common/relative_clock.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/threadloop.hpp"
 #include "data_loading.hpp"
 
 #include <shared_mutex>

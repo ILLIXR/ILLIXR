@@ -6,10 +6,10 @@
 #include <depthai/depthai.hpp>
 
 // ILLIXR includes
-#include "common/data_format.hpp"
-#include "common/relative_clock.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
 
@@ -100,8 +100,8 @@ public:
         }
 
         std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> gyroTs;
-        Eigen::Vector3f                                                                         la;
-        Eigen::Vector3f                                                                         av;
+        Eigen::Vector3d                                                                         la;
+        Eigen::Vector3d                                                                         av;
 
         if (imuPacket_go) {
             auto imuPacket = imuQueue->tryGet<dai::IMUData>();

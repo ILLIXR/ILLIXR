@@ -1,8 +1,8 @@
 #pragma once
-#include "common/concurrentqueue/blockingconcurrentqueue.hpp"
-#include "common/error_util.hpp"
-#include "common/global_module_defs.hpp"
-#include "common/record_logger.hpp"
+#include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/record_logger.hpp"
 #include "sqlite3pp/sqlite3pp.hpp"
 
 #include <atomic>

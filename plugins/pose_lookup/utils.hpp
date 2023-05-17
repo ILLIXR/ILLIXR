@@ -1,4 +1,4 @@
-#include "common/error_util.hpp"
+#include "illixr/error_util.hpp"
 
 #include <deque>
 #include <eigen3/Eigen/Dense>

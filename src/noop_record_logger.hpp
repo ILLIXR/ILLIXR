@@ -1,4 +1,4 @@
-#include "common/record_logger.hpp"
+#include "illixr/record_logger.hpp"
 
 #include <iostream>
 #include <sstream>

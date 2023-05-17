@@ -1,10 +1,10 @@
-#include "common/plugin.hpp"
+#include "illixr/plugin.hpp"
 
-#include "common/data_format.hpp"
-#include "common/error_util.hpp"
-#include "common/global_module_defs.hpp"
-#include "common/phonebook.hpp"
-#include "common/switchboard.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <boost/filesystem.hpp>
 #include <fstream>
@@ -14,7 +14,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#include "common/gl_util/lib/stb_image_write.h"
+#include "illixr/gl_util/lib/stb_image_write.h"
 
 using namespace ILLIXR;
 
