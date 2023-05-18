@@ -178,7 +178,7 @@ int main(int argc, const char* argv[]) {
 
     setenv("__GL_MaxFramesAllowed", "1", false);
     setenv("__GL_SYNC_TO_VBLANK", "1", false);
-
+    bool have_group;
     if (result.count("group") || config["group"]) {
         std::string group;
         if (result.count("group")) {
@@ -186,25 +186,34 @@ int main(int argc, const char* argv[]) {
         } else {
             group = config["group"].as<std::string>();
         }
-        if (group == "monado") {
+        if (group == "monado" || group == "MONADO") {
             plugins = monado_plugins;
-        } else if (group == "native") {
+            have_group = true;
+        } else if (group == "native" || group == "NATIVE") {
             plugins = native_plugins;
-        } else if (group == "ci") {
+            have_group = true;
+        } else if (group == "ci" || group == "CI") {
             plugins = ci_plugins;
-        } else if (group == "all") {
-            plugins = all_plugins;
+            have_group = true;
+        } else if (group == "all" || group == "ALL") {
+            plugins    = all_plugins;
+            have_group = true;
         } else {
-            std::cout << "Invalid group name given. Must be one of monado, native, ci, or all" << std::endl;
-            return EXIT_FAILURE;
+            have_group = false;
         }
-    } else {
+    }
+    if (!have_group) {
         if (result.count("plugins")) {
             plugins = result["plugins"].as<std::vector<std::string>>();
         } else if (config["plugins"]) {
             plugins = config["plugins"].as<std::vector<std::string>>();
+        } else {
+            std::cout << "No plugins specified." << std::endl;
+            std::cout << "Either a list of plugins or a group name must be given. Groups are monado, native, ci, all, or none" << std::endl;
+            return EXIT_FAILURE;
         }
     }
+
     RAC_ERRNO_MSG("main after creating runtime");
 
     std::vector<std::string> lib_paths;
