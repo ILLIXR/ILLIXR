@@ -128,8 +128,10 @@ public:
 
         std::shared_ptr<service> this_service = _m_registry.at(type_index.name());
         assert(this_service);
-        auto this_specific_service_auto = (reinterpret_cast<typename std::shared_ptr<specific_service>::element_type*>(this_service.get()));
-        std::shared_ptr<specific_service> this_specific_service = std::shared_ptr<specific_service>{this_service, this_specific_service_auto};
+        auto this_specific_service_auto =
+            (reinterpret_cast<typename std::shared_ptr<specific_service>::element_type*>(this_service.get()));
+        std::shared_ptr<specific_service> this_specific_service =
+            std::shared_ptr<specific_service>{this_service, this_specific_service_auto};
 
         assert(this_specific_service);
 
@@ -138,6 +140,6 @@ public:
 
 private:
     std::unordered_map<std::string, const std::shared_ptr<service>> _m_registry;
-    mutable std::shared_mutex                                           _m_mutex;
+    mutable std::shared_mutex                                       _m_mutex;
 };
 } // namespace ILLIXR

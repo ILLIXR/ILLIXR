@@ -473,9 +473,11 @@ public:
          * This will return null if no event is on the topic yet.
          */
         ptr<const specific_event> get_ro_nullable() const noexcept {
-            ptr<const event>          this_event          = _m_topic.get();
-            auto this_specific_event_auto = (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
-            ptr<const specific_event> this_specific_event = std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
+            ptr<const event> this_event = _m_topic.get();
+            auto             this_specific_event_auto =
+                (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
+            ptr<const specific_event> this_specific_event =
+                std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
 
             if (this_event != nullptr) {
                 assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
@@ -535,9 +537,11 @@ public:
             // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
             // serial_no));
             serial_no++;
-            ptr<const event>          this_event          = _m_tb.dequeue();
-            auto this_specific_event_auto = (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
-            ptr<const specific_event> this_specific_event = std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
+            ptr<const event> this_event = _m_tb.dequeue();
+            auto             this_specific_event_auto =
+                (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
+            ptr<const specific_event> this_specific_event =
+                std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
             return this_specific_event;
         }
     };
@@ -639,8 +643,10 @@ public:
         try_register_topic<specific_event>(topic_name)
             .schedule(plugin_id, [=](ptr<const event>&& this_event, std::size_t it_no) {
                 assert(this_event);
-                auto this_specific_event_auto = (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
-                ptr<const specific_event> this_specific_event = std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
+                auto this_specific_event_auto =
+                    (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
+                ptr<const specific_event> this_specific_event =
+                    std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
                 assert(this_specific_event);
                 fn(std::move(this_specific_event), it_no);
             });
