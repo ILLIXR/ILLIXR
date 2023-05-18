@@ -1,159 +1,148 @@
 # Building ILLIXR
 
-The ILLIXR application is kick-started through a tool called [_Runner_][10]
-    (found in `runner/` and `runner.sh`).
-The Runner tool is responsible for
-    preparing the environment,
-    downloading required assets/code,
-    compiling each plugin,
-    and
-    launching the ILLIXR application.
-Runner is necessary for our project since ILLIXR manages plugins and data that span
-    many locations and launch [_configurations_][11].
-A configuration (defined via a [_YAML_][13] file in `ILLIXR/configs/`) specifies parameters
-    and plugins required to launch ILLIXR for a specific design/evaluation scenario.
+The ILLIXR application is configured and built via CMake. The CMake system checks for required dependencies,
+builds each requested plugin, builds the main ILLIXR binary, and (optionally) installs these components. 
 
+ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
 
-## Compilation and Usage
+- Ubuntu
+  - 20.04
+  - 22.04
+- Fedora
+  - 37
+  - 38
+- CentOS
+  - stream9
 
-To run ILLIXR (from the root directory of the project) using
-    the default `native` launch configuration,
+Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
+For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
+are not available in the distribution repos.
 
-<!--- language: lang-shell -->
-    ./runner.sh configs/native.yaml
+## Dependencies
 
-To drop into `gdb`, add `command: gdb -q --args $cmd` in the `action` block of
-    `configs/native.yaml`, and use the same command.
+There are several levels of dependencies in ILLIXR: those that are required for any type of build, and those that are
+required only for specific plugins. 
 
-To run ILLIXR with Monado,
+See the [Plugin Selector](https://astrochem.web.illinois.edu/illixr.html) for a listing on dependencies for each plugin.
+The following dependencies are required for any build:
 
-<!--- language: lang-shell -->
-    ./runner.sh configs/monado.yaml
-
-The [_OpenXR_][14] application to run is defined in the `action.openxr_app`
-    (a [_YAML_][13] object).
-
+Ubuntu
+```bash
+sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev
+```
+Fedora
+```bash
+sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel
+```
+CentOS
+```bash
+sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel
+```
 
 ## Configuration
 
-As introduced in the [introduction to the ILLIXR build process][12], a [_Configuration_][11]
-    (or _config_) describes the key information needed to launch an ILLIXR application.
-This section provides a detailed breakdown of the structure of a configuration file.
-The default `ILLIXR/configs/native.yaml` for the `native` action will be used as
-    the running example.
+Configuring ILLIXR is straight forward, but there are many options
 
-The first block in the config file contains a list of `plugin_groups`,
-    where each `plugin_group` is a list of plugins.
+```bash
+cd ILLIXR
+mkdir build
+cd build
+cmake .. <OPTIONS>
+```
+You can use the [Plugin Selector](https://astrochem.web.illinois.edu/illixr.html) to generate the CMake options for the
+particular plugins you want to use. To install ILLIXR into a non-standard location (e.g. in a user's home directory) 
+specify `-DCMAKE_INSTALL_PREFIX=<INSTALL PATH>`, where INSTALL PATH is the desired install location. Use `-DCMAKE_BUILD_TYPE=<>`
+to specify the build type (choices are `Debug`, `Release`, and `RelWithDebInfo`).
 
-<!--- language: lang-yaml -->
-    plugin_groups:
-      - plugin_group:
-          - path: plugin1/
-          - path: plugin2/
-          - path: plugin3/
-          - path: plugin4/
+An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
+plugins to build. Using `-DYAML_FILE=<FILE_NAME>` as the command line argument specifying the [_YAML_][2] file to use.
+The format for the [_YAML_][2] file is:
+```yaml
+group: none
+plugins: timewarp_gl,gldemo,ground_truth_slam
+data: http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
+```
+Where group is one of `all`, `ci`, `monado`, `native`, or `none`; plugins is a group of comma separated plugin names 
+(case sensitive, no spaces); data is the location of the data to download (if any). The current list of plugins is
 
-This defines a list of plugins by their location, `path`.
-Allowed paths will be described below.
-The `plugin_groups` get flattened and those plugins are initialized _in order_ at runtime.
-Several of the default plugins are order-sensitive.
+- audio_pipeline
+- debugview
+- depthai
+- gldemo
+- ground_truth_slam
+- gtsam_integrator
+- kimera_vio
+- monado
+- offline_cam
+- offline_imu
+- offload_data
+- offload_vio
+- openxr_app
+- orb_slam
+- passthrough_integrator
+- pose_lookup
+- pose_prediction
+- realsense
+- record_imu_cam
+- rk4_integrator
+- timewarp_gl
 
-The next block in the config defines the offline IMU data, camera data, and ground-truth data.
+The current groups are defined as
 
-<!--- language: lang-yaml -->
-    data:
-      subpath: mav0
-      relative_to:
-        archive_path:
-          download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+- all: All current plugins
+- ci: audio_pipeline, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio, offline_cam, offline_imu, pose_prediction, timewarp_gl
+- monado: audio_pipeline, gtsam_integrator, kimera_vio, monado, offline_cam, offline_imu, openxr_app, pose_prediction, timewarp_gl
+- native: audio_pipeline, debugview, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio, offline_cam, offline_imu, offload_data, pose_prediction, timewarp_gl
+- none: only plugins which are individually specified in the `plugins` entry are used
 
-Next, we define the location of OBJ files for `gldemo`.
+The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which can be used as input to the binary.
+## Building ILLIXR
 
-<!--- language: lang-yaml -->
-    demo_data: demo_data/
+To compile ILLIXR just run
+```bash
+make -jX
+make install
+```
+X is the number of cores to build with concurrently and the install step is optional (may require `sudo`). Depending on
+how many plugins and dependencies are being built, and the number of cores being used, the build time can
+vary from a few minutes to over half an hour or more.
 
-Then, we define the _Action_ to be taken for the configuration.
-Each action has a name, and can contain a number of member fields beyond this.
+## Running ILLIXR
 
-<!--- language: lang-yaml -->
-    action:
-      name: native
-      command: gdb -q --args $cmd
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
+an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
-The `native` action supports an optional `command` argument.
-In that argument `$cmd` is replaced with the separated command-line arguments to run ILLIXR,
-    while `$quoted_cmd` is replaced with a single string comprising all command-line arguments.
-The `command` argument also supports `$env_cmd`, which interpret command-line argument
-    assignments in the form of `VARNAME=VALUE` as environment variable mappings.
-See the [_configuration_ glossary entry][11] for more details about supported actions.
+- --duration=<>, the duration to run for in seconds (default is 60)
+- --data=<>, the data file to use
+- --demo_data=<>, the demo data to use
+- --enable_offload, ??
+- --enable_alignment, ??
+- --enable_verbose_errors, give more information about errors
+- --enable_pre_sleep, ??
+- -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
+- -g,--group=<>, the group of plugins to use.
+- -y,--yaml<>, the [_YAML_][2] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 
-Finally, we support two compilation [_profiles_][11]:
-    `opt`, which compiles with `-O3` and disables debug prints and assertions,
-    and
-    `dbg`, which compiles with debug flags and enables debug prints and assertions.
+An example of a [_YAML_][2] config file is
+```yaml
+group: none
+plugins: timewarp_gl,gldemo,ground_truth_slam
+data: http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
+enable_offload: true
+enable_verbose_errors: false
+```
 
-<!--- language: lang-yaml -->
-    profile: opt
+Regarding parameters for the binary, the following priority will be used:
+1. If the parameter is specified on the command line it will have the highest priority
+2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
+3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
 
-You can `!include` other configuration files via [pyyaml-include][13].
-Consider separating the site-specific configuration options into its own file.
-
-
-## Specifying Paths
-
-A path refers to a location of a resource. There are 5 ways of specifying a path:
-
--   **Simple path**:
-    Either absolute or relative path in the native filesystem.
-
--   **Git repo**:
-    A git repository.
-
-    <!--- language: lang-yaml -->
-
-        - git_repo: https://github.com/user/repo.git
-          version: master # branch name, SHA-256, or tag
-
--   **Download URL**:
-    A resource downloaded from the internet.
-
-    <!--- language: lang-yaml -->
-
-        - download_url: https://example.com/file.txt
-
--   **Zip archive**:
-    A path that points within the contents of a zip archive.
-    Note that `archive_path` is itself a path (recursive).
-
-    <!--- language: lang-yaml -->
-
-        - archive_path: path/to/archive.zip
-        - archive_path:
-            download_url: https://example.com/file.zip
-
--   **Complex path**:
-    A hard-coded path relative to another path (recursive).
-    This is useful to specify a _subdirectory_ of a git repository or zip archive.
-
-    <!--- language: lang-yaml -->
-
-        - subpath: path/within/git_repo
-          relative_to:
-            git_repo: ...
-            version: ...
 
 
 ## Rationale
 
--   Previously, we would have to specify which plugins to build and which to run separately,
-        violating [DRY principle][6].
-
--   Previously, configuration had to be hard-coded into the component source code,
-        or passed as parsed/unparsed as strings in env-vars on a per-component basis.
-    This gives us a consistent way to deal with all configurations.
-
--   Currently, plugins are specified by a path to the directory containing their source code
-        and build system.
+-  The current system can use config files to control everything from the build to running ILLIXR, inkeeping with the [DRY principle][1].
+  However, for maximum flexibility control can also be done at the command line level as well.
 
 
 ## Philosophy
@@ -167,37 +156,13 @@ A path refers to a location of a resource. There are 5 ways of specifying a path
 
 -   It should be easy to build in parallel.
 
--   Always rebuild every time, so the binary is always "fresh."
-    This is a great convenience when experimenting.
-    However, this implies that rebuilding must be fast when not much has changed.
-
--   Make is the de facto standard for building C/C++ programs.
-    GNU Make, and the makefile language begets no shortage of problems
-        [[1][1],[2][2],[3][3],[4][4],[5][5]], but we choose
-    Make for its tradeoff of between simplicity and functionality.
-    What it lacks in functionality (compared to CMake, Ninja, scons, Bazel, Meson)
-        it makes up for in simplicity.
-    It's still the build system in which it is the easiest to invoke arbitrary commands in
-        shell and the easiest to have a `common.mk` included in each plugin.
-    This decision to use Make should be revisited, when this project outgrows its ability,
-        but for now, Make remains, in our judgement, _the best tool for the job_.
+-   Re-running `make` (and optionally `cmake` first) will only rebuild those parts of the code with have changed.
 
 
 [//]: # (- References -)
 
-[1]:    https://www.conifersystems.com/whitepapers/gnu-make
-[2]:    https://www.gnu.org/software/cons/stable/cons.html#why%20cons%20why%20not%20make
-[3]:    https://interrupt.memfault.com/blog/gnu-make-guidelines#when-to-choose-make
-[4]:    https://grosskurth.ca/bib/1997/miller.pdf
-        "Recursive Make Considered Harmful (AUUGN Journal of AUUG Inc. 1998)"
-[5]:    https://doi.org/10.1145/3241625.2976011
-        "Non-recursive make considered harmful: build systems at scale (SIGPLAN 2016)"
-[6]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+[1]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 
 [//]: # (- Internal -)
 
-[10]:   glossary.md#runner
-[11]:   glossary.md#configuration
-[12]:   building_illixr.md#building-illixr
-[13]:   glossary.md#yaml
-[14]:   glossary.md#openxr
+[2]:   glossary.md#yaml
