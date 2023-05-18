@@ -1,5 +1,6 @@
 #include "illixr/csv_iterator.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/data_format.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <fstream>
