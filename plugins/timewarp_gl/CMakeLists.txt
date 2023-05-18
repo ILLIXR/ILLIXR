@@ -2,10 +2,14 @@ if(NOT DEFINED BUILDING_ILLIXR)
     message(ERROR "The timewarp_gl plugin cannot be built outside of the main ILLIXR build")
 endif()
 
-file(GLOB_RECURSE TIMEWARP_SOURCES "./*.cpp")
 set(PLUGIN_NAME plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED ${TIMEWARP_SOURCES})
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        shaders/basic_shader.hpp
+        shaders/timewarp_shader.hpp
+        utils/hmd.cpp
+        utils/hmd.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)

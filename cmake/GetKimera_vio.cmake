@@ -1,3 +1,6 @@
+get_external(opengv)
+get_external(KimeraRPGO)
+
 set(KIMERA_VIO_CMAKE_ARGS "")
 if(HAVE_CENTOS)
     set(KIMERA_VIO_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")

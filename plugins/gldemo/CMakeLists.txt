@@ -1,7 +1,9 @@
 
 set(PLUGIN_NAME plugin.gldemo${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        shaders/demo_shader.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)

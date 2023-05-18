@@ -1,3 +1,7 @@
+get_external(Pangolin)
+get_external(g2o)
+get_external(Sophus)
+
 set(ORB_SLAM_CMAKE_ARGS "")
 if(HAVE_CENTOS)
     set(ORB_SLAM_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")

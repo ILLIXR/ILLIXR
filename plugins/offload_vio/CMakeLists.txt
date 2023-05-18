@@ -1,3 +1,5 @@
+get_external(eCAL)
+find_package(Protobuf REQUIRED)
 add_subdirectory(device_rx)
 add_subdirectory(device_tx)
 add_subdirectory(server_rx)

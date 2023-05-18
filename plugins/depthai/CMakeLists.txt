@@ -1,3 +1,5 @@
+get_external(DepthAI)
+
 set(PLUGIN_NAME plugin.depthai${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp)

@@ -1,3 +1,6 @@
+get_external(PortAudio)
+get_external(SpatialAudio)
+
 set(AUDIO_PIPELINE_CMAKE_ARGS "")
 if(HAVE_CENTOS)
     set(AUDIO_PIPELINE_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")

@@ -1,6 +1,9 @@
 set(PLUGIN_NAME plugin.pose_lookup${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        data_loading.hpp
+        utils.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
