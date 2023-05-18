@@ -100,8 +100,8 @@ public:
 #ifndef NDEBUG
         std::cerr << "Register " << type_index.name() << std::endl;
 #endif
-        assert(_m_registry.count(type_index) == 0);
-        _m_registry.try_emplace(type_index, impl);
+        assert(_m_registry.count(type_index.name()) == 0);
+        _m_registry.try_emplace(type_index.name(), impl);
     }
 
     /**
@@ -121,22 +121,23 @@ public:
 
 #ifndef NDEBUG
         // if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
-        if (_m_registry.count(type_index) != 1) {
+        if (_m_registry.count(type_index.name()) != 1) {
             throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
         }
 #endif
 
-        std::shared_ptr<service> this_service = _m_registry.at(type_index);
+        std::shared_ptr<service> this_service = _m_registry.at(type_index.name());
         assert(this_service);
+        auto this_specific_service_auto = (reinterpret_cast<typename std::shared_ptr<specific_service>::element_type*>(this_service.get()));
+        std::shared_ptr<specific_service> this_specific_service = std::shared_ptr<specific_service>{this_service, this_specific_service_auto};
 
-        std::shared_ptr<specific_service> this_specific_service = std::dynamic_pointer_cast<specific_service>(this_service);
         assert(this_specific_service);
 
         return this_specific_service;
     }
 
 private:
-    std::unordered_map<std::type_index, const std::shared_ptr<service>> _m_registry;
+    std::unordered_map<std::string, const std::shared_ptr<service>> _m_registry;
     mutable std::shared_mutex                                           _m_mutex;
 };
 } // namespace ILLIXR

@@ -459,7 +459,7 @@ public:
         reader(topic& topic_)
             : _m_topic{topic_} {
 #ifndef NDEBUG
-            if (typeid(specific_event) != _m_topic.ty()) {
+            if (std::string(typeid(specific_event).name()) != std::string(_m_topic.ty().name())) {
                 std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name() << ", but caller used type"
                           << typeid(specific_event).name() << std::endl;
                 abort();
@@ -474,7 +474,8 @@ public:
          */
         ptr<const specific_event> get_ro_nullable() const noexcept {
             ptr<const event>          this_event          = _m_topic.get();
-            ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+            auto this_specific_event_auto = (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
+            ptr<const specific_event> this_specific_event = std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
 
             if (this_event != nullptr) {
                 assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
@@ -535,7 +536,8 @@ public:
             // serial_no));
             serial_no++;
             ptr<const event>          this_event          = _m_tb.dequeue();
-            ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+            auto this_specific_event_auto = (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
+            ptr<const specific_event> this_specific_event = std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
             return this_specific_event;
         }
     };
@@ -573,7 +575,7 @@ public:
          * @brief Publish @p ev to this topic.
          */
         void put(ptr<specific_event>&& this_specific_event) {
-            assert(typeid(specific_event) == _m_topic.ty());
+            assert(std::string(typeid(specific_event).name()) == std::string(_m_topic.ty().name()));
             assert(this_specific_event != nullptr);
             assert(this_specific_event.unique());
             ptr<const event> this_event =
@@ -597,7 +599,7 @@ private:
             if (found != _m_registry.end()) {
                 topic& topic_ = found->second;
 #ifndef NDEBUG
-                if (typeid(specific_event) != topic_.ty()) {
+                if (std::string(typeid(specific_event).name()) != std::string(topic_.ty().name())) {
                     std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name() << ", but caller used type"
                               << typeid(specific_event).name() << std::endl;
                     abort();
@@ -637,8 +639,8 @@ public:
         try_register_topic<specific_event>(topic_name)
             .schedule(plugin_id, [=](ptr<const event>&& this_event, std::size_t it_no) {
                 assert(this_event);
-                ptr<const specific_event> this_specific_event =
-                    std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
+                auto this_specific_event_auto = (reinterpret_cast<typename std::shared_ptr<const specific_event>::element_type*>(this_event.get()));
+                ptr<const specific_event> this_specific_event = std::shared_ptr<const specific_event>{this_event, this_specific_event_auto};
                 assert(this_specific_event);
                 fn(std::move(this_specific_event), it_no);
             });
