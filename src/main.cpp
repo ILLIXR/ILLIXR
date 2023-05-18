@@ -187,13 +187,13 @@ int main(int argc, const char* argv[]) {
             group = config["group"].as<std::string>();
         }
         if (group == "monado" || group == "MONADO") {
-            plugins = monado_plugins;
+            plugins    = monado_plugins;
             have_group = true;
         } else if (group == "native" || group == "NATIVE") {
-            plugins = native_plugins;
+            plugins    = native_plugins;
             have_group = true;
         } else if (group == "ci" || group == "CI") {
-            plugins = ci_plugins;
+            plugins    = ci_plugins;
             have_group = true;
         } else if (group == "all" || group == "ALL") {
             plugins    = all_plugins;
@@ -209,7 +209,8 @@ int main(int argc, const char* argv[]) {
             plugins = config["plugins"].as<std::vector<std::string>>();
         } else {
             std::cout << "No plugins specified." << std::endl;
-            std::cout << "Either a list of plugins or a group name must be given. Groups are monado, native, ci, all, or none" << std::endl;
+            std::cout << "Either a list of plugins or a group name must be given. Groups are monado, native, ci, all, or none"
+                      << std::endl;
             return EXIT_FAILURE;
         }
     }
