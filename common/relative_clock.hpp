@@ -120,8 +120,8 @@ public:
      * @brief Starts the clock. All times are relative to this point.
      */
     void start() {
-        _m_start = std::chrono::steady_clock::now();
-	_m_started = true;
+        _m_start   = std::chrono::steady_clock::now();
+        _m_started = true;
     }
 
     /**
