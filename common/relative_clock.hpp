@@ -102,7 +102,7 @@ public:
     using rep                       = _clock_rep;
     using period                    = _clock_period;
     using duration                  = _clock_duration;
-    using time_point                = time_point;
+    using time_point                = ILLIXR::time_point;
     static constexpr bool is_steady = true;
     static_assert(std::chrono::steady_clock::is_steady);
 
@@ -121,17 +121,19 @@ public:
      */
     void start() {
         _m_start = std::chrono::steady_clock::now();
+	_m_started = true;
     }
 
     /**
      * @brief Check if the clock is started.
      */
     bool is_started() const {
-        return _m_start > std::chrono::steady_clock::time_point{};
+        return _m_started;
     }
 
 private:
     std::chrono::steady_clock::time_point _m_start;
+    bool                                  _m_started;
 };
 
 using duration = RelativeClock::duration;
