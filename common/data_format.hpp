@@ -1,8 +1,5 @@
 #pragma once
 
-#include <boost/optional.hpp>
-#include <chrono>
-#include <iostream>
 #include <memory>
 #include <opencv2/core/mat.hpp>
 #undef Success // For 'Success' conflict
