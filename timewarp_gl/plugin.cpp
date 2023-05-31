@@ -74,11 +74,6 @@ public:
         client_backend      = graphics_api::TBD;
         rendering_ready     = false;
         image_handles_ready = false;
-// #ifdef ILLIXR_MONADO
-//         semaphore_handles_ready = false;
-// #else
-//         semaphore_handles_ready = true;
-// #endif
 
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
         // only 2 swapchains (for the left and right eye) are supported for now.
@@ -152,7 +147,6 @@ private:
     bool              rendering_ready;
     graphics_api      client_backend;
     std::atomic<bool> image_handles_ready;
-    // std::atomic<bool> semaphore_handles_ready;
 
     // Left and right eye images
     std::array<std::vector<image_handle>, 2> _m_eye_image_handles;
@@ -165,11 +159,6 @@ private:
 
 #ifdef ILLIXR_MONADO
     std::array<image_handle, 2> _m_eye_output_handles;
-
-    // Semaphores to synchronize between Monado and ILLIXR
-    // Left and right; ready and complete.
-    // std::array<std::array<semaphore_handle, 2>, 2> _m_semaphore_handles;
-    // std::array<std::array<GLuint, 2>, 2>           _m_semaphores;
 #endif
 
     // Switchboard plug for sending hologram calls
@@ -331,7 +320,8 @@ private:
     void BuildTimewarp(HMD::hmd_info_t& hmdInfo) {
         // Calculate the number of vertices+indices in the distortion mesh.
         num_distortion_vertices = (hmdInfo.eyeTilesHigh + 1) * (hmdInfo.eyeTilesWide + 1);
-        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6;
+        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6; 
+        // What is the 6 here? What's the difference between vertices and indices? Each rectangular has two triangles, each triangle has three vertices (i.e., three indices to represent).
 
         // Allocate memory for the elements/indices array.
         distortion_indices.resize(num_distortion_indices);
@@ -342,6 +332,7 @@ private:
             for (int x = 0; x < hmdInfo.eyeTilesWide; x++) {
                 const int offset = (y * hmdInfo.eyeTilesWide + x) * 6;
 
+                // How are the indices figured out?
                 distortion_indices[offset + 0] = (GLuint) ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
                 distortion_indices[offset + 1] = (GLuint) ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
                 distortion_indices[offset + 2] = (GLuint) ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
@@ -671,11 +662,6 @@ public:
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             // Choose the appropriate texture to render to
-// #ifdef ILLIXR_MONADO
-//             // GLenum src_layout = GL_LAYOUT_COLOR_ATTACHMENT_EXT;
-//             // glWaitSemaphoreEXT(_m_semaphores[eye][0], 0, nullptr, 1,
-//             // &_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]], &src_layout);
-// #endif
             glBindFramebuffer(GL_FRAMEBUFFER, _m_eye_framebuffers[eye]);
             glViewport(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels);
             glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -686,6 +672,7 @@ public:
             [[maybe_unused]] const bool isTexture =
                 static_cast<bool>(glIsTexture(_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]));
             assert(isTexture && "The requested image is not a texture!");
+            std::cout << "Binding the texture\n";
             glBindTexture(GL_TEXTURE_2D, _m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]);
 #endif
 
@@ -729,11 +716,6 @@ public:
             // reused for both eyes. Therefore glDrawElements can be immediately called,
             // with the UV and position buffers correctly offset.
             glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
-
-// #ifdef ILLIXR_MONADO
-//             GLenum dst_layout = GL_LAYOUT_SHADER_READ_ONLY_EXT;
-//             glSignalSemaphoreEXT(_m_semaphores[eye][1], 0, nullptr, 1, &_m_eye_output_textures[eye], &dst_layout);
-// #endif
         }
 
         glFinish();
@@ -747,7 +729,7 @@ public:
         // Call Hologram
         _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
 
-        // Call swap buffers; when vsync is enabled, this will return to the
+        // Call swap buffers; when vsync is enbled, this will return to the
         // CPU thread once the buffers have been successfully swapped.
         // [[maybe_unused]] time_point time_before_swap = _m_clock->now();
 
