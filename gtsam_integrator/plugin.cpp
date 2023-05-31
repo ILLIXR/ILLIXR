@@ -1,3 +1,9 @@
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <thread>
+
 #include "common/plugin.hpp"
 
 #include "common/data_format.hpp"
@@ -14,8 +20,12 @@
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
-#include <iomanip>
-#include <thread>
+
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include <boost/smart_ptr/make_shared.hpp>
+
+
+#include "third_party/filter.h"
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -29,16 +39,47 @@ public:
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu_cam{sb->get_reader<imu_cam_type>("imu_cam")}
+        , _m_imu_cam{sb->get_reader<imu_cam_type_prof>("imu_cam")}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-        sb->schedule<imu_cam_type>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type> datum, size_t) {
+        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+    {
+        sb->schedule<imu_cam_type_prof>(id, "imu_cam", [&](switchboard::ptr<const imu_cam_type_prof> datum, size_t) {
             callback(datum);
         });
+        std::cout << "Data path = " << data_path << std::endl;
+        if (!std::filesystem::exists(data_path)) {
+            if (!std::filesystem::create_directory(data_path)) {
+                std::cerr << "Failed to create data directory.";
+            }
+        }
+        raw_csv.open(data_path + "/imu_raw.csv");
+        filtered_csv.open(data_path + "/imu_filtered.csv");
+        put_to_consume_delay_csv.open(data_path + "/imu_integrator_input_delay.csv");
+
+        const double frequency = 200;
+        const double mincutoff = 10;
+        const double beta = 1;
+        const double dcutoff = 10;
+
+        for (int i = 0; i < 8; ++i) {
+            filters.emplace_back(frequency,
+                                 Eigen::Array<double, 3, 1>{mincutoff, mincutoff, mincutoff},
+                                 Eigen::Array<double, 3, 1>{beta, beta, beta},
+                                 Eigen::Array<double, 3, 1>{dcutoff, dcutoff, dcutoff},
+                                 Eigen::Array<double, 3, 1>::Zero(),
+                                 Eigen::Array<double, 3, 1>::Ones(),
+                                 [](auto &in) {
+                                     return in.abs();
+                                 });
+        }
     }
 
-    void callback(switchboard::ptr<const imu_cam_type> datum) {
-        _imu_vec.emplace_back(datum->time, datum->angular_v.cast<double>(), datum->linear_a.cast<double>());
+    void callback(switchboard::ptr<const imu_cam_type_prof> datum) {
+		_imu_vec.emplace_back(
+							  datum->time,
+							  datum->angular_v.cast<double>(),
+							  datum->linear_a.cast<double>()
+							  );
 
         clean_imu_vec(datum->time);
         propagate_imu_values(datum->time);
@@ -46,18 +87,44 @@ public:
         RAC_ERRNO_MSG("gtsam_integrator");
     }
 
+    // virtual void stop() override {
+    //     std::cout << "gtsam_integrator destructor\n";
+    //     for (size_t i = 0; i < filtered_poses.size(); i++) {
+    //         pose_type p = filtered_poses[i];
+    //         filtered_csv << p.sensor_time.time_since_epoch().count() << "," << 
+    //                         p.position.x() << "," <<
+    //                         p.position.y() << "," << 
+    //                         p.position.z() << "," << 
+    //                         p.orientation.w() << "," <<
+    //                         p.orientation.x() << "," <<
+    //                         p.orientation.y() << "," <<
+    //                         p.orientation.z() << std::endl;
+    //     }
+    // }
+
 private:
-    const std::shared_ptr<switchboard>   sb;
+    const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+    std::ofstream raw_csv;
+    std::ofstream filtered_csv;
+    std::vector <one_euro_filter<Eigen::Array<double,3,1>, double>> filters;
+    bool has_prev = false;
+    Eigen::Matrix<double, 3, 1> prev_euler_angles;
+
+	std::ofstream put_to_consume_delay_csv;
+
+    const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<RelativeClock> _m_clock;
 
     // IMU Data, Sequence Flag, and State Vars Needed
-    switchboard::reader<imu_cam_type>         _m_imu_cam;
+    switchboard::reader<imu_cam_type_prof> _m_imu_cam;
     switchboard::reader<imu_integrator_input> _m_imu_integrator_input;
 
     // Write IMU Biases for PP
     switchboard::writer<imu_raw_type> _m_imu_raw;
 
     std::vector<imu_type> _imu_vec;
+
+    // std::vector<pose_type> filtered_poses;
 
     [[maybe_unused]] time_point last_cam_time;
     duration                    last_imu_offset;
@@ -152,11 +219,12 @@ private:
     }
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-    void propagate_imu_values(time_point real_time) {
-        auto input_values = _m_imu_integrator_input.get_ro_nullable();
-        if (input_values == nullptr) {
-            return;
-        }
+	void propagate_imu_values(time_point real_time) {
+		auto input_values = _m_imu_integrator_input.get_ro_nullable();
+
+		if (input_values == nullptr) {
+			return;
+		}
 
 #ifndef NDEBUG
         if (input_values->last_cam_integration_time > last_cam_time) {
@@ -179,8 +247,12 @@ private:
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
-        time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
-        time_point time_end   = input_values->t_offset + real_time;
+        // long int now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        // double msec_delay = (now - input_values->timestamp);
+        // put_to_consume_delay_csv << msec_delay << std::endl;
+
+		time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
+		time_point time_end = input_values->t_offset + real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
@@ -208,18 +280,93 @@ private:
         gtsam::Pose3    out_pose   = navstate_k.pose();
 
 #ifndef NDEBUG
-        std::cout << "Base Position (x, y, z) = " << input_values->position(0) << ", " << input_values->position(1) << ", "
+        std::cout << "Base Position (x, y, z) = "
+                  << input_values->position(0) << ", "
+                  << input_values->position(1) << ", "
                   << input_values->position(2) << std::endl;
 
-        std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
+        std::cout << "New  Position (x, y, z) = "
+                  << out_pose.x() << ", "
+                  << out_pose.y() << ", "
+                  << out_pose.z() << std::endl;
 #endif
 
-        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(),
-                                                                      bias.gyroscope(), bias.accelerometer(),
-                                                                      out_pose.translation(),             /// Position
-                                                                      navstate_k.velocity(),              /// Velocity
-                                                                      out_pose.rotation().toQuaternion(), /// Eigen Quat
-                                                                      real_time}));
+        auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
+
+        // raw_csv << std::fixed << real_time.time_since_epoch().count() << ","
+        //         << out_pose.x() << ","
+        //         << out_pose.y() << ","
+        //         << out_pose.z() << ","
+        //         << out_pose.rotation().toQuaternion().w() << ","
+        //         << out_pose.rotation().toQuaternion().x() << ","
+        //         << out_pose.rotation().toQuaternion().y() << ","
+        //         << out_pose.rotation().toQuaternion().z() << std::endl;
+
+        // auto to_dregrees = [](double radians) -> double {
+        //     return radians * 180 / M_PI;
+        // };
+
+        auto original_quaternion = out_pose.rotation().toQuaternion();
+        Eigen::Matrix<double, 3, 1> rotation_angles = original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
+        Eigen::Matrix<double, 3, 1> filtered_sins = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_angles{atan2(filtered_sins[0], filtered_cosines[0]),
+                                                    atan2(filtered_sins[1], filtered_cosines[1]),
+                                                    atan2(filtered_sins[2], filtered_cosines[2])};
+
+        if (has_prev && (abs(rotation_angles[0] - prev_euler_angles[0]) > M_PI / 2 || abs(rotation_angles[1] - prev_euler_angles[1]) > M_PI / 2 ||
+            abs(rotation_angles[2] - prev_euler_angles[2]) > M_PI / 2)) {
+            filters[6].clear();
+            filters[7].clear();
+            // std::cout << "clear filter" << std::endl;
+//            std::cout << "roll " << to_dregrees(rotation_angles[0]) << " pitch " << to_dregrees(rotation_angles[1]) << " yaw "
+//                      << to_dregrees(rotation_angles[2]) << "  --->  "
+//                      << "filtered roll " << to_dregrees(filtered_angles[0]) << " filtered pitch " << to_dregrees(filtered_angles[1]) << " filtered yaw "
+//                      << to_dregrees(filtered_angles[2]) << std::endl;
+
+            filtered_sins = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
+            filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
+            filtered_angles = {atan2(filtered_sins[0], filtered_cosines[0]),
+                            atan2(filtered_sins[1], filtered_cosines[1]),
+                            atan2(filtered_sins[2], filtered_cosines[2])};
+        } else {
+            has_prev = true;
+        }
+
+        prev_euler_angles = std::move(rotation_angles);
+
+        __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX())
+                * Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY())
+                * Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
+
+        auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
+
+        // Eigen::Vector3d filtered_pos_ori = filtered_pos;
+        // Eigen::Quaterniond new_quaternion_ori = new_quaternion;
+        // filtered_poses.push_back(pose_type(real_time, filtered_pos.cast<float>(), new_quaternion.cast<float>()));
+
+        filtered_csv << std::fixed << real_time.time_since_epoch().count() << ","
+                     << filtered_pos.x() << ","
+                     << filtered_pos.y() << ","
+                     << filtered_pos.z() << ","
+                     << new_quaternion.w() << ","
+                     << new_quaternion.x() << ","
+                     << new_quaternion.y() << ","
+                     << new_quaternion.z() << std::endl;
+
+        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+                imu_raw_type {
+                    prev_bias.gyroscope(),
+                    prev_bias.accelerometer(),
+                    bias.gyroscope(),
+                    bias.accelerometer(),
+                    filtered_pos,             /// Position
+                    filters[5](navstate_k.velocity().array(), seconds_since_epoch),              /// Velocity
+                    new_quaternion, /// Eigen Quat
+                    real_time
+                }
+        ));
+
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

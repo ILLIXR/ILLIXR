@@ -23,6 +23,9 @@
 #include <thread>
 #include <vector>
 
+#include <filesystem>
+#include <fstream>
+
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
@@ -621,6 +624,7 @@ public:
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
         const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+        
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -656,8 +660,8 @@ public:
         GLuint   query        = 0;
         GLuint64 elapsed_time = 0;
 
-        glGenQueries(1, &query);
-        glBeginQuery(GL_TIME_ELAPSED, query);
+        // glGenQueries(1, &query);
+        // glBeginQuery(GL_TIME_ELAPSED, query);
 
         // Loop over each eye.
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
@@ -719,7 +723,7 @@ public:
         }
 
         glFinish();
-        glEndQuery(GL_TIME_ELAPSED);
+        // glEndQuery(GL_TIME_ELAPSED);
 
         std::cout << "TIMEWARP COMPLETE" << std::endl;
 

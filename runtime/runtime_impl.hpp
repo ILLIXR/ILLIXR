@@ -14,6 +14,7 @@
 #include <cassert>
 #include <cerrno>
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 using namespace ILLIXR;
@@ -85,19 +86,23 @@ public:
 
     virtual void stop() override {
         pb.lookup_impl<Stoplight>()->signal_should_stop();
+        std::cout << "Signaled stop\n";
         // After this point, threads may exit their main loops
         // They still have destructors and still have to be joined.
 
         pb.lookup_impl<switchboard>()->stop();
+        std::cout << "Stopped switchboard\n";
         // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
         for (const std::unique_ptr<plugin>& plugin : plugins) {
+            std::cout << "Stopping " << plugin->get_name() << "\n";
             plugin->stop();
             // Each plugin gets joined in its stop
         }
 
         // Tell runtime::wait() that it can return
         pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
+        std::cout << "Signaled shutdown complete\n";
     }
 
     virtual ~runtime_impl() override {

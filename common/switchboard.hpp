@@ -398,7 +398,8 @@ private:
             // Write on _m_subscriptions.
             // Must acquire unique state on _m_subscriptions_lock
             const std::unique_lock lock{_m_subscriptions_lock};
-            _m_subscriptions.clear();
+            // _m_subscriptions.clear();
+            std::cout << _m_name << " stopped\n";
         }
     };
 
@@ -608,7 +609,9 @@ public:
      */
     void stop() {
         const std::shared_lock lock{_m_registry_lock};
+        std::cout << "The number of topics " << _m_registry.size() << std::endl;
         for (auto& pair : _m_registry) {
+            std::cout << "Stopping " << pair.first << std::endl;
             pair.second.stop();
         }
     }

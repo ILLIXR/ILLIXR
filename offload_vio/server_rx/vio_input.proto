@@ -14,12 +14,16 @@ message IMUCamData
   Vec3 angular_vel = 2;
   Vec3 linear_accel = 3;
 
-  int32 rows = 4;
-  int32 cols = 5;
+  int32 img0_size = 4;
+  int32 img1_size = 5;
   bytes img0_data = 6;
   bytes img1_data = 7;
 }
 
 message IMUCamVec {
   repeated IMUCamData imu_cam_data = 1;
+  fixed64 real_timestamp = 2;
+  fixed64 dataset_timestamp = 3;
+  int32 frame_id = 4;
+  fixed64 cam_time = 5;
 }

@@ -1,1 +1,9 @@
-app: /home/jebbly/Desktop/ILLIXR/local/xrgears/build/src/xrgears
+app:
+  src_path:
+    git_repo : https://gitlab.freedesktop.org/monado/demos/openxr-simple-example
+    version  : master
+  # bin_subpath: Materials_VR.x86_64
+  bin_subpath: Sponza_VR.x86_64
+  # bin_subpath: Platformer_VR.x86_64
+  # bin_subpath: demo_VR.x86_64
+config: {}

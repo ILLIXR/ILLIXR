@@ -40,7 +40,7 @@ cache_path.mkdir(parents=True, exist_ok=True)
 # Environment variables for configuring the GPU
 env_gpu : Mapping[str, str] = dict(
     __GL_MaxFramesAllowed="1", # Double buffer framebuffer
-    __GL_SYNC_TO_VBLANK="1",   # Block on vsync
+    __GL_SYNC_TO_VBLANK="0",   # Block on vsync
 )
 
 
@@ -210,11 +210,13 @@ def load_monado(config: Mapping[str, Any]) -> None:
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    # data_path = pathify(config["data"], root_dir, root_dir / os.getenv("ILLIXR_APP"), True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
     build_runtime(config, "so", illixr_monado = True)
+    run_duration = config["action"].get("ILLIXR_RUN_DURATION")
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
         plugin_config.update(ILLIXR_MONADO="ON")
@@ -229,6 +231,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     env_monado: Mapping[str, str] = dict(
         ILLIXR_DATA=str(data_path),
+        # ILLIXR_DATA=os.getenv("ILLIXR_DATASET"),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
         XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado-dev.json")),
@@ -236,6 +239,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
     )
+    # print(os.getenv("ILLIXR_DATASET"))
 
     ## For CMake
     monado_build_opts: Mapping[str, str] = dict(
@@ -423,3 +427,4 @@ if __name__ == "__main__":
         run_config(Path(config_path))
 
     main()
+    

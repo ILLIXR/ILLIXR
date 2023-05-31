@@ -11,6 +11,10 @@
 #include <optional>
 #include <string>
 
+#include <opencv/cv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 typedef unsigned long long ullong;
 
 typedef struct {
@@ -25,6 +29,10 @@ public:
 
     std::unique_ptr<cv::Mat> load() const {
         auto img = std::unique_ptr<cv::Mat>{new cv::Mat{cv::imread(_m_path, cv::IMREAD_GRAYSCALE)}};
+        // std::cout << "img path " << _m_path << "\n";
+        // std::cout << "cam0 size width " << (*img).rows << "height " << (*img).cols << "\n";
+        // cv::imshow("cam0", *img);
+        // cv::waitKey(1);
         assert(!img->empty());
         return img;
     }

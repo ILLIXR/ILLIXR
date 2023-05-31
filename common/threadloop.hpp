@@ -176,7 +176,7 @@ protected:
         return _m_terminate.load();
     }
 
-private:
+public:
     std::atomic<bool>                _m_terminate{false};
     std::thread                      _m_thread;
     std::shared_ptr<const Stoplight> _m_stoplight;
