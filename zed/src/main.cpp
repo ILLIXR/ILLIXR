@@ -73,7 +73,7 @@ public:
         , _m_cam_type{sb->get_writer<cam_type>("cam_type")}
         , zedm{zedm_}
         , image_size{zedm->getCameraInformation().camera_configuration.resolution} {
-        runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
+        // runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
         imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
         imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
