@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/optional.hpp>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -23,38 +22,22 @@ struct cam_type : switchboard::event {
     time_point time;
     cv::Mat    img0;
     cv::Mat    img1;
-
-    cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
-        : time{_time}
-        , img0{_img0}
-        , img1{_img1} { }
 };
 
 struct imu_type : switchboard::event {
     time_point      time;
     Eigen::Vector3d angular_v;
     Eigen::Vector3d linear_a;
-
-    imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
-        : time{time_}
-        , angular_v{angular_v_}
-        , linear_a{linear_a_} { }
 };
 
-class rgb_depth_type : public switchboard::event {
+struct rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
     cv::Mat                     rgb;
     cv::Mat                     depth;
-
-public:
-    rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
-        : time{_time}
-        , rgb{_rgb}
-        , depth{_depth} { }
 };
 
 // Values needed to initialize the IMU integrator
-typedef struct {
+struct imu_params {
     double                      gyro_noise;
     double                      acc_noise;
     double                      gyro_walk;
@@ -62,7 +45,7 @@ typedef struct {
     Eigen::Matrix<double, 3, 1> n_gravity;
     double                      imu_integration_sigma;
     double                      nominal_rate;
-} imu_params;
+};
 
 // IMU biases, initialization params, and slow pose needed by the IMU integrator
 struct imu_integrator_input : public switchboard::event {
@@ -75,18 +58,6 @@ struct imu_integrator_input : public switchboard::event {
     Eigen::Matrix<double, 3, 1> position;
     Eigen::Matrix<double, 3, 1> velocity;
     Eigen::Quaterniond          quat;
-
-    imu_integrator_input(time_point last_cam_integration_time_, duration t_offset_, imu_params params_,
-                         Eigen::Vector3d biasAcc_, Eigen::Vector3d biasGyro_, Eigen::Matrix<double, 3, 1> position_,
-                         Eigen::Matrix<double, 3, 1> velocity_, Eigen::Quaterniond quat_)
-        : last_cam_integration_time{last_cam_integration_time_}
-        , t_offset{t_offset_}
-        , params{params_}
-        , biasAcc{biasAcc_}
-        , biasGyro{biasGyro_}
-        , position{position_}
-        , velocity{velocity_}
-        , quat{quat_} { }
 };
 
 // Output of the IMU integrator to be used by pose prediction
@@ -102,18 +73,6 @@ struct imu_raw_type : public switchboard::event {
     Eigen::Matrix<double, 3, 1> vel;
     Eigen::Quaterniond          quat;
     time_point                  imu_time;
-
-    imu_raw_type(Eigen::Matrix<double, 3, 1> w_hat_, Eigen::Matrix<double, 3, 1> a_hat_, Eigen::Matrix<double, 3, 1> w_hat2_,
-                 Eigen::Matrix<double, 3, 1> a_hat2_, Eigen::Matrix<double, 3, 1> pos_, Eigen::Matrix<double, 3, 1> vel_,
-                 Eigen::Quaterniond quat_, time_point imu_time_)
-        : w_hat{w_hat_}
-        , a_hat{a_hat_}
-        , w_hat2{w_hat2_}
-        , a_hat2{a_hat2_}
-        , pos{pos_}
-        , vel{vel_}
-        , quat{quat_}
-        , imu_time{imu_time_} { }
 };
 
 struct pose_type : public switchboard::event {
@@ -132,11 +91,11 @@ struct pose_type : public switchboard::event {
         , orientation{orientation_} { }
 };
 
-typedef struct {
+struct  fast_pose_type {
     pose_type  pose;
     time_point predict_computed_time; // Time at which the prediction was computed
     time_point predict_target_time;   // Time that prediction targeted.
-} fast_pose_type;
+};
 
 // Using arrays as a swapchain
 // Array of left eyes, array of right eyes
