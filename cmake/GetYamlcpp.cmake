@@ -1,7 +1,7 @@
 pkg_check_modules(yaml-cpp QUIET yaml-cpp)
 
 if(NOT yaml-cpp_FOUND)
-    EXTERNALPROJECT_ADD(yaml-cpp
+    EXTERNALPROJECT_ADD(cpp-yaml
             GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
             GIT_TAG 0579ae3d976091d7d664aa9d2527e0d0cff25763
             PREFIX ${CMAKE_BINARY_DIR}/_deps/yaml-cpp
@@ -11,5 +11,5 @@ if(NOT yaml-cpp_FOUND)
     set(yaml-cpp_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
     set(yaml-cpp_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)
     set(yaml-cpp_LIBRARIES yaml-cpp)
-    add_dependencies(main${ILLIXR_BUILD_SUFFIX}.exe yaml-cpp)
+    add_dependencies(main${ILLIXR_BUILD_SUFFIX}.exe cpp-yaml)
 endif()

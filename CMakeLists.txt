@@ -284,7 +284,7 @@ if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
 endif()
 
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs ${yaml-cpp_LINK_LIBRARIES})
+target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${OpenCV_LIBRARIES} dl pthread stdc++fs ${yaml-cpp_LIBRARIES})
 
 # set any plugins that are being built
 foreach(ITEM IN LISTS PLUGIN_LIST)
