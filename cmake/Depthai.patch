@@ -1,0 +1,10 @@
+--- include/depthai/xlink/XLinkStream.hpp.orig	2023-06-12 13:06:27.810917424 -0500
++++ include/depthai/xlink/XLinkStream.hpp	2023-06-12 13:06:31.794930697 -0500
+@@ -13,6 +13,7 @@
+ #include <unordered_map>
+ #include <utility>
+ #include <vector>
++#include <stdexcept>
+ 
+ // libraries
+ #include <XLink/XLinkPublicDefines.h>
