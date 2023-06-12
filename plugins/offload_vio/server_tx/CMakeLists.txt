@@ -12,7 +12,7 @@ set(protobuf_files
     ${CMAKE_CURRENT_SOURCE_DIR}/vio_output.proto
 )
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 if(eCAL_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} eCAL_ext)

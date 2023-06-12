@@ -22,21 +22,21 @@ the name of your plugin.
 6
 7   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
 8
-9   target_include_directories(${PLUGIN_NAME} PRIVATE${ILLIXR_SOURCE_DIR})
+9   target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
 10
 11  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 12
 13  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 ```
 
-| Line # | Notes                                                                                                                                                                                                |
-|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1-3    | Specify the source code files individually, we discourage using  ` GLOB `  or  ` GLOB_RECURSE ` to generate a list of files as these functions do not always notice when files change.               |
-| 5      | Put the plugin name into a variable (will also be the name of the library).                                                                                                                          |
-| 7      | Tell the system we are building a shared library with the name  ` PLUGIN_NAME ` from the specified source files.                                                                                     |
-| 9      | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR_SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are. |
-| 11     | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                        |
-| 13     | Add the install directive. This should not need to change.                                                                                                                                           |
+| Line # | Notes                                                                                                                                                                                                        |
+|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1-3    | Specify the source code files individually, we discourage using  ` GLOB `  or  ` GLOB_RECURSE ` to generate a list of files as these functions do not always notice when files change.                       |
+| 5      | Put the plugin name into a variable (will also be the name of the library).                                                                                                                                  |
+| 7      | Tell the system we are building a shared library with the name  ` PLUGIN_NAME ` from the specified source files.                                                                                             |
+| 9      | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR_SOURCE_DIR/include` in this, as this is where plugin.hpp and other ILLIXR common headers are. |
+| 11     | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                |
+| 13     | Add the install directive. This should not need to change.                                                                                                                                                   |
 
 ### More Complex Example
 In this example the plugin has external dependencies provided by OS repos, specifically glfw3, x11, glew, glu, opencv, and eigen3.
@@ -55,7 +55,7 @@ In this example the plugin has external dependencies provided by OS repos, speci
 12      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 13  endif()
 14
-15  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${Eigen3_INCLUDE_DIRS})
+15  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
 16  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} dl pthread)
 17  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 18
@@ -105,7 +105,7 @@ In this example the plugin has dependencies provided by OS repos, and a third pa
 16      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 17  endif()
 18
-19  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR} ${Eigen3_INCLUDE_DIRS} ${Plotter_INCLUDE_DIRS})
+19  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Plotter_INCLUDE_DIRS})
 20  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} ${Plotter_LIBRARIES} dl pthread)
 21  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 22
