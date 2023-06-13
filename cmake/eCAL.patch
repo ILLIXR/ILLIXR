@@ -1,5 +1,5 @@
---- CMakeLists.txt.orig	2023-05-16 13:27:43.881006966 -0500
-+++ CMakeLists.txt	2023-05-16 13:28:47.097147684 -0500
+--- thirdparty/cmake_functions/CMakeLists.txt.orig	2023-05-16 13:27:43.881006966 -0500
++++ thirdparty/cmake_functions/CMakeLists.txt	2023-05-16 13:28:47.097147684 -0500
 @@ -8,7 +8,7 @@
  # Variable definitions
  set(cmake_functions_install_cmake_dir   cmake)
