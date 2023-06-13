@@ -1,4 +1,4 @@
-get_external(DepthAI)
+get_external_for_plugin(DepthAI)
 
 set(PLUGIN_NAME plugin.depthai${ILLIXR_BUILD_SUFFIX})
 

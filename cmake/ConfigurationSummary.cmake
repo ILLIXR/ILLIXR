@@ -49,6 +49,8 @@ report_value("CMake build tool" "${CMAKE_BUILD_TOOL}")
 report_value("Build type" "${CMAKE_BUILD_TYPE}")
 report_value("C compilation flags" "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}}")
 report_value("C++ compilation flags" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}}")
+
+# ------------------------- External Libraries ---------------------------------
 message(STATUS "External Libraries")
 foreach(ITEM IN LISTS EXTERNAL_LIBRARIES)
     if(${ITEM}_EXTERNAL)
@@ -60,6 +62,8 @@ endforeach()
 if(BUILDING_OPENCV)
     report_value("OpenCV" "Download and Install")
 endif()
+
+# ------------------------- Plugins --------------------------------------------
 message(STATUS "Build Plugins")
 set(GROUP_LINE "")
 if(BUILD_GROUP)

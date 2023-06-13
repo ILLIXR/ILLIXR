@@ -1,4 +1,4 @@
-get_external(eCAL)
+get_external_for_plugin(eCAL)
 find_package(Protobuf REQUIRED)
 add_subdirectory(device_rx)
 add_subdirectory(device_tx)

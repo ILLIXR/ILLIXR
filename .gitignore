@@ -19,3 +19,5 @@ deps
 cmake-build*
 
 runner/runner/__pycache__/
+
+illixr.yaml

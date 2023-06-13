@@ -279,6 +279,17 @@ macro(get_external proj)
     include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
 endmacro()
 
+macro(get_external_for_plugin proj)
+    list(APPEND EXTERNAL_LIBRARIES "${proj}")
+    set(${proj}_EXTERNAL No PARENT_SCOPE)
+    set(${proj}_DEP_STR "" PARENT_SCOPE)
+    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
+    set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
+    set(${proj}_EXTERNAL ${${proj}_EXTERNAL} PARENT_SCOPE)
+    set(${proj}_DEP_STR ${${proj}_DEP_STR} PARENT_SCOPE)
+endmacro()
+
+
 if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
     get_external(GTSAM)
 endif()
