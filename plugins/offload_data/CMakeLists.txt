@@ -1,7 +1,14 @@
 
 set(PLUGIN_NAME plugin.offload_data${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/plugin.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/error_util.hpp
+        ../../include/illixr/global_module_defs.hpp
+        ../../include/illixr/phonebook.hpp
+        ../../include/illixr/switchboard.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)

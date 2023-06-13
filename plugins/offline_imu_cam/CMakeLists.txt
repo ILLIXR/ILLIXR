@@ -3,6 +3,12 @@ set(PLUGIN_NAME plugin.offline_imu_cam${ILLIXR_BUILD_SUFFIX})
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         csv_iterator.hpp
         data_loading.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/global_module_defs.hpp
+        ../../include/illixr/relative_clock.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
+        ../../include/illixr/error_util.hpp
         )
 
 if(BUILD_OPENCV)

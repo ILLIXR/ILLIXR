@@ -5,7 +5,26 @@ set(DEBUGVIEW_SOURCES plugin.cpp
         imgui/imgui_draw.cpp
         imgui/imgui_impl_glfw.cpp
         imgui/imgui_impl_opengl3.cpp
-        imgui/imgui_widgets.cpp)
+        imgui/imgui_widgets.cpp
+        imgui/imconfig.h
+        imgui/imgui.h
+        imgui/imgui_impl_glfw.h
+        imgui/imgui_impl_opengl3.h
+        imgui/imgui_internal.h
+        imgui/imstb_rectpack.h
+        imgui/imstb_textedit.h
+        imgui/imstb_truetype.h
+        shaders/demo_shader.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/error_util.hpp
+        ../../include/illixr/gl_util/obj.hpp
+        ../../include/illixr/global_module_defs.hpp
+        ../../include/illixr/math_util.hpp
+        ../../include/illixr/pose_prediction.hpp
+        ../../include/illixr/shader_util.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
+        )
 
 set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 

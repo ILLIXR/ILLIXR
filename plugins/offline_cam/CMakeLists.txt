@@ -2,6 +2,14 @@ set(PLUGIN_NAME plugin.offline_cam${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         data_loading.hpp
+        ../../include/illixr/plugin.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/phonebook.hpp
+        ../../include/illixr/pose_prediction.hpp
+        ../../include/illixr/relative_clock.hpp
+        ../../include/illixr/threadloop.hpp
+        ../../include/illixr/csv_iterator.hpp
+        ../../include/illixr/data_format.hpp
         )
 
 if(BUILD_OPENCV)

@@ -1,6 +1,10 @@
 set(PLUGIN_NAME plugin.record_imu_cam${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/plugin.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/switchboard.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)

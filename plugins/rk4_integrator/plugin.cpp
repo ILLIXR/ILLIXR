@@ -4,7 +4,6 @@
 #include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <chrono>

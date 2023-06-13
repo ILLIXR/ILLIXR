@@ -2,6 +2,13 @@ set(PLUGIN_NAME plugin.offline_imu${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         data_loading.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/managed_thread.hpp
+        ../../include/illixr/relative_clock.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
+        ../../include/illixr/csv_iterator.hpp
+        ../../include/illixr/data_format.hpp
         )
 
 if(BUILD_OPENCV)

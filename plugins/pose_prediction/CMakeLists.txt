@@ -1,6 +1,11 @@
 set(PLUGIN_NAME plugin.pose_prediction${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/plugin.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/phonebook.hpp
+        ../../include/illixr/pose_prediction.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)

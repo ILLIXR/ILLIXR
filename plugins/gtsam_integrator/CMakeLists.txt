@@ -1,6 +1,11 @@
 set(PLUGIN_NAME plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/plugin.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/switchboard.hpp
+        )
+
 if(NOT GTSAM_FOUND)
     add_dependencies(${PLUGIN_NAME} gtsam)
 endif()

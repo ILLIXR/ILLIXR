@@ -2,7 +2,12 @@ get_external_for_plugin(DepthAI)
 
 set(PLUGIN_NAME plugin.depthai${ILLIXR_BUILD_SUFFIX})
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/relative_clock.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
+        )
 add_definitions(-Wno-format-extra-args)
 
 if(BUILD_OPENCV)

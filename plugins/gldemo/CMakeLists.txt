@@ -3,6 +3,16 @@ set(PLUGIN_NAME plugin.gldemo${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         shaders/demo_shader.hpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/error_util.hpp
+        ../../include/illixr/extended_window.hpp
+        ../../include/illixr/gl_util/obj.hpp
+        ../../include/illixr/global_module_defs.hpp
+        ../../include/illixr/math_util.hpp
+        ../../include/illixr/pose_prediction.hpp
+        ../../include/illixr/shader_util.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
         )
 
 if(BUILD_OPENCV)

@@ -3,7 +3,11 @@ set(PLUGIN_NAME plugin.realsense${ILLIXR_BUILD_SUFFIX})
 find_package(realsense2 REQUIRED)
 find_package(realsense2-gl REQUIRED)
 
-add_library(${PLUGIN_NAME} SHARED plugin.cpp)
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
+        )
 
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
