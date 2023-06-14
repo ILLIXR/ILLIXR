@@ -1,5 +1,8 @@
+# module to build and install the ground_truth_slam ILLIXR plugin
+
 set(PLUGIN_NAME plugin.ground_truth_slam${ILLIXR_BUILD_SUFFIX})
 
+# source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         csv_iterator.hpp
         data_loading.hpp
@@ -9,6 +12,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/threadloop.hpp
         )
 
+# if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()

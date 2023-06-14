@@ -1,4 +1,10 @@
+# module to build and install the debugview ILLIXR plugin
+
 find_package(glfw3 REQUIRED)
+
+set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
+
+# source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp
         imgui/imgui.cpp
         imgui/imgui_demo.cpp
@@ -26,10 +32,9 @@ set(DEBUGVIEW_SOURCES plugin.cpp
         ../../include/illixr/threadloop.hpp
         )
 
-set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
-
 add_library(${PLUGIN_NAME} SHARED ${DEBUGVIEW_SOURCES})
 
+# if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()

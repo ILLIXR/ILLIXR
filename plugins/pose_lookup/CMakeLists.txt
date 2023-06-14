@@ -1,5 +1,8 @@
+# module to build and install the pose_lookup ILLIXR plugin
+
 set(PLUGIN_NAME plugin.pose_lookup${ILLIXR_BUILD_SUFFIX})
 
+# source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         data_loading.hpp
         utils.hpp
@@ -12,6 +15,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/pose_prediction.hpp
         )
 
+# if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()

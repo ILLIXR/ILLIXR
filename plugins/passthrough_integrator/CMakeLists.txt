@@ -1,5 +1,8 @@
+# module to build and install the passthrough_integrator ILLIXR plugin
+
 set(PLUGIN_NAME plugin.passthrough_integrator${ILLIXR_BUILD_SUFFIX})
 
+# source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/plugin.hpp
         ../../include/illixr/data_format.hpp
@@ -7,6 +10,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/switchboard.hpp
         )
 
+# if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()

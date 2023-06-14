@@ -1,9 +1,12 @@
+# module to build and install the timewarp_gl ILLIXR plugin
+
 if(NOT DEFINED BUILDING_ILLIXR)
     message(ERROR "The timewarp_gl plugin cannot be built outside of the main ILLIXR build")
 endif()
 
 set(PLUGIN_NAME plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX})
 
+# source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         shaders/basic_shader.hpp
         shaders/timewarp_shader.hpp
@@ -20,6 +23,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/threadloop.hpp
         )
 
+# if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()

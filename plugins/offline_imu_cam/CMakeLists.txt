@@ -1,5 +1,8 @@
+# module to build and install the offline_imu_cam ILLIXR plugin
+
 set(PLUGIN_NAME plugin.offline_imu_cam${ILLIXR_BUILD_SUFFIX})
 
+# source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         csv_iterator.hpp
         data_loading.hpp
@@ -11,6 +14,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/error_util.hpp
         )
 
+# if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)
     add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()
