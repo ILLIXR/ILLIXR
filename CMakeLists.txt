@@ -26,7 +26,9 @@
 ########################################################################################
 
 cmake_minimum_required(VERSION 3.16)
+
 set(CMAKE_VERBOSE_MAKEFILE True)
+
 if (POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
 endif (POLICY CMP0048)
@@ -39,9 +41,6 @@ if (POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)
 endif()
 
-#if (POLICY CMP0127)
-#    cmake_policy(SET CMP0127 NEW)
-#endif()
 set(BUILDING_ILLIXR Yes)
 
 set(PACKAGE_NAME "ILLIXR")
@@ -51,6 +50,7 @@ set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
+# determine the Linux vendor, if it is CentOS then we must rebuild OpenCV to include all the needed components
 if(UNIX)
     execute_process(COMMAND bash -c "awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '\n' | tr -d '\"'" OUTPUT_VARIABLE OS_FLAVOR)
     message("Found OS: ${OS_FLAVOR}")
@@ -71,16 +71,17 @@ endif()
 include(CMakeDependentOption)
 include(ExternalProject)
 
-project(ILLIXR VERSION 1.0.0)
+project(ILLIXR VERSION 3.2.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
 set(ILLIXR_BUILD_SUFFIX "")
 if(CMAKE_BUILD_TYPE STREQUAL "")
-    message("REL")
+    message(NOTICE "No build type specified, defaulting to Release")
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+# the plugin library names will depend on the build type
 string(TOLOWER "${CMAKE_BUILD_TYPE}" lower_type)
 if(lower_type MATCHES "debug")
     set(ILLIXR_BUILD_SUFFIX ".dgb")
@@ -89,31 +90,37 @@ elseif(lower_type MATCHES "release")
 elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -fPIC")
+
+# set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake")
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 set(BUILD_GROUP "NONE" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, NONE")
 option(DATA_FILE "The data file to get" "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
+# full list of available local plugins
 set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data offload_vio passthrough_integrator pose_lookup pose_prediction realsense record_imu_cam rk4_integrator timewarp_gl)
+# full list of available external plugins
 set(EXT_PLUGIN_LIST Kimera_vio AudioPipeline OpenXR_APP ORB_SLAM Monado)
 set(YAML_FILE "" CACHE STRING "Yaml file to specify build parameters")
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
+
 # plugins, only exposed if BUILD_GROUP is OFF
 foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     option("${ITEM_UPPER}" "" OFF)
-    #cmake_dependent_option(${ITEM_UPPER} "" OFF "BUILD_GROUP STREQUAL \"NONE\"" OFF)
 endforeach()
 
 set(CORE_PLUGINS OFF)
 set(RT_SLAM_PLUGINS OFF)
 
+# read the provided yaml file for arguments/options
 if(YAML_FILE)
     file(STRINGS ${YAML_FILE} YAML_LINES)
     foreach(SITEM IN LISTS YAML_LINES)
@@ -197,20 +204,38 @@ endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY runtime)
-
 add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 add_executable(main${ILLIXR_BUILD_SUFFIX}.exe src/main.cpp)
 
 ##############
 # dependencies
 ##############
+set(EXTERNAL_LIBRARIES "")
+
+# check for 3rd party dependencies that are not parts of OS repos
+macro(get_external proj)
+    list(APPEND EXTERNAL_LIBRARIES "${proj}")
+    set(${proj}_EXTERNAL No)
+    set(${proj}_DEP_STR "")
+    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
+endmacro()
+
+# check for 3rd party dependencies that are not parts of OS repos, but from included plugins
+macro(get_external_for_plugin proj)
+    list(APPEND EXTERNAL_LIBRARIES "${proj}")
+    set(${proj}_EXTERNAL No PARENT_SCOPE)
+    set(${proj}_DEP_STR "" PARENT_SCOPE)
+    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
+    set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
+    set(${proj}_EXTERNAL ${${proj}_EXTERNAL} PARENT_SCOPE)
+    set(${proj}_DEP_STR ${${proj}_DEP_STR} PARENT_SCOPE)
+endmacro()
 
 ##############
 # yaml parser
 ##############
 
-include(cmake/GetYamlcpp.cmake)
+get_external(Yamlcpp)
 
 ##############
 # opencv
@@ -269,26 +294,6 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
-set(EXTERNAL_LIBRARIES "")
-
-# check for 3rd party dependencies that are not parts of OS repos
-macro(get_external proj)
-    list(APPEND EXTERNAL_LIBRARIES "${proj}")
-    set(${proj}_EXTERNAL No)
-    set(${proj}_DEP_STR "")
-    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
-endmacro()
-
-macro(get_external_for_plugin proj)
-    list(APPEND EXTERNAL_LIBRARIES "${proj}")
-    set(${proj}_EXTERNAL No PARENT_SCOPE)
-    set(${proj}_DEP_STR "" PARENT_SCOPE)
-    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
-    set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
-    set(${proj}_EXTERNAL ${${proj}_EXTERNAL} PARENT_SCOPE)
-    set(${proj}_DEP_STR ${${proj}_DEP_STR} PARENT_SCOPE)
-endmacro()
-
 
 if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
     get_external(GTSAM)
@@ -305,12 +310,12 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     endif()
 endforeach()
 
-# external plugins
+# external plugin dependecnies
 if(USE_KIMERA_VIO OR USE_ORB_SLAM)
     get_external(DBoW2)
 endif()
 
-
+# external plugins
 foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     if(${ITEM_UPPER})
@@ -323,7 +328,7 @@ file(DOWNLOAD ${DATA_FILE} data.zip SHOW_PROGRESS)
 install(TARGETS main${ILLIXR_BUILD_SUFFIX}.exe DESTINATION bin)
 
 include(cmake/ConfigurationSummary.cmake)
-#get_cmake_property(_variableNames VARIABLES)
-#foreach (_variableName ${_variableNames})
-#    message(STATUS "${_variableName}=${${_variableName}}")
-#endforeach()
+get_cmake_property(_variableNames VARIABLES)
+foreach (_variableName ${_variableNames})
+    message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
