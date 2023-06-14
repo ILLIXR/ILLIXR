@@ -13,7 +13,7 @@ else()
             GIT_TAG 4ff860838726a5e8ac0cbe59128c58a8f6143c6c
             PREFIX ${CMAKE_BINARY_DIR}/_deps/depthai
             DEPENDS ${OpenCV_DEP_STR}
-            PATCH_COMMAND patch -p0 include/depthai/xlink/XLinkStream.hpp < ${PROJECT_SOURCE_DIR}/cmake/Depthai.patch
+            PATCH_COMMAND ${PROJECT_SOURCE_DIR}/cmake/do_patch.sh -p ${PROJECT_SOURCE_DIR}/cmake/Depthai.patch
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release ${DEPTHAI_CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_LIBDIR=lib
             )
     set(DepthAI_EXTERNAL Yes)
