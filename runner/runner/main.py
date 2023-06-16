@@ -361,11 +361,15 @@ def make_docs(config: Mapping[str, Any]) -> None:
         capture_output=False,
     )
 
+def load_dataset(config: Mapping[str, Any]) -> None:
+    pass
+
 
 actions = {
     "native": load_native,
     "monado": load_monado,
     "tests": load_tests,
+    "dataset": load_dataset,
     "clean": clean_project,
     "docs": make_docs,
 }
