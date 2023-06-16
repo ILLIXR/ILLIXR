@@ -1,0 +1,20 @@
+delimiter: ' '
+
+root_path: ...
+
+image:
+  # timestamp units aren't mentioned, so the default of nanoseconds
+  # will be used.
+  - rgb:
+      # VCU only has one RGB image stream
+      - path: color
+  - depth:
+      # ... and one depth image stream
+      - path: depth
+
+ground_truth:
+	- pose:
+    # datatype isn't mentioned, so the default of `double` will be used.
+    # timestamp units aren't mentioned, so the default of nanoseconds
+    # will be used.
+	  - path: lab_simple1_gt.csv
