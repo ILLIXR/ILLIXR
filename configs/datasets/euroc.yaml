@@ -1,1 +1,24 @@
+delimiter: ','
 
+root_path: ...
+
+imu:
+  - datatype: float
+  - timestamp_units: nanoseconds
+  - format: ang_vel, lin_accel
+  - path: imu0/data.csv
+
+image:
+  # timestamp units aren't mentioned, so the default of nanoseconds
+  # will be used.
+  - grayscale:
+      # EuRoC has two grayscale image streams
+      - path: cam0/data
+      - path: cam1/data
+
+ground_truth:
+  - datatype: float
+  - timestamp_units: nanoseconds
+  - path: state_groundtruth_estimate0/data.csv
+  - format: 3, 4, 3, 3, 3
+  - name: position, orientation, linear_velocity, angular_velocity, linear_acceleration
