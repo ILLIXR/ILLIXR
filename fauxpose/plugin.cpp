@@ -29,7 +29,9 @@
 /*                                                                           */
 
 #include "common/plugin.hpp"
+
 #include "common/pose_prediction.hpp"
+
 #include <cstring>
 
 using namespace ILLIXR;
@@ -42,9 +44,8 @@ public:
     faux_pose_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    {
-        char    *env_input;        /* pointer to environment variable input */
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
+        char* env_input; /* pointer to environment variable input */
 #ifndef NDEBUG
         std::cout << "[fauxpose] Starting Service\n";
 #endif
@@ -54,8 +55,8 @@ public:
 
         // Set default faux-pose parameters
         center_location = Eigen::Vector3f{0.0, 1.5, 0.0};
-        period = 0.5;
-        amplitude = 2.0;
+        period          = 0.5;
+        amplitude       = 2.0;
 
         // Adjust parameters based on environment variables
         if ((env_input = getenv("FAUXPOSE_PERIOD"))) {
@@ -66,13 +67,15 @@ public:
         }
         if ((env_input = getenv("FAUXPOSE_CENTER"))) {
             center_location[0] = atof(env_input);
-            center_location[1] = atof(strchrnul(env_input, ',')+1);
-            center_location[2] = atof(strchrnul(strchrnul(env_input, ',')+1, ',')+1);
+            center_location[1] = atof(strchrnul(env_input, ',') + 1);
+            center_location[2] = atof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1);
         }
 #ifndef NDEBUG
         std::cout << "[fauxpose] Period is " << period << "\n";
         std::cout << "[fauxpose] Amplitude is " << amplitude << "\n";
-        std::cout << "[fauxpose] Center is " << center_location[0] << ", " << center_location[1] << ", " << center_location[2] << ", " << "\n";
+        std::cout << "[fauxpose] Center is " << center_location[0] << ", " << center_location[1] << ", " << center_location[2]
+                  << ", "
+                  << "\n";
 #endif
     }
 
@@ -112,10 +115,10 @@ public:
     }
 
     // ********************************************************************
-    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override{
-        std::unique_lock lock {offset_mutex};
+    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+        std::unique_lock   lock{offset_mutex};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-        offset = raw_o.inverse();
+        offset                   = raw_o.inverse();
     }
 
     // ********************************************************************
@@ -123,10 +126,10 @@ public:
         // In actual pose prediction, the semantics are that we return
         //   the pose for next vsync, not now.
         switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
-        if (vsync_estimate == nullptr) {                                                             
-            return get_fast_pose(_m_clock->now());                                                   
-        } else {                                                                                     
-            return get_fast_pose(*vsync_estimate);                                                   
+        if (vsync_estimate == nullptr) {
+            return get_fast_pose(_m_clock->now());
+        } else {
+            return get_fast_pose(*vsync_estimate);
         }
     }
 
@@ -137,51 +140,46 @@ public:
     //
     // NOTE: time_type == std::chrono::system_clock::time_point
     fast_pose_type get_fast_pose(time_point time) const override {
-        pose_type simulated_pose;    /* The algorithmically calculated 6-DOF pose */
-        double    sim_time;          /* sim_time is used to regulate a consistent movement */
+        pose_type simulated_pose; /* The algorithmically calculated 6-DOF pose */
+        double    sim_time;       /* sim_time is used to regulate a consistent movement */
 
         RAC_ERRNO_MSG("[fauxpose] at start of _p_one_iteration");
 
         // Calculate simulation time from start of execution
         std::chrono::nanoseconds elapsed_time;
         elapsed_time = time - sim_start_time;
-        sim_time = elapsed_time.count() * 0.000000001;
+        sim_time     = elapsed_time.count() * 0.000000001;
 
         // Calculate new pose values
         //   Pose values are calculated from the passage of time to maintain consistency */
-        simulated_pose.position[0] = center_location[0] + amplitude * sin(sim_time * period);    // X
-        simulated_pose.position[1] = center_location[1];                                         // Y
-        simulated_pose.position[2] = center_location[2] + amplitude * cos(sim_time * period);    // Z
+        simulated_pose.position[0] = center_location[0] + amplitude * sin(sim_time * period); // X
+        simulated_pose.position[1] = center_location[1];                                      // Y
+        simulated_pose.position[2] = center_location[2] + amplitude * cos(sim_time * period); // Z
         simulated_pose.orientation = Eigen::Quaternionf(0.707, 0.0, 0.707, 0.0); // (W,X,Y,Z) Facing forward (90deg about Y)
 
         // Return the new pose
 #ifndef NDEBUG
         std::cout << "[fauxpose] Returning pose\n";
 #endif
-        return fast_pose_type{
-            .pose = simulated_pose,
-            .predict_computed_time = _m_clock->now(),
-            .predict_target_time = time
-        };
-
+        return fast_pose_type{.pose = simulated_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = time};
     }
 
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
+    // ---------------------------------------------------------------------
+    // ---------------------------------------------------------------------
+    // ---------------------------------------------------------------------
 private:
-    const std::shared_ptr<switchboard>           sb;
-    const std::shared_ptr<const RelativeClock>   _m_clock;
-    switchboard::reader<switchboard::event_wrapper<time_point>>    _m_vsync_estimate;
-    mutable Eigen::Quaternionf                   offset {Eigen::Quaternionf::Identity()};
-    mutable std::shared_mutex                    offset_mutex;
+    const std::shared_ptr<switchboard>                          sb;
+    const std::shared_ptr<const RelativeClock>                  _m_clock;
+    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
+    mutable Eigen::Quaternionf                                  offset{Eigen::Quaternionf::Identity()};
+    mutable std::shared_mutex                                   offset_mutex;
 
-    time_point        sim_start_time;        /* Store the initial time to calculate a known runtime */
+    time_point sim_start_time; /* Store the initial time to calculate a known runtime */
 
     // Parameters
-    double            period;            /* The period of the circular movment (in seconds) */
-    double            amplitude;        /* The amplitude of the circular movment (in meters) */
-    Eigen::Vector3f   center_location;    /* The location around which the tracking should orbit */
+    double          period;          /* The period of the circular movment (in seconds) */
+    double          amplitude;       /* The amplitude of the circular movment (in meters) */
+    Eigen::Vector3f center_location; /* The location around which the tracking should orbit */
 };
 
 // ********************************************************************
@@ -191,13 +189,10 @@ public:
     // ********************************************************************
     /* Constructor: Provide handles to faux_pose */
     faux_pose(const std::string& name, phonebook* pb)
-        : plugin{name, pb}
-    {
+        : plugin{name, pb} {
         // "pose_prediction" is a class inheriting from "phonebook::service"
         //   It is described in "pose_prediction.hpp"
-        pb->register_impl<pose_prediction>(
-            std::static_pointer_cast<pose_prediction>(std::make_shared<faux_pose_impl>(pb))
-        );
+        pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<faux_pose_impl>(pb)));
 #ifndef NDEBUG
         printf("[fauxpose] Starting Plugin\n");
 #endif
@@ -213,4 +208,3 @@ public:
 
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(faux_pose);
-
