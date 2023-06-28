@@ -1,5 +1,7 @@
 #pragma once
 
+#include "spdlog/spdlog.h"
+
 #include <cassert>
 #include <iostream>
 #include <memory>
@@ -98,7 +100,7 @@ public:
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
 #ifndef NDEBUG
-        std::cerr << "Register " << type_index.name() << std::endl;
+	spdlog::debug("Register {}", type_index.name());
 #endif
         assert(_m_registry.count(type_index) == 0);
         _m_registry.try_emplace(type_index, impl);

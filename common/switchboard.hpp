@@ -1,6 +1,7 @@
 #pragma once
 
 #include "phonebook.hpp"
+#include "spdlog/spdlog.h"
 
 #include <array>
 #include <atomic>
@@ -186,7 +187,9 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-            std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
+	    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] Thread %t %v");
+	    spdlog::debug("start");
+	    spdlog::set_pattern("%+");
 #endif
         }
 
@@ -608,7 +611,7 @@ private:
         }
 
 #ifndef NDEBUG
-        std::cerr << "Creating: " << topic_name << " for " << typeid(specific_event).name() << std::endl;
+	spdlog::debug("Creating: {} for {}", topic_name, typeid(specific_event).name());
 #endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{_m_registry_lock};
