@@ -467,16 +467,15 @@ public:
         // Make any chanes to orientation of the output below
         // For the dataset were currently using (EuRoC), the output orientation acts as though
         // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
-        Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.z(), -pose.orientation.x(), pose.orientation.y());
+        Eigen::Quaternionf raw_o = apply_offset(pose.orientation);
 
-        swapped_pose.orientation = raw_o;
+        swapped_pose.orientation = Eigen::Quaternionf(raw_o.w(), -raw_o.z(), -raw_o.x(), raw_o.y());
         swapped_pose.sensor_time = pose.sensor_time;
 
         return swapped_pose;
     }
 
 	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
-        std::shared_lock lock {offset_mutex};
         return orientation * pp->get_offset().inverse();
     }
 
@@ -508,15 +507,6 @@ public:
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
         const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
-        pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
-        pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
-                      << uncorrected_pose.position.x() << ","
-                      << uncorrected_pose.position.y() << ","
-                      << uncorrected_pose.position.z() << ","
-                      << uncorrected_pose.orientation.w() << ","
-                      << uncorrected_pose.orientation.x() << ","
-                      << uncorrected_pose.orientation.y() << ","
-                      << uncorrected_pose.orientation.z() << std::endl;
         
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
@@ -636,8 +626,6 @@ public:
 
         pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
         if (uncorrected_pose.position.x() != 0) {
-            // pred_poses_timestamps.push_back(latest_pose.predict_target_time.time_since_epoch().count());
-            // pred_poses.push_back(uncorrected_pose);
             pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
                       << uncorrected_pose.position.x() << ","
                       << uncorrected_pose.position.y() << ","
