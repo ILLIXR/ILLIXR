@@ -6,6 +6,7 @@
 #include "common/relative_clock.hpp"
 #include "common/threadloop.hpp"
 #include "data_loading.hpp"
+#include "spdlog/spdlog.h"
 
 #include <shared_mutex>
 
@@ -42,9 +43,9 @@ public:
 
         if (after_nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-            std::cerr << "Running out of the dataset! "
-                      << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
+            spdlog::warn("Running out of the dataset! Time {} ({} + {}) after last datum {}",
+			   lookup_time, _m_rtc->now().time_since_epoch().count(), dataset_first_time,
+			   _m_sensor_data.rbegin()->first);
 #endif
             // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
             // to be nearest_row to avoiding sleeping at the end.
@@ -55,8 +56,9 @@ public:
         } else if (after_nearest_row == _m_sensor_data.cbegin()) {
             // Should not happen because lookup_time is bigger than dataset_first_time
 #ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
+            spdlog::warn("Time {} ({} + {}) before first datum {}",
+			    lookup_time, _m_rtc->now().time_since_epoch().count(), dataset_first_time,
+			    _m_sensor_data.cbegin()->first);
 #endif
         } else {
             // Most recent
