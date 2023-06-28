@@ -78,7 +78,7 @@ public:
                          int   ret = dlclose(handle);
                          if ((error = dlerror()) || ret) {
                              const std::string msg_error{"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
-                             std::cerr << "[dynamic_lib] " << msg_error << std::endl;
+			     spdlog::error("[dynamic_lib] {}", msg_error);
                              throw std::runtime_error{msg_error};
                          }
                      }},
