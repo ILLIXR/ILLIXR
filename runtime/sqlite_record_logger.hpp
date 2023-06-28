@@ -128,8 +128,7 @@ public:
             process(record_batch, actual_batch_size);
             post_processed += actual_batch_size;
         }
-        std::cerr << "Drained " << table_name << " (sqlite); " << post_processed << " / " << (processed + post_processed)
-                  << " done post real time" << std::endl;
+	spdlog::info("Drained {} (sqlite); {}/{} done post real time", table_name, post_processed, (processed+post_processed));
     }
 
     void process(const std::vector<record>& record_batch, std::size_t batch_size) {
