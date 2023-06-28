@@ -1,12 +1,10 @@
 #include "common/plugin.hpp"
-
 #include "common/data_format.hpp"
 #include "common/plugin.hpp"
 #include "common/switchboard.hpp"
 
 #include <boost/smart_ptr/make_shared.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
-#include <chrono>
 #include <eigen3/Eigen/Dense>
 #include <gtsam/base/Matrix.h>
 #include <gtsam/base/Vector.h>
@@ -14,12 +12,13 @@
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
+#include <chrono>
 #include <iomanip>
 #include <thread>
-#include <boost/smart_ptr/shared_ptr.hpp>
-#include <boost/smart_ptr/make_shared.hpp>
 #include <filesystem>
 #include <fstream>
+
+#include "third_party/filter.h"
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -73,7 +72,7 @@ public:
 							  );
 
         clean_imu_vec(datum->time);
-        propagate_imu_values(datum->time, datum->dataset_time);
+        propagate_imu_values(datum->time);
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -191,7 +190,7 @@ private:
     }
 
     // Timestamp we are propagating the biases to (new IMU reading time)
-	void propagate_imu_values(time_point real_time, time_point dataset_time) {
+	void propagate_imu_values(time_point real_time) {
 		auto input_values = _m_imu_integrator_input.get_ro_nullable();
 
 		if (input_values == nullptr) {
