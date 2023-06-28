@@ -645,20 +645,6 @@ public:
         return orientation * pp->get_offset().inverse();
     }
 
-    // virtual void stop() override {
-    //     for (size_t i = 0; i < pred_poses_timestamps.size(); i++) {
-    //         pose_type p = pred_poses[i];
-    //         pred_pose_csv << std::fixed << pred_poses_timestamps[i] << ","
-	// 			<< p.position.x() << ","
-	// 			<< p.position.y() << ","
-	// 			<< p.position.z() << ","
-	// 			<< p.orientation.w() << ","
-	// 			<< p.orientation.x() << ","
-	// 			<< p.orientation.y() << ","
-	// 			<< p.orientation.z() << std::endl;
-    //     }
-    // }
-
     virtual void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
 >>>>>>> print uncorrected pose
