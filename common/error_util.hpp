@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global_module_defs.hpp"
+#include "spdlog/spdlog.h"
 
 #include <cerrno>
 #include <cstdlib>
@@ -39,9 +40,9 @@ inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[m
 #ifndef NDEBUG
     if (errno > 0) {
         if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
-            std::cerr << "|| Errno was set: " << errno << " @ " << file << ":" << line << "[" << function << "]" << std::endl;
+            spdlog::error("|| Errno was set: {} @ {}:{} [{}]", errno, file, line, function);
             if (!msg.empty()) {
-                std::cerr << "|> Message: " << msg << std::endl;
+		spdlog::error("|> Message: {}", msg);
             }
         }
         errno = 0;
@@ -56,7 +57,7 @@ inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[m
  * SIGABRT for debugging.
  */
 inline void abort(const std::string& msg = "", [[maybe_unused]] const int error_val = 1) {
-    std::cerr << "** ERROR ** " << msg << std::endl;
+    spdlog::error("** ERROR ** {}", msg);
 #ifndef NDEBUG
     std::abort();
 #else  /// NDEBUG
