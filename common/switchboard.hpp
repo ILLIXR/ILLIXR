@@ -295,7 +295,7 @@ private:
 
     public:
         topic_buffer() {
-            printf("topic buffer created");
+	    spdlog::info("topic buffer created");
         }
 
         void enqueue(ptr<const event>&& this_event) {
