@@ -463,8 +463,8 @@ public:
             : _m_topic{topic_} {
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
-                std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name() << ", but caller used type"
-                          << typeid(specific_event).name() << std::endl;
+		spdlog::error("topic '{}' holds type {}, but caller used type {}", _m_topic.name(), _m_topic.ty().name(),
+				typeid(specific_event).name());
                 abort();
             }
 #endif
@@ -601,8 +601,8 @@ private:
                 topic& topic_ = found->second;
 #ifndef NDEBUG
                 if (typeid(specific_event) != topic_.ty()) {
-                    std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name() << ", but caller used type"
-                              << typeid(specific_event).name() << std::endl;
+		    spdlog::error("topic '{}' holds type {}, but caller used type {}", topic_name, topic_.ty().name(),
+				    typeid(specific_event).name());
                     abort();
                 }
 #endif
