@@ -20,60 +20,26 @@ namespace ILLIXR {
 
 	using ullong = unsigned long long;
 
-	// Data type that combines the IMU and camera data at a certain timestamp.
-	// If there is only IMU data for a certain timestamp, img0 and img1 will be null
-	// time is the current UNIX time where dataset_time is the time read from the csv
-	struct imu_cam_type : public switchboard::event {
+	struct cam_type : switchboard::event {
 		time_point time;
-		Eigen::Vector3f angular_v;
-		Eigen::Vector3f linear_a;
-		std::optional<cv::Mat> img0;
-		std::optional<cv::Mat> img1;
-		imu_cam_type(time_point time_,
-					 Eigen::Vector3f angular_v_,
-					 Eigen::Vector3f linear_a_,
-					 std::optional<cv::Mat> img0_,
-					 std::optional<cv::Mat> img1_)
-			: time{time_}
-			, angular_v{angular_v_}
-			, linear_a{linear_a_}
-			, img0{img0_}
-			, img1{img1_}
-		{ }
+		cv::Mat    img0;
+		cv::Mat    img1;
+
+    cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
+        : time{_time}
+        , img0{_img0}
+        , img1{_img1} { }
 	};
 
-	struct imu_cam_type_prof : public switchboard::event {
-		int frame_id;
-		time_point time;
-		time_point start_time; // Time that the device sent the packet
-		time_point rec_time; // Time the device received the packet
-		time_point dataset_time; // Time from dataset
-		long int created_time; // Time the imu and camera data is put to the switchboard
-		Eigen::Vector3f angular_v;
-		Eigen::Vector3f linear_a;
-		std::optional<cv::Mat> img0;
-		std::optional<cv::Mat> img1;
-		imu_cam_type_prof(int frame_id_,
-					 time_point time_,
-					 time_point start_time_,
-					 time_point rec_time_,
-					 time_point dataset_time_,
-					 long int created_time_,
-					 Eigen::Vector3f angular_v_,
-					 Eigen::Vector3f linear_a_,
-					 std::optional<cv::Mat> img0_,
-					 std::optional<cv::Mat> img1_)
-			: frame_id{frame_id_}
-			, time{time_}
-			, start_time{start_time_}
-			, rec_time{rec_time_}
-			, dataset_time{dataset_time_}
-			, created_time{created_time_} 
+	struct imu_type : switchboard::event {
+		time_point      time;
+		Eigen::Vector3d angular_v;
+		Eigen::Vector3d linear_a;
+
+		imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
+			: time{time_}
 			, angular_v{angular_v_}
-			, linear_a{linear_a_}
-			, img0{img0_}
-			, img1{img1_}
-		{ }
+			, linear_a{linear_a_} { }
 	};
 
 	struct connection_signal : public switchboard::event {
@@ -81,23 +47,6 @@ namespace ILLIXR {
 
 		connection_signal(bool start_)
 			: start{start_}
-		{ }
-	};
-
-	struct imu_type {
-		time_point timestamp;
-		Eigen::Matrix<double, 3, 1> wm;
-		Eigen::Matrix<double, 3, 1> am;
-
-
-		imu_type(
-				time_point timestamp_,
-				Eigen::Matrix<double, 3, 1> wm_,
-				Eigen::Matrix<double, 3, 1> am_
-				)
-			: timestamp{timestamp_}
-			, wm{wm_}
-			, am{am_}
 		{ }
 	};
 
@@ -224,40 +173,6 @@ namespace ILLIXR {
 				  Eigen::Vector3f position_,
 				  Eigen::Quaternionf orientation_)
 			: sensor_time{sensor_time_}
-			, position{position_}
-			, orientation{orientation_}
-		{ }
-	};
-
-	struct pose_type_prof : public switchboard::event {
-		int frame_id;
-		time_point sensor_time; // Recorded time of sensor data ingestion
-		time_point start_time; // Recorded time of transfer start
-		time_point rec_time; // When the server received the packet (in server time)
-		time_point dataset_time; // Sensor time
-		Eigen::Vector3f position;
-		Eigen::Quaternionf orientation;
-		pose_type_prof()
-			: frame_id{0}
-			, sensor_time{time_point{}}
-			, start_time{time_point{}}
-			, rec_time{time_point{}}
-			, dataset_time{time_point{}}
-			, position{Eigen::Vector3f{0, 0, 0}}
-			, orientation{Eigen::Quaternionf{1, 0, 0, 0}}
-		{ }
-		pose_type_prof(int frame_id_,
-				  time_point sensor_time_,
-				  time_point start_time_,
-				  time_point rec_time_,
-				  time_point dataset_time_,
-				  Eigen::Vector3f position_,
-				  Eigen::Quaternionf orientation_)
-			: frame_id{frame_id_}
-			, sensor_time{sensor_time_}
-			, start_time{start_time_}
-			, rec_time{rec_time_}
-			, dataset_time{dataset_time_}
 			, position{position_}
 			, orientation{orientation_}
 		{ }
