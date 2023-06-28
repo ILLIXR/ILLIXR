@@ -6,6 +6,7 @@
 #include "common/data_format.hpp"
 #include "common/switchboard.hpp"
 #include "common/threadloop.hpp"
+#include "spdlog/spdlog.h"
 
 using namespace ILLIXR;
 
@@ -169,11 +170,11 @@ private:
             if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)) {
                 std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE);
 #ifndef NDEBUG
-                std::cout << "Found Product Line: " << product_line << std::endl;
+		spdlog::debug("Found Product Line: {}", product_line);
 #endif
                 if (product_line == "D400") {
 #ifndef NDEBUG
-                    std::cout << "Checking for supported streams" << std::endl;
+		    spdlog::debug("Checking for supported streams");
 #endif
                     std::vector<rs2::sensor> sensors = device.query_sensors();
                     for (rs2::sensor sensor : sensors) {
@@ -192,20 +193,20 @@ private:
                     if (accel_found && gyro_found) {
                         D4XXI_found = true;
 #ifndef NDEBUG
-                        std::cout << "Supported D4XX found!" << std::endl;
+			spdlog::debug("Supported D4XX found!");
 #endif
                     }
                 } else if (product_line == "T200") {
                     T26X_found = true;
 #ifndef NDEBUG
-                    std::cout << "T26X found! " << std::endl;
+		    spdlog::debug("T26X found!");
 #endif
                 }
             }
         }
         if (!T26X_found && !D4XXI_found) {
 #ifndef NDEBUG
-            std::cout << "No supported Realsense device detected!" << std::endl;
+	    spdlog::debug("No supported Realsense device detected!");
 #endif
         }
     }
@@ -220,23 +221,23 @@ private:
             if (D4XXI_found) {
                 cam_select = D4XXI;
 #ifndef NDEBUG
-                std::cout << "Setting cam_select: D4XX" << std::endl;
+		spdlog::debug("Setting cam_select: D4XX");
 #endif
             } else if (T26X_found) {
                 cam_select = T26X;
 #ifndef NDEBUG
-                std::cout << "Setting cam_select: T26X" << std::endl;
+		spdlog::debug("Setting cam_select: T26X");
 #endif
             }
         } else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found) {
             cam_select = D4XXI;
 #ifndef NDEBUG
-            std::cout << "Setting cam_select: D4XX" << std::endl;
+	    spdlog::debug("Setting cam_select: D4XX");
 #endif
         } else if ((realsense_cam.compare("T26X") == 0) && T26X_found) {
             cam_select = T26X;
 #ifndef NDEBUG
-            std::cout << "Setting cam_select: T26X" << std::endl;
+	    spdlog::debug("Setting cam_select: T26X");
 #endif
         }
         if (cam_select == UNSUPPORTED) {

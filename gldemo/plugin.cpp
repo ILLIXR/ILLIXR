@@ -13,6 +13,7 @@
 #include "common/switchboard.hpp"
 #include "common/threadloop.hpp"
 #include "shaders/demo_shader.hpp"
+#include "spdlog/spdlog.h"
 
 #include <array>
 #include <chrono>
@@ -59,7 +60,7 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
-            std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
+	    spdlog::debug("[GL DEMO APP] First vysnc is in {} ms", vsync_in);
         }
 #endif
 
@@ -80,7 +81,7 @@ public:
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
                 double wait_in = duration2double<std::milli>(wait_time - now);
-                std::cout << "\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in " << wait_in << "ms" << std::endl;
+		spdlog::debug("[GL DEMO APP] Waiting until next vsync, in {} ms", wait_in);
             }
 #endif
             // Perform the sleep.
@@ -90,7 +91,7 @@ public:
         } else {
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
-                std::cout << "\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately." << std::endl;
+		spdlog::debug("[GL DEMO APP] We haven't rendered yet, rendering immediately");
             }
 #endif
         }
@@ -176,8 +177,7 @@ public:
         const double fps              = 1.0 / frame_duration_s;
 
         if (log_count > LOG_PERIOD) {
-            std::cout << "\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer " << which_buffer
-                      << ", frametime: " << frame_duration_s << ", FPS: " << fps << std::endl;
+	    spdlog::debug("[GL DEMO APP] Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s, fps);
         }
 #endif
         lastTime = _m_clock->now();
@@ -321,7 +321,7 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-        std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+	spdlog::debug("[GL DEMO APP] Demo app shader program is program {}", demoShaderProgram);
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

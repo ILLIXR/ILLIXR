@@ -16,6 +16,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "shaders/demo_shader.hpp"
+#include "spdlog/spdlog.h"
 
 #include <chrono>
 #include <cmath>
@@ -476,7 +477,7 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-        std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+	spdlog::debug("Demo app shader program is program {}", demoShaderProgram);
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

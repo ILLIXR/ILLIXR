@@ -5,6 +5,7 @@
 #include "common/global_module_defs.hpp"
 #include "common/phonebook.hpp"
 #include "common/switchboard.hpp"
+#include "spdlog/spdlog.h"
 
 #include <boost/filesystem.hpp>
 #include <fstream>
@@ -35,7 +36,7 @@ public:
 
     void callback(switchboard::ptr<const texture_pose> datum) {
 #ifndef NDEBUG
-        std::cout << "Image index: " << img_idx++ << std::endl;
+	spdlog::debug("Image index: {}", img_idx++);
 #endif
         /// A texture pose is present. Store it back to our container.
         _offload_data_container.push_back(datum);

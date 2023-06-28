@@ -10,6 +10,7 @@
 #include "common/relative_clock.hpp"
 #include "common/switchboard.hpp"
 #include "common/threadloop.hpp"
+#include "spdlog/spdlog.h"
 
 using namespace ILLIXR;
 
@@ -24,7 +25,7 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
         , device{createCameraPipeline()} {
 #ifndef NDEBUG
-        std::cout << "Depthai pipeline started" << std::endl;
+	spdlog::debug("Depthai pipeline started");
 #endif
         colorQueue                             = device.getOutputQueue("preview", 1, false);
         depthQueue                             = device.getOutputQueue("depth", 1, false);
@@ -191,7 +192,7 @@ private:
 
     dai::Pipeline createCameraPipeline() {
 #ifndef NDEBUG
-        std::cout << "Depthai creating pipeline" << std::endl;
+	spdlog::debug("Depthai creating pipeline");
 #endif
         dai::Pipeline p;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../error_util.hpp"
+#include "spdlog/spdlog.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "lib/tiny_obj_loader.h"
@@ -83,7 +84,8 @@ public:
         bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_dir_term.c_str());
         if (!warn.empty()) {
 #ifndef NDEBUG
-            std::cout << "[OBJ WARN] " << warn << std::endl;
+	
+	    spdlog::warn("[OBJ] {}", warn);
 #endif
         }
         if (!err.empty()) {
@@ -101,8 +103,8 @@ public:
             for (size_t mat_idx = 0; mat_idx < materials.size(); mat_idx++) {
                 tinyobj::material_t* mp = &materials[mat_idx];
 #ifndef NDEBUG
-                std::cout << "[OBJ INFO] Loading material named: " << materials[mat_idx].name << std::endl;
-                std::cout << "[OBJ INFO] Material texture name: " << materials[mat_idx].diffuse_texname << std::endl;
+		spdlog::debug("[OBJ] Loading material named: {}", materials[mat_idx].name);
+		spdlog::debug("[OBJ] Material texture name: {}", materials[mat_idx].diffuse_texname);
 #endif
                 if (mp->diffuse_texname.length() > 0) {
                     // If we haven't loaded the texture yet...
@@ -114,13 +116,12 @@ public:
 
                         if (texture_data == nullptr) {
 #ifndef NDEBUG
-                            std::cout << "[OBJ TEXTURE ERROR] Loading of " << filename << "failed." << std::endl;
+			    spdlog::warn("[OBJ TEXTURE] Loading of {} failed.", filename);
 #endif
                             successfully_loaded_texture = false;
                         } else {
 #ifndef NDEBUG
-                            std::cout << "[OBJ TEXTURE INFO] Loaded " << filename << ": Resolution (" << x << ", " << y << ")"
-                                      << std::endl;
+			    spdlog::debug("[OBJ TEXTURE] Loaded  {}: Resolution ({}, {})", filename, x, y);
 #endif
                             GLuint texture_handle;
 
@@ -158,8 +159,8 @@ public:
             // Iterate over "shapes" (objects in .obj file)
             for (size_t shape_idx = 0; shape_idx < shapes.size(); shape_idx++) {
 #ifndef NDEBUG
-                std::cout << "[OBJ INFO] Num verts in shape: " << shapes[shape_idx].mesh.indices.size() << std::endl;
-                std::cout << "[OBJ INFO] Num tris in shape: " << shapes[shape_idx].mesh.indices.size() / 3 << std::endl;
+		spdlog::debug("[OBJ] Num verts in shape: {}", shapes[shape_idx].mesh.indices.size());
+		spdlog::debug("[OBJ] Num tris in shape: {}", shapes[shape_idx].mesh.indices.size()/3);
 #endif
                 // Unified buffer for pos + uv. Interleaving vertex data (good practice!)
                 std::vector<vertex_t> buffer;

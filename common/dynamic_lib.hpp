@@ -2,6 +2,7 @@
 
 #include "error_util.hpp"
 #include "global_module_defs.hpp"
+#include "spdlog/spdlog.h"
 
 #include <algorithm>
 #include <dlfcn.h>
@@ -46,7 +47,7 @@ public:
     ~dynamic_lib() {
 #ifndef NDEBUG
         if (!_m_lib_path.empty()) {
-            std::cout << "[dynamic_lib] Destructing library : " << _m_lib_path << std::endl;
+	    spdlog::debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
         }
 #endif /// NDEBUG
     }

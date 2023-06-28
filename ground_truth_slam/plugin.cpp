@@ -4,6 +4,7 @@
 #include "common/switchboard.hpp"
 #include "common/threadloop.hpp"
 #include "data_loading.hpp"
+#include "spdlog/spdlog.h"
 
 #include <chrono>
 #include <iomanip>
@@ -44,7 +45,7 @@ public:
         auto   it           = _m_sensor_data.find(rounded_time);
         if (it == _m_sensor_data.end()) {
 #ifndef NDEBUG
-            std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+	    spdlog::debug("True pose not found at timestamp: {}", rounded_time);
 #endif
             return;
         }
@@ -53,12 +54,9 @@ public:
             _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
 #ifndef NDEBUG
-        std::cout << "Ground truth pose was found at T: " << rounded_time << " | "
-                  << "Pos: (" << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2]
-                  << ")"
-                  << " | "
-                  << "Quat: (" << true_pose->orientation.w() << ", " << true_pose->orientation.x() << ", "
-                  << true_pose->orientation.y() << "," << true_pose->orientation.z() << ")" << std::endl;
+	spdlog::debug("Ground truth pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
+			rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
+			true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(), true_pose->orientation.z());
 #endif
 
         /// Ground truth position offset is the first ground truth position
