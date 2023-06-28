@@ -89,12 +89,12 @@ public:
 #endif
         }
         if (!err.empty()) {
-            std::cerr << "[OBJ ERROR] " << err << std::endl;
+            spdlog::error("[OBJ] {}", err);
             successfully_loaded_model = false;
             ILLIXR::abort();
         }
         if (!success) {
-            std::cerr << "[OBJ FATAL] Loading of " << obj_filename << " failed." << std::endl;
+            spdlog::error("[OBJ FATAL] Loading of {} failed.", obj_filename);	   
             successfully_loaded_model = false;
             ILLIXR::abort();
         } else {

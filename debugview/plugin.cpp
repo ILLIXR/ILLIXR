@@ -53,7 +53,8 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
  * @brief Callback function to handle glfw errors
  */
 static void glfw_error_callback(int error, const char* description) {
-    std::cerr << "|| glfw error_callback: " << error << std::endl << "|> " << description << std::endl;
+    spdlog::error("|| glfw error_callback: {}", error);
+    spdlog::error("|> {}", description);
     ILLIXR::abort();
 }
 
@@ -436,7 +437,7 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
         if (gui_window == nullptr) {
-            std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
+	    spdlog::error("Debug view couldn't create window {}:{}", __FILE__, __LINE__);
             ILLIXR::abort();
         }
 
@@ -454,7 +455,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            std::cerr << "[debugview] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
+	    spdlog::error("[debugview] GLEW Error: {}", glewGetErrorString(glew_err));
             glfwDestroyWindow(gui_window);
             ILLIXR::abort("[debugview] Failed to initialize GLEW");
         }

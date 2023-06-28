@@ -297,7 +297,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            std::cerr << "[gldemo] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
+	    spdlog::error("[gldemo] GLEW Error: {}", glewGetErrorString(glew_err));
             ILLIXR::abort("[gldemo] Failed to initialize GLEW");
         }
 
