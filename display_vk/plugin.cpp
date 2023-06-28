@@ -1,4 +1,6 @@
-#include <vulkan/vulkan_core.h>
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 #define VMA_IMPLEMENTATION
 #include "common/vk_util/vulkan_utils.hpp"
 #include "common/vk_util/display_sink.hpp"
@@ -35,6 +37,10 @@ public:
         swapchain_image_views = vkb_swapchain.get_image_views().value();
         swapchain_image_format = vkb_swapchain.image_format;
         swapchain_extent      = vkb_swapchain.extent;
+    }
+
+    void poll_window_events() override {
+        glfwPollEvents();
     }
 
 private:
@@ -76,7 +82,7 @@ private:
         vk_instance  = vkb_instance.instance;
 
         vkb::PhysicalDeviceSelector selector{vkb_instance};
-        if (glfwCreateWindowSurface(vkb_instance.instance, window, nullptr, &vk_surface) != VK_SUCCESS) {
+        if (glfwCreateWindowSurface(vkb_instance.instance, (GLFWwindow*) window, nullptr, &vk_surface) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
         }
 

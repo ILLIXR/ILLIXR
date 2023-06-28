@@ -21,7 +21,7 @@ class timewarp : public render_pass {
 public:
     virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool) = 0;
 
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind) = 0;
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) = 0;
 
 };
 

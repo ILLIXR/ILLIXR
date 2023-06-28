@@ -1,6 +1,4 @@
 #include <cstdint>
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include "third_party/VkBootstrap.h"
 #include "vulkan_utils.hpp"
 
@@ -11,25 +9,31 @@ using namespace ILLIXR;
 
 class display_sink : public phonebook::service {
 public:
-
-    virtual void recreate_swapchain() = 0;
     virtual ~display_sink() { }
 
-    GLFWwindow*              window;
+    // required by timewarp_vk as a service
     VkInstance               vk_instance;
-    VkSurfaceKHR             vk_surface;
     VkPhysicalDevice         vk_physical_device;
     VkDevice                 vk_device;
     VkQueue                  graphics_queue;
-    VkQueue                  present_queue;
     uint32_t                 graphics_queue_family;
+    VkExtent2D               swapchain_extent;
+
+    virtual void poll_window_events() { };
+
+    // addtionally required for native display
+    virtual void recreate_swapchain() { };
+
+    void*              window;
+    VkSurfaceKHR             vk_surface;
+    VkQueue                  present_queue;
     uint32_t                 present_queue_family;
     VkSwapchainKHR           vk_swapchain;
     VkFormat                 swapchain_image_format;
-    VkExtent2D               swapchain_extent;
     std::vector<VkImage>     swapchain_images;
     std::vector<VkImageView> swapchain_image_views;
 
     // optional
     VmaAllocator             vma_allocator;
+    
 };

@@ -157,15 +157,18 @@ public:
         memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
 
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind) override {
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left = true) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
-        for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye][buffer_ind], 0, nullptr);
-            vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-            vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * eye, 0);
-        }
+        // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
+        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye][buffer_ind], 0, nullptr);
+        //     vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        //     vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * eye, 0);
+        // }
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[!left][buffer_ind], 0, nullptr);
+        vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * !left, 0);
     }
 
 private:
@@ -455,25 +458,40 @@ private:
         depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable = VK_FALSE;
 
-        // disable dynamic state, fixed viewport and scissor
-        VkViewport viewport = {};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = ds->swapchain_extent.width;
-        viewport.height = ds->swapchain_extent.height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
+        // use dynamic state instead
+        // VkViewport viewport = {};
+        // viewport.x = 0.0f;
+        // viewport.y = 0.0f;
+        // viewport.width = ds->swapchain_extent.width;
+        // viewport.height = ds->swapchain_extent.height;
+        // viewport.minDepth = 0.0f;
+        // viewport.maxDepth = 1.0f;
 
-        VkRect2D scissor = {};
-        scissor.offset = {0, 0};
-        scissor.extent = ds->swapchain_extent;
+        // VkRect2D scissor = {};
+        // scissor.offset = {0, 0};
+        // scissor.extent = ds->swapchain_extent;
+
+        // VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
+        // viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        // viewportStateCreateInfo.viewportCount = 1;
+        // viewportStateCreateInfo.pViewports = &viewport;
+        // viewportStateCreateInfo.scissorCount = 1;
+        // viewportStateCreateInfo.pScissors = &scissor;
+
+        std::vector<VkDynamicState> dynamicStates = {
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR
+        };
+
+        VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
+        dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+        dynamicStateCreateInfo.pDynamicStates = dynamicStates.data();
 
         VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
         viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportStateCreateInfo.viewportCount = 1;
-        viewportStateCreateInfo.pViewports = &viewport;
-        viewportStateCreateInfo.scissorCount = 1;
-        viewportStateCreateInfo.pScissors = &scissor;
+        viewportStateCreateInfo.pViewports = nullptr;
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -493,7 +511,7 @@ private:
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDepthStencilState = nullptr;
-        pipelineInfo.pDynamicState = nullptr;
+        pipelineInfo.pDynamicState = &dynamicStateCreateInfo;
 
         pipelineInfo.layout = pipeline_layout;
         pipelineInfo.renderPass = render_pass;
@@ -555,8 +573,10 @@ private:
 
                     // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                     // The distortion is handled by the UVs, not the actual mesh coordinates!
-                    distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
+                    // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
+                    distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + ((float) x / hmdInfo.eyeTilesWide));
+                        
+                    // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
                         -(-1.0f +
                          2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *

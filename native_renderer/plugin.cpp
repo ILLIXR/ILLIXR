@@ -67,6 +67,8 @@ public:
     }
 
     void _p_one_iteration() override {
+        ds->poll_window_events();
+
         VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX));
         uint32_t swapchain_image_index;
         auto ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore, VK_NULL_HANDLE, &swapchain_image_index));
@@ -222,8 +224,25 @@ private:
             render_pass_info.pClearValues = &clear_value;
             
             vkCmdBeginRenderPass(timewarp_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-            tw->record_command_buffer(timewarp_command_buffer, 0);
-            vkCmdEndRenderPass(timewarp_command_buffer);
+
+            for (auto eye = 0; eye < 2; eye++) {
+                VkViewport viewport = {};
+                viewport.x = ds->swapchain_extent.width / 2 * eye;
+                viewport.y = 0.0f;
+                viewport.width = ds->swapchain_extent.width;
+                viewport.height = ds->swapchain_extent.height;
+                viewport.minDepth = 0.0f;
+                viewport.maxDepth = 1.0f;
+                vkCmdSetViewport(timewarp_command_buffer, 0, 1, &viewport);
+
+                VkRect2D scissor = {};
+                scissor.offset = {0, 0};
+                scissor.extent = ds->swapchain_extent;
+                vkCmdSetScissor(timewarp_command_buffer, 0, 1, &scissor);
+
+                tw->record_command_buffer(timewarp_command_buffer, 0, eye == 0);
+            }
+            vkCmdEndRenderPass(timewarp_command_buffer);   
         }
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer));
     }
