@@ -101,7 +101,7 @@ private:
     void writeDataToDisk(std::vector<switchboard::ptr<const texture_pose>> _offload_data_container) {
         stbi_flip_vertically_on_write(true);
 
-        std::cout << "Writing offloaded images to disk ... " << std::endl;
+	spdlog::info("Writing offloaded images to disk...");
         img_idx = 0;
         for (auto& container_it : _offload_data_container) {
             // Get collecting time for each frame
