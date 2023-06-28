@@ -24,6 +24,9 @@ public:
 		, _m_true_pose{sb->get_writer<pose_type>("true_pose")}
 		, _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
 		, _m_sensor_data{load_data()}
+		// The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
+		// Therefore we need the IMU dataset_first_time to reproduce the real dataset time. 
+		// TODO: Change the hardcoded number to reading from some configuration variables.
 		, _m_dataset_first_time{1403715273262142976}
 		// vicon1 easy 1403715273262142976
 		// vicon1 medium 1403715523912143104
@@ -106,21 +109,7 @@ public:
 				  << true_pose->orientation.x() << ","
 				  << true_pose->orientation.y() << ","
 				  << true_pose->orientation.z() << std::endl;
-		// true_poses.push_back(pose_type(datum->time, true_pose->position, true_pose->orientation));
 	}
-
-	// virtual void stop() override {
-	// 	for (pose_type p : true_poses) {
-	// 		truth_csv << p.sensor_time.time_since_epoch().count() << ","
-	// 			  << p.position.x() << ","
-	// 			  << p.position.y() << ","
-	// 			  << p.position.z() << ","
-	// 			  << p.orientation.w() << ","
-	// 			  << p.orientation.x() << ","
-	// 			  << p.orientation.y() << ","
-	// 			  << p.orientation.z() << std::endl;
-	// 	}
-	// }
 
 private:
 	const std::shared_ptr<switchboard> sb;
@@ -133,8 +122,6 @@ private:
 
 	const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
 	std::ofstream truth_csv;
-
-	// std::vector<pose_type> true_poses;
 };
 
 PLUGIN_MAIN(ground_truth_slam);
