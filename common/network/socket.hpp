@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <linux/netfilter_ipv4.h>
 #include <chrono>
+#include <netinet/tcp.h>
 
 #include "address.hpp"
 #include "file_descriptor.hpp"
@@ -250,6 +251,17 @@ public:
     TCPSocket( FileDescriptor && fd ) : Socket( std::move( fd ), AF_INET, SOCK_STREAM ) {}
 
     TCPSocket() : Socket( AF_INET, SOCK_STREAM ) {}
+
+    /* enable tcp socket to immediately send data whenever it receives one */
+    void enable_no_delay( void )
+    {
+        setsockopt( IPPROTO_TCP, TCP_NODELAY, int( true ) );
+        // int flag = 1;
+        // if(setsockopt(IPPROTO_TCP , TCP_NODELAY, (char *) & flag, sizeof(flag) ) == -1)
+        // {
+        //     printf("setsockopt TCP_NODELAY failed for client socket\n");
+        // }
+    }
 
     /* mark the socket as listening for incoming connections */
     void listen( const int backlog = 16)
