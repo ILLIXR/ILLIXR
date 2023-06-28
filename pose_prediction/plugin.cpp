@@ -3,6 +3,7 @@
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
+#include "spdlog/spdlog.h"
 
 #include <eigen3/Eigen/Dense>
 #include <filesystem>
@@ -75,7 +76,7 @@ public:
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (imu_raw == nullptr) {
 #ifndef NDEBUG
-            printf("FAST POSE IS SLOW POSE!\n");
+            spdlog::debug("FAST POSE IS SLOW POSE!");
 #endif
             // No imu_raw, return slow_pose
             return fast_pose_type{

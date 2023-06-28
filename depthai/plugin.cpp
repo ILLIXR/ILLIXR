@@ -147,10 +147,10 @@ public:
 
     virtual ~depthai() override {
 #ifndef NDEBUG
-        std::printf("Depthai Destructor: Packets Received %d Published: IMU: %d RGB-D: %d\n", imu_packet, imu_pub, rgbd_pub);
+	spdlog::debug("Depthai Destructor: Packets Received {} Published: IMU {} RGB-D: {}", imu_packet, imu_pub, rgbd_pub);
         auto dur = std::chrono::steady_clock::now() - first_packet_time;
-        std::printf("Time since first packet: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
-        std::printf("Depthai RGB: %d Left: %d Right: %d Depth: %d All: %d\n", rgb_count, left_count, right_count, depth_count,
+	spdlog::debug("Time since first packet: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
+	spdlog::debug("Depthai RGB: {} Left: {} Right: {} Depth: {} All: {}", rgb_count, left_count, right_count, depth_count,
                     all_count);
 #endif
     }
