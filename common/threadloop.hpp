@@ -4,6 +4,7 @@
 #include "error_util.hpp"
 #include "plugin.hpp"
 #include "stoplight.hpp"
+#include "spdlog/spdlog.h"
 
 #include <algorithm>
 #include <atomic>
@@ -89,7 +90,9 @@ protected:
 private:
     void thread_main() {
         record_coalescer it_log{record_logger_};
-        std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
+	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] thread,%t,%v ");
+	spdlog::info("threadloop,{}",name);	
+	spdlog::set_pattern("%+");
 
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in

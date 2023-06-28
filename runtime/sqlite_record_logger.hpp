@@ -104,7 +104,9 @@ public:
         std::vector<record> record_batch{max_record_batch_size};
         std::size_t         actual_batch_size;
 
-        std::cout << "thread," << std::this_thread::get_id() << ",sqlite thread," << table_name << std::endl;
+	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] thread,%t,%v");
+	spdlog::info("sqlite thread,{}",table_name);
+	spdlog::set_pattern("%+");
 
         std::size_t processed = 0;
         while (!terminate.load()) {
