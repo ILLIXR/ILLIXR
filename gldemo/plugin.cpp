@@ -275,7 +275,7 @@ private:
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         // Bind eyebuffer texture
-        std::cout << "About to bind eyebuffer texture, texture handle: " << *texture_handle << std::endl;
+	spdlog::info("About to bind eyebuffer texture, texture handle: {}", *texture_handle);
 
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
         glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
