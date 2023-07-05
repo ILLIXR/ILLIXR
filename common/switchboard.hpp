@@ -203,7 +203,6 @@ private:
         topic_subscription(const std::string& topic_name, plugin_id_t plugin_id,
                            std::function<void(ptr<const event>&&, std::size_t)> callback)
             : _m_topic_name{topic_name}
-            , _m_plugin_id{plugin_id}
             , _m_callback{callback}
             , _m_thread{[this] {
                             this->thread_body();
@@ -215,6 +214,7 @@ private:
                             this->thread_on_stop();
                         }} {
             _m_thread.start();
+	    _m_plugin_id = plugin_id;
         }
 
         /**
