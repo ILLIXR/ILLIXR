@@ -561,9 +561,6 @@ public:
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
 
-        std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
-        std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
-        std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
 
         if (enable_offload) {
             // Read texture image from texture buffer
@@ -576,6 +573,10 @@ public:
         }
 
 #ifndef NDEBUG
+        std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
+        std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
+        std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
+
         if (log_count > LOG_PERIOD) {
             const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
             const double     latency_mtd       = duration2double<std::milli>(imu_to_display);
