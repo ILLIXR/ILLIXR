@@ -13,7 +13,6 @@ endif()
 ExternalProject_Add(Kimera_VIO
         GIT_REPOSITORY https://github.com/ILLIXR/Kimera-VIO.git   # Git repo for source code
         GIT_TAG 129803e0434b12d9fee9c9af4599839b5a19789f          # sha5 hash for specific commit to pull (if there is no specific tag to use)
-        GIT_SUBMODULES_RECURSE TRUE                               # recursively update
         DEPENDS ${KimeraRPGO_DEP_STR} ${DBoW2_DEP_STR} ${GTSAM_DEP_STR} ${opengv_DEP_STR} ${OpenCV_DEP_STR}  # dependencies of this module
         PREFIX ${CMAKE_BINARY_DIR}/_deps/kimera_vio               # the build directory
         #arguments to pass to CMake
