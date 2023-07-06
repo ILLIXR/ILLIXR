@@ -1,19 +1,40 @@
 <html>
 <head>
-<title>ILLIXR Configuration</title>
+    <title>Plugin Selector</title>
+    <link href="css/prism.min.css" rel="stylesheet">
+    <link href="css/code-box-copy.css" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/prism.min.js"></script>
+    <script src="js/clipboard.min.js"></script>
+    <script src="js/code-box-copy.js"></script>
+    <script src="js/modules.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.code-box-copy').codeBoxCopy();
+        });
+    </script>
 </head>
 <body>
+<h1><img src="icon.png"> Installation Instructions</h1>
+<h3>Pick Your OS</h3>
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
+<P>ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+<h3>Pick the ILLIXR plugins you want to use</h3>
 <table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 <P>
-    ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
-<P>
 <div id="notes"></div>
-Package installation:<br>
-<div id="output" style="border: 1px solid black;"></div>
+<h3>Dependency installation:</h3>
+Use the following to install the ILLIXR dependencies:
+<div class="code-box-copy">
+    <button class="code-box-copy__btn" data-clipboard-target="#output" title="Copy"></button>
+    <pre class="language-shell"><code class="language-shell" id="output"></code></pre>
+</div>
+<div id="depinstall"></div>
 <P>
-    Cmake command:<br>
-<div id="cmake" style="border: 1px solid black;"></div>
+<div id="postnotes"></div>
+<h3>Build command:</h3>
+Use the following to build and install ILLIXR. You can specify the install location by giving the path to CMAKE_INSTALL_PREFIX. If you want the default install path then do not add the option to the command line. Note that if your install prefix requires sudo privileges then you will need to run both the make and make install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
+<div id="cmake"></div>
 <script>
     const dependencies = {};
     const plugs = {};
@@ -22,12 +43,18 @@ Package installation:<br>
     var selectedOS = "";
     var selectedOSv = "";
     const plugins = new Set();
+
+    function makeCopyable(code, name) {
+        return "<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#" + name + "\" title=\"Copy\">\n</button>\n<pre class=\"language-shell\">\n<code class=\"language-shell\" id=\"" + name + "\">" + code + "</pre></code>\n</div>\n";
+    }
+
     async function loadModules(){
         // read text from URL location
-        let url = 'https://astrochem.web.illinois.edu/modules.json';
-        await fetch(url)
-            .then(response => response.json())
-            .then(json => {
+        //let url = 'https://astrochem.web.illinois.edu/modules.json';
+        //await fetch(url)
+        //    .then(response => response.json())
+        //    .then(json => {
+        const json = JSON.parse(ILLIXR_modules);
                 for(var os of json.systems) {
                     operatingSystems[os.name] = os.versions;
                 }
@@ -54,24 +81,29 @@ Package installation:<br>
                         groups[grp.name].push(plug);
                     }
                 }
-            });
+            //});
     }
 
     function updateSudo() {
         let sudoLine = "";
         let notes = document.getElementById("notes");
+        let pkgnotes = "";
+        let pkginfo = "";
+        let postnotes = document.getElementById("postnotes");
+        let depinstall = document.getElementById("depinstall");
+
+        notes.innerHTML = "";
+
         if(selectedOS == "Ubuntu") {
-            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev";
-            notes.style.border = "";
-            notes.innerHTML = "";
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev";
+            postnotes.innerHTML = "";
         } else if(selectedOS == "Fedora") {
-            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel";
-            notes.style.border = "";
-            innerHTML = "";
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel";
+            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
         } else {
-            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel";
-            notes.style.border = "1px solid black";
-            notes.innerHTML = "<P>Notes:<br>Centos does not provide a complete version of OpenCV in their repos, in particular the 'viz' component is missing. You will need to install the VTK-devel package and compile OpenCV from source, be sure that the 'viz' component is built.";
+            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel";
+            pkginfo = "Notes:<br>Centos does not provide a complete version of OpenCV in their repos, in particular the 'viz' component is missing. You will need to install the VTK-devel package and the ILLIXR build system will compile OpenCV from source.<P>You may also need to run the following:" + makeCopyable("sudo dnf -y install dnf-plugins-core epel-release\nsudo dnf config-manager --set-enabled crb", "pkgC");
+            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postC") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2C") + "</li></ul>";
         }
 
         for(var m in dependencies) {
@@ -80,12 +112,26 @@ Package installation:<br>
                 checked ||= document.getElementById(p).checked;
             }
             if(checked) {
-                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv];
+                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv].pkg;
+                if(dependencies[m].pkg[selectedOS][selectedOSv].postnotes !== "") {
+                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS][selectedOSv].postnotes;
+                }
+                if(dependencies[m].pkg[selectedOS][selectedOSv].notes !== "") {
+                    if(pkginfo !== "") {
+                        pkginfo += "<P>";
+                    }
+                    pkginfo +=  dependencies[m].pkg[selectedOS][selectedOSv].notes;
+                }
             }
         }
+        if(pkginfo !== "") {
+            notes.innerHTML = "<h3>Notes:</h3>" + pkginfo;
+        }
+        depinstall.innerHTML = pkgnotes;
+
         document.getElementById("output").innerHTML = sudoLine;
 
-        cmakeLine = "cmake ..";
+        cmakeLine = "git clone https://github.com/ILLIXR/ILLIXR\ncd ILLIXR\nmkdir build\ncd build\ncmake .. -DCMAKE_INSTALL_PREFIX=<LOCATION>";
         var group_check = false;
         if(document.getElementById("ALL_plugins").checked) {
             cmakeLine += " -DBUILD_GROUP=ALL";
@@ -106,7 +152,8 @@ Package installation:<br>
                 }
             }
         }
-        document.getElementById("cmake").innerHTML = cmakeLine;
+        cmakeLine += "\nmake\nmake install";
+        document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
 
     }
 
@@ -150,6 +197,7 @@ Package installation:<br>
                 txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "." + ver + "' name='os_choice' value='" + x + "." + ver + "' onclick='updateOS(this.value);'>" + ver;
             }
             let cell = osrow.insertCell(-1);
+            cell.style.verticalAlign = "top";
             cell.innerHTML = txt;
         }
         selectedOS = "Ubuntu";

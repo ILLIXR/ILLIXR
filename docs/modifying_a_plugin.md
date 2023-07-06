@@ -2,7 +2,7 @@
 
 ## Tutorial
 
-This is how you can modify an existing ILLIXR plugin
+This is how you can modify an existing ILLIXR plugin. This example uses the Audio Pipeline plugin, but the steps can be applied to any plugin.
 
 1.  Fork the repository for the component you want to modify into your own repo using the github
     web interface, then pull your repo to your computer. For example, using the Audio Pipeline plugin:
@@ -12,8 +12,8 @@ This is how you can modify an existing ILLIXR plugin
 
         
 
-1.  Modify the associated `cmake/Get<PLUGIN>.cmake`
-    Original
+1.  Modify the associated `cmake/GetAudioPipeline.cmake`
+    original
     ```cmake
     get_external(PortAudio)
     get_external(SpatialAudio)
@@ -30,7 +30,7 @@ This is how you can modify an existing ILLIXR plugin
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS=-L${CMAKE_INSTALL_PREFIX}/lib\ -L${CMAKE_INSTALL_PREFIX}/lib64 -DILLIXR_ROOT=${PROJECT_SOURCE_DIR}/include -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} ${AUDIO_PIPELINE_CMAKE_ARGS}
      )
     ```
-    becomes
+    which becomes `cmake/GetMyAudioPipeline.cmake`
     ```cmake
     get_external(PortAudio)
     get_external(SpatialAudio)
@@ -41,7 +41,7 @@ This is how you can modify an existing ILLIXR plugin
     endif()
     ExternalProject_Add(Audio_Pipeline
         GIT_REPOSITORY https://github.com/<YOUR_USER_NAME>/audio_pipeline.git
-        PREFIX ${CMAKE_BINARY_DIR}/_deps/audio_pipeline
+        PREFIX ${CMAKE_BINARY_DIR}/_deps/myaudio_pipeline
         DEPENDS ${PortAudio_DEP_STR} ${SpatialAudio_DEP_STR} ${OpenCV_DEP_STR}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS=-L${CMAKE_INSTALL_PREFIX}/lib\ -L${CMAKE_INSTALL_PREFIX}/lib64 -DILLIXR_ROOT=${PROJECT_SOURCE_DIR}/include -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} ${AUDIO_PIPELINE_CMAKE_ARGS}
      )

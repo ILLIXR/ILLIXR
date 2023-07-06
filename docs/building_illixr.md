@@ -16,14 +16,15 @@ ILLIXR currently only builds on Linux systems, and has been tested on the follow
 
 Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
 For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
-are not available in the distribution repos.
+are not available in the distribution repos. Full installation instructions are available in the
+[Plugin Selector](install/setup.html). The instructions below are a generalized version.
 
 ## Dependencies
 
-There are several levels of dependencies in ILLIXR: those that are required for any type of build, and those that are
+There are two levels of dependencies in ILLIXR: those that are required for any type of build, and those that are
 required only for specific plugins. 
 
-See the [Plugin Selector](https://astrochem.web.illinois.edu/illixr.html) for a listing on dependencies for each plugin.
+See the [Plugin Selector](install/setup.html) for a listing on dependencies for each plugin, and their installation instructions.
 The following dependencies are required for any build:
 
 Ubuntu
@@ -49,7 +50,7 @@ mkdir build
 cd build
 cmake .. <OPTIONS>
 ```
-You can use the [Plugin Selector](https://astrochem.web.illinois.edu/illixr.html) to generate the CMake options for the
+You can use the [Plugin Selector](install/setup.html) to generate the CMake options for the
 particular plugins you want to use. To install ILLIXR into a non-standard location (e.g. in a user's home directory) 
 specify `-DCMAKE_INSTALL_PREFIX=<INSTALL PATH>`, where INSTALL PATH is the desired install location. Use `-DCMAKE_BUILD_TYPE=<>`
 to specify the build type (choices are `Debug`, `Release`, and `RelWithDebInfo`).
