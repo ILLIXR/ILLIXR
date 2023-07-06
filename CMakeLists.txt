@@ -323,7 +323,7 @@ foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
     endif()
 endforeach()
 
-file(DOWNLOAD ${DATA_FILE} data.zip SHOW_PROGRESS)
+file(DOWNLOAD ${DATA_FILE} ./data.zip SHOW_PROGRESS)
 
 install(TARGETS main${ILLIXR_BUILD_SUFFIX}.exe DESTINATION bin)
 
