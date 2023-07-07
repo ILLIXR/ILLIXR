@@ -36,7 +36,7 @@ public:
 
     void callback(switchboard::ptr<const texture_pose> datum) {
 #ifndef NDEBUG
-	spdlog::debug("Image index: {}", img_idx++);
+	spdlog::get("illixr_file_log")->debug("[OFFLOADDATA] Image index: {}", img_idx++);
 #endif
         /// A texture pose is present. Store it back to our container.
         _offload_data_container.push_back(datum);
@@ -101,7 +101,7 @@ private:
     void writeDataToDisk(std::vector<switchboard::ptr<const texture_pose>> _offload_data_container) {
         stbi_flip_vertically_on_write(true);
 
-	spdlog::info("Writing offloaded images to disk...");
+	spdlog::get("illixr_file_log")->info("[OFFLOADDATA] Writing offloaded images to disk...");
         img_idx = 0;
         for (auto& container_it : _offload_data_container) {
             // Get collecting time for each frame

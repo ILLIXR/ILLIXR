@@ -170,11 +170,11 @@ private:
             if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)) {
                 std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE);
 #ifndef NDEBUG
-		spdlog::debug("Found Product Line: {}", product_line);
+		spdlog::get("illixr_file_log")->debug("[REALSENSE] Found Product Line: {}", product_line);
 #endif
                 if (product_line == "D400") {
 #ifndef NDEBUG
-		    spdlog::debug("Checking for supported streams");
+		    spdlog::get("illixr_file_log")->debug("[REALSENSE] Checking for supported streams");
 #endif
                     std::vector<rs2::sensor> sensors = device.query_sensors();
                     for (rs2::sensor sensor : sensors) {
@@ -193,20 +193,20 @@ private:
                     if (accel_found && gyro_found) {
                         D4XXI_found = true;
 #ifndef NDEBUG
-			spdlog::debug("Supported D4XX found!");
+			spdlog::get("illixr_file_log")->debug("[REALSENSE] Supported D4XX found!");
 #endif
                     }
                 } else if (product_line == "T200") {
                     T26X_found = true;
 #ifndef NDEBUG
-		    spdlog::debug("T26X found!");
+		    spdlog::get("illixr_file_log")->debug("[REALSENSE] T26X found!");
 #endif
                 }
             }
         }
         if (!T26X_found && !D4XXI_found) {
 #ifndef NDEBUG
-	    spdlog::debug("No supported Realsense device detected!");
+	    spdlog::get("illixr_file_log")->debug("[REALSENSE] No supported Realsense device detected!");
 #endif
         }
     }
@@ -221,23 +221,23 @@ private:
             if (D4XXI_found) {
                 cam_select = D4XXI;
 #ifndef NDEBUG
-		spdlog::debug("Setting cam_select: D4XX");
+		spdlog::get("illixr_file_log")->debug("[REALSENSE] Setting cam_select: D4XX");
 #endif
             } else if (T26X_found) {
                 cam_select = T26X;
 #ifndef NDEBUG
-		spdlog::debug("Setting cam_select: T26X");
+		spdlog::get("illixr_file_log")->debug("[REALSENSE] Setting cam_select: T26X");
 #endif
             }
         } else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found) {
             cam_select = D4XXI;
 #ifndef NDEBUG
-	    spdlog::debug("Setting cam_select: D4XX");
+	    spdlog::get("illixr_file_log")->debug("[REALSENSE] Setting cam_select: D4XX");
 #endif
         } else if ((realsense_cam.compare("T26X") == 0) && T26X_found) {
             cam_select = T26X;
 #ifndef NDEBUG
-	    spdlog::debug("Setting cam_select: T26X");
+	    spdlog::get("illixr_file_log")->debug("[REALSENSE] Setting cam_select: T26X");
 #endif
         }
         if (cam_select == UNSUPPORTED) {

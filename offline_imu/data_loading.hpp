@@ -21,7 +21,7 @@ typedef struct {
 static std::map<ullong, sensor_types> load_data() {
     const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
     if (!illixr_data_c_str) {
-	spdlog::error("Please define ILLIXR_DATA");
+	spdlog::get("illixr_file_log")->error("[OFFLINEIMU] Please define ILLIXR_DATA");
         ILLIXR::abort();
     }
     std::string illixr_data = std::string{illixr_data_c_str};
@@ -31,7 +31,7 @@ static std::map<ullong, sensor_types> load_data() {
     const std::string imu0_subpath = "/imu0/data.csv";
     std::ifstream     imu0_file{illixr_data + imu0_subpath};
     if (!imu0_file.good()) {
-	spdlog::error("${ILLIXR_DATA} {0} ({1}{0}) is not a good path",imu0_subpath,illixr_data);
+	spdlog::get("illixr_file_log")->error("[OFFLINEIMU] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path",imu0_subpath,illixr_data);
         ILLIXR::abort();
     }
     for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
