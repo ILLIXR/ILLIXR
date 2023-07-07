@@ -75,6 +75,32 @@ struct imu_raw_type : public switchboard::event {
     time_point                  imu_time;
 };
 
+// TODO: fix this
+class lazy_load_image {
+public:
+    lazy_load_image() { }
+
+    lazy_load_image(const std::string& path)
+        : _m_path(path) {
+#ifndef LAZY
+        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+#endif
+    }
+
+    cv::Mat load() const {
+#ifdef LAZY
+        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+    #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
+#endif
+        assert(!_m_mat.empty());
+        return _m_mat;
+    }
+
+private:
+    std::string _m_path;
+    cv::Mat     _m_mat;
+};
+
 struct pose_type : public switchboard::event {
     time_point         sensor_time; // Recorded time of sensor data ingestion
     Eigen::Vector3f    position;
