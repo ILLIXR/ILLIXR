@@ -835,7 +835,7 @@ public:
 	    spdlog::get("illixr_file_log")->debug("[TIMEWARP] Motion-to-display latency: {} ms", latency_mtd);
 	    spdlog::get("illixr_file_log")->debug("[TIMEWARP] Prediction-to-display latency: {} ms", latency_ptd);
 	    spdlog::get("illixr_file_log")->debug("[TIMEWARP] Render-to-display latency: {} ms", latency_rtd);
-	    spdlog::get("illixr_file_log")->debug("Next swap in: {} ms in the future", timewarp_estimate);
+	    spdlog::get("illixr_file_log")->debug("[TIMEWARP] Next swap in: {} ms in the future", timewarp_estimate);
         }
     #endif
 
