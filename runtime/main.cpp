@@ -2,6 +2,7 @@
 #include "runtime_impl.hpp"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 #include <csignal>
 #include <unistd.h> /// Not portable
@@ -74,7 +75,7 @@ int main(int argc, char* const* argv) {
     /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
     std::signal(SIGILL, sigill_handler);
     std::signal(SIGABRT, sigabrt_handler);
-    logger->set_level(spdlog::level::debug);
+    spdlog::get("illixr_log")->set_level(spdlog::level::debug);
 #endif /// NDEBUG
 
     /// Shutting down method 1: Ctrl+C
@@ -86,11 +87,11 @@ int main(int argc, char* const* argv) {
     const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
-	logger->info("[main] Pre-sleep enabled.");
-	logger->info("[main] PID: {}", pid);
-	logger->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
+	spdlog::get("illixr_log")->info("[main] Pre-sleep enabled.");
+	spdlog::get("illixr_log")->info("[main] PID: {}", pid);
+	spdlog::get("illixr_log")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
         sleep(ILLIXR_PRE_SLEEP_DURATION);
-	logger->info("[main] Resuming...");
+	spdlog::get("illixr_log")->info("[main] Resuming...");
     }
 #endif /// NDEBUG
 

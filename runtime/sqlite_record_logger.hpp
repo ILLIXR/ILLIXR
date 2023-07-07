@@ -105,9 +105,9 @@ public:
         std::vector<record> record_batch{max_record_batch_size};
         std::size_t         actual_batch_size;
 
-	spdlog::get("illixr_file_log")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [sqlite_record_logger] thread %t %v");
-	spdlog::get("illixr_file_log")->info("{}",table_name);
-	spdlog::get("illixr_file_log")->set_pattern("%+");
+	spdlog::get("illixr_log")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [sqlite_record_logger] thread %t %v");
+	spdlog::get("illixr_log")->info("{}",table_name);
+	spdlog::get("illixr_log")->set_pattern("%+");
 
         std::size_t processed = 0;
         while (!terminate.load()) {
@@ -129,7 +129,7 @@ public:
             process(record_batch, actual_batch_size);
             post_processed += actual_batch_size;
         }
-	spdlog::get("illixr_file_log")->info("[sqlite_record_logger] Drained {} (sqlite); {}/{} done post real time", table_name, post_processed, (processed+post_processed));
+	spdlog::get("illixr_log")->info("[sqlite_record_logger] Drained {} (sqlite); {}/{} done post real time", table_name, post_processed, (processed+post_processed));
     }
 
     void process(const std::vector<record>& record_batch, std::size_t batch_size) {

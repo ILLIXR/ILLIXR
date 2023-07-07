@@ -45,7 +45,7 @@ public:
         auto   it           = _m_sensor_data.find(rounded_time);
         if (it == _m_sensor_data.end()) {
 #ifndef NDEBUG
-	    spdlog::get("illixr_file_log")->debug("[GROUNDTRUTHSLAM] True pose not found at timestamp: {}", rounded_time);
+	    spdlog::get("illixr_log")->debug("[GROUNDTRUTHSLAM] True pose not found at timestamp: {}", rounded_time);
 #endif
             return;
         }
@@ -54,7 +54,7 @@ public:
             _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
 #ifndef NDEBUG
-	spdlog::get("illixr_file_log")->debug("[GROUNDTRUTHSLAM] pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
+	spdlog::get("illixr_log")->debug("[GROUNDTRUTHSLAM] pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
 			rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
 			true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(), true_pose->orientation.z());
 #endif

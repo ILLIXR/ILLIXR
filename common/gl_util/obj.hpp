@@ -85,16 +85,16 @@ public:
         if (!warn.empty()) {
 #ifndef NDEBUG
 	
-	    spdlog::get("illixr_file_log")->warn("[obj] {}", warn);
+	    spdlog::get("illixr_log")->warn("[obj] {}", warn);
 #endif
         }
         if (!err.empty()) {
-            spdlog::get("illixr_file_log")->error("[obj] {}", err);
+            spdlog::get("illixr_log")->error("[obj] {}", err);
             successfully_loaded_model = false;
             ILLIXR::abort();
         }
         if (!success) {
-            spdlog::get("illixr_file_log")->error("[obj] Loading of {} failed.", obj_filename);	   
+            spdlog::get("illixr_log")->error("[obj] Loading of {} failed.", obj_filename);	   
             successfully_loaded_model = false;
             ILLIXR::abort();
         } else {
@@ -103,8 +103,8 @@ public:
             for (size_t mat_idx = 0; mat_idx < materials.size(); mat_idx++) {
                 tinyobj::material_t* mp = &materials[mat_idx];
 #ifndef NDEBUG
-		spdlog::get("illixr_file_log")->debug("[obj] Loading material named: {}", materials[mat_idx].name);
-		spdlog::get("illixr_file_log")->debug("[obj] Material texture name: {}", materials[mat_idx].diffuse_texname);
+		spdlog::get("illixr_log")->debug("[obj] Loading material named: {}", materials[mat_idx].name);
+		spdlog::get("illixr_log")->debug("[obj] Material texture name: {}", materials[mat_idx].diffuse_texname);
 #endif
                 if (mp->diffuse_texname.length() > 0) {
                     // If we haven't loaded the texture yet...
@@ -116,12 +116,12 @@ public:
 
                         if (texture_data == nullptr) {
 #ifndef NDEBUG
-			    spdlog::get("illixr_file_log")->warn("[obj TEXTURE] Loading of {} failed.", filename);
+			    spdlog::get("illixr_log")->warn("[obj TEXTURE] Loading of {} failed.", filename);
 #endif
                             successfully_loaded_texture = false;
                         } else {
 #ifndef NDEBUG
-			    spdlog::get("illixr_file_log")->debug("[obj TEXTURE] Loaded  {}: Resolution ({}, {})", filename, x, y);
+			    spdlog::get("illixr_log")->debug("[obj TEXTURE] Loaded  {}: Resolution ({}, {})", filename, x, y);
 #endif
                             GLuint texture_handle;
 
@@ -159,8 +159,8 @@ public:
             // Iterate over "shapes" (objects in .obj file)
             for (size_t shape_idx = 0; shape_idx < shapes.size(); shape_idx++) {
 #ifndef NDEBUG
-		spdlog::get("illixr_file_log")->debug("[obj] Num verts in shape: {}", shapes[shape_idx].mesh.indices.size());
-		spdlog::get("illixr_file_log")->debug("[obj] Num tris in shape: {}", shapes[shape_idx].mesh.indices.size()/3);
+		spdlog::get("illixr_log")->debug("[obj] Num verts in shape: {}", shapes[shape_idx].mesh.indices.size());
+		spdlog::get("illixr_log")->debug("[obj] Num tris in shape: {}", shapes[shape_idx].mesh.indices.size()/3);
 #endif
                 // Unified buffer for pos + uv. Interleaving vertex data (good practice!)
                 std::vector<vertex_t> buffer;
