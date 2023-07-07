@@ -47,7 +47,7 @@ public:
     ~dynamic_lib() {
 #ifndef NDEBUG
         if (!_m_lib_path.empty()) {
-	    spdlog::debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
+	    spdlog::get("illixr_file_log")->debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
         }
 #endif /// NDEBUG
     }

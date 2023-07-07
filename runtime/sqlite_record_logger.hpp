@@ -4,6 +4,7 @@
 #include "common/global_module_defs.hpp"
 #include "common/record_logger.hpp"
 #include "sqlite3pp/sqlite3pp.hpp"
+#include "spdlog/spdlog.h"
 
 #include <atomic>
 #include <cassert>
@@ -104,9 +105,9 @@ public:
         std::vector<record> record_batch{max_record_batch_size};
         std::size_t         actual_batch_size;
 
-	spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] thread,%t,%v");
-	spdlog::info("sqlite thread,{}",table_name);
-	spdlog::set_pattern("%+");
+	spdlog::get("illixr_file_log")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] thread,%t,%v");
+	spdlog::get("illixr_file_log")->info("sqlite thread,{}",table_name);
+	spdlog::get("illixr_file_log")->set_pattern("%+");
 
         std::size_t processed = 0;
         while (!terminate.load()) {
@@ -128,7 +129,7 @@ public:
             process(record_batch, actual_batch_size);
             post_processed += actual_batch_size;
         }
-	spdlog::info("Drained {} (sqlite); {}/{} done post real time", table_name, post_processed, (processed+post_processed));
+	spdlog::get("illixr_file_log")->info("Drained {} (sqlite); {}/{} done post real time", table_name, post_processed, (processed+post_processed));
     }
 
     void process(const std::vector<record>& record_batch, std::size_t batch_size) {
