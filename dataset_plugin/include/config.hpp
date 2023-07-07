@@ -1,22 +1,30 @@
 # pragma once
 
 #include <cassert>    // for assert()
-#include <chrono>     // for std::chrono::duration
 #include <cstdlib>    // for std::getenv
 #include <filesystem> // for std::filesystem::path
 #include <string>
+#include <stringstream>
 #include <vector>
 
 // #include "common/data_format.hpp" // might not be necessary
 
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
 
+enum TimestampUnit {
+    second,
+    millisecond,
+    microsecond,
+    nanosecond
+};
+
 struct IMUConfig {
     // datatype-related info
     bool use_double = true; // default is to use `double`
-    std::chrono::duration timestamp_units;
+    // timestamp units-related info
+    TimestampUnit timestamp_unit;
 
-    std::vector<std::filesystem::path> imu_path_list;
+    std::vector<std::filesystem::path> path_list;
 
     // format-related info
     std::vector<bool> format;
@@ -25,7 +33,8 @@ struct IMUConfig {
 };
 
 struct ImageConfig {
-    std::chrono::duration timestamp_units;
+    // timestamp units-related info
+    TimestampUnit timestamp_unit;
 
     std::vector<std::filesystem::path> rgb_path_list;
     std::vector<std::filesystem::path> depth_path_list;
@@ -35,7 +44,8 @@ struct ImageConfig {
 struct PoseConfig {
     // datatype-related info
     bool use_double = false; // default is to use `float`
-    std::chrono::duration timestamp_units;
+    // timestamp units-related info
+    TimestampUnit timestamp_unit;
 
     std::vector<std::filesystem::path> path_list;
 };
@@ -43,7 +53,8 @@ struct PoseConfig {
 struct GroundTruthConfig {
     // datatype-related info
     bool use_double = true; // default is to use `double`
-    std::chrono::duration timestamp_units;
+    // timestamp units-related info
+    TimestampUnit timestamp_unit;
     std::filesystem::path path;
     
     // format-related info
@@ -68,6 +79,26 @@ struct Config {
     GroundTruthConfig ground_truth_config;
 
 };
+
+// helper function
+std::vector<std::filesystem::path> convertPathStringToPathList(const std::string& path_string) {
+    // TODO: Come up with a better, more descriptive name
+
+    // Takes in a comma-separated string like "data" or "data/hand-pose,data/head-pose"
+    // and returns a vector of filesystem paths. In the previous examples, we will get
+    // just {"data"}, and {"data/hand-pose", "data/head-pose"}.
+
+    std::istringstream input_stream(path_string);
+    std::string path;
+
+    std::vector<std::filesystem::path> output;
+
+    while (std::getline(input_stream, path, ',')) {
+        output.emplace_back(path);
+    }
+
+    return output;
+}
 
 class ConfigParser {
     public:
