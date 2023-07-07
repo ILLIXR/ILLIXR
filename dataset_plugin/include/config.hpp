@@ -9,14 +9,6 @@
 
 // #include "common/data_format.hpp" // might not be necessary
 
-// const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
-// if (!illixr_data_c_str) {
-//     std::cerr << "Please define ILLIXR_DATA" << std::endl;
-//     ILLIXR::abort();
-// }
-// std::string illixr_data = std::string{illixr_data_c_str};
-
-
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
 
 struct IMUConfig {
@@ -77,23 +69,6 @@ struct Config {
 
 };
 
-
-class IMUConfigParser {
-
-};
-
-class ImageConfigParser {
-
-};
-
-class PoseConfigParser {
-
-};
-
-class GroundTruthConfigParser {
-
-};
-
 class ConfigParser {
     public:
         ConfigParser() {
@@ -101,7 +76,16 @@ class ConfigParser {
         }
     
     private:
-        void initFromConfig() {
+        // helper member functions
+        void initIMUConfig();
 
-        }
+        void initImageConfig();
+
+        void initPoseConfig();
+
+        void initGroundTruthConfig();
+        
+        void initFromConfig();
+
+        Config config;
 };
