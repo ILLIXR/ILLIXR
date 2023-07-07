@@ -14,7 +14,54 @@ void ConfigParser::initIMUConfig() {
 }
 
 void ConfigParser::initImageConfig() {
-    
+    // parsing timestamp unit-related info.
+    const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS");
+    if (!timestamp_env_var) {
+        std::cerr << "Error: Please define `ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS`." << std::endl;
+        ILLIXR::abort();
+    }
+
+    std::string timestamp_units{timestamp_units_env_var};
+
+    if (timestamp_units == "seconds") {
+        config.image_config.timestamp_unit = TimestampUnit::second;
+    } else if (timestamp_units == "milliseconds") {
+        config.image_config.timestamp_unit = TimestampUnit::millisecond;
+    } else if (timestamp_units == "microseconds") {
+        config.image_config.timestamp_unit = TimestampUnit::microsecond;
+    } else {
+        // nanoseconds
+        config.image_config.timestamp_unit = TimestampUnit::nanosecond;
+    }
+
+    // parsing image path-related info.
+
+    // rgb path(s)
+    const char* rgb_path_env_var = std::getenv("ILLIXR_DATASET_IMAGE_RGB_PATH");
+    if (!rgb_path_env_var) {
+        std::cerr << "Error: Please define `ILLIXR_DATASET_IMAGE_RGB_PATH`." << std::endl;
+        ILLIXR::abort();
+    }
+
+    config.image_config.rgb_path_list = convertPathStringToPathList(rgb_path_env_var);
+
+    // depth path(s)
+    const char* depth_path_env_var = std::getenv("ILLIXR_DATASET_IMAGE_DEPTH_PATH");
+    if (!depth_path_env_var) {
+        std::cerr << "Error: Please define `ILLIXR_DATASET_IMAGE_DEPTH_PATH`." << std::endl;
+        ILLIXR::abort();
+    }
+
+    config.image_config.depth_path_list = convertPathStringToPathList(depth_path_env_var);
+
+    // grayscale path(s)
+    const char* grayscale_path_env_var = std::getenv("ILLIXR_DATASET_IMAGE_GRAYSCALE_PATH");
+    if (!grayscale_path_env_var) {
+        std::cerr << "Error: Please define `ILLIXR_DATASET_IMAGE_GRAYSCALE_PATH`." << std::endl;
+        ILLIXR::abort();
+    }
+
+    config.image_config.grayscale_path_list = convertPathStringToPathList(grayscale_path_env_var);
 }
 
 void ConfigParser::initPoseConfig() {
