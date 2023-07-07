@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "common/data_format.hpp"
+// #include "common/data_format.hpp" // might not be necessary
 
 // const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
 // if (!illixr_data_c_str) {
@@ -20,10 +20,16 @@
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
 
 struct IMUConfig {
-    // datatype
+    // datatype-related info
+    bool use_double = true; // default is to use `double`
     std::chrono::duration timestamp_units;
 
-    // ...
+    std::vector<std::filesystem::path> imu_path_list;
+
+    // format-related info
+    std::vector<bool> format;
+    // if true, then linear acceleration is first. Else, angular velocity is first.
+    // This was an arbitrary choice.
 };
 
 struct ImageConfig {
@@ -35,20 +41,23 @@ struct ImageConfig {
 };
 
 struct PoseConfig {
+    // datatype-related info
+    bool use_double = false; // default is to use `float`
     std::chrono::duration timestamp_units;
 
     std::vector<std::filesystem::path> path_list;
 };
 
 struct GroundTruthConfig {
-    // datatype
+    // datatype-related info
+    bool use_double = true; // default is to use `double`
     std::chrono::duration timestamp_units;
     std::filesystem::path path;
     
-    // format stuff
+    // format-related info
     std::vector<int> length_list; // stores how long each group is
     std::vector<std::string> name_list; // stores the name of each group
-    // assert that length_list and name_list have the same length after both have been filled
+    // should assert that length_list and name_list have the same length (after both have been filled)
 };
 
 struct Config {
@@ -68,25 +77,20 @@ struct Config {
 
 };
 
-// TODO: See if this common --> specific child architecture is necessary.
-class CommonConfigParser {
-    // has helper functions to query info about path, timestamp units, and
-    // datatype. This is common for IMU, Image (kinda), and Pose.
-};
 
-class IMUConfigParser : CommonConfigParser {
+class IMUConfigParser {
 
 };
 
-class ImageConfigParser : CommonConfigParser {
+class ImageConfigParser {
 
 };
 
-class PoseConfigParser : CommonConfigParser {
+class PoseConfigParser {
 
 };
 
-class GroundTruthConfigParser : CommonConfigParser {
+class GroundTruthConfigParser {
 
 };
 
