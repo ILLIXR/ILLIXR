@@ -4,21 +4,6 @@
 #include "config.hpp"
 
 void ConfigParser::initIMUConfig() {
-    // parsing datatype-related info.
-    const char* datatype_env_var = std::getenv("ILLIXR_DATASET_IMU_DATATYPE");
-    if (!datatype_env_var) {
-        std::cerr << "Error: Please define `ILLIXR_DATASET_IMU_DATATYPE`." << std::endl;
-        ILLIXR::abort();
-    }
-
-    std::string datatype{datatype_env_var};
-
-    if (datatype == "float") {
-        config.imu_config.use_double = false;
-    }
-    // no need to do anything otherwise, since the other option is to use `double`, which is
-    // the default choice.
-
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_IMU_TIMESTAMP_UNITS");
     if (!timestamp_env_var) {
@@ -110,21 +95,6 @@ void ConfigParser::initImageConfig() {
 }
 
 void ConfigParser::initPoseConfig() {
-    // parsing datatype-related info.
-    const char* datatype_env_var = std::getenv("ILLIXR_DATASET_POSE_DATATYPE");
-    if (!datatype_env_var) {
-        std::cerr << "Error: Please define `ILLIXR_DATASET_POSE_DATATYPE`." << std::endl;
-        ILLIXR::abort();
-    }
-
-    std::string datatype{datatype_env_var};
-
-    if (datatype == "double") {
-        config.pose_config.use_double = true;
-    }
-    // no need to do anything otherwise, since the other option is to use `float`, which is
-    // the default choice.
-
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_POSE_TIMESTAMP_UNITS");
     if (!timestamp_units_env_var) {
@@ -156,21 +126,6 @@ void ConfigParser::initPoseConfig() {
 }
 
 void ConfigParser::initGroundTruthConfig() {
-    // parsing datatype-related info.
-    const char* datatype_env_var = std::getenv("ILLIXR_DATASET_GROUND_TRUTH_DATATYPE");
-    if (!datatype_env_var) {
-        std::cerr << "Error: Please define `ILLIXR_DATASET_GROUND_TRUTH_DATATYPE`." << std::endl;
-        ILLIXR::abort();
-    }
-
-    std::string datatype{datatype_env_var};
-
-    if (datatype == "float") {
-        config.imu_config.use_double = false;
-    }
-    // no need to do anything otherwise, since the other option is to use `double`, which is
-    // the default choice.
-
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_GROUND_TRUTH_TIMESTAMP_UNITS");
     if (!timestamp_env_var) {

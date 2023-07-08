@@ -19,8 +19,6 @@ enum TimestampUnit {
 };
 
 struct IMUConfig {
-    // datatype-related info
-    bool use_double = true; // default is to use `double`
     // timestamp units-related info
     TimestampUnit timestamp_unit;
 
@@ -42,8 +40,6 @@ struct ImageConfig {
 };
 
 struct PoseConfig {
-    // datatype-related info
-    bool use_double = false; // default is to use `float`
     // timestamp units-related info
     TimestampUnit timestamp_unit;
 
@@ -51,8 +47,6 @@ struct PoseConfig {
 };
 
 struct GroundTruthConfig {
-    // datatype-related info
-    bool use_double = true; // default is to use `double`
     // timestamp units-related info
     TimestampUnit timestamp_unit;
     std::filesystem::path path;
