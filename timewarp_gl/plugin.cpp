@@ -832,11 +832,11 @@ public:
             const time_point time_next_swap    = GetNextSwapTimeEstimate();
             const double     timewarp_estimate = duration2double<std::milli>(time_next_swap - time_last_swap);
 
-	    spdlog::get(name)->debug("[TIMEWARP] Swap time: {} ms", time_swap);
-	    spdlog::get(name)->debug("[TIMEWARP] Motion-to-display latency: {} ms", latency_mtd);
-	    spdlog::get(name)->debug("[TIMEWARP] Prediction-to-display latency: {} ms", latency_ptd);
-	    spdlog::get(name)->debug("[TIMEWARP] Render-to-display latency: {} ms", latency_rtd);
-	    spdlog::get(name)->debug("[TIMEWARP] Next swap in: {} ms in the future", timewarp_estimate);
+	    spdlog::get(name)->debug("Swap time: {} ms", time_swap);
+	    spdlog::get(name)->debug("Motion-to-display latency: {} ms", latency_mtd);
+	    spdlog::get(name)->debug("Prediction-to-display latency: {} ms", latency_ptd);
+	    spdlog::get(name)->debug("Render-to-display latency: {} ms", latency_rtd);
+	    spdlog::get(name)->debug("Next swap in: {} ms in the future", timewarp_estimate);
         }
     #endif
 

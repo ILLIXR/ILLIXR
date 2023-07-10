@@ -178,7 +178,7 @@ private:
 
 #ifndef NDEBUG
         if (input_values->last_cam_integration_time > last_cam_time) {
-	    spdlog::get(name)->debug("[GTSAMINTEGRATOR] New slow pose has arrived!");
+	    spdlog::get(name)->debug("New slow pose has arrived!");
             last_cam_time = input_values->last_cam_integration_time;
         }
 #endif
@@ -214,7 +214,7 @@ private:
         ImuBias bias      = _pim_obj->biasHat();
 
 #ifndef NDEBUG
-	spdlog::get(name)->debug("[GTSAMINTEGRATOR] Integrating over {} IMU samples", prop_data.size());
+	spdlog::get(name)->debug("Integrating over {} IMU samples", prop_data.size());
 #endif
 
         for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
@@ -228,9 +228,9 @@ private:
         gtsam::Pose3    out_pose   = navstate_k.pose();
 
 #ifndef NDEBUG
-	spdlog::get(name)->debug("[GTSAMINTEGRATOR] Base Position (x, y, z) = {}, {}, {}",
+	spdlog::get(name)->debug("Base Position (x, y, z) = {}, {}, {}",
 			input_values->position(0), input_values->position(1), input_values->position(2));
-	spdlog::get(name)->debug("[GTSAMINTEGRATOR] New Position (x, y, z) = {}, {}, {}", out_pose.x(), out_pose.y(), out_pose.z());
+	spdlog::get(name)->debug("New Position (x, y, z) = {}, {}, {}", out_pose.x(), out_pose.y(), out_pose.z());
 #endif
 
         auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
