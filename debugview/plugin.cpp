@@ -70,7 +70,9 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
+		spdlogger();       
+	}
 
     void draw_GUI() {
         RAC_ERRNO_MSG("debugview at start of draw_GUI");
@@ -437,7 +439,7 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
         if (gui_window == nullptr) {
-	    spdlog::get("illixr_log")->error("[DEBUGVIEW] couldn't create window {}:{}", __FILE__, __LINE__);
+	    spdlog::get(name)->error("[DEBUGVIEW] couldn't create window {}:{}", __FILE__, __LINE__);
             ILLIXR::abort();
         }
 
@@ -455,7 +457,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-	    spdlog::get("illixr_log")->error("[DEBUGVIEW] GLEW Error: {}", glewGetErrorString(glew_err));
+	    spdlog::get(name)->error("[DEBUGVIEW] GLEW Error: {}", glewGetErrorString(glew_err));
             glfwDestroyWindow(gui_window);
             ILLIXR::abort("[DEBUGVIEW] Failed to initialize GLEW");
         }
@@ -478,7 +480,7 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-	spdlog::get("illixr_log")->debug("[DEBUGVIEW] Demo app shader program is program {}", demoShaderProgram);
+	spdlog::get(name)->debug("[DEBUGVIEW] Demo app shader program is program {}", demoShaderProgram);
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

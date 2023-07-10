@@ -81,6 +81,7 @@ public:
 #endif
         , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
+	    spdlogger();       
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
@@ -306,7 +307,7 @@ private:
 
 #ifndef NDEBUG
         double time = duration2double<std::milli>(offload_duration);
-	spdlog::get("illixr_log")->debug("Texture image collecting time: {} ms", time);
+	spdlog::get(name)->debug("Texture image collecting time: {} ms", time);
 #endif
 
         return pixels;
@@ -513,7 +514,7 @@ public:
         glewExperimental      = GL_TRUE;
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-	    spdlog::get("illixr_log")->error("[timewarp_gl] GLEW Error: {}", glewGetErrorString(glew_err));
+	    spdlog::get(name)->error("[timewarp_gl] GLEW Error: {}", glewGetErrorString(glew_err));
             ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
         }
 
@@ -831,11 +832,11 @@ public:
             const time_point time_next_swap    = GetNextSwapTimeEstimate();
             const double     timewarp_estimate = duration2double<std::milli>(time_next_swap - time_last_swap);
 
-	    spdlog::get("illixr_log")->debug("[TIMEWARP] Swap time: {} ms", time_swap);
-	    spdlog::get("illixr_log")->debug("[TIMEWARP] Motion-to-display latency: {} ms", latency_mtd);
-	    spdlog::get("illixr_log")->debug("[TIMEWARP] Prediction-to-display latency: {} ms", latency_ptd);
-	    spdlog::get("illixr_log")->debug("[TIMEWARP] Render-to-display latency: {} ms", latency_rtd);
-	    spdlog::get("illixr_log")->debug("[TIMEWARP] Next swap in: {} ms in the future", timewarp_estimate);
+	    spdlog::get(name)->debug("[TIMEWARP] Swap time: {} ms", time_swap);
+	    spdlog::get(name)->debug("[TIMEWARP] Motion-to-display latency: {} ms", latency_mtd);
+	    spdlog::get(name)->debug("[TIMEWARP] Prediction-to-display latency: {} ms", latency_ptd);
+	    spdlog::get(name)->debug("[TIMEWARP] Render-to-display latency: {} ms", latency_rtd);
+	    spdlog::get(name)->debug("[TIMEWARP] Next swap in: {} ms in the future", timewarp_estimate);
         }
     #endif
 
