@@ -17,7 +17,6 @@ public:
     VkDevice                 vk_device;
     VkQueue                  graphics_queue;
     uint32_t                 graphics_queue_family;
-    VkExtent2D               swapchain_extent;
 
     virtual void poll_window_events() { };
 
@@ -32,6 +31,7 @@ public:
     VkFormat                 swapchain_image_format;
     std::vector<VkImage>     swapchain_images;
     std::vector<VkImageView> swapchain_image_views;
+    VkExtent2D               swapchain_extent;
 
     // optional
     VmaAllocator             vma_allocator;

@@ -90,12 +90,14 @@ struct UniformBufferObject {
 class timewarp_vk : public timewarp {
 public:
     timewarp_vk(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()}
+        : pb{pb}
+        , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-        , ds{pb->lookup_impl<display_sink>()}
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
+        ds = pb->lookup_impl<display_sink>();
+
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
@@ -112,7 +114,15 @@ public:
         create_texture_sampler();
     }
 
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool) override {
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool, bool input_texture_vulkan_coordinates = true) override {
+        this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates;
+        if (!initialized) {
+            initialize();
+            initialized = true;
+        } else {
+            partial_destroy();
+        }
+
         if (buffer_pool[0].size() != buffer_pool[1].size()) {
             throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
         }
@@ -121,6 +131,17 @@ public:
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
+    }
+
+    void partial_destroy() {
+        vkDestroyPipeline(ds->vk_device, pipeline, nullptr);
+        pipeline = VK_NULL_HANDLE;
+
+        vkDestroyPipelineLayout(ds->vk_device, pipeline_layout, nullptr);
+        pipeline_layout = VK_NULL_HANDLE;
+
+        vkDestroyDescriptorPool(ds->vk_device, descriptor_pool, nullptr);
+        descriptor_pool = VK_NULL_HANDLE;
     }
 
     virtual void update_uniforms(const fast_pose_type render_pose) override {
@@ -578,7 +599,7 @@ private:
                         
                     // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
-                        -(-1.0f +
+                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) * (-1.0f +
                          2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
                              ((float) (hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / hmdInfo.displayPixelsHigh));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
@@ -625,10 +646,14 @@ private:
         transform = texCoordProjection * deltaViewMatrix;
     }
 
+    const phonebook* const pb;
     const std::shared_ptr<switchboard> sb;
     const std::shared_ptr<pose_prediction> pp;
     bool disable_warp = false;
     std::shared_ptr<display_sink> ds = nullptr;
+
+    bool initialized = false;
+    bool input_texture_vulkan_coordinates = true;
 
     // Vulkan resources
     VmaAllocator vma_allocator;
@@ -674,7 +699,7 @@ public:
     }
 
     virtual void start() override {
-        tw->initialize();
+        // tw->initialize();
     }
 
 private:
