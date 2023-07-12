@@ -81,7 +81,7 @@ public:
         VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence));
 
         auto fast_pose = pp->get_fast_pose();
-        src->update_uniforms(fast_pose);
+        src->update_uniforms(fast_pose.pose);
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0));
         record_command_buffer(swapchain_image_index);
 

@@ -144,10 +144,10 @@ public:
         descriptor_pool = VK_NULL_HANDLE;
     }
 
-    virtual void update_uniforms(const fast_pose_type render_pose) override {
+    virtual void update_uniforms(const pose_type render_pose) override {
         // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
         Eigen::Matrix4f viewMatrix   = Eigen::Matrix4f::Identity();
-        viewMatrix.block(0, 0, 3, 3) = render_pose.pose.orientation.toRotationMatrix();
+        viewMatrix.block(0, 0, 3, 3) = render_pose.orientation.toRotationMatrix();
 
         // We simulate two asynchronous view matrices, one at the beginning of
         // display refresh, and one at the end of display refresh. The
@@ -157,8 +157,8 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const fast_pose_type latest_pose  = disable_warp ? render_pose : pp->get_fast_pose();
-        viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
+        const pose_type latest_pose  = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
         // `display_period` later

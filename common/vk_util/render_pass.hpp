@@ -10,7 +10,7 @@ using namespace ILLIXR;
 class render_pass : public phonebook::service {
 public:
 
-    virtual void update_uniforms(const fast_pose_type render_pose) = 0;
+    virtual void update_uniforms(const pose_type render_pose) = 0;
 
     virtual ~render_pass() { }
 
