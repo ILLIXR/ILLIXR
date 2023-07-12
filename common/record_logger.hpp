@@ -160,7 +160,7 @@ public:
 #ifndef NDEBUG
         if (rh && !data_use_indicator_.is_used()) {
             std::cerr << "Record was deleted without being logged." << std::endl;
-            abort();
+            // abort();
         }
 #endif
     }

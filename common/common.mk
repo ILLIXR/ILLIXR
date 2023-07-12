@@ -8,11 +8,11 @@ RM := rm -f
 ## A compilation flag for selecting the Monado integration mode
 #> If ILLIXR_MONADO_MAINLINE is set to 'ON', use the mainline Monado
 #> Else ILLIXR_MONADO_MAINLINE is empty, enabling the monado_integration compatible compilation
-ifeq ($(ILLIXR_MONADO_MAINLINE),ON)
+# ifeq ($(ILLIXR_MONADO_MAINLINE),ON)
 	MONADO_FLAGS := -DILLIXR_MONADO_MAINLINE
-else
-	MONADO_FLAGS :=
-endif
+# else
+# 	MONADO_FLAGS :=
+# endif
 
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
