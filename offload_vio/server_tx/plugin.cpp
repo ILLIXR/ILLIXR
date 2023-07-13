@@ -23,20 +23,15 @@ public:
 		, _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
 		, client_addr(CLIENT_IP, CLIENT_PORT_2)
     { 
-		socket.set_reuseaddr();
-		socket.bind(Address(SERVER_IP, SERVER_PORT_2));
-		is_client_connected = false;
-
 		if (!filesystem::exists(data_path)) {
 			if (!std::filesystem::create_directory(data_path)) {
 				std::cerr << "Failed to create data directory.";
 			}
 		}
-
-		receiver_to_sender.open(data_path + "/receiver_to_sender_time.csv");
-		// hashed.open(data_path + "/hash_server_tx.txt");
-
-		last_send_time = timestamp();
+		
+		socket.set_reuseaddr();
+		socket.bind(Address(SERVER_IP, SERVER_PORT_2));
+		is_client_connected = false;
 	}
 
 
@@ -44,7 +39,7 @@ public:
     // the callbeing being triggered before any data is written to slow_pose. This needs debugging.
     virtual void start() override {
         plugin::start();
-        sb->schedule<pose_type_prof>(id, "slow_pose_prof", [this](switchboard::ptr<const pose_type_prof> datum, std::size_t) {
+        sb->schedule<pose_type>(id, "slow_pose", [this](switchboard::ptr<const pose_type> datum, std::size_t) {
 			this->send_vio_output(datum);
 		});
 		sb->schedule<connection_signal>(id, "connection_signal", [this](switchboard::ptr<const connection_signal> datum, std::size_t) {
@@ -60,14 +55,9 @@ public:
 	}
 
 
-    void send_vio_output(switchboard::ptr<const pose_type_prof> datum) {
+    void send_vio_output(switchboard::ptr<const pose_type> datum) {
 		// Check if a socket connection has been established
 		if (write_socket != NULL) {
-			/* Logging */
-			unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			double sec_to_trans = (curr_time - datum->rec_time.time_since_epoch().count()) / 1e9;
-			receiver_to_sender << datum->frame_id << "," << datum->start_time.time_since_epoch().count() << "," << sec_to_trans * 1e3 << std::endl;
-
 			// Construct slow pose for output
 			vio_output_proto::SlowPose* protobuf_slow_pose = new vio_output_proto::SlowPose();
 			protobuf_slow_pose->set_timestamp(datum->sensor_time.time_since_epoch().count());
@@ -141,11 +131,6 @@ public:
 			vio_output_params->set_allocated_slow_pose(protobuf_slow_pose);
 			vio_output_params->set_allocated_imu_int_input(protobuf_imu_int_input);
 
-			// This will get the time elapsed of the full roundtrip loop
-			vio_output_params->set_start_timestamp(datum->start_time.time_since_epoch().count());
-			vio_output_params->set_dataset_timestamp(datum->dataset_time.time_since_epoch().count());
-			vio_output_params->set_frame_id(datum->frame_id);
-
 			unsigned long long end_pose_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 			vio_output_params->set_end_server_timestamp(end_pose_time);
 
@@ -153,16 +138,7 @@ public:
 			string data_to_be_sent = vio_output_params->SerializeAsString();
 			string delimitter = "END!";
 
-			long int now = timestamp();
 			write_socket->write(data_to_be_sent + delimitter);
-			long int send_duration = timestamp() - now;
-			std::cout << "send_duration: " << send_duration << std::endl;
-			last_send_time = now;
-
-			// hash<std::string> hasher;
-			// auto hash_result = hasher(data_to_be_sent);
-
-			// hashed << datum->frame_id << "\t" << hash_result << endl;
 
 			delete vio_output_params;
 		} else {
@@ -179,10 +155,7 @@ private:
 	Address client_addr;
 	bool is_client_connected;
 
-	long int last_send_time;
-	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
-    std::ofstream receiver_to_sender;
-	// std::ofstream hashed;
+	const string data_path = filesystem::current_path().string() + "/recorded_data";
 
 };
 
