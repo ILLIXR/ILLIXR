@@ -22,10 +22,15 @@ ILLIXR implements a modular logging system that enables users to capture and rec
 
 ## Metrics
 
-ILLIXR allows users to generate higher order statistics from logged results called _Metrics_.
+ILLIXR allows users to generate higher order statistics from logged results called _Metrics_. The relevant public API is given in common/cpu_timer/cpu_timer.hpp.
 
-***TODO***
-
+To generate metrics:
+- At the top of main() call setup_frame_logger() from runtime/frame_logger2.cpp
+- Metrics are collected by inserting one of the CPU_TIMER_TIME_* macros defined in common/cpu_timer/cpu_timer.hpp at the location of interest.
+- A  _BLOCK is recorded from the macro until the end of the enclosing scope.
+- An _EVENT is recorded as an instaneous event.
+- Metrics can be disabled at compile time by defining CPU_TIMER_DISABLE.
+- Metrics are written to sqlite3 files in $ILLIXR_ROOT/metrics/frames via the sqlite_record_logger mechanism.  
 
 [//]: # (- Internal -)
 
