@@ -19,11 +19,9 @@ for one terminal and configs/offload-server.yaml on the other terminal. The defa
 config files will run OpenVINS on the server and will feed it with the EuRoC dataset from the device.
 
 To run more complicated experiment setups where the device and server are not on the same machine, you will need
-to setup each machine to be able to send/recieve UDP multicasts, and configure your local network. A detailed 
-guide on how to do this can be found [here][1]. Currently, this set of plugins only supports offloading within 
-your local area network. This is due to a constraint of eCAL which doesnt support communication outside of the LAN.
+to setup each machine to be able to send/recieve via TCP, and configure the server/client IP and port number in common/network/net_config.hpp.
+
+The offloading vio plugins have basic support for logging pose_transfer_time and round trip time. The logging files are written to directory recorded_data/. Other information can be logged the same way as in the existing plugins (e.g. offload_vio/device_rx/plugin.cpp).
 
 
 [//]: # (- References -)
-
-[1]:    https://continental.github.io/ecal/getting_started/cloud.html
