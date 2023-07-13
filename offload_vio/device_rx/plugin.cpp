@@ -42,7 +42,6 @@ public:
 		
 		pose_transfer_csv.open(data_path + "/pose_transfer_time.csv");
 		roundtrip_csv.open(data_path + "/roundtrip_time.csv");
-		// hashed.open(data_path + "/hash_device_rx.txt");
 
 		socket.set_reuseaddr();
 		socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
@@ -75,14 +74,12 @@ public:
 					vio_output_proto::VIOOutput vio_output;
 					bool success = vio_output.ParseFromString(before);
 					if (success) {
-						// cout << "Received vio output (" << datagram.size() << " bytes) from " << client_addr.str(":") << endl;
 						ReceiveVioOutput(vio_output, before);
 					} else {
 						cout << "client_rx: Cannot parse VIO output!!" << endl;
 					}
 					end_position = buffer_str.find(delimitter);
 				}
-				cout << "Recv time = " << timestamp() - now << ", size = " << recv_data.size() << endl;
 			}
 		}
 	}
@@ -95,14 +92,10 @@ private:
 		unsigned long long curr_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 		double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
-		pose_transfer_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
+		pose_transfer_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
 
 		double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
-		roundtrip_csv << vio_output.frame_id() << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
-
-		// hash<std::string> hasher;
-		// auto hash_result = hasher(str_data);
-		// hashed << vio_output.frame_id() << "\t" << hash_result << endl;
+		roundtrip_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
 
 		pose_type datum_pose_tmp{
 			time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
@@ -144,12 +137,12 @@ private:
 			Eigen::Matrix<double,3,1>{imu_int_input.velocity().x(), imu_int_input.velocity().y(), imu_int_input.velocity().z()},
 			Eigen::Quaterniond{imu_int_input.rotation().w(), imu_int_input.rotation().x(), imu_int_input.rotation().y(), imu_int_input.rotation().z()}
 		};
-
-		datum_imu_int_tmp.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
+		
 		switchboard::ptr<imu_integrator_input> datum_imu_int = 
             _m_imu_integrator_input.allocate<imu_integrator_input>(std::move(datum_imu_int_tmp));
         _m_imu_integrator_input.put(std::move(datum_imu_int));
+
+		frame_id++;
     }
 
     const std::shared_ptr<switchboard> sb;
@@ -165,7 +158,7 @@ private:
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream pose_transfer_csv;
 	std::ofstream roundtrip_csv;
-	// std::ofstream hashed;
+	int frame_id = 0;
 };
 
 PLUGIN_MAIN(offload_reader)

@@ -87,7 +87,6 @@ namespace ILLIXR {
 		Eigen::Matrix<double,3,1> position;
 		Eigen::Matrix<double,3,1> velocity;
 		Eigen::Quaterniond quat;
-		long int timestamp;
 
 		imu_integrator_input()
 			: last_cam_integration_time{time_point{}}
@@ -104,7 +103,6 @@ namespace ILLIXR {
 			, position{Eigen::Vector3d{0, 0, 0}}
 			, velocity{Eigen::Vector3d{0, 0, 0}}
 			, quat{Eigen::Quaterniond{1, 0, 0, 0}}
-			, timestamp{0}
 		{ }
 		imu_integrator_input(
 							 time_point last_cam_integration_time_,
@@ -124,7 +122,6 @@ namespace ILLIXR {
 			, position{position_}
 			, velocity{velocity_}
 			, quat{quat_}
-			, timestamp{0}
 		{ }
 	};
 
