@@ -49,6 +49,7 @@ struct PoseConfig {
 struct GroundTruthConfig {
     // timestamp units-related info
     TimestampUnit timestamp_unit;
+    
     std::filesystem::path path;
     
     // format-related info

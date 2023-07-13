@@ -1,5 +1,6 @@
-#include <iostream> // for std::cerr
+#include <iostream>     // for std::cerr
 #include <string>
+#include <stringstream>
 
 #include "config.hpp"
 
@@ -33,13 +34,22 @@ void ConfigParser::initIMUConfig() {
 
     config.imu_config.path_list = convertPathStringToPathList(path_env_var);
 
-    // -----------------------------------------------------------------------------------------
-
-    // parsing format-related info TODO: Finish this
+    // parsing format-related info
     const char* format_env_var = std::getenv("ILLIXR_DATASET_IMU_FORMAT");
     if (!format_env_var) {
         std::cerr << "Error: Please define `ILLIXR_DATASET_IMU_FORMAT`." << std::endl;
         ILLIXR::abort();
+    }
+
+    std::istringstream input_stream(format_env_var);
+    std::string lin_accel_first;
+
+    while (std::getline(input_stream, lin_accel_first, ',')) {
+        if (lin_accel_first == "true") {
+            config.imu_config.format.emplace_back(true);
+        } else {
+            config.imu_config.format.emplace_back(false);
+        }
     }
 }
 
