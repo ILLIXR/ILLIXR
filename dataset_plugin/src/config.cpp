@@ -165,11 +165,36 @@ void ConfigParser::initGroundTruthConfig() {
 
     config.ground_truth_config.path = path_env_var;
 
-    // -----------------------------------------------------------------------------------------
+    // parsing format-related info
+    const char* format_env_var = std::getenv("ILLIXR_DATASET_GROUND_TRUTH_FORMAT");
+    if (!format_env_var) {
+        std::cerr << "Error: Please define `ILLIXR_DATASET_GROUND_TRUTH_FORMAT`." << std::endl;
+        ILLIXR::abort();
+    }
 
-    // parsing format-related info not done
+    // resetting the stringstream
+    std::istringstream input_stream;
+    std::string number;
 
-    // parsing name-related info not done
+    while (std::getline(input_stream, number, ',')) {
+        config.ground_truth_config.length_list.emplace_back(std::stoi(number));
+    }
+
+    // parsing name-related info
+    const char* name_env_var = std::getenv("ILLIXR_DATASET_GROUND_TRUTH_NAMES");
+    if (!name_env_var) {
+        std::cerr << "Error: Please define `ILLIXR_DATASET_GROUND_TRUTH_NAMES`." << std::endl;
+        ILLIXR::abort();
+    }
+
+    // resetting the stringstream
+    input_stream.str("");
+    input_stream.clear();
+    std::string name;
+
+    while (std::getline(input_stream, name, ',')) {
+        config.ground_truth_config.name_list.emplace_back(name);
+    }
 }
 
 void ConfigParser::initFromConfig() {

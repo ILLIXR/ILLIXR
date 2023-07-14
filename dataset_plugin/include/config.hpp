@@ -7,8 +7,6 @@
 #include <stringstream>
 #include <vector>
 
-// #include "common/data_format.hpp" // might not be necessary
-
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
 
 enum TimestampUnit {
