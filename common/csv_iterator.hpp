@@ -15,7 +15,7 @@ public:
         return m_data.size();
     }
 
-    void readNextRow(std::istream& str) {
+    void readNextRow(std::istream& str, char delimiter=',') {
         std::string line;
         std::getline(str, line);
 
@@ -25,7 +25,7 @@ public:
         std::string       cell;
 
         m_data.clear();
-        while (std::getline(lineStream, cell, ',')) {
+        while (std::getline(lineStream, cell, delimiter)) {
             m_data.push_back(cell);
         }
         // This checks for a trailing comma with no data after it.

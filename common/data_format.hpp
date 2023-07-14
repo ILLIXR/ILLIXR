@@ -1,8 +1,8 @@
 #pragma once
 
-#include <chrono>
-#include <iostream>
-#include <memory>
+#include <array> // for std::array
+#include <string> // for std::string
+#include <utility> // for std::move
 #include <opencv2/core/mat.hpp>
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
@@ -75,24 +75,26 @@ struct imu_raw_type : public switchboard::event {
     time_point                  imu_time;
 };
 
-// TODO: fix this
-class lazy_load_image {
-public:
+// TODO: fix this struct up.
+struct lazy_load_image {
     lazy_load_image() { }
 
     lazy_load_image(const std::string& path)
-        : _m_path(path) {
-#ifndef LAZY
-        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-#endif
+        : _m_path(path) { }
+
+    cv::Mat load_grayscale() {
+        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+
+        assert(!_m_mat.empty());
+        
+        return _m_mat;
     }
 
-    cv::Mat load() const {
-#ifdef LAZY
-        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-    #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
-#endif
+    cv::Mat load_rgb() {
+        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+
         assert(!_m_mat.empty());
+        
         return _m_mat;
     }
 
