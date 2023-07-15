@@ -25,8 +25,8 @@ private:
     boost::lockfree::spsc_queue<uint64_t> queue {1000};
     std::mutex mutex;
     std::condition_variable cv;
-    cv::Mat img0;
-    cv::Mat img1;
+    cv::Mat img0_dst;
+    cv::Mat img1_dst;
     bool img_ready = false;
 public:
 	server_reader(std::string name_, phonebook* pb_)
@@ -100,8 +100,8 @@ public:
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
-                this->img0 = std::forward<cv::Mat>(img0);
-                this->img1 = std::forward<cv::Mat>(img1);
+                this->img0_dst = std::forward<cv::Mat>(img0);
+                this->img1_dst = std::forward<cv::Mat>(img1);
                 img_ready = true;
             }
             cv.notify_one();
@@ -141,9 +141,8 @@ private:
 		cv.wait(lock, [this]() { return img_ready; });
 		img_ready = false;
 
-		// TODO Is another clone needed?
-		cv::Mat img0(cam_data.rows(), cam_data.cols(), CV_8UC1, img0_copy.data());
-		cv::Mat img1(cam_data.rows(), cam_data.cols(), CV_8UC1, img1_copy.data());
+		cv::Mat img0(img0_dst.clone());
+		cv::Mat img1(img1_dst.clone());
 
 		lock.unlock();
 		// With compression end
