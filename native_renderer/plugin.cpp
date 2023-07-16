@@ -117,7 +117,7 @@ public:
         // for DRM, get vsync estimate
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
 
-        tw->update_uniforms(fast_pose);
+        tw->update_uniforms(fast_pose.pose);
         VkSubmitInfo timewarp_submit_info = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
         timewarp_submit_info.waitSemaphoreCount = 0;
         timewarp_submit_info.commandBufferCount = 1;
