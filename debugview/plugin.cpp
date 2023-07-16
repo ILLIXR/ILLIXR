@@ -53,8 +53,8 @@ Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vecto
  * @brief Callback function to handle glfw errors
  */
 static void glfw_error_callback(int error, const char* description) {
-    spdlog::get("illixr_log")->error("|| glfw error_callback: {}", error);
-    spdlog::get("illixr_log")->error("|> {}", description);
+    spdlog::get("illixr_app")->error("|| glfw error_callback: {}", error);
+    spdlog::get("illixr_app")->error("|> {}", description);
     ILLIXR::abort();
 }
 
