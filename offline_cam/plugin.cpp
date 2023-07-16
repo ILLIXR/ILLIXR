@@ -23,7 +23,7 @@ public:
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} {
-	    spdlogger();       
+	    spdlogger(ILLIXR::getenv_or("OFFLINE_CAM_LOG_LEVEL", "off"));       
 	}
 
     virtual skip_option _p_should_skip() override {

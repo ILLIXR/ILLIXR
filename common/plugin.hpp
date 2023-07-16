@@ -3,6 +3,7 @@
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 #include "spdlog/spdlog.h"
+#include "spdlog/common.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -60,7 +61,8 @@ public:
         , pb{pb_}
         , record_logger_{pb->lookup_impl<record_logger>()}
         , gen_guid_{pb->lookup_impl<gen_guid>()}
-        , id{gen_guid_->get()} {
+        , id{gen_guid_->get()}
+	{
 	}
 
     virtual ~plugin() = default;
@@ -69,14 +71,14 @@ public:
         return name;
     }
 
-    void spdlogger() {
+    void spdlogger(std::string log_level = "off") {
 	std::vector<spdlog::sink_ptr> sinks;
      	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log");
 	auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 	sinks.push_back(file_sink);
         sinks.push_back(console_sink);
         auto plugin_logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
-	plugin_logger->set_level(spdlog::level::debug);	    
+	plugin_logger->set_level(spdlog::level::from_str(log_level));	    
 	spdlog::register_logger(plugin_logger);
     }
 

@@ -29,7 +29,7 @@ public:
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
-	spdlogger();
+	spdlogger(ILLIXR::getenv_or("REALSENSE_LOG_LEVEL", "off"));
         accel_data.iteration = -1;
         cfg.disable_all_streams();
         configure_camera();

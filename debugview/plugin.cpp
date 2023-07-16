@@ -71,7 +71,7 @@ public:
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
-		spdlogger();       
+		spdlogger(ILLIXR::getenv_or("DEBUGVIEW_LOG_LEVEL", "off"));       
 	}
 
     void draw_GUI() {

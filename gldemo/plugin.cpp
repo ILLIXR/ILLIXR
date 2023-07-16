@@ -43,7 +43,7 @@ public:
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_image_handle{sb->get_writer<image_handle>("image_handle")}
         , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} { 
-		spdlogger();
+		spdlogger(ILLIXR::getenv_or("GLDEMO_LOG_LEVEL", "off"));
 	}
 
     // Essentially, a crude equivalent of XRWaitFrame.

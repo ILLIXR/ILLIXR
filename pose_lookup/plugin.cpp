@@ -27,7 +27,7 @@ public:
         , align_trans{Eigen::Vector3f::Zero()}
         , align_quat{Eigen::Vector4f::Zero()}
         , align_scale{0.0} {
-	spdlogger();
+	spdlogger(ILLIXR::getenv_or("POSE_LOOKUP_LOG_LEVEL", "off"));
         if (enable_alignment) {
             std::string path_to_alignment(ILLIXR::getenv_or("ILLIXR_ALIGNMENT_FILE", "./metrics/alignMatrix.txt"));
             load_align_parameters(path_to_alignment, align_rot, align_trans, align_quat, align_scale);
