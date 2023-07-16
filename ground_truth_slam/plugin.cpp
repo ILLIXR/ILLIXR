@@ -15,6 +15,12 @@
 #include <thread>
 
 using namespace ILLIXR;
+#define ViconRoom1Easy 1403715273262142976
+#define ViconRoom1Medium 1403715523912143104
+#define ViconRoom1Difficult 1403715886544058112
+#define ViconRoom2Easy 1413393212225760512
+#define ViconRoom2Medium 1413393885975760384
+#define ViconRoom2Hard 1413394881555760384
 
 class ground_truth_slam : public plugin {
 public:
@@ -26,14 +32,8 @@ public:
 		, _m_sensor_data{load_data()}
 		// The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
 		// Therefore we need the IMU dataset_first_time to reproduce the real dataset time. 
-		// TODO: Change the hardcoded number to reading from some configuration variables.
-		, _m_dataset_first_time{1403715273262142976}
-		// vicon1 easy 1403715273262142976
-		// vicon1 medium 1403715523912143104
-		// vicon1 difficult 1403715886544058112
-		// vicon2 easy 1413393212225760512
-		// vicon2 medium 1413393885975760384
-		// vicon2 hard 1413394881555760384
+		// TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
+		, _m_dataset_first_time{ViconRoom1Medium}
 		, _m_first_time{true}
 	{
 		if (!std::filesystem::exists(data_path)) {
@@ -55,7 +55,9 @@ public:
         ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
         auto   it           = _m_sensor_data.find(rounded_time);
         if (it == _m_sensor_data.end()) {
+#ifndef NDEBUG
             std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+#endif
             return;
         }
 
@@ -66,15 +68,6 @@ public:
                 it->second.orientation
             }
         );
-#ifndef NDEBUG
-        std::cout << "Ground truth pose was found at T: " << rounded_time << " | "
-                  << "Pos: (" << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2]
-                  << ")"
-                  << " | "
-                  << "Quat: (" << true_pose->orientation.w() << ", " << true_pose->orientation.x() << ", "
-                  << true_pose->orientation.y() << "," << true_pose->orientation.z() << ")" << std::endl;
-#endif
-        
 
 #ifndef NDEBUG
 		std::cout << "Ground truth pose was found at T: " << rounded_time
