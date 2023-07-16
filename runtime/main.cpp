@@ -67,15 +67,23 @@ private:
     std::atomic<bool> _m_terminate{false};
 };
 
+void spdlogger(std::string name, std::string log_level = "off") {
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+    sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log"));
+    auto logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
+    logger->set_level(spdlog::level::from_str(log_level));
+    spdlog::register_logger(logger);
+}
+
 int main(int argc, char* const* argv) {
-    auto logger = spdlog::basic_logger_mt("illixr_file_log", "logs/illixr-log.txt");
+    spdlogger("illixr_app", ILLIXR::getenv_or("ILLIXR_APP_LOG_LEVEL", "off"));
     r = ILLIXR::runtime_factory();
 
 #ifndef NDEBUG
     /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
     std::signal(SIGILL, sigill_handler);
     std::signal(SIGABRT, sigabrt_handler);
-    spdlog::get("illixr_log")->set_level(spdlog::level::debug);
 #endif /// NDEBUG
 
     /// Shutting down method 1: Ctrl+C
@@ -87,11 +95,11 @@ int main(int argc, char* const* argv) {
     const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
-	spdlog::get("illixr_log")->info("[main] Pre-sleep enabled.");
-	spdlog::get("illixr_log")->info("[main] PID: {}", pid);
-	spdlog::get("illixr_log")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
+	spdlog::get("illixr_app")->info("[main] Pre-sleep enabled.");
+	spdlog::get("illixr_app")->info("[main] PID: {}", pid);
+	spdlog::get("illixr_app")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
         sleep(ILLIXR_PRE_SLEEP_DURATION);
-	spdlog::get("illixr_log")->info("[main] Resuming...");
+	spdlog::get("illixr_app")->info("[main] Resuming...");
     }
 #endif /// NDEBUG
 
