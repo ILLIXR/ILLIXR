@@ -759,16 +759,16 @@ public:
 
         // retrieving the recorded elapsed time
         // wait until the query result is available
-        int done = 0;
-        glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+        // int done = 0;
+        // glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
 
-        while (!done) {
-            std::this_thread::yield();
-            glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
-        }
+        // while (!done) {
+        //     std::this_thread::yield();
+        //     glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+        // }
 
         // get the query result
-        glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
+        // glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
