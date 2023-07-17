@@ -187,7 +187,7 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-	    spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [switchboard] thread %t %v");
+	    spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
 	    spdlog::get("illixr_app")->debug("start");
 	    spdlog::get("illixr_app")->set_pattern("%+");
 #endif

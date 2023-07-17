@@ -105,7 +105,7 @@ public:
         std::vector<record> record_batch{max_record_batch_size};
         std::size_t         actual_batch_size;
 
-	spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [sqlite_record_logger] thread %t %v");
+	spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [sqlite_record_logger] thread %t %v");
 	spdlog::get("illixr_app")->info("{}",table_name);
 	spdlog::get("illixr_app")->set_pattern("%+");
 

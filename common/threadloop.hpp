@@ -90,7 +90,7 @@ protected:
 private:
     void thread_main() {
         record_coalescer it_log{record_logger_};
-	spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%l] [threadloop] %t %v ");
+	spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [threadloop] %t %v ");
 	spdlog::get("illixr_app")->info("{}",name);	
 	spdlog::get("illixr_app")->set_pattern("%+");
 
