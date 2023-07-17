@@ -1,8 +1,8 @@
 #include "common/global_module_defs.hpp"
 #include "runtime_impl.hpp"
-#include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 
 #include <csignal>
 #include <unistd.h> /// Not portable
@@ -95,11 +95,11 @@ int main(int argc, char* const* argv) {
     const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
-	spdlog::get("illixr_app")->info("[main] Pre-sleep enabled.");
-	spdlog::get("illixr_app")->info("[main] PID: {}", pid);
-	spdlog::get("illixr_app")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
+        spdlog::get("illixr_app")->info("[main] Pre-sleep enabled.");
+        spdlog::get("illixr_app")->info("[main] PID: {}", pid);
+        spdlog::get("illixr_app")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
         sleep(ILLIXR_PRE_SLEEP_DURATION);
-	spdlog::get("illixr_app")->info("[main] Resuming...");
+        spdlog::get("illixr_app")->info("[main] Resuming...");
     }
 #endif /// NDEBUG
 

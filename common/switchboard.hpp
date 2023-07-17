@@ -187,9 +187,9 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-	    spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
-	    spdlog::get("illixr_app")->debug("start");
-	    spdlog::get("illixr_app")->set_pattern("%+");
+            spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
+            spdlog::get("illixr_app")->debug("start");
+            spdlog::get("illixr_app")->set_pattern("%+");
 #endif
         }
 
@@ -295,7 +295,7 @@ private:
 
     public:
         topic_buffer() {
-	    spdlog::get("illixr_app")->info("[switchboard] topic buffer created");
+            spdlog::get("illixr_app")->info("[switchboard] topic buffer created");
         }
 
         void enqueue(ptr<const event>&& this_event) {
@@ -463,8 +463,9 @@ public:
             : _m_topic{topic_} {
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
-		spdlog::get("illixr_app")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", _m_topic.name(), _m_topic.ty().name(),
-				typeid(specific_event).name());
+                spdlog::get("illixr_app")
+                    ->error("[switchboard] topic '{}' holds type {}, but caller used type {}", _m_topic.name(),
+                            _m_topic.ty().name(), typeid(specific_event).name());
                 abort();
             }
 #endif
@@ -601,8 +602,9 @@ private:
                 topic& topic_ = found->second;
 #ifndef NDEBUG
                 if (typeid(specific_event) != topic_.ty()) {
-		    spdlog::get("illixr_app")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_name, topic_.ty().name(),
-				    typeid(specific_event).name());
+                    spdlog::get("illixr_app")
+                        ->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_name,
+                                topic_.ty().name(), typeid(specific_event).name());
                     abort();
                 }
 #endif
@@ -611,7 +613,7 @@ private:
         }
 
 #ifndef NDEBUG
-	spdlog::get("illixr_app")->debug("[switchboard] Creating: {} for {}", topic_name, typeid(specific_event).name());
+        spdlog::get("illixr_app")->debug("[switchboard] Creating: {} for {}", topic_name, typeid(specific_event).name());
 #endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{_m_registry_lock};

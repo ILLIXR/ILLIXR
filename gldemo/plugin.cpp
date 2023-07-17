@@ -62,7 +62,7 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
-	    spdlog::get(name)->debug("First vysnc is in {} ms", vsync_in);
+            spdlog::get(name)->debug("First vysnc is in {} ms", vsync_in);
         }
 #endif
 
@@ -83,7 +83,7 @@ public:
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
                 double wait_in = duration2double<std::milli>(wait_time - now);
-		spdlog::get(name)->debug("Waiting until next vsync, in {} ms", wait_in);
+                spdlog::get(name)->debug("Waiting until next vsync, in {} ms", wait_in);
             }
 #endif
             // Perform the sleep.
@@ -93,7 +93,7 @@ public:
         } else {
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
-		spdlog::get(name)->debug("We haven't rendered yet, rendering immediately");
+                spdlog::get(name)->debug("We haven't rendered yet, rendering immediately");
             }
 #endif
         }
@@ -179,7 +179,8 @@ public:
         const double fps              = 1.0 / frame_duration_s;
 
         if (log_count > LOG_PERIOD) {
-	    spdlog::get(name)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s, fps);
+            spdlog::get(name)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s,
+                                     fps);
         }
 #endif
         lastTime = _m_clock->now();
@@ -277,7 +278,7 @@ private:
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         // Bind eyebuffer texture
-	spdlog::get(name)->info("About to bind eyebuffer texture, texture handle: {}", *texture_handle);
+        spdlog::get(name)->info("About to bind eyebuffer texture, texture handle: {}", *texture_handle);
 
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
         glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
@@ -299,7 +300,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-	    spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
             ILLIXR::abort("Failed to initialize GLEW");
         }
 
@@ -323,7 +324,7 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-	spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
+        spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

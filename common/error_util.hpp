@@ -42,7 +42,7 @@ inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[m
         if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
             spdlog::get("illixr_app")->error("[error_util] || Errno was set: {} @ {}:{} [{}]", errno, file, line, function);
             if (!msg.empty()) {
-		spdlog::get("illixr_app")->error("[error_util ]|> Message: {}", msg);
+                spdlog::get("illixr_app")->error("[error_util ]|> Message: {}", msg);
             }
         }
         errno = 0;

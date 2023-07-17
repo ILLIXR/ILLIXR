@@ -3,8 +3,8 @@
 #include "cpu_timer.hpp"
 #include "error_util.hpp"
 #include "plugin.hpp"
-#include "stoplight.hpp"
 #include "spdlog/spdlog.h"
+#include "stoplight.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -90,9 +90,9 @@ protected:
 private:
     void thread_main() {
         record_coalescer it_log{record_logger_};
-	spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [threadloop] %t %v ");
-	spdlog::get("illixr_app")->info("{}",name);	
-	spdlog::get("illixr_app")->set_pattern("%+");
+        spdlog::get("illixr_app")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [threadloop] %t %v ");
+        spdlog::get("illixr_app")->info("{}", name);
+        spdlog::get("illixr_app")->set_pattern("%+");
 
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in

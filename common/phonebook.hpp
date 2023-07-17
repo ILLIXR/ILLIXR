@@ -100,7 +100,7 @@ public:
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
 #ifndef NDEBUG
-	spdlog::get("illixr_app")->debug("[phonebook] Register {}", type_index.name());
+        spdlog::get("illixr_app")->debug("[phonebook] Register {}", type_index.name());
 #endif
         assert(_m_registry.count(type_index) == 0);
         _m_registry.try_emplace(type_index, impl);
