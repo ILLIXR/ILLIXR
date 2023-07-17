@@ -24,7 +24,7 @@ Note that in this case, the OpenXR application itself can also be launched with 
 
 ### Defining Applications in Config
 
-Although the OpenXR specification does not explicitly require support for multiple OpenXR proocesses, but since Monado does provide this support, we currently allow the launching of multiple applications. There are two main ways to run an OpenXR app:
+Although the OpenXR specification does not explicitly require support for multiple OpenXR processes, but since Monado does provide this support, we currently allow the launching of multiple applications. There are two main ways to run an OpenXR app:
 
 1. If there is a build system in place to build the app, an application can be defined as follows:
   ```
@@ -34,14 +34,14 @@ Although the OpenXR specification does not explicitly require support for multip
       version  : master
     bin_subpath: build/openxr-example
   ```
-  This provides a link to path to Git repo (alterenatively, a local directory can be specified through ``src_path``), and ``bin_subpath`` defines where the binary will be built.
+  This provides a link to the Git repo (alternatively, a local directory can be specified through ``src_path``), and ``bin_subpath`` defines where the binary will be built.
   
-2. If the application binary is already available, an application can just be linked to directly with:
+2. If the application binary is already available, an application can just be linked directly with:
 ```
 app: {path_to_app_binary}
 ```
 
-To provided multiple applications, multiple ``app``s can be defined in the ``openxr_app.yaml`` file.
+To provide multiple applications, multiple ``app``s can be defined in the ``openxr_app.yaml`` file.
 
 
 ## Building OpenXR Apps from Game Engines
@@ -51,13 +51,13 @@ To provided multiple applications, multiple ``app``s can be defined in the ``ope
 Godot 3.4 with the OpenXR plugin has been tested with ILLIXR. To build an app through Godot 3.4, follow the steps below:
 1. You may either clone Godot with ``git clone --branch 3.4 https://github.com/godotengine/godot`` and build it locally with the provided build instructions, or you may install Godot 3.4.
 2. Clone the Godot OpenXR plugin with ``git clone --reecursive https://github.com/GodotVR/godot_openxr`` and follow the build instructions to build it locally.
-3. For a set of sample Godot apps, clone the following repository with ``git clone https://github.com/ILLIXR/OpenXR-Apps`.
+3. For a set of sample Godot apps, clone the following repository with ``git clone https://github.com/ILLIXR/OpenXR-Apps``
 4. For a given Godot project:
     - Go to the app you want to run (e.g. OpenXR-Apps/sponza) and delete the contents of /addons
     - Go to the OpenXR plugin you built in step 2 and copy the contents of godot_openxr/demo/addons into the addons folder in sponza
 5. Start your Godot binary:
     - Click import on the right hand side and find the project.godot file in the sponza directory
-    - Once the game scene is loaded in the godot editor, go to project->export->linux (runnable). Set the export path to ./Sponza_VR.x86_64 and under the “options” tab, for both the Debug and Release, point it to the Godot executable that you used to open Godot
+    - Once the game scene is loaded in the Godot editor, go to project->export->linux (runnable). Set the export path to ./Sponza_VR.x86_64 and under the “options” tab, for both the Debug and Release, point it to the Godot executable that you used to open Godot
         - If you built Godot locally, you may be prompted with a message regarding missing templates. In that case, you should also be provided the option to install the missing templates.
     - Export project
 
