@@ -31,8 +31,7 @@ static std::map<ullong, sensor_types> load_data() {
     const std::string imu0_subpath = "/imu0/data.csv";
     std::ifstream     imu0_file{illixr_data + imu0_subpath};
     if (!imu0_file.good()) {
-        spdlog::get("illixr")
-            ->error("[OFFLINEIMU] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", imu0_subpath, illixr_data);
+        spdlog::get("illixr")->error("[OFFLINEIMU] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", imu0_subpath, illixr_data);
         ILLIXR::abort();
     }
     for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {

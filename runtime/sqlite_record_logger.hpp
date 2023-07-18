@@ -129,9 +129,8 @@ public:
             process(record_batch, actual_batch_size);
             post_processed += actual_batch_size;
         }
-        spdlog::get("illixr")
-            ->info("[sqlite_record_logger] Drained {} (sqlite); {}/{} done post real time", table_name, post_processed,
-                   (processed + post_processed));
+        spdlog::get("illixr")->info("[sqlite_record_logger] Drained {} (sqlite); {}/{} done post real time", table_name,
+                                    post_processed, (processed + post_processed));
     }
 
     void process(const std::vector<record>& record_batch, std::size_t batch_size) {

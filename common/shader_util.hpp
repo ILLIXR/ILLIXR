@@ -22,8 +22,8 @@ static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_u
         return;
     }
     std::string type_error = (type == GL_DEBUG_TYPE_ERROR) ? "** GL ERROR **" : "";
-    spdlog::get("illixr")
-        ->warn("[shader_util] GL CALLBACK: {} type = {:x}, severity = {:x}, message = {}", type_error, type, severity, message);
+    spdlog::get("illixr")->warn("[shader_util] GL CALLBACK: {} type = {:x}, severity = {:x}, message = {}", type_error, type,
+                                severity, message);
 
     // https://www.khronos.org/opengl/wiki/Debug_Output#Message_Components
     if (severity == GL_DEBUG_SEVERITY_HIGH) {

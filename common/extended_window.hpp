@@ -100,9 +100,9 @@ public:
                 glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf);
                 glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLES, &samples);
 #ifndef NDEBUG
-                spdlog::get("illixr")
-                    ->debug("[extended_window] Matching fbconfig {}, visual ID {:x}: SAMPLE_BUFFERS = {}, SAMPLES = {}", i,
-                            vi->visualid, samp_buf, samples);
+                spdlog::get("illixr")->debug(
+                    "[extended_window] Matching fbconfig {}, visual ID {:x}: SAMPLE_BUFFERS = {}, SAMPLES = {}", i,
+                    vi->visualid, samp_buf, samples);
 #endif
                 if (best_fbc < 0 || (samp_buf && samples > best_num_samp)) {
                     best_fbc = i, best_num_samp = samples;

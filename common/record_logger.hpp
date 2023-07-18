@@ -140,18 +140,16 @@ public:
 #ifndef NDEBUG
         assert(rh);
         if (values.size() != rh->get().get_columns()) {
-            spdlog::get("illixr")
-                ->error("[record_logger] {} elements passed, but rh for {} only specifies {}.", values.size(),
-                        rh->get().get_name(), rh->get().get_columns());
+            spdlog::get("illixr")->error("[record_logger] {} elements passed, but rh for {} only specifies {}.", values.size(),
+                                         rh->get().get_name(), rh->get().get_columns());
             abort();
         }
         for (std::size_t column = 0; column < values.size(); ++column) {
             if (values[column].type() != rh->get().get_column_type(column)) {
-                spdlog::get("illixr")
-                    ->error("[record_logger] Caller got wrong type for column {} of {}.", column, rh->get().get_name());
-                spdlog::get("illixr")
-                    ->error("[record_logger] Caller passed: {}; record_header specifies: {}", values[column].type().name(),
-                            rh->get().get_column_type(column).name());
+                spdlog::get("illixr")->error("[record_logger] Caller got wrong type for column {} of {}.", column,
+                                             rh->get().get_name());
+                spdlog::get("illixr")->error("[record_logger] Caller passed: {}; record_header specifies: {}",
+                                             values[column].type().name(), rh->get().get_column_type(column).name());
                 abort();
             }
         }
@@ -324,9 +322,8 @@ public:
 #ifndef NDEBUG
             if (&r.get_record_header() != &buffer[0].get_record_header() &&
                 r.get_record_header() == buffer[0].get_record_header()) {
-                spdlog::get("illixr")
-                    ->error("[record_logger] Tried to push a record of type {} to a record logger for type {}",
-                            r.get_record_header().to_string(), buffer[0].get_record_header().to_string());
+                spdlog::get("illixr")->error("[record_logger] Tried to push a record of type {} to a record logger for type {}",
+                                             r.get_record_header().to_string(), buffer[0].get_record_header().to_string());
                 abort();
             }
 #endif
