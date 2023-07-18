@@ -19,15 +19,15 @@ namespace ILLIXR {
 using ullong = unsigned long long;
 
 struct cam_type : switchboard::event {
-    time_point time;
-    cv::Mat    img0;
-    cv::Mat    img1;
+    [[maybe_unused]] time_point time;
+    cv::Mat                     img0;
+    cv::Mat                     img1;
 };
 
 struct imu_type : switchboard::event {
-    time_point      time;
-    Eigen::Vector3d angular_v;
-    Eigen::Vector3d linear_a;
+    [[maybe_unused]] time_point time;
+    Eigen::Vector3d             angular_v;
+    Eigen::Vector3d             linear_a;
 };
 
 struct rgb_depth_type : public switchboard::event {
@@ -75,15 +75,14 @@ struct imu_raw_type : public switchboard::event {
     time_point                  imu_time;
 };
 
-// TODO: fix this struct up.
 struct lazy_load_image {
-    lazy_load_image() { }
+    lazy_load_image() = default;
 
     lazy_load_image(const std::string& path)
         : _m_path(path) { }
 
     cv::Mat load_grayscale() {
-        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 
         assert(!_m_mat.empty());
         
@@ -91,7 +90,16 @@ struct lazy_load_image {
     }
 
     cv::Mat load_rgb() {
-        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+        _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+
+        assert(!_m_mat.empty());
+        
+        return _m_mat;
+    }
+
+    cv::Math load_depth() {
+        _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+        // TODO: how should depth images be read?
 
         assert(!_m_mat.empty());
         
