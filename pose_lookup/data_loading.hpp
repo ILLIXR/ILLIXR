@@ -35,7 +35,7 @@ static std::map<ullong, sensor_types> load_data() {
     std::ifstream gt_file{illixr_data + "/state_groundtruth_estimate0/data.csv"};
 
     if (!gt_file.good()) {
-        spdlog::get("illixr_app")
+        spdlog::get("illixr")
             ->error("[POSELOOKUP] ${ILLIXR_DATA}/state_groundtruth_estimate0/data.csv "
                     "({})/state_groundtruth_estimate0/data.csv) is not a good path",
                     illixr_data);

@@ -36,7 +36,7 @@ static std::map<ullong, sensor_types> load_data() {
     std::ifstream gt_file{illixr_data + subpath};
 
     if (!gt_file.good()) {
-        spdlog::get("illixr_app")
+        spdlog::get("illixr")
             ->error("[GROUNDTRUTHSLAM] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", subpath, illixr_data);
         ILLIXR::abort();
     }

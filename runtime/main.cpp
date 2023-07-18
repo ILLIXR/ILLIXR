@@ -77,7 +77,7 @@ void spdlogger(std::string name, std::string log_level = "off") {
 }
 
 int main(int argc, char* const* argv) {
-    spdlogger("illixr_app", ILLIXR::getenv_or("ILLIXR_APP_LOG_LEVEL", "off"));
+    spdlogger("illixr", ILLIXR::getenv_or("ILLIXR_LOG_LEVEL", "off"));
     r = ILLIXR::runtime_factory();
 
 #ifndef NDEBUG
@@ -95,11 +95,11 @@ int main(int argc, char* const* argv) {
     const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
-        spdlog::get("illixr_app")->info("[main] Pre-sleep enabled.");
-        spdlog::get("illixr_app")->info("[main] PID: {}", pid);
-        spdlog::get("illixr_app")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
+        spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
+        spdlog::get("illixr")->info("[main] PID: {}", pid);
+        spdlog::get("illixr")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
         sleep(ILLIXR_PRE_SLEEP_DURATION);
-        spdlog::get("illixr_app")->info("[main] Resuming...");
+        spdlog::get("illixr")->info("[main] Resuming...");
     }
 #endif /// NDEBUG
 

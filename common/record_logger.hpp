@@ -140,16 +140,16 @@ public:
 #ifndef NDEBUG
         assert(rh);
         if (values.size() != rh->get().get_columns()) {
-            spdlog::get("illixr_app")
+            spdlog::get("illixr")
                 ->error("[record_logger] {} elements passed, but rh for {} only specifies {}.", values.size(),
                         rh->get().get_name(), rh->get().get_columns());
             abort();
         }
         for (std::size_t column = 0; column < values.size(); ++column) {
             if (values[column].type() != rh->get().get_column_type(column)) {
-                spdlog::get("illixr_app")
+                spdlog::get("illixr")
                     ->error("[record_logger] Caller got wrong type for column {} of {}.", column, rh->get().get_name());
-                spdlog::get("illixr_app")
+                spdlog::get("illixr")
                     ->error("[record_logger] Caller passed: {}; record_header specifies: {}", values[column].type().name(),
                             rh->get().get_column_type(column).name());
                 abort();
@@ -163,7 +163,7 @@ public:
     ~record() {
 #ifndef NDEBUG
         if (rh && !data_use_indicator_.is_used()) {
-            spdlog::get("illixr_app")->error("[record_logger] Record was deleted without being logged.");
+            spdlog::get("illixr")->error("[record_logger] Record was deleted without being logged.");
             abort();
         }
 #endif
@@ -324,7 +324,7 @@ public:
 #ifndef NDEBUG
             if (&r.get_record_header() != &buffer[0].get_record_header() &&
                 r.get_record_header() == buffer[0].get_record_header()) {
-                spdlog::get("illixr_app")
+                spdlog::get("illixr")
                     ->error("[record_logger] Tried to push a record of type {} to a record logger for type {}",
                             r.get_record_header().to_string(), buffer[0].get_record_header().to_string());
                 abort();

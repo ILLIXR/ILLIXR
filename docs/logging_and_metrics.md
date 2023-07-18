@@ -17,8 +17,9 @@ Logging is activated by exporting environment variables to a particular level be
 # Logs can have different levels.
 
 export GROUND_TRUTH_SLAM_LOG_LEVEL=debug
-export ILLIXR_APP_LOG_LEVEL=warn
-...
+export ILLIXR_LOG_LEVEL=warn
+
+./runner.sh configs/native.yaml
 ``` 
 
 When writing a new plugin, the `plugin.spdlogger()` method should be called with the argument: `ILLIXR::getenv_or("<PLUGIN_NAME>_LOG_LEVEL","<default>")` This creates a logger with two sinks (console and file). This logger is then registered in the global spdlog registry. 
@@ -28,7 +29,7 @@ To log inside of a plugin method, use the plugin's name attribute to get the par
 spdlog::get(name)->info("informative message");
 ```
 
-To get the ILLIXR app logger use `spdlog::get("illixr_app")`, for example when logging outside of a plugin method. This usage requires explicitly adding the name of the component or file to the output message, if desired.
+To get the ILLIXR app logger use `spdlog::get("illixr")`, for example when logging outside of a plugin method. This usage requires explicitly adding the name of the component or file to the output message, if desired.
 
 Log files are appended. To merge to a single log do `$ cat *log | sort > combined.log` This will sort correctly because the entries start with an ISO-8601 timestamp. For this reason, if a plugin uses `spdlog::set_pattern()` to create a custom log pattern, it is highly recommended that the custom pattern start with an ISO-8601 timestamp and it is required to reset to the default log message pattern after use.
 
