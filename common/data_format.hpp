@@ -18,77 +18,73 @@
 
 namespace ILLIXR {
 
-	using ullong = unsigned long long;
+using ullong = unsigned long long;
 
-	struct cam_type : switchboard::event {
-		time_point time;
-		cv::Mat    img0;
-		cv::Mat    img1;
+struct cam_type : switchboard::event {
+    time_point time;
+    cv::Mat    img0;
+    cv::Mat    img1;
 
     cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
         : time{_time}
         , img0{_img0}
         , img1{_img1} { }
-	};
+};
 
-	struct imu_type : switchboard::event {
-		time_point      time;
-		Eigen::Vector3d angular_v;
-		Eigen::Vector3d linear_a;
+struct imu_type : switchboard::event {
+    time_point      time;
+    Eigen::Vector3d angular_v;
+    Eigen::Vector3d linear_a;
 
-		imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
-			: time{time_}
-			, angular_v{angular_v_}
-			, linear_a{linear_a_} { }
-	};
+    imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
+        : time{time_}
+        , angular_v{angular_v_}
+        , linear_a{linear_a_} { }
+};
 
-	struct connection_signal : public switchboard::event {
-		bool start;
+struct connection_signal : public switchboard::event {
+    bool start;
 
-		connection_signal(bool start_)
-			: start{start_}
-		{ }
-	};
+    connection_signal(bool start_)
+        : start{start_} { }
+};
 
-    class rgb_depth_type : public switchboard::event {
-        [[maybe_unused]] time_point time;
-        std::optional<cv::Mat> rgb;
-        std::optional<cv::Mat> depth;
-	public:
-		rgb_depth_type(time_point _time,
-					   std::optional<cv::Mat> _rgb,
-					   std::optional<cv::Mat> _depth
-					   )
-			: time{_time}
-			, rgb{_rgb}
-			, depth{_depth}
-		{ }
-    };
+class rgb_depth_type : public switchboard::event {
+    [[maybe_unused]] time_point time;
+    std::optional<cv::Mat>      rgb;
+    std::optional<cv::Mat>      depth;
 
-	// Values needed to initialize the IMU integrator
-	typedef struct {
-		double gyro_noise;
-		double acc_noise;
-		double gyro_walk;
-		double acc_walk;
-		Eigen::Matrix<double,3,1> n_gravity;
-		double imu_integration_sigma;
-		double nominal_rate;
-	} imu_params;
+public:
+    rgb_depth_type(time_point _time, std::optional<cv::Mat> _rgb, std::optional<cv::Mat> _depth)
+        : time{_time}
+        , rgb{_rgb}
+        , depth{_depth} { }
+};
 
-	// IMU biases, initialization params, and slow pose needed by the IMU integrator
-	struct imu_integrator_input : public switchboard::event {
-		time_point last_cam_integration_time;
-		duration t_offset;
-		imu_params params;
-		
-		Eigen::Vector3d biasAcc;
-		Eigen::Vector3d biasGyro;
-		Eigen::Matrix<double,3,1> position;
-		Eigen::Matrix<double,3,1> velocity;
-		Eigen::Quaterniond quat;
+// Values needed to initialize the IMU integrator
+typedef struct {
+    double                      gyro_noise;
+    double                      acc_noise;
+    double                      gyro_walk;
+    double                      acc_walk;
+    Eigen::Matrix<double, 3, 1> n_gravity;
+    double                      imu_integration_sigma;
+    double                      nominal_rate;
+} imu_params;
 
-		imu_integrator_input()
+// IMU biases, initialization params, and slow pose needed by the IMU integrator
+struct imu_integrator_input : public switchboard::event {
+    time_point last_cam_integration_time;
+    duration   t_offset;
+    imu_params params;
+
+    Eigen::Vector3d             biasAcc;
+    Eigen::Vector3d             biasGyro;
+    Eigen::Matrix<double, 3, 1> position;
+    Eigen::Matrix<double, 3, 1> velocity;
+    Eigen::Quaterniond          quat;
+
+    imu_integrator_input()
 			: last_cam_integration_time{time_point{}}
 			, t_offset{duration(std::chrono::milliseconds{-50})}
 			, params{.gyro_noise = 0.00016968,
