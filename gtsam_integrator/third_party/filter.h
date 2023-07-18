@@ -29,60 +29,75 @@ For details, see http://www.lifl.fr/~casiez/1euro
 
 #include <cmath>
 
-template <typename T = double>
+template<typename T = double>
 struct low_pass_filter {
-    low_pass_filter() : hatxprev(0), xprev(0), hadprev(false) {}
+    low_pass_filter()
+        : hatxprev(0)
+        , xprev(0)
+        , hadprev(false) { }
+
     T operator()(T x, T alpha) {
         T hatx;
-        if(hadprev) {
-            hatx = alpha * x + (1-alpha) * hatxprev;
+        if (hadprev) {
+            hatx = alpha * x + (1 - alpha) * hatxprev;
         } else {
-            hatx = x;
+            hatx    = x;
             hadprev = true;
         }
         hatxprev = hatx;
-        xprev = x;
+        xprev    = x;
         return hatx;
     }
-    T hatxprev;
-    T xprev;
+
+    T    hatxprev;
+    T    xprev;
     bool hadprev;
 };
 
-template <typename T = double, typename timestamp_t = double>
+template<typename T = double, typename timestamp_t = double>
 struct one_euro_filter {
-    one_euro_filter(double _freq, T _mincutoff, T _beta, T _dcutoff, T zero, T one, std::function<T(T&)> abs) : freq(_freq), mincutoff(_mincutoff), beta(_beta), dcutoff(_dcutoff), zero(zero), one(one), abs(abs), last_time_(-1) {}
+    one_euro_filter(double _freq, T _mincutoff, T _beta, T _dcutoff, T zero, T one, std::function<T(T&)> abs)
+        : freq(_freq)
+        , mincutoff(_mincutoff)
+        , beta(_beta)
+        , dcutoff(_dcutoff)
+        , zero(zero)
+        , one(one)
+        , abs(abs)
+        , last_time_(-1) { }
+
     T operator()(T x, timestamp_t t = -1) {
         T dx = zero;
 
-        if(last_time_ != -1 && t != -1 && t != last_time_) {
+        if (last_time_ != -1 && t != -1 && t != last_time_) {
             freq = 1.0 / (t - last_time_);
         }
         last_time_ = t;
 
-        if(xfilt_.hadprev)
+        if (xfilt_.hadprev)
             dx = (x - xfilt_.xprev) * freq;
 
-        T edx = dxfilt_(dx, alpha(dcutoff));
+        T edx    = dxfilt_(dx, alpha(dcutoff));
         T cutoff = mincutoff + beta * abs(edx);
         return xfilt_(x, alpha(cutoff));
     }
 
     void clear() {
-        xfilt_.hadprev = false;
+        xfilt_.hadprev  = false;
         dxfilt_.hadprev = false;
     }
 
-    double freq;
-    T mincutoff, beta, dcutoff, zero, one;
+    double               freq;
+    T                    mincutoff, beta, dcutoff, zero, one;
     std::function<T(T&)> abs;
+
 private:
     T alpha(T cutoff) {
         T tau = one / (2 * M_PI * cutoff);
-        T te = one / freq;
+        T te  = one / freq;
         return one / (one + tau / te);
     }
 
-    timestamp_t last_time_;
+    timestamp_t        last_time_;
     low_pass_filter<T> xfilt_, dxfilt_;
 };
