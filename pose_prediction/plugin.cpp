@@ -1,12 +1,14 @@
+#include "common/plugin.hpp"
+
+#include "common/data_format.hpp"
+#include "common/phonebook.hpp"
+#include "common/pose_prediction.hpp"
+
+#include <eigen3/Eigen/Dense>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <shared_mutex>
-#include <eigen3/Eigen/Dense>
-#include "common/phonebook.hpp"
-#include "common/pose_prediction.hpp"
-#include "common/plugin.hpp"
-#include "common/data_format.hpp"
 
 using namespace ILLIXR;
 
@@ -19,8 +21,7 @@ public:
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-		, _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-    { }
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
 
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
@@ -100,7 +101,7 @@ public:
                                           static_cast<float>(state_plus(6))},
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
-        last_pose = state_plus;
+        last_pose      = state_plus;
         last_pose_time = future_timestamp;
 
         // Make the first valid fast pose be straight ahead.
@@ -116,12 +117,8 @@ public:
         // Several timestamps are logged:
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
         //       - the prediction target (the time that was requested for this pose.)
-        return fast_pose_type {
-            .pose = predicted_pose,
-            .predict_computed_time = _m_clock->now(),
-            .predict_target_time = future_timestamp
-        };
-
+        return fast_pose_type{
+            .pose = predicted_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = future_timestamp};
     }
 
     virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
@@ -204,12 +201,11 @@ private:
     switchboard::reader<imu_raw_type>                                _m_imu_raw;
     switchboard::reader<pose_type>                                   _m_true_pose;
     switchboard::reader<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
-    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
-	mutable Eigen::Quaternionf offset {Eigen::Quaternionf::Identity()};
-	mutable std::shared_mutex offset_mutex;
-    mutable Eigen::Matrix<double, 13, 1> last_pose;
-    mutable time_point last_pose_time;
-    
+    switchboard::reader<switchboard::event_wrapper<time_point>>      _m_vsync_estimate;
+    mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
+    mutable std::shared_mutex                                        offset_mutex;
+    mutable Eigen::Matrix<double, 13, 1>                             last_pose;
+    mutable time_point                                               last_pose_time;
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the

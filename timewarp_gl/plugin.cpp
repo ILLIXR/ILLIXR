@@ -16,13 +16,12 @@
 #include "utils/hmd.hpp"
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <future>
 #include <iostream>
 #include <thread>
 #include <vector>
-
-#include <filesystem>
-#include <fstream>
 
 using namespace ILLIXR;
 
@@ -69,15 +68,14 @@ public:
         // which results in a "multipath" between the pose and the video stream.
         // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} { 
-            
-            if (!std::filesystem::exists(data_path)) {
-                if (!std::filesystem::create_directory(data_path)) {
-                    std::cerr << "Failed to create data directory.";
-                }
+        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} {
+        if (!std::filesystem::exists(data_path)) {
+            if (!std::filesystem::create_directory(data_path)) {
+                std::cerr << "Failed to create data directory.";
             }
-            pred_pose_csv.open(data_path + "/pred_pose.csv");
         }
+        pred_pose_csv.open(data_path + "/pred_pose.csv");
+    }
 
 private:
     const std::shared_ptr<switchboard>             sb;
@@ -85,7 +83,7 @@ private:
     const std::shared_ptr<xlib_gl_extended_window> xwin;
     const std::shared_ptr<const RelativeClock>     _m_clock;
 
-    const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+    const std::string     data_path = std::filesystem::current_path().string() + "/recorded_data";
     mutable std::ofstream pred_pose_csv;
 
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
@@ -475,7 +473,7 @@ public:
         return swapped_pose;
     }
 
-	Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+    Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
         return orientation * pp->get_offset().inverse();
     }
 
@@ -506,8 +504,8 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
-        
+        const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -627,13 +625,10 @@ public:
         pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
         if (uncorrected_pose.position.x() != 0) {
             pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
-                      << uncorrected_pose.position.x() << ","
-                      << uncorrected_pose.position.y() << ","
-                      << uncorrected_pose.position.z() << ","
-                      << uncorrected_pose.orientation.w() << ","
-                      << uncorrected_pose.orientation.x() << ","
-                      << uncorrected_pose.orientation.y() << ","
-                      << uncorrected_pose.orientation.z() << std::endl;
+                          << uncorrected_pose.position.x() << "," << uncorrected_pose.position.y() << ","
+                          << uncorrected_pose.position.z() << "," << uncorrected_pose.orientation.w() << ","
+                          << uncorrected_pose.orientation.x() << "," << uncorrected_pose.orientation.y() << ","
+                          << uncorrected_pose.orientation.z() << std::endl;
         }
 
         std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
