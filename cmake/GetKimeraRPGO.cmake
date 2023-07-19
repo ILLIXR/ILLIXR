@@ -1,8 +1,6 @@
 # CMake module to look for KimeraRPGO
 # if it is not found then it is downloaded and marked for compilation and install
-
-find_package(KimeraRPGO 1.0 QUIET)
-
+find_package(KimeraRPGO 1.0 QUIET PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
 if(NOT KimeraRPGO_FOUND)
     # if OpenCV4 was found we use this version of KimeraRPGO
     if(USE_V4_CODE)
