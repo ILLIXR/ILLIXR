@@ -8,7 +8,7 @@ if(SPATIALAUDIO_FOUND)
 else()
     EXTERNALPROJECT_ADD(SpatialAudio
             GIT_REPOSITORY https://github.com/ILLIXR/libspatialaudio.git   # Git repo for source code
-            GIT_TAG 77a901e337a63aa981745ab369ccf597834a37a5               # sha5 hash for specific commit to pull (if there is no specific tag to use)
+            GIT_TAG 12a48a20e45d9a7203d49821e2c4f253c8f933b7               # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/spatialaudio                  # the build directory
             # arguments to pass to CMake
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib
