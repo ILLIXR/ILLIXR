@@ -9,7 +9,7 @@
 #
 # In addition to the standard CMake options, the following arguments can be used:
 #
-# BUILD_GROUP [ALL|NATIVE|MONADO|CI|TESTS|NONE] : which subgroup of plugins are to be built
+# BUILD_GROUP [ALL|NATIVE|MONADO|CI|TESTS|HEADLESS|NONE] : which subgroup of plugins are to be built
 #     ALL : all plugins, this is the default
 #     NATIVE : audio_pipeline, debugview, gldemo, gtsam_integrator, ground_truth_slam,
 #              kimera_vio, offline_imu, offline_cam, offload_data, pose_prediction, timewarp_gl
@@ -17,6 +17,8 @@
 #              openxr_app, pose_prediction, timewarp_gl
 #     CI : audio_pipeline, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio,
 #          offline_imu, offline_cam, pose_prediction,  timewarp_gl
+#     TESTS:
+#     HEADLESS: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
 #     NONE : no group is built, individual plugins can be selected
 #
 # To build specific plugins use the following format:
@@ -75,42 +77,23 @@ project(ILLIXR VERSION 3.2.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
-set(ILLIXR_BUILD_SUFFIX "")
-if(CMAKE_BUILD_TYPE STREQUAL "")
-    message(NOTICE "No build type specified, defaulting to Release")
-    set(CMAKE_BUILD_TYPE "Release")
-endif()
-
-# the plugin library names will depend on the build type
-string(TOLOWER "${CMAKE_BUILD_TYPE}" lower_type)
-if(lower_type MATCHES "debug")
-    set(ILLIXR_BUILD_SUFFIX ".dbg")
-elseif(lower_type MATCHES "release")
-    set(ILLIXR_BUILD_SUFFIX ".opt")
-elseif(lower_type MATCHES "relwithdebinfo")
-    set(ILLIXR_BUILD_SUFFIX ".optdbg")
-endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -fPIC")
 
 # set the CMake search path to include the local files
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
-set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake")
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
-set(BUILD_GROUP "NONE" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, NONE")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+
+set(BUILD_GROUP "NONE" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, HEADLESS, NONE")
 option(DATA_FILE "The data file to get" ON)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 # full list of available local plugins
 set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data offload_vio passthrough_integrator pose_lookup pose_prediction realsense record_imu_cam rk4_integrator timewarp_gl)
 # full list of available external plugins
-set(EXT_PLUGIN_LIST Kimera_vio AudioPipeline OpenXR_APP ORB_SLAM Monado)
+set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado)
 set(YAML_FILE "" CACHE STRING "Yaml file to specify build parameters")
-
-link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
-include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 
 # plugins, only exposed if BUILD_GROUP is OFF
 foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
@@ -140,9 +123,41 @@ if(YAML_FILE)
             endforeach()
         elseif(YCOMMAND STREQUAL "data")
             list(GET ITEM_LIST 1 DATA_FILE)
+        elseif (YCOMMAND STREQUAL "build_type")
+            if(CMAKE_BUILD_TYPE STREQUAL "")
+                list(GET ITEM_LIST 1 BTYPE)
+                set(CMAKE_BUILD_TYPE ${BTYPE})
+            endif()
+        elseif(YCOMMAND STREQUAL "install_prefix")
+            if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+                list(GET ITEM_LIST 1 IPREFIX)
+                set(CMAKE_INSTALL_PREFIX ${IPREFIX})
+            endif()
         endif()
     endforeach()
 endif()
+
+set(ILLIXR_BUILD_SUFFIX "")
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    message(NOTICE "No build type specified, defaulting to Release")
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+# the plugin library names will depend on the build type
+string(TOLOWER "${CMAKE_BUILD_TYPE}" lower_type)
+if(lower_type MATCHES "debug")
+    set(ILLIXR_BUILD_SUFFIX ".dbg")
+elseif(lower_type MATCHES "release")
+    set(ILLIXR_BUILD_SUFFIX ".opt")
+elseif(lower_type MATCHES "relwithdebinfo")
+    set(ILLIXR_BUILD_SUFFIX ".optdbg")
+endif()
+
+set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake")
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
+
+link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
+include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
 
 #STILL NEED DEMO DATA
 if(BUILD_GROUP STREQUAL "NATIVE")
@@ -171,6 +186,11 @@ elseif(BUILD_GROUP STREQUAL "ALL")
         string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
         set(${ITEM_UPPER} ON)
     endforeach()
+elseif(BUILD_GROUP STREQUAL "HEADLESS")
+    set(RT_SLAM_PLUGINS ON)
+    set(CORE_PLUGINS ON)
+    set(USE_GROUND_TRUTH_SLAM ON)
+    set(USE_GLDEMO ON)
 else()
     set(SUBTARGETS No)
     foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
