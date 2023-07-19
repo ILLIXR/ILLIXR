@@ -1,0 +1,6 @@
+group: headless
+plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+enable_offload:   False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False

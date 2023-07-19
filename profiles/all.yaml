@@ -1,0 +1,6 @@
+group: all
+plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,offload_data,depthai,offload_vio,passthrough_integrator,pose_lookup,realsense,record_imu_cam,rk4_integrator,monado,openxr_app,orb_slam,timewarp_gl,audio_pipeline
+enable_offload: true
+enable_alignment: true
+enable_verbose_errors: true
+enable_pre_sleep: true
