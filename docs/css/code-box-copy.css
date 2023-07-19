@@ -40,7 +40,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     vertical-align: middle;
     width: 16px;
     height: 16px;
-    background: url(ic-copy.svg) no-repeat 0 0;
+    background: url(../images/ic-copy.svg) no-repeat 0 0;
 }
 
 .code-box-copy:hover .code-box-copy__btn {
