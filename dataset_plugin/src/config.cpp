@@ -4,7 +4,7 @@
 
 #include "config.hpp"
 
-void ConfigParser::initIMUConfig() {
+void ConfigParser::initIMUConfig(const Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_IMU_TIMESTAMP_UNITS");
     if (!timestamp_env_var) {
@@ -53,7 +53,7 @@ void ConfigParser::initIMUConfig() {
     }
 }
 
-void ConfigParser::initImageConfig() {
+void ConfigParser::initImageConfig(const Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS");
     if (!timestamp_units_env_var) {
@@ -104,7 +104,7 @@ void ConfigParser::initImageConfig() {
     config.image_config.grayscale_path_list = convertPathStringToPathList(grayscale_path_env_var);
 }
 
-void ConfigParser::initPoseConfig() {
+void ConfigParser::initPoseConfig(const Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_POSE_TIMESTAMP_UNITS");
     if (!timestamp_units_env_var) {
@@ -135,7 +135,7 @@ void ConfigParser::initPoseConfig() {
     config.pose_config.path_list = convertPathStringToPathList(path_env_var);
 }
 
-void ConfigParser::initGroundTruthConfig() {
+void ConfigParser::initGroundTruthConfig(const Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_GROUND_TRUTH_TIMESTAMP_UNITS");
     if (!timestamp_env_var) {
@@ -197,7 +197,7 @@ void ConfigParser::initGroundTruthConfig() {
     }
 }
 
-void ConfigParser::initFromConfig() {
+void ConfigParser::initFromConfig(const Config& config) {
     // delimiter
     const char* delimiter_env_var = std::getenv("ILLIXR_DATASET_DELIMITER");
     if (!delimiter_env_var) {
@@ -216,11 +216,11 @@ void ConfigParser::initFromConfig() {
 
     config.root_path = root_path_env_var;
 
-    initIMUConfig();
+    initIMUConfig(config);
 
-    initImageConfig();
+    initImageConfig(config);
 
-    initPoseConfig();
+    initPoseConfig(config);
 
-    initGroundTruthConfig();
+    initGroundTruthConfig(config);
 }
