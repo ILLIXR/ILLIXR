@@ -1,7 +1,11 @@
 # module to download, build and install the ORM_SLAM ILLIXR plugin
 
 # get dependencies
-pkg_check_modules(glslang REQUIRED glslang)
+pkg_check_modules(glslang glslang)
+if(NOT glslang_FOUND)
+    find_package(glslang 11 REQUIRED)
+endif()
+#pkg_check_modules(glslang REQUIRED glslang)
 find_package(gflags REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
@@ -14,7 +18,10 @@ pkg_check_modules(xcb-randr REQUIRED xcb-randr)
 pkg_check_modules(xkbcommon REQUIRED xkbcommon)
 pkg_check_modules(xrandr REQUIRED xrandr)
 find_package(OpenXR REQUIRED)
-find_package(Vulkan REQUIRED)
+pkg_check_modules(Vulkan vulkan)
+if(NOT Vulkan_FOUND)
+    find_package(Vulkan REQUIRED)
+endif()
 pkg_check_modules(libusb-1.0 REQUIRED libusb-1.0)
 
 set(MONADO_CMAKE_ARGS "")
