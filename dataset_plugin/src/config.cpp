@@ -1,3 +1,4 @@
+#include <cassert>      // for the assert()
 #include <iostream>     // for std::cerr
 #include <string>
 #include <stringstream>
@@ -51,6 +52,9 @@ void ConfigParser::initIMUConfig(const Config& config) {
             config.imu_config.format.emplace_back(false);
         }
     }
+
+    // sanity checking
+    assert(config.imu_config.path_list.size() == config.imu_config.format.size());
 }
 
 void ConfigParser::initImageConfig(const Config& config) {
@@ -195,6 +199,9 @@ void ConfigParser::initGroundTruthConfig(const Config& config) {
     while (std::getline(input_stream, name, ',')) {
         config.ground_truth_config.name_list.emplace_back(name);
     }
+
+    // sanity checking
+    assert(config.ground_truth_config.length_list.size() == config.ground_truth_config.name_list.size());
 }
 
 void ConfigParser::initFromConfig(const Config& config) {

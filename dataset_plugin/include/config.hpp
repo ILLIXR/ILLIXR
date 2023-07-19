@@ -53,7 +53,6 @@ struct GroundTruthConfig {
     // format-related info
     std::vector<int> length_list; // stores how long each group is
     std::vector<std::string> name_list; // stores the name of each group
-    // should assert that length_list and name_list have the same length (after both have been filled)
 };
 
 struct Config {
