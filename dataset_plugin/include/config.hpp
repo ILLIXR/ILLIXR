@@ -9,7 +9,7 @@
 
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
 
-enum TimestampUnit {
+enum class TimestampUnit {
     second,
     millisecond,
     microsecond,
