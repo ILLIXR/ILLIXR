@@ -93,18 +93,18 @@ std::vector<std::filesystem::path> convertPathStringToPathList(const std::string
 }
 
 class ConfigParser {
-    public:
-        ConfigParser() = default;
+public:
+    ConfigParser() = default;
 
-        void initFromConfig(const Config&);
-    
-    private:
-        // helper member functions
-        void initIMUConfig(const Config&);
+    void initFromConfig(const Config&);
 
-        void initImageConfig(const Config&);
+private:
+    // helper member functions
+    void initIMUConfig(const Config&);
 
-        void initPoseConfig(const Config&);
+    void initImageConfig(const Config&);
 
-        void initGroundTruthConfig(const Config&);
+    void initPoseConfig(const Config&);
+
+    void initGroundTruthConfig(const Config&);
 };
