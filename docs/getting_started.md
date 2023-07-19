@@ -1,84 +1,191 @@
 # Getting Started
 
-These instructions have been tested with Ubuntu 18.04 and 20.04.
+The ILLIXR application is configured and built via CMake. The CMake system checks for required dependencies,
+builds each requested plugin, builds the main ILLIXR binary, and (optionally) installs these components.
+
+ILLIXR currently only builds on Linux systems, and has been tested on the following configurations:
+
+- Ubuntu
+    - 20.04
+    - 22.04
+- Fedora
+    - 37
+    - 38
+- CentOS
+    - stream9
+
+Other versions of these operating systems may work, but will likely require some manual installation of dependencies.
+For other Linux distributions (e.g. RHEL) it will require significant manual installation of dependencies as many
+are not available in the distribution repos. The instructions below are a generalized version.
+
+## Building ILLIXR
+
+### Clone the repository
+
+<div class="code-box-copy">
+
+    <button class="code-box-copy__btn" data-clipboard-target="#clone" title="Copy"></button>
+    <pre class="language-shell" id="clone">git clone https://github.com/ILLIXR/ILLIXR</pre>
+
+</div>
+<br>
+### Install dependencies
+
+There are two levels of dependencies in ILLIXR: those that are required for any type of build, and those that are
+required only for specific plugins.
+
+#### Select your operating system and version
+
+<table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
+
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+
+#### Pick the ILLIXR plugins you want to use
+
+<table id="group_table" style="border-spacing: 8px; border: 1px solid black;"></table>
+<table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
+
+<table style="border-spaceing: 20px; border: 1px solid black;">
+    <tr><td>Include virtualization support: <input type="checkbox" id="withVirt" onclick="updateChecked();"><br>See <a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a> for details.</td></tr>
+</table>
+
+<div id="notes"></div>
+
+Use the following to install the dependencies for the selected plugins:
+
+<div class="code-box-copy">
+
+    <button class="code-box-copy__btn" data-clipboard-target="#output" title="Copy"></button>
+    <pre class="language-shell" id="output"></pre>
+
+</div>
+
+<div id="depinstall">
+</div>
 
 
-## ILLIXR Runtime without Monado
+<div id="postnotes">
+</div>
 
-1.  **Clone the repository**:
+<br>
 
-    <!--- language: lang-none -->
+#### Build command
 
-        git clone https://github.com/ILLIXR/ILLIXR
+Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`. 
+If you want the default install path then do not add the option to the command line. 
+Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
 
-    ***Note for ILLIXR versions older than `v2.2.0`***:
+<div id="cmake" class="code-box-copy">
+    <button class="code-box-copy__btn" data-clipboard-target="#cmakeoutput" title="Copy"></button>
+    <pre class="language-shell" id="cmakeoutput"></pre>
+</div>
 
-    Update the submodules.
-    Submodules are git repositories inside a git repository that need to be pulled down separately:
+Common CMake command line arguments (always prepend with a `-D`):
 
-    <!--- language: lang-none -->
+-  ***CMAKE_INSTALL_PREFIX*** 
+   The root path to install the libraries and binary to. This defaults to `/usr/local`.
+-  ***CMAKE_BUILD_TYPE***
+   The build type to do: Debug, Release, RelWithDebInfo
+-  ***BUILD_GROUP***
+   The [group][21] of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually.
+-  ***USE_<PLUGIN_NAME>=ON***
+   Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
 
-        git submodule update --init --recursive
+An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
+plugins to build. Using `-DYAML_FILE=<FILE_NAME>` as the command line argument specifying the [_YAML_][2] file to use.
+The format for the [_YAML_][2] [profile][23] file is:
+```yaml
+group: none
+plugins: timewarp_gl,gldemo,ground_truth_slam
+data: http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
+install_prefix: /home/user/illixr
+build_type: Release
+```
+Where **group** is one of `all`, `ci`, `headless`, `monado`, `native`, or `none`; **plugins** is a group of comma separated plugin names
+(case sensitive, no spaces); **data** is the location of the data to download (if any). The current list of plugins is
 
-1.  **Install dependencies**:
+- audio_pipeline
+- debugview
+- depthai
+- gldemo
+- ground_truth_slam
+- gtsam_integrator
+- kimera_vio
+- monado
+- offline_cam
+- offline_imu
+- offload_data
+- offload_vio
+- openxr_app
+- orb_slam
+- passthrough_integrator
+- pose_lookup
+- pose_prediction
+- realsense
+- record_imu_cam
+- rk4_integrator
+- timewarp_gl
 
-    <!--- language: lang-shell -->
+The current groups are defined as
 
-        ./install_deps.sh [--jobs <integer>]
+- **all:** All current plugins
+- **ci:** audio_pipeline, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio, offline_cam, offline_imu, pose_prediction, timewarp_gl
+- **headless:** offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+- **monado:** audio_pipeline, gtsam_integrator, kimera_vio, monado, offline_cam, offline_imu, openxr_app, pose_prediction, timewarp_gl
+- **native:** audio_pipeline, debugview, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio, offline_cam, offline_imu, offload_data, pose_prediction, timewarp_gl
+- **none:** only plugins which are individually specified in the `plugins` entry are used
 
-    This script installs some Ubuntu/Debian packages and builds several dependencies from source.
-    Without any arguments, the script will print the help message, and proceed using default values.
-    To change the number of threads/tasks to use for building, specify using the `--jobs` argument.
-    Other available options can be inspected using the `--help` flag.
+The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which can be used as input to the binary.
 
-1.  **Inspect `configs/native.yaml`**.
+## Running ILLIXR
 
-    The schema definition is in `runner/config_schema.yaml`.
-    For more details on the runner and the config files, see [Building ILLIXR][12].
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
+an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
-1.  **Build and run ILLIXR without Monado**:
+- --duration=<>, the duration to run for in seconds (default is 60)
+- --data=<>, the data file to use
+- --demo_data=<>, the demo data to use
+- --enable_offload, ??
+- --enable_alignment, ??
+- --enable_verbose_errors, give more information about errors
+- --enable_pre_sleep, ??
+- -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
+- -g,--group=<>, the group of plugins to use.
+- -y,--yaml<>, the [_YAML_][2] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 
-    <!--- language: lang-shell -->
+An example of a [_YAML_][2] [profile][23] file is
+```yaml
+group: none
+plugins: timewarp_gl,gldemo,ground_truth_slam
+data: mav0
+demo_data: demo_data/
+enable_offload: true
+enable_verbose_errors: false
+```
 
-        ./runner.sh configs/native.yaml
+Regarding parameters for the binary, the following priority will be used:
+1. If the parameter is specified on the command line it will have the highest priority
+2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
+3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
 
-    If you are running ILLIXR without a graphical environment,
-        try ILLIXR headlessly using [Xvfb][17]:
+## Rationale
 
-    <!--- language: lang-shell -->
-
-        ./runner.sh configs/headless.yaml
-
-1.  **To clean up after building, run**:
-
-    <!--- language: lang-shell -->
-
-        ./runner.sh configs/clean.yaml
-
-    Or simply:
-
-    <!--- language: lang-shell -->
-
-        ./clean.sh
-
-
-## ILLIXR Runtime with Monado
-
-ILLIXR leverages [Monado][18], an open-source implementation of [OpenXR][19],
-    to support a wide range of OpenXR client applications.
-Because of a low-level driver issue, Monado only supports Ubuntu 18.04+.
-
-1.  Compile and run:
-
-    <!--- language: lang-shell -->
-
-        ./runner.sh configs/monado.yaml
+-  The current system can use profile files to control everything from the build to running ILLIXR, inkeeping with the [DRY principle][1].
+   However, for maximum flexibility control can also be done at the command line level as well.
 
 
-## ILLIXR under Virtualization
+## Philosophy
 
-ILLIXR can be run inside a [_QEMU-KVM_][20] image.
-Check out the instructions [here][16].
+-   Each plugin should not have to know or care how the others are compiled.
+    In the future, they may even be distributed separately, just as SOs.
+    Therefore, each plugin needs its own build system.
+
+-   Despite this per-plugin flexibility, building the 'default' set of ILLIXR plugins
+    should be extremely easy.
+
+-   It should be easy to build in parallel.
+
+-   Re-running `make` (and optionally `cmake` first) will only rebuild those parts of the code with have changed.
 
 
 ## Next Steps
@@ -86,32 +193,277 @@ Check out the instructions [here][16].
 Try browsing the source for the runtime and provided plugins.
 The source code is divided into components in the following directories:
 
--   `ILLIXR/runtime/`:
+-   `ILLIXR/src/`:
     A directory holding the implementation for loading and interfacing plugins.
     This directory contains [_Spindle_][13].
 
--   `ILLIXR/common/`:
+-   `ILLIXR/include/illixr/`:
     A directory holding resources and utilities available globally to all plugins.
-    Most plugins symlink this directory into theirs.
     This directory contains the interfaces for [_Switchboard_][14] and [_Phonebook_][15].
 
--   `ILLIXR/<plugin_dir>/`:
+-   `ILLIXR/plugins/<plugin_dir>/`:
     A unique directory for each plugin.
     Most of the core XR functionality is implemented via plugins.
     See [Default Components][10] for more details.
 
-If you edit any of the source files, the runner will detect and rebuild the respective binary
-    the next time it runs.
+If you edit any of the source files, the CMake system will detect and rebuild the respective binary
+the next time it runs.
 If you want to add your own plugin, see [Writing Your Plugin][11].
 
-Otherwise, proceed to the next section, [Building ILLIXR][12].
+<script>
+    const dependencies = {};
+    const plugs = {};
+    const operatingSystems = {};
+    const groups = [];
+    var selectedOS = "";
+    var selectedOSv = "";
+    const plugins = new Set();
 
+    function makeCopyable(code, name) {
+        return "<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#" + name + "\" title=\"Copy\">\n</button>\n<pre class=\"language-shell\" id=\"" + name + "\">" + code + "</pre>\n</div>\n";
+    }
+
+    async function loadModules(){
+        let url = '../images/modules.json';
+        await fetch(url)
+            .then(response => response.json())
+            .then(json => {
+                for(var os of json.systems) {
+                    operatingSystems[os.name] = os.versions;
+                }
+
+                for(var item of json.dependencies) {
+                    var nm = "";
+                    for(var i in item){
+                        nm = i;
+                    }
+                    dependencies[nm] = {'pkg': item[nm].pkg,
+                        'plugins' : []};
+                }
+                for(var item of json.plugins) {
+                    plugins.add(item.name);
+                    plugs[item.name] = item.cmake_flag;
+                    for(var dep of item.dependencies) {
+                        dependencies[dep].plugins.push(item.name);
+                    }
+                }
+                for(var grp of json.groups) {
+                    groups.push(grp.name);
+                    groups[grp.name] = [];
+                    for(var plug of grp.plugins) {
+                        groups[grp.name].push(plug);
+                    }
+                }
+            });
+    }
+
+    function updateSudo() {
+        let sudoLine = "";
+        let notes = document.getElementById("notes");
+        let pkgnotes = "";
+        let pkginfo = "";
+        let postnotes = document.getElementById("postnotes");
+        let depinstall = document.getElementById("depinstall");
+
+        notes.innerHTML = "";
+
+        if(selectedOS == "Ubuntu") {
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev";
+            postnotes.innerHTML = "";
+        } else if(selectedOS == "Fedora") {
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel";
+            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
+        } else {
+            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel";
+            pkginfo = "Notes:<br>Centos does not provide a complete version of OpenCV in their repos, in particular the 'viz' component is missing. You will need to install the VTK-devel package and the ILLIXR build system will compile OpenCV from source.<P>You may also need to run the following:" + makeCopyable("sudo dnf -y install dnf-plugins-core epel-release\nsudo dnf config-manager --set-enabled crb", "pkgC");
+            postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postC") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2C") + "</li></ul>";
+        }
+
+        for(var m in dependencies) {
+            var checked = false;
+            for(var p of dependencies[m].plugins) {
+                checked ||= document.getElementById(p).checked;
+            }
+            if(checked) {
+                sudoLine += " " + dependencies[m].pkg[selectedOS][selectedOSv].pkg;
+                if(dependencies[m].pkg[selectedOS][selectedOSv].postnotes !== "") {
+                    pkgnotes += "<P>" + dependencies[m].pkg[selectedOS][selectedOSv].postnotes;
+                }
+                if(dependencies[m].pkg[selectedOS][selectedOSv].notes !== "") {
+                    if(pkginfo !== "") {
+                        pkginfo += "<P>";
+                    }
+                    pkginfo +=  dependencies[m].pkg[selectedOS][selectedOSv].notes;
+                }
+            }
+        }
+
+        if(document.getElementById("withVirt").checked) {
+            sudoLine += " " + dependencies["qemu"].pkg[selectedOS][selectedOSv].pkg;
+        }
+
+        if(pkginfo !== "") {
+            notes.innerHTML = "<h3>Notes:</h3>" + pkginfo;
+        }
+        depinstall.innerHTML = pkgnotes;
+
+        document.getElementById("output").innerHTML = sudoLine;
+
+        cmakeLine = "cd ILLIXR\nmkdir build\ncd build\ncmake .. -DCMAKE_INSTALL_PREFIX=&lt;LOCATION&gt;";
+        var group_check = false;
+        if(document.getElementById("ALL_plugins").checked) {
+            cmakeLine += " -DBUILD_GROUP=ALL";
+            group_check = true;
+        } else {
+            for(var g of groups) {
+                if(document.getElementById("group_" + g).checked) {
+                    cmakeLine += " -DBUILD_GROUP=" + g.toUpperCase();
+                    group_check = true;
+                    break;
+                }
+            }
+        }
+        if(!group_check) {
+            for(var p of plugins) {
+                if(document.getElementById(p).checked) {
+                    cmakeLine += " -D" + plugs[p];
+                }
+            }
+        }
+        cmakeLine += "\ncmake --build -- -j4\ncmake --install";
+        document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
+        $('.code-box-copy').codeBoxCopy();
+    }
+
+    function updateOS(os_str) {
+        const items = os_str.split(".");
+        selectedOS = items[0];
+        selectedOSv = items[1];
+        updateSudo();
+    }
+    function checkAll() {
+        for(var p of plugins) {
+            document.getElementById(p).checked = document.getElementById("ALL_plugins").checked;
+        }
+        updateSudo();
+    }
+    function checkGroup(group_name) {
+        for(var p of plugins) {
+            var setChecked = false;
+            for(var pl of groups[group_name]) {
+                if(p == pl) {
+                    setChecked = true;
+                    break;
+                }
+            }
+            document.getElementById(p).checked = setChecked;
+        }
+        updateSudo();
+    }
+
+    function updateChecked() {
+        document.getElementById("None_plugins").checked = true;
+        updateSudo();
+    }
+    async function setUpPage() {
+        await loadModules();
+        let osref = document.getElementById("operating_system");
+        let osrow = osref.insertRow(-1);
+        for(var x in operatingSystems) {
+            var txt = x + ":";
+            for(var ver of operatingSystems[x]) {
+                txt += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' id='" + x + "." + ver + "' name='os_choice' value='" + x + "." + ver + "' onclick='updateOS(this.value);'>" + ver;
+            }
+            let cell = osrow.insertCell(-1);
+            cell.style.verticalAlign = "top";
+            cell.innerHTML = txt;
+        }
+        selectedOS = "Ubuntu";
+        selectedOSv = "22";
+        document.getElementById(selectedOS + "." + selectedOSv).checked = true;
+        let tabRef = document.getElementById("group_table");
+
+        let count = 0;
+        let currentRow = tabRef.insertRow(-1);
+        
+        let groupcell = currentRow.insertCell(-1);
+        groupcell.innerHTML = "<b>Groups:</b>";
+        groupcell.setAttribute("colspan", groups.length + 2);
+        currentRow = tabRef.insertRow(-1);
+
+        let all_cell = currentRow.insertCell(-1);
+        let all_check = document.createElement("INPUT");
+        all_check.setAttribute("type", "radio");
+        all_check.setAttribute("onclick", "checkAll();");
+        all_check.setAttribute("id", "ALL_plugins");
+        all_check.setAttribute("value", "ALL_plugins");
+        all_check.setAttribute("name", "group_selection");
+        let all_label = document.createElement("LABEL");
+        all_label.setAttribute("for", "ALL_plugins");
+        all_label.appendChild(document.createTextNode("All"));
+        all_cell.appendChild(all_check);
+        all_cell.appendChild(all_label);
+
+        for(var g of groups) {
+            let cell = currentRow.insertCell(-1);
+            let radio = document.createElement("INPUT");
+            radio.setAttribute("type", "radio");
+            radio.setAttribute("onclick", "checkGroup('" +  g + "');");
+            radio.setAttribute("id", "group_" + g);
+            radio.setAttribute("value", "group_" + g);
+            radio.setAttribute("name", "group_selection");
+            let label = document.createElement("LABEL");
+            label.setAttribute("for", "group_" + g);
+            label.appendChild(document.createTextNode(g));
+            cell.appendChild(radio);
+            cell.appendChild(label);
+        }
+        let none_cell = currentRow.insertCell(-1);
+        let none_check = document.createElement("INPUT");
+        none_check.setAttribute("type", "radio");
+        none_check.setAttribute("onclick", "updateSudo();");
+        none_check.setAttribute("id", "None_plugins");
+        none_check.setAttribute("value", "None_plugins");
+        none_check.setAttribute("name", "group_selection");
+        none_check.checked = true;
+        let none_label = document.createElement("LABEL");
+        none_label.setAttribute("for", "None_plugins");
+        none_label.appendChild(document.createTextNode("None"));
+        none_cell.appendChild(none_check);
+        none_cell.appendChild(none_label);
+
+        tabRef = document.getElementById("listing_table");
+        currentRow = tabRef.insertRow(-1);
+        for(const dep of plugins) {
+            if(count >= 4) {
+                currentRow = tabRef.insertRow(-1);
+                count = 0;
+            }
+            let cell = currentRow.insertCell(-1);
+            let x = document.createElement("INPUT");
+            x.setAttribute("type", "checkbox");
+            x.setAttribute("onclick", "updateChecked();");
+            x.setAttribute("id", dep);
+            let y = document.createElement("LABEL");
+            y.setAttribute("for", dep);
+            y.appendChild(document.createTextNode(dep));
+            cell.appendChild(x);
+            cell.appendChild(y);
+            count += 1;
+        }
+        updateSudo();
+    }
+    window.onload = setUpPage();
+</script>
+
+
+[//]: # (- References -)
+[1]:    https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 
 [//]: # (- Internal -)
-
+[2]:   glossary.md#yaml
 [10]:   illixr_plugins.md
 [11]:   writing_your_plugin.md
-[12]:   building_illixr.md
 [13]:   glossary.md#spindle
 [14]:   glossary.md#switchboard
 [15]:   glossary.md#phonebook
@@ -120,3 +472,6 @@ Otherwise, proceed to the next section, [Building ILLIXR][12].
 [18]:   glossary.md#monado
 [19]:   glossary.md#openxr
 [20]:   glossary.md#qemu-kvm
+[21]:   glossary.md#group
+[22]:   glossary.md#plugin
+[23]:   glossary.md#profile

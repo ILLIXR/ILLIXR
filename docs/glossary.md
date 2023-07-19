@@ -6,119 +6,22 @@ A collection of ILLIXR and ILLIXR-adjacent terms and their definitions can be fo
 
 ## General
 
+#### Asynchronous Reprojection
 
-#### Runtime
+The processing of rendered video for motion interpolation.
+Asynchronous reprojection improves the perception of the rendered video to the [_HMD_][71]
+when rendering misses it target [_frame rate_][72].
 
-The ILLIXR system runtime is responsible for the dynamic orchestration of ILLIXR
-    device resources,
-    system resources,
-    and
-    client applications.
+Asynchronous reprojection is implemented in the [`timewarpgl` ILLIXR plugin][68].
 
-The runtime implementation is located in `ILLIXR/runtime/`.
-See the [Building ILLIXR][74] and [Monado Overiew][64] pages for details about the ILLIXR runtime.
+See the [Wikipedia article][13].
 
-#### Plugin
+#### Chromatic Abberation Correction
 
-A modular component that can be detected and enabled for use by an ILLIXR application.
-A plugin can be internal or external to the [ILLIXR project][4].
-Each plugin is compiled and launched dynamically at runtime based on the
-    ILLIXR [_configuration_][20] used.
-ILLIXR also implements a [_Monado_][58] runtime [_translation Plugin_][75].
+The processing of visual anomalies in images where colors are diffracted due to imperfect optics
+or other perturbing factors.
 
-For a list of supported plugins and their details, see the [ILLIXR Plugins][68] page.
-For instructions for how to modify or write your own plugins, see the [Modifying a Plugin][60]
-    and [Writing Your Plugin][61] pages.
-
-See the [_Plugin_ API documentation][53].
-
-#### Config(uration)
-
-A file describing the key information required to launch an ILLIXR application.
-Configurations for ILLIXR are implemented as [_YAML_][66] files.
-Each configuration comprises an _action_, a _profile_, and a list of [_plugins_][67] as
-    defined by our configuration specification _Schema_.
-
--   **Action** *(Previously Loader)*:
-    An _action_ encapsulates a task for [_Runner_][2].
-    
-    *   `native`:
-        The default application launch configuration.
-        Does not use our [_Monado_][58] runtime integration.
-        Defined in `ILLIXR/configs/native.yaml`.
-
-    *   `native-lookup`:
-        Same as `native`, but using a [_ground truth_][56] lookup from a file for
-            the [_pose_][57] instead of computing it.
-        Defined in `ILLIXR/configs/native-lookup.yaml`.
-
-    *   `headless`:
-        Same as `native`, but using [_Xvfb_][59] to run without a graphical environment.
-        Defined in `ILLIXR/configs/headless.yaml`.
-
-    *   `ci`:
-        Same as `headless`, but using [_Docker_][62] virtualization and debug-enabled compilation.
-        Defined in `ILLIXR/configs/ci.yaml`.
-
-    *   `monado`:
-        Similar to `native`, but uses our [_Monado_][58] runtime integration.
-        Defined in `ILLIXR/configs/monado.yaml`.
-
-    *   `clean`:
-        A meta-task that fetches all supported plugins and then cleans up builds across
-            the entire ILLIXR project.
-        Defined in `ILLIXR/configs/clean.yaml` and supported by `ILLIXR/clean.sh`.
-
-    *   `docs`:
-        A meta-task that generates and populates the documention subdirectories in the project.
-
--   **Profile**:
-    A _profile_ captures the compilation mode used by [_Runner_][55].
- 
-    *   `opt`:
-        Sets [_Runner_][55] to compile the ILLIXR application and plugins with optimizations.
-
-    *  `dbg`:
-        Sets [_Runner_][55] to compile the ILLIXR application and plugins without optimizations,
-            while enabling debug logic and debug logging.
-
--   **Schema**:
-    A _schema_ captures the specification describing the allowable structure of
-        a configuration file.
-    Our schema is implemented using the [json-schema specification][8].
-    Defined in `ILLIXR/runner/config_schema.yaml`.
-
-For more details about the structure of a configuration, see the [Building ILLIXR page][69].
-
-#### Framebuffer
-
-A region of memory used to hold graphical information to be output to a display or graphics device.
-
--   **Frame**:
-    A single frame (image) to be output to a display at a certain instant of time based on the
-        system's _frame rate_.
-
--   **Frame Rate**:
-    The interval period between complete (as defined by the output resolution) frame updates
-        and refreshes.
-    In many systems, the target frame rate is determined by a fixed vertical sync (_VSYNC_) period.
-
--   **Depth Buffer**:
-    A framebuffer representing the depth information of a 3D scene.
-    Depth information is useful for applications such as graphics and [_SLAM_][76].
-
--   **Eye Buffer**:
-    A framebuffer dedicated for display through a [_HMD_][71] lens to be perceived by a user's eye.
-
-For more information, see the [Wikipedia article][17].
-
-#### Swap Chain
-
-A set of virtual [_framebuffers_][72] to be output to a display.
-Only one framebuffer in a swap chain is displayed at a time, enabling the
-    other virtual framebuffers to be concurrently modified in memory.
-
-For more information, see the [Wikipedia article][19].
+For more information, see the [Wikipedia article][29].
 
 #### Compositor
 
@@ -127,12 +30,11 @@ A compositor merges information across its windows to construct a unified frameb
 
 For more information, see the [Wikipedia article][25].
 
-#### Head-mounted Display
+#### Distortion Correction
 
-A display device worn on the head and face for use with VR and XR applications.
-Also known as a _HMD_.
+The processing of visual anomalies in images where rectilinear features have been warped.
 
-For more information, see the [Wikipedia article][16].
+For more information, see the [Wikipedia artice][28].
 
 #### Eye Tracking
 
@@ -146,10 +48,93 @@ A communication interface supporting writes, sychronous reads, and asynchronous 
 For synchronous reads, every value written to the stream is visible to consumers.
 For asynchronous reads, only the latest values written are guaranteed to be visible to consumers.
 
+
+#### Framebuffer
+
+A region of memory used to hold graphical information to be output to a display or graphics device.
+
+-   **Depth Buffer**:
+    A framebuffer representing the depth information of a 3D scene.
+    Depth information is useful for applications such as graphics and [_SLAM_][76].
+
+-   **Eye Buffer**:
+    A framebuffer dedicated for display through a [_HMD_][71] lens to be perceived by a user's eye.
+
+-   **Frame**:
+    A single frame (image) to be output to a display at a certain instant of time based on the
+    system's _frame rate_.
+
+-   **Frame Rate**:
+    The interval period between complete (as defined by the output resolution) frame updates
+    and refreshes.
+    In many systems, the target frame rate is determined by a fixed vertical sync (_VSYNC_) period.
+
+For more information, see the [Wikipedia article][17].
+
+#### Ground Truth
+
+The most accurate source of measurement available for a data set.
+Typically, ground truth measurements are provided for the evaluation of sensor data where the sensor
+or other data source is not as accurate or reliable as the source for the ground truth.
+
+-   ***Ground Truth Poses***:
+    A collection of poses used to evaluate the accuracy of pose generation and prediction algorithms.
+
+-   ***Ground Truth Images***:
+    A collection of images used to evaluate the accuracy of visual processing algorithms,
+    like [_SLAM_][76] and [_VIO_][77].
+
+See the [ILLIXR Plugins][68] page for information about sensors implemented in ILLIXR.
+
+#### Group
+
+A _group_ is a selection of [plugins][67] used for a common purpose. For example the group `MONADO` contains all the [plugins][67] necessary to run [Monado][58] in ILLIXR. _Groups_ are generally used as shortcuts for commonly grouped [plugins][67].
+
+#### Head-mounted Display
+
+A display device worn on the head and face for use with VR and XR applications.
+Also known as a _HMD_.
+
+For more information, see the [Wikipedia article][16].
+
+#### Inertial Measurement Unit
+
+A device that reports its orientation in space and any forces applied it.
+Also known as an _IMU_.
+
+An IMU is implemented in the [`offline_imu_cam` ILLIXR plugin][68].
+
+For more information, see the [Wikipedia article][14].
+
+#### Plugin
+
+A modular component that can be detected and enabled for use by an ILLIXR application.
+A plugin can be internal or external to the [ILLIXR project][4].
+Each plugin is compiled and launched dynamically at runtime based on the command line options given or
+    ILLIXR [_profile_][20] file being used.
+ILLIXR also implements a [_Monado_][58] runtime [_translation Plugin_][75].
+
+For a list of supported plugins and their details, see the [ILLIXR Plugins][68] page.
+For instructions for how to modify or write your own plugins, see the [Modifying a Plugin][60]
+    and [Writing Your Plugin][61] pages.
+
+See the [_Plugin_ API documentation][53].
+
+#### Profile
+
+A _profile_ describes the environment to be used for the build system and running ILLIXR. _Profiles_ are defined in [YAML][66] files. There are several provided in the `profiles` directory in the repository. A _profile_ file defines what [plugins][67] are to be used, as well as additional information specific to where it is being used.
+
+-  ***As input to CMake***:
+   If a _profile_ file is given to cmake via the `-DYAML_FILE=` directive then the [group][69] (if defined) and listed [plugins][67] will be built.
+-  ***As input to the ILLIXR binary***
+   If a _profile_ file is given on the ILLIXR binary via the `--yaml=` command line option, then any listed [plugins][67] will be loaded and any other command line options given in the _profile_ file will be used. See [Running ILLIXR][68] for details.
+
+The same _profile_ file can be given to both cmake and the ILLIXR binary, as any unrecognized options are ignored by both systems.
+
 #### Pose
 
 The combination of orientation and position of an object, used for computer vision
-    and robotics applications.
+and robotics applications.
 ILLIXR applications make use of poses to track the [user's HMD][71] within the virtual environment.
 Internally, ILLIXR has multiple classifications of poses which are used for various purposes.
 
@@ -165,37 +150,32 @@ Internally, ILLIXR has multiple classifications of poses which are used for vari
 
 -   ***Pose Prediction***:
     To improve the user's perception latency experience the time between, _pose prediction_
-        uses history and current system information to pre-compute the user's next pose
+    uses history and current system information to pre-compute the user's next pose
     Pre-computing the next pose allows for components downstream from the pose output
-        in the event stream dataflow graph to begin computation.
+    in the event stream dataflow graph to begin computation.
 
 Pose Prediction is implemented in the [`pose_prediction` ILLIXR plugin][68].
 
 For more information, see the [Wikipedia article][18].
 
-#### Ground Truth
+#### Runtime
 
-The most accurate source of measurement available for a data set.
-Typically, ground truth measurements are provided for the evaluation of sensor data where the sensor
-    or other data source is not as accurate or reliable as the source for the ground truth.
+The ILLIXR system runtime is responsible for the dynamic orchestration of ILLIXR
+device resources,
+system resources,
+and
+client applications.
 
--   ***Ground Truth Poses***:
-    A collection of poses used to evaluate the accuracy of pose generation and prediction algorithms.
+The runtime implementation is located in `<ILLIXR_INSTALL_DIR>/bin`.
+See the [Getting Started][74] and [Monado Overiew][64] pages for details about the ILLIXR runtime.
 
--   ***Ground Truth Images***:
-    A collection of images used to evaluate the accuracy of visual processing algorithms,
-        like [_SLAM_][76] and [_VIO_][77].
+#### Swap Chain
 
-See the [ILLIXR Plugins][68] page for information about sensors implemented in ILLIXR.
+A set of virtual [_framebuffers_][72] to be output to a display.
+Only one framebuffer in a swap chain is displayed at a time, enabling the
+    other virtual framebuffers to be concurrently modified in memory.
 
-#### Inertial Measurement Unit
-
-A device that reports its orientation in space and any forces applied it.
-Also known as an _IMU_.
-
-An IMU is implemented in the [`offline_imu_cam` ILLIXR plugin][68].
-
-For more information, see the [Wikipedia article][14].
+For more information, see the [Wikipedia article][19].
 
 #### Simultaneous Localization and Mapping
 
@@ -214,53 +194,9 @@ Often used in combination with [_SLAM_][76] techniques.
 
 See the [Wikipedia article][30].
 
-#### Asynchronous Reprojection
-
-The processing of rendered video for motion interpolation.
-Asynchronous reprojection improves the perception of the rendered video to the [_HMD_][71]
-    when rendering misses it target [_frame rate_][72].
-
-Asynchronous reprojection is implemented in the [`timewarpgl` ILLIXR plugin][68].
-
-See the [Wikipedia article][13].
-
-#### Distortion Correction
-
-The processing of visual anomalies in images where rectilinear features have been warped.
-
-For more information, see the [Wikipedia artice][28].
-
-#### Chromatic Abberation Correction
-
-The processing of visual anomalies in images where colors are diffracted due to imperfect optics
-    or other perturbing factors.
-
-For more information, see the [Wikipedia article][29].
-
 
 ## Components
 
-
-#### Runner
-
-An ILLIXR tool responsible for
-    preparing the environment,
-    downloading required assets & code,
-    compiling each plugin,
-    and
-    launching the ILLIXR application.
-The implementation resides in `ILLIXR/runner/`, and can be launched with
-    the appropriate environment setup via `ILLIXR/runner.sh`.
-
--   **Action** *(Previously Loader)*:
-    See [_Configuration_][50].
-
-#### Spindle
-
-An ILLIXR component responsible for launching and managing plugin threads.
-The implementation resides in `ILLIXR/runtime/`.
-
-See the [_Spindle_ API documentation][52].
 
 #### Phonebook
 
@@ -268,6 +204,13 @@ An ILLIXR service directory used to introspectively interface plugins and their 
 The implementation resides in `ILLIXR/runtime/`.
 
 See the [_Phonebook_ API documentation][51].
+
+#### Spindle
+
+An ILLIXR component responsible for launching and managing plugin threads.
+The implementation resides in `ILLIXR/runtime/`.
+
+See the [_Spindle_ API documentation][52].
 
 #### Switchboard
 
@@ -280,39 +223,6 @@ See the [_Switchboard_ API documentation][54].
 ## Technologies
 
 
-#### OpenXR
-
-An open standard for Augmented and Virtual Reality.
-ILLIXR components target the OpenXR standard and interact with the ILLIXR device
-    via the Application Interface.
-
-For more information, visit the [official site from the Khronos Group][1].
-
-#### Monado
-
-An open source, modular implementation of the OpenXR standard for [GNU/Linux][3].
-
-See the ILLIXR [Monado Overview][64] and [Monado Dataflow][65] pages for details about our
-    runtime integration using Monado.
-
-For more information, visit the [official Monado development site][2].
-
-#### Godot
-
-An open source game development engine.
-ILLIXR applications targeting the [_OpenXR_][70] use Godot to access the engine's integration
-    with the OpenXR standard via [_Monado_][58].
-
-For more information, visit the [official Godot site][12].
-
-#### Xvfb
-
-A virtual framebuffer for the [X11 Window Sytem][22].
-ILLIXR uses Xvfb to enable running the graphical ILLIXR application without requiring the user
-    to have a graphical environment configured at application launch.
-
-For more information, see the [Xfvb man page][5].
-
 #### Docker
 
 A platform and containerization framework for deploying applications under virtualization.
@@ -320,41 +230,27 @@ ILLIXR uses Docker to deploy and test code in a continuous integration and deplo
 
 For more information, see the [Docker overview and getting started page][6].
 
-#### QEMU-KVM
+#### Godot
 
-An open source virtulization tool and machine emulator.
-See the instructions for running [ILLIXR under Virtualization][63].
+An open source game development engine.
+ILLIXR applications targeting the [_OpenXR_][70] use Godot to access the engine's integration
+with the OpenXR standard via [_Monado_][58].
 
-For more information, see the [official QEMU page][11].
+For more information, visit the [official Godot site][12].
 
-#### YAML
+#### Monado
 
-A markup language and data serilization standard designed to be user friendly.
-We make use of the [PyYAML][9] and [pyyaml-include][10] libraries to implement
-    our [_Configuration_][50] implementation.
+An open source, modular implementation of the OpenXR standard for [GNU/Linux][3].
 
-For more information, visit the [official YAML page][7].
+See the ILLIXR [Monado Overview][64] and [Monado Dataflow][65] pages for details about our
+runtime integration using Monado.
 
-#### SQLite
-
-A SQL database engine implementation in C designed to be lightweight and easy to use.
-The ILLIXR project allows user to records application statistics to a local database
-    for efficient processing.
-See the [Logging and Metrics page][73] for usage details.
-
-For more information, see the [SQLite development site][21].
-
-#### Vulkan
-
-A cross-platform graphics API that allows developers to efficiently target
-    low-level hardware features.
-
-For more information, see the [official Vulkan page from the Khronos Group][23].
+For more information, visit the [official Monado development site][2].
 
 #### OpenGL
 
 A cross-platform graphics API that allows developers to create graphics applications
-    easily and portably.
+easily and portably.
 Also known as _GL_.
 
 -   **GL Context**:
@@ -369,15 +265,61 @@ Also known as _GL_.
 
 For more information, see the [official OpenGL page from the Khronos Group][24].
 
+#### OpenXR
+
+An open standard for Augmented and Virtual Reality.
+ILLIXR components target the OpenXR standard and interact with the ILLIXR device
+    via the Application Interface.
+
+For more information, visit the [official site from the Khronos Group][1].
+
+#### QEMU-KVM
+
+An open source virtulization tool and machine emulator.
+See the instructions for running [ILLIXR under Virtualization][63].
+
+For more information, see the [official QEMU page][11].
+
+#### SQLite
+
+A SQL database engine implementation in C designed to be lightweight and easy to use.
+The ILLIXR project allows user to records application statistics to a local database
+for efficient processing.
+See the [Logging and Metrics page][73] for usage details.
+
+For more information, see the [SQLite development site][21].
+
 #### Ubuntu
 
 An open source [GNU/Linux][3] operating system and distribution.
 ILLIXR currently supports the _Long Term Support (LTS)_ versions of Ubuntu:
-    18.04 LTS (Bionic)
-    and
-    20.04 LTS (Focal).
+20.04 LTS (Focal)
+and 11.04 (Jammy)
 
 For more information, visit the [official Ubuntu site][29].
+#### Vulkan
+
+A cross-platform graphics API that allows developers to efficiently target
+low-level hardware features.
+
+For more information, see the [official Vulkan page from the Khronos Group][23].
+
+#### Xvfb
+
+A virtual framebuffer for the [X11 Window Sytem][22].
+ILLIXR uses Xvfb to enable running the graphical ILLIXR application without requiring the user
+    to have a graphical environment configured at application launch.
+
+For more information, see the [Xfvb man page][5].
+
+#### YAML
+
+A markup language and data serialization standard designed to be user-friendly.
+We make use of the [yaml-cpp][9] libraries to read
+    our [_profile_][50] files.
+
+For more information, visit the [official YAML page][7].
+
 
 
 [//]: # (- References -)
@@ -390,8 +332,7 @@ For more information, visit the [official Ubuntu site][29].
 [6]:    https://docs.docker.com/get-started/overview
 [7]:    https://yaml.org
 [8]:    https://json-schema.org
-[9]:    https://github.com/yaml/pyyaml
-[10]:   https://pypi.org/project/pyyaml-include
+[9]:    https://github.com/jbeder/yaml-cpp
 [11]:   https://www.qemu.org
 [12]:   https://godotengine.org
 [13]:   https://en.wikipedia.org/wiki/Asynchronous_reprojection
@@ -415,12 +356,11 @@ For more information, visit the [official Ubuntu site][29].
 
 [//]: # (- Internal -)
 
-[50]:   glossary.md#configuration
+[50]:   glossary.md#profile
 [51]:   api/html/classILLIXR_1_1phonebook.html
 [52]:   api/html/classILLIXR_1_1threadloop.html
 [53]:   api/html/classILLIXR_1_1plugin.html
 [54]:   api/html/classILLIXR_1_1switchboard.html
-[55]:   glossary.md#runner
 [56]:   glossary.md#ground-truth
 [57]:   glossary.md#pose
 [58]:   glossary.md#monado
@@ -434,12 +374,14 @@ For more information, visit the [official Ubuntu site][29].
 [66]:   glossary.md#yaml
 [67]:   glossary.md#plugin
 [68]:   illixr_plugins.md
-[69]:   building_illixr.md#configuration
+[69]:   glossary.md#group
 [70]:   glossary.md#openxr
 [71]:   glossary.md#head-mounted-display
 [72]:   glossary.md#framebuffer
 [73]:   logging_and_metrics.md
-[74]:   building_illixr.md
+[74]:   getting_started.md
 [75]:   monado_illixr_runtime_overview.md#translation-plugin
-[76]:   glossary.md#simulataneous-localization-and-mapping
-[77]:   glossary.md#visual-inertial-odometry
+[76]:   glossary.md#simultaneous-localization-and-mapping
+[77]:   glossary.md#visual-interial-odometry
+[78]:   getting_started.md#running-illixr
+[79]:   glossary.md#group

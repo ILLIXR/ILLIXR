@@ -249,10 +249,10 @@ To add your own functionality via the plugin interface:
         PLUGIN_MAIN(basic_plugin);
 
 1.  At this point, you should be able to build your plugin with ILLIXR using -DUSE<YOUR_PLUGIN_NAME>=ON as a command line argument to cmake.
-     See [Building ILLIXR][10] for more details.
+     See [Getting Started][10] for more details.
 
 
-1.  Finally, run ILLIXR with your new plugin following the instructions in [Building ILLIXR][10]:
+1.  Finally, run ILLIXR with your new plugin following the instructions in [Getting Started][10]:
 
 
 1.  This is all that is required to be a plugin which can be loaded by Spindle in
@@ -346,7 +346,7 @@ To add your own functionality via the plugin interface:
 
 [//]: # (- Internal -)
 
-[10]:   building_illixr.md
+[10]:   getting_started.md
 [11]:   api/html/classILLIXR_1_1phonebook.html
 [12]:   api/html/classILLIXR_1_1threadloop.html
 [13]:   api/html/classILLIXR_1_1plugin.html

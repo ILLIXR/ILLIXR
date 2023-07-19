@@ -54,10 +54,10 @@ The driver starts to load the runtime by loading the shared library into the cur
 Then, it calls the plugin loading for each ILLIXR plugin
     (except [`gldemo`][28], which is replaced by the OpenXR app).
 Finally, it calls a special plugin loading which takes a function address instead of a file path
-    to load a [_Translation Plugin_][30] into ILLIXR as the application.
-If the plugin implements a long running computation, it may block the main ILLIXR thread
+    to load a Translation Plugin into ILLIXR as the application.
+If the plugin implements a long-running computation, it may block the main ILLIXR thread
     which drives the entire application.
-To remedy this, a plugin should implement long running processing in its own thread.
+To remedy this, a plugin should implement long-running processing in its own thread.
 This way, the driver will be able to reacquire control and return to Monado
     and the application efficiently.
 
@@ -96,4 +96,3 @@ For implementation details regarding the representation of poses and frames in M
 [27]:   glossary.md#phonebook
 [28]:   illixr_plugins.md
 [29]:   glossary.md#framebuffer
-[30]:   glossary.md#translation-plugin

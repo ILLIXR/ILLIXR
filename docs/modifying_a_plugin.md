@@ -49,11 +49,11 @@ This is how you can modify an existing ILLIXR plugin. This example uses the Audi
    
 1.  Make whatever changes to the plugin code you want and be sure to push them to your forked repo.
 
-1.  See the instructions on [Building ILLIXR][10] to learn how to build and run ILLIXR.
+1.  See the instructions on [Getting Started][10] to learn how to build and run ILLIXR.
 
 1.  To push the modification to upstream ILLIXR, create a PR to the original repository.
 
 
 [//]: # (- Internal -)
 
-[10]:   building_illixr.md
+[10]:   getting_started.md

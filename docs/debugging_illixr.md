@@ -2,7 +2,7 @@
 
 
 ## Debugging Locally
-The config described in [Building ILLIXR][10] supports running the runtime with
+The config described in [Getting Started][10] supports running the runtime with
     arbitrary commands like `gdb`.
 When debugging locally, we recommend using either `gdb` or `valgrind` in this way.
 
@@ -49,8 +49,7 @@ Now run:
 
 You are now in a bash shell in a docker container.
 
-From here you can test whichever project flow you wish, such as the usual `./runner.sh configs/native.yaml`,
-    or the CI/CD testing flow (`./runner.sh configs/ci.yaml`).
+From here you can test whichever project flow you wish, such as the usual `main.opt.exe --yaml illixr.yaml`.
 
 
 [//]: # (- References -)
@@ -59,4 +58,4 @@ From here you can test whichever project flow you wish, such as the usual `./run
 
 [//]: # (- Internal -)
 
-[10]:   building_illixr.md
+[10]:   getting_started.md
