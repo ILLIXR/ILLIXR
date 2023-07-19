@@ -1,4 +1,5 @@
 get_external_for_plugin(eCAL)
+get_external_for_plugin(OpenVINS)
 find_package(Protobuf REQUIRED)
 add_subdirectory(device_rx)
 add_subdirectory(device_tx)
