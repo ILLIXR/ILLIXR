@@ -350,6 +350,7 @@ if(DATA_FILE)
     else()
         message("Downloading ${DATA_FILE} to data.zip")
         file(DOWNLOAD ${DATA_FILE} ./data.zip SHOW_PROGRESS)
+        file(ARCHIVE_EXTRACT INPUT ./data.zip DESTINATION ${CMAKE_SOURCE_DIR}/data)
     endif()
 endif()
 
