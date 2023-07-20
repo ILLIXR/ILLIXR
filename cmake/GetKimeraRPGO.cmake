@@ -6,7 +6,7 @@ if(NOT KimeraRPGO_FOUND)
     if(USE_V4_CODE)
         ExternalProject_Add(KimeraRPGO
                 GIT_REPOSITORY https://github.com/MIT-SPARK/Kimera-RPGO.git   # Git repo for source code
-                GIT_TAG 3718a6f29dc1de5c2966fcbd679eee27a7933a68              # sha5 hash for specific commit to pull (if there is no specific tag to use)
+                GIT_TAG cdf7913ab44a0823f2324cadf72a98afa61ad99f              # sha5 hash for specific commit to pull (if there is no specific tag to use)
                 DEPENDS ${GTSAM_DEP_STR}                                      # dependencies of this module
                 PREFIX ${CMAKE_BINARY_DIR}/_deps/kimerarpgo                   # the build directory
                 # arguments to pass to CMake
