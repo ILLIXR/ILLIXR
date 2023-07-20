@@ -1,7 +1,6 @@
 group: ci
 plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-data: /home/illixr/ILLIXR/build/mav0
-demo_data: /home/illixr/ILLIXR/demo_data
+data: http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
 enable_offload:   False
 enable_alignment: False
 enable_verbose_errors: False
