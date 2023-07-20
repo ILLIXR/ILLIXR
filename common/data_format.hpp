@@ -75,41 +75,41 @@ struct imu_raw_type : public switchboard::event {
     time_point                  imu_time;
 };
 
-struct lazy_load_image {
-    lazy_load_image() = default;
+// struct lazy_load_image {
+//     lazy_load_image() = default;
 
-    lazy_load_image(const std::string& path)
-        : _m_path(path) { }
+//     lazy_load_image(const std::string& path)
+//         : _m_path(path) { }
 
-    cv::Mat load_grayscale() {
-        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+//     cv::Mat load_grayscale() {
+//         _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 
-        assert(!_m_mat.empty());
+//         assert(!_m_mat.empty());
         
-        return _m_mat;
-    }
+//         return _m_mat;
+//     }
 
-    cv::Mat load_rgb() {
-        _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+//     cv::Mat load_rgb() {
+//         _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
 
-        assert(!_m_mat.empty());
+//         assert(!_m_mat.empty());
         
-        return _m_mat;
-    }
+//         return _m_mat;
+//     }
 
-    cv::Math load_depth() {
-        _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
-        // TODO: how should depth images be read?
+//     cv::Math load_depth() {
+//         _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+//         // TODO: how should depth images be read?
 
-        assert(!_m_mat.empty());
+//         assert(!_m_mat.empty());
         
-        return _m_mat;
-    }
+//         return _m_mat;
+//     }
 
-private:
-    std::string _m_path;
-    cv::Mat     _m_mat;
-};
+// private:
+//     std::string _m_path;
+//     cv::Mat     _m_mat;
+// };
 
 struct pose_type : public switchboard::event {
     time_point         sensor_time; // Recorded time of sensor data ingestion
