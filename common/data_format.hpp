@@ -1,10 +1,10 @@
 #pragma once
 
 #include <array> // for std::array
-#include <string> // for std::string
-#include <utility> // for std::move
 #include <opencv2/core/mat.hpp>
-#undef Success // For 'Success' conflict
+#include <string>  // for std::string
+#include <utility> // for std::move
+#undef Success     // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 //#undef Complex // For 'Complex' conflict
@@ -78,33 +78,33 @@ struct imu_raw_type : public switchboard::event {
 // struct lazy_load_image {
 //     lazy_load_image() = default;
 
-//     lazy_load_image(const std::string& path)
-//         : _m_path(path) { }
+// lazy_load_image(const std::string& path)
+//     : _m_path(path) { }
 
-//     cv::Mat load_grayscale() {
-//         _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+// cv::Mat load_grayscale() {
+//     _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 
-//         assert(!_m_mat.empty());
-        
-//         return _m_mat;
-//     }
+// assert(!_m_mat.empty());
 
-//     cv::Mat load_rgb() {
-//         _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+// return _m_mat;
+// }
 
-//         assert(!_m_mat.empty());
-        
-//         return _m_mat;
-//     }
+// cv::Mat load_rgb() {
+//     _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
 
-//     cv::Math load_depth() {
-//         _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
-//         // TODO: how should depth images be read?
+// assert(!_m_mat.empty());
 
-//         assert(!_m_mat.empty());
-        
-//         return _m_mat;
-//     }
+// return _m_mat;
+// }
+
+// cv::Math load_depth() {
+//     _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
+//     // TODO: how should depth images be read?
+
+// assert(!_m_mat.empty());
+
+// return _m_mat;
+// }
 
 // private:
 //     std::string _m_path;
@@ -127,7 +127,7 @@ struct pose_type : public switchboard::event {
         , orientation{orientation_} { }
 };
 
-struct  fast_pose_type {
+struct fast_pose_type {
     pose_type  pose;
     time_point predict_computed_time; // Time at which the prediction was computed
     time_point predict_target_time;   // Time that prediction targeted.

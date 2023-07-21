@@ -1,9 +1,9 @@
-#include <cassert>      // for the assert()
-#include <iostream>     // for std::cerr
+#include "config.hpp"
+
+#include <cassert>  // for the assert()
+#include <iostream> // for std::cerr
 #include <string>
 #include <stringstream>
-
-#include "config.hpp"
 
 void ConfigParser::initIMUConfig(const Config& config) {
     // parsing timestamp unit-related info.
@@ -43,7 +43,7 @@ void ConfigParser::initIMUConfig(const Config& config) {
     }
 
     std::istringstream input_stream(format_env_var);
-    std::string lin_accel_first;
+    std::string        lin_accel_first;
 
     while (std::getline(input_stream, lin_accel_first, ',')) {
         if (lin_accel_first == "true") {
@@ -178,7 +178,7 @@ void ConfigParser::initGroundTruthConfig(const Config& config) {
 
     // resetting the stringstream
     std::istringstream input_stream;
-    std::string number;
+    std::string        number;
 
     while (std::getline(input_stream, number, ',')) {
         config.ground_truth_config.length_list.emplace_back(std::stoi(number));

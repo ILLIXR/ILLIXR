@@ -1,4 +1,4 @@
-# pragma once
+#pragma once
 
 #include <cassert>    // for assert()
 #include <cstdlib>    // for std::getenv
@@ -9,12 +9,7 @@
 
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
 
-enum class TimestampUnit {
-    second,
-    millisecond,
-    microsecond,
-    nanosecond
-};
+enum class TimestampUnit { second, millisecond, microsecond, nanosecond };
 
 struct IMUConfig {
     // timestamp units-related info
@@ -47,21 +42,21 @@ struct PoseConfig {
 struct GroundTruthConfig {
     // timestamp units-related info
     TimestampUnit timestamp_unit;
-    
+
     std::filesystem::path path;
-    
+
     // format-related info
-    std::vector<int> length_list; // stores how long each group is
-    std::vector<std::string> name_list; // stores the name of each group
+    std::vector<int>         length_list; // stores how long each group is
+    std::vector<std::string> name_list;   // stores the name of each group
 };
 
 struct Config {
     // delimiting character in the data file
     char delimiter;
-    
+
     // path to the directory containing the datasets
     std::filesystem::path root_path;
-    
+
     IMUConfig imu_config;
 
     ImageConfig image_config;
@@ -69,7 +64,6 @@ struct Config {
     PoseConfig pose_config;
 
     GroundTruthConfig ground_truth_config;
-
 };
 
 // helper function
@@ -81,7 +75,7 @@ std::vector<std::filesystem::path> convertPathStringToPathList(const std::string
     // just {"data"}, and {"data/hand-pose", "data/head-pose"}.
 
     std::istringstream input_stream(path_string);
-    std::string path;
+    std::string        path;
 
     std::vector<std::filesystem::path> output;
 
