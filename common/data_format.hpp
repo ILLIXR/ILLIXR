@@ -4,7 +4,9 @@
 #include <opencv2/core/mat.hpp>
 #include <string>  // for std::string
 #include <utility> // for std::move
-#undef Success     // For 'Success' conflict
+#include <unordered_map>
+#include <opencv2/core/mat.hpp>
+#undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 //#undef Complex // For 'Complex' conflict
@@ -34,6 +36,11 @@ struct rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
     cv::Mat                     rgb;
     cv::Mat                     depth;
+};
+
+struct ground_truth_type {
+    std::unordered_map<std::string, Eigen::VectorXd> data;
+
 };
 
 // Values needed to initialize the IMU integrator
@@ -74,42 +81,6 @@ struct imu_raw_type : public switchboard::event {
     Eigen::Quaterniond          quat;
     time_point                  imu_time;
 };
-
-// struct lazy_load_image {
-//     lazy_load_image() = default;
-
-// lazy_load_image(const std::string& path)
-//     : _m_path(path) { }
-
-// cv::Mat load_grayscale() {
-//     _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
-
-// assert(!_m_mat.empty());
-
-// return _m_mat;
-// }
-
-// cv::Mat load_rgb() {
-//     _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
-
-// assert(!_m_mat.empty());
-
-// return _m_mat;
-// }
-
-// cv::Math load_depth() {
-//     _m_mat = cv::imread(_m_path, cv::IMREAD_COLOR);
-//     // TODO: how should depth images be read?
-
-// assert(!_m_mat.empty());
-
-// return _m_mat;
-// }
-
-// private:
-//     std::string _m_path;
-//     cv::Mat     _m_mat;
-// };
 
 struct pose_type : public switchboard::event {
     time_point         sensor_time; // Recorded time of sensor data ingestion
