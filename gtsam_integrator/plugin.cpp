@@ -17,6 +17,9 @@
 #include <iomanip>
 #include <thread>
 
+#include <filesystem>
+#include <fstream>
+
 using namespace ILLIXR;
 // IMU sample time to live in seconds
 constexpr duration IMU_TTL{std::chrono::seconds{5}};
@@ -31,6 +34,14 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
+
+        if (!std::filesystem::exists(data_path)) {
+            if (!std::filesystem::create_directory(data_path)) {
+                std::cerr << "Failed to create data directory.";
+            }
+        }
+        raw_csv.open(data_path + "/imu_raw.csv");
+
         sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
             callback(datum);
         });
@@ -59,6 +70,9 @@ private:
 
     [[maybe_unused]] time_point last_cam_time;
     duration                    last_imu_offset;
+
+    const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+    std::ofstream raw_csv;
 
     /**
      * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
@@ -175,8 +189,9 @@ private:
         }
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
+        std::cout << "CAM to IMU offset is " << input_values->t_offset.count() << std::endl;
 
-        time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
+        time_point time_begin = input_values->last_cam_integration_time + input_values->t_offset;
         time_point time_end   = input_values->t_offset + real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
@@ -190,9 +205,9 @@ private:
         ImuBias prev_bias = _pim_obj->biasHat();
         ImuBias bias      = _pim_obj->biasHat();
 
-#ifndef NDEBUG
+// #ifndef NDEBUG
         std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
-#endif
+// #endif
 
         for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
             _pim_obj->integrateMeasurement(prop_data[i], prop_data[i + 1]);
@@ -217,6 +232,14 @@ private:
                                                                       navstate_k.velocity(),              /// Velocity
                                                                       out_pose.rotation().toQuaternion(), /// Eigen Quat
                                                                       real_time}));
+        raw_csv << std::fixed << real_time.time_since_epoch().count() << ","
+                << out_pose.x() << ","
+                << out_pose.y() << ","
+                << out_pose.z() << ","
+                << out_pose.rotation().toQuaternion().w() << ","
+                << out_pose.rotation().toQuaternion().x() << ","
+                << out_pose.rotation().toQuaternion().y() << ","
+                << out_pose.rotation().toQuaternion().z() << std::endl;
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

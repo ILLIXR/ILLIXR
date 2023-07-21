@@ -15,7 +15,7 @@
 using namespace ILLIXR;
 
 // Set exposure to 8% of camera frame time. This is an empirically determined number
-static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
+static constexpr unsigned EXPOSURE_TIME_PERCENT = 12;
 
 const record_header __imu_cam_record{"imu_cam",
                                      {
@@ -33,7 +33,7 @@ std::shared_ptr<Camera> start_camera() {
     init_params.camera_resolution      = RESOLUTION::VGA;
     init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
     init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps             = 15;
+    init_params.camera_fps             = 30;
     init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization    = true;
     init_params.depth_minimum_distance = 0.3;
@@ -44,6 +44,7 @@ std::shared_ptr<Camera> start_camera() {
         printf("%s\n", toString(err).c_str());
         zedm->close();
     }
+    std::cout << "ZED started\n";
 
     zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, EXPOSURE_TIME_PERCENT);
 
@@ -60,7 +61,7 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{zedm_}
         , image_size{zedm->getCameraInformation().camera_configuration.resolution} {
-        runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
+        // runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
         imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
         imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
@@ -71,6 +72,10 @@ public:
         imageR_ocv = slMat2cvMat(imageR_zed);
         rgb_ocv    = slMat2cvMat(rgb_zed);
         depth_ocv  = slMat2cvMat(depth_zed);
+    }
+
+    void set_first_time(ullong imu_first_time) {
+        _m_first_imu_time = imu_first_time;
     }
 
 private:
@@ -93,8 +98,9 @@ private:
     cv::Mat depth_ocv;
     cv::Mat rgb_ocv;
 
-    std::optional<ullong>     _m_first_cam_time;
-    std::optional<time_point> _m_first_real_time;
+    // std::optional<ullong>     _m_first_cam_time;
+    // std::optional<time_point> _m_first_real_time;
+    std::optional<ullong> _m_first_imu_time;
 
 protected:
     virtual skip_option _p_should_skip() override {
@@ -112,11 +118,19 @@ protected:
         ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
 
         // Time as time_point
-        if (!_m_first_cam_time) {
-            _m_first_cam_time  = cam_time;
-            _m_first_real_time = _m_clock->now();
+        // if (!_m_first_cam_time) {
+        //     _m_first_cam_time  = cam_time;
+        //     _m_first_real_time = _m_clock->now();
+        // }
+        // time_point cam_time_point{std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
+        
+        // We align the starting time point of IMU and CAM to be the first IMU time
+        if (!_m_first_imu_time || cam_time < _m_first_imu_time) {
+            return;
         }
-        time_point cam_time_point{*_m_first_real_time + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
+        time_point cam_time_point{std::chrono::nanoseconds(cam_time - *_m_first_imu_time)};
+        std::this_thread::sleep_for(std::chrono::nanoseconds{cam_time - *_m_first_imu_time} -
+                                        _m_clock->now().time_since_epoch());
 
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
@@ -159,7 +173,7 @@ protected:
     virtual skip_option _p_should_skip() override {
         zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
         if (sensors_data.imu.timestamp > last_imu_ts) {
-            std::this_thread::sleep_for(std::chrono::milliseconds{2});
+            // std::this_thread::sleep_for(std::chrono::milliseconds{2});
             return skip_option::run;
         } else {
             return skip_option::skip_and_yield;
@@ -169,7 +183,7 @@ protected:
     virtual void _p_one_iteration() override {
         RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
-        // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
+        std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
         // Time as ullong (nanoseconds)
         ullong imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
@@ -177,9 +191,12 @@ protected:
         // Time as time_point
         if (!_m_first_imu_time) {
             _m_first_imu_time  = imu_time;
+            camera_thread_.set_first_time(_m_first_imu_time.value());
             _m_first_real_time = _m_clock->now();
         }
-        time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
+        time_point imu_time_point{std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
+        std::this_thread::sleep_for(std::chrono::nanoseconds{imu_time - *_m_first_imu_time} -
+                                        _m_clock->now().time_since_epoch());
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x,
