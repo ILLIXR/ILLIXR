@@ -129,7 +129,8 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}, ++serial_no}));
+        _m_cam.put(_m_cam.allocate<cam_type_zed>(
+            {cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}, ++serial_no}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -187,7 +188,7 @@ protected:
         }
         time_point imu_time_point{std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
         std::this_thread::sleep_for(std::chrono::nanoseconds{imu_time - *_m_first_imu_time} -
-                                        _m_clock->now().time_since_epoch());
+                                    _m_clock->now().time_since_epoch());
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x,
@@ -218,13 +219,13 @@ private:
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_type>              _m_imu;
-    switchboard::reader<cam_type_zed> _m_cam_reader;
-    switchboard::writer<cam_type>     _m_cam_publisher;
+    switchboard::reader<cam_type_zed>          _m_cam_reader;
+    switchboard::writer<cam_type>              _m_cam_publisher;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
 
     // IMU
     SensorsData sensors_data;
-    Timestamp   last_imu_ts = 0;
+    Timestamp   last_imu_ts    = 0;
     std::size_t last_serial_no = 0;
 
     // Logger
