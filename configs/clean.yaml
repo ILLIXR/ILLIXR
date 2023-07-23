@@ -39,6 +39,7 @@ plugin_groups:
     - path: ground_truth_slam
     - path: gldemo
     - path: debugview
+    - path: offload_data
     ## Offloading Plugins
     - path: offload_vio/device_tx
     - path: offload_vio/device_rx
