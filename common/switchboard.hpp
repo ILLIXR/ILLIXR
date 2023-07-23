@@ -295,7 +295,7 @@ private:
 
     public:
         topic_buffer() {
-            spdlog::get("illixr")->info("[switchboard] topic buffer created");
+            //spdlog::get("illixr")->info("[switchboard] topic buffer created");
         }
 
         void enqueue(ptr<const event>&& this_event) {
@@ -464,7 +464,7 @@ public:
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
                 spdlog::get("illixr")
-                    ->error("[switchboard] topic '{}' holds type {}, but caller used type {}", _m_topic.name(),
+                   ->error("[switchboard] topic '{}' holds type {}, but caller used type {}", _m_topic.name(),
                             _m_topic.ty().name(), typeid(specific_event).name());
                 abort();
             }

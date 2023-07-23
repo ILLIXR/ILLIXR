@@ -90,9 +90,9 @@ protected:
 private:
     void thread_main() {
         record_coalescer it_log{record_logger_};
-        spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [threadloop] %t %v ");
-        spdlog::get("illixr")->info("{}", name);
-        spdlog::get("illixr")->set_pattern("%+");
+        //spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [threadloop] %t %v ");
+        //spdlog::get("illixr")->info("{}", name);
+        //spdlog::get("illixr")->set_pattern("%+");
 
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in
