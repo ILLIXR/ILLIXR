@@ -129,7 +129,7 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv}, cv::Mat{imageR_ocv}, cv::Mat{rgb_ocv}, cv::Mat{depth_ocv}, ++serial_no}));
+        _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()}, cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -185,9 +185,9 @@ protected:
             _m_first_imu_time  = imu_time;
             _m_first_real_time = _m_clock->now();
         }
-        time_point imu_time_point{std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
-        std::this_thread::sleep_for(std::chrono::nanoseconds{imu_time - *_m_first_imu_time} -
-                                        _m_clock->now().time_since_epoch());
+        // _m_first_real_time is the time point when the system receives the first IMU sample
+        // Timestamp for later IMU samples is its dataset time difference from the first sample added to _m_first_real_time
+        time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x,
