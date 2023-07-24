@@ -218,13 +218,13 @@ private:
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_type>              _m_imu;
-    switchboard::reader<cam_type_zed> _m_cam_reader;
-    switchboard::writer<cam_type>     _m_cam_publisher;
+    switchboard::reader<cam_type_zed>          _m_cam_reader;
+    switchboard::writer<cam_type>              _m_cam_publisher;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
 
     // IMU
     SensorsData sensors_data;
-    Timestamp   last_imu_ts = 0;
+    Timestamp   last_imu_ts    = 0;
     std::size_t last_serial_no = 0;
 
     // Logger

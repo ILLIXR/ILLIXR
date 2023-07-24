@@ -31,7 +31,6 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-
         sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
             callback(datum);
         });
@@ -60,7 +59,6 @@ private:
 
     [[maybe_unused]] time_point last_cam_time;
     duration                    last_imu_offset;
-
 
     /**
      * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
@@ -178,11 +176,11 @@ private:
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
-        // TODO last_imu_offset is 0, t_offset only take effects when it's negative. 
+        // TODO last_imu_offset is 0, t_offset only take effects when it's negative.
         // However, why would we want to integrate to a past time point rather than the current time point?
         time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
         // time_point time_end   = input_values->t_offset + real_time;
-        time_point time_end   = real_time;
+        time_point time_end = real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
