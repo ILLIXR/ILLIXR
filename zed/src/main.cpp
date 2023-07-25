@@ -48,7 +48,7 @@ std::shared_ptr<Camera> start_camera() {
     init_params.camera_resolution      = RESOLUTION::VGA;
     init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
     init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps             = 30;
+    init_params.camera_fps             = 30;                                         // gives best user experience
     init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization    = true;
     init_params.depth_minimum_distance = 0.3;
@@ -74,7 +74,7 @@ public:
         , _m_cam{sb->get_writer<cam_type_zed>("cam_zed")}
         , zedm{zedm_}
         , image_size{zedm->getCameraInformation().camera_configuration.resolution} {
-        runtime_parameters.sensing_mode = SENSING_MODE::FILL;
+        // runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
         imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
         imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
@@ -129,8 +129,8 @@ protected:
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
-        _m_cam.put(_m_cam.allocate<cam_type_zed>(
-            {cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()}, cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
+        _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()},
+                                                  cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -186,9 +186,9 @@ protected:
             _m_first_imu_time  = imu_time;
             _m_first_real_time = _m_clock->now();
         }
-        time_point imu_time_point{std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
-        std::this_thread::sleep_for(std::chrono::nanoseconds{imu_time - *_m_first_imu_time} -
-                                    _m_clock->now().time_since_epoch());
+        // _m_first_real_time is the time point when the system receives the first IMU sample
+        // Timestamp for later IMU samples is its dataset time difference from the first sample added to _m_first_real_time
+        time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
         Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x,
