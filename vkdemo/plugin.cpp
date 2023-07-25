@@ -163,6 +163,8 @@ public:
         }
     }
 
+    virtual void destroy() override {}
+
 private:
 
     void update_uniform(const fast_pose_type& fp, int eye) {

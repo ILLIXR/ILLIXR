@@ -1,3 +1,4 @@
+#include <mutex>
 #define VMA_IMPLEMENTATION
 #include <algorithm>
 #include <cstdint>
@@ -25,6 +26,7 @@
 #include <fstream>
 #include <thread>
 #include <vector>
+#include <stack>
 
 #include "utils/hmd.hpp"
 
@@ -102,11 +104,17 @@ public:
             this->vma_allocator = ds->vma_allocator;
         } else {
             this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            deletion_queue.push([=]() {
+                vmaDestroyAllocator(vma_allocator);
+            });
         }
 
         generate_distortion_data();
         command_pool = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
         command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        deletion_queue.push([=]() {
+            vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
+        });
         create_vertex_buffer();
         create_index_buffer();
         create_descriptor_set_layout();
@@ -115,6 +123,8 @@ public:
     }
 
     virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool, bool input_texture_vulkan_coordinates = true) override {
+        std::lock_guard<std::mutex> lock{m_setup};
+        
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates;
         if (!initialized) {
             initialize();
@@ -192,6 +202,15 @@ public:
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * !left, 0);
     }
 
+    virtual void destroy() override {
+        partial_destroy();
+        // drain deletion_queue
+        while (!deletion_queue.empty()) {
+            deletion_queue.top()();
+            deletion_queue.pop();
+        }
+    }
+
 private:
 
     void create_vertex_buffer() {
@@ -238,6 +257,10 @@ private:
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
+
+        deletion_queue.push([=]() {
+            vmaDestroyBuffer(vma_allocator, vertex_buffer, vertex_alloc);
+        });
     }
 
     void create_index_buffer() {
@@ -274,7 +297,11 @@ private:
         vkCmdCopyBuffer(command_buffer, staging_buffer, index_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);    
+        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
+
+        deletion_queue.push([=]() {
+            vmaDestroyBuffer(vma_allocator, index_buffer, index_alloc);
+        });
     }
 
     void generate_distortion_data() {
@@ -308,6 +335,10 @@ private:
         samplerInfo.maxLod = 0.f;
 
         VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler));
+
+        deletion_queue.push([=]() {
+            vkDestroySampler(ds->vk_device, fb_sampler, nullptr);
+        });
     }
 
     void create_descriptor_set_layout() {
@@ -330,6 +361,9 @@ private:
         layoutInfo.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout));
+        deletion_queue.push([=]() {
+            vkDestroyDescriptorSetLayout(ds->vk_device, descriptor_set_layout, nullptr);
+        });
     }
 
     void create_uniform_buffer() {
@@ -343,6 +377,9 @@ private:
         createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info));
+        deletion_queue.push([=]() {
+            vmaDestroyBuffer(vma_allocator, uniform_buffer, uniform_alloc);
+        });
     }
 
     void create_descriptor_pool() {
@@ -512,7 +549,7 @@ private:
         VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
         viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportStateCreateInfo.viewportCount = 1;
-        viewportStateCreateInfo.pViewports = nullptr;
+        viewportStateCreateInfo.scissorCount = 1;
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -651,11 +688,13 @@ private:
     const std::shared_ptr<pose_prediction> pp;
     bool disable_warp = false;
     std::shared_ptr<display_sink> ds = nullptr;
+    std::mutex m_setup;
 
     bool initialized = false;
     bool input_texture_vulkan_coordinates = true;
 
     // Vulkan resources
+    std::stack<std::function<void()>> deletion_queue;
     VmaAllocator vma_allocator;
 
     std::array<std::vector<VkImageView>, 2> buffer_pool;

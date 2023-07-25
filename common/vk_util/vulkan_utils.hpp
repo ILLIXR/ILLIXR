@@ -1,6 +1,7 @@
 #ifndef TIMEWARP_VK_VULKAN_UTILS_H
 #define TIMEWARP_VK_VULKAN_UTILS_H
 
+#include <cassert>
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -123,9 +124,9 @@ public:
         VmaVulkanFunctions vulkanFunctions = {};
         vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
         vulkanFunctions.vkGetDeviceProcAddr = &vkGetDeviceProcAddr;
-        
+
         VmaAllocatorCreateInfo allocatorCreateInfo = {};
-        allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
+        allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_0;
         allocatorCreateInfo.physicalDevice = vk_physical_device;
         allocatorCreateInfo.device = vk_device;
         allocatorCreateInfo.instance = vk_instance;

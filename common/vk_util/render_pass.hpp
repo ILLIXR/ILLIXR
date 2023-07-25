@@ -12,6 +12,8 @@ public:
 
     virtual void update_uniforms(const pose_type render_pose) = 0;
 
+    virtual void destroy() = 0;
+
     virtual ~render_pass() { }
 
     VkPipeline pipeline = VK_NULL_HANDLE;
