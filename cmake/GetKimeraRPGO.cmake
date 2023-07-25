@@ -5,8 +5,8 @@ if(NOT KimeraRPGO_FOUND)
     # if OpenCV4 was found we use this version of KimeraRPGO
     if(USE_V4_CODE)
         ExternalProject_Add(KimeraRPGO
-                GIT_REPOSITORY https://github.com/MIT-SPARK/Kimera-RPGO.git   # Git repo for source code
-                GIT_TAG cdf7913ab44a0823f2324cadf72a98afa61ad99f              # sha5 hash for specific commit to pull (if there is no specific tag to use)
+                GIT_REPOSITORY https://github.com/ILLIXR/Kimera-RPGO.git   # Git repo for source code
+                GIT_TAG ILLIXR-v3.2                                           # sha5 hash for specific commit to pull (if there is no specific tag to use)
                 DEPENDS ${GTSAM_DEP_STR}                                      # dependencies of this module
                 PREFIX ${CMAKE_BINARY_DIR}/_deps/kimerarpgo                   # the build directory
                 # arguments to pass to CMake
