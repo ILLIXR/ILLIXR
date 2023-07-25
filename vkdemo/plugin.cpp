@@ -140,7 +140,7 @@ public:
         create_pipeline(render_pass, subpass);
     }
 
-    virtual void update_uniforms(const fast_pose_type fp) override {
+    virtual void update_uniforms(const pose_type fp) override {
         update_uniform(fp, 0);
         update_uniform(fp, 1);
     }
@@ -167,10 +167,10 @@ public:
 
 private:
 
-    void update_uniform(const fast_pose_type& fp, int eye) {
+    void update_uniform(const pose_type& fp, int eye) {
         Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
-        auto pose = fp.pose;
+        auto pose = fp;
 
         Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
