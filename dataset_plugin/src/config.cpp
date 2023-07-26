@@ -1,9 +1,9 @@
-#include <cassert>      // for assert()
-#include <iostream>     // for std::cerr
+#include "config.hpp"
+
+#include <cassert>  // for assert()
+#include <iostream> // for std::cerr
 #include <string>
 #include <stringstream>
-
-#include "config.hpp"
 
 void ConfigParser::initIMUConfig(const Config& config) {
     // parsing timestamp unit-related info.

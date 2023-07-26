@@ -1,9 +1,10 @@
-#include <cstddef>  // for the std::size_t data type
-#include <fstream>
-#include <iostream> // for std::clog
+#include "dataset_loader.hpp"
 
 #include "common/csv_iterator.hpp"
-#include "dataset_loader.hpp"
+
+#include <cstddef> // for the std::size_t data type
+#include <fstream>
+#include <iostream> // for std::clog
 
 // TODO: update the index-related  comments to match the current design.
 
@@ -56,7 +57,8 @@ void DatasetLoader::loadIMUData() {
             for (CSVIterator row{imuFile, 1}; row != CSVIterator{}; ++row) {
                 // we skip the first row because it contains the column names
 
-                std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
+                std::chrono::nanoseconds timestamp =
+                    convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
 
                 Eigen::Vector3d lin_accel{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
                 Eigen::Vector3d ang_vel{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
@@ -69,7 +71,8 @@ void DatasetLoader::loadIMUData() {
             for (CSVIterator row{imuFile, 1}; row != CSVIterator{}; ++row) {
                 // we skip the first row because it contains the column names
 
-                std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
+                std::chrono::nanoseconds timestamp =
+                    convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
 
                 Eigen::Vector3d ang_vel{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
                 Eigen::Vector3d lin_accel{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
@@ -104,10 +107,11 @@ void DatasetLoader::loadImageData() {
 
                 if (isImageFile(entry.path().filename())) {
                     // we don't want to do anything with non-image files.
-                    
+
                     std::string filename = file.path().stem();
 
-                    std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
+                    std::chrono::nanoseconds timestamp =
+                        convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
 
                     m_imageData[timestamp] = {entry.path(), i, ImageType::RGB};
                 }
@@ -117,7 +121,7 @@ void DatasetLoader::loadImageData() {
 
 #ifndef NDEBUG
     std::clog << "Finished loading RGB Images.\n";
-    
+
     std::clog << "Loading Depth Images...\n";
 #endif
 
@@ -135,10 +139,11 @@ void DatasetLoader::loadImageData() {
 
                 if (isImageFile(entry.path().filename())) {
                     // we don't want to do anything with non-image files.
-                    
+
                     std::string filename = file.path().stem();
 
-                    std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
+                    std::chrono::nanoseconds timestamp =
+                        convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
 
                     m_imageData[timestamp] = {entry.path(), i, ImageType::Depth};
                 }
@@ -148,7 +153,7 @@ void DatasetLoader::loadImageData() {
 
 #ifndef NDEBUG
     std::clog << "Finished loading Depth Images.\n";
-    
+
     std::clog << "Loading Grayscale Images...\n";
 #endif
 
@@ -166,10 +171,11 @@ void DatasetLoader::loadImageData() {
 
                 if (isImageFile(entry.path().filename())) {
                     // we don't want to do anything with non-image files.
-                    
+
                     std::string filename = file.path().stem();
 
-                    std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
+                    std::chrono::nanoseconds timestamp =
+                        convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
 
                     m_imageData[timestamp] = {entry.path(), i, ImageType::Grayscale};
                 }
@@ -196,11 +202,11 @@ void DatasetLoader::loadPoseData() {
         std::ifstream poseFile{m_config.pose_config.path_list[i]};
 
         for (CSVIterator row{imuFile, 1}; row != CSVIterator{}; ++row) {
-                // we skip the first row because it contains the column names
+            // we skip the first row because it contains the column names
 
-                std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
+            std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
 
-                // TODO: how to read the pose data?
+            // TODO: how to read the pose data?
         }
     }
 
@@ -224,27 +230,28 @@ void DatasetLoader::loadGroundTruthData() {
         std::ifstream groundTruthFile{m_config.ground_truth_config.path_list[i]};
 
         for (CSVIterator row{groundTruthFile, 1}; row != CSVIterator{}; ++row) {
-                // we skip the first row because it contains the column names
+            // we skip the first row because it contains the column names
 
-                std::size_t rowIndex = 0;
+            std::size_t rowIndex = 0;
 
-                std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.ground_truth_config.timestamp_unit, std::stoull(row[0]));
+            std::chrono::nanoseconds timestamp =
+                convertToTimestamp(m_config.ground_truth_config.timestamp_unit, std::stoull(row[0]));
 
-                GroundTruthData newEntry;
-                Eigen::VectorXd data;
+            GroundTruthData newEntry;
+            Eigen::VectorXd data;
 
-                for (std::size_t j = 0; j < m_config.ground_truth_config.name_list.size(); ++j) {
-                    // we want to reset the `data` variable before reading in new data at every iteration
-                    data.setZero();
+            for (std::size_t j = 0; j < m_config.ground_truth_config.name_list.size(); ++j) {
+                // we want to reset the `data` variable before reading in new data at every iteration
+                data.setZero();
 
-                    for (std::size_t k = 0; k < m_config.ground_truth_config.length_list[j]; ++k) {
-                        data[k] = row[rowIndex++];
-                    }
-
-                    newEntry[m_config.ground_truth_config.name_list[j]] = data;
+                for (std::size_t k = 0; k < m_config.ground_truth_config.length_list[j]; ++k) {
+                    data[k] = row[rowIndex++];
                 }
 
-                m_groundTruthData[timestamp] = newEntry;
+                newEntry[m_config.ground_truth_config.name_list[j]] = data;
+            }
+
+            m_groundTruthData[timestamp] = newEntry;
         }
     }
 

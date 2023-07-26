@@ -1,12 +1,12 @@
 #pragma once
 
-#include <array> // for std::array
+#include <array>   // for std::array
 #include <cstddef> // for the std::size_t datatype
-#include <string> // for std::string
-#include <utility> // for std::move
-#include <unordered_map>
 #include <opencv2/core/mat.hpp>
-#undef Success // For 'Success' conflict
+#include <string> // for std::string
+#include <unordered_map>
+#include <utility> // for std::move
+#undef Success     // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 //#undef Complex // For 'Complex' conflict
@@ -50,7 +50,6 @@ struct image_type : public switchboard::event {
 struct ground_truth_type : public switchboard::event {
     [[maybe_unused]] time_point                      time;
     std::unordered_map<std::string, Eigen::VectorXd> data;
-
 };
 
 // Values needed to initialize the IMU integrator

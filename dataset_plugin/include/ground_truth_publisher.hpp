@@ -1,18 +1,17 @@
 #pragma once
 
-#include <chrono>  // for std::chrono::nanoseconds
-#include <map>
-#include <memory>  // for std::shared_ptr
-#include <string>
-#include <thread>  // for std::this_thread::sleep_for
-#include <utility> // for std::move
-
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
 #include "common/relative_clock.hpp"
 #include "common/threadloop.hpp"
-
 #include "include/dataset_loader.hpp"
+
+#include <chrono> // for std::chrono::nanoseconds
+#include <map>
+#include <memory> // for std::shared_ptr
+#include <string>
+#include <thread>  // for std::this_thread::sleep_for
+#include <utility> // for std::move
 
 using namespace ILLIXR;
 
@@ -51,27 +50,26 @@ public:
 
         std::chrono::nanoseconds lower_bound_time = upper_bound_time - error_cushion;
 
-        for (m_data_iterator = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++m_data_iterator) {
+        for (m_data_iterator = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time);
+             ++m_data_iterator) {
             GroundTruthData datum = it->second;
 
             time_point expected_real_time_given_dataset_time(it->first - dataset_first_time);
-            
-            m_ground_truth_publisher.put(m_ground_truth_publisher.allocate<ground_truth_type>(
-                expected_real_time_given_dataset_time,
-                datum.data
-            ));
+
+            m_ground_truth_publisher.put(
+                m_ground_truth_publisher.allocate<ground_truth_type>(expected_real_time_given_dataset_time, datum.data));
         }
     }
 
-private:   
-    const std::shared_ptr<switchboard> sb;
-    const switchboard::writer<ground_truth_type> m_ground_truth_publisher;
-    const std::shared_ptr<DatasetLoader> m_dataset_loader;
+private:
+    const std::shared_ptr<switchboard>                             sb;
+    const switchboard::writer<ground_truth_type>                   m_ground_truth_publisher;
+    const std::shared_ptr<DatasetLoader>                           m_dataset_loader;
     const std::multimap<std::chrono::nanoseconds, GroundTruthData> m_data;
 
     std::multimap<std::chrono::nanoseconds, GroundTruthData>::const_iterator m_data_iterator;
-    
-    std::chrono::nanoseconds dataset_first_time;
+
+    std::chrono::nanoseconds       dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;
 
     const std::chrono::nanoseconds error_cushion(250);
