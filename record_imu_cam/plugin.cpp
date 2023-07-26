@@ -54,8 +54,12 @@ public:
         Eigen::Vector3d linear_a  = datum->linear_a;
 
         // write imu0
-        imu_wt_file << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2]
-                    << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
+        imu_wt_file << datum->time.time_since_epoch().count() << "," << std::setprecision(17) << angular_v[0] << ","
+                    << angular_v[1] << "," << angular_v[2] << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2]
+                    << std::endl;
+        // imu_wt_file << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," <<
+        // angular_v[2]
+        //             << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
         // write cam0 and cam1
         switchboard::ptr<const cam_type> cam;
@@ -63,10 +67,14 @@ public:
         std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         if (cam != nullptr) {
-            cam0_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
+            cam0_wt_file << cam->time.time_since_epoch().count() << "," << timestamp << ".png " << std::endl;
             cv::imwrite(cam0_img, cam->img0);
-            cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
+            cam1_wt_file << cam->time.time_since_epoch().count() << "," << timestamp << ".png " << std::endl;
             cv::imwrite(cam1_img, cam->img1);
+            // cam0_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
+            // cv::imwrite(cam0_img, cam->img0);
+            // cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
+            // cv::imwrite(cam1_img, cam->img1);
         }
     }
 
