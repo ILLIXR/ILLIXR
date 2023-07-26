@@ -1,23 +1,17 @@
-# gldemo
+# timewarp_vk
 
 ## Summary
 
-The `gldemo` plugin serves as a stand-in for an actual application when ILLIXR is run as a standalone application without an actual OpenXR application. `gldemo` will subscribe to several Switchboard plugs, render a simple, hard-coded 3D scene (in fact, the same 3D scene that is included in the `debugview` plugin) and publish the results to the Switchboard API. `gldemo` is intended to be as lightweight as possible, serving as a baseline debug "dummy application". During development, it is useful to have some content being published to the HMD display without needing to use the full OpenXR interface; `gldemo` fills this requirement. As an important note, `gldemo` does not render stereoscopically; the two eye renders are rendered from the same position. This may be updated to render stereoscopically in the future, but is not seen as a critical feature as this is generally intended as a debugging tool.
+`timewarp_vk` is an Vulkan-based rotational reprojection service intended for use in the ILLIXR architecture. This plugin implements a rotational reprojection algorithm (i.e. does not reproject position, only rotation). 
 
-## Switchboard connection
+## Phonebook Service
 
-`gldemo` subscribes to and publishes to several Switchboard plugs. Most notably, `gldemo` subscribes to the `fast_pose` plug, which (ideally) represents the most recent extrapolated pose. This connection represents an area of active development in ILLIXR, as we are replacing the pose subscription with an RPC-like proper pose prediction system. As of the time of writing, `fast_pose` is functionally identical to the `slow_pose` published by the SLAM system, but this will change when proper pose extrapolation is implemented. `gldemo` also pulls the correct graphics context from Phonebook.
+`timewarp_vk` is registered as a service in phonebook, conforming to the `timewarp` render pass interface. Three functions are exposed:
 
-`gldemo` publishes the rendered eyebuffers to the Switchboard system as well, using whichever eyebuffer format has been selected with the `USE_ALT_EYE_FORMAT` compile-time macro. The alternative eye format is more similar to the format used by Monado/OpenXR, and is more fully explained by the code comments.
+* `setup(VkRenderPass render_pass, uint32_t subpass)` initializes the required Vulkan pipeline and resources given a specific render pass and subpass, to which `timewarp_vk` binds to
+* `update_uniforms(const pose_type render_pose)` calculates the reprojection matrix given the current pose and the pose used to render the frame, and updates the uniform buffer with the reprojection matrix. This must be called before `record_command_buffer` is called
+* `record_command_buffer(VkCommandBuffer commandBuffer, int left)` records the commands into a given command buffer that would perform the reprojection for one eye, for which 1 is left and 0 is right
 
 ## Notes
 
-`gldemo` does not pretend to be an OpenXR application; it does not use the OpenXR API, nor does it follow typical OpenXR patterns. It hooks directly into the Switchboard system and is intended as a debug/visualization tool. For more accurate and representative testing, consider running ILLIXR with an actual OpenXR application.
-
-## Known Issues
-
-As noted above, `gldemo` does not actually render stereoscopically, and the two eye buffers are rendered from the same eye location. (This is not to say that the two eye buffers are not rendered separately; they are actually two separate drawcalls.) In addition, the quality of the pose used by `gldemo` is dependent on the upstream pose, which is currently not extrapolated/predicted and is subject to change.
-
-## Contributions
-
-Contributions are welcome; please raise an issue first, though, as many issues are known and are a part of our existing internal backlog.
+The rotational reprojection algorithm implemented in this plugin is a re-implementation of the algorithm used by the late Jan Paul van Waveren. His invaluable, priceless work in the area of AR/VR has made our project possible. View his codebase [here.](https://github.com/KhronosGroup/Vulkan-Samples-Deprecated/tree/master/samples/apps/atw)

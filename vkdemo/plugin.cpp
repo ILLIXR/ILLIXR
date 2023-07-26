@@ -106,8 +106,7 @@ public:
     vkdemo(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , ds{pb->lookup_impl<display_sink>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
+        , _m_clock{pb->lookup_impl<RelativeClock>()} { }
 
     void initialize() {
         if (ds->vma_allocator) {
@@ -742,7 +741,6 @@ private:
     const std::shared_ptr<pose_prediction>                            pp;
     const std::shared_ptr<display_sink> ds = nullptr;
     const std::shared_ptr<const RelativeClock>                        _m_clock;
-    const switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 
     Eigen::Matrix4f basic_projection;
     std::vector<Model> models;
