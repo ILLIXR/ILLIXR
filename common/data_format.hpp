@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array> // for std::array
-#include <opencv2/core/mat.hpp>
-#include <string>  // for std::string
+#include <cstddef> // for the std::size_t datatype
+#include <string> // for std::string
 #include <utility> // for std::move
 #include <unordered_map>
 #include <opencv2/core/mat.hpp>
@@ -17,6 +17,8 @@
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
 
+// TODO: Modify the output formats to include channel information later.
+
 namespace ILLIXR {
 using ullong = unsigned long long;
 
@@ -30,6 +32,7 @@ struct imu_type : switchboard::event {
     [[maybe_unused]] time_point time;
     Eigen::Vector3d             angular_v;
     Eigen::Vector3d             linear_a;
+    std::size_t                 channel;
 };
 
 struct rgb_depth_type : public switchboard::event {
@@ -38,7 +41,14 @@ struct rgb_depth_type : public switchboard::event {
     cv::Mat                     depth;
 };
 
-struct ground_truth_type {
+struct image_type : public switchboard::event {
+    [[maybe_unused]] time_point time;
+    cv::Mat                     image;
+    std::size_t                 channel;
+};
+
+struct ground_truth_type : public switchboard::event {
+    [[maybe_unused]] time_point                      time;
     std::unordered_map<std::string, Eigen::VectorXd> data;
 
 };
