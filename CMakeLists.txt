@@ -89,11 +89,10 @@ set(BUILD_GROUP "NONE" CACHE STRING "Which components to build: ALL, NATIVE, MON
 option(DATA_FILE "The data file to get" ON)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
-# full list of available local plugins
-set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data offload_vio passthrough_integrator pose_lookup pose_prediction realsense record_imu_cam rk4_integrator timewarp_gl)
-# full list of available external plugins
-set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado OpenVINS)
-set(YAML_FILE "" CACHE STRING "Yaml file to specify build parameters")
+include(cmake/HelperFunctions.cmake)
+
+#set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado OpenVINS)
+generate_yaml()
 
 # plugins, only exposed if BUILD_GROUP is OFF
 foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
@@ -125,6 +124,9 @@ if(YAML_FILE)
                 string(TOUPPER "USE_${PL}" PL_UPPER)
                 set(${PL_UPPER} ON)
             endforeach()
+        elseif(YCOMMAND STREQUAL "run")
+            list(GET ITEM_LIST 1 RUN_NAMES)
+            set(ILLIXR_RUN_NAMES ${RUN_NAMES})
         elseif(YCOMMAND STREQUAL "data")
             list(GET ITEM_LIST 1 DATA_FILE)
         elseif (YCOMMAND STREQUAL "build_type")

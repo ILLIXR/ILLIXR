@@ -151,8 +151,14 @@ an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `op
 - --enable_pre_sleep, ??
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
 - -g,--group=<>, the group of plugins to use.
-- -y,--yaml<>, the [_YAML_][2] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
+- -y,--yaml<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
 
+Regarding parameters for the binary, the following priority will be used:
+1. If the parameter is specified on the command line it will have the highest priority
+2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
+3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
+
+### Profile file format
 An example of a [_YAML_][2] [profile][23] file is
 ```yaml
 group: none
@@ -163,10 +169,7 @@ enable_offload: true
 enable_verbose_errors: false
 ```
 
-Regarding parameters for the binary, the following priority will be used:
-1. If the parameter is specified on the command line it will have the highest priority
-2. If the parameter has a value in the yaml file this value will only be used if it is not specified on the command line (second priority)
-3. If the parameter has a value as an environment variable this value will only be used if it is not specified on the command line nor yaml file
+In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file.
 
 ## Rationale
 

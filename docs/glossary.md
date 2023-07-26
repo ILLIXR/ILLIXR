@@ -88,7 +88,7 @@ See the [ILLIXR Plugins][68] page for information about sensors implemented in I
 
 #### Group
 
-A _group_ is a selection of [plugins][67] used for a common purpose. For example the group `MONADO` contains all the [plugins][67] necessary to run [Monado][58] in ILLIXR. _Groups_ are generally used as shortcuts for commonly grouped [plugins][67].
+A _group_ is a selection of [plugins][67] used for a common purpose. For example the group `MONADO` contains all the [plugins][67] necessary to run [Monado][58] in ILLIXR. _Groups_ are generally used as shortcuts for commonly grouped [plugins][67]. A _group_ can be defined in one a [profile][80] file.
 
 #### Head-mounted Display
 
@@ -127,9 +127,9 @@ A _profile_ describes the environment to be used for the build system and runnin
 -  ***As input to CMake***:
    If a _profile_ file is given to cmake via the `-DYAML_FILE=` directive then the [group][69] (if defined) and listed [plugins][67] will be built.
 -  ***As input to the ILLIXR binary***
-   If a _profile_ file is given on the ILLIXR binary via the `--yaml=` command line option, then any listed [plugins][67] will be loaded and any other command line options given in the _profile_ file will be used. See [Running ILLIXR][68] for details.
+   If a _profile_ file is given on the ILLIXR binary via the `--yaml=` command line option, then any listed [plugins][67] will be loaded and any other command line options given in the _profile_ file will be used. See [Running ILLIXR][78] for details.
 
-The same _profile_ file can be given to both cmake and the ILLIXR binary, as any unrecognized options are ignored by both systems.
+The same _profile_ file can be given to both cmake and the ILLIXR binary (you may need to change the `data:` entry), as any unrecognized options are ignored by both systems.
 
 #### Pose
 
@@ -385,3 +385,4 @@ For more information, visit the [official YAML page][7].
 [77]:   glossary.md#visual-interial-odometry
 [78]:   getting_started.md#running-illixr
 [79]:   glossary.md#group
+[80]:   glossary.md#profile

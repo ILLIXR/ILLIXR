@@ -1,7 +1,4 @@
-group: none
-plugins: offload_vio,offload_vio.server_rx,offload_vio.server_tx,kimera_vio,audio_pipeline
+group: offload_server
+plugins: offload_vio,kimera_vio,audio_pipeline
+run: offload_vio.server_rx,offload_vio.server_tx,kimera_vio,audio_pipeline
 duration: 90
-enable_offload:   False
-enable_alignment: False
-enable_verbose_errors: False
-enable_pre_sleep: False
