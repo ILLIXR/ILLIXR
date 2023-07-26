@@ -739,10 +739,10 @@ private:
         vkDestroyShaderModule(ds->vk_device, frag, nullptr);
     }
 
-    const std::shared_ptr<switchboard>                                sb;
-    const std::shared_ptr<pose_prediction>                            pp;
-    const std::shared_ptr<display_sink>                               ds = nullptr;
-    const std::shared_ptr<const RelativeClock>                        _m_clock;
+    const std::shared_ptr<switchboard>         sb;
+    const std::shared_ptr<pose_prediction>     pp;
+    const std::shared_ptr<display_sink>        ds = nullptr;
+    const std::shared_ptr<const RelativeClock> _m_clock;
 
     Eigen::Matrix4f       basic_projection;
     std::vector<Model>    models;
