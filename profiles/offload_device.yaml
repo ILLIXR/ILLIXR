@@ -1,7 +1,13 @@
-group: none
+group: offload-device
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio,offload_vio.device_rx,offload_vio.device_tx,timewarp_gl,audio_pipeline,kimera_vio
 duration: 85
-enable_offload:   False
+enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False
 enable_pre_sleep: False
+enable_offload: false
+enable_alignment: false
+enable_verbose_errors: false
+enable_pre_sleep: false
+plugins: offload_vio,offload_vio.server_rx,offload_vio.server_tx,kimera_vio,audio_pipeline
+duration: 90
