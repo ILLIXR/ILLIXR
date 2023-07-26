@@ -6,7 +6,6 @@
 #include <string>
 #include <thread>  // for std::this_thread::sleep_for
 #include <utility> // for std::move
-#include <vector>
 
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
