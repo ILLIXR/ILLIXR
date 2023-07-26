@@ -1,6 +1,7 @@
 # pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <chrono>
 #include <filestystem>
 #include <map>
@@ -38,6 +39,10 @@ struct ImageData {
         }
     }
 
+    std::size_t getChannel() {
+        return m_channel;
+    }
+
 private:
     cv::Mat loadGrayscale() {
         m_mat = cv::imread(m_path, cv::IMREAD_GRAYSCALE);
@@ -63,15 +68,9 @@ private:
         return m_mat;
     }
 
-    int getChannel() {
-        return m_channel;
-    }
-
     std::string m_path;
     cv::Mat m_mat;
-
-    // used to determine which channel to publish the image to
-    int m_channel;
+    std::size_t m_channel;
     
     // tells us what load function to use to load the image
     ImageType m_type;
@@ -81,14 +80,14 @@ private:
 struct IMUData {
     Eigen::Vector3d angular_v;
     Eigen::Vector3d linear_a;
-    int channel;
+    std::size_t channel;
 };
 
 
 struct PoseData {
     Eigen::Vector3f position;
     Eigen::Quaternionf orientation;
-    int channel;
+    std::size_t channel;
 };
 
 class DatasetLoader {
@@ -151,13 +150,8 @@ private:
 
     Config m_config;
     
-    std::map<std::chrono::nanoseconds, IMUData> m_IMUData;
-    std::map<std::chrono::nanoseconds, ImageData> m_imageData;
-    std::map<std::chrono::nanoseconds, PoseData> m_poseData;
-    std::map<std::chrono::nanoseconds, ground_truth_type> m_groundTruthData;
-
-    // int m_numIMUChannels;
-    // int m_numImageChannels;
-    // int m_numPoseChannels;
-    // ground truth always only has one channel.
+    std::multimap<std::chrono::nanoseconds, IMUData> m_IMUData;
+    std::multimap<std::chrono::nanoseconds, ImageData> m_imageData;
+    std::multimap<std::chrono::nanoseconds, PoseData> m_poseData;
+    std::multimap<std::chrono::nanoseconds, ground_truth_type> m_groundTruthData;
 };
