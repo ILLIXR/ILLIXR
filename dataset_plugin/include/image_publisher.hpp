@@ -1,11 +1,11 @@
 #pragma once
 
-#include <algorithm>
-#include <chrono>
-#include <memory>
+#include <chrono>  // for std::chrono::nanoseconds
+#include <map>
+#include <memory>  // for std::shared_ptr
 #include <string>
-#include <thread>
-#include <utility>
+#include <thread>  // for std::this_thread::sleep_for
+#include <utility> // for std::move
 #include <vector>
 
 #include "common/data_format.hpp"
@@ -33,6 +33,8 @@ public:
         if (m_data_iterator != m_data.end()) {
             std::chrono::nanoseconds dataset_now = m_data_iterator->first;
 
+            // the time difference needs to be casted to `time_point` because `m_rtc` returns that type.
+            // the explicit type of the `sleep_time` variable will trigger a typecast of the final calculated expression.
             std::chrono::nanoseconds sleep_time = time_point{dataset_now - dataset_first_time} - m_rtc->now();
 
             std::this_thread::sleep_for(sleep_time);
@@ -48,19 +50,18 @@ public:
 
         std::chrono::nanoseconds upper_bound_time = time_since_start.count() + dataset_first_time;
 
-        std::chrono::nanoseconds lower_bound_time = upper_bound_time - 250ns;
+        std::chrono::nanoseconds lower_bound_time = upper_bound_time - error_cushion;
 
-        for (auto it = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++it) {
+        for (m_data_iterator = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++m_data_iterator) {
             ImageData datum = it->second;
 
             time_point expected_real_time_given_dataset_time(it->first - dataset_first_time);
             
-            
-            m_image_publisher.put(m_image_publisher.allocate<image_type>(image_type{
+            m_image_publisher.put(m_image_publisher.allocate<image_type>(
                 expected_real_time_given_dataset_time,
                 datum.loadImage(),
                 datum.getChannel()
-            }));
+            ));
         }
     }
 
@@ -74,4 +75,6 @@ private:
     
     std::chrono::nanoseconds dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;
+
+    const std::chrono::nanoseconds error_cushion(250);
 };
