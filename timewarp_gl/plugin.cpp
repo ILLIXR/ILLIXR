@@ -296,6 +296,11 @@ private:
         glBindTexture(GL_TEXTURE_2D, image_handle);
         glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
 
+        float color[4] = {0.0f, 0.0f, 0.0f, 1.0f}; 
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
         switch (usage) {
         case swapchain_usage::LEFT_SWAPCHAIN: {
             _m_eye_swapchains[0].push_back(image_handle);
