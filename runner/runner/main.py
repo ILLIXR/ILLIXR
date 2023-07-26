@@ -85,7 +85,7 @@ def build_runtime(
     config: Mapping[str, Any],
     suffix: str,
     test: bool = False,
-    illixr_monado: bool = False,
+    is_vulkan: bool = False,
 ) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
@@ -94,8 +94,11 @@ def build_runtime(
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
-    if illixr_monado:
-        runtime_config.update(ILLIXR_MONADO="ON")
+    runtime_config.update(ILLIXR_MONADO="ON")
+
+    if is_vulkan:
+        runtime_config.update(ILLIXR_MONADO_VULKAN="ON")
+
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
 
@@ -215,7 +218,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
-    build_runtime(config, "so", illixr_monado = True)
+
+    is_vulkan: bool = bool(config["action"]["is_vulkan"])
+    build_runtime(config, "so", is_vulkan = True)
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
         plugin_config.update(ILLIXR_MONADO="ON")
@@ -327,26 +332,13 @@ def load_monado(config: Mapping[str, Any]) -> None:
         )
     )
 
-    # print(f"[{action_name}] Running command: {actual_cmd_list}")
-    # new_env = []
-    # for (key, value) in env_override.items():
-    #     new_env.append({
-    #         "separator": "Platform style",
-    #         "type": "Set",
-    #         "variable": key,
-    #         "value": value,
-    #     })
-    # # json encode new_env
-    # new_env = json.dumps(new_env)
-    # print(f"[{action_name}] Setting environment variables: {new_env}")
-
     ## Launch the Monado service before any OpenXR apps are opened
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(15)
+    time.sleep(10)
 
-    ## Launch all OpenXR apps after the service is launched
+    # Launch all OpenXR apps after the service is launched
     for openxr_app_bin_path in openxr_app_bin_paths:
         subprocess.Popen(
            [str(openxr_app_bin_path)],

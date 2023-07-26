@@ -1,12 +1,5 @@
 plugin_groups:
   - !include "rt_slam_plugins.yaml"
-  # - plugin_group:  
-  #   - path: gtsam_integrator
-  #   - path: pose_prediction
-  #   - name: OpenVINS
-  #     path:
-  #       git_repo : https://github.com/ILLIXR/open_vins.git
-  #       version  : "3.2"
   - plugin_group:
     - path: timewarp_vk/
 
@@ -25,7 +18,7 @@ enable_pre_sleep      : False
 
 action:
   name: monado
-  is_mainline: True
+  is_vulkan: True
 
   monado:
     path: ./monado
