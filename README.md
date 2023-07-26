@@ -76,9 +76,13 @@ A [talk presented at NVIDIA GTC'21][42] describing ILLIXR and announcing the ILL
 
 A [demo][45] of an OpenXR application running with ILLIXR.
 
+For more up-to-date list of related papers, demos, and talks, please visit [illixr.org][37].
+
 The [ILLIXR consortium][37] is an industry-supported community effort to democratize
     XR systems research, development, and benchmarking.
 Visit our [web site][37] for more information.
+
+The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. 
 
 # Citation
 
@@ -264,3 +268,4 @@ You can join
 [47]:   https://discord.gg/upkvy7x3W4
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
+[50]:   https://illixr.org/open_meetings

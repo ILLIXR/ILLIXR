@@ -4,13 +4,21 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
 ## Default Plugins
 
--   [`offline_imu_cam`][2]:
-    Reads [_IMU_][36] data and images from files on disk, emulating a real sensor on the [_headset_][38]
+-   [`offline_imu`][2]:
+    Reads [_IMU_][36] data files on disk, emulating a real sensor on the [_headset_][38]
         (feeds the application input measurements with timing similar to an actual IMU).
 
     Topic details:
 
-    -   *Publishes* `imu_cam_type` on `imu_cam` topic.
+    -   *Publishes* `imu_type` on `imu` topic.
+
+-   [`offline_cam`][2]:
+    Reads camera images from files on disk, emulating real cameras on the [_headset_][38]
+        (feeds the application input measurements with timing similar to an actual camera).
+
+    Topic details:
+
+    -   *Publishes* `cam_type` on `cam` topic.
 
 -   [`ground_truth_slam`][3]:
     Reads the [_ground truth_][34] from the same dataset as the `offline_imu_cam` plugin.
