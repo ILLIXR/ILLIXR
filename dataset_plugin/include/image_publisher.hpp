@@ -1,31 +1,42 @@
+#pragma once
+
+#include <algorithm>
+#include <chrono>
+#include <memory>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
+
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
-#include "common/plugin.hpp"
-#include "common/pose_prediction.hpp"
 #include "common/relative_clock.hpp"
 #include "common/threadloop.hpp"
-#include "data_loading.hpp"
 
-// deal with includes later.
-
-#include <shared_mutex>
+#include "include/dataset_loader.hpp"
 
 using namespace ILLIXR;
 
 class ImagePublisher : public threadloop {
 public:
-    offline_cam(std::string name_, phonebook* pb_)
-        : threadloop{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
-        , _m_sensor_data{load_data()}
-        , dataset_first_time{_m_sensor_data.cbegin()->first}
-        , last_ts{0}
-        , _m_rtc{pb->lookup_impl<RelativeClock>()}
-        , next_row{_m_sensor_data.cbegin()} { }
+    ImagePublisher(std::string name, phonebook* pb)
+        : threadloop{name, pb}
+        , switchboard{pb->lookup_impl<switchboard>()}
+        , m_image_publisher{sb->get_writer<image_type>("image")}
+        , m_dataset_loader{std::shared_ptr<DatasetLoader>(DatasetLoader::getInstance())}
+        , m_data{std::move(m_dataset_loader->getImageData())}
+        , m_data_iterator{m_data.cbegin()}
+        , dataset_first_time{m_data_iterator->first}
+        , m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
     virtual skip_option _p_should_skip() override {
-        if (true) {
+        if (m_data_iterator != m_data.end()) {
+            std::chrono::nanoseconds dataset_now = m_data_iterator->first;
+
+            std::chrono::nanoseconds sleep_time = time_point{dataset_now - dataset_first_time} - m_rtc->now();
+
+            std::this_thread::sleep_for(sleep_time);
+
             return skip_option::run;
         } else {
             return skip_option::stop;
@@ -33,61 +44,34 @@ public:
     }
 
     virtual void _p_one_iteration() override {
-        duration time_since_start = _m_rtc->now().time_since_epoch();
-        // duration begin            = time_since_start;
-        ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
-        std::map<ullong, sensor_types>::const_iterator nearest_row;
+        std::chrono::nanoseconds time_since_start = _m_rtc->now().time_since_epoch();
 
-        // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
-        auto after_nearest_row = _m_sensor_data.upper_bound(lookup_time);
+        std::chrono::nanoseconds upper_bound_time = time_since_start.count() + dataset_first_time;
 
-        if (after_nearest_row == _m_sensor_data.cend()) {
-#ifndef NDEBUG
-            std::cerr << "Running out of the dataset! "
-                      << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
-#endif
-            // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
-            // to be nearest_row to avoiding sleeping at the end.
-            nearest_row       = std::prev(after_nearest_row, 1);
-            after_nearest_row = nearest_row;
-            // We are running out of the dataset and the loop will stop next time.
-            internal_stop();
-        } else if (after_nearest_row == _m_sensor_data.cbegin()) {
-            // Should not happen because lookup_time is bigger than dataset_first_time
-#ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
-#endif
-        } else {
-            // Most recent
-            nearest_row = std::prev(after_nearest_row, 1);
-        }
+        std::chrono::nanoseconds lower_bound_time = upper_bound_time - 250ns;
 
-        if (last_ts != nearest_row->first) {
-            last_ts = nearest_row->first;
+        for (auto it = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++it) {
+            ImageData datum = it->second;
 
-            auto img0 = nearest_row->second.cam0.load();
-            auto img1 = nearest_row->second.cam1.load();
-
-            time_point expected_real_time_given_dataset_time(
-                std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time});
-            _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>(cam_type{
+            time_point expected_real_time_given_dataset_time(it->first - dataset_first_time);
+            
+            
+            m_image_publisher.put(m_image_publisher.allocate<image_type>(image_type{
                 expected_real_time_given_dataset_time,
-                img0,
-                img1,
+                datum.loadImage(),
+                datum.getChannel()
             }));
         }
-        std::this_thread::sleep_for(std::chrono::nanoseconds(after_nearest_row->first - dataset_first_time -
-                                                             _m_rtc->now().time_since_epoch().count() - 2));
     }
 
-private:
-    const std::shared_ptr<switchboard>             sb;
-    switchboard::writer<cam_type>                  _m_cam_publisher;
-    const std::map<ullong, sensor_types>           _m_sensor_data;
-    ullong                                         dataset_first_time;
-    ullong                                         last_ts;
-    std::shared_ptr<RelativeClock>                 _m_rtc;
-    std::map<ullong, sensor_types>::const_iterator next_row;
+private:   
+    const std::shared_ptr<switchboard> sb;
+    const switchboard::writer<image_type> m_image_publisher;
+    const std::shared_ptr<DatasetLoader> m_dataset_loader;
+    const std::multimap<std::chrono::nanoseconds, ImageData> m_data;
+
+    std::multimap<std::chrono::nanoseconds, ImageData>::const_iterator m_data_iterator;
+    
+    std::chrono::nanoseconds dataset_first_time;
+    std::shared_ptr<RelativeClock> m_rtc;
 };
