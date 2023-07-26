@@ -115,6 +115,13 @@
       ]
     },
     {
+      "name": "OpenVINS",
+      "cmake_flag": "USE_OPENVINS",
+      "dependencies": [
+        "boost"
+      ]
+    },
+    {
       "name": "OpenXr_APP",
       "cmake_flag": "USE_OPENXR_APP",
       "dependencies": [
@@ -215,14 +222,14 @@
         "pkg": {
           "Ubuntu": {
             "20": {
-              "pkg": "graphviz zlib1g-dev qtbase5-dev libhdf5-dev libcurl4-openssl-dev libqwt-qt5-dev libyaml-cpp-dev",
+              "pkg": "ecal",
               "postnotes": "",
-              "notes": ""
+              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, bit it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             },
             "22": {
-              "pkg": "graphviz zlib1g-dev qtbase5-dev libhdf5-dev libcurl4-openssl-dev libqwt-qt5-dev libyaml-cpp-dev",
+              "pkg": "ecal",
               "postnotes": "",
-              "notes": ""
+              "notes": "Ubuntu 22 does not have a system supplied package for OpenXR, bit it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             }
           },
           "Fedora": {

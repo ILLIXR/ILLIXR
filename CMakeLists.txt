@@ -92,7 +92,7 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 # full list of available local plugins
 set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data offload_vio passthrough_integrator pose_lookup pose_prediction realsense record_imu_cam rk4_integrator timewarp_gl)
 # full list of available external plugins
-set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado)
+set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado OpenVINS)
 set(YAML_FILE "" CACHE STRING "Yaml file to specify build parameters")
 
 # plugins, only exposed if BUILD_GROUP is OFF
