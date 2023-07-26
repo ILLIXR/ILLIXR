@@ -54,10 +54,8 @@ public:
         Eigen::Vector3d linear_a  = datum->linear_a;
 
         // write imu0
-        imu_wt_file << timestamp << "," << std::setprecision(17)
-                    << angular_v[0] << "," << angular_v[1] << "," << angular_v[2] << ","
-                    << linear_a[0] << "," << linear_a[1] << "," << linear_a[2]
-                    << std::endl;
+        imu_wt_file << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2]
+                    << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
         // write cam0 and cam1
         switchboard::ptr<const cam_type> cam;
