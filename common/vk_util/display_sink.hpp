@@ -1,9 +1,9 @@
-#include <cstdint>
+#include "../data_format.hpp"
+#include "../phonebook.hpp"
 #include "third_party/VkBootstrap.h"
 #include "vulkan_utils.hpp"
 
-#include "../data_format.hpp"
-#include "../phonebook.hpp"
+#include <cstdint>
 
 using namespace ILLIXR;
 
@@ -12,18 +12,18 @@ public:
     virtual ~display_sink() { }
 
     // required by timewarp_vk as a service
-    VkInstance               vk_instance;
-    VkPhysicalDevice         vk_physical_device;
-    VkDevice                 vk_device;
-    VkQueue                  graphics_queue;
-    uint32_t                 graphics_queue_family;
+    VkInstance       vk_instance;
+    VkPhysicalDevice vk_physical_device;
+    VkDevice         vk_device;
+    VkQueue          graphics_queue;
+    uint32_t         graphics_queue_family;
 
-    virtual void poll_window_events() { };
+    virtual void poll_window_events(){};
 
     // addtionally required for native display
-    virtual void recreate_swapchain() { };
+    virtual void recreate_swapchain(){};
 
-    void*              window;
+    void*                    window;
     VkSurfaceKHR             vk_surface;
     VkQueue                  present_queue;
     uint32_t                 present_queue_family;
@@ -34,6 +34,5 @@ public:
     VkExtent2D               swapchain_extent;
 
     // optional
-    VmaAllocator             vma_allocator;
-    
+    VmaAllocator vma_allocator;
 };

@@ -1,39 +1,37 @@
 #include <mutex>
 #define VMA_IMPLEMENTATION
-#include <algorithm>
-#include <cstdint>
-#include <cstring>
-#include <glm/detail/qualifier.hpp>
-#include <vulkan/vulkan_core.h>
-#include "common/plugin.hpp"
-
 #include "common/data_format.hpp"
 #include "common/error_util.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/math_util.hpp"
 #include "common/phonebook.hpp"
+#include "common/plugin.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/switchboard.hpp"
 #include "common/vk_util/display_sink.hpp"
 #include "common/vk_util/render_pass.hpp"
 #include "common/vk_util/vulkan_utils.hpp"
+#include "utils/hmd.hpp"
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <cmath>
-#include <future>
-#include <iostream>
+#include <cstdint>
+#include <cstring>
 #include <fstream>
+#include <future>
+#include <glm/detail/qualifier.hpp>
+#include <iostream>
+#include <stack>
 #include <thread>
 #include <vector>
-#include <stack>
-
-#include "utils/hmd.hpp"
+#include <vulkan/vulkan_core.h>
 
 #ifndef NDEBUG
-#define SHADER_FOLDER "timewarp_vk/build/Debug/shaders"
+    #define SHADER_FOLDER "timewarp_vk/build/Debug/shaders"
 #else
-#define SHADER_FOLDER "timewarp_vk/build/Release/shaders"
+    #define SHADER_FOLDER "timewarp_vk/build/Release/shaders"
 #endif
 
 using namespace ILLIXR;
@@ -46,9 +44,9 @@ struct Vertex {
 
     static VkVertexInputBindingDescription get_binding_description() {
         VkVertexInputBindingDescription binding_description = {};
-        binding_description.binding = 0; // index of the binding in the array of bindings
-        binding_description.stride = sizeof(Vertex); // number of bytes from one entry to the next
-        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
+        binding_description.binding                         = 0;              // index of the binding in the array of bindings
+        binding_description.stride                          = sizeof(Vertex); // number of bytes from one entry to the next
+        binding_description.inputRate                       = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
 
         return binding_description;
     }
@@ -57,28 +55,29 @@ struct Vertex {
         std::array<VkVertexInputAttributeDescription, 4> attribute_descriptions = {};
 
         // position
-        attribute_descriptions[0].binding = 0; // which binding the per-vertex data comes from
-        attribute_descriptions[0].location = 0; // location directive of the input in the vertex shader
-        attribute_descriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
-        attribute_descriptions[0].offset = offsetof(Vertex, pos); // number of bytes since the start of the per-vertex data to read from
+        attribute_descriptions[0].binding  = 0;                          // which binding the per-vertex data comes from
+        attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
+        attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
+        attribute_descriptions[0].offset =
+            offsetof(Vertex, pos); // number of bytes since the start of the per-vertex data to read from
 
         // uv0
-        attribute_descriptions[1].binding = 0;
+        attribute_descriptions[1].binding  = 0;
         attribute_descriptions[1].location = 1;
-        attribute_descriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[1].offset = offsetof(Vertex, uv0);
+        attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[1].offset   = offsetof(Vertex, uv0);
 
         // uv1
-        attribute_descriptions[2].binding = 0;
+        attribute_descriptions[2].binding  = 0;
         attribute_descriptions[2].location = 2;
-        attribute_descriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[2].offset = offsetof(Vertex, uv1);
+        attribute_descriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[2].offset   = offsetof(Vertex, uv1);
 
         // uv2
-        attribute_descriptions[3].binding = 0;
+        attribute_descriptions[3].binding  = 0;
         attribute_descriptions[3].location = 3;
-        attribute_descriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[3].offset = offsetof(Vertex, uv2);
+        attribute_descriptions[3].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[3].offset   = offsetof(Vertex, uv2);
 
         return attribute_descriptions;
     }
@@ -110,7 +109,7 @@ public:
         }
 
         generate_distortion_data();
-        command_pool = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
+        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
         command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.push([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
@@ -122,9 +121,10 @@ public:
         create_texture_sampler();
     }
 
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool, bool input_texture_vulkan_coordinates = true) override {
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool,
+                       bool input_texture_vulkan_coordinates = true) override {
         std::lock_guard<std::mutex> lock{m_setup};
-        
+
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates;
         if (!initialized) {
             initialize();
@@ -137,7 +137,7 @@ public:
             throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
         }
         this->buffer_pool = buffer_pool;
-        
+
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
@@ -167,7 +167,7 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const pose_type latest_pose  = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -183,7 +183,7 @@ public:
         calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
         calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-        UniformBufferObject *ubo = (UniformBufferObject *) uniform_alloc_info.pMappedData;
+        UniformBufferObject* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
         memcpy(&ubo->timewarp_start_transform, timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
         memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
@@ -193,11 +193,13 @@ public:
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye][buffer_ind], 0, nullptr);
-        //     vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        //     vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * eye, 0);
+        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
+        //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
+        //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
+        //     eye, 0);
         // }
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[!left][buffer_ind], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
+                                &descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * !left, 0);
     }
@@ -212,26 +214,26 @@ public:
     }
 
 private:
-
     void create_vertex_buffer() {
-        VkBufferCreateInfo staging_buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        staging_buffer_info.size = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        staging_buffer_info.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
+        staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
         VmaAllocationCreateInfo staging_alloc_info = {};
-        staging_alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
-        staging_alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+        staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
-        VkBuffer staging_buffer;
+        VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr));
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
+                                          &staging_alloc, nullptr));
 
-        VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        buffer_info.size = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        buffer_info.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
+        buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
         VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+        alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation vertex_alloc;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr));
@@ -239,20 +241,20 @@ private:
         std::vector<Vertex> vertices;
         vertices.resize(num_distortion_vertices * HMD::NUM_EYES);
         for (size_t i = 0; i < num_distortion_vertices * HMD::NUM_EYES; i++) {
-            vertices[i].pos = { distortion_positions[i].x, distortion_positions[i].y, distortion_positions[i].z };
-            vertices[i].uv0 = { distortion_uv0[i].u, distortion_uv0[i].v };
-            vertices[i].uv1 = { distortion_uv1[i].u, distortion_uv1[i].v };
-            vertices[i].uv2 = { distortion_uv2[i].u, distortion_uv2[i].v };
+            vertices[i].pos = {distortion_positions[i].x, distortion_positions[i].y, distortion_positions[i].z};
+            vertices[i].uv0 = {distortion_uv0[i].u, distortion_uv0[i].v};
+            vertices[i].uv1 = {distortion_uv1[i].u, distortion_uv1[i].v};
+            vertices[i].uv2 = {distortion_uv2[i].u, distortion_uv2[i].v};
         }
 
-        void *mapped_data;
+        void* mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
         memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
         VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy copy_region = {};
-        copy_region.size = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
+        VkBufferCopy    copy_region    = {};
+        copy_region.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer, staging_buffer, vertex_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
 
@@ -264,36 +266,37 @@ private:
     }
 
     void create_index_buffer() {
-        VkBufferCreateInfo staging_buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        staging_buffer_info.size = sizeof(uint32_t) * num_distortion_indices;
-        staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        staging_buffer_info.size               = sizeof(uint32_t) * num_distortion_indices;
+        staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
         VmaAllocationCreateInfo staging_alloc_info = {};
-        staging_alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
-        staging_alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+        staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
-        VkBuffer staging_buffer;
+        VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr));
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
+                                          &staging_alloc, nullptr));
 
-        VkBufferCreateInfo buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        buffer_info.size = sizeof(uint32_t) * num_distortion_indices;
-        buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        buffer_info.size               = sizeof(uint32_t) * num_distortion_indices;
+        buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
         VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+        alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation index_alloc;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr));
 
-        void *mapped_data;
+        void* mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
         VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy copy_region = {};
-        copy_region.size = sizeof(uint32_t) * num_distortion_indices;
+        VkBufferCopy    copy_region    = {};
+        copy_region.size               = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer, staging_buffer, index_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
 
@@ -315,24 +318,24 @@ private:
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
-        samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
+        samplerInfo.magFilter           = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
+        samplerInfo.minFilter           = VK_FILTER_LINEAR;
 
         samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
+        samplerInfo.borderColor  = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
 
-        samplerInfo.anisotropyEnable = VK_FALSE;
+        samplerInfo.anisotropyEnable        = VK_FALSE;
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
-        samplerInfo.compareEnable = VK_FALSE;
-        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS; 
+        samplerInfo.compareEnable           = VK_FALSE;
+        samplerInfo.compareOp               = VK_COMPARE_OP_ALWAYS;
 
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
         samplerInfo.mipLodBias = 0.f;
-        samplerInfo.minLod = 0.f;
-        samplerInfo.maxLod = 0.f;
+        samplerInfo.minLod     = 0.f;
+        samplerInfo.maxLod     = 0.f;
 
         VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler));
 
@@ -343,21 +346,21 @@ private:
 
     void create_descriptor_set_layout() {
         VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-        uboLayoutBinding.binding = 0; // binding number in the shader
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount = 1;
+        uboLayoutBinding.binding                      = 0; // binding number in the shader
+        uboLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        uboLayoutBinding.descriptorCount              = 1;
         uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; // shader stages that can access the descriptor
 
         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 1;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        samplerLayoutBinding.binding                      = 1;
+        samplerLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        samplerLayoutBinding.descriptorCount              = 1;
+        samplerLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, samplerLayoutBinding};
+        VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
+        layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
         layoutInfo.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout));
@@ -367,16 +370,17 @@ private:
     }
 
     void create_uniform_buffer() {
-        VkBufferCreateInfo bufferInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-        bufferInfo.size = sizeof(UniformBufferObject);
-        bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+        VkBufferCreateInfo bufferInfo = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        bufferInfo.size               = sizeof(UniformBufferObject);
+        bufferInfo.usage              = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
         VmaAllocationCreateInfo createInfo = {};
-        createInfo.usage = VMA_MEMORY_USAGE_AUTO;
-        createInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        createInfo.usage                   = VMA_MEMORY_USAGE_AUTO;
+        createInfo.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
         createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info));
+        VK_ASSERT_SUCCESS(
+            vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info));
         deletion_queue.push([=]() {
             vmaDestroyBuffer(vma_allocator, uniform_buffer, uniform_alloc);
         });
@@ -384,15 +388,15 @@ private:
 
     void create_descriptor_pool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
-        poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = 1;
-        poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = 1;
+        poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[0].descriptorCount                  = 1;
+        poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        poolSizes[1].descriptorCount                  = 1;
 
-        VkDescriptorPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
-        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-        poolInfo.pPoolSizes = poolSizes.data();
-        poolInfo.maxSets = buffer_pool[0].size() * 2;
+        VkDescriptorPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+        poolInfo.poolSizeCount              = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.pPoolSizes                 = poolSizes.data();
+        poolInfo.maxSets                    = buffer_pool[0].size() * 2;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool));
     }
@@ -400,45 +404,46 @@ private:
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            std::vector<VkDescriptorSetLayout> layouts = { buffer_pool[0].size(), descriptor_set_layout };
-            VkDescriptorSetAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
-            allocInfo.descriptorPool = descriptor_pool;
-            allocInfo.descriptorSetCount = buffer_pool[0].size();
-            allocInfo.pSetLayouts = layouts.data();
+            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
+            VkDescriptorSetAllocateInfo        allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+            allocInfo.descriptorPool                     = descriptor_pool;
+            allocInfo.descriptorSetCount                 = buffer_pool[0].size();
+            allocInfo.pSetLayouts                        = layouts.data();
 
             descriptor_sets[eye].resize(buffer_pool[0].size());
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()));
 
             for (size_t i = 0; i < buffer_pool[0].size(); i++) {
                 VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer = uniform_buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = sizeof(UniformBufferObject);
+                bufferInfo.buffer                 = uniform_buffer;
+                bufferInfo.offset                 = 0;
+                bufferInfo.range                  = sizeof(UniformBufferObject);
 
                 VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = buffer_pool[eye][i];
-                imageInfo.sampler = fb_sampler;
+                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView             = buffer_pool[eye][i];
+                imageInfo.sampler               = fb_sampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
-                descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[0].dstSet = descriptor_sets[eye][i];
-                descriptorWrites[0].dstBinding = 0;
+                descriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[0].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[0].dstBinding      = 0;
                 descriptorWrites[0].dstArrayElement = 0;
-                descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                 descriptorWrites[0].descriptorCount = 1;
-                descriptorWrites[0].pBufferInfo = &bufferInfo;
+                descriptorWrites[0].pBufferInfo     = &bufferInfo;
 
-                descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet = descriptor_sets[eye][i];
-                descriptorWrites[1].dstBinding = 1;
+                descriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[1].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[1].dstBinding      = 1;
                 descriptorWrites[1].dstArrayElement = 0;
-                descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 descriptorWrites[1].descriptorCount = 1;
-                descriptorWrites[1].pImageInfo = &imageInfo;
+                descriptorWrites[1].pImageInfo      = &imageInfo;
 
-                vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+                vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(),
+                                       0, nullptr);
             }
         }
     }
@@ -450,71 +455,69 @@ private:
 
         VkDevice device = ds->vk_device;
 
-        auto folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.vert.spv"));
-        VkShaderModule frag = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.frag.spv"));
+        auto           folder = std::string(SHADER_FOLDER);
+        VkShaderModule vert   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.vert.spv"));
+        VkShaderModule frag   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
-        vertStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertStageInfo.module = vert;
-        vertStageInfo.pName = "main";
+        vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertStageInfo.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
+        vertStageInfo.module                          = vert;
+        vertStageInfo.pName                           = "main";
 
         VkPipelineShaderStageCreateInfo fragStageInfo = {};
-        fragStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragStageInfo.module = frag;
-        fragStageInfo.pName = "main";
+        fragStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragStageInfo.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragStageInfo.module                          = frag;
+        fragStageInfo.pName                           = "main";
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertStageInfo, fragStageInfo};
 
-        auto bindingDescription = Vertex::get_binding_description();
+        auto bindingDescription    = Vertex::get_binding_description();
         auto attributeDescriptions = Vertex::get_attribute_descriptions();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 1;
-        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        vertexInputInfo.sType                                = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.vertexBindingDescriptionCount        = 1;
+        vertexInputInfo.pVertexBindingDescriptions           = &bindingDescription;
+        vertexInputInfo.vertexAttributeDescriptionCount      = static_cast<uint32_t>(attributeDescriptions.size());
+        vertexInputInfo.pVertexAttributeDescriptions         = attributeDescriptions.data();
 
         VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-        inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssembly.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssembly.topology                               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
         VkPipelineRasterizationStateCreateInfo rasterizer = {};
-        rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-        rasterizer.cullMode = VK_CULL_MODE_NONE;
-        rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-        rasterizer.lineWidth = 1.0f;
-        rasterizer.depthClampEnable = VK_FALSE;
-        rasterizer.rasterizerDiscardEnable = VK_FALSE;
-        rasterizer.depthBiasEnable = VK_FALSE;
+        rasterizer.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizer.polygonMode                            = VK_POLYGON_MODE_FILL;
+        rasterizer.cullMode                               = VK_CULL_MODE_NONE;
+        rasterizer.frontFace                              = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        rasterizer.lineWidth                              = 1.0f;
+        rasterizer.depthClampEnable                       = VK_FALSE;
+        rasterizer.rasterizerDiscardEnable                = VK_FALSE;
+        rasterizer.depthBiasEnable                        = VK_FALSE;
 
         // disable multisampling
         VkPipelineMultisampleStateCreateInfo multisampling = {};
-        multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        multisampling.sampleShadingEnable = VK_FALSE;
+        multisampling.sType                                = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampling.rasterizationSamples                 = VK_SAMPLE_COUNT_1_BIT;
+        multisampling.sampleShadingEnable                  = VK_FALSE;
 
         VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                                              VK_COLOR_COMPONENT_G_BIT |
-                                              VK_COLOR_COMPONENT_B_BIT |
-                                              VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         colorBlendAttachment.blendEnable = VK_FALSE;
 
         // disable blending
         VkPipelineColorBlendStateCreateInfo colorBlending = {};
-        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlending.attachmentCount = 1;
-        colorBlending.pAttachments = &colorBlendAttachment;
+        colorBlending.sType                               = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.attachmentCount                     = 1;
+        colorBlending.pAttachments                        = &colorBlendAttachment;
 
         // disable depth testing
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
-        depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencil.depthTestEnable = VK_FALSE;
+        depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencil.depthTestEnable                       = VK_FALSE;
 
         // use dynamic state instead
         // VkViewport viewport = {};
@@ -536,44 +539,41 @@ private:
         // viewportStateCreateInfo.scissorCount = 1;
         // viewportStateCreateInfo.pScissors = &scissor;
 
-        std::vector<VkDynamicState> dynamicStates = {
-            VK_DYNAMIC_STATE_VIEWPORT,
-            VK_DYNAMIC_STATE_SCISSOR
-        };
+        std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
         VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
-        dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicStateCreateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-        dynamicStateCreateInfo.pDynamicStates = dynamicStates.data();
+        dynamicStateCreateInfo.sType                            = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateCreateInfo.dynamicStateCount                = static_cast<uint32_t>(dynamicStates.size());
+        dynamicStateCreateInfo.pDynamicStates                   = dynamicStates.data();
 
         VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
-        viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportStateCreateInfo.viewportCount = 1;
-        viewportStateCreateInfo.scissorCount = 1;
+        viewportStateCreateInfo.sType                             = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportStateCreateInfo.viewportCount                     = 1;
+        viewportStateCreateInfo.scissorCount                      = 1;
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &descriptor_set_layout;
+        pipelineLayoutInfo.sType                      = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount             = 1;
+        pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
 
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout));
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
-        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount = 2;
-        pipelineInfo.pStages = shaderStages;
-        pipelineInfo.pVertexInputState = &vertexInputInfo;
-        pipelineInfo.pInputAssemblyState = &inputAssembly;
-        pipelineInfo.pViewportState = &viewportStateCreateInfo;
-        pipelineInfo.pRasterizationState = &rasterizer;
-        pipelineInfo.pMultisampleState = &multisampling;
-        pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.pDepthStencilState = nullptr;
-        pipelineInfo.pDynamicState = &dynamicStateCreateInfo;
+        pipelineInfo.sType                        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.stageCount                   = 2;
+        pipelineInfo.pStages                      = shaderStages;
+        pipelineInfo.pVertexInputState            = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState          = &inputAssembly;
+        pipelineInfo.pViewportState               = &viewportStateCreateInfo;
+        pipelineInfo.pRasterizationState          = &rasterizer;
+        pipelineInfo.pMultisampleState            = &multisampling;
+        pipelineInfo.pColorBlendState             = &colorBlending;
+        pipelineInfo.pDepthStencilState           = nullptr;
+        pipelineInfo.pDynamicState                = &dynamicStateCreateInfo;
 
-        pipelineInfo.layout = pipeline_layout;
+        pipelineInfo.layout     = pipeline_layout;
         pipelineInfo.renderPass = render_pass;
-        pipelineInfo.subpass = 0;
+        pipelineInfo.subpass    = 0;
 
         VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline));
 
@@ -631,12 +631,15 @@ private:
 
                     // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                     // The distortion is handled by the UVs, not the actual mesh coordinates!
-                    // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
-                    distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + ((float) x / hmdInfo.eyeTilesWide));
-                        
+                    // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
+                    // hmdInfo.eyeTilesWide));
+                    distortion_positions[eye * num_distortion_vertices + index].x =
+                        (-1.0f + ((float) x / hmdInfo.eyeTilesWide));
+
                     // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
-                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) * (-1.0f +
+                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
+                        (-1.0f +
                          2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
                              ((float) (hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / hmdInfo.displayPixelsHigh));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
@@ -660,7 +663,7 @@ private:
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
     void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
-                                    const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
+                                      const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
@@ -683,33 +686,33 @@ private:
         transform = texCoordProjection * deltaViewMatrix;
     }
 
-    const phonebook* const pb;
-    const std::shared_ptr<switchboard> sb;
+    const phonebook* const                 pb;
+    const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
-    bool disable_warp = false;
-    std::shared_ptr<display_sink> ds = nullptr;
-    std::mutex m_setup;
+    bool                                   disable_warp = false;
+    std::shared_ptr<display_sink>          ds           = nullptr;
+    std::mutex                             m_setup;
 
-    bool initialized = false;
+    bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
-    VmaAllocator vma_allocator;
+    VmaAllocator                      vma_allocator;
 
     std::array<std::vector<VkImageView>, 2> buffer_pool;
-    VkSampler fb_sampler;
+    VkSampler                               fb_sampler;
 
-    VkDescriptorPool descriptor_pool;
-    VkDescriptorSetLayout descriptor_set_layout;
+    VkDescriptorPool                            descriptor_pool;
+    VkDescriptorSetLayout                       descriptor_set_layout;
     std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
-    
-    VkPipelineLayout pipeline_layout;
-    VkBuffer uniform_buffer;
-    VmaAllocation uniform_alloc;
+
+    VkPipelineLayout  pipeline_layout;
+    VkBuffer          uniform_buffer;
+    VmaAllocation     uniform_alloc;
     VmaAllocationInfo uniform_alloc_info;
 
-    VkCommandPool command_pool;
+    VkCommandPool   command_pool;
     VkCommandBuffer command_buffer;
 
     VkBuffer vertex_buffer;
@@ -718,13 +721,13 @@ private:
     // distortion data
     HMD::hmd_info_t hmd_info;
 
-    uint32_t num_distortion_vertices;
-    uint32_t num_distortion_indices;
-    Eigen::Matrix4f basicProjection;
+    uint32_t                         num_distortion_vertices;
+    uint32_t                         num_distortion_indices;
+    Eigen::Matrix4f                  basicProjection;
     std::vector<HMD::mesh_coord3d_t> distortion_positions;
-    std::vector<HMD::uv_coord_t> distortion_uv0;
-    std::vector<HMD::uv_coord_t> distortion_uv1;
-    std::vector<HMD::uv_coord_t> distortion_uv2;
+    std::vector<HMD::uv_coord_t>     distortion_uv0;
+    std::vector<HMD::uv_coord_t>     distortion_uv1;
+    std::vector<HMD::uv_coord_t>     distortion_uv2;
 
     std::vector<uint32_t> distortion_indices;
 };
@@ -732,8 +735,8 @@ private:
 class timewarp_vk_plugin : public plugin {
 public:
     timewarp_vk_plugin(const std::string& name, phonebook* pb)
-        : plugin{name, pb},
-        tw{std::make_shared<timewarp_vk>(pb)} {
+        : plugin{name, pb}
+        , tw{std::make_shared<timewarp_vk>(pb)} {
         pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
     }
 
@@ -742,7 +745,7 @@ public:
     }
 
 private:
-    std::shared_ptr<timewarp_vk> tw;
+    std::shared_ptr<timewarp_vk>  tw;
     std::shared_ptr<display_sink> ds;
 };
 
