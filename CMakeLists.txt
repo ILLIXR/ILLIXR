@@ -92,7 +92,7 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 # full list of available local plugins
 set(PLUGIN_LIST debugview depthai gldemo ground_truth_slam gtsam_integrator offline_cam offline_imu offload_data offload_vio passthrough_integrator pose_lookup pose_prediction realsense record_imu_cam rk4_integrator timewarp_gl)
 # full list of available external plugins
-set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado)
+set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado OpenVINS)
 set(YAML_FILE "" CACHE STRING "Yaml file to specify build parameters")
 
 # plugins, only exposed if BUILD_GROUP is OFF
@@ -293,22 +293,13 @@ if(HAVE_CENTOS)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
 	    message("Building OpenCV")
         include(cmake/GetOpenCV_Viz.cmake)
-        set(USE_V4_CODE Yes)
         add_dependencies(main${ILLIXR_BUILD_SUFFIX}.exe OpenCV_Viz)
         set(OpenCV_DEP_STR OpenCV_Viz)
         set(INTERNAL_OPENCV ${OpenCV_DIR})
         set(BUILD_OPENCV Yes)
     endif()
 else()
-    find_package(OpenCV REQUIRED)# CONFIG)
-endif()
-
-if(DEFINED OpenCV_VERSION_MAJOR)
-    if (${OpenCV_VERSION_MAJOR} EQUAL 4)
-        set(USE_V4_CODE Yes)
-    else()
-        set(USE_V4_CODE No)
-    endif()
+    find_package(OpenCV 4 REQUIRED)
 endif()
 
 find_package(GLEW REQUIRED)
