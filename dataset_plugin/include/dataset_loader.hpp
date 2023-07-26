@@ -90,6 +90,10 @@ struct PoseData {
     std::size_t channel;
 };
 
+struct GroundTruthData {
+    std::unordered_map<std::string, Eigen::VectorXd> data;
+};
+
 class DatasetLoader {
     // might make more sense to rename the class into something else
 public:
@@ -103,19 +107,19 @@ public:
       return instance;
     }
 
-    std::map<std::chrono::nanoseconds, IMUData> getIMUData() {
+    std::multimap<std::chrono::nanoseconds, IMUData> getIMUData() {
         return m_IMUData;
     }
 
-    std::map<std::chrono::nanoseconds, ImageData> getImageData() {
+    std::multimap<std::chrono::nanoseconds, ImageData> getImageData() {
         return m_imageData;
     }
     
-    std::map<std::chrono::nanoseconds, PoseData> getPoseData() {
+    std::multimap<std::chrono::nanoseconds, PoseData> getPoseData() {
         return m_poseData;
     }
     
-    std::map<std::chrono::nanoseconds, GroundTruthData> getGroundTruthData() {
+    std::multimap<std::chrono::nanoseconds, GroundTruthData> getGroundTruthData() {
         return m_groundTruthData;
     }
 
@@ -153,5 +157,5 @@ private:
     std::multimap<std::chrono::nanoseconds, IMUData> m_IMUData;
     std::multimap<std::chrono::nanoseconds, ImageData> m_imageData;
     std::multimap<std::chrono::nanoseconds, PoseData> m_poseData;
-    std::multimap<std::chrono::nanoseconds, ground_truth_type> m_groundTruthData;
+    std::multimap<std::chrono::nanoseconds, GroundTruthData> m_groundTruthData;
 };

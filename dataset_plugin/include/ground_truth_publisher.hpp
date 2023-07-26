@@ -52,7 +52,7 @@ public:
         std::chrono::nanoseconds lower_bound_time = upper_bound_time - error_cushion;
 
         for (m_data_iterator = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++m_data_iterator) {
-            ground_truth_type datum = it->second;
+            GroundTruthData datum = it->second;
 
             time_point expected_real_time_given_dataset_time(it->first - dataset_first_time);
             
@@ -67,9 +67,9 @@ private:
     const std::shared_ptr<switchboard> sb;
     const switchboard::writer<ground_truth_type> m_ground_truth_publisher;
     const std::shared_ptr<DatasetLoader> m_dataset_loader;
-    const std::multimap<std::chrono::nanoseconds, ground_truth_type> m_data;
+    const std::multimap<std::chrono::nanoseconds, GroundTruthData> m_data;
 
-    std::multimap<std::chrono::nanoseconds, ground_truth_type>::const_iterator m_data_iterator;
+    std::multimap<std::chrono::nanoseconds, GroundTruthData>::const_iterator m_data_iterator;
     
     std::chrono::nanoseconds dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;

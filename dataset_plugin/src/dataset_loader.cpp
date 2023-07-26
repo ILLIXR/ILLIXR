@@ -230,7 +230,7 @@ void DatasetLoader::loadGroundTruthData() {
 
                 std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.ground_truth_config.timestamp_unit, std::stoull(row[0]));
 
-                ground_truth_type newEntry;
+                GroundTruthData newEntry;
                 Eigen::VectorXd data;
 
                 for (std::size_t j = 0; j < m_config.ground_truth_config.name_list.size(); ++j) {
