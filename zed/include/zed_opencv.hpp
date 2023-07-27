@@ -1,21 +1,38 @@
 using namespace sl;
 
 /**
-* Conversion function between sl::Mat and cv::Mat
-**/
+ * Conversion function between sl::Mat and cv::Mat
+ **/
 cv::Mat slMat2cvMat(Mat& input) {
     // Mapping between MAT_TYPE and CV_TYPE
     int cv_type = -1;
     switch (input.getDataType()) {
-        case MAT_TYPE::F32_C1: cv_type = CV_32FC1; break;
-        case MAT_TYPE::F32_C2: cv_type = CV_32FC2; break;
-        case MAT_TYPE::F32_C3: cv_type = CV_32FC3; break;
-        case MAT_TYPE::F32_C4: cv_type = CV_32FC4; break;
-        case MAT_TYPE::U8_C1: cv_type = CV_8UC1; break;
-        case MAT_TYPE::U8_C2: cv_type = CV_8UC2; break;
-        case MAT_TYPE::U8_C3: cv_type = CV_8UC3; break;
-        case MAT_TYPE::U8_C4: cv_type = CV_8UC4; break;
-        default: break;
+    case MAT_TYPE::F32_C1:
+        cv_type = CV_32FC1;
+        break;
+    case MAT_TYPE::F32_C2:
+        cv_type = CV_32FC2;
+        break;
+    case MAT_TYPE::F32_C3:
+        cv_type = CV_32FC3;
+        break;
+    case MAT_TYPE::F32_C4:
+        cv_type = CV_32FC4;
+        break;
+    case MAT_TYPE::U8_C1:
+        cv_type = CV_8UC1;
+        break;
+    case MAT_TYPE::U8_C2:
+        cv_type = CV_8UC2;
+        break;
+    case MAT_TYPE::U8_C3:
+        cv_type = CV_8UC3;
+        break;
+    case MAT_TYPE::U8_C4:
+        cv_type = CV_8UC4;
+        break;
+    default:
+        break;
     }
 
     // Since cv::Mat data requires a uchar* pointer, we get the uchar1 pointer from sl::Mat (getPtr<T>())

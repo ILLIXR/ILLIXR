@@ -6,7 +6,7 @@ plugin_groups:
     - name: OpenVINS
       path:
         git_repo : https://github.com/ILLIXR/open_vins.git
-        version  : "3.0"
+        version  : "3.1"
 
 data:
   subpath: mav0

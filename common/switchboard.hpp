@@ -1,25 +1,28 @@
 #pragma once
 
-#include <memory>
-#include <list>
-#include <string>
+#include "phonebook.hpp"
+
 #include <array>
-#include <sstream>
 #include <atomic>
-#include <shared_mutex>
-#include <type_traits>
-#include <functional>
 #include <chrono>
 #include <exception>
-#include "phonebook.hpp"
+#include <functional>
+#include <list>
+#include <memory>
+#include <shared_mutex>
+#include <sstream>
+#include <string>
+#include <type_traits>
 #if __has_include("cpu_timer.hpp")
-	#include "cpu_timer.hpp"
+    #include "cpu_timer.hpp"
 #else
-	static std::chrono::nanoseconds thread_cpu_time() { return {}; }
+static std::chrono::nanoseconds thread_cpu_time() {
+    return {};
+}
 #endif
-#include "record_logger.hpp"
-#include "managed_thread.hpp"
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "managed_thread.hpp"
+#include "record_logger.hpp"
 
 namespace ILLIXR {
 
@@ -28,26 +31,29 @@ using plugin_id_t = std::size_t;
 /**
  * @Should be private to Switchboard.
  */
-const record_header __switchboard_callback_header {"switchboard_callback", {
-    {"plugin_id", typeid(plugin_id_t)},
-    {"topic_name", typeid(std::string)},
-    {"iteration_no", typeid(std::size_t)},
-    {"cpu_time_start", typeid(std::chrono::nanoseconds)},
-    {"cpu_time_stop" , typeid(std::chrono::nanoseconds)},
-    {"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-    {"wall_time_stop" , typeid(std::chrono::high_resolution_clock::time_point)},
-}};
+const record_header __switchboard_callback_header{
+    "switchboard_callback",
+    {
+        {"plugin_id", typeid(plugin_id_t)},
+        {"topic_name", typeid(std::string)},
+        {"iteration_no", typeid(std::size_t)},
+        {"cpu_time_start", typeid(std::chrono::nanoseconds)},
+        {"cpu_time_stop", typeid(std::chrono::nanoseconds)},
+        {"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
+        {"wall_time_stop", typeid(std::chrono::high_resolution_clock::time_point)},
+    }};
 
 /**
  * @Should be private to Switchboard.
  */
-const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
-    {"plugin_id", typeid(plugin_id_t)},
-    {"topic_name", typeid(std::string)},
-    {"enqueued", typeid(std::size_t)},
-    {"dequeued", typeid(std::size_t)},
-    {"idle_cycles", typeid(std::size_t)},
-}};
+const record_header __switchboard_topic_stop_header{"switchboard_topic_stop",
+                                                    {
+                                                        {"plugin_id", typeid(plugin_id_t)},
+                                                        {"topic_name", typeid(std::string)},
+                                                        {"enqueued", typeid(std::size_t)},
+                                                        {"dequeued", typeid(std::size_t)},
+                                                        {"idle_cycles", typeid(std::size_t)},
+                                                    }};
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -81,7 +87,7 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  *     // Write to topic 2 using topic 1 input
  *     topic2.put(topic2.allocate<topic2_type>( do_something(event1->foo) ));
  * }
- * 
+ *
  * // Read topic 3 synchronously
  * switchboard.schedule<topic3_type>(plugin_id, "topic3", [&](switchboard::ptr<topic3_type> event3, std::size_t it) {
  *     // This is a lambda expression
@@ -92,14 +98,13 @@ const record_header __switchboard_topic_stop_header {"switchboard_topic_stop", {
  */
 class switchboard : public phonebook::service {
 public:
-
     /**
      * @brief The type of shared pointer returned by switchboard.
      *
      * TODO: Make this agnostic to the type of `ptr`
      * Currently, it depends on `ptr` == shared_ptr
      */
-    template <typename specific_event>
+    template<typename specific_event>
     using ptr = std::shared_ptr<specific_event>;
 
     /**
@@ -128,19 +133,28 @@ public:
      * event_wrapper<int> int_event = 5;
      * \endcode
      */
-    template <typename underlying_type>
+    template<typename underlying_type>
     class event_wrapper : public event {
     private:
         underlying_type underlying_data;
+
     public:
         event_wrapper() { }
 
         event_wrapper(underlying_type underlying_data_)
-            : underlying_data{underlying_data_}
-        { }
-        operator underlying_type() const { return underlying_data; }
-        underlying_type& operator*() { return underlying_data; }
-        const underlying_type& operator*() const { return underlying_data; }
+            : underlying_data{underlying_data_} { }
+
+        operator underlying_type() const {
+            return underlying_data;
+        }
+
+        underlying_type& operator*() {
+            return underlying_data;
+        }
+
+        const underlying_type& operator*() const {
+            return underlying_data;
+        }
     };
 
 private:
@@ -154,17 +168,17 @@ private:
      */
     class topic_subscription {
     private:
-        const std::string& _m_topic_name;
-        plugin_id_t _m_plugin_id;
-        std::function<void(ptr<const event>&&, std::size_t)> _m_callback;
-        const std::shared_ptr<record_logger> _m_record_logger;
-        record_coalescer _m_cb_log;
-        moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue {8 /*max size estimate*/};
-        moodycamel::ConsumerToken _m_ctok {_m_queue};
-        static constexpr std::chrono::milliseconds _m_queue_timeout {100};
-        std::size_t _m_enqueued {0};
-        std::size_t _m_dequeued {0};
-        std::size_t _m_idle_cycles {0};
+        const std::string&                                    _m_topic_name;
+        plugin_id_t                                           _m_plugin_id;
+        std::function<void(ptr<const event>&&, std::size_t)>  _m_callback;
+        const std::shared_ptr<record_logger>                  _m_record_logger;
+        record_coalescer                                      _m_cb_log;
+        moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue{8 /*max size estimate*/};
+        moodycamel::ConsumerToken                             _m_ctok{_m_queue};
+        static constexpr std::chrono::milliseconds            _m_queue_timeout{100};
+        std::size_t                                           _m_enqueued{0};
+        std::size_t                                           _m_dequeued{0};
+        std::size_t                                           _m_idle_cycles{0};
 
         // This needs to be last,
         // so it is destructed before the data it uses.
@@ -179,7 +193,7 @@ private:
         void thread_body() {
             // Try to pull event off of queue
             ptr<const event> this_event;
-            std::int64_t timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
+            std::int64_t     timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
             // Note the use of timed blocking wait
             if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
                 // Process event
@@ -187,25 +201,26 @@ private:
                 _m_dequeued++;
                 auto cb_start_cpu_time  = thread_cpu_time();
                 auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
-                // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " << this_event.use_count() << " v\n";
+                // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " <<
+                // this_event.use_count() << " v\n";
                 _m_callback(std::move(this_event), _m_dequeued);
                 if (_m_cb_log) {
-                    _m_cb_log.log(record{__switchboard_callback_header, {
-                        {_m_plugin_id},
-                        {_m_topic_name},
-                        {_m_dequeued},
-                        {cb_start_cpu_time},
-                        {thread_cpu_time()},
-                        {cb_start_wall_time},
-                        {std::chrono::high_resolution_clock::now()},
-                    }});
+                    _m_cb_log.log(record{__switchboard_callback_header,
+                                         {
+                                             {_m_plugin_id},
+                                             {_m_topic_name},
+                                             {_m_dequeued},
+                                             {cb_start_cpu_time},
+                                             {thread_cpu_time()},
+                                             {cb_start_wall_time},
+                                             {std::chrono::high_resolution_clock::now()},
+                                         }});
                 }
             } else {
                 // Nothing to do.
                 _m_idle_cycles++;
             }
         }
-
 
         void thread_on_stop() {
             // Drain queue
@@ -215,32 +230,43 @@ private:
                 for (std::size_t i = 0; i < unprocessed; ++i) {
                     [[maybe_unused]] bool ret = _m_queue.try_dequeue(_m_ctok, this_event);
                     assert(ret);
-                    // std::cerr << "deq (stopping) " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " << this_event.use_count() << " v\n";
+                    // std::cerr << "deq (stopping) " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " "
+                    // << this_event.use_count() << " v\n";
                     this_event.reset();
                 }
             }
 
             // Log stats
             if (_m_record_logger) {
-                _m_record_logger->log(record{__switchboard_topic_stop_header, {
-                    {_m_plugin_id},
-                    {_m_topic_name},
-                    {_m_dequeued},
-                    {unprocessed},
-                    {_m_idle_cycles},
-                }});
+                _m_record_logger->log(record{__switchboard_topic_stop_header,
+                                             {
+                                                 {_m_plugin_id},
+                                                 {_m_topic_name},
+                                                 {_m_dequeued},
+                                                 {unprocessed},
+                                                 {_m_idle_cycles},
+                                             }});
             }
         }
 
     public:
-        topic_subscription(const std::string& topic_name, plugin_id_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback, std::shared_ptr<record_logger> record_logger_)
+        topic_subscription(const std::string& topic_name, plugin_id_t plugin_id,
+                           std::function<void(ptr<const event>&&, std::size_t)> callback,
+                           std::shared_ptr<record_logger>                       record_logger_)
             : _m_topic_name{topic_name}
             , _m_plugin_id{plugin_id}
             , _m_callback{callback}
             , _m_record_logger{record_logger_}
             , _m_cb_log{record_logger_}
-            , _m_thread{[this]{this->thread_body();}, [this]{this->thread_on_start();}, [this]{this->thread_on_stop();}}
-        {
+            , _m_thread{[this] {
+                            this->thread_body();
+                        },
+                        [this] {
+                            this->thread_on_start();
+                        },
+                        [this] {
+                            this->thread_on_stop();
+                        }} {
             _m_thread.start();
         }
 
@@ -255,6 +281,35 @@ private:
                 assert(ret);
                 _m_enqueued++;
             }
+        }
+    };
+
+    class topic_buffer {
+    private:
+        moodycamel::BlockingConcurrentQueue<ptr<const event>> _m_queue{8 /*max size estimate*/};
+        moodycamel::ConsumerToken                             _m_ctok{_m_queue};
+        std::atomic<size_t>                                   _m_queue_size{0};
+
+    public:
+        topic_buffer() {
+            printf("topic buffer created");
+        }
+
+        void enqueue(ptr<const event>&& this_event) {
+            _m_queue_size++;
+            [[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
+            assert(ret);
+        }
+
+        size_t size() const {
+            return _m_queue_size;
+        }
+
+        ptr<const event> dequeue() {
+            ptr<const event> obj;
+            _m_queue_size--;
+            _m_queue.wait_dequeue(_m_ctok, obj);
+            return obj;
         }
     };
 
@@ -274,40 +329,42 @@ private:
      */
     class topic {
     private:
-        const std::string _m_name;
-        const std::type_info& _m_ty;
-        const std::shared_ptr<record_logger> _m_record_logger;
-		std::atomic<size_t> _m_latest_index;
-		static constexpr std::size_t _m_latest_buffer_size = 256;
-		std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
-        std::list<topic_subscription> _m_subscriptions;
-        std::shared_mutex _m_subscriptions_lock;
+        const std::string                                   _m_name;
+        const std::type_info&                               _m_ty;
+        const std::shared_ptr<record_logger>                _m_record_logger;
+        std::atomic<size_t>                                 _m_latest_index;
+        static constexpr std::size_t                        _m_latest_buffer_size = 256;
+        std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
+        std::list<topic_subscription>                       _m_subscriptions;
+        std::list<topic_buffer>                             _m_buffers;
+        std::shared_mutex                                   _m_subscriptions_lock;
 
     public:
-        topic(
-            std::string name,
-            const std::type_info& ty,
-            std::shared_ptr<record_logger> record_logger_
-        )   : _m_name{name}
+        topic(std::string name, const std::type_info& ty, std::shared_ptr<record_logger> record_logger_)
+            : _m_name{name}
             , _m_ty{ty}
             , _m_record_logger{record_logger_}
-			, _m_latest_index{0}
-        { }
+            , _m_latest_index{0} { }
 
-        const std::string& name() { return _m_name; }
+        const std::string& name() {
+            return _m_name;
+        }
 
-        const std::type_info& ty() { return _m_ty; }
+        const std::type_info& ty() {
+            return _m_ty;
+        }
 
         /**
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-			size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
-			ptr<const event> this_event = _m_latest_buffer[idx];
-			// if (this_event) {
-			// 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " << this_event.use_count() << "v \n";
-			// }
-			return this_event;
+            size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
+            ptr<const event> this_event = _m_latest_buffer[idx];
+            // if (this_event) {
+            // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
+            // this_event.use_count() << "v \n";
+            // }
+            return this_event;
         }
 
         /**
@@ -328,23 +385,33 @@ private:
          *   The probability of a data race decreases geometrically with N.
          */
         void put(ptr<const event>&& this_event) {
-			assert(this_event != nullptr);
-			assert(this_event.unique() || this_event.use_count() <= 2);  /// <-- TODO: Revisit for solution that guarantees uniqueness
+            assert(this_event != nullptr);
+            assert(this_event.unique() ||
+                   this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
 
-			/* The pointer that this gets exchanged with needs to get dropped. */
-			size_t index = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
-			_m_latest_buffer[index] = this_event;
-			_m_latest_index++;
+            /* The pointer that this gets exchanged with needs to get dropped. */
+            size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
+            _m_latest_buffer[index] = this_event;
+            _m_latest_index++;
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
             std::unique_lock lock{_m_subscriptions_lock};
             for (topic_subscription& ts : _m_subscriptions) {
-                // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " ^\n";
-                ptr<const event> event_ptr_copy {this_event};
+                // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " <<
+                // this_event->use_count() << " ^\n";
+                ptr<const event> event_ptr_copy{this_event};
                 ts.enqueue(std::move(event_ptr_copy));
             }
-            // std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " << this_event->use_count() << " (= 1 + len(sub)) \n";
+
+            for (topic_buffer& ts : _m_buffers) {
+                // std::cerr << "enq " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " <<
+                // this_event->use_count() << " ^\n";
+                ptr<const event> event_ptr_copy{this_event};
+                ts.enqueue(std::move(event_ptr_copy));
+            }
+            // std::cerr << "put done " << ptr_to_str(reinterpret_cast<const void*>(this_event->get())) << " " <<
+            // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
         /**
@@ -352,14 +419,17 @@ private:
          *
          * Thread-safe
          */
-        void schedule(
-            plugin_id_t plugin_id,
-            std::function<void(ptr<const event>&&, std::size_t)> callback)
-        {
+        void schedule(plugin_id_t plugin_id, std::function<void(ptr<const event>&&, std::size_t)> callback) {
             // Write on _m_subscriptions.
             // Must acquire unique state on _m_subscriptions_lock
             const std::unique_lock lock{_m_subscriptions_lock};
             _m_subscriptions.emplace_back(_m_name, plugin_id, callback, _m_record_logger);
+        }
+
+        topic_buffer& get_buffer() {
+            const std::unique_lock lock{_m_subscriptions_lock};
+            _m_buffers.emplace_back();
+            return _m_buffers.back();
         }
 
         /**
@@ -376,11 +446,10 @@ private:
     };
 
 public:
-
     /**
      * @brief A handle which can read the latest event on a topic.
      */
-    template <typename specific_event>
+    template<typename specific_event>
     class reader {
     private:
         /// Reference to the underlying topic
@@ -388,39 +457,38 @@ public:
 
     public:
         reader(topic& topic_)
-            : _m_topic{topic_}
-        {
+            : _m_topic{topic_} {
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
-                std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name()
-                          << ", but caller used type" << typeid(specific_event).name() << std::endl;
+                std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name() << ", but caller used type"
+                          << typeid(specific_event).name() << std::endl;
                 abort();
             }
 #endif
         }
 
-       /**
-        * @brief Gets a "read-only" copy of the latest value.
-        *
-        * This will return null if no event is on the topic yet.
-        */
-       ptr<const specific_event> get_ro_nullable() const noexcept {
-           ptr<const event> this_event = _m_topic.get();
-           ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+        /**
+         * @brief Gets a "read-only" copy of the latest value.
+         *
+         * This will return null if no event is on the topic yet.
+         */
+        ptr<const specific_event> get_ro_nullable() const noexcept {
+            ptr<const event>          this_event          = _m_topic.get();
+            ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
-           if (this_event != nullptr) {
-			   assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
-               return this_specific_event;
-           } else {
-               return ptr<const specific_event>{nullptr};
-           }
-       }
+            if (this_event != nullptr) {
+                assert(this_specific_event /* Otherwise, dynamic cast failed; dynamic type information could be wrong*/);
+                return this_specific_event;
+            } else {
+                return ptr<const specific_event>{nullptr};
+            }
+        }
 
-       /**
-        * @brief Gets a non-null "read-only" copy of the latest value.
-        *
-        * @throws `runtime_error` If no event is on the topic yet.
-        */
+        /**
+         * @brief Gets a non-null "read-only" copy of the latest value.
+         *
+         * @throws `runtime_error` If no event is on the topic yet.
+         */
         ptr<const specific_event> get_ro() const {
             ptr<const specific_event> this_specific_event = get_ro_nullable();
             if (this_specific_event != nullptr) {
@@ -431,11 +499,11 @@ public:
             }
         }
 
-       /**
-        * @brief Gets a non-null mutable copy of the latest value.
-        *
-        * @throws `runtime_error` If no event is on the topic yet.
-        */
+        /**
+         * @brief Gets a non-null mutable copy of the latest value.
+         *
+         * @throws `runtime_error` If no event is on the topic yet.
+         */
         ptr<specific_event> get_rw() const {
             /*
               This method is currently not more efficient than calling get_ro() and making a copy,
@@ -446,10 +514,36 @@ public:
         }
     };
 
+    template<typename specific_event>
+    class buffered_reader {
+    private:
+        topic&        _m_topic;
+        size_t        serial_no = 0;
+        topic_buffer& _m_tb;
+
+    public:
+        buffered_reader(topic& topic)
+            : _m_topic{topic}
+            , _m_tb{_m_topic.get_buffer()} { }
+
+        size_t size() const {
+            return _m_tb.size();
+        }
+
+        ptr<const specific_event> dequeue() {
+            // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
+            // serial_no));
+            serial_no++;
+            ptr<const event>          this_event          = _m_tb.dequeue();
+            ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
+            return this_specific_event;
+        }
+    };
+
     /**
      * @brief A handle which can publish events to a topic.
      */
-    template <typename specific_event>
+    template<typename specific_event>
     class writer {
     private:
         // Reference to the underlying topic
@@ -457,8 +551,7 @@ public:
 
     public:
         writer(topic& topic_)
-            : _m_topic{topic_}
-        { }
+            : _m_topic{topic_} { }
 
         /**
          * @brief Like `new`/`malloc` but more efficient for this specific case.
@@ -471,41 +564,42 @@ public:
          * [1]: https://en.wikipedia.org/wiki/Slab_allocation
          * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
          */
-		template<class... Args>
+        template<class... Args>
         ptr<specific_event> allocate(Args&&... args) {
-			return std::make_shared<specific_event>(std::forward<Args>(args)...);
+            return std::make_shared<specific_event>(std::forward<Args>(args)...);
         }
 
         /**
          * @brief Publish @p ev to this topic.
          */
-		void put(ptr<specific_event>&& this_specific_event) {
-			assert(typeid(specific_event) == _m_topic.ty());
-			assert(this_specific_event != nullptr);
-			assert(this_specific_event.unique());
-			ptr<const event> this_event = std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
-			assert(this_event.unique() || this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
-			_m_topic.put(std::move(this_event));
+        void put(ptr<specific_event>&& this_specific_event) {
+            assert(typeid(specific_event) == _m_topic.ty());
+            assert(this_specific_event != nullptr);
+            assert(this_specific_event.unique());
+            ptr<const event> this_event =
+                std::const_pointer_cast<const event>(std::static_pointer_cast<event>(std::move(this_specific_event)));
+            assert(this_event.unique() ||
+                   this_event.use_count() <= 2); /// TODO: Revisit for solution that guarantees uniqueness
+            _m_topic.put(std::move(this_event));
         }
     };
 
 private:
     std::unordered_map<std::string, topic> _m_registry;
-    std::shared_mutex _m_registry_lock;
-    std::shared_ptr<record_logger> _m_record_logger;
+    std::shared_mutex                      _m_registry_lock;
+    std::shared_ptr<record_logger>         _m_record_logger;
 
-    template <typename specific_event>
+    template<typename specific_event>
     topic& try_register_topic(const std::string& topic_name) {
         {
             const std::shared_lock lock{_m_registry_lock};
-            auto found = _m_registry.find(topic_name);
+            auto                   found = _m_registry.find(topic_name);
             if (found != _m_registry.end()) {
                 topic& topic_ = found->second;
 #ifndef NDEBUG
                 if (typeid(specific_event) != topic_.ty()) {
-                    std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name()
-                              << ", but caller used type" << typeid(specific_event).name()
-                              << std::endl;
+                    std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name() << ", but caller used type"
+                              << typeid(specific_event).name() << std::endl;
                     abort();
                 }
 #endif
@@ -519,17 +613,14 @@ private:
         // Topic not found. Need to create it here.
         const std::unique_lock lock{_m_registry_lock};
         return _m_registry.try_emplace(topic_name, topic_name, typeid(specific_event), _m_record_logger).first->second;
-
     }
 
 public:
-
     /**
      * If @p pb is null, then logging is disabled.
      */
     switchboard(const phonebook* pb)
-        : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr}
-    { }
+        : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
@@ -540,14 +631,17 @@ public:
      *
      * @throws if topic already exists and its type does not match the @p event.
      */
-    template <typename specific_event>
-    void schedule(plugin_id_t plugin_id, std::string topic_name, std::function<void(ptr<const specific_event>&&, std::size_t)> fn) {
-        try_register_topic<specific_event>(topic_name).schedule(plugin_id, [=](ptr<const event>&& this_event, std::size_t it_no) {
-            assert(this_event);
-            ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
-            assert(this_specific_event);
-            fn(std::move(this_specific_event), it_no);
-        });
+    template<typename specific_event>
+    void schedule(plugin_id_t plugin_id, std::string topic_name,
+                  std::function<void(ptr<const specific_event>&&, std::size_t)> fn) {
+        try_register_topic<specific_event>(topic_name)
+            .schedule(plugin_id, [=](ptr<const event>&& this_event, std::size_t it_no) {
+                assert(this_event);
+                ptr<const specific_event> this_specific_event =
+                    std::dynamic_pointer_cast<const specific_event>(std::move(this_event));
+                assert(this_specific_event);
+                fn(std::move(this_specific_event), it_no);
+            });
     }
 
     /**
@@ -557,7 +651,7 @@ public:
      *
      * @throws If topic already exists, and its type does not match the @p event.
      */
-    template <typename specific_event>
+    template<typename specific_event>
     writer<specific_event> get_writer(const std::string& topic_name) {
         return writer<specific_event>{try_register_topic<specific_event>(topic_name)};
     }
@@ -569,9 +663,14 @@ public:
      *
      * @throws If topic already exists, and its type does not match the @p event.
      */
-    template <typename specific_event>
+    template<typename specific_event>
     reader<specific_event> get_reader(const std::string& topic_name) {
         return reader<specific_event>{try_register_topic<specific_event>(topic_name)};
+    }
+
+    template<typename specific_event>
+    buffered_reader<specific_event> get_buffered_reader(const std::string& topic_name) {
+        return buffered_reader<specific_event>{try_register_topic<specific_event>(topic_name)};
     }
 
     /**
@@ -589,4 +688,4 @@ public:
     }
 };
 
-}
+} // namespace ILLIXR

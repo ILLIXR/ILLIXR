@@ -228,7 +228,7 @@ fi
 
 # Check for distribution support of Intel RealSense
 # For supported distributions, automatically add the RealSense package group to our list
-if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
+if [ "${distro_name}" = "ubuntu" ] && ([ "${distro_version}" = "18.04" ] || [ "${distro_version}" = "20.04" ]); then
     case "${arch_name}" in
         x86_64)     use_realsense="yes"
                     pkg_dep_groups+=" realsense_anyarch"
@@ -244,9 +244,9 @@ if [ "${distro_name}" = "ubuntu" ] && [ "${distro_version}" = "18.04" ]; then
 else
     pkg_install_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md"
     pkg_build_url_realsense="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md"
-    pkg_warn_msg_realsense="Currently, Intel RealSense does not support binary package installations "
-    pkg_warn_msg_realsense+="for Ubuntu 20 LTS kernels, or other non-Ubuntu Linux distributions. "
-    pkg_warn_msg_realsense+="If your project requires Intel RealSense support, "
+    pkg_warn_msg_realsense="This script only supports installation of Intel RealSense for Ubuntu 18.04 and 20.04. "
+    pkg_warn_msg_realsense+="For other Ubuntu or non-Ubuntu Linux distributions, "
+    pkg_warn_msg_realsense+="if your project requires Intel RealSense support, "
     pkg_warn_msg_realsense+="please build and install the Intel RealSense SDK from source. "
     pkg_warn_msg_realsense+="For more information, visit '${pkg_install_url_realsense}' and '${pkg_build_url_realsense}'."
     print_warning "${pkg_warn_msg_realsense}"
@@ -359,8 +359,15 @@ fi
 # If supported, add the keys and repository for CUDA (for GPU plugin support)
 if [ "${use_cuda}" = "yes" ]; then
     repo_url_cuda="https://developer.download.nvidia.com/compute/cuda/repos/${distro_name_cuda}/${arch_name_cuda}"
-    key_srv_url_cuda="${repo_url_cuda}/7fa2af80.pub"
-    add_repo "${key_srv_url_cuda}" "${repo_url_cuda}" "/"
+    
+    # Install the keys from the repo using nvidia's key package
+    key_pkg_name_cuda="cuda-keyring_1.0-1_all.deb"
+    key_pkg_url_cuda="${repo_url_cuda}/${key_pkg_name_cuda}"
+    wget ${key_pkg_url_cuda}
+    sudo apt-get install -y -q "./${key_pkg_name_cuda}"
+    rm "./${key_pkg_name_cuda}"
+
+    add_repo "" "${repo_url_cuda}" "/"
 
     path_cmd_cuda='export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}'
     lib64_cmd_cuda='export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'

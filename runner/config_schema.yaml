@@ -115,6 +115,7 @@ properties:
         additionalProperties:
           type: string
         description: Vars that get passed to the build system
+
   action:
     type: object
     additionalProperties: true
