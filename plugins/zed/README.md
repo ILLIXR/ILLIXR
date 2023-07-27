@@ -7,8 +7,8 @@
 
 ### Prerequisites
 
-- Ubuntu - Tested with 18.04
-- [CUDA](https://developer.nvidia.com/cuda-toolkit-archive) - Tested with 10.2, 11.0
-- [ZED SDK](https://www.stereolabs.com/docs/installation/linux/) - Tested with 3.2.2
-- OpenCV (we install our modified OpenCV 3.4.6 in `install_deps.sh`)
+- Ubuntu 20.04 or 22.04
+- [CUDA](https://developer.nvidia.com/cuda-toolkit-archive)
+- [ZED SDK](https://www.stereolabs.com/docs/installation/linux/)
+- OpenCV 4
 

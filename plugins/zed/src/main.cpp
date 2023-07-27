@@ -4,13 +4,13 @@
 #include <cmath>
 #include <opencv2/opencv.hpp>
 #include <sl/Camera.hpp>
-#include <zed_opencv.hpp>
+#include "zed_opencv.hpp"
 
 // ILLIXR includes
-#include "common/data_format.hpp"
-#include "common/error_util.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
 

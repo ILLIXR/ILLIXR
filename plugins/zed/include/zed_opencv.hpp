@@ -1,3 +1,4 @@
+#include <opencv2/core/cvdef.h>
 using namespace sl;
 
 /**
