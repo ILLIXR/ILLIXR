@@ -177,6 +177,13 @@
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL",
       "dependencies": []
+    },
+    {
+      "name": "zed",
+      "cmake_flag": "USE_ZED",
+      "dependencies": [
+        "zed_SDK"
+      ]
     }
   ],
   "dependencies": [
@@ -1104,6 +1111,44 @@
           }
         }
       }
+    },
+    {
+      "zed_SDK": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "zstd",
+              "postnotes": "",
+              "notes": "ZED SDK is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
+            },
+            "22": {
+              "pkg": "zstd",
+              "postnotes": "",
+              "notes": "ZED SDK (version 3) is required for the zed plugin. It must be installed manually. See <a href=\"https://www.stereolabs.com/docs/installation/linux/\">here</a> for details. It also requires some CUDA packages which should be available <a href=\"https://developer.nvidia.com/cuda-toolkit-archive\">here</a> or through your Ubuntu repo."
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+
     }
   ],
   "groups": [

@@ -4,37 +4,28 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
-if(COMMAND cmake_policy)
-	cmake_policy(SET CMP0003 OLD)
-	cmake_policy(SET CMP0015 OLD)
-endif(COMMAND cmake_policy)
+set(PLUGIN_NAME plugin.zed${ILLIXR_BUILD_SUFFIX})
 
-SET(EXECUTABLE_OUTPUT_PATH ".")
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 find_package(Threads REQUIRED)
 find_package(ZED 3 REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
-include_directories(${CUDA_INCLUDE_DIRS})
-include_directories(${ZED_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-link_directories(${ZED_LIBRARY_DIR})
-link_directories(${OpenCV_LIBRARY_DIRS})
-link_directories(${CUDA_LIBRARY_DIRS})
-
-FILE(GLOB_RECURSE SRC_FILES src/main.cpp)
-FILE(GLOB_RECURSE HDR_FILES include/*.hpp)
+set(SRC_FILES src/main.cpp)
+set(HDR_FILES include/zed_opencv.hpp)
 
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
-add_library(plugin SHARED ${HDR_FILES} ${SRC_FILES})
+add_library(${PLUGIN_NAME} SHARED ${HDR_FILES} ${SRC_FILES})
 
-if(NOT HAVE_CENTOS)
-	find_package(OpenCV REQUIRED)
-else()
-	add_dependencies(plugin OpenCV_Viz)
+if(BUILD_OPENCV)
+	add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
 endif()
-include_directories(${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS})
 
-target_link_libraries(plugin ${ZED_LIBS} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} Threads::Threads)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDA_INCLUDE_DIRS} ${ZED_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} Threads::Threads)
+target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

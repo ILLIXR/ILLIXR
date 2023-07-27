@@ -1,4 +1,4 @@
-internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl
+internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed
 external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP,ORB_SLAM,Monado,OpenVINS
 
 group:
