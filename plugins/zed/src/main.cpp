@@ -1,10 +1,11 @@
 // ZED includes
+#include "zed_opencv.hpp"
+
 #include <cassert>
 #include <cerrno>
 #include <cmath>
 #include <opencv2/opencv.hpp>
 #include <sl/Camera.hpp>
-#include "zed_opencv.hpp"
 
 // ILLIXR includes
 #include "illixr/data_format.hpp"
