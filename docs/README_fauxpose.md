@@ -11,6 +11,9 @@ values set to rotate in a circle.  The period and amplitude of the movement
 are have default values (0.5, and 2.0 respectively) that can be changed
 through environment variables.
 
+    Topic details:
+    -   *Publishes* `pose_position` on `fast_pose` topic.
+
 ## Usage
 The "FauxPose" plugin must be included in the YAML configuration file
 prior to any rendering plugin (such as "debugview" or "gldemo").  Also
@@ -20,7 +23,9 @@ by commenting out the line:
 	#- !include "rt_slam_plugins.yaml"
 
 And then adding FauxPose as a plugin:
-        - path: FauxPose/
+        - path: fauxpose/
+
+An example "faux.yaml" configuration file is included as an example.
 
 
 By default, the "orbit" of the tracked position will be about the point
