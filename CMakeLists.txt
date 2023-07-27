@@ -2,24 +2,10 @@
 #
 # This is the install script for ILLIXR
 # This will compile the main ILLIXR binary along with any requested plugins.
-# The currently supported plugins are:
-#   audio_pipeline, debugview, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio,
-#   monado, offline_cam, offline_imu, offload_data, openxr_app, orb_slam, pose_prediction,
-#   realsense, timewarp_gl
 #
 # In addition to the standard CMake options, the following arguments can be used:
 #
-# BUILD_GROUP [ALL|NATIVE|MONADO|CI|TESTS|HEADLESS|NONE] : which subgroup of plugins are to be built
-#     ALL : all plugins, this is the default
-#     NATIVE : audio_pipeline, debugview, gldemo, gtsam_integrator, ground_truth_slam,
-#              kimera_vio, offline_imu, offline_cam, offload_data, pose_prediction, timewarp_gl
-#     MONADO : audio_pipeline, gtsam_integrator, kimera_vio, monado, offline_imu, offline_cam,
-#              openxr_app, pose_prediction, timewarp_gl
-#     CI : audio_pipeline, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio,
-#          offline_imu, offline_cam, pose_prediction,  timewarp_gl
-#     TESTS:
-#     HEADLESS: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-#     NONE : no group is built, individual plugins can be selected
+# BUILD_GROUP : which subgroup of plugins are to be built
 #
 # To build specific plugins use the following format:
 #   USE_<PLUGIN>=ON
@@ -85,13 +71,12 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -fPIC")
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
-set(BUILD_GROUP "NONE" CACHE STRING "Which components to build: ALL, NATIVE, MONADO, CI, TESTS, HEADLESS, NONE")
+set(BUILD_GROUP "NONE" CACHE STRING "Which components to build")
 option(DATA_FILE "The data file to get" ON)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 include(cmake/HelperFunctions.cmake)
 
-#set(EXT_PLUGIN_LIST Kimera_vio Audio_Pipeline OpenXR_APP ORB_SLAM Monado OpenVINS)
 generate_yaml()
 
 # plugins, only exposed if BUILD_GROUP is OFF
@@ -100,63 +85,13 @@ foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
     option("${ITEM_UPPER}" "" OFF)
 endforeach()
 
+check_plugins()
+
 set(CORE_PLUGINS OFF)
 set(RT_SLAM_PLUGINS OFF)
 
-# read the provided yaml file for arguments/options
 if(YAML_FILE)
-    set(ENABLE_OFFLOAD "false")
-    set(ENABLE_ALIGNMENT "false")
-    set(ENABLE_VERBOSE_ERRORS "false")
-    set(ENABLE_PRE_SLEEP "false")
-    file(STRINGS ${YAML_FILE} YAML_LINES)
-    foreach(SITEM IN LISTS YAML_LINES)
-        string(REPLACE " " "" ITEM ${SITEM})
-        string(REPLACE ":" ";" ITEM_LIST ${ITEM})
-        list(GET ITEM_LIST 0 YCOMMAND)
-        if(YCOMMAND STREQUAL "group" AND BUILD_GROUP STREQUAL "NONE")
-            list(GET ITEM_LIST 1 GROUP_NAME)
-            string(TOUPPER ${GROUP_NAME} BUILD_GROUP)
-        elseif(YCOMMAND STREQUAL "plugins")
-            list(GET ITEM_LIST 1 PLUGIN_NAMES)
-            string(REPLACE "," ";" YPLUGIN_LIST ${PLUGIN_NAMES})
-            foreach(PL IN LISTS YPLUGIN_LIST)
-                string(TOUPPER "USE_${PL}" PL_UPPER)
-                set(${PL_UPPER} ON)
-            endforeach()
-        elseif(YCOMMAND STREQUAL "run")
-            list(GET ITEM_LIST 1 RUN_NAMES)
-            set(ILLIXR_RUN_NAMES ${RUN_NAMES})
-        elseif(YCOMMAND STREQUAL "data")
-            list(GET ITEM_LIST 1 DATA_FILE)
-        elseif (YCOMMAND STREQUAL "build_type")
-            if(CMAKE_BUILD_TYPE STREQUAL "")
-                list(GET ITEM_LIST 1 BTYPE)
-                set(CMAKE_BUILD_TYPE ${BTYPE})
-            endif()
-        elseif(YCOMMAND STREQUAL "install_prefix")
-            if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-                list(GET ITEM_LIST 1 IPREFIX)
-                set(CMAKE_INSTALL_PREFIX ${IPREFIX})
-            endif()
-        elseif(YCOMMAND STREQUAL "enable_offload")
-            list(GET ITEM_LIST 1 IPREFIX)
-            set(ENABLE_OFFLOAD ${IPREFIX})
-        elseif(YCOMMAND STREQUAL "enable_alignment")
-            list(GET ITEM_LIST 1 EALI)
-            set(ENABLE_ALIGNMENT ${EALI})
-        elseif(YCOMMAND STREQUAL "enable_verbose_errors")
-            list(GET ITEM_LIST 1 EVERBE)
-            set(ENABLE_VERBOSE_ERRORS ${EVERBE})
-        elseif(YCOMMAND STREQUAL "enable_pre_sleep")
-            list(GET ITEM_LIST 1 EPRES)
-            set(ENABLE_PRE_SLEEP ${EPRES})
-        elseif(YCOMMAND STREQUAL "demo_data")
-            list(GET ITEM_LIST 1 DDATA)
-            set(DEMO_DATA ${DDATA})
-        endif()
-
-    endforeach()
+    read_yaml(${YAML_FILE})
 endif()
 
 set(ILLIXR_BUILD_SUFFIX "")
@@ -254,25 +189,6 @@ add_executable(main${ILLIXR_BUILD_SUFFIX}.exe src/main.cpp)
 # dependencies
 ##############
 set(EXTERNAL_LIBRARIES "")
-
-# check for 3rd party dependencies that are not parts of OS repos
-macro(get_external proj)
-    list(APPEND EXTERNAL_LIBRARIES "${proj}")
-    set(${proj}_EXTERNAL No)
-    set(${proj}_DEP_STR "")
-    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
-endmacro()
-
-# check for 3rd party dependencies that are not parts of OS repos, but from included plugins
-macro(get_external_for_plugin proj)
-    list(APPEND EXTERNAL_LIBRARIES "${proj}")
-    set(${proj}_EXTERNAL No PARENT_SCOPE)
-    set(${proj}_DEP_STR "" PARENT_SCOPE)
-    include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
-    set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} PARENT_SCOPE)
-    set(${proj}_EXTERNAL ${${proj}_EXTERNAL} PARENT_SCOPE)
-    set(${proj}_DEP_STR ${${proj}_DEP_STR} PARENT_SCOPE)
-endmacro()
 
 ##############
 # yaml parser
