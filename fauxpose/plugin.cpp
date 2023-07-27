@@ -52,16 +52,15 @@ public:
 
         // Store the initial time
         if (_m_clock->is_started()) {
-		sim_start_time = _m_clock->now();
+            sim_start_time = _m_clock->now();
 #ifndef NDEBUG
-		std::cout << "[fauxpose] Starting Service\n";
+            std::cout << "[fauxpose] Starting Service\n";
 #endif
-	} else {
+        } else {
 #ifndef NDEBUG
-		std::cout << "[fauxpose] Warning: the clock isn't started yet\n";
+            std::cout << "[fauxpose] Warning: the clock isn't started yet\n";
 #endif
-	}
-
+        }
 
         // Set default faux-pose parameters
         center_location = Eigen::Vector3f{0.0, 1.5, 0.0};
