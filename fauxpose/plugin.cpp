@@ -2,7 +2,7 @@
 /* fauxpose/plugin.cpp                                                       */
 /*                                                                           */
 /* Created: 03/03/2022                                                       */
-/* Last Edited: 06/15/2023                                                   */
+/* Last Edited: 07/27/2023                                                   */
 /*                                                                           */
 /* An ILLIXR plugin that publishes position tracking data ("pose")           */
 /*     from a mathematical operation just to quickly produce some known    */
@@ -50,7 +50,17 @@ public:
 #endif
 
         // Store the initial time
-        sim_start_time = _m_clock->now();
+//        if (_m_clock->is_started()) {
+		sim_start_time = _m_clock->now();
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Starting Service\n";
+#endif
+//	} else {
+#ifndef NDEBUG
+		std::cout << "[fauxpose] Warning: the clock isn't started yet\n";
+#endif
+//	}
+
 
         // Set default faux-pose parameters
         center_location = Eigen::Vector3f{0.0, 1.5, 0.0};
