@@ -155,6 +155,8 @@ def load_native(config: Mapping[str, Any]) -> None:
             stdout=log_stdout,
             check=True,
         )
+        
+    load_dataset(config)
 
 
 def load_tests(config: Mapping[str, Any]) -> None:
@@ -178,6 +180,8 @@ def load_tests(config: Mapping[str, Any]) -> None:
     cmd_list_tail    : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
     cmd_list         : List[str] = (["catchsegv"] if not enable_pre_sleep else list()) + cmd_list_tail
 
+    load_dataset(config)
+    
     subprocess_run(
         cmd_list,
         env_override=dict(
@@ -297,6 +301,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(5)
 
+    load_dataset(config)
+    
     subprocess_run(
         [str(openxr_app_bin_path)],
         env_override=dict(
@@ -362,14 +368,71 @@ def make_docs(config: Mapping[str, Any]) -> None:
     )
 
 def load_dataset(config: Mapping[str, Any]) -> None:
-    pass
+    print(config)
+    # TODO: Figure this out.
+    # runtime_exe_path = build_runtime(config, "exe")
+    # demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
+    # enable_offload_flag = config["enable_offload"]
+    # enable_alignment_flag = config["enable_alignment"]
+    # realsense_cam_string = config["realsense_cam"]
+    # plugin_paths = threading_map(
+    #     lambda plugin_config: build_one_plugin(config, plugin_config),
+    #     [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
+    #     desc="Building plugins",
+    # )
+    # actual_cmd_str = config["action"].get("command", "$cmd")
+    # illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
+    # env_override = dict(
+    #     ILLIXR_DATA=str(data_path),
+    #     ILLIXR_DEMO_DATA=str(demo_data_path),
+    #     ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+    #     ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+    #     ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+    #     ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
+    #     ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+    #     KIMERA_ROOT=config["action"]["kimera_path"],
+    #     AUDIO_ROOT=config["action"]["audio_path"],
+    #     REALSENSE_CAM=str(realsense_cam_string),
+    #     **env_gpu,
+    # )
+    # env_list = [f"{shlex.quote(var)}={shlex.quote(val)}" for var, val in env_override.items()]
+    # actual_cmd_list = list(
+    #     flatten1(
+    #         replace_all(
+    #             unflatten(shlex.split(actual_cmd_str)),
+    #             {
+    #                 ("$env_cmd",): [
+    #                     "env",
+    #                     "-C",
+    #                     Path(".").resolve(),
+    #                     *env_list,
+    #                     *illixr_cmd_list,
+    #                 ],
+    #                 ("$cmd",): illixr_cmd_list,
+    #                 ("$quoted_cmd",): [shlex.quote(shlex.join(illixr_cmd_list))],
+    #                 ("$env",): env_list,
+    #             },
+    #         )
+    #     )
+    # )
+    # log_stdout_str = config["action"].get("log_stdout", None)
+    # log_stdout_ctx = cast(
+    #     ContextManager[Optional[BinaryIO]],
+    #     (open(log_stdout_str, "wb") if (log_stdout_str is not None) else noop_context(None)),
+    # )
+    # with log_stdout_ctx as log_stdout:
+    #     subprocess_run(
+    #         actual_cmd_list,
+    #         env_override=env_override,
+    #         stdout=log_stdout,
+    #         check=True,
+    #     )
 
 
 actions = {
     "native": load_native,
     "monado": load_monado,
     "tests": load_tests,
-    "dataset": load_dataset,
     "clean": clean_project,
     "docs": make_docs,
 }
