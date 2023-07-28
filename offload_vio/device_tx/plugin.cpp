@@ -48,6 +48,7 @@ public:
 
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
+        socket.enable_no_delay();
         initial_timestamp();
 
         std::srand(std::time(0));
