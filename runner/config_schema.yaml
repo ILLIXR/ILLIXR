@@ -165,19 +165,17 @@ properties:
         $ref: '#/definitions/path'
         description: Path to the directory containing the dataset
       imu:
-        datatype:
-          default: 'double' # double fine for imu?
-          type: string
         timestamp_units:
-          default: 'nanoseconds' # this fine?
+          default: 'nanoseconds'
           type: string
-        format:
+        layout:
           type: string
-        path:
+          default: ''
+        data_path:
           $ref: '#/definitions/path' # add description
       image:
         timestamp_units:
-          default: 'nanoseconds' # this fine? should it be milliseconds?
+          default: 'nanoseconds'
           type: string
         rgb:
           type: array
@@ -190,35 +188,29 @@ properties:
           type: array
           default: []
           items:
-            path:
+            data_path:
               $ref: '#/definitions/path'
               description: Path to the directory containing the Depth images.
         grayscale:
           type: array
           default: []
           items:
-            path:
+            data_path:
               $ref: '#/definitions/path'
               description: Path to the directory containing the grayscale images.
       pose:
-        datatype:
-          default: 'double' # double fine for pose?
-          type: string
         timestamp_units:
-          default: 'nanoseconds' # this fine?
+          default: 'nanoseconds'
           type: string
-        path:
+        data_path:
           $ref: '#/definitions/path' # add description
       ground_truth:
-        datatype:
-          default: 'double' # double fine for ground truth?
-          type: string
         timestamp_units:
-          default: 'nanoseconds' # this fine?
+          default: 'nanoseconds'
           type: string
-        path:
+        data_path:
           $ref: '#/definitions/path' # add description
-        format:
+        layout:
           type: string
         name:
           type: string
