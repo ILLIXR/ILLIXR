@@ -155,8 +155,8 @@ private:
 #endif
         _m_cam.put(_m_cam.allocate<cam_type>(cam_type{
             time_point{std::chrono::nanoseconds{cam_data.timestamp()}},
-            img0,
-            img1,
+            img0.clone(),
+            img1.clone(),
         }));
     }
 
