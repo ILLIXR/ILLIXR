@@ -8,5 +8,6 @@ layout(location = 0) out vec4 outColor;
 layout(push_constant) uniform PER_OBJECT { int tex_ind; } pc;
 
 void main() {
+    // Sample the texture at the interpolated coordinate
     outColor = texture(sampler2D(tex[pc.tex_ind], samp), uv);
 }

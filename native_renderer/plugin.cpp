@@ -45,6 +45,13 @@ public:
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} { }
 
+    /**
+    * @brief Sets up the thread for the plugin.
+    *
+    * This function initializes depth images, offscreen targets, command buffers, sync objects, 
+    * application and timewarp passes, offscreen and swapchain framebuffers. Then, it initializes
+    * application and timewarp with their respective passes.
+    */
     void _p_thread_setup() override {
         for (auto i = 0; i < 2; i++) {
             create_depth_image(&depth_images[i], &depth_image_allocations[i], &depth_image_views[i]);
@@ -66,13 +73,27 @@ public:
         tw->setup(timewarp_pass, 0, {std::vector{offscreen_image_views[0]}, std::vector{offscreen_image_views[1]}});
     }
 
+    /**
+    * @brief Executes one iteration of the plugin's main loop.
+    *
+    * This function handles window events, acquires the next image from the swapchain, updates uniforms,
+    * records command buffers, submits commands to the graphics queue, and presents the rendered image.
+    * It also handles swapchain recreation if necessary and updates the frames per second (FPS) counter.
+    *
+    * @throws runtime_error If any Vulkan operation fails.
+    */
     void _p_one_iteration() override {
         ds->poll_window_events();
 
+        // Wait for the previous frame to finish rendering
         VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX));
+
+        // Acquire the next image from the swapchain
         uint32_t swapchain_image_index;
         auto     ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
                                               VK_NULL_HANDLE, &swapchain_image_index));
+
+        // Check if the swapchain is out of date or suboptimal
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
             ds->recreate_swapchain();
             return;
@@ -81,14 +102,19 @@ public:
         }
         VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence));
 
+        // Get the current fast pose and update the uniforms
         auto fast_pose = pp->get_fast_pose();
         src->update_uniforms(fast_pose.pose);
+
+        // Record the command buffer
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0));
         record_command_buffer(swapchain_image_index);
 
+        // Submit the command buffer to the graphics queue
         const uint64_t ignored       = 0;
         const uint64_t default_value = timeline_semaphore_value;
         const uint64_t fired_value   = timeline_semaphore_value + 1;
+
         timeline_semaphore_value += 1;
         VkTimelineSemaphoreSubmitInfo timeline_submit_info = {VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO};
         timeline_submit_info.waitSemaphoreValueCount       = 1;
@@ -109,15 +135,17 @@ public:
 
         VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, nullptr));
 
+        // Wait for the application to finish rendering
         VkSemaphoreWaitInfo wait_info = {VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO};
         wait_info.semaphoreCount      = 1;
         wait_info.pSemaphores         = &app_render_finished_semaphore;
         wait_info.pValues             = &fired_value;
         VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX));
 
-        // for DRM, get vsync estimate
+        // TODO: for DRM, get vsync estimate
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
 
+        // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
         tw->update_uniforms(fast_pose.pose);
         VkSubmitInfo timewarp_submit_info         = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
         timewarp_submit_info.waitSemaphoreCount   = 0;
@@ -128,6 +156,7 @@ public:
 
         VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence));
 
+        // Present the rendered image
         VkPresentInfoKHR present_info   = {VK_STRUCTURE_TYPE_PRESENT_INFO_KHR};
         present_info.waitSemaphoreCount = 1;
         present_info.pWaitSemaphores    = &timewarp_render_finished_semaphore;
@@ -143,6 +172,7 @@ public:
         }
 
         // #ifndef NDEBUG
+        // Print the FPS
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
             std::cout << "FPS: " << fps << std::endl;
             fps             = 0;
@@ -154,6 +184,14 @@ public:
     }
 
 private:
+    /**
+    * @brief Recreates the Vulkan swapchain.
+    *
+    * This function waits for the device to be idle, destroys the existing swapchain framebuffers,
+    * recreates the swapchain, and then creates new swapchain framebuffers.
+    *
+    * @throws runtime_error If any Vulkan operation fails.
+    */
     void recreate_swapchain() {
         vkDeviceWaitIdle(ds->vk_device);
         for (auto& framebuffer : swapchain_framebuffers) {
@@ -163,14 +201,20 @@ private:
         create_swapchain_framebuffers();
     }
 
+    /**
+    * @brief Creates framebuffers for each swapchain image view.
+    *
+    * @throws runtime_error If framebuffer creation fails.
+    */
     void create_swapchain_framebuffers() {
         swapchain_framebuffers.resize(ds->swapchain_image_views.size());
+
         for (auto i = 0; i < ds->swapchain_image_views.size(); i++) {
             std::array<VkImageView, 1> attachments = {ds->swapchain_image_views[i]};
 
             VkFramebufferCreateInfo framebuffer_info = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
             assert(timewarp_pass != VK_NULL_HANDLE);
-            framebuffer_info.renderPass      = timewarp_pass;
+            framebuffer_info.renderPass      = timewarp_pass; 
             framebuffer_info.attachmentCount = attachments.size();
             framebuffer_info.pAttachments    = attachments.data();
             framebuffer_info.width           = ds->swapchain_extent.width;
@@ -181,7 +225,12 @@ private:
         }
     }
 
+    /**
+    * @brief Records the command buffer for a single frame.
+    * @param swapchain_image_index The index of the swapchain image to render to.
+    */
     void record_command_buffer(uint32_t swapchain_image_index) {
+        // Begin recording app command buffer
         VkCommandBufferBeginInfo begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
         VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info));
 
@@ -201,11 +250,13 @@ private:
             render_pass_info.pClearValues            = clear_values.data();
 
             vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+            // Call app service to record the command buffer
             src->record_command_buffer(app_command_buffer, eye);
             vkCmdEndRenderPass(app_command_buffer);
         }
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer));
 
+        // Begin recording timewarp command buffer
         VkCommandBufferBeginInfo timewarp_begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
         VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info));
         {
@@ -239,6 +290,7 @@ private:
                 scissor.extent   = ds->swapchain_extent;
                 vkCmdSetScissor(timewarp_command_buffer, 0, 1, &scissor);
 
+                // Call timewarp service to record the command buffer
                 tw->record_command_buffer(timewarp_command_buffer, 0, eye == 0);
             }
             vkCmdEndRenderPass(timewarp_command_buffer);
@@ -246,6 +298,15 @@ private:
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer));
     }
 
+    /**
+    * @brief Creates synchronization objects for the application.
+    *
+    * This function creates a timeline semaphore for the application render finished signal,
+    * a binary semaphore for the image available signal, a binary semaphore for the timewarp render finished signal,
+    * and a fence for frame synchronization.
+    *
+    * @throws runtime_error If any Vulkan operation fails.
+    */
     void create_sync_objects() {
         VkSemaphoreTypeCreateInfo timeline_semaphore_info = {VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO};
         timeline_semaphore_info.semaphoreType             = VK_SEMAPHORE_TYPE_TIMELINE;
@@ -265,6 +326,12 @@ private:
         VK_ASSERT_SUCCESS(vkCreateFence(ds->vk_device, &fence_info, nullptr, &frame_fence));
     }
 
+    /**
+    * @brief Creates a depth image for the application.
+    * @param depth_image Pointer to the depth image handle.
+    * @param depth_image_allocation Pointer to the depth image memory allocation handle.
+    * @param depth_image_view Pointer to the depth image view handle.
+    */
     void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation, VkImageView* depth_image_view) {
         VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
         image_info.imageType         = VK_IMAGE_TYPE_2D;
@@ -297,6 +364,13 @@ private:
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, depth_image_view));
     }
 
+    /**
+    * @brief Creates an offscreen target for the application to render to.
+    * @param offscreen_image Pointer to the offscreen image handle.
+    * @param offscreen_image_allocation Pointer to the offscreen image memory allocation handle.
+    * @param offscreen_image_view Pointer to the offscreen image view handle.
+    * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
+    */
     void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
                                  VkImageView* offscreen_image_view, VkFramebuffer* offscreen_framebuffer) {
         VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
@@ -330,6 +404,9 @@ private:
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, offscreen_image_view));
     }
 
+    /**
+    * @brief Creates the offscreen framebuffers for the application.
+    */
     void create_offscreen_framebuffers() {
         for (auto eye = 0; eye < 2; eye++) {
             std::array<VkImageView, 2> attachments = {offscreen_image_views[eye], depth_image_views[eye]};
@@ -347,6 +424,14 @@ private:
         }
     }
 
+    /**
+    * @brief Creates a render pass for the application.
+    *
+    * This function sets up the attachment descriptions for color and depth, the attachment references,
+    * the subpass description, and the subpass dependencies. It then creates a render pass with these configurations.
+    *
+    * @throws runtime_error If render pass creation fails.
+    */
     void create_app_pass() {
         std::array<VkAttachmentDescription, 2> attchmentDescriptions = {};
         attchmentDescriptions[0].format                              = VK_FORMAT_B8G8R8A8_UNORM;
@@ -381,7 +466,9 @@ private:
         subpass.colorAttachmentCount    = 1;
         subpass.pDepthStencilAttachment = &depth_attachment_ref;
 
+        // Subpass dependencies for layout transitions
         std::array<VkSubpassDependency, 2> dependencies = {};
+        // After timewarp samples from the offscreen image, it needs to be transitioned to a color attachment
         dependencies[0].srcSubpass                      = VK_SUBPASS_EXTERNAL;
         dependencies[0].dstSubpass                      = 0;
         dependencies[0].srcStageMask                    = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
@@ -390,6 +477,7 @@ private:
         dependencies[0].dstAccessMask                   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         dependencies[0].dependencyFlags                 = VK_DEPENDENCY_BY_REGION_BIT;
 
+        // After the app is done rendering to the offscreen image, it needs to be transitioned to a shader read
         dependencies[1].srcSubpass      = 0;
         dependencies[1].dstSubpass      = VK_SUBPASS_EXTERNAL;
         dependencies[1].srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -409,6 +497,9 @@ private:
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &app_pass));
     }
 
+    /**
+    * @brief Creates a render pass for timewarp.
+    */
     void create_timewarp_pass() {
         std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
         attchmentDescriptions[0].format                              = ds->swapchain_image_format;

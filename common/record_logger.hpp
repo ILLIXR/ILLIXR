@@ -160,6 +160,7 @@ public:
 #ifndef NDEBUG
         if (rh && !data_use_indicator_.is_used()) {
             std::cerr << "Record was deleted without being logged." << std::endl;
+            // TODO: The sqlite record logger is sometimes loaded after records have started to come in.
             // abort();
         }
 #endif

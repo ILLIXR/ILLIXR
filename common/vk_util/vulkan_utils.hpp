@@ -36,6 +36,11 @@
 
 class vulkan_utils {
 public:
+    /**
+    * @brief Returns the string representation of a VkResult.
+    * @param err_code The VkResult to convert to a string.
+    * @return The string representation of the VkResult.
+    */
     static std::string error_string(VkResult err_code) {
         switch (err_code) {
         case VK_NOT_READY:
@@ -107,6 +112,13 @@ public:
         }
     }
 
+    /**
+    * @brief Creates a VkShaderModule from SPIR-V bytecode.
+    *
+    * @param device The Vulkan device to use.
+    * @param code The SPIR-V bytecode.
+    * @return The created VkShaderModule.
+    */
     static VkShaderModule create_shader_module(VkDevice device, std::vector<char>&& code) {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -119,6 +131,14 @@ public:
         return shaderModule;
     }
 
+    /**
+    * @brief Creates a VMA allocator.
+    *
+    * @param vk_instance The Vulkan instance to use.
+    * @param vk_physical_device The Vulkan physical device to use.
+    * @param vk_device The Vulkan device to use.
+    * @return The created VMA allocator.
+    */
     static VmaAllocator create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device, VkDevice vk_device) {
         VmaVulkanFunctions vulkanFunctions    = {};
         vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
@@ -136,6 +156,13 @@ public:
         return allocator;
     }
 
+    /**
+    * @brief Creates a one-time command buffer.
+    *
+    * @param vk_device The Vulkan device to use.
+    * @param vk_command_pool The Vulkan command pool to use.
+    * @return The created command buffer.
+    */
     static VkCommandBuffer begin_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool) {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -155,6 +182,16 @@ public:
         return commandBuffer;
     }
 
+    /**
+    * @brief Ends, submits and frees a one-time command buffer.
+    *
+    * @details This function waits for the queue to become idle.
+    *
+    * @param vk_device The Vulkan device to use.
+    * @param vk_command_pool The Vulkan command pool to use.
+    * @param vk_queue The Vulkan queue to use.
+    * @param vk_command_buffer The Vulkan command buffer to use.
+    */
     static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue,
                                      VkCommandBuffer vk_command_buffer) {
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer));
@@ -170,6 +207,13 @@ public:
         vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
     }
 
+    /**
+    * @brief Creates a VkCommandPool.
+    *
+    * @param device The Vulkan device to use.
+    * @param queue_family_index The queue family index to use.
+    * @return The created VkCommandPool.
+    */
     static VkCommandPool create_command_pool(VkDevice device, uint32_t queue_family_index) {
         VkCommandPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
         poolInfo.queueFamilyIndex        = queue_family_index;
@@ -180,6 +224,12 @@ public:
         return command_pool;
     }
 
+    /**
+    * @brief Creates a VkCommandBuffer.
+    *
+    * @param device The Vulkan device to use.
+    * @param command_pool The Vulkan command pool to use.
+    */
     static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool command_pool) {
         VkCommandBufferAllocateInfo allocInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
         allocInfo.commandPool                 = command_pool;
@@ -191,6 +241,12 @@ public:
         return command_buffer;
     }
 
+    /**
+    * @brief Reads a file into a vector of chars.
+    *
+    * @param path The path to the file.
+    * @return The vector of chars.
+    */
     static std::vector<char> read_file(std::string path) {
         std::ifstream file(path, std::ios::ate | std::ios::binary);
 
@@ -208,6 +264,17 @@ public:
         return buffer;
     }
 
+    /**
+    * @brief Copies a buffer to an image of the same size.
+    *
+    * @param vk_device The Vulkan device to use.
+    * @param vk_queue The Vulkan queue to use.
+    * @param vk_command_pool The Vulkan command pool to use.
+    * @param buffer The buffer to copy from.
+    * @param image The image to copy to.
+    * @param width The width of the image.
+    * @param height The height of the image.
+    */
     static void copy_buffer_to_image(VkDevice vk_device, VkQueue vk_queue, VkCommandPool vk_command_pool, VkBuffer buffer,
                                      VkImage image, uint32_t width, uint32_t height) {
         VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);

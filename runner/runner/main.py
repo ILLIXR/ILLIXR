@@ -245,7 +245,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
 
     ## For CMake
     monado_build_opts: Mapping[str, str] = dict(
-        CMAKE_BUILD_TYPE="Debug",
+        CMAKE_BUILD_TYPE=cmake_profile,
         ILLIXR_PATH=str(runtime_path),
         **monado_config,
     )
