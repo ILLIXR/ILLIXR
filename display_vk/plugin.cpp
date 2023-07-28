@@ -17,16 +17,16 @@ public:
         : sb{pb->lookup_impl<switchboard>()} { }
 
     /**
-    * @brief This function sets up the GLFW and Vulkan environments. See display_sink::setup().
-    */
+     * @brief This function sets up the GLFW and Vulkan environments. See display_sink::setup().
+     */
     void setup() {
         setup_glfw();
         setup_vk();
     }
 
     /**
-    * @brief This function recreates the Vulkan swapchain. See display_sink::recreate_swapchain().
-    */
+     * @brief This function recreates the Vulkan swapchain. See display_sink::recreate_swapchain().
+     */
     virtual void recreate_swapchain() override {
         vkb::SwapchainBuilder swapchain_builder{vkb_device};
         auto                  swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
@@ -45,22 +45,21 @@ public:
     }
 
     /**
-    * @brief This function polls GLFW events. See display_sink::poll_window_events().
-    */
+     * @brief This function polls GLFW events. See display_sink::poll_window_events().
+     */
     void poll_window_events() override {
         glfwPollEvents();
     }
 
 private:
-
     /**
-    * @brief Sets up the GLFW environment.
-    *
-    * This function initializes the GLFW library, sets the window hints for the client API and resizability,
-    * and creates a GLFW window with the specified width and height.
-    *
-    * @throws runtime_error If GLFW initialization fails.
-    */
+     * @brief Sets up the GLFW environment.
+     *
+     * This function initializes the GLFW library, sets the window hints for the client API and resizability,
+     * and creates a GLFW window with the specified width and height.
+     *
+     * @throws runtime_error If GLFW initialization fails.
+     */
     void setup_glfw() {
         if (!glfwInit()) {
             ILLIXR::abort("Failed to initalize glfw");
@@ -74,13 +73,13 @@ private:
     }
 
     /**
-    * @brief Sets up the Vulkan environment.
-    *
-    * This function initializes the Vulkan instance, selects the physical device, creates the Vulkan device,
-    * gets the graphics and present queues, creates the swapchain, and sets up the VMA allocator.
-    *
-    * @throws runtime_error If any of the Vulkan setup steps fail.
-    */
+     * @brief Sets up the Vulkan environment.
+     *
+     * This function initializes the Vulkan instance, selects the physical device, creates the Vulkan device,
+     * gets the graphics and present queues, creates the swapchain, and sets up the VMA allocator.
+     *
+     * @throws runtime_error If any of the Vulkan setup steps fail.
+     */
     void setup_vk() {
         vkb::InstanceBuilder builder;
         auto                 instance_ret =

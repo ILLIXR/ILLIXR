@@ -46,12 +46,12 @@ public:
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} { }
 
     /**
-    * @brief Sets up the thread for the plugin.
-    *
-    * This function initializes depth images, offscreen targets, command buffers, sync objects, 
-    * application and timewarp passes, offscreen and swapchain framebuffers. Then, it initializes
-    * application and timewarp with their respective passes.
-    */
+     * @brief Sets up the thread for the plugin.
+     *
+     * This function initializes depth images, offscreen targets, command buffers, sync objects,
+     * application and timewarp passes, offscreen and swapchain framebuffers. Then, it initializes
+     * application and timewarp with their respective passes.
+     */
     void _p_thread_setup() override {
         for (auto i = 0; i < 2; i++) {
             create_depth_image(&depth_images[i], &depth_image_allocations[i], &depth_image_views[i]);
@@ -74,14 +74,14 @@ public:
     }
 
     /**
-    * @brief Executes one iteration of the plugin's main loop.
-    *
-    * This function handles window events, acquires the next image from the swapchain, updates uniforms,
-    * records command buffers, submits commands to the graphics queue, and presents the rendered image.
-    * It also handles swapchain recreation if necessary and updates the frames per second (FPS) counter.
-    *
-    * @throws runtime_error If any Vulkan operation fails.
-    */
+     * @brief Executes one iteration of the plugin's main loop.
+     *
+     * This function handles window events, acquires the next image from the swapchain, updates uniforms,
+     * records command buffers, submits commands to the graphics queue, and presents the rendered image.
+     * It also handles swapchain recreation if necessary and updates the frames per second (FPS) counter.
+     *
+     * @throws runtime_error If any Vulkan operation fails.
+     */
     void _p_one_iteration() override {
         ds->poll_window_events();
 
@@ -185,13 +185,13 @@ public:
 
 private:
     /**
-    * @brief Recreates the Vulkan swapchain.
-    *
-    * This function waits for the device to be idle, destroys the existing swapchain framebuffers,
-    * recreates the swapchain, and then creates new swapchain framebuffers.
-    *
-    * @throws runtime_error If any Vulkan operation fails.
-    */
+     * @brief Recreates the Vulkan swapchain.
+     *
+     * This function waits for the device to be idle, destroys the existing swapchain framebuffers,
+     * recreates the swapchain, and then creates new swapchain framebuffers.
+     *
+     * @throws runtime_error If any Vulkan operation fails.
+     */
     void recreate_swapchain() {
         vkDeviceWaitIdle(ds->vk_device);
         for (auto& framebuffer : swapchain_framebuffers) {
@@ -202,10 +202,10 @@ private:
     }
 
     /**
-    * @brief Creates framebuffers for each swapchain image view.
-    *
-    * @throws runtime_error If framebuffer creation fails.
-    */
+     * @brief Creates framebuffers for each swapchain image view.
+     *
+     * @throws runtime_error If framebuffer creation fails.
+     */
     void create_swapchain_framebuffers() {
         swapchain_framebuffers.resize(ds->swapchain_image_views.size());
 
@@ -214,7 +214,7 @@ private:
 
             VkFramebufferCreateInfo framebuffer_info = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
             assert(timewarp_pass != VK_NULL_HANDLE);
-            framebuffer_info.renderPass      = timewarp_pass; 
+            framebuffer_info.renderPass      = timewarp_pass;
             framebuffer_info.attachmentCount = attachments.size();
             framebuffer_info.pAttachments    = attachments.data();
             framebuffer_info.width           = ds->swapchain_extent.width;
@@ -226,9 +226,9 @@ private:
     }
 
     /**
-    * @brief Records the command buffer for a single frame.
-    * @param swapchain_image_index The index of the swapchain image to render to.
-    */
+     * @brief Records the command buffer for a single frame.
+     * @param swapchain_image_index The index of the swapchain image to render to.
+     */
     void record_command_buffer(uint32_t swapchain_image_index) {
         // Begin recording app command buffer
         VkCommandBufferBeginInfo begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
@@ -299,14 +299,14 @@ private:
     }
 
     /**
-    * @brief Creates synchronization objects for the application.
-    *
-    * This function creates a timeline semaphore for the application render finished signal,
-    * a binary semaphore for the image available signal, a binary semaphore for the timewarp render finished signal,
-    * and a fence for frame synchronization.
-    *
-    * @throws runtime_error If any Vulkan operation fails.
-    */
+     * @brief Creates synchronization objects for the application.
+     *
+     * This function creates a timeline semaphore for the application render finished signal,
+     * a binary semaphore for the image available signal, a binary semaphore for the timewarp render finished signal,
+     * and a fence for frame synchronization.
+     *
+     * @throws runtime_error If any Vulkan operation fails.
+     */
     void create_sync_objects() {
         VkSemaphoreTypeCreateInfo timeline_semaphore_info = {VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO};
         timeline_semaphore_info.semaphoreType             = VK_SEMAPHORE_TYPE_TIMELINE;
@@ -327,11 +327,11 @@ private:
     }
 
     /**
-    * @brief Creates a depth image for the application.
-    * @param depth_image Pointer to the depth image handle.
-    * @param depth_image_allocation Pointer to the depth image memory allocation handle.
-    * @param depth_image_view Pointer to the depth image view handle.
-    */
+     * @brief Creates a depth image for the application.
+     * @param depth_image Pointer to the depth image handle.
+     * @param depth_image_allocation Pointer to the depth image memory allocation handle.
+     * @param depth_image_view Pointer to the depth image view handle.
+     */
     void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation, VkImageView* depth_image_view) {
         VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
         image_info.imageType         = VK_IMAGE_TYPE_2D;
@@ -365,12 +365,12 @@ private:
     }
 
     /**
-    * @brief Creates an offscreen target for the application to render to.
-    * @param offscreen_image Pointer to the offscreen image handle.
-    * @param offscreen_image_allocation Pointer to the offscreen image memory allocation handle.
-    * @param offscreen_image_view Pointer to the offscreen image view handle.
-    * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
-    */
+     * @brief Creates an offscreen target for the application to render to.
+     * @param offscreen_image Pointer to the offscreen image handle.
+     * @param offscreen_image_allocation Pointer to the offscreen image memory allocation handle.
+     * @param offscreen_image_view Pointer to the offscreen image view handle.
+     * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
+     */
     void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
                                  VkImageView* offscreen_image_view, VkFramebuffer* offscreen_framebuffer) {
         VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
@@ -405,8 +405,8 @@ private:
     }
 
     /**
-    * @brief Creates the offscreen framebuffers for the application.
-    */
+     * @brief Creates the offscreen framebuffers for the application.
+     */
     void create_offscreen_framebuffers() {
         for (auto eye = 0; eye < 2; eye++) {
             std::array<VkImageView, 2> attachments = {offscreen_image_views[eye], depth_image_views[eye]};
@@ -425,13 +425,13 @@ private:
     }
 
     /**
-    * @brief Creates a render pass for the application.
-    *
-    * This function sets up the attachment descriptions for color and depth, the attachment references,
-    * the subpass description, and the subpass dependencies. It then creates a render pass with these configurations.
-    *
-    * @throws runtime_error If render pass creation fails.
-    */
+     * @brief Creates a render pass for the application.
+     *
+     * This function sets up the attachment descriptions for color and depth, the attachment references,
+     * the subpass description, and the subpass dependencies. It then creates a render pass with these configurations.
+     *
+     * @throws runtime_error If render pass creation fails.
+     */
     void create_app_pass() {
         std::array<VkAttachmentDescription, 2> attchmentDescriptions = {};
         attchmentDescriptions[0].format                              = VK_FORMAT_B8G8R8A8_UNORM;
@@ -469,13 +469,13 @@ private:
         // Subpass dependencies for layout transitions
         std::array<VkSubpassDependency, 2> dependencies = {};
         // After timewarp samples from the offscreen image, it needs to be transitioned to a color attachment
-        dependencies[0].srcSubpass                      = VK_SUBPASS_EXTERNAL;
-        dependencies[0].dstSubpass                      = 0;
-        dependencies[0].srcStageMask                    = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        dependencies[0].dstStageMask                    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependencies[0].srcAccessMask                   = VK_ACCESS_SHADER_READ_BIT;
-        dependencies[0].dstAccessMask                   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        dependencies[0].dependencyFlags                 = VK_DEPENDENCY_BY_REGION_BIT;
+        dependencies[0].srcSubpass      = VK_SUBPASS_EXTERNAL;
+        dependencies[0].dstSubpass      = 0;
+        dependencies[0].srcStageMask    = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        dependencies[0].dstStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependencies[0].srcAccessMask   = VK_ACCESS_SHADER_READ_BIT;
+        dependencies[0].dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
         // After the app is done rendering to the offscreen image, it needs to be transitioned to a shader read
         dependencies[1].srcSubpass      = 0;
@@ -498,8 +498,8 @@ private:
     }
 
     /**
-    * @brief Creates a render pass for timewarp.
-    */
+     * @brief Creates a render pass for timewarp.
+     */
     void create_timewarp_pass() {
         std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
         attchmentDescriptions[0].format                              = ds->swapchain_image_format;

@@ -11,15 +11,16 @@ using namespace ILLIXR;
 class render_pass : public phonebook::service {
 public:
     /**
-    * @brief Update the uniforms for the render pass.
-    *
-    * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose previously supplied to the app pass.
-    */
+     * @brief Update the uniforms for the render pass.
+     *
+     * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
+     * previously supplied to the app pass.
+     */
     virtual void update_uniforms(const pose_type render_pose) = 0;
 
     /**
-    * @brief Destroy the render pass and free all Vulkan resources.
-    */
+     * @brief Destroy the render pass and free all Vulkan resources.
+     */
     virtual void destroy() = 0;
 
     virtual ~render_pass() { }
@@ -31,22 +32,22 @@ public:
 class timewarp : public render_pass {
 public:
     /**
-    * @brief Setup the timewarp render pass and initailize required Vulkan resources.
-    *
-    * @param render_pass The render pass to use.
-    * @param subpass The subpass to use.
-    * @param buffer_pool The buffer pool to use.
-    * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
-    */
+     * @brief Setup the timewarp render pass and initailize required Vulkan resources.
+     *
+     * @param render_pass The render pass to use.
+     * @param subpass The subpass to use.
+     * @param buffer_pool The buffer pool to use.
+     * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
+     */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool,
                        bool input_texture_vulkan_coordinates = true) = 0;
     /**
-    * @brief Record a command buffer for a given eye.
-    * 
-    * @param commandBuffer The command buffer to record to.
-    * @param buffer_ind The index of the buffer to use.
-    * @param left Whether to render the left eye or the right eye. True for left eye, false for right eye.
-    */
+     * @brief Record a command buffer for a given eye.
+     *
+     * @param commandBuffer The command buffer to record to.
+     * @param buffer_ind The index of the buffer to use.
+     * @param left Whether to render the left eye or the right eye. True for left eye, false for right eye.
+     */
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) = 0;
 };
 
@@ -54,18 +55,18 @@ public:
 class app : public render_pass {
 public:
     /**
-    * @brief Setup the app render pass and initailize required Vulkan resources.
-    *
-    * @param render_pass The render pass to use.
-    * @param subpass The subpass to use.
-    */
+     * @brief Setup the app render pass and initailize required Vulkan resources.
+     *
+     * @param render_pass The render pass to use.
+     * @param subpass The subpass to use.
+     */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass) = 0;
 
     /**
-    * @brief Record a command buffer for a given eye.
-    *
-    * @param commandBuffer The command buffer to record to.
-    * @param eye The eye to render.
-    */
+     * @brief Record a command buffer for a given eye.
+     *
+     * @param commandBuffer The command buffer to record to.
+     * @param eye The eye to render.
+     */
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int eye) = 0;
 };
