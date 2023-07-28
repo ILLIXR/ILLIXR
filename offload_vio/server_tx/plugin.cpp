@@ -28,6 +28,7 @@ public:
 
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
+        socket.enable_no_delay();
         is_client_connected = false;
     }
 
