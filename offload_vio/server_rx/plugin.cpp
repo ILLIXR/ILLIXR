@@ -159,13 +159,14 @@ private:
             img1.clone(),
         }));
         // If we publish all IMU samples before the camera data, the camera data may not be captured in any of the IMU callbacks
-        // in the tracking algorithm (e.g. OpenVINS), and has to wait for another camera frame time (until the next packet arrives) to be consumed.
-        // Therefore, we publish one (or more) IMU samples after the camera data to make sure that the camera data will be captured.
-        vio_input_proto::IMUData last_imu = vio_input.imu_data(vio_input.imu_data_size()-1);
-        _m_imu.put(_m_imu.allocate<imu_type>(imu_type{
-                time_point{std::chrono::nanoseconds{last_imu.timestamp()}},
-                Eigen::Vector3d{last_imu.angular_vel().x(), last_imu.angular_vel().y(), last_imu.angular_vel().z()},
-                Eigen::Vector3d{last_imu.linear_accel().x(), last_imu.linear_accel().y(), last_imu.linear_accel().z()}}));
+        // in the tracking algorithm (e.g. OpenVINS), and has to wait for another camera frame time (until the next packet
+        // arrives) to be consumed. Therefore, we publish one (or more) IMU samples after the camera data to make sure that the
+        // camera data will be captured.
+        vio_input_proto::IMUData last_imu = vio_input.imu_data(vio_input.imu_data_size() - 1);
+        _m_imu.put(_m_imu.allocate<imu_type>(
+            imu_type{time_point{std::chrono::nanoseconds{last_imu.timestamp()}},
+                     Eigen::Vector3d{last_imu.angular_vel().x(), last_imu.angular_vel().y(), last_imu.angular_vel().z()},
+                     Eigen::Vector3d{last_imu.linear_accel().x(), last_imu.linear_accel().y(), last_imu.linear_accel().z()}}));
     }
 
 private:
