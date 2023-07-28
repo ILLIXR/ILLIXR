@@ -1,7 +1,7 @@
 #include "../data_format.hpp"
 #include "../phonebook.hpp"
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Werror"
+#pragma GCC diagnostic ignored "-Wunused-variable"
 #include "third_party/VkBootstrap.h"
 #pragma GCC diagnostic pop
 #include "vulkan_utils.hpp"
