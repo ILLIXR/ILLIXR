@@ -1,6 +1,9 @@
 #include "../data_format.hpp"
 #include "../phonebook.hpp"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Werror"
 #include "third_party/VkBootstrap.h"
+#pragma GCC diagnostic pop
 #include "vulkan_utils.hpp"
 
 #include <cstdint>
@@ -8,14 +11,14 @@
 using namespace ILLIXR;
 
 /**
- * @brief A display sink is a service that can display the rendered images to the screen.
- *
- * @details
- * A display sink is a service created with the necessary Vulkan resources to display the rendered images to the screen.
- * It is created either by display_vk, a plugin that configures the Vulkan resources and swapchain,
- * or by monado_vulkan_integration, which populate the Vulkan resources and swapchain from Monado.
- * Previously with the GL implementation, this was not required since we were using GL and Monado was using Vulkan.
- */
+* @brief A display sink is a service that can display the rendered images to the screen.
+*
+* @details
+* A display sink is a service created with the necessary Vulkan resources to display the rendered images to the screen.
+* It is created either by display_vk, a plugin that configures the Vulkan resources and swapchain, 
+* or by monado_vulkan_integration, which populate the Vulkan resources and swapchain from Monado.
+* Previously with the GL implementation, this was not required since we were using GL and Monado was using Vulkan.
+*/
 class display_sink : public phonebook::service {
 public:
     virtual ~display_sink() { }
@@ -29,15 +32,15 @@ public:
     uint32_t         graphics_queue_family;
 
     /**
-     * @brief Polls window events using whatever the windowing backend is.
-     */
+    * @brief Polls window events using whatever the windowing backend is.
+    */
     virtual void poll_window_events(){};
 
     // addtionally required for native display
 
     /**
-     * @brief Recreates the swapchain when an outdated or nonoptimal swapchain is detected.
-     */
+    * @brief Recreates the swapchain when an outdated or nonoptimal swapchain is detected.
+    */
     virtual void recreate_swapchain(){};
 
     void*                    window;
