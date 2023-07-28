@@ -43,6 +43,7 @@ public:
 
         socket.set_reuseaddr();
         socket.bind(server_addr);
+        socket.enable_no_delay();
     }
 
     virtual skip_option _p_should_skip() override {
