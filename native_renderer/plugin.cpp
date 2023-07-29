@@ -504,7 +504,7 @@ private:
         std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
         attchmentDescriptions[0].format                              = ds->swapchain_image_format;
         attchmentDescriptions[0].samples                             = VK_SAMPLE_COUNT_1_BIT;
-        attchmentDescriptions[0].loadOp                              = VK_ATTACHMENT_LOAD_OP_LOAD;
+        attchmentDescriptions[0].loadOp                              = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attchmentDescriptions[0].storeOp                             = VK_ATTACHMENT_STORE_OP_STORE;
         attchmentDescriptions[0].stencilLoadOp                       = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         attchmentDescriptions[0].stencilStoreOp                      = VK_ATTACHMENT_STORE_OP_DONT_CARE;
