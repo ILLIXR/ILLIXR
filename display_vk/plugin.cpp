@@ -4,8 +4,8 @@
 #define VMA_IMPLEMENTATION
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
-#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
+#include "common/threadloop.hpp"
 #include "common/vk_util/display_sink.hpp"
 #include "common/vk_util/vulkan_utils.hpp"
 
@@ -179,7 +179,7 @@ private:
     vkb::Device                        vkb_device;
     vkb::Swapchain                     vkb_swapchain;
 
-    std::atomic<bool> should_poll { true };
+    std::atomic<bool> should_poll{true};
 
     friend class display_vk_plugin;
 };
@@ -190,8 +190,8 @@ public:
         : plugin{name, pb}
         , _dvk{std::make_shared<display_vk>(pb)}
         , _pb{pb} {
-            _pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
-        }
+        _pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
+    }
 
     virtual void start() override {
         main_thread = std::thread(&display_vk_plugin::main_loop, this);
@@ -206,11 +206,11 @@ public:
     }
 
 private:
-    std::thread main_thread;
-    std::atomic<bool> ready { false };
+    std::thread                 main_thread;
+    std::atomic<bool>           ready{false};
     std::shared_ptr<display_vk> _dvk;
-    std::atomic<bool> running { true };
-    phonebook* _pb;
+    std::atomic<bool>           running{true};
+    phonebook*                  _pb;
 
     void main_loop() {
         _dvk->setup();
