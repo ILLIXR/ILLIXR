@@ -4,7 +4,7 @@
 #define VMA_IMPLEMENTATION
 #include "common/data_format.hpp"
 #include "common/phonebook.hpp"
-#include "common/plugin.hpp"
+#include "common/threadloop.hpp"
 #include "common/switchboard.hpp"
 #include "common/vk_util/display_sink.hpp"
 #include "common/vk_util/vulkan_utils.hpp"
@@ -48,7 +48,7 @@ public:
      * @brief This function polls GLFW events. See display_sink::poll_window_events().
      */
     void poll_window_events() override {
-        glfwPollEvents();
+        should_poll = true;
     }
 
 private:
@@ -178,22 +178,51 @@ private:
     vkb::PhysicalDevice                physical_device;
     vkb::Device                        vkb_device;
     vkb::Swapchain                     vkb_swapchain;
+
+    std::atomic<bool> should_poll { true };
+
+    friend class display_vk_plugin;
 };
 
 class display_vk_plugin : public plugin {
 public:
     display_vk_plugin(const std::string& name, phonebook* pb)
         : plugin{name, pb}
-        , _dvk{std::make_shared<display_vk>(pb)} {
-        pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
-    }
+        , _dvk{std::make_shared<display_vk>(pb)}
+        , _pb{pb} {
+            _pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
+        }
 
     virtual void start() override {
-        _dvk->setup();
+        main_thread = std::thread(&display_vk_plugin::main_loop, this);
+        while (!ready) {
+            // yield
+            std::this_thread::yield();
+        }
+    }
+
+    virtual void stop() override {
+        running = false;
     }
 
 private:
+    std::thread main_thread;
+    std::atomic<bool> ready { false };
     std::shared_ptr<display_vk> _dvk;
+    std::atomic<bool> running { true };
+    phonebook* _pb;
+
+    void main_loop() {
+        _dvk->setup();
+
+        ready = true;
+
+        while (running) {
+            if (_dvk->should_poll.exchange(false)) {
+                glfwPollEvents();
+            }
+        }
+    }
 };
 
 PLUGIN_MAIN(display_vk_plugin)
