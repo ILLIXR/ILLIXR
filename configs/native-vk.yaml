@@ -5,6 +5,7 @@ plugin_groups:
       - path: timewarp_vk/
       - path: vkdemo/
       - path: native_renderer/
+      - path: debugview/
   - !include "core_plugins.yaml"
 data:
   subpath: mav0
