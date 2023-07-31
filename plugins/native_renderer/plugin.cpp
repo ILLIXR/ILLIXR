@@ -1,22 +1,19 @@
 #include <cassert>
 #include <cstdint>
-#include <opencv2/core/hal/interface.h>
+
 #include <ratio>
 #include <sys/types.h>
 #include <vector>
 #define VMA_IMPLEMENTATION
-#include "common/data_format.hpp"
-#include "common/error_util.hpp"
-#include "common/global_module_defs.hpp"
-#include "common/math_util.hpp"
-#include "common/pose_prediction.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
-#include "common/vk_util/display_sink.hpp"
-#include "common/vk_util/render_pass.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/pose_prediction.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/vk_util/display_sink.hpp"
+#include "illixr/vk_util/render_pass.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "common/gl_util/lib/tiny_obj_loader.h"
+#include "illixr/gl_util/lib/tiny_obj_loader.h"
 #include "unordered_map"
 
 #include <array>

@@ -2,12 +2,12 @@
 #include <GLFW/glfw3.h>
 
 #define VMA_IMPLEMENTATION
-#include "common/data_format.hpp"
-#include "common/phonebook.hpp"
-#include "common/switchboard.hpp"
-#include "common/threadloop.hpp"
-#include "common/vk_util/display_sink.hpp"
-#include "common/vk_util/vulkan_utils.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/vk_util/display_sink.hpp"
+#include "illixr/vk_util/vulkan_utils.hpp"
 
 using namespace ILLIXR;
 

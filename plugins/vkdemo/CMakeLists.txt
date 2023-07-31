@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 project(vkdemo)
+
+set(PLUGIN_NAME plugin.vkdemo${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,20 +26,38 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
 endforeach (GLSL)
 
 add_custom_target(
-        Shaders
+        Vkdemo_Shaders
         DEPENDS ${SPIRV_BINARY_FILES}
 )
 
-add_library(vkdemo SHARED plugin.cpp)
-add_dependencies(vkdemo Shaders)
-set_target_properties(vkdemo PROPERTIES OUTPUT_NAME "plugin")
+add_library(${PLUGIN_NAME} SHARED plugin.cpp
+        ../../include/illixr/data_format.hpp
+        ../../include/illixr/global_module_defs.hpp
+        ../../include/illixr/math_util.hpp
+        ../../include/illixr/pose_prediction.hpp
+        ../../include/illixr/switchboard.hpp
+        ../../include/illixr/threadloop.hpp
+        ../../include/illixr/vk_util/display_sink.hpp
+        ../../include/illixr/vk_util/render_pass.hpp
+        ../../include/illixr/gl_util/lib/tiny_obj_loader.h
+        ../../include/illixr/gl_util/lib/stb_image.h
+        )
+# if building on CentOS make sure we use the correct OpenCV
+if(BUILD_OPENCV)
+    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
+endif()
 
-target_link_libraries(vkdemo ${Vulkan_LIBRARIES})
-target_include_directories(vkdemo PUBLIC ${Vulkan_INCLUDE_DIRS})
+add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
+set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "plugin")
 
-add_custom_command(TARGET vkdemo POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:vkdemo>/shaders/"
+target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} ${OpenCV_LIBRARIES})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${OpenCV_INCLUDE_DIRS})
+
+add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PLUGIN_NAME}>/shaders/"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_BINARY_DIR}/shaders"
-        "$<TARGET_FILE_DIR:vkdemo>/shaders"
+        "$<TARGET_FILE_DIR:${PLUGIN_NAME}>/shaders"
         )
+
+install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
