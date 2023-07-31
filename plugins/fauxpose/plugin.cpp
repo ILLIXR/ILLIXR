@@ -28,9 +28,9 @@
 /*   * (This version uploaded to ILLIXR github)                              */
 /*                                                                           */
 
-#include "common/plugin.hpp"
+#include "illixr/plugin.hpp"
 
-#include "common/pose_prediction.hpp"
+#include "illixr/pose_prediction.hpp"
 
 #include <cstring>
 

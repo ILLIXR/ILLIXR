@@ -1,5 +1,8 @@
-internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed
-external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP,ORB_SLAM,Monado,OpenVINS
+internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose
+external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP,Monado,OpenVINS
+
+# core plugins: timewarp_gl,audio_pipeline
+# rt_slam_plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction
 
 group:
   name: ci
@@ -55,3 +58,11 @@ group:
   enable_alignment: False
   enable_verbose_errors: False
   enable_pre_sleep: False
+
+group:
+  name: fauxpose
+  plugins: fauxpose,gldemo,debugview,timewarp_gl,audio_pipeline,kimera_vio
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false

@@ -1,0 +1,2 @@
+group: fauxpose
+plugins: fauxpose,gldemo,debugview,timewarp_gl,audio_pipeline,kimera_vio
