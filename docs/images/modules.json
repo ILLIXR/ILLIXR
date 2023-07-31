@@ -43,6 +43,16 @@
       "dependencies": []
     },
     {
+      "name": "display_vk",
+      "cmake_flag": "USE_DISPLAY_VK",
+      "dependencies:": [
+        "OpenCV",
+        "Vulkan",
+        "glfw3",
+        "glm"
+      ]
+    },
+    {
       "name": "gldemo",
       "cmake_flag": "USE_GLDEMO",
       "dependencies": []
@@ -86,6 +96,14 @@
         "OpenXR",
         "Vulkan",
         "libusb"
+      ]
+    },
+    {
+      "name": "native_renderer",
+      "cmake_flag": "USE_NATIVE_RENDERER",
+      "dependencies:": [
+        "OpenCV",
+        "Vulkan"
       ]
     },
     {
@@ -177,6 +195,26 @@
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL",
       "dependencies": []
+    },
+    {
+      "name": "timewarp_vk",
+      "cmake_flag": "USE_TIMEWARP_VK",
+      "dependencies:": [
+        "OpenCV",
+        "Vulkan",
+        "glfw3",
+        "glm"
+      ]
+    },
+    {
+      "name": "vkdemo",
+      "cmake_flag": "USE_VKDEMO",
+      "dependencies:": [
+        "OpenCV",
+        "Vulkan",
+        "glfw3",
+        "glm"
+        ]
     },
     {
       "name": "zed",

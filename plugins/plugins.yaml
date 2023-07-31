@@ -1,8 +1,9 @@
-internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose
+internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo
 external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP,Monado,OpenVINS
 
-# core plugins: timewarp_gl,audio_pipeline
+# core plugins: audio_pipeline
 # rt_slam_plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction
+# rt_slam_plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction
 
 group:
   name: ci
@@ -32,8 +33,16 @@ group:
   enable_pre_sleep: false
 
 group:
-  name: native
+  name: native_gl
   plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,offload_data,timewarp_gl,audio_pipeline
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+group:
+  name: native_vk
+  plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview,audio_pipeline
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -66,3 +75,11 @@ group:
   enable_alignment: false
   enable_verbose_errors: false
   enable_pre_sleep: false
+
+group:
+  name: monado_vk
+  plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,timewarp_vk,openxr_app
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
