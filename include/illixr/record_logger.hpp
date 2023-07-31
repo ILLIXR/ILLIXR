@@ -136,7 +136,7 @@ class record {
 public:
     record(const record_header& rh_, std::vector<std::any> values_)
         : rh{rh_}
-        , values{values_} {
+        , values(values_) {
 #ifndef NDEBUG
         assert(rh);
         if (values.size() != rh->get().get_columns()) {
