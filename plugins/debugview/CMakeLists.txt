@@ -1,6 +1,10 @@
 # module to build and install the debugview ILLIXR plugin
 
-find_package(glfw3 REQUIRED)
+find_package(glfw3 QUIET)
+if(NOT glfw3_FOUND)
+    pkg_search_module(glfw3 REQUIRED glfw3)
+endif()
+
 
 set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 
