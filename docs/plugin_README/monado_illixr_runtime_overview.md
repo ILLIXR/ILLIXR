@@ -86,13 +86,13 @@ For implementation details regarding the representation of poses and frames in M
 
 [//]: # (- Internal -)
 
-[20]:   glossary.md#monado
-[21]:   glossary.md#openxr
+[20]:   ../glossary.md#monado
+[21]:   ../glossary.md#openxr
 [22]:   monado_integration_dataflow.md
-[23]:   glossary.md#plugin
-[24]:   glossary.md#runtime
-[25]:   glossary.md#head-mounted-display
-[26]:   glossary.md#switchboard
-[27]:   glossary.md#phonebook
-[28]:   illixr_plugins.md
-[29]:   glossary.md#framebuffer
+[23]:   ../glossary.md#plugin
+[24]:   ../glossary.md#runtime
+[25]:   ../glossary.md#head-mounted-display
+[26]:   ../glossary.md#switchboard
+[27]:   ../glossary.md#phonebook
+[28]:   ../illixr_plugins.md
+[29]:   ../glossary.md#framebuffer

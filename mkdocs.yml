@@ -15,13 +15,19 @@ nav:
         - 'Getting Started': getting_started.md
         - 'ILLIXR Debugging Tips': debugging_illixr.md
         - 'ILLIXR Under Virtualization': virtualization.md
-        - 'ILLIXR Plugins': illixr_plugins.md
+        - 'ILLIXR Plugin Overview': illixr_plugins.md
         - 'Modifying a Plugin': modifying_a_plugin.md
         - 'Writing Your Plugin': writing_your_plugin.md
-        - 'Monado Overview': monado_illixr_runtime_overview.md
-        - 'Monado Dataflow': monado_integration_dataflow.md
+        - 'Plugin Details':
+            - 'Debugview': plugin_README/README_debugview.md
+            - 'Fauxpose': plugin_README/README_fauxpose.md
+            - 'Gldemo': plugin_README/README_gldemo.md
+            - 'Monado Overview': plugin_README/monado_illixr_runtime_overview.md
+            - 'Monado Dataflow': plugin_README/monado_integration_dataflow.md
+            - 'Offload VIO': plugin_README/offload_vio.md
+            - 'Timewarp_gl': plugin_README/README_timewarp_gl.md
+            - 'Zed': plugin_README/README_zed.md
         - 'Logging and Metrics': logging_and_metrics.md
-        - 'Offload VIO': offload_vio.md
         - 'ILLIXR Glossary': glossary.md
         - 'ILLIXR API': api/html/annotated.html
         - 'ILLIXR License': LICENSE.md

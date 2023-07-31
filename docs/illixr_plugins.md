@@ -232,4 +232,4 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 [39]:   glossary.md#simultaneous-localization-and-mapping
 [40]:   glossary.md#profile
 [41]:   glossary.md#plugin
-[42]:	README_fauxpose.md
+[42]:	plugin_README/README_fauxpose.md

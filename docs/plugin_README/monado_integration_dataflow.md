@@ -57,16 +57,16 @@ The integration:
 
 [//]: # (- Internal -)
 
-[20]:   illixr_plugins.md
-[21]:   glossary.md#monado
-[22]:   glossary.md#pose
-[23]:   glossary.md#head-mounted-display
-[24]:   glossary.md#switchboard
-[25]:   glossary.md#plugin
-[26]:   glossary.md#vulkan
-[27]:   glossary.md#opengl
-[28]:   glossary.md#framebuffer
-[29]:   glossary.md#distortion-correction
-[30]:   glossary.md#chromatic-abberation-correction
-[31]:   glossary.md#swap-chain
-[32]:   glossary.md#simultaneous-localization-and-mapping
+[20]:   ../illixr_plugins.md
+[21]:   ../glossary.md#monado
+[22]:   ../glossary.md#pose
+[23]:   ../glossary.md#head-mounted-display
+[24]:   ../glossary.md#switchboard
+[25]:   ../glossary.md#plugin
+[26]:   ../glossary.md#vulkan
+[27]:   ../glossary.md#opengl
+[28]:   ../glossary.md#framebuffer
+[29]:   ../glossary.md#distortion-correction
+[30]:   ../glossary.md#chromatic-abberation-correction
+[31]:   ../glossary.md#swap-chain
+[32]:   ../glossary.md#simultaneous-localization-and-mapping

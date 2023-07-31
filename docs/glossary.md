@@ -369,8 +369,8 @@ For more information, visit the [official YAML page][7].
 [61]:   writing_your_plugin.md
 [62]:   glossary.md#docker
 [63]:   virtualization.md
-[64]:   monado_illixr_runtime_overview.md
-[65]:   monado_integration_dataflow.md
+[64]:   plugin_README/monado_illixr_runtime_overview.md
+[65]:   plugin_README/monado_integration_dataflow.md
 [66]:   glossary.md#yaml
 [67]:   glossary.md#plugin
 [68]:   illixr_plugins.md
@@ -380,7 +380,7 @@ For more information, visit the [official YAML page][7].
 [72]:   glossary.md#framebuffer
 [73]:   logging_and_metrics.md
 [74]:   getting_started.md
-[75]:   monado_illixr_runtime_overview.md#translation-plugin
+[75]:   plugin_README/monado_illixr_runtime_overview.md#translation-plugin
 [76]:   glossary.md#simultaneous-localization-and-mapping
 [77]:   glossary.md#visual-interial-odometry
 [78]:   getting_started.md#running-illixr
