@@ -265,10 +265,6 @@ if(USE_KIMERA_VIO OR USE_ORB_SLAM)
     get_external(DBoW2)
 endif()
 
-if(USE_DISPLAY_VK OR USE_TIMEWARP_VK OR USE_VKDEOM or USE_NATIVE_REDERER)
-    get_external(MonadoVK)
-endif()
-
 # external plugins
 foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
@@ -276,6 +272,10 @@ foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
         include(cmake/Get${ITEM}.cmake)
     endif()
 endforeach()
+
+if(USE_DISPLAY_VK OR USE_TIMEWARP_VK OR USE_VKDEMO OR USE_NATIVE_REDERER)
+    get_external(MonadoVK)
+endif()
 
 if(DATA_FILE)
     if(EXISTS "./data.zip")
