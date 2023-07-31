@@ -13,7 +13,7 @@ find_package(ZED 3 REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 
-set(SRC_FILES src/main.cpp)
+set(SRC_FILES src/plugin.cpp)
 set(HDR_FILES include/zed_opencv.hpp)
 
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})

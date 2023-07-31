@@ -1,4 +1,5 @@
-#include <opencv2/core/cvdef.h>
+#include <opencv2/opencv.hpp>
+#include <sl/Camera.hpp>
 using namespace sl;
 
 /**
