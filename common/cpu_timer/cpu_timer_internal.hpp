@@ -87,7 +87,7 @@ namespace detail {
             }
             if (wall_time) {
                 assert(start_wall == WallTime{0} && "timer already started");
-                assert(start_wall == WallTime{0} && "timer already stopped");
+                assert(stop_wall == WallTime{0} && "timer already stopped");
                 start_wall = stop_wall = wall_now();
             }
             if (cpu_time) {
