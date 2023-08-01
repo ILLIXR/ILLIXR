@@ -45,6 +45,9 @@ public:
                 std::cerr << "Failed to create data directory.";
             }
         }
+        pub_to_send_csv.open(data_path + "/pub_to_send.csv");
+        frame_info_csv.open(data_path + "/frame_info.csv");
+        frame_info_csv << "frame no." << "," << "IMU (0) or Cam (1)" << "," << "Timestamp" << std::endl;
 
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
@@ -93,7 +96,7 @@ protected:
     }
 
 public:
-    void send_imu_cam_data() {
+    void send_imu_cam_data(std::optional<time_point> &cam_time) {
         data_buffer->set_real_timestamp(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         data_buffer->set_frame_id(frame_id);
@@ -102,10 +105,12 @@ public:
         string delimitter      = "EEND!";
 
         socket.write(data_to_be_sent + delimitter);
+        pub_to_send_csv << (_m_clock->now() - cam_time.value()).count() << std::endl;
 
         frame_id++;
         delete data_buffer;
         data_buffer = new vio_input_proto::IMUCamVec();
+        cam_time.reset();
     }
 
     void prepare_imu_cam_data(switchboard::ptr<const imu_type> datum) {
@@ -134,10 +139,10 @@ public:
         linear_accel->set_z(datum->linear_a.z());
         imu_data->set_allocated_linear_accel(linear_accel);
 
+        frame_info_csv << frame_id << "," << "0" << "," << datum->time.time_since_epoch().count() << std::endl;
+
         if (latest_cam_time && latest_imu_time > latest_cam_time) {
-            send_imu_cam_data();
-            latest_cam_time.reset();
-            return;
+            send_imu_cam_data(latest_cam_time);
         }
 
         switchboard::ptr<const cam_type> cam;
@@ -145,16 +150,17 @@ public:
         if (_m_cam.size() != 0 && !latest_cam_time) {
             cam = _m_cam.dequeue();
 
-            cv::Mat img0 = (cam->img0).clone();
-            cv::Mat img1 = (cam->img1).clone();
+            cv::Mat cam_img0 = (cam->img0).clone();
+            cv::Mat cam_img1 = (cam->img1).clone();
 
             // size of img0 before compression
-            double img0_size = img0.total() * img0.elemSize();
+            double cam_img0_size = cam_img0.total() * cam_img0.elemSize();
 
             vio_input_proto::CamData* cam_data = new vio_input_proto::CamData();
             cam_data->set_timestamp(cam->time.time_since_epoch().count());
-            cam_data->set_rows(img0.rows);
-            cam_data->set_cols(img0.cols);
+            cam_data->set_rows(cam_img0.rows);
+            cam_data->set_cols(cam_img0.cols);
+            frame_info_csv << frame_id << "," << "1" << "," << cam->time.time_since_epoch().count() << std::endl;
 
 #ifdef USE_COMPRESSION
             /** WITH COMPRESSION **/
@@ -163,10 +169,11 @@ public:
                     .count();
             queue.push(curr);
             std::unique_lock<std::mutex> lock{mutex};
-            encoder->enqueue(img0, img1);
+            encoder->enqueue(cam_img0, cam_img1);
             cv.wait(lock, [this]() {
                 return img_ready;
             });
+            std::cout << "unlocked\n";
             img_ready = false;
 
             sizes.push_back(this->img0.size);
@@ -189,17 +196,16 @@ public:
             /** WITH COMPRESSION END **/
 #else
             /** NO COMPRESSION **/
-            // cam_data->set_img0_data((void*) img0.data, img0_size);
-            // cam_data->set_img1_data((void*) img1.data, img0_size);
+            cam_data->set_img0_data((void*) cam_img0.data, cam_img0_size);
+            cam_data->set_img1_data((void*) cam_img1.data, cam_img0_size);
             /** NO COMPRESSION END **/
 #endif
             data_buffer->set_allocated_cam_data(cam_data);
-
-            if (latest_imu_time <= cam->time) {
-                latest_cam_time = cam->time;
+            latest_cam_time = cam->time;
+            if (latest_imu_time <= latest_cam_time) {
                 return;
             } else {
-                send_imu_cam_data();
+                send_imu_cam_data(latest_cam_time);
             }
         }
     }
@@ -219,6 +225,8 @@ private:
     Address   server_addr;
 
     const string data_path = filesystem::current_path().string() + "/recorded_data";
+    std::ofstream pub_to_send_csv;
+    std::ofstream frame_info_csv;
 };
 
 PLUGIN_MAIN(offload_writer)
