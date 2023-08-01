@@ -69,7 +69,7 @@ private:
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
         window =
-            glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "Vulkan window", nullptr, nullptr);
+            glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
     }
 
     /**
