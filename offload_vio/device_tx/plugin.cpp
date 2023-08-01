@@ -47,7 +47,11 @@ public:
         }
         pub_to_send_csv.open(data_path + "/pub_to_send.csv");
         frame_info_csv.open(data_path + "/frame_info.csv");
-        frame_info_csv << "frame no." << "," << "IMU (0) or Cam (1)" << "," << "Timestamp" << std::endl;
+        frame_info_csv << "frame no."
+                       << ","
+                       << "IMU (0) or Cam (1)"
+                       << ","
+                       << "Timestamp" << std::endl;
 
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
@@ -96,7 +100,7 @@ protected:
     }
 
 public:
-    void send_imu_cam_data(std::optional<time_point> &cam_time) {
+    void send_imu_cam_data(std::optional<time_point>& cam_time) {
         data_buffer->set_real_timestamp(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         data_buffer->set_frame_id(frame_id);
@@ -139,7 +143,9 @@ public:
         linear_accel->set_z(datum->linear_a.z());
         imu_data->set_allocated_linear_accel(linear_accel);
 
-        frame_info_csv << frame_id << "," << "0" << "," << datum->time.time_since_epoch().count() << std::endl;
+        frame_info_csv << frame_id << ","
+                       << "0"
+                       << "," << datum->time.time_since_epoch().count() << std::endl;
 
         if (latest_cam_time && latest_imu_time > latest_cam_time) {
             send_imu_cam_data(latest_cam_time);
@@ -160,7 +166,9 @@ public:
             cam_data->set_timestamp(cam->time.time_since_epoch().count());
             cam_data->set_rows(cam_img0.rows);
             cam_data->set_cols(cam_img0.cols);
-            frame_info_csv << frame_id << "," << "1" << "," << cam->time.time_since_epoch().count() << std::endl;
+            frame_info_csv << frame_id << ","
+                           << "1"
+                           << "," << cam->time.time_since_epoch().count() << std::endl;
 
 #ifdef USE_COMPRESSION
             /** WITH COMPRESSION **/
@@ -224,7 +232,7 @@ private:
     TCPSocket socket;
     Address   server_addr;
 
-    const string data_path = filesystem::current_path().string() + "/recorded_data";
+    const string  data_path = filesystem::current_path().string() + "/recorded_data";
     std::ofstream pub_to_send_csv;
     std::ofstream frame_info_csv;
 };
