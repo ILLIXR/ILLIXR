@@ -104,7 +104,7 @@ def build_runtime(
 
 
 def load_native(config: Mapping[str, Any]) -> None:
-    runtime_exe_path = build_runtime(config, "exe")
+    runtime_exe_path = build_runtime(config, "exe", is_vulkan=(bool(config["action"]["is_vulkan"]) if "is_vulkan" in config["action"] else False))
     data_path = pathify(config["data"], root_dir, cache_path, True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
@@ -237,7 +237,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_DATA=str(data_path),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
-        XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
+        XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado-dev.json")),
         XRT_TRACING="true",
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
