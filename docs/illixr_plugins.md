@@ -129,6 +129,15 @@ See [Writing Your Plugin][30] to extend ILLIXR.
 ## Other Supported Plugins
 ILLIXR supports additional plugins to replace some of the default plugins.
 
+-   [`fauxpose`][42]:
+    An alternate tracking implementation that simply generates "fast_pose"
+    data from a simple mathematical algorithm (circular movement).  The intent
+    is for use when debugging other plugins and the developer wants a known
+    pose trajectory without having to configure actual tracking.
+
+    Topic details:
+    -   *Publishes* `pose_position` on `fast_pose` topic.
+
 -   [`hologram`][9]:
     Adapts the eyebuffer for use on a holographic display.
     By default, this plugin is disabled, since an NVIDIA GPU is currently required.
@@ -230,3 +239,4 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [39]:   glossary.md#simulataneous-localization-and-mapping
 [40]:   glossary.md#configuration
 [41]:   glossary.md#plugin
+[42]:	README_fauxpose.md
