@@ -5,9 +5,9 @@
 #include "common/global_module_defs.hpp"
 #include "common/math_util.hpp"
 #include "common/phonebook.hpp"
-#include "common/threadloop.hpp"
 #include "common/pose_prediction.hpp"
 #include "common/switchboard.hpp"
+#include "common/threadloop.hpp"
 #include "common/vk_util/display_sink.hpp"
 #include "common/vk_util/render_pass.hpp"
 #include "common/vk_util/vulkan_utils.hpp"
@@ -759,9 +759,9 @@ public:
 
     skip_option _p_should_skip() override {
         // Get the current time in milliseconds
-        auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count();
-        
+        auto now =
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
         // Only print every 1 second
         if (now - last_print < 1000) {
             return skip_option::skip_and_yield;
