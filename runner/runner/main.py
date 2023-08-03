@@ -205,6 +205,12 @@ def load_tests(config: Mapping[str, Any]) -> None:
 
 
 def load_monado(config: Mapping[str, Any]) -> None:
+    # check whether env var $XDG_RUNTIME_DIR is set
+    socket_path = "/tmp/monado_comp_ipc" if not os.getenv("XDG_RUNTIME_DIR") else os.getenv("XDG_RUNTIME_DIR") + "/monado_comp_ipc"
+    # delete socket if it exists
+    if os.path.exists(socket_path):
+        os.remove(socket_path)
+    
     action_name = config["action"]["name"]
 
     profile = config["profile"]
