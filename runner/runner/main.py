@@ -237,7 +237,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_DATA=str(data_path),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
-        XR_RUNTIME_JSON=str(monado_path / "build" / "openxr_monado-dev.json"),
+        XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado-dev.json")),
         XRT_TRACING="true",
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
@@ -298,6 +298,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
 
+    ## Remove the socket file from unclean exit
+    if os.path.exists("/run/user/1000/monado_comp_ipc"):
+        os.remove("/run/user/1000/monado_comp_ipc")
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(monado_target_path), *map(str, plugin_paths)]
@@ -330,48 +333,13 @@ def load_monado(config: Mapping[str, Any]) -> None:
                 },
             )
         )
-
-    if not openxr_app_bin_path.exists():
-        raise RuntimeError(f"{action_name} Failed to build openxr_app (mainline={is_mainline}, path={openxr_app_bin_path})")
-
-    if is_mainline:
-        monado_target_name : str  = "monado-service"
-        monado_target_dir  : Path = monado_path / "build" / "src" / "xrt" / "targets" / "service"
-        monado_target_path : Path = monado_target_dir / monado_target_name
-
-        if not monado_target_path.exists():
-            raise RuntimeError(f"[{action_name}] Failed to build monado (mainline={is_mainline}, path={monado_target_path})")
-
-        env_monado_service: Mapping[str, str] = dict(**os.environ, **env_monado, **env_gpu)
-
-        ## Open the Monado service application in the background
-        monado_service_proc = subprocess.Popen([str(monado_target_path)], env=env_monado_service, stdout=PIPE)
-
-    ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(5)
-
-    subprocess_run(
-        [str(openxr_app_bin_path)],
-        env_override=dict(
-            ILLIXR_DEMO_DATA=str(demo_data_path),
-            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
-            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
-            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
-            KIMERA_ROOT=config["action"]["kimera_path"],
-            AUDIO_ROOT=config["action"]["audio_path"],
-            REALSENSE_CAM=str(realsense_cam_string),
-            **env_monado,
-            **env_gpu,
-        ),
-        check=True,
     )
 
     ## Launch the Monado service before any OpenXR apps are opened
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(10)
+    time.sleep(5)
 
     # Launch all OpenXR apps after the service is launched
     for openxr_app_bin_path in openxr_app_bin_paths:

@@ -5,13 +5,9 @@ project(timewarp_vk)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Vulkan COMPONENTS glslc)
-# print glslc path
-message(STATUS "glslc: ${glslc_executable}")
+find_package(Vulkan)
 
 find_package(glm REQUIRED)
-
-find_program(glslc_executable NAMES glslc)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
         "shaders/*.frag"
@@ -24,7 +20,7 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
     add_custom_command(
             OUTPUT ${SPIRV}
             COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-            COMMAND ${glslc_executable} ${GLSL} -o ${SPIRV}
+            COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
             DEPENDS ${GLSL})
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach (GLSL)

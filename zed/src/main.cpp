@@ -148,6 +148,9 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
+        , _m_cam_reader{sb->get_reader<cam_type_zed>("cam_zed")}
+        , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
+        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , zedm{start_camera()}
         , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_} {

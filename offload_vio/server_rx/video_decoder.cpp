@@ -10,6 +10,12 @@
 #include <utility>
 
 namespace ILLIXR {
+// EuRoc
+#define IMG_WIDTH 752
+#define IMG_HEIGHT 480
+// ZED
+// #define IMG_WIDTH 672
+// #define IMG_HEIGHT 376
 
 GstFlowReturn cb_new_sample(GstElement* appsink, gpointer* user_data) {
     return reinterpret_cast<video_decoder*>(user_data)->cb_appsink(appsink);
@@ -128,11 +134,7 @@ GstFlowReturn video_decoder::cb_appsink(GstElement* sink) {
         }
 
         if (_img0_ready && _img1_ready) {
-            // for EuRoc dataset
-            _callback(cv::Mat(480, 752, CV_8UC1, _img0_map.data), cv::Mat(480, 752, CV_8UC1, _img1_map.data));
-            // for OpenXR apps
-            // _callback(cv::Mat(376, 672, CV_8UC1, _img0_map.data),
-            //           cv::Mat(376, 672,  CV_8UC1, _img1_map.data));
+            _callback(cv::Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1, _img0_map.data), cv::Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1, _img1_map.data));
             _img0_ready = false;
             _img1_ready = false;
             lock.unlock(); // unlock and notify the waiting thread to clean up

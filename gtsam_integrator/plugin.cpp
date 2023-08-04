@@ -211,7 +211,7 @@ private:
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
         time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
-        time_point time_end   = input_values->t_offset + real_time;
+        time_point time_end   = real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
