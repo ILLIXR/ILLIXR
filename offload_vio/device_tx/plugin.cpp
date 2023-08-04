@@ -165,15 +165,13 @@ public:
 #ifdef USE_COMPRESSION
             /** WITH COMPRESSION **/
             uint64_t curr =
-                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                    .count();
+                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             queue.push(curr);
             std::unique_lock<std::mutex> lock{mutex};
             encoder->enqueue(cam_img0, cam_img1);
             cv.wait(lock, [this]() {
                 return img_ready;
             });
-            std::cout << "unlocked\n";
             img_ready = false;
 
             sizes.push_back(this->img0.size);
