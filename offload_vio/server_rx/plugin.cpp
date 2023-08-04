@@ -116,7 +116,7 @@ private:
         double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
 
         // Loop through and publish all IMU values first
-        for (int i = 0; i < vio_input.imu_data_size(); i++) {
+        for (int i = 0; i < vio_input.imu_data_size() - 1; i++) {
             vio_input_proto::IMUData curr_data = vio_input.imu_data(i);
             _m_imu.put(_m_imu.allocate<imu_type>(imu_type{
                 time_point{std::chrono::nanoseconds{curr_data.timestamp()}},

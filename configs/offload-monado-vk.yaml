@@ -12,6 +12,7 @@ plugin_groups:
       # - path: debugview/
       # - path: offload_data/
       # - path: record_imu_cam/
+      - path: timewarp_vk/
       - path: offload_vio/device_rx/
       - path: offload_vio/device_tx/
   - !include "core_plugins.yaml"

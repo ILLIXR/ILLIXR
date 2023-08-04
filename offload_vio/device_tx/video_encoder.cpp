@@ -15,6 +15,21 @@ namespace ILLIXR {
 //    void cb_need_data(GstElement *appsrc, guint size, gpointer* user_data) {
 //        reinterpret_cast<video_encoder*>(user_data)->want = 1;
 //    }
+// EuRoc
+#define IMG_WIDTH 752
+#define IMG_HEIGHT 480
+// ZED
+// #define IMG_WIDTH 672
+// #define IMG_HEIGHT 376
+
+#define ILLIXR_BITRATE 5242880
+// 50Mbps = 52428800
+// 20Mbps = 20971520
+// 10Mbps = 10485760
+// 5Mbps = 5242880
+// 2Mbps = 2097152
+// 0.5Mbps = 524288
+// 0.1Mbps = 104857
 
 GstFlowReturn cb_new_sample(GstElement* appsink, gpointer* user_data) {
     return reinterpret_cast<video_encoder*>(user_data)->cb_appsink(appsink);
@@ -46,12 +61,12 @@ void video_encoder::create_pipelines() {
     auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
     auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
 
-    auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=GRAY8,width=752,height=480,framerate=0/1"); // 752/480 for euroc
+    auto caps_8uc1 = gst_caps_from_string("video/x-raw,format=GRAY8,width=IMG_WIDTH,height=IMG_HEIGHT,framerate=0/1");
     g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_8uc1, nullptr);
     g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
     gst_caps_unref(caps_8uc1);
 
-    auto caps_convert_to = gst_caps_from_string("video/x-raw,format=NV12,width=752,height=480"); // 752/480 for euroc
+    auto caps_convert_to = gst_caps_from_string("video/x-raw,format=NV12,width=IMG_WIDTH,height=IMG_HEIGHT");
     g_object_set(G_OBJECT(caps_filter_0), "caps", caps_convert_to, nullptr);
     g_object_set(G_OBJECT(caps_filter_1), "caps", caps_convert_to, nullptr);
     gst_caps_unref(caps_convert_to);
@@ -59,16 +74,8 @@ void video_encoder::create_pipelines() {
     // set bitrate from environment variables
     // g_object_set(G_OBJECT(encoder_img0), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
     // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
-
-    // 50Mbps = 52428800
-    // 20Mbps = 20971520
-    // 10Mbps = 10485760
-    // 5Mbps = 5242880
-    // 2Mbps = 2097152
-    // 0.5Mbps = 524288
-    // 0.1Mbps = 104857
-    g_object_set(G_OBJECT(encoder_img0), "bitrate", 5242880, nullptr);
-    g_object_set(G_OBJECT(encoder_img1), "bitrate", 5242880, nullptr);
+    g_object_set(G_OBJECT(encoder_img0), "bitrate", ILLIXR_BITRATE, nullptr);
+    g_object_set(G_OBJECT(encoder_img1), "bitrate", ILLIXR_BITRATE, nullptr);
 
     g_object_set(G_OBJECT(_appsrc_img0), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
     g_object_set(G_OBJECT(_appsrc_img1), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
