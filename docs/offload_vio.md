@@ -23,5 +23,10 @@ to setup each machine to be able to send/recieve via TCP, and configure the serv
 
 The offloading vio plugins have basic support for logging pose_transfer_time and round trip time. The logging files are written to directory recorded_data/. Other information can be logged the same way as in the existing plugins (e.g. offload_vio/device_rx/plugin.cpp).
 
+## Compression
+
+H.264 codec is supported for compressing the camera images to save bandwidth. To enable compression, define USE_COMPRESSION in device_tx/plugin.cpp and server_rx/plugin.cpp. In device_tx/video_encoder.cpp and server_rx/video_decoder.cpp, define appropriate image dimensions and desired target bitrate (defaults to 5Mbps). The codec library is implemented based on GStreamer and DeepStream. Please follow the instructions [here][1] to install GStreamer and DeepStream SDK. You don't have to reinstall CUDA and NVIDIA Driver if you have a relatively new version. TensorRT and librdkafka are not required either.
+
 
 [//]: # (- References -)
+[1]: https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#dgpu-setup-for-ubuntu

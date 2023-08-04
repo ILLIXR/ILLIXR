@@ -306,6 +306,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
 
+    ## Remove the socket file from unclean exit
+    if os.path.exists("/run/user/1000/monado_comp_ipc"):
+        os.remove("/run/user/1000/monado_comp_ipc")
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(monado_target_path), *map(str, plugin_paths)]
@@ -344,7 +347,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(10)
+    time.sleep(5)
 
     # Launch all OpenXR apps after the service is launched
     for openxr_app_bin_path in openxr_app_bin_paths:
