@@ -20,13 +20,13 @@ plugin.opt.so: build/Release/Makefile
 build/Debug/Makefile:
 	mkdir -p build/Debug && \
 	cd build/Debug && \
-	cmake -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../ && \
+	cmake -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
 	true
 
 build/Release/Makefile:
 	mkdir -p build/Release && \
 	cd build/Release && \
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../ && \#
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=$(CXX) -DCMAKE_C_COMPILER=$(CC) ../.. && \
 	true
 
 

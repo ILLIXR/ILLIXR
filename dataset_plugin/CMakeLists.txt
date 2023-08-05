@@ -69,7 +69,7 @@ ENDIF()
 # Add subdirectories #
 ######################
 
-add_library(plugin SHARED plugin.cpp dataset_loader.cpp config.cpp)
+add_library(plugin SHARED src/plugin.cpp src/dataset_loader.cpp src/config.cpp)
 target_include_directories(plugin PUBLIC ./include)
 
 target_link_libraries(plugin ${OpenCV_LIBS} Eigen3::Eigen)
