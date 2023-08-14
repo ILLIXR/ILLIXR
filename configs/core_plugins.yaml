@@ -1,5 +1,4 @@
 plugin_group:
-  - path: timewarp_gl/
   - name: audio
     path:
       git_repo: https://github.com/ILLIXR/audio_pipeline.git

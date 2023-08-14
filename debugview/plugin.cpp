@@ -432,6 +432,7 @@ public:
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
         if (gui_window == nullptr) {
             std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
@@ -446,8 +447,8 @@ public:
         glfwSwapInterval(1); // Enable vsync!
         RAC_ERRNO_MSG("debugview after vysnc");
 
-        glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(MessageCallback, 0);
+        // glEnable(GL_DEBUG_OUTPUT);
+        // glDebugMessageCallback(MessageCallback, 0);
 
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
