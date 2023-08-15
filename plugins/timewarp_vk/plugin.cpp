@@ -1,12 +1,13 @@
 #include <mutex>
 #define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
 #include "illixr/vk_util/vulkan_utils.hpp"
@@ -154,6 +155,8 @@ public:
     }
 
     virtual void update_uniforms(const pose_type render_pose) override {
+        num_update_uniforms_calls++;
+
         // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
         Eigen::Matrix4f viewMatrix   = Eigen::Matrix4f::Identity();
         viewMatrix.block(0, 0, 3, 3) = render_pose.orientation.toRotationMatrix();
@@ -188,6 +191,8 @@ public:
     }
 
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left = true) override {
+        num_record_calls++;
+
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
@@ -729,23 +734,48 @@ private:
     std::vector<HMD::uv_coord_t>     distortion_uv2;
 
     std::vector<uint32_t> distortion_indices;
+
+    // metrics
+    std::atomic<uint32_t> num_record_calls{0};
+    std::atomic<uint32_t> num_update_uniforms_calls{0};
+
+    friend class timewarp_vk_plugin;
 };
 
-class timewarp_vk_plugin : public plugin {
+class timewarp_vk_plugin : public threadloop {
 public:
     timewarp_vk_plugin(const std::string& name, phonebook* pb)
-        : plugin{name, pb}
+        : threadloop{name, pb}
         , tw{std::make_shared<timewarp_vk>(pb)} {
         pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
     }
 
-    virtual void start() override {
-        // tw->initialize();
+    void _p_one_iteration() override {
+        auto fps = tw->num_record_calls.exchange(0) / 2; // two eyes
+        auto ups = tw->num_update_uniforms_calls.exchange(0);
+
+        std::cout << "timewarp_vk: cb records: " << fps << ", uniform updates: " << ups << std::endl;
+    }
+
+    skip_option _p_should_skip() override {
+        // Get the current time in milliseconds
+        auto now =
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+        // Only print every 1 second
+        if (now - last_print < 1000) {
+            return skip_option::skip_and_yield;
+        } else {
+            last_print = now;
+            return skip_option::run;
+        }
     }
 
 private:
     std::shared_ptr<timewarp_vk>  tw;
     std::shared_ptr<display_sink> ds;
+
+    int64_t last_print = 0;
 };
 
 PLUGIN_MAIN(timewarp_vk_plugin)

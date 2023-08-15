@@ -68,8 +68,8 @@ private:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-        window =
-            glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "Vulkan window", nullptr, nullptr);
+        window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
+                                  "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
     }
 
     /**
@@ -108,7 +108,7 @@ private:
         }
 
         auto physical_device_ret = selector.set_surface(vk_surface)
-                                       .set_minimum_version(1, 1)
+                                       .set_minimum_version(1, 2)
                                        .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
                                        // .add_required_extension(VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME)
                                        .select();
@@ -159,9 +159,6 @@ private:
         vkb_swapchain = swapchain_ret.value();
         vk_swapchain  = vkb_swapchain.swapchain;
 
-        // we no longer check for errors for individual Vulkan API calls since
-        // 1. we have validation layer enabled
-        // 2. we can't recover from them anyway
         swapchain_images       = vkb_swapchain.get_images().value();
         swapchain_image_views  = vkb_swapchain.get_image_views().value();
         swapchain_image_format = vkb_swapchain.image_format;
