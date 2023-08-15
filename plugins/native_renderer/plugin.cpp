@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cstdint>
-
 #include <ratio>
 #include <sys/types.h>
 #include <vector>
