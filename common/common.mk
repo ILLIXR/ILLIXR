@@ -5,23 +5,22 @@ STDCXX ?= c++17
 CFLAGS := $(CFLAGS) -DGLSL_VERSION='"330 core"'
 RM := rm -f
 
-## A compilation flag for selecting the Monado integration mode
-#> If ILLIXR_MONADO_VULKAN is set to 'ON', disable OpenGL initializatin
-#> Else ILLIXR_MONADO_VULKAN is empty, enabling the monado_integration compatible compilation
-ifeq ($(ILLIXR_MONADO_VULKAN),ON)
-	MONADO_FLAGS := -DILLIXR_MONADO_MAINLINE
-else
-	MONADO_FLAGS :=
+## A compilation flag for selecting the graphics backend
+#> Depending on if we're using OpenGL + Monado or Vulkan, certain things may be handled differently.
+ifeq ($(ILLIXR_VULKAN), ON)
+	GRAPHICS_BACKEND_FLAGS := -DILLIXR_VULKAN
+else ifeq ($(ILLIXR_MONADO), ON)
+	GRAPHICS_BACKEND_FLAGS := -DILLIXR_MONADO
 endif
 
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
-DBG_FLAGS ?= -Og -g $(MONADO_FLAGS) -Wall -Wextra -rdynamic
+DBG_FLAGS ?= -Og -g $(GRAPHICS_BACKEND_FLAGS) -Wall -Wextra -rdynamic
 
 ## OPT Notes:
 #> NDEBUG disables debugging output and logic
-OPT_FLAGS ?= -O3 -DNDEBUG $(MONADO_FLAGS) -Wall -Wextra
+OPT_FLAGS ?= -O3 -DNDEBUG $(GRAPHICS_BACKEND_FLAGS) -Wall -Wextra
 
 CPP_FILES ?= $(shell find . -name '*.cpp' -not -name 'plugin.cpp' -not -name 'main.cpp' -not -path '*/tests/*')
 CPP_TEST_FILES ?= $(shell find tests/ -name '*.cpp' 2>/dev/null)
