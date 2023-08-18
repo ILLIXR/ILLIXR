@@ -31,8 +31,7 @@
  *   CPU time spent on that thread. Both of these should be monotonic.
  *
  * - These timers have a ~400ns overhead (check clocks + storing frame
- *   overhead) per frame timed on my system. Run ./test.sh to check on
- *   yours.
+ *   overhead) per frame timed on my system.
  *
  * - I use clock_gettime with CLOCK_THREAD_CPUTIME_ID (cpu time) and
  *   CLOCK_MONOTONIC (wall time). rdtsc won't track CPU time if the
