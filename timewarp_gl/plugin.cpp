@@ -18,13 +18,12 @@
 
 #include <atomic>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <future>
 #include <iostream>
 #include <thread>
 #include <vector>
-
-#include <filesystem>
-#include <fstream>
 
 using namespace ILLIXR;
 
@@ -50,7 +49,7 @@ const record_header mtp_record{"mtp_record",
 #ifdef ILLIXR_MONADO
 typedef plugin timewarp_type;
 #else
-typedef threadloop timewarp_type ;
+typedef threadloop timewarp_type;
 #endif
 
 class timewarp_gl : public timewarp_type {
@@ -157,9 +156,9 @@ public:
                 image_handles_ready = true;
             }
         });
-        
+
         this->_setup();
-        
+
 #ifdef ILLIXR_MONADO
         sb->schedule<rendered_frame>(id, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
             this->warp(datum);
@@ -346,7 +345,7 @@ private:
         glBindTexture(GL_TEXTURE_2D, image_handle);
         glTextureStorageMem2DEXT(image_handle, 1, format, vk_handle.width, vk_handle.height, memory_handle, 0);
 
-        float color[4] = {0.0f, 0.0f, 0.0f, 1.0f}; 
+        float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -378,8 +377,9 @@ private:
     void BuildTimewarp(HMD::hmd_info_t& hmdInfo) {
         // Calculate the number of vertices+indices in the distortion mesh.
         num_distortion_vertices = (hmdInfo.eyeTilesHigh + 1) * (hmdInfo.eyeTilesWide + 1);
-        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6; 
-        // What is the 6 here? What's the difference between vertices and indices? Each rectangular has two triangles, each triangle has three vertices (i.e., three indices to represent).
+        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6;
+        // What is the 6 here? What's the difference between vertices and indices? Each rectangular has two triangles, each
+        // triangle has three vertices (i.e., three indices to represent).
 
         // Allocate memory for the elements/indices array.
         distortion_indices.resize(num_distortion_indices);
@@ -530,7 +530,7 @@ public:
         timewarpShaderProgram =
             init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL_Alternative);
 #else
-        timewarpShaderProgram   = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
+        timewarpShaderProgram = init_and_link(timeWarpChromaticVertexProgramGLSL, timeWarpChromaticFragmentProgramGLSL);
 #endif
         // Acquire attribute and uniform locations from the compiled and linked shader program
         distortion_pos_attr = glGetAttribLocation(timewarpShaderProgram, "vertexPosition");
@@ -638,7 +638,7 @@ public:
 
                 glBindTexture(GL_TEXTURE_2D, eye_output_texture);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, display_params::width_pixels * 0.5f, display_params::height_pixels, 0,
-                               GL_RGB, GL_FLOAT, NULL);
+                             GL_RGB, GL_FLOAT, NULL);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #endif
@@ -661,7 +661,8 @@ public:
     }
 
     void warp(switchboard::ptr<const rendered_frame> most_recent_frame) {
-        if (!rendering_ready) _prepare_rendering();
+        if (!rendering_ready)
+            _prepare_rendering();
         assert(this->image_handles_ready && rendering_ready);
 
         // Use the timewarp program
@@ -679,8 +680,8 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
-        
+        const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -708,9 +709,9 @@ public:
 
         glBindVertexArray(tw_vao);
 
-        auto gpu_start_wall_time = _m_clock->now();
-        GLuint   query        = 0;
-        GLuint64 elapsed_time = 0;
+        auto     gpu_start_wall_time = _m_clock->now();
+        GLuint   query               = 0;
+        GLuint64 elapsed_time        = 0;
 
         glGenQueries(1, &query);
         glBeginQuery(GL_TIME_ELAPSED, query);
@@ -753,7 +754,7 @@ public:
             glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0,
                                   (void*) (eye * num_distortion_vertices * sizeof(HMD::mesh_coord2d_t)));
             glEnableVertexAttribArray(distortion_uv1_attr);
-        
+
             // We do the exact same thing for the UV GPU memory.
             glBindBuffer(GL_ARRAY_BUFFER, distortion_uv2_vbo);
             glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0,
@@ -781,13 +782,13 @@ public:
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[0]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels, 0, 0,
-                        display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                          display_params::width_pixels * 0.5, display_params::height_pixels, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[1]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels,
-                        display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels,
-                        GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                          display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels,
+                          GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         // Call swap buffers; when vsync is enabled, this will return to the
         // CPU thread once the buffers have been successfully swapped.
@@ -806,15 +807,15 @@ public:
         std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
 
         mtp_logger.log(record{mtp_record,
-                            {
-                                {iteration_no},
-                                {time_last_swap},
-                                {imu_to_display},
-                                {predict_to_display},
-                                {render_to_display},
-                            }});
+                              {
+                                  {iteration_no},
+                                  {time_last_swap},
+                                  {imu_to_display},
+                                  {predict_to_display},
+                                  {render_to_display},
+                              }});
 
-#ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
+    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
         if (log_count > LOG_PERIOD) {
             const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
             const double     latency_mtd       = duration2double<std::milli>(imu_to_display);
@@ -829,17 +830,17 @@ public:
                       << "\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: " << latency_rtd << "ms" << std::endl
                       << "Next swap in: " << timewarp_estimate << "ms in the future" << std::endl;
         }
-#endif
+    #endif
 #endif
 
         // if (enable_offload) {
         //     // Read texture image from texture buffer
         //     GLubyte* image = readTextureImage();
 
-        //     // Publish image and pose
-        //     _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
-        //         texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
-        //                     most_recent_frame->render_pose.pose.orientation}));
+        // // Publish image and pose
+        // _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
+        //     texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
+        //                 most_recent_frame->render_pose.pose.orientation}));
         // }
 
         // retrieving the recorded elapsed time
@@ -856,12 +857,12 @@ public:
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 
         timewarp_gpu_logger.log(record{timewarp_gpu_record,
-                                    {
-                                        {iteration_no},
-                                        {gpu_start_wall_time},
-                                        {_m_clock->now()},
-                                        {std::chrono::nanoseconds(elapsed_time)},
-                                    }});
+                                       {
+                                           {iteration_no},
+                                           {gpu_start_wall_time},
+                                           {_m_clock->now()},
+                                           {std::chrono::nanoseconds(elapsed_time)},
+                                       }});
 
 #ifdef ILLIXR_MONADO
         // Manually increment the iteration number if timewarp is running as a plugin
