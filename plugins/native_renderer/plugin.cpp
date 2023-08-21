@@ -1,10 +1,16 @@
+#include <array>
 #include <cassert>
-#include <cstdint>
-#include <ratio>
-#include <sys/types.h>
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <thread>
 #include <vector>
+
+#include <vulkan/vulkan_core.h>
+
 #define VMA_IMPLEMENTATION
 #include "illixr/global_module_defs.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -13,18 +19,7 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
-#include "unordered_map"
 
-#include <array>
-#include <chrono>
-#include <cmath>
-#include <eigen3/Eigen/src/Core/Matrix.h>
-#include <future>
-#include <glm/detail/qualifier.hpp>
-#include <glm/fwd.hpp>
-#include <iostream>
-#include <thread>
-#include <vulkan/vulkan_core.h>
 
 using namespace ILLIXR;
 

@@ -1,19 +1,17 @@
-#include "illixr/plugin.hpp"
+#include <iomanip>
+#include <memory>
+#include <thread>
 
-#include "illixr/data_format.hpp"
-#include "illixr/switchboard.hpp"
-
-#include <chrono>
-#include <eigen3/Eigen/Dense>
 #include <gtsam/base/Vector.h>
-#include <gtsam/config.h>
 #include <gtsam/navigation/AHRSFactor.h>
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
-#include <iomanip>
-#include <memory>
-#include <thread>
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -70,7 +68,7 @@ private:
         using pim_t     = gtsam::PreintegratedCombinedMeasurements;
         using pim_ptr_t = gtsam::PreintegrationType*;
 
-        PimObject(const imu_int_t& imu_int_input)
+        explicit PimObject(const imu_int_t& imu_int_input)
             : _imu_bias{imu_int_input.biasAcc, imu_int_input.biasGyro}
             , _pim{nullptr} {
             pim_t::Params _params{imu_int_input.params.n_gravity};

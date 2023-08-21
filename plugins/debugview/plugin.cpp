@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h> // Also loading first, just to be safe
 // clang-format on
 
-#include "illixr/data_format.hpp"
+//#include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -15,16 +15,13 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
-#include "shaders/demo_shader.hpp"
+#include "illixr/shaders/demo_shader.hpp"
 
-#include <chrono>
-#include <cmath>
-#include <functional>
-#include <future>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <string_view>
-#include <thread>
+
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
 
 using namespace ILLIXR;
 

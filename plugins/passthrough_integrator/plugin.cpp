@@ -1,7 +1,10 @@
-#include "illixr/plugin.hpp"
+#include <memory>
+
+#include <eigen3/Eigen/Dense>
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;

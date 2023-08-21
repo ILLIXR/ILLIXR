@@ -1,12 +1,12 @@
-#include "illixr/plugin.hpp"
+#include <ecal/ecal.h>
+#include <ecal/msg/protobuf/subscriber.h>
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-#include "vio_output.pb.h"
 
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/subscriber.h>
+#include "vio_output.pb.h"
 
 using namespace ILLIXR;
 

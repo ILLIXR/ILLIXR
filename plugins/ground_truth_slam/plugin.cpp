@@ -1,12 +1,10 @@
+#include <thread>
+
+#include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
 
 #include "data_loading.hpp"
-#include "illixr/data_format.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-
-#include <chrono>
-#include <thread>
 
 using namespace ILLIXR;
 
@@ -21,7 +19,7 @@ public:
         , _m_dataset_first_time{_m_sensor_data.cbegin()->first}
         , _m_first_time{true} { }
 
-    virtual void start() override {
+    void start() override {
         plugin::start();
         sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
             this->feed_ground_truth(datum);

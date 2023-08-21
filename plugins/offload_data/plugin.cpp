@@ -1,14 +1,12 @@
-#include "illixr/plugin.hpp"
-
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <boost/filesystem.hpp>
-#include <fstream>
-#include <iomanip>
+#include <iostream>
 #include <numeric>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION

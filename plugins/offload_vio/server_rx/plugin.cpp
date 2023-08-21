@@ -1,12 +1,16 @@
-#include "illixr/plugin.hpp"
-
-#include "illixr/data_format.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/switchboard.hpp"
-#include "vio_input.pb.h"
+#include <memory>
+#include <opencv2/core/mat.hpp>
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
+
+#include "vio_input.pb.h"
+
 
 using namespace ILLIXR;
 

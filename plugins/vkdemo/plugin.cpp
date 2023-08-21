@@ -1,34 +1,29 @@
-#include <cassert>
-#include <cstdint>
-#include <iterator>
-#include <sys/types.h>
+#include <array>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <memory>
+#include <map>
+
 #define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/pose_prediction.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
+
+#include <vulkan/vulkan_core.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image.h"
-#include "unordered_map"
-
-#include <array>
-#include <chrono>
-#include <cmath>
-#include <eigen3/Eigen/src/Core/Matrix.h>
-#include <future>
-#include <glm/detail/qualifier.hpp>
-#include <glm/fwd.hpp>
-#include <iostream>
-#include <thread>
-#include <vulkan/vulkan_core.h>
+#include <unordered_map>
 
 using namespace ILLIXR;
 

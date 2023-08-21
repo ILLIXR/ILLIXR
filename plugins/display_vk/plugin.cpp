@@ -1,13 +1,9 @@
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/vulkan_utils.hpp"
 
 using namespace ILLIXR;
 

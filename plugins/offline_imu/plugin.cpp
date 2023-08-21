@@ -1,6 +1,9 @@
+#include <chrono>
+
 #include "data_loading.hpp"
 #include "illixr/data_format.hpp"
 #include "illixr/managed_thread.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"

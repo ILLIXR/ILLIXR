@@ -1,17 +1,17 @@
-#include "illixr/plugin.hpp"
+#include <shared_mutex>
+
+#include <eigen3/Eigen/Dense>
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
-
-#include <eigen3/Eigen/Dense>
-#include <shared_mutex>
 
 using namespace ILLIXR;
 
 class pose_prediction_impl : public pose_prediction {
 public:
-    pose_prediction_impl(const phonebook* const pb)
+    explicit pose_prediction_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
@@ -23,7 +23,7 @@ public:
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
     // So we will predict to `now()`, as a temporary approximation
-    virtual fast_pose_type get_fast_pose() const override {
+    fast_pose_type get_fast_pose() const override {
         switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
 
         if (vsync_estimate == nullptr) {
@@ -33,7 +33,7 @@ public:
         }
     }
 
-    virtual pose_type get_true_pose() const override {
+    pose_type get_true_pose() const override {
         switchboard::ptr<const pose_type>                                   pose_ptr = _m_true_pose.get_ro_nullable();
         switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr =
             _m_ground_truth_offset.get_ro_nullable();
@@ -58,7 +58,7 @@ public:
     }
 
     // future_time: An absolute timepoint in the future
-    virtual fast_pose_type get_fast_pose(time_point future_timestamp) const override {
+    fast_pose_type get_fast_pose(time_point future_timestamp) const override {
         switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_ro_nullable();
         if (slow_pose == nullptr) {
             // No slow pose, return 0
@@ -116,7 +116,7 @@ public:
             .pose = predicted_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = future_timestamp};
     }
 
-    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+    void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
         std::unique_lock   lock{offset_mutex};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
         offset                   = raw_o.inverse();
@@ -135,7 +135,7 @@ public:
         return orientation * offset;
     }
 
-    virtual bool fast_pose_reliable() const override {
+    bool fast_pose_reliable() const override {
         return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
         /*
           SLAM takes some time to initialize, so initially fast_pose
@@ -152,7 +152,7 @@ public:
          */
     }
 
-    virtual bool true_pose_reliable() const override {
+    bool true_pose_reliable() const override {
         // return _m_true_pose.valid();
         /*
           We do not have a "ground truth" available in all cases, such
@@ -161,13 +161,13 @@ public:
         return bool(_m_true_pose.get_ro_nullable());
     }
 
-    virtual Eigen::Quaternionf get_offset() override {
+    Eigen::Quaternionf get_offset() override {
         return offset;
     }
 
     // Correct the orientation of the pose due to the lopsided IMU in the
     // current Dataset we are using (EuRoC)
-    virtual pose_type correct_pose(const pose_type pose) const override {
+    pose_type correct_pose(const pose_type pose) const override {
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below

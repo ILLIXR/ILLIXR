@@ -1,7 +1,14 @@
+#include <future>
+#include <iostream>
 #include <mutex>
+#include <stack>
+
 #define VMA_IMPLEMENTATION
+
+#include <eigen3/Eigen/Dense>
+#include <vulkan/vulkan_core.h>
+
 #include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/phonebook.hpp"
@@ -11,22 +18,8 @@
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
 #include "illixr/vk_util/vulkan_utils.hpp"
-#include "utils/hmd.hpp"
 
-#include <algorithm>
-#include <array>
-#include <chrono>
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <future>
-#include <glm/detail/qualifier.hpp>
-#include <iostream>
-#include <stack>
-#include <thread>
-#include <vector>
-#include <vulkan/vulkan_core.h>
+#include "utils/hmd.hpp"
 
 #ifndef NDEBUG
     #define SHADER_FOLDER "timewarp_vk/build/Debug/shaders"

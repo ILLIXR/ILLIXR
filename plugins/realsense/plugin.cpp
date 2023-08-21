@@ -1,9 +1,18 @@
-#include <librealsense2/rs.hpp> // Include RealSense Cross Platform API
+#include <iostream>
+#include <memory>
 #include <mutex>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include <librealsense2/rs.hpp> // Include RealSense Cross Platform API
 #include <opencv2/opencv.hpp> // Include OpenCV API
+#include <eigen3/Eigen/Dense>
 
 // ILLIXR includes
 #include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 

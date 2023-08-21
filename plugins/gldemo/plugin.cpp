@@ -2,24 +2,26 @@
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/extended_window.hpp"
-#include "illixr/gl_util/obj.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/math_util.hpp"
-#include "illixr/pose_prediction.hpp"
-#include "illixr/shader_util.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-#include "shaders/demo_shader.hpp"
-
 #include <array>
 #include <chrono>
 #include <cmath>
 #include <future>
 #include <iostream>
 #include <thread>
+#include <eigen3/Eigen/Core>
+
+#include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/extended_window.hpp"
+#include "illixr/gl_util/obj.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/math_util.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
+#include "illixr/shader_util.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/shaders/demo_shader.hpp"
 
 using namespace ILLIXR;
 
@@ -288,7 +290,7 @@ private:
 
 public:
     // We override start() to control our own lifecycle
-    virtual void start() override {
+    void start() override {
         [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
         assert(gl_result_0 && "glXMakeCurrent should not fail");
 

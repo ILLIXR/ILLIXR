@@ -1,15 +1,19 @@
 // This entire IMU integrator has been ported almost as-is from the original OpenVINS integrator, which
 // can be found here: https://github.com/rpng/open_vins/blob/master/ov_msckf/src/state/Propagator.cpp
 
-#include "illixr/plugin.hpp"
+#include <chrono>
+#include <iomanip>
+#include <memory>
+#include <vector>
+
+#include <eigen3/Eigen/Dense>
 
 #include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
-
-#include <chrono>
-#include <eigen3/Eigen/Dense>
-#include <iomanip>
-#include <thread>
 
 using namespace ILLIXR;
 

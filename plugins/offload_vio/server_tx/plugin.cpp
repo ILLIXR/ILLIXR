@@ -1,12 +1,16 @@
-#include "illixr/plugin.hpp"
-
-#include "illixr/data_format.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/switchboard.hpp"
-#include "vio_output.pb.h"
+#include <memory>
+#include <string>
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/publisher.h>
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
+
+#include "vio_output.pb.h"
+
 
 using namespace ILLIXR;
 
@@ -24,7 +28,7 @@ public:
 
     // This schedule function cant go in the constructor because there seems to be an issue with
     // the callbeing being triggered before any data is written to slow_pose. This needs debugging.
-    virtual void start() override {
+    void start() override {
         plugin::start();
 
         sb->schedule<pose_type>(id, "slow_pose", [this](switchboard::ptr<const pose_type> datum, std::size_t) {

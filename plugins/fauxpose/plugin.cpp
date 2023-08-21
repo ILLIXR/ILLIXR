@@ -28,11 +28,16 @@
 /*   * (This version uploaded to ILLIXR github)                              */
 /*                                                                           */
 
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
+#include <iostream>
+#include <memory>
+#include <mutex>
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
-
 #include "illixr/pose_prediction.hpp"
-
-#include <cstring>
 
 using namespace ILLIXR;
 
@@ -41,7 +46,7 @@ class faux_pose_impl : public pose_prediction {
 public:
     // ********************************************************************
     /* Constructor: Provide handles to faux_pose */
-    faux_pose_impl(const phonebook* const pb)
+    explicit faux_pose_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
@@ -96,22 +101,22 @@ public:
     }
 
     // ********************************************************************
-    virtual pose_type get_true_pose() const override {
+    pose_type get_true_pose() const override {
         throw std::logic_error{"Not Implemented"};
     }
 
     // ********************************************************************
-    virtual bool fast_pose_reliable() const override {
+    bool fast_pose_reliable() const override {
         return true;
     }
 
     // ********************************************************************
-    virtual bool true_pose_reliable() const override {
+    bool true_pose_reliable() const override {
         return false;
     }
 
     // ********************************************************************
-    virtual pose_type correct_pose([[maybe_unused]] const pose_type pose) const override {
+    pose_type correct_pose([[maybe_unused]] const pose_type pose) const override {
 #ifndef NDEBUG
         std::cout << "[fauxpose] Returning (passthru) pose\n";
 #endif
@@ -119,19 +124,19 @@ public:
     }
 
     // ********************************************************************
-    virtual Eigen::Quaternionf get_offset() override {
+    Eigen::Quaternionf get_offset() override {
         return offset;
     }
 
     // ********************************************************************
-    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+    void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
         std::unique_lock   lock{offset_mutex};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
         offset                   = raw_o.inverse();
     }
 
     // ********************************************************************
-    virtual fast_pose_type get_fast_pose() const override {
+    fast_pose_type get_fast_pose() const override {
         // In actual pose prediction, the semantics are that we return
         //   the pose for next vsync, not now.
         switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
@@ -208,7 +213,7 @@ public:
     }
 
     // ********************************************************************
-    virtual ~faux_pose() override {
+    ~faux_pose() override {
 #ifndef NDEBUG
         std::cout << "[fauxpose] Ending Plugin\n";
 #endif

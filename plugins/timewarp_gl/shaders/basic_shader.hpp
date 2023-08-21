@@ -1,4 +1,4 @@
-#include <GL/gl.h>
+#pragma once
 
 static const char* const basicVertexShader = "#version " GLSL_VERSION "\n"
                                              "in vec3 vertexPosition;\n"

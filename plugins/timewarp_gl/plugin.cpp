@@ -1,5 +1,14 @@
+#include <cassert>
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <memory>
+#include <thread>
+
 // clang-format off
+#include <eigen3/Eigen/Dense>
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+#include <GL/glx.h>
 // clang-format on
 
 #include "illixr/data_format.hpp"
@@ -8,18 +17,15 @@
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/pose_prediction.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "shaders/basic_shader.hpp"
+
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
 
-#include <chrono>
-#include <future>
-#include <iostream>
-#include <thread>
-#include <vector>
 
 using namespace ILLIXR;
 

@@ -1,14 +1,17 @@
-#include "illixr/plugin.hpp"
-
-#include "illixr/data_format.hpp"
-#include "illixr/switchboard.hpp"
+#include <iomanip>
+#include <fstream>
+#include <memory>
+#include <string>
 
 #include <boost/filesystem.hpp>
-#include <fstream>
-#include <iomanip>
-#include <opencv2/core/mat.hpp>
+#include <eigen3/Eigen/Dense>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
+
+#include "illixr/data_format.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
+
 using namespace ILLIXR;
 
 class record_imu_cam : public plugin {

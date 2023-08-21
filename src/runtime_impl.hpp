@@ -1,21 +1,22 @@
+#pragma once
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <GL/glx.h>
+
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
-#include "illixr/relative_clock.hpp"
+#include "illixr/record_logger.hpp"
 #include "illixr/runtime.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
-#include "noop_record_logger.hpp"
 #include "sqlite_record_logger.hpp"
-#include "stdout_record_logger.hpp"
-
-#include <cassert>
-#include <cerrno>
-#include <chrono>
-#include <thread>
-#include <vector>
 
 using namespace ILLIXR;
 

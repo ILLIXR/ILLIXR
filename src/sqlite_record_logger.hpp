@@ -1,20 +1,17 @@
 #pragma once
-#include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/record_logger.hpp"
-#include "sqlite3pp/sqlite3pp.hpp"
 
-#include <atomic>
-#include <cassert>
-#include <cerrno>
-#include <chrono>
 #include <filesystem>
-#include <functional>
 #include <iostream>
-#include <memory>
+#include <mutex>
 #include <shared_mutex>
 #include <thread>
+
+#include "illixr/concurrentqueue/blockingconcurrentqueue.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/record_logger.hpp"
+
+#include "sqlite3pp/sqlite3pp.hpp"
 
 /**
  * There are many SQLite3 wrapper libraries.
