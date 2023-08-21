@@ -1,11 +1,13 @@
 #pragma once
 
-#include "global_module_defs.hpp"
-
+#ifdef NDEBUG
 #include <cerrno>
 #include <cstdlib>
+#endif
 #include <iostream>
 #include <string>
+
+#include "global_module_defs.hpp"
 
 /**
  * @brief Parameterless macro for report_and_clear_errno.

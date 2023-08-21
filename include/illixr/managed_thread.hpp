@@ -3,6 +3,7 @@
 #include <atomic>
 #include <cassert>
 #include <functional>
+#include <stdexcept>
 #include <thread>
 
 namespace ILLIXR {
@@ -44,7 +45,7 @@ public:
      * @p on_start is called as the thread is joining
      * @p body is called in a tight loop
      */
-    managed_thread(std::function<void()> body, std::function<void()> on_start = std::function<void()>{},
+    explicit managed_thread(std::function<void()> body, std::function<void()> on_start = std::function<void()>{},
                    std::function<void()> on_stop = std::function<void()>{}) noexcept
         : _m_body{body}
         , _m_on_start{on_start}

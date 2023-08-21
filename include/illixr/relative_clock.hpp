@@ -1,8 +1,10 @@
 #pragma once
-#include "phonebook.hpp"
 
+#include <cassert>
 #include <chrono>
 #include <ratio>
+
+#include "phonebook.hpp"
 
 namespace ILLIXR {
 

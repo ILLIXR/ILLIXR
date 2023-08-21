@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../data_format.hpp"
 #include "../phonebook.hpp"
 #include "third_party/VkBootstrap.h"

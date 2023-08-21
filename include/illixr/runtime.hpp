@@ -1,10 +1,10 @@
 #pragma once
 
-#include "extended_window.hpp"
-
 #include <GL/glx.h>
-#include <memory>
+#include <string>
 #include <vector>
+
+#include "illixr/phonebook.hpp"
 
 namespace ILLIXR {
 class plugin;

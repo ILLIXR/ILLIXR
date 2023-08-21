@@ -1,5 +1,10 @@
+#pragma once
+
+#include <eigen3/Eigen/Geometry>
+
 #include "data_format.hpp"
-#include "phonebook.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 
 using namespace ILLIXR;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <eigen3/Eigen/Core>
+
 namespace ILLIXR {
 namespace math_util {
     /// Calculates a projection matrix with the given tangent angles and clip planes

@@ -1,15 +1,11 @@
 #pragma once
 
-#include <boost/optional.hpp>
-#include <chrono>
-#include <iostream>
-#include <memory>
 #include <opencv2/core/mat.hpp>
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 //#undef Complex // For 'Complex' conflict
-#include "phonebook.hpp"
+
 #include "relative_clock.hpp"
 #include "switchboard.hpp"
 

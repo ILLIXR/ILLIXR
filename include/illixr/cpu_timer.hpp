@@ -1,18 +1,15 @@
 #pragma once
 
-#include "error_util.hpp"
+//
 
-#include <cerrno>
 #include <chrono>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
 #include <functional>
 #include <iostream>
-#include <sstream>
 #include <string>
+#include <string.h>
 #include <thread>
 
+#include "error_util.hpp"
 /**
  * @brief A C++ translation of [clock_gettime][1]
  *
@@ -220,7 +217,7 @@ std::thread timed_thread(const std::string& account_name, Function&& f, Args&&..
     // See Sam Varshavchik's comment on https://stackoverflow.com/a/62380971/1078199
     return std::thread([=] {
         {
-            PRINT_RECORD_FOR_THIS_BLOCK(account_name);
+            PRINT_RECORD_FOR_THIS_BLOCK(account_name)
             std::invoke(f, args...);
         }
     });

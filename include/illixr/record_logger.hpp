@@ -1,14 +1,21 @@
 #pragma once
 
-#include "phonebook.hpp"
-
 #include <any>
 #include <atomic>
+#include <cassert>
+#include <chrono>
 #include <memory>
 #include <optional>
-#include <sstream>
+#include <string>
 #include <unordered_map>
 #include <vector>
+
+#ifndef NDEBUG
+#include <iostream>
+#include <sstream>
+#endif
+
+#include "phonebook.hpp"
 
 namespace ILLIXR {
 

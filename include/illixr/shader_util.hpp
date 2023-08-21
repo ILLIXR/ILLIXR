@@ -1,12 +1,15 @@
-#include "error_util.hpp"
-#include "GL/gl.h"
+#pragma once
 
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <GL/glew.h>
+#include <GL/gl.h>
+
+
+#include <cassert>
 #include <string>
+#include <string.h>
 #include <vector>
+
+#include "error_util.hpp"
 
 using namespace ILLIXR;
 

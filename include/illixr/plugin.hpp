@@ -1,4 +1,7 @@
 #pragma once
+#include <memory>
+#include <string>
+#include <typeinfo>
 
 #include "phonebook.hpp"
 #include "record_logger.hpp"

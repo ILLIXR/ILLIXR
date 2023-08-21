@@ -1,15 +1,12 @@
 #pragma once
 
-#include "error_util.hpp"
-#include "global_module_defs.hpp"
-
-#include <algorithm>
 #include <dlfcn.h>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <string_view>
+
+#include "error_util.hpp"
 
 namespace ILLIXR {
 
