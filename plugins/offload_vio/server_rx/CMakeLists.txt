@@ -18,7 +18,7 @@ if(BUILD_OPENCV)
 endif()
 
 set(protobuf_files
-    ${CMAKE_CURRENT_SOURCE_DIR}/vio_input.proto
+        ${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_input.proto
 )
 
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)

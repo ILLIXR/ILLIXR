@@ -4,8 +4,8 @@ set(PLUGIN_NAME plugin.ground_truth_slam${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        csv_iterator.hpp
         data_loading.hpp
+        ../../include/illixr/csv_iterator.hpp
         ../../include/illixr/plugin.hpp
         ../../include/illixr/data_format.hpp
         ../../include/illixr/switchboard.hpp

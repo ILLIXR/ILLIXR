@@ -4,7 +4,7 @@ set(PLUGIN_NAME plugin.gldemo${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        shaders/demo_shader.hpp
+        ../../include/illixr/shaders/demo_shader.hpp
         ../../include/illixr/data_format.hpp
         ../../include/illixr/error_util.hpp
         ../../include/illixr/extended_window.hpp
