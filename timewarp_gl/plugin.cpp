@@ -67,11 +67,11 @@ public:
 #ifndef ILLIXR_MONADO
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-        , timewarp_gpu_logger{record_logger_}
         , mtp_logger{record_logger_}
 #else
         , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
 #endif
+        , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
@@ -196,6 +196,9 @@ private:
 
     // Synchronization helper for Monado
     switchboard::writer<signal_to_quad> _m_signal_quad;
+
+    // When using Monado, timewarp is a plugin and not a threadloop, but we still keep track of the iteration number
+    std::size_t iteration_no = 0;
 #else
     // Note: 0.9 works fine without hologram, but we need a larger safety net with hologram enabled
     static constexpr double DELAY_FRACTION = 0.9;
@@ -206,9 +209,11 @@ private:
     // Switchboard plug for publishing vsync estimates
     switchboard::writer<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 
-    record_coalescer timewarp_gpu_logger;
+    // Timewarp only has vsync estimates with native-gl
     record_coalescer mtp_logger;
 #endif
+
+    record_coalescer timewarp_gpu_logger;
 
     // Switchboard plug for sending hologram calls
     switchboard::writer<hologram_input> _m_hologram;
@@ -707,10 +712,8 @@ public:
         GLuint   query        = 0;
         GLuint64 elapsed_time = 0;
 
-    #ifndef ILLIXR_MONADO
         glGenQueries(1, &query);
         glBeginQuery(GL_TIME_ELAPSED, query);
-    #endif
 
         // Loop over each eye
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
@@ -810,19 +813,8 @@ public:
                                 {predict_to_display},
                                 {render_to_display},
                             }});
-                            
 
-        // if (enable_offload) {
-        //     // Read texture image from texture buffer
-        //     GLubyte* image = readTextureImage();
-
-        //     // Publish image and pose
-        //     _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
-        //         texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
-        //                     most_recent_frame->render_pose.pose.orientation}));
-        // }
-
-#ifndef NDEBUG
+#ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
         if (log_count > LOG_PERIOD) {
             const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
             const double     latency_mtd       = duration2double<std::milli>(imu_to_display);
@@ -838,6 +830,17 @@ public:
                       << "Next swap in: " << timewarp_estimate << "ms in the future" << std::endl;
         }
 #endif
+#endif
+
+        // if (enable_offload) {
+        //     // Read texture image from texture buffer
+        //     GLubyte* image = readTextureImage();
+
+        //     // Publish image and pose
+        //     _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
+        //         texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
+        //                     most_recent_frame->render_pose.pose.orientation}));
+        // }
 
         // retrieving the recorded elapsed time
         // wait until the query result is available
@@ -859,6 +862,10 @@ public:
                                         {_m_clock->now()},
                                         {std::chrono::nanoseconds(elapsed_time)},
                                     }});
+
+#ifdef ILLIXR_MONADO
+        // Manually increment the iteration number if timewarp is running as a plugin
+        ++iteration_no;
 #endif
 
         // Call Hologram
