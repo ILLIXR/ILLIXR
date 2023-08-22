@@ -5,6 +5,7 @@
 #include <functional>
 #include <stdexcept>
 #include <thread>
+#include <utility>
 
 namespace ILLIXR {
 
@@ -36,7 +37,7 @@ public:
     /**
      * @brief Constructs a non-startable thread
      */
-    managed_thread() noexcept { }
+    managed_thread() noexcept = default;
 
     /**
      * @brief Constructs a startable thread
@@ -47,9 +48,9 @@ public:
      */
     explicit managed_thread(std::function<void()> body, std::function<void()> on_start = std::function<void()>{},
                    std::function<void()> on_stop = std::function<void()>{}) noexcept
-        : _m_body{body}
-        , _m_on_start{on_start}
-        , _m_on_stop{on_stop} { }
+        : _m_body{std::move(body)}
+        , _m_on_start{std::move(on_start)}
+        , _m_on_stop{std::move(on_stop)} { }
 
     /**
      * @brief Stops a thread, if necessary
@@ -74,8 +75,7 @@ public:
      */
     state get_state() {
         bool stopped = _m_stop.load();
-        if (false) {
-        } else if (!_m_body) {
+        if (!_m_body) {
             return state::nonstartable;
         } else if (!stopped && !_m_thread.joinable()) {
             return state::startable;

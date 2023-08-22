@@ -11,7 +11,7 @@ float HMD::MinFloat(const float x, const float y) {
 }
 
 // A Catmull-Rom spline through the values K[0], K[1], K[2] ... K[numKnots-1] evenly spaced from 0.0 to 1.0
-float HMD::EvaluateCatmullRomSpline(float value, float* K, int numKnots) {
+float HMD::EvaluateCatmullRomSpline(float value, const float* K, int numKnots) {
     const float scaledValue      = (float) (numKnots - 1) * value;
     const float scaledValueFloor = MaxFloat(0.0f, MinFloat((float) (numKnots - 1), floorf(scaledValue)));
     const float t                = scaledValue - scaledValueFloor;
@@ -62,9 +62,9 @@ void HMD::BuildDistortionMeshes(
                 const float xf = (float) x / (float) hmdInfo.eyeTilesWide;
 
                 const float in[2]             = {(eye ? -horizontalShiftView : horizontalShiftView) + xf, yf};
-                const float ndcToPixels[2]    = {hmdInfo.visiblePixelsWide * 0.25f, hmdInfo.visiblePixelsHigh * 0.5f};
-                const float pixelsToMeters[2] = {hmdInfo.visibleMetersWide / hmdInfo.visiblePixelsWide,
-                                                 hmdInfo.visibleMetersHigh / hmdInfo.visiblePixelsHigh};
+                const float ndcToPixels[2]    = {static_cast<float>(hmdInfo.visiblePixelsWide) * 0.25f, static_cast<float>(hmdInfo.visiblePixelsHigh) * 0.5f};
+                const float pixelsToMeters[2] = {hmdInfo.visibleMetersWide / static_cast<float>(hmdInfo.visiblePixelsWide),
+                                                 hmdInfo.visibleMetersHigh / static_cast<float>(hmdInfo.visiblePixelsHigh)};
 
                 float theta[2];
                 for (int i = 0; i < 2; i++) {
@@ -104,8 +104,8 @@ void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixels
     hmd_info.visiblePixelsWide = hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES;
     hmd_info.visiblePixelsHigh = hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh;
     hmd_info.visibleMetersWide =
-        displayMetersWide * (hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / displayPixelsWide;
-    hmd_info.visibleMetersHigh      = displayMetersHigh * (hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / displayPixelsHigh;
+        displayMetersWide * static_cast<float>(hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / static_cast<float>(displayPixelsWide);
+    hmd_info.visibleMetersHigh      = displayMetersHigh * static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / static_cast<float>(displayPixelsHigh);
     hmd_info.lensSeparationInMeters = lensSeparation;
     hmd_info.metersPerTanAngleAtCenter = metersPerTanAngle;
     hmd_info.numKnots                  = 11;

@@ -25,7 +25,7 @@ using namespace ILLIXR;
 
 class native_renderer : public threadloop {
 public:
-    native_renderer(std::string name_, phonebook* pb)
+    native_renderer(const std::string& name_, phonebook* pb)
         : threadloop{name_, pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
@@ -33,7 +33,6 @@ public:
         , tw{pb->lookup_impl<timewarp>()}
         , src{pb->lookup_impl<app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} { }
 
     /**
@@ -61,7 +60,7 @@ public:
         create_offscreen_framebuffers();
         create_swapchain_framebuffers();
         src->setup(app_pass, 0);
-        tw->setup(timewarp_pass, 0, {std::vector{offscreen_image_views[0]}, std::vector{offscreen_image_views[1]}});
+        tw->setup(timewarp_pass, 0, {std::vector{offscreen_image_views[0]}, std::vector{offscreen_image_views[1]}}, true);
     }
 
     /**
@@ -77,7 +76,7 @@ public:
         ds->poll_window_events();
 
         // Wait for the previous frame to finish rendering
-        VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX));
+        VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
 
         // Acquire the next image from the swapchain
         uint32_t swapchain_image_index;
@@ -89,31 +88,30 @@ public:
             ds->recreate_swapchain();
             return;
         } else {
-            VK_ASSERT_SUCCESS(ret);
+            VK_ASSERT_SUCCESS(ret)
         }
-        VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence));
+        VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence))
 
         // Get the current fast pose and update the uniforms
         auto fast_pose = pp->get_fast_pose();
         src->update_uniforms(fast_pose.pose);
 
         // Record the command buffer
-        VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0));
+        VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
         record_command_buffer(swapchain_image_index);
 
         // Submit the command buffer to the graphics queue
         const uint64_t ignored       = 0;
-        const uint64_t default_value = timeline_semaphore_value;
         const uint64_t fired_value   = timeline_semaphore_value + 1;
 
         timeline_semaphore_value += 1;
-        VkTimelineSemaphoreSubmitInfo timeline_submit_info = {VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO};
+        VkTimelineSemaphoreSubmitInfo timeline_submit_info = {VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO, nullptr, 0, nullptr, 0, nullptr};
         timeline_submit_info.waitSemaphoreValueCount       = 1;
         timeline_submit_info.pWaitSemaphoreValues          = &ignored;
         timeline_submit_info.signalSemaphoreValueCount     = 1;
         timeline_submit_info.pSignalSemaphoreValues        = &fired_value;
 
-        VkSubmitInfo         submit_info   = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+        VkSubmitInfo         submit_info   = {VK_STRUCTURE_TYPE_SUBMIT_INFO, nullptr, 0, nullptr, nullptr, 0, nullptr, 0, nullptr};
         VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         submit_info.waitSemaphoreCount     = 1;
         submit_info.pWaitSemaphores        = &image_available_semaphore;
@@ -124,31 +122,31 @@ public:
         submit_info.pSignalSemaphores      = &app_render_finished_semaphore;
         submit_info.pNext                  = &timeline_submit_info;
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, nullptr));
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, nullptr))
 
         // Wait for the application to finish rendering
-        VkSemaphoreWaitInfo wait_info = {VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO};
+        VkSemaphoreWaitInfo wait_info = {VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO, nullptr, 0, 0, nullptr, nullptr};
         wait_info.semaphoreCount      = 1;
         wait_info.pSemaphores         = &app_render_finished_semaphore;
         wait_info.pValues             = &fired_value;
-        VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX));
+        VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
 
         // TODO: for DRM, get vsync estimate
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
 
         // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
         tw->update_uniforms(fast_pose.pose);
-        VkSubmitInfo timewarp_submit_info         = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+        VkSubmitInfo timewarp_submit_info         = {VK_STRUCTURE_TYPE_SUBMIT_INFO, nullptr, 0, nullptr, nullptr, 0, nullptr, 0, nullptr};
         timewarp_submit_info.waitSemaphoreCount   = 0;
         timewarp_submit_info.commandBufferCount   = 1;
         timewarp_submit_info.pCommandBuffers      = &timewarp_command_buffer;
         timewarp_submit_info.signalSemaphoreCount = 1;
         timewarp_submit_info.pSignalSemaphores    = &timewarp_render_finished_semaphore;
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence));
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence))
 
         // Present the rendered image
-        VkPresentInfoKHR present_info   = {VK_STRUCTURE_TYPE_PRESENT_INFO_KHR};
+        VkPresentInfoKHR present_info   = {VK_STRUCTURE_TYPE_PRESENT_INFO_KHR, nullptr, 0, nullptr, 0, nullptr, nullptr, nullptr};
         present_info.waitSemaphoreCount = 1;
         present_info.pWaitSemaphores    = &timewarp_render_finished_semaphore;
         present_info.swapchainCount     = 1;
@@ -159,7 +157,7 @@ public:
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
             ds->recreate_swapchain();
         } else {
-            VK_ASSERT_SUCCESS(ret);
+            VK_ASSERT_SUCCESS(ret)
         }
 
         // #ifndef NDEBUG
@@ -183,7 +181,7 @@ private:
      *
      * @throws runtime_error If any Vulkan operation fails.
      */
-    void recreate_swapchain() {
+    [[maybe_unused]] void recreate_swapchain() {
         vkDeviceWaitIdle(ds->vk_device);
         for (auto& framebuffer : swapchain_framebuffers) {
             vkDestroyFramebuffer(ds->vk_device, framebuffer, nullptr);
@@ -200,10 +198,10 @@ private:
     void create_swapchain_framebuffers() {
         swapchain_framebuffers.resize(ds->swapchain_image_views.size());
 
-        for (auto i = 0; i < ds->swapchain_image_views.size(); i++) {
+        for (ulong i = 0; i < ds->swapchain_image_views.size(); i++) {
             std::array<VkImageView, 1> attachments = {ds->swapchain_image_views[i]};
 
-            VkFramebufferCreateInfo framebuffer_info = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
+            VkFramebufferCreateInfo framebuffer_info = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, nullptr, 0, nullptr, 0, 0, 0};
             assert(timewarp_pass != VK_NULL_HANDLE);
             framebuffer_info.renderPass      = timewarp_pass;
             framebuffer_info.attachmentCount = attachments.size();
@@ -212,7 +210,7 @@ private:
             framebuffer_info.height          = ds->swapchain_extent.height;
             framebuffer_info.layers          = 1;
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers[i]));
+            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers[i]))
         }
     }
 
@@ -222,11 +220,11 @@ private:
      */
     void record_command_buffer(uint32_t swapchain_image_index) {
         // Begin recording app command buffer
-        VkCommandBufferBeginInfo begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info));
+        VkCommandBufferBeginInfo begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, 0, nullptr};
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info))
 
         for (auto eye = 0; eye < 2; eye++) {
-            VkRenderPassBeginInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
+            VkRenderPassBeginInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nullptr, nullptr, {}, 0, nullptr};
             assert(app_pass != VK_NULL_HANDLE);
             render_pass_info.renderPass  = app_pass;
             render_pass_info.framebuffer = offscreen_framebuffers[eye];
@@ -235,7 +233,7 @@ private:
             render_pass_info.renderArea.extent = ds->swapchain_extent;
 
             std::array<VkClearValue, 2> clear_values = {};
-            clear_values[0].color                    = {1.0f, 1.0f, 1.0f, 1.0f};
+            clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
             clear_values[1].depthStencil             = {1.0f, 0};
             render_pass_info.clearValueCount         = clear_values.size();
             render_pass_info.pClearValues            = clear_values.data();
@@ -245,13 +243,13 @@ private:
             src->record_command_buffer(app_command_buffer, eye);
             vkCmdEndRenderPass(app_command_buffer);
         }
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer));
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
 
         // Begin recording timewarp command buffer
-        VkCommandBufferBeginInfo timewarp_begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info));
+        VkCommandBufferBeginInfo timewarp_begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, 0, nullptr};
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info))
         {
-            VkRenderPassBeginInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
+            VkRenderPassBeginInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, nullptr, nullptr, nullptr, {}, 0, nullptr};
             assert(timewarp_pass != VK_NULL_HANDLE);
             render_pass_info.renderPass  = timewarp_pass;
             render_pass_info.framebuffer = swapchain_framebuffers[swapchain_image_index];
@@ -260,7 +258,7 @@ private:
             render_pass_info.renderArea.extent = ds->swapchain_extent;
 
             VkClearValue clear_value         = {};
-            clear_value.color                = {0.0f, 0.0f, 0.0f, 1.0f};
+            clear_value.color                = {{0.0f, 0.0f, 0.0f, 1.0f}};
             render_pass_info.clearValueCount = 1;
             render_pass_info.pClearValues    = &clear_value;
 
@@ -268,10 +266,10 @@ private:
 
             for (auto eye = 0; eye < 2; eye++) {
                 VkViewport viewport = {};
-                viewport.x          = ds->swapchain_extent.width / 2 * eye;
+                viewport.x          = static_cast<float>(ds->swapchain_extent.width / 2. * eye);
                 viewport.y          = 0.0f;
-                viewport.width      = ds->swapchain_extent.width;
-                viewport.height     = ds->swapchain_extent.height;
+                viewport.width      = static_cast<float>(ds->swapchain_extent.width);
+                viewport.height     = static_cast<float>(ds->swapchain_extent.height);
                 viewport.minDepth   = 0.0f;
                 viewport.maxDepth   = 1.0f;
                 vkCmdSetViewport(timewarp_command_buffer, 0, 1, &viewport);
@@ -286,7 +284,7 @@ private:
             }
             vkCmdEndRenderPass(timewarp_command_buffer);
         }
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer));
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer))
     }
 
     /**
@@ -299,22 +297,22 @@ private:
      * @throws runtime_error If any Vulkan operation fails.
      */
     void create_sync_objects() {
-        VkSemaphoreTypeCreateInfo timeline_semaphore_info = {VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO};
+        VkSemaphoreTypeCreateInfo timeline_semaphore_info = {VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO, nullptr, {}, 0};
         timeline_semaphore_info.semaphoreType             = VK_SEMAPHORE_TYPE_TIMELINE;
         timeline_semaphore_info.initialValue              = 0;
 
-        VkSemaphoreCreateInfo create_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+        VkSemaphoreCreateInfo create_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
         create_info.pNext                 = &timeline_semaphore_info;
 
         vkCreateSemaphore(ds->vk_device, &create_info, nullptr, &app_render_finished_semaphore);
 
-        VkSemaphoreCreateInfo semaphore_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-        VkFenceCreateInfo     fence_info     = {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+        VkSemaphoreCreateInfo semaphore_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, nullptr, 0};
+        VkFenceCreateInfo     fence_info     = {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, nullptr, 0};
         fence_info.flags                     = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &image_available_semaphore));
-        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore));
-        VK_ASSERT_SUCCESS(vkCreateFence(ds->vk_device, &fence_info, nullptr, &frame_fence));
+        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &image_available_semaphore))
+        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore))
+        VK_ASSERT_SUCCESS(vkCreateFence(ds->vk_device, &fence_info, nullptr, &frame_fence))
     }
 
     /**
@@ -324,7 +322,7 @@ private:
      * @param depth_image_view Pointer to the depth image view handle.
      */
     void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation, VkImageView* depth_image_view) {
-        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, {}, {}, {}, 0, 0, {}, {}, 0, {}, 0, nullptr, {}};
         image_info.imageType         = VK_IMAGE_TYPE_2D;
         image_info.format            = VK_FORMAT_D32_SFLOAT;
         image_info.extent.width      = display_params::width_pixels;
@@ -340,9 +338,9 @@ private:
         alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr));
+            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr))
 
-        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, nullptr, {}, {}, {}, {}};
         view_info.image                           = *depth_image;
         view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
         view_info.format                          = VK_FORMAT_D32_SFLOAT;
@@ -352,7 +350,7 @@ private:
         view_info.subresourceRange.baseArrayLayer = 0;
         view_info.subresourceRange.layerCount     = 1;
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, depth_image_view));
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, depth_image_view))
     }
 
     /**
@@ -363,8 +361,8 @@ private:
      * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
      */
     void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
-                                 VkImageView* offscreen_image_view, VkFramebuffer* offscreen_framebuffer) {
-        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+                                 VkImageView* offscreen_image_view, [[maybe_unused]]VkFramebuffer* offscreen_framebuffer) {
+        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, {}, {}, {}, 0, 0, {}, {}, {}, {}, 0, nullptr, {}};
         image_info.imageType         = VK_IMAGE_TYPE_2D;
         image_info.format            = VK_FORMAT_B8G8R8A8_UNORM;
         image_info.extent.height     = display_params::height_pixels;
@@ -380,9 +378,9 @@ private:
         alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, offscreen_image, offscreen_image_allocation, nullptr));
+            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, offscreen_image, offscreen_image_allocation, nullptr))
 
-        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, {}, {}, {}, {}, {}, {}};
         view_info.image                           = *offscreen_image;
         view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
         view_info.format                          = VK_FORMAT_B8G8R8A8_UNORM;
@@ -392,7 +390,7 @@ private:
         view_info.subresourceRange.baseArrayLayer = 0;
         view_info.subresourceRange.layerCount     = 1;
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, offscreen_image_view));
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, offscreen_image_view))
     }
 
     /**
@@ -402,7 +400,7 @@ private:
         for (auto eye = 0; eye < 2; eye++) {
             std::array<VkImageView, 2> attachments = {offscreen_image_views[eye], depth_image_views[eye]};
 
-            VkFramebufferCreateInfo framebuffer_info = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
+            VkFramebufferCreateInfo framebuffer_info = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, nullptr, 0, {}, 0, nullptr, 0, 0, 0};
             assert(app_pass != VK_NULL_HANDLE);
             framebuffer_info.renderPass      = app_pass;
             framebuffer_info.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -411,7 +409,7 @@ private:
             framebuffer_info.height          = display_params::height_pixels;
             framebuffer_info.layers          = 1;
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]));
+            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]))
         }
     }
 
@@ -477,7 +475,7 @@ private:
         dependencies[1].dstAccessMask   = VK_ACCESS_SHADER_READ_BIT;
         dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-        VkRenderPassCreateInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
+        VkRenderPassCreateInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr, 0, nullptr};
         render_pass_info.attachmentCount        = static_cast<uint32_t>(attchmentDescriptions.size());
         render_pass_info.pAttachments           = attchmentDescriptions.data();
         render_pass_info.subpassCount           = 1;
@@ -485,7 +483,7 @@ private:
         render_pass_info.dependencyCount        = static_cast<uint32_t>(dependencies.size());
         render_pass_info.pDependencies          = dependencies.data();
 
-        VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &app_pass));
+        VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &app_pass))
     }
 
     /**
@@ -511,13 +509,13 @@ private:
         subpass.pColorAttachments    = &color_attachment_ref;
         subpass.colorAttachmentCount = 1;
 
-        VkRenderPassCreateInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
+        VkRenderPassCreateInfo render_pass_info = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr, 0, nullptr};
         render_pass_info.attachmentCount        = static_cast<uint32_t>(attchmentDescriptions.size());
         render_pass_info.pAttachments           = attchmentDescriptions.data();
         render_pass_info.subpassCount           = 1;
         render_pass_info.pSubpasses             = &subpass;
 
-        VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass));
+        VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
     }
 
     const std::shared_ptr<switchboard>                                sb;
@@ -526,34 +524,33 @@ private:
     const std::shared_ptr<timewarp>                                   tw;
     const std::shared_ptr<app>                                        src;
     const std::shared_ptr<const RelativeClock>                        _m_clock;
-    const switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 
-    VkCommandPool   command_pool;
-    VkCommandBuffer app_command_buffer;
-    VkCommandBuffer timewarp_command_buffer;
+    VkCommandPool   command_pool{};
+    VkCommandBuffer app_command_buffer{};
+    VkCommandBuffer timewarp_command_buffer{};
 
-    std::array<VkImage, 2>       depth_images;
-    std::array<VmaAllocation, 2> depth_image_allocations;
-    std::array<VkImageView, 2>   depth_image_views;
+    std::array<VkImage, 2>       depth_images{};
+    std::array<VmaAllocation, 2> depth_image_allocations{};
+    std::array<VkImageView, 2>   depth_image_views{};
 
-    std::array<VkImage, 2>       offscreen_images;
-    std::array<VmaAllocation, 2> offscreen_image_allocations;
-    std::array<VkImageView, 2>   offscreen_image_views;
-    std::array<VkFramebuffer, 2> offscreen_framebuffers;
+    std::array<VkImage, 2>       offscreen_images{};
+    std::array<VmaAllocation, 2> offscreen_image_allocations{};
+    std::array<VkImageView, 2>   offscreen_image_views{};
+    std::array<VkFramebuffer, 2> offscreen_framebuffers{};
 
     std::vector<VkFramebuffer> swapchain_framebuffers;
 
-    VkRenderPass app_pass;
-    VkRenderPass timewarp_pass;
+    VkRenderPass app_pass{};
+    VkRenderPass timewarp_pass{};
 
-    VkSemaphore image_available_semaphore;
-    VkSemaphore app_render_finished_semaphore;
-    VkSemaphore timewarp_render_finished_semaphore;
-    VkFence     frame_fence;
+    VkSemaphore image_available_semaphore{};
+    VkSemaphore app_render_finished_semaphore{};
+    VkSemaphore timewarp_render_finished_semaphore{};
+    VkFence     frame_fence{};
 
     uint64_t timeline_semaphore_value = 1;
 
-    int        fps;
+    int        fps{};
     time_point last_fps_update;
 };
 PLUGIN_MAIN(native_renderer)

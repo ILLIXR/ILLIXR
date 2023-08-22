@@ -167,7 +167,7 @@ public:
 
     // Correct the orientation of the pose due to the lopsided IMU in the
     // current Dataset we are using (EuRoC)
-    pose_type correct_pose(const pose_type pose) const override {
+    pose_type correct_pose(const pose_type &pose) const override {
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below
@@ -221,12 +221,11 @@ private:
         // k1 ================
         Eigen::Vector4d dq_0   = {0, 0, 0, 1};
         Eigen::Vector4d q0_dot = 0.5 * Omega(w_hat) * dq_0;
-        Eigen::Vector3d p0_dot = v_0;
         Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, q_0));
         Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k1_q = q0_dot * dt;
-        Eigen::Vector3d k1_p = p0_dot * dt;
+        Eigen::Vector3d k1_p = v_0 * dt;
         Eigen::Vector3d k1_v = v0_dot * dt;
 
         // k2 ================
@@ -237,12 +236,11 @@ private:
         Eigen::Vector3d v_1  = v_0 + 0.5 * k1_v;
 
         Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
-        Eigen::Vector3d p1_dot = v_1;
         Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, q_0));
         Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k2_q = q1_dot * dt;
-        Eigen::Vector3d k2_p = p1_dot * dt;
+        Eigen::Vector3d k2_p = v_1 * dt;
         Eigen::Vector3d k2_v = v1_dot * dt;
 
         // k3 ================
@@ -251,12 +249,11 @@ private:
         Eigen::Vector3d v_2 = v_0 + 0.5 * k2_v;
 
         Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
-        Eigen::Vector3d p2_dot = v_2;
         Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, q_0));
         Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k3_q = q2_dot * dt;
-        Eigen::Vector3d k3_p = p2_dot * dt;
+        Eigen::Vector3d k3_p = v_2 * dt;
         Eigen::Vector3d k3_v = v2_dot * dt;
 
         // k4 ================
@@ -268,12 +265,11 @@ private:
         Eigen::Vector3d v_3 = v_0 + k3_v;
 
         Eigen::Vector4d q3_dot = 0.5 * Omega(w_hat) * dq_3;
-        Eigen::Vector3d p3_dot = v_3;
         Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3, q_0));
         Eigen::Vector3d v3_dot = R_Gto3.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k4_q = q3_dot * dt;
-        Eigen::Vector3d k4_p = p3_dot * dt;
+        Eigen::Vector3d k4_p = v_3 * dt;
         Eigen::Vector3d k4_v = v3_dot * dt;
 
         // y+dt ================
@@ -293,7 +289,7 @@ private:
      * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf).
      *
      */
-    static const inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
+    static inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
         Eigen::Matrix<double, 4, 4> mat;
         mat.block(0, 0, 3, 3) = -skew_x(w);
         mat.block(3, 0, 1, 3) = -w.transpose();
@@ -307,7 +303,7 @@ private:
      * @param q_t Quaternion to normalized
      * @return Normalized quaterion
      */
-    static const inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
+    static inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
         if (q_t(3, 0) < 0) {
             q_t *= -1;
         }
@@ -327,7 +323,7 @@ private:
      * @param[in] w 3x1 vector to be made a skew-symmetric
      * @return 3x3 skew-symmetric matrix
      */
-    static const inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
+    static inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
         Eigen::Matrix<double, 3, 3> w_x;
         w_x << 0, -w(2), w(1), w(2), 0, -w(0), -w(1), w(0), 0;
         return w_x;
@@ -344,7 +340,7 @@ private:
      * @param[in] q JPL quaternion
      * @return 3x3 SO(3) rotation matrix
      */
-    static const inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
+    static inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
         Eigen::Matrix<double, 3, 3> q_x = skew_x(q.block(0, 0, 3, 1));
         Eigen::MatrixXd             Rot = (2 * std::pow(q(3, 0), 2) - 1) * Eigen::MatrixXd::Identity(3, 3) - 2 * q(3, 0) * q_x +
             2 * q.block(0, 0, 3, 1) * (q.block(0, 0, 3, 1).transpose());
@@ -369,7 +365,7 @@ private:
      * @param[in] p Second JPL quaternion
      * @return 4x1 resulting p*q quaternion
      */
-    static const inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
+    static inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
                                                                   const Eigen::Matrix<double, 4, 1>& p) {
         Eigen::Matrix<double, 4, 1> q_t;
         Eigen::Matrix<double, 4, 4> Qm;

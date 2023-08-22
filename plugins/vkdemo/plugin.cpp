@@ -98,7 +98,7 @@ struct UniformBufferObject {
 
 class vkdemo : public app {
 public:
-    vkdemo(const phonebook* const pb)
+    explicit vkdemo(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , ds{pb->lookup_impl<display_sink>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()} { }
@@ -130,16 +130,16 @@ public:
                                   rendering_params::far_z);
     }
 
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass) override {
         create_pipeline(render_pass, subpass);
     }
 
-    virtual void update_uniforms(const pose_type fp) override {
+    void update_uniforms(const pose_type &fp) override {
         update_uniform(fp, 0);
         update_uniform(fp, 1);
     }
 
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer     vertexBuffers[] = {vertex_buffer};
         VkDeviceSize offsets[]       = {0};
@@ -150,14 +150,14 @@ public:
 
         for (auto& model : models) {
             ModelPushConstant push_constant{};
-            push_constant.texture_index = texture_map[model.texture_index];
+            push_constant.texture_index = static_cast<int>(texture_map[model.texture_index]);
             vkCmdPushConstants(commandBuffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(ModelPushConstant),
                                &push_constant);
             vkCmdDrawIndexed(commandBuffer, model.index_count, 1, model.index_offset, 0, 0);
         }
     }
 
-    virtual void destroy() override { }
+    void destroy() override { }
 
 private:
     void update_uniform(const pose_type& fp, int eye) {
@@ -188,13 +188,13 @@ private:
 
         Eigen::Matrix4f model_view = view_matrix * modelMatrix;
 
-        UniformBufferObject* ubo = (UniformBufferObject*) uniform_buffer_allocation_infos[eye].pMappedData;
+        auto* ubo = (UniformBufferObject*) uniform_buffer_allocation_infos[eye].pMappedData;
         memcpy(&ubo->model_view, &model_view, sizeof(model_view));
         memcpy(&ubo->proj, &basic_projection, sizeof(basic_projection));
     }
 
     void bake_models() {
-        for (auto i = 0; i < textures.size(); i++) {
+        for (std::size_t i = 0; i < textures.size(); i++) {
             if (textures[i].image_view == VK_NULL_HANDLE) {
                 continue;
             }
@@ -228,17 +228,17 @@ private:
         sampled_image_layout_binding.pImmutableSamplers           = nullptr;
         sampled_image_layout_binding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        VkDescriptorSetLayoutCreateInfo layout_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
+        VkDescriptorSetLayoutCreateInfo layout_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0, 0, nullptr};
         layout_info.bindingCount                    = 3;
         VkDescriptorSetLayoutBinding bindings[] = {ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
         layout_info.pBindings                   = bindings;
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout));
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout))
     }
 
     void create_uniform_buffers() {
         for (auto i = 0; i < 2; i++) {
-            VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+            VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
             buffer_info.size               = sizeof(UniformBufferObject);
             buffer_info.usage              = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
@@ -247,7 +247,7 @@ private:
             alloc_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
             VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &uniform_buffers[i],
-                                              &uniform_buffer_allocations[i], &uniform_buffer_allocation_infos[i]));
+                                              &uniform_buffer_allocations[i], &uniform_buffer_allocation_infos[i]))
         }
     }
 
@@ -260,16 +260,16 @@ private:
         pool_sizes[2].type                             = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
         pool_sizes[2].descriptorCount                  = static_cast<uint32_t>(2 * texture_map.size());
 
-        VkDescriptorPoolCreateInfo pool_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+        VkDescriptorPoolCreateInfo pool_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, 0, 0, 0, nullptr};
         pool_info.poolSizeCount              = static_cast<uint32_t>(pool_sizes.size());
         pool_info.pPoolSizes                 = pool_sizes.data();
         pool_info.maxSets                    = 2;
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool));
+        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool))
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo sampler_info = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
+        VkSamplerCreateInfo sampler_info = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, nullptr, 0, {}, {}, {}, {}, {}, {}, 0.f, 0, 0.f, 0, {}, 0.f, 0.f, {}, 0};
         sampler_info.magFilter           = VK_FILTER_LINEAR;
         sampler_info.minFilter           = VK_FILTER_LINEAR;
         sampler_info.addressModeU        = VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -283,17 +283,17 @@ private:
         sampler_info.compareOp               = VK_COMPARE_OP_ALWAYS;
         sampler_info.mipmapMode              = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &sampler_info, nullptr, &texture_sampler));
+        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &sampler_info, nullptr, &texture_sampler))
     }
 
     void create_descriptor_set() {
         VkDescriptorSetLayout       layouts[]  = {descriptor_set_layout, descriptor_set_layout};
-        VkDescriptorSetAllocateInfo alloc_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+        VkDescriptorSetAllocateInfo alloc_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, {}, 0, nullptr};
         alloc_info.descriptorPool              = descriptor_pool;
         alloc_info.descriptorSetCount          = 2;
         alloc_info.pSetLayouts                 = layouts;
 
-        VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &alloc_info, descriptor_sets.data()));
+        VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &alloc_info, descriptor_sets.data()))
 
         std::array<VkDescriptorBufferInfo, 2> buffer_infos = {};
         for (auto i = 0; i < 2; i++) {
@@ -319,18 +319,18 @@ private:
 
         std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
         for (auto i = 0; i < 2; i++) {
-            VkWriteDescriptorSet descriptor_write = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+            VkWriteDescriptorSet descriptor_write = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, {}, 0, 0, 0, {}, nullptr, nullptr, nullptr};
             descriptor_write.dstSet               = descriptor_sets[i];
             descriptor_write.dstBinding           = 1;
             descriptor_write.dstArrayElement      = 0;
             descriptor_write.descriptorType       = VK_DESCRIPTOR_TYPE_SAMPLER;
             descriptor_write.descriptorCount      = 1;
-            VkDescriptorImageInfo image_info      = {texture_sampler};
+            VkDescriptorImageInfo image_info      = {texture_sampler, nullptr, {}};
             descriptor_write.pImageInfo           = &image_info;
             image_descriptor_writes.push_back(descriptor_write);
 
-            assert(image_infos.size() > 0);
-            descriptor_write                 = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+            assert(!image_infos.empty());
+            descriptor_write                 = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, {}, 0, 0, 0, {}, nullptr, nullptr, nullptr};
             descriptor_write.dstSet          = descriptor_sets[i];
             descriptor_write.dstBinding      = 2;
             descriptor_write.dstArrayElement = 0;
@@ -344,7 +344,7 @@ private:
                                image_descriptor_writes.data(), 0, nullptr);
     }
 
-    void load_texture(std::string path, int i) {
+    void load_texture(const std::string& path, int i) {
         int  width, height, channels;
         auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
         std::cout << "Loaded texture " << path << " with dimensions " << width << "x" << height << " and " << channels
@@ -375,7 +375,7 @@ private:
         VmaAllocation     staging_buffer_allocation;
         VmaAllocationInfo staging_buffer_allocation_info;
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
         buffer_info.size               = image_size;
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -384,13 +384,13 @@ private:
         alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
 
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
-                                          &staging_buffer_allocation_info));
+                                          &staging_buffer_allocation_info))
 
         memcpy(staging_buffer_allocation_info.pMappedData, data, static_cast<size_t>(image_size));
 
         stbi_image_free(data);
 
-        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, {}, {}, {}, 0, 0, {}, {}, {}, {}, 0, nullptr, {}};
         image_info.imageType         = VK_IMAGE_TYPE_2D;
         image_info.extent.width      = static_cast<uint32_t>(width);
         image_info.extent.height     = static_cast<uint32_t>(height);
@@ -408,7 +408,7 @@ private:
         image_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &image_alloc_info, &textures[i].image,
-                                         &textures[i].image_memory, nullptr));
+                                         &textures[i].image_memory, nullptr))
 
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -421,7 +421,7 @@ private:
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
 
-        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, nullptr, {}, {}, {}, {}};
         view_info.image                           = textures[i].image;
         view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
         view_info.format                          = VK_FORMAT_R8G8B8A8_SRGB;
@@ -431,13 +431,13 @@ private:
         view_info.subresourceRange.baseArrayLayer = 0;
         view_info.subresourceRange.layerCount     = 1;
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view));
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view))
     }
 
-    void image_layout_transition(VkImage image, VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout) {
-        VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+    void image_layout_transition(VkImage image, [[maybe_unused]]VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout) {
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
 
-        VkImageMemoryBarrier barrier = {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+        VkImageMemoryBarrier barrier = {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, 0, {}, {}, 0, 0, {}, {}};
         barrier.oldLayout            = old_layout;
         barrier.newLayout            = new_layout;
         barrier.srcQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
@@ -481,9 +481,9 @@ private:
             throw std::invalid_argument("Unsupported layout transition!");
         }
 
-        vkCmdPipelineBarrier(command_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
     }
 
     void load_model() {
@@ -499,10 +499,10 @@ private:
 
         textures.resize(materials.size());
 
-        for (auto i = 0; i < materials.size(); i++) {
+        for (auto i = 0; i < static_cast<int>(materials.size()); i++) {
             auto material = materials[i];
             if (material.diffuse_texname.length() > 0) {
-                auto path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + material.diffuse_texname;
+                path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + material.diffuse_texname;
                 load_texture(path, i);
             }
         }
@@ -529,7 +529,7 @@ private:
 
                 indices.push_back(unique_vertices[vertex]);
             }
-            if (shape.mesh.material_ids.size() > 0) {
+            if (!shape.mesh.material_ids.empty()) {
                 model.texture_index = shape.mesh.material_ids[0];
             } else {
                 model.texture_index = -1;
@@ -540,7 +540,7 @@ private:
     }
 
     void create_vertex_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
         staging_buffer_info.size               = sizeof(vertices[0]) * vertices.size();
         staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -551,9 +551,9 @@ private:
         VkBuffer      staging_buffer;
         VmaAllocation staging_buffer_allocation;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
-                                          &staging_buffer_allocation, nullptr));
+                                          &staging_buffer_allocation, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
         buffer_info.size               = sizeof(vertices[0]) * vertices.size();
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
@@ -562,24 +562,24 @@ private:
 
         VmaAllocation buffer_allocation;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &buffer_allocation, nullptr));
+            vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &buffer_allocation, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data));
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data))
         memcpy(mapped_data, vertices.data(), sizeof(vertices[0]) * vertices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region    = {};
         copy_region.size               = sizeof(vertices[0]) * vertices.size();
-        vkCmdCopyBuffer(command_buffer, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
 
     void create_index_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
         staging_buffer_info.size               = sizeof(indices[0]) * indices.size();
         staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -590,9 +590,9 @@ private:
         VkBuffer      staging_buffer;
         VmaAllocation staging_buffer_allocation;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
-                                          &staging_buffer_allocation, nullptr));
+                                          &staging_buffer_allocation, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
         buffer_info.size               = sizeof(indices[0]) * indices.size();
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
@@ -601,18 +601,18 @@ private:
 
         VmaAllocation buffer_allocation;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr));
+            vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data));
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data))
         memcpy(mapped_data, indices.data(), sizeof(indices[0]) * indices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region    = {};
         copy_region.size               = sizeof(indices[0]) * indices.size();
-        vkCmdCopyBuffer(command_buffer, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -628,12 +628,12 @@ private:
         VkShaderModule frag =
             vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
 
-        VkPipelineShaderStageCreateInfo vert_shader_stage_info = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
+        VkPipelineShaderStageCreateInfo vert_shader_stage_info = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, {}, nullptr, nullptr, nullptr};
         vert_shader_stage_info.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
         vert_shader_stage_info.module                          = vert;
         vert_shader_stage_info.pName                           = "main";
 
-        VkPipelineShaderStageCreateInfo frag_shader_stage_info = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO};
+        VkPipelineShaderStageCreateInfo frag_shader_stage_info = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, {}, nullptr, nullptr, nullptr};
         frag_shader_stage_info.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
         frag_shader_stage_info.module                          = frag;
         frag_shader_stage_info.pName                           = "main";
@@ -643,13 +643,13 @@ private:
         auto binding_description    = Vertex::get_binding_description();
         auto attribute_descriptions = Vertex::get_attribute_descriptions();
 
-        VkPipelineVertexInputStateCreateInfo vertex_input_info = {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO};
+        VkPipelineVertexInputStateCreateInfo vertex_input_info = {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr};
         vertex_input_info.vertexBindingDescriptionCount        = 1;
         vertex_input_info.vertexAttributeDescriptionCount      = static_cast<uint32_t>(attribute_descriptions.size());
         vertex_input_info.pVertexBindingDescriptions           = &binding_description;
         vertex_input_info.pVertexAttributeDescriptions         = attribute_descriptions.data();
 
-        VkPipelineInputAssemblyStateCreateInfo input_assembly = {VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
+        VkPipelineInputAssemblyStateCreateInfo input_assembly = {VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, nullptr, 0, {}, 0};
         input_assembly.topology                               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         input_assembly.primitiveRestartEnable                 = VK_FALSE;
 
@@ -665,13 +665,13 @@ private:
         scissor.offset   = {0, 0};
         scissor.extent   = ds->swapchain_extent;
 
-        VkPipelineViewportStateCreateInfo viewport_state = {VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO};
+        VkPipelineViewportStateCreateInfo viewport_state = {VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr};
         viewport_state.viewportCount                     = 1;
         viewport_state.pViewports                        = &viewport;
         viewport_state.scissorCount                      = 1;
         viewport_state.pScissors                         = &scissor;
 
-        VkPipelineRasterizationStateCreateInfo rasterizer = {VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO};
+        VkPipelineRasterizationStateCreateInfo rasterizer = {VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, nullptr, 0, 0, 0, {}, {}, {}, {}, 0, 0.f, 0.f, 0.f};
         rasterizer.depthClampEnable                       = VK_FALSE;
         rasterizer.polygonMode                            = VK_POLYGON_MODE_FILL;
         rasterizer.cullMode                               = VK_CULL_MODE_NONE;
@@ -681,7 +681,7 @@ private:
         rasterizer.rasterizerDiscardEnable                = VK_FALSE;
         rasterizer.depthBiasEnable                        = VK_FALSE;
 
-        VkPipelineMultisampleStateCreateInfo multisampling = {VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO};
+        VkPipelineMultisampleStateCreateInfo multisampling = {VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, nullptr, 0, {}, 0, 0.f, nullptr, 0, 0};
         multisampling.sampleShadingEnable                  = VK_FALSE;
         multisampling.rasterizationSamples                 = VK_SAMPLE_COUNT_1_BIT;
 
@@ -690,11 +690,11 @@ private:
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         color_blend_attachment.blendEnable = VK_FALSE;
 
-        VkPipelineColorBlendStateCreateInfo color_blending = {VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
+        VkPipelineColorBlendStateCreateInfo color_blending = {VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, nullptr, 0, 0, {}, 0, nullptr, {0.f, 0.f, 0.f, 0.f}};
         color_blending.pAttachments                        = &color_blend_attachment;
         color_blending.attachmentCount                     = 1;
 
-        VkPipelineLayoutCreateInfo pipeline_layout_info = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
+        VkPipelineLayoutCreateInfo pipeline_layout_info = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr};
         pipeline_layout_info.setLayoutCount             = 1;
         pipeline_layout_info.pSetLayouts                = &descriptor_set_layout;
 
@@ -706,9 +706,9 @@ private:
         pipeline_layout_info.pushConstantRangeCount = 1;
         pipeline_layout_info.pPushConstantRanges    = &push_constant_range;
 
-        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout));
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout))
 
-        VkPipelineDepthStencilStateCreateInfo depth_stencil = {VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO};
+        VkPipelineDepthStencilStateCreateInfo depth_stencil = {VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, 0, {}, {}, 0.f, 0.f};
         depth_stencil.depthTestEnable                       = VK_TRUE;
         depth_stencil.depthWriteEnable                      = VK_TRUE;
         depth_stencil.depthCompareOp                        = VK_COMPARE_OP_LESS;
@@ -717,7 +717,7 @@ private:
         depth_stencil.maxDepthBounds                        = 1.0f;
         depth_stencil.stencilTestEnable                     = VK_FALSE;
 
-        VkGraphicsPipelineCreateInfo pipeline_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
+        VkGraphicsPipelineCreateInfo pipeline_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, nullptr, 0, 0, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, {}, {}, 0, {}, 0};
         pipeline_info.stageCount                   = 2;
         pipeline_info.pStages                      = shader_stages;
         pipeline_info.pVertexInputState            = &vertex_input_info;
@@ -731,7 +731,7 @@ private:
         pipeline_info.renderPass                   = render_pass;
         pipeline_info.subpass                      = subpass;
 
-        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline));
+        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
 
         vkDestroyShaderModule(ds->vk_device, vert, nullptr);
         vkDestroyShaderModule(ds->vk_device, frag, nullptr);
@@ -749,26 +749,26 @@ private:
 
     std::array<std::vector<VkImageView>, 2> buffer_pool;
 
-    VmaAllocator    vma_allocator;
-    VkCommandPool   command_pool;
-    VkCommandBuffer command_buffer;
+    VmaAllocator    vma_allocator{};
+    VkCommandPool   command_pool{};
+    VkCommandBuffer command_buffer{};
 
-    VkDescriptorSetLayout          descriptor_set_layout;
-    VkDescriptorPool               descriptor_pool;
-    std::array<VkDescriptorSet, 2> descriptor_sets;
+    VkDescriptorSetLayout          descriptor_set_layout{};
+    VkDescriptorPool               descriptor_pool{};
+    std::array<VkDescriptorSet, 2> descriptor_sets{};
 
-    std::array<VkBuffer, 2>          uniform_buffers;
-    std::array<VmaAllocation, 2>     uniform_buffer_allocations;
-    std::array<VmaAllocationInfo, 2> uniform_buffer_allocation_infos;
+    std::array<VkBuffer, 2>          uniform_buffers{};
+    std::array<VmaAllocation, 2>     uniform_buffer_allocations{};
+    std::array<VmaAllocationInfo, 2> uniform_buffer_allocation_infos{};
 
-    VkBuffer vertex_buffer;
-    VkBuffer index_buffer;
+    VkBuffer vertex_buffer{};
+    VkBuffer index_buffer{};
 
-    VkPipelineLayout pipeline_layout;
+    VkPipelineLayout pipeline_layout{};
 
     std::vector<VkDescriptorImageInfo> image_infos;
     std::vector<Texture>               textures;
-    VkSampler                          texture_sampler;
+    VkSampler                          texture_sampler{};
     std::map<uint32_t, uint32_t>       texture_map;
 };
 
@@ -780,7 +780,7 @@ public:
         pb->register_impl<app>(std::static_pointer_cast<vkdemo>(vkd));
     }
 
-    virtual void start() override {
+    void start() override {
         vkd->initialize();
     }
 

@@ -14,7 +14,7 @@ typedef plugin* (*plugin_factory)(phonebook*);
 class runtime {
 public:
     virtual void load_so(const std::vector<std::string>& so) = 0;
-    virtual void load_so(const std::string_view so)          = 0;
+    virtual void load_so(const std::string_view &so)         = 0;
     virtual void load_plugin_factory(plugin_factory plugin)  = 0;
 
     /**

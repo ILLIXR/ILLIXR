@@ -8,6 +8,7 @@
 #include <future>
 #include <iostream>
 #include <thread>
+
 #include <eigen3/Eigen/Core>
 
 #include "illixr/data_format.hpp"
@@ -35,7 +36,7 @@ public:
     // references to the switchboard plugs, so the component can read the
     // data whenever it needs to.
 
-    gldemo(std::string name_, phonebook* pb_)
+    gldemo(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , xwin{new xlib_gl_extended_window{1, 1, pb->lookup_impl<xlib_gl_extended_window>()->glc}}
         , sb{pb->lookup_impl<switchboard>()}
@@ -48,7 +49,7 @@ public:
     void wait_vsync() {
         switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();
         time_point                                                     now        = _m_clock->now();
-        time_point                                                     wait_time;
+        time_point                                                     wait_time{};
 
         if (next_vsync == nullptr) {
             // If no vsync data available, just sleep for roughly a vsync period.
@@ -121,9 +122,6 @@ public:
 
         glClearDepth(1);
 
-        // We'll calculate this model view matrix
-        // using fresh pose data, if we have any.
-        Eigen::Matrix4f modelViewMatrix;
 
         Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 
@@ -154,9 +152,11 @@ public:
             // Objects' "view matrix" is inverse of eye matrix.
             auto view_matrix = eye_matrix.inverse();
 
+            // We'll calculate this model view matrix
+            // using fresh pose data, if we have any.
             Eigen::Matrix4f modelViewMatrix = view_matrix * modelMatrix;
-            glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*) (modelViewMatrix.data()));
-            glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*) (basicProjection.data()));
+            glUniformMatrix4fv(static_cast<GLint>(modelViewAttr), 1, GL_FALSE, (GLfloat*) (modelViewMatrix.data()));
+            glUniformMatrix4fv(static_cast<GLint>(projectionAttr), 1, GL_FALSE, (GLfloat*) (basicProjection.data()));
 
             glBindTexture(GL_TEXTURE_2D, eyeTextures[eye_idx]);
             glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, eyeTextures[eye_idx], 0);
@@ -220,29 +220,29 @@ private:
     // correct eye/framebuffer in the "swapchain".
     switchboard::writer<rendered_frame> _m_eyebuffer;
 
-    GLuint eyeTextures[2];
-    GLuint eyeTextureFBO;
-    GLuint eyeTextureDepthTarget;
+    GLuint eyeTextures[2]{};
+    GLuint eyeTextureFBO{};
+    GLuint eyeTextureDepthTarget{};
 
     unsigned char which_buffer = 0;
 
-    GLuint demo_vao;
-    GLuint demoShaderProgram;
+    GLuint demo_vao{};
+    GLuint demoShaderProgram{};
 
-    GLuint vertexPosAttr;
-    GLuint vertexNormalAttr;
-    GLuint modelViewAttr;
-    GLuint projectionAttr;
+    GLuint vertexPosAttr{};
+    GLuint vertexNormalAttr{};
+    GLuint modelViewAttr{};
+    GLuint projectionAttr{};
 
-    GLuint colorUniform;
+    GLuint colorUniform{};
 
     ObjScene demoscene;
 
     Eigen::Matrix4f basicProjection;
 
-    time_point lastTime;
+    time_point lastTime{};
 
-    void createSharedEyebuffer(GLuint* texture_handle) {
+    static void createSharedEyebuffer(GLuint* texture_handle) {
         // Create the shared eye texture handle
         glGenTextures(1, texture_handle);
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
@@ -254,13 +254,13 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, display_params::width_pixels, display_params::height_pixels, 0, GL_RGB,
-                     GL_UNSIGNED_BYTE, 0);
+                     GL_UNSIGNED_BYTE, nullptr);
 
         // Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void createFBO(GLuint* texture_handle, GLuint* fbo, GLuint* depth_target) {
+    static void createFBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth_target) {
         // Create a framebuffer to draw some things to the eye texture
         glGenFramebuffers(1, fbo);
 
@@ -302,7 +302,7 @@ public:
         }
 
         glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(MessageCallback, 0);
+        glDebugMessageCallback(MessageCallback, nullptr);
 
         // Create two shared eye textures, one for each eye
         createSharedEyebuffer(&(eyeTextures[0]));

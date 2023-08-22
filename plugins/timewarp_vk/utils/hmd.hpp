@@ -48,11 +48,11 @@ public:
         float chromaticAberration[4];
     };
 
-    static float MaxFloat(const float x, const float y);
-    static float MinFloat(const float x, const float y);
-    static float EvaluateCatmullRomSpline(float value, float* K, int numKnots);
-    static void  GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixelsHigh, const float displayMetersWide,
-                                   const float displayMetersHigh, const float lensSeparation, const float metersPerTanAngle,
+    static float MaxFloat(float x, float y);
+    static float MinFloat(float x, float y);
+    static float EvaluateCatmullRomSpline(float value, const float* K, int numKnots);
+    static void  GetDefaultHmdInfo(int displayPixelsWide, int displayPixelsHigh, float displayMetersWide,
+                                   float displayMetersHigh, float lensSeparation, float metersPerTanAngle,
                                    const float aberration[4], hmd_info_t& hmd_info);
     static void
     BuildDistortionMeshes(std::array<std::array<std::vector<mesh_coord2d_t>, NUM_COLOR_CHANNELS>, NUM_EYES>& distort_coords,

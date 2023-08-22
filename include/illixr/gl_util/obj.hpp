@@ -25,7 +25,7 @@ struct object_t {
     GLuint texture;
     bool   has_texture;
 
-    void Draw() {
+    void Draw() const {
         RAC_ERRNO_MSG("gl_util/obj at start of Draw");
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_handle);
@@ -38,7 +38,7 @@ struct object_t {
             glBindTexture(GL_TEXTURE_2D, texture);
         }
 
-        glDrawArrays(GL_TRIANGLES, 0, num_triangles * 3);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(num_triangles) * 3);
 
         if (has_texture) {
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -215,11 +215,11 @@ public:
                     }
                 }
 
-                if (buffer.size() > 0) {
+                if (!buffer.empty()) {
                     // Create/bind/fill vbo.
                     glGenBuffers(1, &newObject.vbo_handle);
                     glBindBuffer(GL_ARRAY_BUFFER, newObject.vbo_handle);
-                    glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(vertex_t), &buffer.at(0), GL_STATIC_DRAW);
+                    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(buffer.size() * sizeof(vertex_t)), &buffer.at(0), GL_STATIC_DRAW);
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
                     // Compute the number of triangles for this object.

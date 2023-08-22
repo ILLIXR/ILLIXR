@@ -59,7 +59,7 @@ void assign_matrix(std::deque<float>& parameters, EigenType& eigen_data) {
     }
 }
 
-void load_align_parameters(std::string path, Eigen::Matrix3f& align_rot, Eigen::Vector3f& align_trans,
+void load_align_parameters(const std::string& path, Eigen::Matrix3f& align_rot, Eigen::Vector3f& align_trans,
                            Eigen::Vector4f& align_quat, double& align_scale) {
     std::ifstream infile;
     infile.open(path);

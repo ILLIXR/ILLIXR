@@ -3,6 +3,7 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <librealsense2/rs.hpp> // Include RealSense Cross Platform API
@@ -30,7 +31,7 @@ static constexpr int IMAGE_HEIGHT_T26X = 800;
 class realsense : public plugin {
 public:
     realsense(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
@@ -58,8 +59,7 @@ public:
             std::string s = mf.get_profile().stream_name();
 
             if (s == "Accel") {
-                rs2::motion_frame accel = mf;
-                accel_data.data         = accel.get_motion_data();
+                accel_data.data         = mf.get_motion_data();
                 accel_data.iteration    = iteration_accel;
                 iteration_accel++;
             }
@@ -71,16 +71,15 @@ public:
 
                 last_iteration_accel        = accel_data.iteration;
                 rs2_vector        accel     = accel_data.data;
-                rs2::motion_frame gyro      = mf;
-                double            ts        = gyro.get_timestamp();
-                rs2_vector        gyro_data = gyro.get_motion_data();
+                double            ts        = mf.get_timestamp();
+                rs2_vector        gyro_data = mf.get_motion_data();
 
                 // IMU data
                 Eigen::Vector3f la = {accel.x, accel.y, accel.z};
                 Eigen::Vector3f av = {gyro_data.x, gyro_data.y, gyro_data.z};
 
                 // Time as ullong (nanoseconds)
-                ullong imu_time = static_cast<ullong>(ts * 1000000);
+                auto imu_time = static_cast<ullong>(ts * 1000000);
                 if (!_m_first_imu_time) {
                     _m_first_imu_time      = imu_time;
                     _m_first_real_time_imu = _m_clock->now();
@@ -96,7 +95,7 @@ public:
 
         if (auto fs = frame.as<rs2::frameset>()) {
             double ts       = fs.get_timestamp();
-            ullong cam_time = static_cast<ullong>(ts * 1000000);
+            auto cam_time = static_cast<ullong>(ts * 1000000);
             if (!_m_first_cam_time) {
                 _m_first_cam_time      = cam_time;
                 _m_first_real_time_cam = _m_clock->now();
@@ -134,7 +133,7 @@ public:
         }
     };
 
-    virtual ~realsense() override {
+    ~realsense() override {
         pipe.stop();
     }
 
@@ -171,7 +170,7 @@ private:
     std::optional<ullong>     _m_first_cam_time;
     std::optional<time_point> _m_first_real_time_cam;
 
-    void find_supported_devices(rs2::device_list devices) {
+    void find_supported_devices(const rs2::device_list& devices) {
         bool gyro_found{false};
         bool accel_found{false};
         for (rs2::device device : devices) {
@@ -185,7 +184,7 @@ private:
                     std::cout << "Checking for supported streams" << std::endl;
 #endif
                     std::vector<rs2::sensor> sensors = device.query_sensors();
-                    for (rs2::sensor sensor : sensors) {
+                    for (const rs2::sensor& sensor : sensors) {
                         std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
                         // Currently, all D4XX cameras provide infrared, RGB, and depth, so we only need to check for accel and
                         // gyro
@@ -225,7 +224,7 @@ private:
         // This plugin assumes only one device should be connected to the system. If multiple supported devices are found the
         // preference is to choose D4XX with IMU over T26X systems.
         find_supported_devices(devices);
-        if (realsense_cam.compare("auto") == 0) {
+        if (realsense_cam == "auto") {
             if (D4XXI_found) {
                 cam_select = D4XXI;
 #ifndef NDEBUG
@@ -237,12 +236,12 @@ private:
                 std::cout << "Setting cam_select: T26X" << std::endl;
 #endif
             }
-        } else if ((realsense_cam.compare("D4XX") == 0) && D4XXI_found) {
+        } else if ((realsense_cam == "D4XX") && D4XXI_found) {
             cam_select = D4XXI;
 #ifndef NDEBUG
             std::cout << "Setting cam_select: D4XX" << std::endl;
 #endif
-        } else if ((realsense_cam.compare("T26X") == 0) && T26X_found) {
+        } else if ((realsense_cam == "T26X") && T26X_found) {
             cam_select = T26X;
 #ifndef NDEBUG
             std::cout << "Setting cam_select: T26X" << std::endl;

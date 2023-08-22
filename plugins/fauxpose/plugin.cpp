@@ -28,11 +28,13 @@
 /*   * (This version uploaded to ILLIXR github)                              */
 /*                                                                           */
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <mutex>
+
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
@@ -74,15 +76,15 @@ public:
 
         // Adjust parameters based on environment variables
         if ((env_input = getenv("FAUXPOSE_PERIOD"))) {
-            period = atof(env_input);
+            period = std::strtof(env_input, nullptr);
         }
         if ((env_input = getenv("FAUXPOSE_AMPLITUDE"))) {
-            amplitude = atof(env_input);
+            amplitude = std::strtof(env_input, nullptr);
         }
         if ((env_input = getenv("FAUXPOSE_CENTER"))) {
-            center_location[0] = atof(env_input);
-            center_location[1] = atof(strchrnul(env_input, ',') + 1);
-            center_location[2] = atof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1);
+            center_location[0] = std::strtof(env_input, nullptr);
+            center_location[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
+            center_location[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);
         }
 #ifndef NDEBUG
         std::cout << "[fauxpose] Period is " << period << "\n";
@@ -94,7 +96,7 @@ public:
     }
 
     // ********************************************************************
-    virtual ~faux_pose_impl() {
+    ~faux_pose_impl() override {
 #ifndef NDEBUG
         std::cout << "[fauxpose] Ending Service\n";
 #endif
@@ -116,7 +118,7 @@ public:
     }
 
     // ********************************************************************
-    pose_type correct_pose([[maybe_unused]] const pose_type pose) const override {
+    pose_type correct_pose([[maybe_unused]] const pose_type &pose) const override {
 #ifndef NDEBUG
         std::cout << "[fauxpose] Returning (passthru) pose\n";
 #endif
@@ -162,13 +164,13 @@ public:
         // Calculate simulation time from start of execution
         std::chrono::nanoseconds elapsed_time;
         elapsed_time = time - sim_start_time;
-        sim_time     = elapsed_time.count() * 0.000000001;
+        sim_time     = static_cast<double>(elapsed_time.count()) * 0.000000001;
 
         // Calculate new pose values
         //   Pose values are calculated from the passage of time to maintain consistency */
-        simulated_pose.position[0] = center_location[0] + amplitude * sin(sim_time * period); // X
-        simulated_pose.position[1] = center_location[1];                                      // Y
-        simulated_pose.position[2] = center_location[2] + amplitude * cos(sim_time * period); // Z
+        simulated_pose.position[0] = static_cast<float>(center_location[0] + amplitude * sin(sim_time * period)); // X
+        simulated_pose.position[1] = static_cast<float>(center_location[1]);                                      // Y
+        simulated_pose.position[2] = static_cast<float>(center_location[2] + amplitude * cos(sim_time * period)); // Z
         simulated_pose.orientation = Eigen::Quaternionf(0.707, 0.0, 0.707, 0.0); // (W,X,Y,Z) Facing forward (90deg about Y)
 
         // Return the new pose
@@ -188,7 +190,7 @@ private:
     mutable Eigen::Quaternionf                                  offset{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                   offset_mutex;
 
-    time_point sim_start_time; /* Store the initial time to calculate a known runtime */
+    time_point sim_start_time{}; /* Store the initial time to calculate a known runtime */
 
     // Parameters
     double          period;          /* The period of the circular movment (in seconds) */

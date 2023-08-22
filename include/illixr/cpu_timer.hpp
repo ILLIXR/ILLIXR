@@ -6,8 +6,9 @@
 #include <functional>
 #include <iostream>
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <thread>
+#include <utility>
 
 #include "error_util.hpp"
 /**
@@ -22,7 +23,7 @@ static inline std::chrono::nanoseconds cpp_clock_gettime(clockid_t clock_id) {
                  : /* OutputOperands */
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
-    struct timespec ts;
+    struct timespec ts{};
 
     RAC_ERRNO_MSG("cpu_timer before clock_gettime");
 
@@ -113,8 +114,8 @@ class print_timer {
 private:
     class print_in_destructor {
     public:
-        print_in_destructor(const std::string& account_name, const duration& _duration)
-            : _p_account_name{account_name}
+        print_in_destructor(std::string  account_name, const duration& _duration)
+            : _p_account_name{std::move(account_name)}
             , _p_duration{_duration} { }
 
         ~print_in_destructor() {
@@ -158,7 +159,7 @@ public:
         actually_should_profile           = ILLIXR_STDOUT_METRICS && (strcmp(ILLIXR_STDOUT_METRICS, "y") == 0);
     }
 
-    bool operator()() {
+    bool operator()() const {
         return actually_should_profile;
     }
 
@@ -176,8 +177,8 @@ private:
     std::size_t       cpu_time_start;
 
 public:
-    print_timer2(std::string name_)
-        : name{name_}
+    explicit print_timer2(std::string name_)
+        : name{std::move(name_)}
         , serial_no{should_profile() ? gen_serial_no() : std::size_t{0}}
         , wall_time_start{should_profile() ? std::chrono::duration_cast<std::chrono::nanoseconds>(
                                                  std::chrono::high_resolution_clock::now().time_since_epoch())

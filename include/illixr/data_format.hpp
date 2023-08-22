@@ -3,6 +3,7 @@
 #include <opencv2/core/mat.hpp>
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
+#include <utility>
 #include <GL/gl.h>
 //#undef Complex // For 'Complex' conflict
 
@@ -22,8 +23,8 @@ struct cam_type : switchboard::event {
 
     cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
         : time{_time}
-        , img0{_img0}
-        , img1{_img1} { }
+        , img0{std::move(_img0)}
+        , img1{std::move(_img1)} { }
 };
 
 struct imu_type : switchboard::event {
@@ -33,8 +34,8 @@ struct imu_type : switchboard::event {
 
     imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
         : time{time_}
-        , angular_v{angular_v_}
-        , linear_a{linear_a_} { }
+        , angular_v{std::move(angular_v_)}
+        , linear_a{std::move(linear_a_)} { }
 };
 
 class rgb_depth_type : public switchboard::event {
@@ -45,8 +46,8 @@ class rgb_depth_type : public switchboard::event {
 public:
     rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
         : time{_time}
-        , rgb{_rgb}
-        , depth{_depth} { }
+        , rgb{std::move(_rgb)}
+        , depth{std::move(_depth)} { }
 };
 
 // Values needed to initialize the IMU integrator
@@ -77,12 +78,12 @@ struct imu_integrator_input : public switchboard::event {
                          Eigen::Matrix<double, 3, 1> velocity_, Eigen::Quaterniond quat_)
         : last_cam_integration_time{last_cam_integration_time_}
         , t_offset{t_offset_}
-        , params{params_}
-        , biasAcc{biasAcc_}
-        , biasGyro{biasGyro_}
-        , position{position_}
-        , velocity{velocity_}
-        , quat{quat_} { }
+        , params{std::move(params_)}
+        , biasAcc{std::move(biasAcc_)}
+        , biasGyro{std::move(biasGyro_)}
+        , position{std::move(position_)}
+        , velocity{std::move(velocity_)}
+        , quat{std::move(quat_)} { }
 };
 
 // Output of the IMU integrator to be used by pose prediction
@@ -102,13 +103,13 @@ struct imu_raw_type : public switchboard::event {
     imu_raw_type(Eigen::Matrix<double, 3, 1> w_hat_, Eigen::Matrix<double, 3, 1> a_hat_, Eigen::Matrix<double, 3, 1> w_hat2_,
                  Eigen::Matrix<double, 3, 1> a_hat2_, Eigen::Matrix<double, 3, 1> pos_, Eigen::Matrix<double, 3, 1> vel_,
                  Eigen::Quaterniond quat_, time_point imu_time_)
-        : w_hat{w_hat_}
-        , a_hat{a_hat_}
-        , w_hat2{w_hat2_}
-        , a_hat2{a_hat2_}
-        , pos{pos_}
-        , vel{vel_}
-        , quat{quat_}
+        : w_hat{std::move(w_hat_)}
+        , a_hat{std::move(a_hat_)}
+        , w_hat2{std::move(w_hat2_)}
+        , a_hat2{std::move(a_hat2_)}
+        , pos{std::move(pos_)}
+        , vel{std::move(vel_)}
+        , quat{std::move(quat_)}
         , imu_time{imu_time_} { }
 };
 
@@ -124,8 +125,8 @@ struct pose_type : public switchboard::event {
 
     pose_type(time_point sensor_time_, Eigen::Vector3f position_, Eigen::Quaternionf orientation_)
         : sensor_time{sensor_time_}
-        , position{position_}
-        , orientation{orientation_} { }
+        , position{std::move(position_)}
+        , orientation{std::move(orientation_)} { }
 };
 
 typedef struct {
@@ -138,29 +139,29 @@ typedef struct {
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-    std::array<GLuint, 2> texture_handles; // Does not change between swaps in swapchain
-    std::array<GLuint, 2> swap_indices;    // Which element of the swapchain
+    std::array<GLuint, 2> texture_handles{}; // Does not change between swaps in swapchain
+    std::array<GLuint, 2> swap_indices{};    // Which element of the swapchain
     fast_pose_type        render_pose;     // The pose used when rendering this frame.
-    time_point            sample_time;
-    time_point            render_time;
+    time_point            sample_time{};
+    time_point            render_time{};
 
-    rendered_frame() { }
+    rendered_frame() = default;
 
     rendered_frame(std::array<GLuint, 2>&& texture_handles_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
                    time_point sample_time_, time_point render_time_)
-        : texture_handles{std::move(texture_handles_)}
-        , swap_indices{std::move(swap_indices_)}
-        , render_pose(render_pose_)
+        : texture_handles{texture_handles_}
+        , swap_indices{swap_indices_}
+        , render_pose(std::move(render_pose_))
         , sample_time(sample_time_)
         , render_time(render_time_) { }
 };
 
 struct hologram_input : public switchboard::event {
-    uint seq;
+    uint seq{};
 
-    hologram_input() { }
+    hologram_input() = default;
 
-    hologram_input(uint seq_)
+    explicit hologram_input(uint seq_)
         : seq{seq_} { }
 };
 
@@ -181,22 +182,22 @@ struct hmd_physical_info {
 };
 
 struct texture_pose : public switchboard::event {
-    duration           offload_duration;
-    unsigned char*     image;
-    time_point         pose_time;
+    duration           offload_duration{};
+    unsigned char*     image{};
+    time_point         pose_time{};
     Eigen::Vector3f    position;
     Eigen::Quaternionf latest_quaternion;
     Eigen::Quaternionf render_quaternion;
 
-    texture_pose() { }
+    texture_pose() = default;
 
     texture_pose(duration offload_duration_, unsigned char* image_, time_point pose_time_, Eigen::Vector3f position_,
                  Eigen::Quaternionf latest_quaternion_, Eigen::Quaternionf render_quaternion_)
         : offload_duration{offload_duration_}
         , image{image_}
         , pose_time{pose_time_}
-        , position{position_}
-        , latest_quaternion{latest_quaternion_}
-        , render_quaternion{render_quaternion_} { }
+        , position{std::move(position_)}
+        , latest_quaternion{std::move(latest_quaternion_)}
+        , render_quaternion{std::move(render_quaternion_)} { }
 };
 } // namespace ILLIXR

@@ -12,7 +12,7 @@ using namespace ILLIXR;
 
 class offline_imu : public ILLIXR::threadloop {
 public:
-    offline_imu(std::string name_, phonebook* pb_)
+    offline_imu(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , _m_sensor_data{load_data()}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
@@ -24,7 +24,7 @@ public:
         , _m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
 protected:
-    virtual skip_option _p_should_skip() override {
+    skip_option _p_should_skip() override {
         if (_m_sensor_data_it != _m_sensor_data.end()) {
             assert(dataset_now < _m_sensor_data_it->first);
             dataset_now = _m_sensor_data_it->first;
@@ -40,7 +40,7 @@ protected:
         }
     }
 
-    virtual void _p_one_iteration() override {
+    void _p_one_iteration() override {
         assert(_m_sensor_data_it != _m_sensor_data.end());
         time_point          real_now(std::chrono::duration<long, std::nano>{dataset_now - dataset_first_time});
         const sensor_types& sensor_datum = _m_sensor_data_it->second;

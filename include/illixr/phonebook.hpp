@@ -86,7 +86,7 @@ public:
     public:
         /**
          */
-        virtual ~service() { }
+        virtual ~service() = default;
     };
 
     /**

@@ -20,7 +20,7 @@ using namespace ILLIXR;
  */
 class display_sink : public phonebook::service {
 public:
-    virtual ~display_sink() { }
+    ~display_sink() override = default;
 
     // required by timewarp_vk as a service
 

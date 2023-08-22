@@ -1,5 +1,6 @@
 #include <memory>
 #include <opencv2/core/mat.hpp>
+#include <utility>
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
@@ -17,11 +18,11 @@ using namespace ILLIXR;
 class server_reader : public plugin {
 public:
     server_reader(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")} {
-        eCAL::Initialize(0, NULL, "VIO Server Reader");
+        eCAL::Initialize(0, nullptr, "VIO Server Reader");
         subscriber = eCAL::protobuf::CSubscriber<vio_input_proto::IMUCamVec>("vio_input");
         subscriber.AddReceiveCallback(std::bind(&server_reader::ReceiveVioInput, this, std::placeholders::_2));
     }
@@ -30,7 +31,7 @@ private:
     void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
         // Loop through all IMU values first then the cam frame
         for (int i = 0; i < vio_input.imu_cam_data_size(); i++) {
-            vio_input_proto::IMUCamData curr_data = vio_input.imu_cam_data(i);
+            const vio_input_proto::IMUCamData& curr_data = vio_input.imu_cam_data(i);
 
             if (curr_data.rows() != -1 && curr_data.cols() != -1) {
                 cv::Mat img0(curr_data.rows(), curr_data.cols(), CV_8UC1, (void*) (curr_data.img0_data().data()));

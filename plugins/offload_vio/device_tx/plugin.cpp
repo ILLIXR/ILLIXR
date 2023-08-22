@@ -9,30 +9,31 @@
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/publisher.h>
 #include <opencv2/core/mat.hpp>
+#include <utility>
 
 using namespace ILLIXR;
 
 class offload_writer : public plugin {
 public:
     offload_writer(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
-        eCAL::Initialize(0, NULL, "VIO Device Transmitter");
+        eCAL::Initialize(0, nullptr, "VIO Device Transmitter");
         publisher = eCAL::protobuf::CPublisher<vio_input_proto::IMUCamVec>("vio_input");
         publisher.SetLayerMode(eCAL::TLayer::tlayer_udp_mc, eCAL::TLayer::smode_off);
         publisher.SetLayerMode(eCAL::TLayer::tlayer_tcp, eCAL::TLayer::smode_auto);
     }
 
-    virtual void start() override {
+    void start() override {
         plugin::start();
 
-        sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
+        sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
             this->send_imu_cam_data(datum);
         });
     }
 
-    void send_imu_cam_data(switchboard::ptr<const imu_type> datum) {
+    void send_imu_cam_data(const switchboard::ptr<const imu_type>& datum) {
         // Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
             assert(previous_timestamp == 0);
@@ -45,13 +46,13 @@ public:
         vio_input_proto::IMUCamData* imu_cam_data = data_buffer->add_imu_cam_data();
         imu_cam_data->set_timestamp(datum->time.time_since_epoch().count());
 
-        vio_input_proto::Vec3* angular_vel = new vio_input_proto::Vec3();
+        auto* angular_vel = new vio_input_proto::Vec3();
         angular_vel->set_x(datum->angular_v.x());
         angular_vel->set_y(datum->angular_v.y());
         angular_vel->set_z(datum->angular_v.z());
         imu_cam_data->set_allocated_angular_vel(angular_vel);
 
-        vio_input_proto::Vec3* linear_accel = new vio_input_proto::Vec3();
+        auto* linear_accel = new vio_input_proto::Vec3();
         linear_accel->set_x(datum->linear_a.x());
         linear_accel->set_y(datum->linear_a.y());
         linear_accel->set_z(datum->linear_a.z());

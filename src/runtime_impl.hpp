@@ -78,7 +78,7 @@ public:
         pb.lookup_impl<Stoplight>()->signal_ready();
     }
 
-    virtual void load_so(const std::string_view so) override {
+    virtual void load_so(const std::string_view &so) override {
         auto           lib                 = dynamic_lib::create(so);
         plugin_factory this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
         load_plugin_factory(this_plugin_factory);

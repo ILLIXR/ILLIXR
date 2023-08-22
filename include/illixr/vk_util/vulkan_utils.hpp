@@ -126,7 +126,7 @@ public:
         createInfo.pCode    = reinterpret_cast<const uint32_t*>(code.data());
 
         VkShaderModule shaderModule;
-        VK_ASSERT_SUCCESS(vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule));
+        VK_ASSERT_SUCCESS(vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule))
 
         return shaderModule;
     }
@@ -152,7 +152,7 @@ public:
         allocatorCreateInfo.pVulkanFunctions       = &vulkanFunctions;
 
         VmaAllocator allocator;
-        VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator));
+        VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator))
         return allocator;
     }
 
@@ -171,13 +171,13 @@ public:
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer commandBuffer;
-        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer));
+        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer))
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &beginInfo));
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &beginInfo))
 
         return commandBuffer;
     }
@@ -194,15 +194,15 @@ public:
      */
     static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue,
                                      VkCommandBuffer vk_command_buffer) {
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer));
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer))
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers    = &vk_command_buffer;
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE));
-        VK_ASSERT_SUCCESS(vkQueueWaitIdle(vk_queue));
+        VK_ASSERT_SUCCESS(vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
+        VK_ASSERT_SUCCESS(vkQueueWaitIdle(vk_queue))
 
         vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
     }
@@ -220,7 +220,7 @@ public:
         poolInfo.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         VkCommandPool command_pool;
-        VK_ASSERT_SUCCESS(vkCreateCommandPool(device, &poolInfo, nullptr, &command_pool));
+        VK_ASSERT_SUCCESS(vkCreateCommandPool(device, &poolInfo, nullptr, &command_pool))
         return command_pool;
     }
 
@@ -237,7 +237,7 @@ public:
         allocInfo.commandBufferCount          = 1;
 
         VkCommandBuffer command_buffer;
-        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(device, &allocInfo, &command_buffer));
+        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(device, &allocInfo, &command_buffer))
         return command_buffer;
     }
 
@@ -247,7 +247,7 @@ public:
      * @param path The path to the file.
      * @return The vector of chars.
      */
-    static std::vector<char> read_file(std::string path) {
+    static std::vector<char> read_file(const std::string &path) {
         std::ifstream file(path, std::ios::ate | std::ios::binary);
 
         if (!file.is_open()) {
@@ -258,7 +258,7 @@ public:
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
-        file.read(buffer.data(), fileSize);
+        file.read(buffer.data(), static_cast<long>(fileSize));
 
         file.close();
         return buffer;

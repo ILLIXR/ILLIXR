@@ -9,7 +9,7 @@ using namespace ILLIXR;
 
 class display_vk : public display_sink {
 public:
-    display_vk(const phonebook* const pb)
+    explicit display_vk(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()} { }
 
     /**
@@ -23,7 +23,7 @@ public:
     /**
      * @brief This function recreates the Vulkan swapchain. See display_sink::recreate_swapchain().
      */
-    virtual void recreate_swapchain() override {
+    void recreate_swapchain() override {
         vkb::SwapchainBuilder swapchain_builder{vkb_device};
         auto                  swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
                                  .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
@@ -186,7 +186,7 @@ public:
         _pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
     }
 
-    virtual void start() override {
+    void start() override {
         main_thread = std::thread(&display_vk_plugin::main_loop, this);
         while (!ready) {
             // yield
@@ -194,7 +194,7 @@ public:
         }
     }
 
-    virtual void stop() override {
+    void stop() override {
         running = false;
     }
 

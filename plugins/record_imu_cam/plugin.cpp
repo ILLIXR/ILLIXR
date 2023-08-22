@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <eigen3/Eigen/Dense>
 #include <opencv2/imgcodecs.hpp>
+#include <utility>
 
 #include "illixr/data_format.hpp"
 #include "illixr/plugin.hpp"
@@ -17,7 +18,7 @@ using namespace ILLIXR;
 class record_imu_cam : public plugin {
 public:
     record_imu_cam(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , record_data{get_record_data_path()}
@@ -46,12 +47,12 @@ public:
         cam1_wt_file.open(cam1_file, std::ofstream::out);
         cam1_wt_file << "#timestamp [ns],filename" << std::endl;
 
-        sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
+        sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
             this->dump_data(datum);
         });
     }
 
-    void dump_data(switchboard::ptr<const imu_type> datum) {
+    void dump_data(const switchboard::ptr<const imu_type>& datum) {
         long            timestamp = datum->time.time_since_epoch().count();
         Eigen::Vector3d angular_v = datum->angular_v;
         Eigen::Vector3d linear_a  = datum->linear_a;
@@ -73,7 +74,7 @@ public:
         }
     }
 
-    virtual ~record_imu_cam() override {
+    ~record_imu_cam() override {
         imu_wt_file.close();
         cam0_wt_file.close();
         cam1_wt_file.close();
@@ -92,11 +93,11 @@ private:
     const boost::filesystem::path cam1_data_dir;
 
     // TODO: This should come from a yaml file
-    boost::filesystem::path get_record_data_path() {
+    static boost::filesystem::path get_record_data_path() {
         boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
         return ILLIXR_DIR / "data_record";
     }
 };
 
 // This line makes the plugin importable by Spindle
-PLUGIN_MAIN(record_imu_cam);
+PLUGIN_MAIN(record_imu_cam)

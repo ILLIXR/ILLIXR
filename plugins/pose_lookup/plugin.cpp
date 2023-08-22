@@ -65,7 +65,7 @@ public:
         return offset;
     }
 
-    pose_type correct_pose(const pose_type pose) const override {
+    pose_type correct_pose(const pose_type &pose) const override {
         pose_type swapped_pose;
 
         // Step 1: Compensate starting point to (0, 0, 0), pos only

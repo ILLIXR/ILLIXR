@@ -12,7 +12,7 @@ using namespace ILLIXR;
 
 class offline_cam : public threadloop {
 public:
-    offline_cam(std::string name_, phonebook* pb_)
+    offline_cam(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}

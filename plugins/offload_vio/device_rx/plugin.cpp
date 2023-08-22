@@ -1,6 +1,8 @@
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
 
+#include <utility>
+
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -13,7 +15,7 @@ using namespace ILLIXR;
 class offload_reader : public plugin {
 public:
     offload_reader(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")} {
@@ -21,14 +23,14 @@ public:
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
-        eCAL::Initialize(0, NULL, "VIO Device Reader");
+        eCAL::Initialize(0, nullptr, "VIO Device Reader");
         subscriber = eCAL::protobuf::CSubscriber<vio_output_proto::VIOOutput>("vio_output");
         subscriber.AddReceiveCallback(std::bind(&offload_reader::ReceiveVioOutput, this, std::placeholders::_2));
     }
 
 private:
     void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {
-        vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
+        const vio_output_proto::SlowPose& slow_pose = vio_output.slow_pose();
         pose_type                  datum_pose_tmp{
             time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
             Eigen::Vector3f{static_cast<float>(slow_pose.position().x()), static_cast<float>(slow_pose.position().y()),
@@ -39,7 +41,7 @@ private:
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
-        vio_output_proto::IMUIntInput imu_int_input = vio_output.imu_int_input();
+        const vio_output_proto::IMUIntInput& imu_int_input = vio_output.imu_int_input();
 
         imu_integrator_input datum_imu_int_tmp{
             time_point{std::chrono::nanoseconds{imu_int_input.last_cam_integration_time()}},

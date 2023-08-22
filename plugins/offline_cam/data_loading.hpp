@@ -7,6 +7,7 @@
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <utility>
 
 #include "illixr/csv_iterator.hpp"
 #include "illixr/data_format.hpp"
@@ -25,14 +26,14 @@ class lazy_load_image {
 public:
     lazy_load_image() { }
 
-    lazy_load_image(const std::string& path)
-        : _m_path(path) {
+    lazy_load_image(std::string  path)
+        : _m_path(std::move(path)) {
 #ifndef LAZY
         _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
 #endif
     }
 
-    cv::Mat load() const {
+    [[nodiscard]] cv::Mat load() const {
 #ifdef LAZY
         cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
     #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
