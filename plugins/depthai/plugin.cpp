@@ -11,11 +11,12 @@
 #include <utility>
 
 // ILLIXR includes
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/opencv_data_types.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/phonebook.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/data_format.hpp"
 
 using namespace ILLIXR;
 
@@ -287,4 +288,4 @@ private:
 };
 
 // This line makes the plugin importable by Spindle
-PLUGIN_MAIN(depthai);
+PLUGIN_MAIN(depthai)

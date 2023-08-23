@@ -9,6 +9,7 @@
 // ILLIXR includes
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -240,4 +241,4 @@ private:
 };
 
 // This line makes the plugin importable by Spindle
-PLUGIN_MAIN(zed_imu_thread);
+PLUGIN_MAIN(zed_imu_thread)

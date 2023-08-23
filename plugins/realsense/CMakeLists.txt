@@ -8,6 +8,7 @@ find_package(realsense2-gl REQUIRED)
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/data_format.hpp
+        ../../include/illixr/opencv_data_types.hpp
         ../../include/illixr/switchboard.hpp
         ../../include/illixr/threadloop.hpp
         )

@@ -12,6 +12,7 @@
 
 // ILLIXR includes
 #include "illixr/data_format.hpp"
+#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -278,4 +279,4 @@ private:
     }
 };
 
-PLUGIN_MAIN(realsense);
+PLUGIN_MAIN(realsense)

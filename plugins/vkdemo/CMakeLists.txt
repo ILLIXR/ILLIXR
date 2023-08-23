@@ -42,16 +42,12 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/gl_util/lib/tiny_obj_loader.h
         ../../include/illixr/gl_util/lib/stb_image.h
         )
-# if building on CentOS make sure we use the correct OpenCV
-if(BUILD_OPENCV)
-    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
-endif()
 
 add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "plugin")
 
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} ${OpenCV_LIBRARIES})
-target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PLUGIN_NAME}>/shaders/"

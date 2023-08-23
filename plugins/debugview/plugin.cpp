@@ -1,27 +1,28 @@
-// clang-format off
-#include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
-#include <GLFW/glfw3.h> // Also loading first, just to be safe
-// clang-format on
-
-//#include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/gl_util/obj.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/math_util.hpp"
-#include "illixr/pose_prediction.hpp"
-#include "illixr/shader_util.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "illixr/shaders/demo_shader.hpp"
-
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
+
+// clang-format off
+#include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
+#include <GLFW/glfw3.h> // Also loading first, just to be safe
+// clang-format on
+
+#include "illixr/error_util.hpp"
+#include "illixr/gl_util/obj.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/math_util.hpp"
+#include "illixr/opencv_data_types.hpp"
+#include "illixr/pose_prediction.hpp"
+#include "illixr/shader_util.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/shaders/demo_shader.hpp"
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 using namespace ILLIXR;
 
@@ -531,4 +532,4 @@ public:
     }
 };
 
-PLUGIN_MAIN(debugview);
+PLUGIN_MAIN(debugview)
