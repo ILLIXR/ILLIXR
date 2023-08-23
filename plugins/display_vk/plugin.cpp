@@ -119,8 +119,10 @@ private:
 
         // enable timeline semaphore
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES};
-        timeline_semaphore_features.timelineSemaphore = VK_TRUE;
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
+            nullptr,    // pNext
+            VK_TRUE           // timelineSemaphore
+        };
 
         // enable anisotropic filtering
         auto device_ret = device_builder.add_pNext(&timeline_semaphore_features).build();

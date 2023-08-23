@@ -38,24 +38,31 @@ struct Vertex {
     glm::vec2 uv;
 
     static VkVertexInputBindingDescription get_binding_description() {
-        VkVertexInputBindingDescription binding_description{};
-        binding_description.binding   = 0;
-        binding_description.stride    = sizeof(Vertex);
-        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
+        VkVertexInputBindingDescription binding_description{
+                0,    // binding
+                sizeof(Vertex),    // stride
+                VK_VERTEX_INPUT_RATE_VERTEX     // inputRate
+        };
         return binding_description;
     }
 
     static std::array<VkVertexInputAttributeDescription, 2> get_attribute_descriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions{};
-        attribute_descriptions[0].binding  = 0;
-        attribute_descriptions[0].location = 0;
-        attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT;
-        attribute_descriptions[0].offset   = offsetof(Vertex, pos);
-        attribute_descriptions[1].binding  = 0;
-        attribute_descriptions[1].location = 1;
-        attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[1].offset   = offsetof(Vertex, uv);
+        std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions{
+            {
+                    {
+                            0,    // location
+                            0,    // binding
+                            VK_FORMAT_R32G32B32_SFLOAT,    // format
+                            offsetof(Vertex, pos)   // offset
+                    },
+                    {
+                            1,    // location
+                            0,    // binding
+                            VK_FORMAT_R32G32_SFLOAT,    // format
+                            offsetof(Vertex, uv)    // offset
+                    }
+            }
+        };
 
         return attribute_descriptions;
     }
@@ -198,39 +205,49 @@ private:
             if (textures[i].image_view == VK_NULL_HANDLE) {
                 continue;
             }
-            VkDescriptorImageInfo image_info = {};
-            image_info.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            image_info.imageView             = textures[i].image_view;
-            image_info.sampler               = nullptr;
+            VkDescriptorImageInfo image_info{
+                    nullptr,    // sampler
+                    textures[i].image_view,    // imageView
+                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,    // imageLayout
+            };
             texture_map.insert(std::make_pair(i, image_infos.size()));
             image_infos.push_back(image_info);
         }
     }
 
     void create_descriptor_set_layout() {
-        VkDescriptorSetLayoutBinding ubo_layout_binding = {};
-        ubo_layout_binding.binding                      = 0;
-        ubo_layout_binding.descriptorType               = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        ubo_layout_binding.descriptorCount              = 1;
-        ubo_layout_binding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT;
+        VkDescriptorSetLayoutBinding ubo_layout_binding{
+                0,    // binding
+                VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType
+                1,    // descriptorCount
+                VK_SHADER_STAGE_VERTEX_BIT,     // stageFlags
+                nullptr     // pImmutableSamplers
+        };
 
-        VkDescriptorSetLayoutBinding sampler_layout_binding = {};
-        sampler_layout_binding.binding                      = 1;
-        sampler_layout_binding.descriptorCount              = 1;
-        sampler_layout_binding.descriptorType               = VK_DESCRIPTOR_TYPE_SAMPLER;
-        sampler_layout_binding.pImmutableSamplers           = nullptr;
-        sampler_layout_binding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+        VkDescriptorSetLayoutBinding sampler_layout_binding{
+                1,    // binding
+                VK_DESCRIPTOR_TYPE_SAMPLER,    // descriptorType
+                1,    // descriptorCount
+                VK_SHADER_STAGE_FRAGMENT_BIT,    // stageFlags
+                nullptr     // pImmutableSamplers
+        };
 
-        VkDescriptorSetLayoutBinding sampled_image_layout_binding = {};
-        sampled_image_layout_binding.binding                      = 2;
-        sampled_image_layout_binding.descriptorCount              = texture_map.size();
-        sampled_image_layout_binding.descriptorType               = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        sampled_image_layout_binding.pImmutableSamplers           = nullptr;
-        sampled_image_layout_binding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+        VkDescriptorSetLayoutBinding sampled_image_layout_binding{
+                2,    // binding
+                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,    // descriptorType
+                static_cast<uint>(texture_map.size()),    // descriptorCount
+                VK_SHADER_STAGE_FRAGMENT_BIT,    // stageFlags
+                nullptr     // pImmutableSamplers
+        };
 
-        VkDescriptorSetLayoutCreateInfo layout_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0, 0, nullptr};
-        layout_info.bindingCount                    = 3;
-        VkDescriptorSetLayoutBinding bindings[] = {ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
+        VkDescriptorSetLayoutCreateInfo layout_info{
+                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,     // flags
+                3,     // bindingCount
+                nullptr   // pBindings
+        };
+        VkDescriptorSetLayoutBinding bindings[]{ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
         layout_info.pBindings                   = bindings;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout))
@@ -238,11 +255,18 @@ private:
 
     void create_uniform_buffers() {
         for (auto i = 0; i < 2; i++) {
-            VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
-            buffer_info.size               = sizeof(UniformBufferObject);
-            buffer_info.usage              = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+            VkBufferCreateInfo buffer_info{
+                    VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+                    nullptr,    // pNext
+                    0,          // flags
+                    sizeof(UniformBufferObject),    // size
+                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,     // usage
+                    {},    // sharingMode
+                    0,     // queueFamilyIndexCount
+                    nullptr  // pQueueFamilyIndices
+            };
 
-            VmaAllocationCreateInfo alloc_info = {};
+            VmaAllocationCreateInfo alloc_info{};
             alloc_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
             alloc_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
@@ -252,92 +276,148 @@ private:
     }
 
     void create_descriptor_pool() {
-        std::array<VkDescriptorPoolSize, 3> pool_sizes = {};
-        pool_sizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        pool_sizes[0].descriptorCount                  = 2;
-        pool_sizes[1].type                             = VK_DESCRIPTOR_TYPE_SAMPLER;
-        pool_sizes[1].descriptorCount                  = 2;
-        pool_sizes[2].type                             = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        pool_sizes[2].descriptorCount                  = static_cast<uint32_t>(2 * texture_map.size());
-
-        VkDescriptorPoolCreateInfo pool_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, 0, 0, 0, nullptr};
-        pool_info.poolSizeCount              = static_cast<uint32_t>(pool_sizes.size());
-        pool_info.pPoolSizes                 = pool_sizes.data();
-        pool_info.maxSets                    = 2;
+        std::array<VkDescriptorPoolSize, 3> pool_sizes{
+            {
+                    {
+                            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // type
+                            2     // descriptorCount
+                    },
+                    {
+                            VK_DESCRIPTOR_TYPE_SAMPLER,    // type
+                            2     // descriptorCount
+                    },
+                    {
+                            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,    // type
+                            static_cast<uint32_t>(2 * texture_map.size())     // descriptorCount
+                    }
+            }
+        };
+        VkDescriptorPoolCreateInfo pool_info{
+                VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,    // flags
+                2,    // maxSets
+                static_cast<uint32_t>(pool_sizes.size()),    // poolSizeCount
+                pool_sizes.data()     // pPoolSizes
+        };
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool))
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo sampler_info = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, nullptr, 0, {}, {}, {}, {}, {}, {}, 0.f, 0, 0.f, 0, {}, 0.f, 0.f, {}, 0};
-        sampler_info.magFilter           = VK_FILTER_LINEAR;
-        sampler_info.minFilter           = VK_FILTER_LINEAR;
-        sampler_info.addressModeU        = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        sampler_info.addressModeV        = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        sampler_info.addressModeW        = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        sampler_info.anisotropyEnable    = VK_FALSE;
-        // sampler_info.maxAnisotropy = 16;
-        sampler_info.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-        sampler_info.unnormalizedCoordinates = VK_FALSE;
-        sampler_info.compareEnable           = VK_FALSE;
-        sampler_info.compareOp               = VK_COMPARE_OP_ALWAYS;
-        sampler_info.mipmapMode              = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        VkSamplerCreateInfo sampler_info{
+                VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,    // sType
+                nullptr,     // pNext
+                0,           // flags
+                VK_FILTER_LINEAR,    // magFilter
+                VK_FILTER_LINEAR,    // minFilter
+                VK_SAMPLER_MIPMAP_MODE_LINEAR,    // mipmapMode
+                VK_SAMPLER_ADDRESS_MODE_REPEAT,    // addressModeU
+                VK_SAMPLER_ADDRESS_MODE_REPEAT,    // addressModeV
+                VK_SAMPLER_ADDRESS_MODE_REPEAT,    // addressModeW
+                0.f,         // mipLodBias
+                VK_FALSE,    // anisotropyEnable
+                // .maxAnisotropy = 16;
+                0.f,         // maxAnisotropy
+                VK_FALSE,    // compareEnable
+                VK_COMPARE_OP_ALWAYS,    // compareOp
+                0.f,     // minLod
+                0.f,     // maxLod
+                VK_BORDER_COLOR_INT_OPAQUE_BLACK,    // borderColor
+                VK_FALSE     // unnormalizedCoordinates
+        };
 
         VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &sampler_info, nullptr, &texture_sampler))
     }
 
     void create_descriptor_set() {
         VkDescriptorSetLayout       layouts[]  = {descriptor_set_layout, descriptor_set_layout};
-        VkDescriptorSetAllocateInfo alloc_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, {}, 0, nullptr};
-        alloc_info.descriptorPool              = descriptor_pool;
-        alloc_info.descriptorSetCount          = 2;
-        alloc_info.pSetLayouts                 = layouts;
+        VkDescriptorSetAllocateInfo alloc_info{
+                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,    // sType
+                nullptr,    // pNext
+                descriptor_pool,    // descriptorPool
+                2,    // descriptorSetCount
+                layouts     // pSetLayouts
+        };
 
         VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &alloc_info, descriptor_sets.data()))
 
-        std::array<VkDescriptorBufferInfo, 2> buffer_infos = {};
-        for (auto i = 0; i < 2; i++) {
-            buffer_infos[i].buffer = uniform_buffers[i];
-            buffer_infos[i].offset = 0;
-            buffer_infos[i].range  = sizeof(UniformBufferObject);
-        }
+        std::array<VkDescriptorBufferInfo, 2> buffer_infos = {
+                {
+                        {
+                                uniform_buffers[0],    // buffer
+                                0,    // offset
+                                sizeof(UniformBufferObject)     // range
+                        },
+                        {
+                                uniform_buffers[1],    // buffer
+                                0,    // offset
+                                sizeof(UniformBufferObject)     // range
+                        }
+                }
+        };
 
-        std::array<VkWriteDescriptorSet, 2> descriptor_writes = {};
-
-        for (auto i = 0; i < 2; i++) {
-            descriptor_writes[i].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptor_writes[i].dstSet          = descriptor_sets[i];
-            descriptor_writes[i].dstBinding      = 0;
-            descriptor_writes[i].dstArrayElement = 0;
-            descriptor_writes[i].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptor_writes[i].descriptorCount = 1;
-            descriptor_writes[i].pBufferInfo     = &buffer_infos[i];
-        }
+        std::array<VkWriteDescriptorSet, 2> descriptor_writes = {
+                {
+                        {
+                                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
+                                nullptr,    // pNext
+                                descriptor_sets[0],    // dstSet
+                                0,    // dstBinding
+                                0,    // dstArrayElement
+                                1,    // descriptorCount
+                                VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType
+                                nullptr,    // pImageInfo
+                                &buffer_infos[0],    // pBufferInfo
+                                nullptr    //pTexelBufferView
+                        },
+                        {
+                                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
+                                nullptr,    // pNext
+                                descriptor_sets[1],    // dstSet
+                                0,    // dstBinding
+                                0,    // dstArrayElement
+                                1,    // descriptorCount
+                                VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType
+                                nullptr,    // pImageInfo
+                                &buffer_infos[1],     // pBufferInfo
+                                nullptr    //pTexelBufferView
+                        }
+                }
+        };
 
         vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0,
                                nullptr);
 
         std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
         for (auto i = 0; i < 2; i++) {
-            VkWriteDescriptorSet descriptor_write = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, {}, 0, 0, 0, {}, nullptr, nullptr, nullptr};
-            descriptor_write.dstSet               = descriptor_sets[i];
-            descriptor_write.dstBinding           = 1;
-            descriptor_write.dstArrayElement      = 0;
-            descriptor_write.descriptorType       = VK_DESCRIPTOR_TYPE_SAMPLER;
-            descriptor_write.descriptorCount      = 1;
             VkDescriptorImageInfo image_info      = {texture_sampler, nullptr, {}};
-            descriptor_write.pImageInfo           = &image_info;
-            image_descriptor_writes.push_back(descriptor_write);
+            image_descriptor_writes.push_back({
+                    VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
+                    nullptr,    // pNext
+                    descriptor_sets[i],    // dstSet
+                    1,    // dstBinding
+                    0,    // dstArrayElement
+                    1,    // descriptorCount
+                    VK_DESCRIPTOR_TYPE_SAMPLER,    // descriptorType
+                    &image_info,     // pImageInfo
+                    nullptr,    // pBufferInfo
+                    nullptr     // pTexelBufferView
+            });
 
             assert(!image_infos.empty());
-            descriptor_write                 = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, {}, 0, 0, 0, {}, nullptr, nullptr, nullptr};
-            descriptor_write.dstSet          = descriptor_sets[i];
-            descriptor_write.dstBinding      = 2;
-            descriptor_write.dstArrayElement = 0;
-            descriptor_write.descriptorType  = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-            descriptor_write.descriptorCount = static_cast<uint32_t>(image_infos.size());
-            descriptor_write.pImageInfo      = image_infos.data();
-            image_descriptor_writes.push_back(descriptor_write);
+            image_descriptor_writes.push_back({
+                    VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
+                    nullptr,    // pNext
+                    descriptor_sets[i],    // dstSet
+                    2,    // dstBinding
+                    0,    // dstArrayElement
+                    static_cast<uint32_t>(image_infos.size()),    // descriptorCount
+                    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,    // descriptorType
+                    image_infos.data(),     // pImageInfo
+                    nullptr,    // pBufferInfo
+                    nullptr     // pTexelBufferView
+            });
         }
 
         vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(image_descriptor_writes.size()),
@@ -375,13 +455,20 @@ private:
         VmaAllocation     staging_buffer_allocation;
         VmaAllocationInfo staging_buffer_allocation_info;
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
-        buffer_info.size               = image_size;
-        buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        VkBufferCreateInfo buffer_info{
+                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                image_size,    // size
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
+                {},    // sharingMode
+                0,     // queueFamilyIndexCount
+                nullptr  // pQueueFamilyIndices
+        };
 
-        VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+        VmaAllocationCreateInfo alloc_info{};
         alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+        alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
 
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
                                           &staging_buffer_allocation_info))
@@ -390,22 +477,30 @@ private:
 
         stbi_image_free(data);
 
-        VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, nullptr, 0, {}, {}, {}, 0, 0, {}, {}, {}, {}, 0, nullptr, {}};
-        image_info.imageType         = VK_IMAGE_TYPE_2D;
-        image_info.extent.width      = static_cast<uint32_t>(width);
-        image_info.extent.height     = static_cast<uint32_t>(height);
-        image_info.extent.depth      = 1;
-        image_info.mipLevels         = 1;
-        image_info.arrayLayers       = 1;
-        image_info.format            = VK_FORMAT_R8G8B8A8_SRGB;
-        image_info.tiling            = VK_IMAGE_TILING_OPTIMAL;
-        image_info.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
-        image_info.usage             = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-        image_info.sharingMode       = VK_SHARING_MODE_EXCLUSIVE;
-        image_info.samples           = VK_SAMPLE_COUNT_1_BIT;
+        VkImageCreateInfo image_info{
+                VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_IMAGE_TYPE_2D,    // imageType
+                VK_FORMAT_R8G8B8A8_SRGB,    // format
+                {
+                        static_cast<uint32_t>(width),    // width
+                        static_cast<uint32_t>(height),    // height
+                        1,    // depth
+                },     // extent
+                1,    // mipLevels
+                1,    // arrayLayers
+                VK_SAMPLE_COUNT_1_BIT,    // samples
+                VK_IMAGE_TILING_OPTIMAL,    // tiling
+                VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,    // usage
+                VK_SHARING_MODE_EXCLUSIVE,    // sharingMode
+                0,    // queueFamilyIndexCount
+                nullptr,  // pQueueFamilyIndices
+                VK_IMAGE_LAYOUT_UNDEFINED     // initialLayout
+        };
 
-        VmaAllocationCreateInfo image_alloc_info = {};
-        image_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
+        VmaAllocationCreateInfo image_alloc_info{};
+        image_alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &image_alloc_info, &textures[i].image,
                                          &textures[i].image_memory, nullptr))
@@ -421,15 +516,22 @@ private:
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
 
-        VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0, nullptr, {}, {}, {}, {}};
-        view_info.image                           = textures[i].image;
-        view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-        view_info.format                          = VK_FORMAT_R8G8B8A8_SRGB;
-        view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        view_info.subresourceRange.baseMipLevel   = 0;
-        view_info.subresourceRange.levelCount     = 1;
-        view_info.subresourceRange.baseArrayLayer = 0;
-        view_info.subresourceRange.layerCount     = 1;
+        VkImageViewCreateInfo view_info{
+                VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                textures[i].image,    // image
+                VK_IMAGE_VIEW_TYPE_2D,    // viewType
+                VK_FORMAT_R8G8B8A8_SRGB,    // format
+                {},    // components
+                {
+                        VK_IMAGE_ASPECT_COLOR_BIT,    // aspectMask
+                        0,    // baseMipLevel
+                        1,    // levelCount
+                        0,    // baseArrayLayer
+                        1     // layerCount
+                }    // subresourceRange
+        };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view))
     }
@@ -437,23 +539,24 @@ private:
     void image_layout_transition(VkImage image, [[maybe_unused]]VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout) {
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
 
-        VkImageMemoryBarrier barrier = {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, nullptr, 0, 0, {}, {}, 0, 0, {}, {}};
-        barrier.oldLayout            = old_layout;
-        barrier.newLayout            = new_layout;
-        barrier.srcQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
-        barrier.dstQueueFamilyIndex  = VK_QUEUE_FAMILY_IGNORED;
-        barrier.image                = image;
-
-        if (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
-            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-        } else {
-            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        }
-
-        barrier.subresourceRange.baseMipLevel   = 0;
-        barrier.subresourceRange.levelCount     = 1;
-        barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount     = 1;
+        VkImageMemoryBarrier barrier{
+                VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,    // sType
+                nullptr,    // pNext
+                {},     // srcAccessMask
+                {},     // dstAccessMask
+                old_layout,    // oldLayout
+                new_layout,    // newLayout
+                VK_QUEUE_FAMILY_IGNORED,    // srcQueueFamilyIndex
+                VK_QUEUE_FAMILY_IGNORED,    // dstQueueFamilyIndex
+                image,    // image
+                {
+                        (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,    // aspectMask
+                        0,    // baseMipLevel
+                        1,    // levelCount
+                        0,    // baseArrayLayer
+                        1     // layerCount
+                }     // subresourceRange
+        };
 
         VkPipelineStageFlags source_stage;
         VkPipelineStageFlags destination_stage;
@@ -540,25 +643,39 @@ private:
     }
 
     void create_vertex_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
-        staging_buffer_info.size               = sizeof(vertices[0]) * vertices.size();
-        staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        VkBufferCreateInfo staging_buffer_info{
+                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                sizeof(vertices[0]) * vertices.size(),    // size
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
+                {},    // sharingMode
+                0,     // queueFamilyIndexCount
+                nullptr  // pQueueFamilyIndices
+        };
 
-        VmaAllocationCreateInfo staging_alloc_info = {};
-        staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
-        staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        VmaAllocationCreateInfo staging_alloc_info{};
+        staging_alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        staging_alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
 
         VkBuffer      staging_buffer;
         VmaAllocation staging_buffer_allocation;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
                                           &staging_buffer_allocation, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
-        buffer_info.size               = sizeof(vertices[0]) * vertices.size();
-        buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        VkBufferCreateInfo buffer_info{
+                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                sizeof(vertices[0]) * vertices.size(),    // size
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,     // usage
+                {},    // sharingMode
+                0,     // queueFamilyIndexCount
+                nullptr  // pQueueFamilyIndices
+        };
 
-        VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
+        VmaAllocationCreateInfo alloc_info{};
+        alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
         VK_ASSERT_SUCCESS(
@@ -570,8 +687,11 @@ private:
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy    copy_region    = {};
-        copy_region.size               = sizeof(vertices[0]) * vertices.size();
+        VkBufferCopy copy_region{
+            0,  // srcOffset
+            0,  // dstOffset
+            sizeof(vertices[0]) * vertices.size()     // size
+        };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
 
@@ -579,25 +699,39 @@ private:
     }
 
     void create_index_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
-        staging_buffer_info.size               = sizeof(indices[0]) * indices.size();
-        staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        VkBufferCreateInfo staging_buffer_info{
+                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                sizeof(indices[0]) * indices.size(),    // size
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
+                {},     // sharingMode
+                0,      // queueFamilyIndexCount
+                nullptr  // pQueueFamilyIndices
+        };
 
-        VmaAllocationCreateInfo staging_alloc_info = {};
-        staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
-        staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        VmaAllocationCreateInfo staging_alloc_info{};
+        staging_alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        staging_alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
 
         VkBuffer      staging_buffer;
         VmaAllocation staging_buffer_allocation;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
                                           &staging_buffer_allocation, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
-        buffer_info.size               = sizeof(indices[0]) * indices.size();
-        buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+        VkBufferCreateInfo buffer_info{
+                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                sizeof(indices[0]) * indices.size(),    // size
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,     // usage
+                {},     // sharingMode
+                0,      // queueFamilyIndexCount
+                nullptr  // pQueueFamilyIndices
+        };
 
-        VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
+        VmaAllocationCreateInfo alloc_info{};
+        alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
         VK_ASSERT_SUCCESS(
@@ -609,8 +743,11 @@ private:
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy    copy_region    = {};
-        copy_region.size               = sizeof(indices[0]) * indices.size();
+        VkBufferCopy copy_region{
+            0,   // srcOffset
+            0,   // dstOffset
+            sizeof(indices[0]) * indices.size()     // size
+        };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
 
@@ -628,108 +765,176 @@ private:
         VkShaderModule frag =
             vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
 
-        VkPipelineShaderStageCreateInfo vert_shader_stage_info = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, {}, nullptr, nullptr, nullptr};
-        vert_shader_stage_info.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
-        vert_shader_stage_info.module                          = vert;
-        vert_shader_stage_info.pName                           = "main";
+        VkPipelineShaderStageCreateInfo vert_shader_stage_info{
+                VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_SHADER_STAGE_VERTEX_BIT,    // stage
+                vert,    // module
+                "main",     // pName
+                nullptr    // pSpecializationInfo
+        };
 
-        VkPipelineShaderStageCreateInfo frag_shader_stage_info = {VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, nullptr, 0, {}, nullptr, nullptr, nullptr};
-        frag_shader_stage_info.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
-        frag_shader_stage_info.module                          = frag;
-        frag_shader_stage_info.pName                           = "main";
+        VkPipelineShaderStageCreateInfo frag_shader_stage_info{
+                VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_SHADER_STAGE_FRAGMENT_BIT,    // stage
+                frag,    // module
+                "main",     // pName
+                nullptr    // pSpecializationInfo
+        };
 
         VkPipelineShaderStageCreateInfo shader_stages[] = {vert_shader_stage_info, frag_shader_stage_info};
 
         auto binding_description    = Vertex::get_binding_description();
         auto attribute_descriptions = Vertex::get_attribute_descriptions();
 
-        VkPipelineVertexInputStateCreateInfo vertex_input_info = {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr};
-        vertex_input_info.vertexBindingDescriptionCount        = 1;
-        vertex_input_info.vertexAttributeDescriptionCount      = static_cast<uint32_t>(attribute_descriptions.size());
-        vertex_input_info.pVertexBindingDescriptions           = &binding_description;
-        vertex_input_info.pVertexAttributeDescriptions         = attribute_descriptions.data();
+        VkPipelineVertexInputStateCreateInfo vertex_input_info{
+                VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                1,    // vertexBindingDescriptionCount
+                &binding_description,    // pVertexBindingDescriptions
+                static_cast<uint32_t>(attribute_descriptions.size()),    // vertexAttributeDescriptionCount
+                attribute_descriptions.data()     // pVertexAttributeDescriptions
+        };
 
-        VkPipelineInputAssemblyStateCreateInfo input_assembly = {VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, nullptr, 0, {}, 0};
-        input_assembly.topology                               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        input_assembly.primitiveRestartEnable                 = VK_FALSE;
+        VkPipelineInputAssemblyStateCreateInfo input_assembly{
+                VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,    // topology
+                VK_FALSE     // primitiveRestartEnable
+        };
 
-        VkViewport viewport = {};
-        viewport.x          = 0.0f;
-        viewport.y          = 0.0f;
-        viewport.width      = static_cast<float>(ds->swapchain_extent.width);
-        viewport.height     = static_cast<float>(ds->swapchain_extent.height);
-        viewport.minDepth   = 0.0f;
-        viewport.maxDepth   = 1.0f;
+        VkViewport viewport{
+                0.0f,    // x
+                0.0f,    // y
+                static_cast<float>(ds->swapchain_extent.width),    // width
+                static_cast<float>(ds->swapchain_extent.height),    // height
+                0.0f,    // minDepth
+                1.0f     // maxDepth
+        };
 
-        VkRect2D scissor = {};
-        scissor.offset   = {0, 0};
-        scissor.extent   = ds->swapchain_extent;
+        VkRect2D scissor{
+                {0, 0},    // offset
+                ds->swapchain_extent     // extent
+        };
 
-        VkPipelineViewportStateCreateInfo viewport_state = {VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr};
-        viewport_state.viewportCount                     = 1;
-        viewport_state.pViewports                        = &viewport;
-        viewport_state.scissorCount                      = 1;
-        viewport_state.pScissors                         = &scissor;
+        VkPipelineViewportStateCreateInfo viewport_state{
+                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                1,    // viewportCount
+                &viewport,    // pViewports
+                1,    // scissorCount
+                &scissor     // pScissors
+        };
 
-        VkPipelineRasterizationStateCreateInfo rasterizer = {VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, nullptr, 0, 0, 0, {}, {}, {}, {}, 0, 0.f, 0.f, 0.f};
-        rasterizer.depthClampEnable                       = VK_FALSE;
-        rasterizer.polygonMode                            = VK_POLYGON_MODE_FILL;
-        rasterizer.cullMode                               = VK_CULL_MODE_NONE;
-        rasterizer.frontFace                              = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-        rasterizer.lineWidth                              = 1.0f;
-        rasterizer.depthClampEnable                       = VK_FALSE;
-        rasterizer.rasterizerDiscardEnable                = VK_FALSE;
-        rasterizer.depthBiasEnable                        = VK_FALSE;
+        VkPipelineRasterizationStateCreateInfo rasterizer{
+                VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_FALSE,    // depthClampEnable
+                VK_FALSE,    // rasterizerDiscardEnable
+                VK_POLYGON_MODE_FILL,    // polygonMode
+                VK_CULL_MODE_NONE,    // cullMode
+                VK_FRONT_FACE_COUNTER_CLOCKWISE,    // frontFace
+                VK_FALSE,    // depthBiasEnable
+                0.f,     // depthBiasConstantFactor
+                0.f,     // depthBiasClamp
+                0.f,     // depthBiasSlopeFactor
+                1.0f     // lineWidth
+        };
 
-        VkPipelineMultisampleStateCreateInfo multisampling = {VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, nullptr, 0, {}, 0, 0.f, nullptr, 0, 0};
-        multisampling.sampleShadingEnable                  = VK_FALSE;
-        multisampling.rasterizationSamples                 = VK_SAMPLE_COUNT_1_BIT;
+        VkPipelineMultisampleStateCreateInfo multisampling{
+                VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_SAMPLE_COUNT_1_BIT,    // rasterizationSamples
+                VK_FALSE,     // sampleShadingEnable
+                0.f,       // minSampleShading
+                nullptr,   // pSampleMask
+                0,         // alphaToCoverageEnable
+                0          // alphaToOneEnable
+        };
 
-        VkPipelineColorBlendAttachmentState color_blend_attachment = {};
-        color_blend_attachment.colorWriteMask =
-            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        color_blend_attachment.blendEnable = VK_FALSE;
+        VkPipelineColorBlendAttachmentState color_blend_attachment{
+                VK_FALSE,    // blendEnable
+                {},          // srcColorBlendFactor
+                {},          // dstColorBlendFactor
+                {},          // colorBlendOp
+                {},          // srcAlphaBlendFactor
+                {},          // dstAlphaBlendFactor
+                {},          // alphaBlendOp
+                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT     // colorWriteMask
+        };
+        VkPipelineColorBlendStateCreateInfo color_blending{
+                VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                0,    // logicOpEnable
+                {},   // logicOp
+                1,    // attachmentCount
+                &color_blend_attachment,     // pAttachments
+                {0.f, 0.f, 0.f, 0.f}    // blendConstants
+        };
 
-        VkPipelineColorBlendStateCreateInfo color_blending = {VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, nullptr, 0, 0, {}, 0, nullptr, {0.f, 0.f, 0.f, 0.f}};
-        color_blending.pAttachments                        = &color_blend_attachment;
-        color_blending.attachmentCount                     = 1;
+        VkPushConstantRange push_constant_range{
+                VK_SHADER_STAGE_FRAGMENT_BIT,    // stageFlags
+                0,    // offset
+                sizeof(ModelPushConstant)     // size
+        };
 
-        VkPipelineLayoutCreateInfo pipeline_layout_info = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 0, nullptr, 0, nullptr};
-        pipeline_layout_info.setLayoutCount             = 1;
-        pipeline_layout_info.pSetLayouts                = &descriptor_set_layout;
-
-        VkPushConstantRange push_constant_range = {};
-        push_constant_range.stageFlags          = VK_SHADER_STAGE_FRAGMENT_BIT;
-        push_constant_range.offset              = 0;
-        push_constant_range.size                = sizeof(ModelPushConstant);
-
-        pipeline_layout_info.pushConstantRangeCount = 1;
-        pipeline_layout_info.pPushConstantRanges    = &push_constant_range;
+        VkPipelineLayoutCreateInfo pipeline_layout_info{
+                VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                1,    // setLayoutCount
+                &descriptor_set_layout,    // pSetLayouts
+                1,    // pushConstantRangeCount
+                &push_constant_range     // pPushConstantRanges
+        };
 
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout))
 
-        VkPipelineDepthStencilStateCreateInfo depth_stencil = {VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, 0, {}, {}, 0.f, 0.f};
-        depth_stencil.depthTestEnable                       = VK_TRUE;
-        depth_stencil.depthWriteEnable                      = VK_TRUE;
-        depth_stencil.depthCompareOp                        = VK_COMPARE_OP_LESS;
-        depth_stencil.depthBoundsTestEnable                 = VK_FALSE;
-        depth_stencil.minDepthBounds                        = 0.0f;
-        depth_stencil.maxDepthBounds                        = 1.0f;
-        depth_stencil.stencilTestEnable                     = VK_FALSE;
+        VkPipelineDepthStencilStateCreateInfo depth_stencil{
+                VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                VK_TRUE,    // depthTestEnable
+                VK_TRUE,    // depthWriteEnable
+                VK_COMPARE_OP_LESS,    // depthCompareOp
+                VK_FALSE,    // depthBoundsTestEnable
+                VK_FALSE,    // stencilTestEnable
+                {},    // front
+                {},    // back
+                0.0f,    // minDepthBounds
+                1.0f     // maxDepthBounds
+        };
 
-        VkGraphicsPipelineCreateInfo pipeline_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, nullptr, 0, 0, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, {}, {}, 0, {}, 0};
-        pipeline_info.stageCount                   = 2;
-        pipeline_info.pStages                      = shader_stages;
-        pipeline_info.pVertexInputState            = &vertex_input_info;
-        pipeline_info.pInputAssemblyState          = &input_assembly;
-        pipeline_info.pViewportState               = &viewport_state;
-        pipeline_info.pRasterizationState          = &rasterizer;
-        pipeline_info.pMultisampleState            = &multisampling;
-        pipeline_info.pColorBlendState             = &color_blending;
-        pipeline_info.pDepthStencilState           = &depth_stencil;
-        pipeline_info.layout                       = pipeline_layout;
-        pipeline_info.renderPass                   = render_pass;
-        pipeline_info.subpass                      = subpass;
+        VkGraphicsPipelineCreateInfo pipeline_info{
+                VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,    // sType
+                nullptr,    // pNext
+                0,          // flags
+                2,    // stageCount
+                shader_stages,    // pStages
+                &vertex_input_info,    // pVertexInputState
+                &input_assembly,    // pInputAssemblyState
+                nullptr,            // pTessellationState
+                &viewport_state,    // pViewportState
+                &rasterizer,    // pRasterizationState
+                &multisampling,    // pMultisampleState
+                &depth_stencil,    // pDepthStencilState
+                &color_blending,    // pColorBlendState
+                nullptr,            // pDynamicState
+                pipeline_layout,    // layout
+                render_pass,    // renderPass
+                subpass,     // subpass
+                {},          // basePipelineHandle
+                0            // basePipelineIndex
+        };
 
         VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
 

@@ -1,5 +1,4 @@
-#ifndef TIMEWARP_VK_VULKAN_UTILS_H
-#define TIMEWARP_VK_VULKAN_UTILS_H
+#pragma once
 
 #include <cassert>
 #include <cstdint>
@@ -120,10 +119,13 @@ public:
      * @return The created VkShaderModule.
      */
     static VkShaderModule create_shader_module(VkDevice device, std::vector<char>&& code) {
-        VkShaderModuleCreateInfo createInfo{};
-        createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode    = reinterpret_cast<const uint32_t*>(code.data());
+        VkShaderModuleCreateInfo createInfo{
+                VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,   // sType
+                nullptr,       // pNext
+                0,             // flags
+                code.size(),   // codeSize
+                reinterpret_cast<const uint32_t*>(code.data())  // pCode
+        };
 
         VkShaderModule shaderModule;
         VK_ASSERT_SUCCESS(vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule))
@@ -140,16 +142,17 @@ public:
      * @return The created VMA allocator.
      */
     static VmaAllocator create_vma_allocator(VkInstance vk_instance, VkPhysicalDevice vk_physical_device, VkDevice vk_device) {
-        VmaVulkanFunctions vulkanFunctions    = {};
+        VmaVulkanFunctions vulkanFunctions{};
         vulkanFunctions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
         vulkanFunctions.vkGetDeviceProcAddr   = &vkGetDeviceProcAddr;
 
-        VmaAllocatorCreateInfo allocatorCreateInfo = {};
-        allocatorCreateInfo.vulkanApiVersion       = VK_API_VERSION_1_0;
-        allocatorCreateInfo.physicalDevice         = vk_physical_device;
-        allocatorCreateInfo.device                 = vk_device;
-        allocatorCreateInfo.instance               = vk_instance;
-        allocatorCreateInfo.pVulkanFunctions       = &vulkanFunctions;
+        VmaAllocatorCreateInfo allocatorCreateInfo{};
+        allocatorCreateInfo.physicalDevice   = vk_physical_device;
+        allocatorCreateInfo.device           = vk_device;
+        allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
+        allocatorCreateInfo.instance         = vk_instance;
+        allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_0;
+
 
         VmaAllocator allocator;
         VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator))
@@ -164,19 +167,23 @@ public:
      * @return The created command buffer.
      */
     static VkCommandBuffer begin_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool) {
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool        = vk_command_pool;
-        allocInfo.commandBufferCount = 1;
+        VkCommandBufferAllocateInfo allocInfo{
+                VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,    // sType
+                nullptr,     // pNext
+                vk_command_pool,    // commandPool
+                VK_COMMAND_BUFFER_LEVEL_PRIMARY,    // level
+                1    // commandBufferCount
+        };
 
         VkCommandBuffer commandBuffer;
         VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer))
 
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
+        VkCommandBufferBeginInfo beginInfo{
+                VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,    // sType
+                nullptr,     // pNext
+                VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,    // flags
+                nullptr      // pInheritanceInfo
+        };
         VK_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &beginInfo))
 
         return commandBuffer;
@@ -196,10 +203,17 @@ public:
                                      VkCommandBuffer vk_command_buffer) {
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer))
 
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers    = &vk_command_buffer;
+        VkSubmitInfo submitInfo{
+                VK_STRUCTURE_TYPE_SUBMIT_INFO,    // sType
+                nullptr,     // pNext
+                0,           // waitSemaphoreCount
+                nullptr,     // pWaitSemaphores
+                nullptr,     // pWaitDstStageMask
+                1,           // commandBufferCount
+                &vk_command_buffer,    // pCommandBuffers
+                0,           // signalSemaphoreCount
+                nullptr      // pSignalSemaphores
+        };
 
         VK_ASSERT_SUCCESS(vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
         VK_ASSERT_SUCCESS(vkQueueWaitIdle(vk_queue))
@@ -215,9 +229,12 @@ public:
      * @return The created VkCommandPool.
      */
     static VkCommandPool create_command_pool(VkDevice device, uint32_t queue_family_index) {
-        VkCommandPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
-        poolInfo.queueFamilyIndex        = queue_family_index;
-        poolInfo.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        VkCommandPoolCreateInfo poolInfo = {
+                VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,    // sType
+                nullptr,      // pNext
+                VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,    // flags
+                queue_family_index    // queueFamilyIndex
+        };
 
         VkCommandPool command_pool;
         VK_ASSERT_SUCCESS(vkCreateCommandPool(device, &poolInfo, nullptr, &command_pool))
@@ -231,10 +248,13 @@ public:
      * @param command_pool The Vulkan command pool to use.
      */
     static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool command_pool) {
-        VkCommandBufferAllocateInfo allocInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
-        allocInfo.commandPool                 = command_pool;
-        allocInfo.level                       = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount          = 1;
+        VkCommandBufferAllocateInfo allocInfo = {
+                VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,    // sType
+                nullptr,    // pNext
+                command_pool,    // commandPool
+                VK_COMMAND_BUFFER_LEVEL_PRIMARY,    // level
+                1    // commandBufferCount
+        };
 
         VkCommandBuffer command_buffer;
         VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(device, &allocInfo, &command_buffer))
@@ -254,7 +274,7 @@ public:
             throw std::runtime_error("failed to open file!");
         }
 
-        size_t            fileSize = (size_t) file.tellg();
+        size_t fileSize = (size_t) file.tellg();
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
@@ -279,23 +299,21 @@ public:
                                      VkImage image, uint32_t width, uint32_t height) {
         VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);
 
-        VkBufferImageCopy region{};
-        region.bufferOffset      = 0;
-        region.bufferRowLength   = 0;
-        region.bufferImageHeight = 0;
-
-        region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.mipLevel       = 0;
-        region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount     = 1;
-
-        region.imageOffset = {0, 0, 0};
-        region.imageExtent = {width, height, 1};
-
+        VkBufferImageCopy region{
+                0,    // bufferOffset
+                0,    // bufferRowLength
+                0,    // bufferImageHeight
+                {    // imageSubresource
+                        VK_IMAGE_ASPECT_COLOR_BIT,    // aspectMask
+                        0,    // mipLevel
+                        0,    // baseArrayLayer
+                        1,    // layerCount
+                },
+                {0, 0, 0},    // imageOffset
+                {width, height, 1}    // imageExtent
+        };
         vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
         end_one_time_command(vk_device, vk_command_pool, vk_queue, command_buffer);
     }
 };
-
-#endif // TIMEWARP_VK_VULKAN_UTILS_H

@@ -5,7 +5,6 @@
 
 #define VMA_IMPLEMENTATION
 
-#include <eigen3/Eigen/Dense>
 #include <vulkan/vulkan_core.h>
 
 #include "illixr/data_format.hpp"
@@ -212,7 +211,15 @@ public:
 
 private:
     void create_vertex_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                                  nullptr,          // pNext
+                                                  0,                // flags
+                                                  0,                // size
+                                                  0,                // usage
+                                                  {},               // sharingMode
+                                                  0,                // queueFamilyIndexCount
+                                                  nullptr           // pQueueFamilyIndices
+        };
         staging_buffer_info.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -225,7 +232,15 @@ private:
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
                                           &staging_alloc, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                          nullptr,          // pNext
+                                          0,                // flags
+                                          0,                // size
+                                          0,                // usage
+                                          {},               // sharingMode
+                                          0,                // queueFamilyIndexCount
+                                          nullptr           // pQueueFamilyIndices
+        };
         buffer_info.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
@@ -263,7 +278,15 @@ private:
     }
 
     void create_index_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                                  nullptr,          // pNext
+                                                  0,                // flags
+                                                  0,                // size
+                                                  0,                // usage
+                                                  {},               // sharingMode
+                                                  0,                // queueFamilyIndexCount
+                                                  nullptr           // pQueueFamilyIndices
+        };
         staging_buffer_info.size               = sizeof(uint32_t) * num_distortion_indices;
         staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -276,7 +299,15 @@ private:
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
                                           &staging_alloc, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                          nullptr,          // pNext
+                                          0,                // flags
+                                          0,                // size
+                                          0,                // usage
+                                          {},               // sharingMode
+                                          0,                // queueFamilyIndexCount
+                                          nullptr           // pQueueFamilyIndices
+        };
         buffer_info.size               = sizeof(uint32_t) * num_distortion_indices;
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
@@ -315,7 +346,25 @@ private:
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, nullptr, 0, {}, {}, {}, {}, {}, {}, 0.f, 0, 0.f, 0, {}, 0.f, 0.f, {}, 0};
+        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,   // sType
+                                           nullptr,     // pNext
+                                           0,           // flags
+                                           {},          // magFilter
+                                           {},          // minFilter
+                                           {},          // mipmapMode
+                                           {},          // addressModeU
+                                           {},          // addressModeV
+                                           {},          // addressModeW
+                                           0.f,         // mipLodBias
+                                           0,           // anisotropyEnable
+                                           0.f,         // maxAnisotropy
+                                           0,           // compareEnable
+                                           {},          // compareOp
+                                           0.f,         // minLod
+                                           0.f,         // maxLod
+                                           {},          // borderColor
+                                           0            // unnormalizedCoordinates
+        };
         samplerInfo.magFilter           = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
         samplerInfo.minFilter           = VK_FILTER_LINEAR;
 
@@ -367,7 +416,15 @@ private:
     }
 
     void create_uniform_buffer() {
-        VkBufferCreateInfo bufferInfo = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0, 0, 0, {}, 0, nullptr};
+        VkBufferCreateInfo bufferInfo = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                         nullptr,          // pNext
+                                         0,                // flags
+                                         0,                // size
+                                         0,                // usage
+                                         {},               // sharingMode
+                                         0,                // queueFamilyIndexCount
+                                         nullptr           // pQueueFamilyIndices
+        };
         bufferInfo.size               = sizeof(UniformBufferObject);
         bufferInfo.usage              = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
@@ -390,7 +447,13 @@ private:
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         poolSizes[1].descriptorCount                  = 2;
 
-        VkDescriptorPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, 0, 0, 0, nullptr};
+        VkDescriptorPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,   // sType
+                                               nullptr,      // pNext
+                                               0,            // flags
+                                               0,            // maxSets
+                                               0,            // poolSizeCount
+                                               nullptr       // pPoolSizes
+        };
         poolInfo.poolSizeCount              = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes                 = poolSizes.data();
         poolInfo.maxSets                    = buffer_pool[0].size() * 2;
@@ -402,7 +465,12 @@ private:
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
             std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
-            VkDescriptorSetAllocateInfo        allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, nullptr, 0, nullptr};
+            VkDescriptorSetAllocateInfo        allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,   // sType
+                                                            nullptr,      // pNext
+                                                            {},           // descriptorPool
+                                                            0,            // descriptorSetCount
+                                                            nullptr       // pSetLayouts
+            };
             allocInfo.descriptorPool                     = descriptor_pool;
             allocInfo.descriptorSetCount                 = buffer_pool[0].size();
             allocInfo.pSetLayouts                        = layouts.data();
