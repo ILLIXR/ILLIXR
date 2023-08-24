@@ -1,10 +1,10 @@
-##########################################
-# Top-level CMakeLists.txt for InfiniTAM #
-##########################################
+###############################################
+# Top-level CMakeLists.txt for dataset_plugin #
+###############################################
 
 cmake_minimum_required(VERSION 3.0)
 
-PROJECT(dataset_plugin)
+project(dataset_plugin)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -24,52 +24,57 @@ if (POLICY CMP0072)
   cmake_policy (SET CMP0072 NEW)
 endif(POLICY CMP0072)
 
+if (POLICY CMP0072)
+  cmake_policy (SET CMP0054 NEW)
+endif(POLICY CMP0072)
+
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-
-#################################
-# Specify the CMake module path #
-#################################
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 #################################
 # Add additional compiler flags #
 #################################
 
-IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++ -std=c++17 -Wno-deprecated-declarations -Wno-unused-function -I /usr/local/cuda-11.2/include")
-ENDIF()
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++ -Wno-deprecated-declarations -Wno-unused-function")
+endif()
 
-IF(NOT MSVC_IDE)
-  SET(CFLAGS_WARN "-Wall -Wextra -Wno-unused-parameter -Wno-strict-aliasing")
-  SET(CMAKE_CXX_FLAGS "-fPIC -O3 -std=c++17 -march=native ${CFLAGS_WARN} ${CMAKE_CXX_FLAGS}")
-  #SET(CMAKE_CXX_FLAGS "-fPIC -g ${CFLAGS_WARN} ${CMAKE_CXX_FLAGS}")
-ENDIF()
+if(NOT MSVC_IDE)
+  set(CFLAGS_WARN "-Wall -Wextra -Wno-unused-parameter -Wno-strict-aliasing")
+  set(CMAKE_CXX_FLAGS "-fPIC -O3 -std=c++17 -march=native ${CFLAGS_WARN} ${CMAKE_CXX_FLAGS}")
+  #set(CMAKE_CXX_FLAGS "-fPIC -g ${CFLAGS_WARN} ${CMAKE_CXX_FLAGS}")
+endif()
 
 #########################
 # Suppress auto-linking #
 #########################
 
-IF(MSVC_IDE)
-  ADD_DEFINITIONS(-DUSING_CMAKE=1)
-ENDIF()
-
-# Pose format
-# ADD_DEFINITIONS(-DVCU)
-
-# Verbose debug prints
-# ADD_DEFINITIONS(-DDEBUG)
-
-#message(STATUS "main CUDA Include Directory: ${CUDA_INCLUDE_DIRS}")
-#message(STATUS "main CUDA Library Directory: ${CUDA_LIBRARY_DIRS}")
-
+if(MSVC_IDE)
+  add_definitions(-DUSING_CMAKE=1)
+endif()
 
 ######################
 # Add subdirectories #
 ######################
 
-add_library(plugin SHARED src/imu_publisher_plugin.cpp src/dataset_loader.cpp src/config.cpp)
+add_library(plugin SHARED src/dataset_loader.cpp src/config.cpp)
+
+if(DEFINED $ENV{USE_IMAGE_PUBLISHER})
+  add_library(plugin SHARED src/image_publisher_plugin.cpp)
+endif()
+
+if(DEFINED $ENV{USE_IMU_PUBLISHER})
+  add_library(plugin SHARED src/imu_publisher_plugin.cpp)
+endif()
+
+if(DEFINED $ENV{USE_POSE_PUBLISHER})
+  add_library(plugin SHARED src/pose_publisher_plugin.cpp)
+endif()
+
+if(DEFINED $ENV{USE_GROUND_TRUTH_PUBLISHER})
+  add_library(plugin SHARED src/ground_truth_publisher_plugin.cpp)
+endif()
+
 target_include_directories(plugin PUBLIC .)
 
 target_link_libraries(plugin ${OpenCV_LIBS} Eigen3::Eigen)
