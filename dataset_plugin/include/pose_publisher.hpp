@@ -58,7 +58,8 @@ public:
 
             m_pose_publisher.put(m_pose_publisher.allocate<pose_type>(pose_type{
                 expected_real_time_given_dataset_time,
-                // TODO: fill the rest of the struct.
+                datum.position,
+                datum.orientation
             }));
         }
     }
