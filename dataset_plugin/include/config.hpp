@@ -68,24 +68,7 @@ struct Config {
 };
 
 // helper function
-std::vector<std::filesystem::path> convertPathStringToPathList(const std::string& path_string) {
-    // TODO: Come up with a better, more descriptive name
-
-    // Takes in a comma-separated string like "data" or "data/hand-pose,data/head-pose"
-    // and returns a vector of filesystem paths. In the previous examples, we will get
-    // just {"data"}, and {"data/hand-pose", "data/head-pose"}.
-
-    std::istringstream input_stream(path_string);
-    std::string        path;
-
-    std::vector<std::filesystem::path> output;
-
-    while (std::getline(input_stream, path, ',')) {
-        output.emplace_back(path);
-    }
-
-    return output;
-}
+std::vector<std::filesystem::path> convertPathStringToPathList(const std::string&);
 
 class ConfigParser {
 public:
