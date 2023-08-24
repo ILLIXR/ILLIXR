@@ -1,6 +1,6 @@
-#include "dataset_loader.hpp"
-
 #include "common/csv_iterator.hpp"
+
+#include "include/dataset_loader.hpp"
 
 #include <cstddef> // for the std::size_t data type
 #include <fstream>
@@ -63,7 +63,7 @@ void DatasetLoader::loadIMUData() {
                 Eigen::Vector3d lin_accel{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
                 Eigen::Vector3d ang_vel{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
 
-                m_IMUData[timestamp] = {ang_vel, linear_acc, i};
+                m_IMUData.insert({timestamp, IMUData{ang_vel, lin_accel, i}});
             }
         } else {
             // angular velocity is the first element
@@ -77,7 +77,7 @@ void DatasetLoader::loadIMUData() {
                 Eigen::Vector3d ang_vel{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
                 Eigen::Vector3d lin_accel{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
 
-                m_IMUData[timestamp] = {ang_vel, linear_acc, i};
+                m_IMUData.insert({timestamp, IMUData{ang_vel, lin_accel, i}});
             }
         }
     }
@@ -105,7 +105,7 @@ void DatasetLoader::loadImageData() {
             if (file.is_regular_file()) {
                 // checking that it's a normal file, just to be safe
 
-                if (isImageFile(entry.path().filename())) {
+                if (isImageFile(file.path().filename())) {
                     // we don't want to do anything with non-image files.
 
                     std::string filename = file.path().stem();
@@ -113,7 +113,7 @@ void DatasetLoader::loadImageData() {
                     std::chrono::nanoseconds timestamp =
                         convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
 
-                    m_imageData[timestamp] = {entry.path(), i, ImageType::RGB};
+                    m_imageData.insert({timestamp, ImageData{file.path(), i, ImageType::RGB}});
                 }
             }
         }
@@ -137,7 +137,7 @@ void DatasetLoader::loadImageData() {
             if (file.is_regular_file()) {
                 // checking that it's a normal file, just to be safe
 
-                if (isImageFile(entry.path().filename())) {
+                if (isImageFile(file.path().filename())) {
                     // we don't want to do anything with non-image files.
 
                     std::string filename = file.path().stem();
@@ -145,7 +145,7 @@ void DatasetLoader::loadImageData() {
                     std::chrono::nanoseconds timestamp =
                         convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
 
-                    m_imageData[timestamp] = {entry.path(), i, ImageType::Depth};
+                    m_imageData.insert({timestamp, ImageData{file.path(), i, ImageType::Depth}});
                 }
             }
         }
@@ -169,7 +169,7 @@ void DatasetLoader::loadImageData() {
             if (file.is_regular_file()) {
                 // checking that it's a normal file, just to be safe
 
-                if (isImageFile(entry.path().filename())) {
+                if (isImageFile(file.path().filename())) {
                     // we don't want to do anything with non-image files.
 
                     std::string filename = file.path().stem();
@@ -177,7 +177,7 @@ void DatasetLoader::loadImageData() {
                     std::chrono::nanoseconds timestamp =
                         convertToTimestamp(m_config.image_config.timestamp_unit, std::stoull(filename));
 
-                    m_imageData[timestamp] = {entry.path(), i, ImageType::Grayscale};
+                    m_imageData.insert({timestamp, ImageData{file.path(), i, ImageType::Grayscale}});
                 }
             }
         }
@@ -201,7 +201,7 @@ void DatasetLoader::loadPoseData() {
 
         std::ifstream poseFile{m_config.pose_config.path_list[i]};
 
-        for (CSVIterator row{imuFile, 1}; row != CSVIterator{}; ++row) {
+        for (CSVIterator row{poseFile, 1}; row != CSVIterator{}; ++row) {
             // we skip the first row because it contains the column names
 
             std::chrono::nanoseconds timestamp = convertToTimestamp(m_config.imu_config.timestamp_unit, std::stoull(row[0]));
@@ -221,38 +221,31 @@ void DatasetLoader::loadGroundTruthData() {
 #endif
 
     // TODO: Slowly reason about the ground truth loading function and verify that it's correct.
-    for (std::size_t i = 0; i < m_config.ground_truth_config.path_list.size(); ++i) {
-        // we need to know the index of the path to know which channel to publish
-        // the pose data on. For example, if the pose data is from the 2nd path in
-        // the list, then we need to know that so that we can mark it for
-        // publication on the pose2 channel.
+    std::ifstream groundTruthFile{m_config.ground_truth_config.path};
 
-        std::ifstream groundTruthFile{m_config.ground_truth_config.path_list[i]};
+    for (CSVIterator row{groundTruthFile, 1}; row != CSVIterator{}; ++row) {
+        // we skip the first row because it contains the column names
 
-        for (CSVIterator row{groundTruthFile, 1}; row != CSVIterator{}; ++row) {
-            // we skip the first row because it contains the column names
+        std::size_t rowIndex = 0;
 
-            std::size_t rowIndex = 0;
+        std::chrono::nanoseconds timestamp =
+            convertToTimestamp(m_config.ground_truth_config.timestamp_unit, std::stoull(row[0]));
 
-            std::chrono::nanoseconds timestamp =
-                convertToTimestamp(m_config.ground_truth_config.timestamp_unit, std::stoull(row[0]));
+        GroundTruthData newEntry;
+        Eigen::VectorXd data;
 
-            GroundTruthData newEntry;
-            Eigen::VectorXd data;
+        for (std::size_t j = 0; j < m_config.ground_truth_config.name_list.size(); ++j) {
+            // we want to reset the `data` variable before reading in new data at every iteration
+            data.setZero();
 
-            for (std::size_t j = 0; j < m_config.ground_truth_config.name_list.size(); ++j) {
-                // we want to reset the `data` variable before reading in new data at every iteration
-                data.setZero();
-
-                for (std::size_t k = 0; k < m_config.ground_truth_config.length_list[j]; ++k) {
-                    data[k] = row[rowIndex++];
-                }
-
-                newEntry[m_config.ground_truth_config.name_list[j]] = data;
+            for (std::size_t k = 0; k < m_config.ground_truth_config.length_list[j]; ++k) {
+                data[k] = std::stod(row[rowIndex++]);
             }
 
-            m_groundTruthData[timestamp] = newEntry;
+            newEntry.data[m_config.ground_truth_config.name_list[j]] = data;
         }
+
+        m_groundTruthData.insert({timestamp, newEntry});
     }
 
 #ifndef NDEBUG

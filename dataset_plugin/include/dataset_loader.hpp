@@ -1,15 +1,18 @@
 #pragma once
 
 #include "common/data_format.hpp"
-#include "config.hpp"
+
+#include "include/config.hpp"
 
 #include <cassert>
 #include <chrono>
 #include <cstddef>
 #include <eigen3/Eigen/Dense>
-#include <filestystem>
+#include <filesystem>
 #include <map>
 #include <opencv2/core/mat.hpp>
+#include <opencv2/imgcodecs.hpp>
+
 #include <string>
 #include <unordered_map>
 
@@ -20,7 +23,7 @@ enum class ImageType { RGB, Depth, Grayscale };
 struct ImageData {
     ImageData() = default;
 
-    ImageData(const std::string& path, int channel, ImageType type)
+    ImageData(const std::string& path, std::size_t channel, ImageType type)
         : m_path(path)
         , m_channel(channel)
         , m_type(type) { }
@@ -32,7 +35,7 @@ struct ImageData {
             return loadRGB();
         } else {
             // the only remaining option is that it's a depth image
-            loadDepth();
+            return loadDepth();
         }
     }
 

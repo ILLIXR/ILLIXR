@@ -4,6 +4,7 @@
 #include "common/phonebook.hpp"
 #include "common/relative_clock.hpp"
 #include "common/threadloop.hpp"
+
 #include "include/dataset_loader.hpp"
 
 #include <chrono> // for std::chrono::nanoseconds
@@ -19,10 +20,10 @@ class PosePublisher : public threadloop {
 public:
     PosePublisher(std::string name, phonebook* pb)
         : threadloop{name, pb}
-        , switchboard{pb->lookup_impl<switchboard>()}
+        , sb{pb->lookup_impl<switchboard>()}
         , m_pose_publisher{sb->get_writer<pose_type>("pose")}
         , m_dataset_loader{std::shared_ptr<DatasetLoader>(DatasetLoader::getInstance())}
-        , m_data{std::move(m_dataset_loader->getPoseData())}
+        , m_data{m_dataset_loader->getPoseData()}
         , m_data_iterator{m_data.cbegin()}
         , dataset_first_time{m_data_iterator->first}
         , m_rtc{pb->lookup_impl<RelativeClock>()} { }
@@ -44,34 +45,34 @@ public:
     }
 
     virtual void _p_one_iteration() override {
-        std::chrono::nanoseconds time_since_start = _m_rtc->now().time_since_epoch();
+        std::chrono::nanoseconds time_since_start = m_rtc->now().time_since_epoch();
 
-        std::chrono::nanoseconds upper_bound_time = time_since_start.count() + dataset_first_time;
+        std::chrono::nanoseconds upper_bound_time = time_since_start + dataset_first_time;
 
         std::chrono::nanoseconds lower_bound_time = upper_bound_time - error_cushion;
 
-        for (m_data_iterator = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time);
+        for (m_data_iterator = m_data.lower_bound(lower_bound_time); m_data_iterator != m_data.upper_bound(upper_bound_time);
              ++m_data_iterator) {
-            PoseData datum = it->second;
+            PoseData datum = m_data_iterator->second;
 
-            time_point expected_real_time_given_dataset_time(it->first - dataset_first_time);
+            time_point expected_real_time_given_dataset_time(m_data_iterator->first - dataset_first_time);
 
-            m_image_publisher.put(m_image_publisher.allocate<pose_type>(expected_real_time_given_dataset_time,
+            m_pose_publisher.put(m_pose_publisher.allocate<pose_type>(pose_type{expected_real_time_given_dataset_time,
                                                                         // TODO: fill the rest of the struct.
-                                                                        ));
+                                                                        }));
         }
     }
 
 private:
-    const std::shared_ptr<switchboard>                      sb;
-    const switchboard::writer<pose_type>                    m_pose_publisher;
-    const std::shared_ptr<DatasetLoader>                    m_dataset_loader;
+    const std::shared_ptr<switchboard> sb;
+    switchboard::writer<pose_type> m_pose_publisher;
+    const std::shared_ptr<DatasetLoader> m_dataset_loader;
     const std::multimap<std::chrono::nanoseconds, PoseData> m_data;
 
     std::multimap<std::chrono::nanoseconds, PoseData>::const_iterator m_data_iterator;
 
-    std::chrono::nanoseconds       dataset_first_time;
+    std::chrono::nanoseconds dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;
 
-    const std::chrono::nanoseconds error_cushion(250);
+    const std::chrono::nanoseconds error_cushion{250};
 };

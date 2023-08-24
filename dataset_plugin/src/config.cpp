@@ -1,14 +1,16 @@
-#include "config.hpp"
+#include "include/config.hpp"
 
 #include <cassert>  // for assert()
 #include <iostream> // for std::cerr
 #include <string>
-#include <stringstream>
+#include <sstream>
 
-void ConfigParser::initIMUConfig(const Config& config) {
+#include "common/error_util.hpp"
+
+void ConfigParser::initIMUConfig(Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_IMU_TIMESTAMP_UNITS");
-    if (!timestamp_env_var) {
+    if (!timestamp_units_env_var) {
         std::cerr << "Error: Please define `ILLIXR_DATASET_IMU_TIMESTAMP_UNITS`." << std::endl;
         ILLIXR::abort();
     }
@@ -57,7 +59,7 @@ void ConfigParser::initIMUConfig(const Config& config) {
     assert(config.imu_config.path_list.size() == config.imu_config.format.size());
 }
 
-void ConfigParser::initImageConfig(const Config& config) {
+void ConfigParser::initImageConfig(Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS");
     if (!timestamp_units_env_var) {
@@ -108,7 +110,7 @@ void ConfigParser::initImageConfig(const Config& config) {
     config.image_config.grayscale_path_list = convertPathStringToPathList(grayscale_path_env_var);
 }
 
-void ConfigParser::initPoseConfig(const Config& config) {
+void ConfigParser::initPoseConfig(Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_POSE_TIMESTAMP_UNITS");
     if (!timestamp_units_env_var) {
@@ -139,10 +141,10 @@ void ConfigParser::initPoseConfig(const Config& config) {
     config.pose_config.path_list = convertPathStringToPathList(path_env_var);
 }
 
-void ConfigParser::initGroundTruthConfig(const Config& config) {
+void ConfigParser::initGroundTruthConfig(Config& config) {
     // parsing timestamp unit-related info.
     const char* timestamp_units_env_var = std::getenv("ILLIXR_DATASET_GROUND_TRUTH_TIMESTAMP_UNITS");
-    if (!timestamp_env_var) {
+    if (!timestamp_units_env_var) {
         std::cerr << "Error: Please define `ILLIXR_DATASET_GROUND_TRUTH_TIMESTAMP_UNITS`." << std::endl;
         ILLIXR::abort();
     }
@@ -204,7 +206,7 @@ void ConfigParser::initGroundTruthConfig(const Config& config) {
     assert(config.ground_truth_config.length_list.size() == config.ground_truth_config.name_list.size());
 }
 
-void ConfigParser::initFromConfig(const Config& config) {
+void ConfigParser::initFromConfig(Config& config) {
     // delimiter
     const char* delimiter_env_var = std::getenv("ILLIXR_DATASET_DELIMITER");
     if (!delimiter_env_var) {
@@ -212,7 +214,7 @@ void ConfigParser::initFromConfig(const Config& config) {
         ILLIXR::abort();
     }
 
-    config.delimiter = delimiter[0];
+    config.delimiter = delimiter_env_var[0];
 
     // root path
     const char* root_path_env_var = std::getenv("ILLIXR_DATASET_ROOT_PATH");
