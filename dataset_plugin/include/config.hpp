@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cassert>    // for assert()
+#include <cstddef>    // for the std::size_t data type
 #include <cstdlib>    // for std::getenv
 #include <filesystem> // for std::filesystem::path
 #include <string>
-#include <stringstream>
+#include <sstream>
 #include <vector>
 
 // We assume that defaults are filled (to be done) and that all the environment variables exist.
@@ -46,7 +47,7 @@ struct GroundTruthConfig {
     std::filesystem::path path;
 
     // format-related info
-    std::vector<int>         length_list; // stores how long each group is
+    std::vector<std::size_t> length_list; // stores how long each group is
     std::vector<std::string> name_list;   // stores the name of each group
 };
 
@@ -90,15 +91,15 @@ class ConfigParser {
 public:
     ConfigParser() = default;
 
-    void initFromConfig(const Config&);
+    void initFromConfig(Config&);
 
 private:
     // helper member functions
-    void initIMUConfig(const Config&);
+    void initIMUConfig(Config&);
 
-    void initImageConfig(const Config&);
+    void initImageConfig(Config&);
 
-    void initPoseConfig(const Config&);
+    void initPoseConfig(Config&);
 
-    void initGroundTruthConfig(const Config&);
+    void initGroundTruthConfig(Config&);
 };
