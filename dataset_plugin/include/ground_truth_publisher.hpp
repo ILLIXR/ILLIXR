@@ -56,20 +56,20 @@ public:
 
             time_point expected_real_time_given_dataset_time(m_data_iterator->first - dataset_first_time);
 
-            m_ground_truth_publisher.put(
-                m_ground_truth_publisher.allocate<ground_truth_type>(ground_truth_type{expected_real_time_given_dataset_time, datum.data}));
+            m_ground_truth_publisher.put(m_ground_truth_publisher.allocate<ground_truth_type>(
+                ground_truth_type{expected_real_time_given_dataset_time, datum.data}));
         }
     }
 
 private:
-    const std::shared_ptr<switchboard> sb;
-    switchboard::writer<ground_truth_type> m_ground_truth_publisher;
-    const std::shared_ptr<DatasetLoader> m_dataset_loader;
+    const std::shared_ptr<switchboard>                             sb;
+    switchboard::writer<ground_truth_type>                         m_ground_truth_publisher;
+    const std::shared_ptr<DatasetLoader>                           m_dataset_loader;
     const std::multimap<std::chrono::nanoseconds, GroundTruthData> m_data;
 
     std::multimap<std::chrono::nanoseconds, GroundTruthData>::const_iterator m_data_iterator;
 
-    std::chrono::nanoseconds dataset_first_time;
+    std::chrono::nanoseconds       dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;
 
     const std::chrono::nanoseconds error_cushion{250};

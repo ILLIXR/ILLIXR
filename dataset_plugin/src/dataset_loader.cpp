@@ -1,6 +1,6 @@
-#include "common/csv_iterator.hpp"
-
 #include "include/dataset_loader.hpp"
+
+#include "common/csv_iterator.hpp"
 
 #include <cstddef> // for the std::size_t data type
 #include <fstream>

@@ -1,11 +1,11 @@
 #include "include/config.hpp"
 
+#include "common/error_util.hpp"
+
 #include <cassert>  // for assert()
 #include <iostream> // for std::cerr
-#include <string>
 #include <sstream>
-
-#include "common/error_util.hpp"
+#include <string>
 
 void ConfigParser::initIMUConfig(Config& config) {
     // parsing timestamp unit-related info.

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/data_format.hpp"
-
 #include "include/config.hpp"
 
 #include <cassert>
@@ -12,7 +11,6 @@
 #include <map>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
-
 #include <string>
 #include <unordered_map>
 

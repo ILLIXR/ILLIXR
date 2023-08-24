@@ -4,8 +4,8 @@
 #include <cstddef>    // for the std::size_t data type
 #include <cstdlib>    // for std::getenv
 #include <filesystem> // for std::filesystem::path
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 // We assume that defaults are filled (to be done) and that all the environment variables exist.

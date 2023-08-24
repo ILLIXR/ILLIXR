@@ -4,7 +4,6 @@
 #include "common/phonebook.hpp"
 #include "common/relative_clock.hpp"
 #include "common/threadloop.hpp"
-
 #include "include/dataset_loader.hpp"
 
 #include <chrono> // for std::chrono::nanoseconds
@@ -57,20 +56,20 @@ public:
 
             time_point expected_real_time_given_dataset_time(m_data_iterator->first - dataset_first_time);
 
-            m_image_publisher.put(m_image_publisher.allocate<image_type>(image_type{expected_real_time_given_dataset_time,
-                                                                         datum.loadImage(), datum.getChannel()}));
+            m_image_publisher.put(m_image_publisher.allocate<image_type>(
+                image_type{expected_real_time_given_dataset_time, datum.loadImage(), datum.getChannel()}));
         }
     }
 
 private:
-    const std::shared_ptr<switchboard> sb;
-    switchboard::writer<image_type> m_image_publisher;
-    const std::shared_ptr<DatasetLoader> m_dataset_loader;
+    const std::shared_ptr<switchboard>                       sb;
+    switchboard::writer<image_type>                          m_image_publisher;
+    const std::shared_ptr<DatasetLoader>                     m_dataset_loader;
     const std::multimap<std::chrono::nanoseconds, ImageData> m_data;
 
     std::multimap<std::chrono::nanoseconds, ImageData>::const_iterator m_data_iterator;
 
-    std::chrono::nanoseconds dataset_first_time;
+    std::chrono::nanoseconds       dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;
 
     const std::chrono::nanoseconds error_cushion{250};

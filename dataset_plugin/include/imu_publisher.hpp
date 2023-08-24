@@ -4,7 +4,6 @@
 #include "common/phonebook.hpp"
 #include "common/relative_clock.hpp"
 #include "common/threadloop.hpp"
-
 #include "include/dataset_loader.hpp"
 
 #include <chrono> // for std::chrono::nanoseconds
@@ -57,20 +56,20 @@ public:
 
             time_point expected_real_time_given_dataset_time(m_data_iterator->first - dataset_first_time);
 
-            m_imu_publisher.put(m_imu_publisher.allocate<imu_type>(imu_type{expected_real_time_given_dataset_time, datum.angular_v,
-                                                                   datum.linear_a, datum.channel}));
+            m_imu_publisher.put(m_imu_publisher.allocate<imu_type>(
+                imu_type{expected_real_time_given_dataset_time, datum.angular_v, datum.linear_a, datum.channel}));
         }
     }
 
 private:
-    const std::shared_ptr<switchboard> sb;
-    switchboard::writer<imu_type> m_imu_publisher;
-    const std::shared_ptr<DatasetLoader> m_dataset_loader;
+    const std::shared_ptr<switchboard>                     sb;
+    switchboard::writer<imu_type>                          m_imu_publisher;
+    const std::shared_ptr<DatasetLoader>                   m_dataset_loader;
     const std::multimap<std::chrono::nanoseconds, IMUData> m_data;
 
     std::multimap<std::chrono::nanoseconds, IMUData>::const_iterator m_data_iterator;
 
-    std::chrono::nanoseconds dataset_first_time;
+    std::chrono::nanoseconds       dataset_first_time;
     std::shared_ptr<RelativeClock> m_rtc;
 
     const std::chrono::nanoseconds error_cushion{250};
