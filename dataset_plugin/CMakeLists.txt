@@ -7,6 +7,9 @@ cmake_minimum_required(VERSION 3.0)
 PROJECT(dataset_plugin)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 find_package(Threads REQUIRED)
 
 find_package(Eigen3 REQUIRED)
@@ -58,9 +61,6 @@ ENDIF()
 # Verbose debug prints
 # ADD_DEFINITIONS(-DDEBUG)
 
-# Instrumentation
-# ADD_DEFINITIONS(-DINSTRUMENTATION)
-
 #message(STATUS "main CUDA Include Directory: ${CUDA_INCLUDE_DIRS}")
 #message(STATUS "main CUDA Library Directory: ${CUDA_LIBRARY_DIRS}")
 
@@ -69,7 +69,7 @@ ENDIF()
 # Add subdirectories #
 ######################
 
-add_library(plugin SHARED src/plugin.cpp src/dataset_loader.cpp src/config.cpp)
-target_include_directories(plugin PUBLIC ./include)
+add_library(plugin SHARED src/imu_publisher_plugin.cpp src/dataset_loader.cpp src/config.cpp)
+target_include_directories(plugin PUBLIC .)
 
 target_link_libraries(plugin ${OpenCV_LIBS} Eigen3::Eigen)
