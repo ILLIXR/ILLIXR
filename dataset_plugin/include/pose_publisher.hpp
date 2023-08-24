@@ -56,11 +56,8 @@ public:
 
             time_point expected_real_time_given_dataset_time(m_data_iterator->first - dataset_first_time);
 
-            m_pose_publisher.put(m_pose_publisher.allocate<pose_type>(pose_type{
-                expected_real_time_given_dataset_time,
-                datum.position,
-                datum.orientation
-            }));
+            m_pose_publisher.put(m_pose_publisher.allocate<pose_type>(
+                pose_type{expected_real_time_given_dataset_time, datum.position, datum.orientation}));
         }
     }
 

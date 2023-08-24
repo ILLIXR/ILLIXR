@@ -209,11 +209,10 @@ void DatasetLoader::loadPoseData() {
             // position first, then orientation.
             // position is in x, y, z format and orientation is in x, y, z, w format.
 
-            Eigen::Vector3f position{std::stof(row[0]), std::stof(row[1]), std::stof(row[2])};
+            Eigen::Vector3f    position{std::stof(row[0]), std::stof(row[1]), std::stof(row[2])};
             Eigen::Quaternionf orientation{std::stof(row[3]), std::stof(row[4]), std::stof(row[5]), std::stof(row[6])};
 
             m_poseData.insert({timestamp, PoseData{position, orientation}});
-
         }
     }
 
