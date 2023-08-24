@@ -130,6 +130,13 @@ public:
         return _m_start > std::chrono::steady_clock::time_point{};
     }
 
+    /**
+     * @brief Get the start time of the clock.
+     */
+    time_point start_time() const {
+        return time_point{_m_start.time_since_epoch()};
+    }
+
 private:
     std::chrono::steady_clock::time_point _m_start;
 };
