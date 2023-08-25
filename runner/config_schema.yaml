@@ -115,7 +115,6 @@ properties:
         additionalProperties:
           type: string
         description: Vars that get passed to the build system
-
   action:
     type: object
     additionalProperties: true
@@ -126,7 +125,7 @@ properties:
       name:
         default: native
         type: string
-        description: "Currently supports: 'native', 'monado', 'dataset', 'tests', or 'clean'"
+        description: "Currently supports: 'native', 'monado', 'tests', or 'clean'"
         properties:
           path:
             $ref: '#/definitions/path'
@@ -180,7 +179,7 @@ properties:
             default: []
             items:
                 $ref: '#/definitions/path'
-                description: List of paths to the directories containing the IMU.
+                description: List of paths to the directories containing the IMU Data.
       image:
         type: object
         default: {}
@@ -231,8 +230,11 @@ properties:
             default: 'nanoseconds'
             type: string
           path:
-            $ref: '#/definitions/path'
-            description: List of paths to the directories containing the pose data.              
+            type: array
+            default: []
+            items:
+                $ref: '#/definitions/path'
+                description: List of paths to the directories containing the Pose Data.    
       ground_truth:
         type: object
         default: {}
