@@ -1,39 +1,14 @@
 plugin_groups:
   - !include "rt_slam_plugins.yaml"
   - plugin_group:
-      - path: ground_truth_slam/
+      #  - path: ground_truth_slam/
       - path: gldemo/
       - path: debugview/
       - path: offload_data/
   - !include "core_plugins.yaml"
 
 dataset:
-  delimiter: ','
-
-  root_path:
-    subpath: mav0
-    relative_to:
-      archive_path:
-        download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-
-  imu:
-    - timestamp_units: nanoseconds
-    - layout: ang_vel, lin_accel
-    - data_path: imu0/data.csv
-
-  image:
-    # timestamp units aren't mentioned, so the default of nanoseconds
-    # will be used.
-    - grayscale:
-        # EuRoC has two grayscale image streams
-        - data_path: cam0/data
-        - data_path: cam1/data
-
-  ground_truth:
-    - timestamp_units: nanoseconds
-    - data_path: state_groundtruth_estimate0/data.csv
-    - layout: 3, 4, 3, 3, 3
-    - name: position, orientation, linear_velocity, angular_velocity, linear_acceleration
+  !include "datasets/euroc.yaml"
 
 demo_data: demo_data/
 
@@ -49,7 +24,7 @@ action:
   name: native
 
   # run in GDB:
-  # command: gdb -q --args $cmd
+  command: gdb -q --args $cmd
 
   # Print cmd for external use:
   # command: printf %s\n $env_cmd
@@ -57,4 +32,4 @@ action:
   # Capture stdout for metrics
   # log_stdout: metrics/output.log
 
-profile: opt
+profile: dbg
