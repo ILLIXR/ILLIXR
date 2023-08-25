@@ -1,5 +1,5 @@
-#include <fstream>
-#include <iostream>
+#pragma once
+
 #include <iterator>
 #include <sstream>
 #include <string>
@@ -11,7 +11,7 @@ public:
         return m_data[index];
     }
 
-    std::size_t size() const {
+    [[nodiscard]] std::size_t size() const {
         return m_data.size();
     }
 
@@ -31,7 +31,7 @@ public:
         // This checks for a trailing comma with no data after it.
         if (!lineStream && cell.empty()) {
             // If there was a trailing comma then add an empty element.
-            m_data.push_back("");
+            m_data.emplace_back("");
         }
     }
 
@@ -52,14 +52,14 @@ public:
     typedef CSVRow*                 pointer;
     typedef CSVRow&                 reference;
 
-    CSVIterator(std::istream& str, std::size_t skip = 0)
-        : m_str(str.good() ? &str : NULL) {
+    explicit CSVIterator(std::istream& str, std::size_t skip = 0)
+        : m_str(str.good() ? &str : nullptr) {
         ++(*this);
         (*this) += skip;
     }
 
     CSVIterator()
-        : m_str(NULL) { }
+        : m_str(nullptr) { }
 
     CSVIterator& operator+=(std::size_t skip) {
         for (size_t i = 0; i < skip; ++i) {
@@ -72,7 +72,7 @@ public:
     CSVIterator& operator++() {
         if (m_str) {
             if (!((*m_str) >> m_row)) {
-                m_str = NULL;
+                m_str = nullptr;
             }
         }
         return *this;
@@ -94,7 +94,7 @@ public:
     }
 
     bool operator==(CSVIterator const& rhs) {
-        return ((this == &rhs) || ((this->m_str == NULL) && (rhs.m_str == NULL)));
+        return ((this == &rhs) || ((this->m_str == nullptr) && (rhs.m_str == nullptr)));
     }
 
     bool operator!=(CSVIterator const& rhs) {

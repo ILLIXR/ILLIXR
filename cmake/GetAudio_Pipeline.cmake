@@ -6,13 +6,9 @@ get_external(SpatialAudio)
 
 set(AUDIO_PIPELINE_CMAKE_ARGS "")
 
-# if building on CentOS make sure we use the correct OpenCV
-if(HAVE_CENTOS)
-    set(AUDIO_PIPELINE_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")
-endif()
 ExternalProject_Add(Audio_Pipeline
         GIT_REPOSITORY https://github.com/ILLIXR/audio_pipeline.git   # Git repo for source code
-        GIT_TAG 714c3541378ece7b481804e4a504e23b49c2bdbe              # sha5 hash for specific commit to pull (if there is no specific tag to use)
+        GIT_TAG 0aad861a29371b1464d6c9415593187208942049              # sha5 hash for specific commit to pull (if there is no specific tag to use)
         PREFIX ${CMAKE_BINARY_DIR}/_deps/audio_pipeline               # the build directory
         DEPENDS ${PortAudio_DEP_STR} ${SpatialAudio_DEP_STR} ${OpenCV_DEP_STR}  # dependencies of this module
         #arguments to pass to CMake

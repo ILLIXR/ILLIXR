@@ -1,12 +1,11 @@
 // Common parameters. Ultimately, these need to be moved to a yaml file.
-
 #pragma once
 
-#include "relative_clock.hpp"
-
-#include <math.h>
+#include <cmath>
 #include <stdexcept>
 #include <string>
+
+#include "relative_clock.hpp"
 
 namespace ILLIXR {
 
@@ -64,14 +63,14 @@ struct rendering_params {
 /**
  * @brief Convert a string containing a (python) boolean to the bool type
  */
-inline bool str_to_bool(std::string var) {
+inline bool str_to_bool(const std::string& var) {
     return (var == "True") ? true
         : (var == "False") ? false
                            : throw std::runtime_error("Invalid conversion from std::string to bool");
 }
 
 /// Temporary environment variable getter. Not needed once #198 is merged.
-inline std::string getenv_or(std::string var, std::string default_) {
+inline std::string getenv_or(const std::string &var, std::string default_) {
     if (std::getenv(var.c_str())) {
         return {std::getenv(var.c_str())};
     } else {

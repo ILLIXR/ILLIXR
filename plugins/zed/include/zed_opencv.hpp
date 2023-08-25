@@ -1,3 +1,5 @@
+#pragma once
+
 #include <opencv2/opencv.hpp>
 #include <sl/Camera.hpp>
 using namespace sl;
@@ -39,5 +41,5 @@ cv::Mat slMat2cvMat(Mat& input) {
 
     // Since cv::Mat data requires a uchar* pointer, we get the uchar1 pointer from sl::Mat (getPtr<T>())
     // cv::Mat and sl::Mat will share a single memory structure
-    return cv::Mat(input.getHeight(), input.getWidth(), cv_type, input.getPtr<sl::uchar1>(MEM::CPU));
+    return {static_cast<int>(input.getHeight()), static_cast<int>(input.getWidth()), cv_type, input.getPtr<sl::uchar1>(MEM::CPU)};
 }

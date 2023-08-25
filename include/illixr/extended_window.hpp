@@ -1,15 +1,12 @@
 #pragma once
 
+#include <cassert>
+#include <cerrno>
+#include <GL/glx.h>
+
 #include "error_util.hpp"
 #include "global_module_defs.hpp"
 #include "phonebook.hpp"
-
-#include <cassert>
-#include <cerrno>
-#include <GL/glu.h>
-#include <GL/glx.h>
-#include <X11/X.h>
-#include <X11/Xlib.h>
 
 // GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
@@ -149,8 +146,7 @@ public:
 #ifndef NDEBUG
         std::cout << "Creating context" << std::endl;
 #endif
-        glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
-        glXCreateContextAttribsARB =
+        auto glXCreateContextAttribsARB =
             (glXCreateContextAttribsARBProc) glXGetProcAddressARB((const GLubyte*) "glXCreateContextAttribsARB");
         int context_attribs[] = {GLX_CONTEXT_MAJOR_VERSION_ARB, 3, GLX_CONTEXT_MINOR_VERSION_ARB, 3, None};
 
@@ -185,7 +181,7 @@ public:
 #endif
     }
 
-    ~xlib_gl_extended_window() {
+    ~xlib_gl_extended_window() override {
         RAC_ERRNO_MSG("xlib_gl_extended_window at start of destructor");
 
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));

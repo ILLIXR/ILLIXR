@@ -8,6 +8,7 @@ set(PLUGIN_NAME plugin.offload_vio.device_tx${ILLIXR_BUILD_SUFFIX})
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../../include/illixr/plugin.hpp
         ../../../include/illixr/data_format.hpp
+        ../../../include/illixr/opencv_data_types.hpp
         ../../../include/illixr/phonebook.hpp
         ../../../include/illixr/switchboard.hpp
         )
@@ -18,12 +19,12 @@ if(BUILD_OPENCV)
 endif()
 
 set(protobuf_files
-    ${CMAKE_CURRENT_SOURCE_DIR}/vio_input.proto
+        ${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_input.proto
 )
 
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCV_INCLUDE_DIRS} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
-PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR} ${protobuf_files})
+PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../proto ${protobuf_files})
 target_link_libraries(${PLUGIN_NAME}
         ${OpenCV_LIBS}
         eCAL::core

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "extended_window.hpp"
-
 #include <GL/glx.h>
-#include <memory>
+#include <string>
 #include <vector>
+
+#include "illixr/phonebook.hpp"
 
 namespace ILLIXR {
 class plugin;
@@ -14,7 +14,7 @@ typedef plugin* (*plugin_factory)(phonebook*);
 class runtime {
 public:
     virtual void load_so(const std::vector<std::string>& so) = 0;
-    virtual void load_so(const std::string_view so)          = 0;
+    virtual void load_so(const std::string_view &so)         = 0;
     virtual void load_plugin_factory(plugin_factory plugin)  = 0;
 
     /**

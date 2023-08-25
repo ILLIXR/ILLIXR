@@ -1,5 +1,14 @@
+#include <cassert>
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <memory>
+#include <thread>
+
 // clang-format off
+#include <eigen3/Eigen/Dense>
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
+#include <GL/glx.h>
 // clang-format on
 
 #include "illixr/data_format.hpp"
@@ -8,18 +17,15 @@
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/pose_prediction.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "shaders/basic_shader.hpp"
+
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
 
-#include <chrono>
-#include <future>
-#include <iostream>
-#include <thread>
-#include <vector>
 
 using namespace ILLIXR;
 
@@ -48,7 +54,7 @@ public:
     // to this constructor. In turn, the constructor fills in the private
     // references to the switchboard plugs, so the component can read the
     // data whenever it needs to.
-    timewarp_gl(std::string name_, phonebook* pb_)
+    timewarp_gl(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
@@ -92,48 +98,48 @@ private:
     record_coalescer timewarp_gpu_logger;
     record_coalescer mtp_logger;
 
-    GLuint timewarpShaderProgram;
+    GLuint timewarpShaderProgram{};
 
-    time_point time_last_swap;
+    time_point time_last_swap{};
 
-    HMD::hmd_info_t hmd_info;
+    HMD::hmd_info_t hmd_info{};
 
     // Eye sampler array
-    GLuint eye_sampler_0;
-    GLuint eye_sampler_1;
+    GLuint eye_sampler_0{};
+    //GLuint eye_sampler_1;
 
     // Eye index uniform
-    GLuint tw_eye_index_unif;
+    GLuint tw_eye_index_unif{};
 
     // VAOs
-    GLuint tw_vao;
+    GLuint tw_vao{};
 
     // Position and UV attribute locations
-    GLuint distortion_pos_attr;
-    GLuint distortion_uv0_attr;
-    GLuint distortion_uv1_attr;
-    GLuint distortion_uv2_attr;
+    GLuint distortion_pos_attr{};
+    GLuint distortion_uv0_attr{};
+    GLuint distortion_uv1_attr{};
+    GLuint distortion_uv2_attr{};
 
     // Distortion mesh information
-    GLuint num_distortion_vertices;
-    GLuint num_distortion_indices;
+    GLuint num_distortion_vertices{};
+    GLuint num_distortion_indices{};
 
     // Distortion mesh CPU buffers and GPU VBO handles
     std::vector<HMD::mesh_coord3d_t> distortion_positions;
-    GLuint                           distortion_positions_vbo;
+    GLuint                           distortion_positions_vbo{};
     std::vector<GLuint>              distortion_indices;
-    GLuint                           distortion_indices_vbo;
+    GLuint                           distortion_indices_vbo{};
     std::vector<HMD::uv_coord_t>     distortion_uv0;
-    GLuint                           distortion_uv0_vbo;
+    GLuint                           distortion_uv0_vbo{};
     std::vector<HMD::uv_coord_t>     distortion_uv1;
-    GLuint                           distortion_uv1_vbo;
+    GLuint                           distortion_uv1_vbo{};
     std::vector<HMD::uv_coord_t>     distortion_uv2;
-    GLuint                           distortion_uv2_vbo;
+    GLuint                           distortion_uv2_vbo{};
 
     // Handles to the start and end timewarp
     // transform matrices (3x4 uniforms)
-    GLuint tw_start_transform_unif;
-    GLuint tw_end_transform_unif;
+    GLuint tw_start_transform_unif{};
+    GLuint tw_end_transform_unif{};
     // Basic perspective projection matrix
     Eigen::Matrix4f basicProjection;
 
@@ -145,13 +151,13 @@ private:
     bool enable_offload;
 
     // PBO buffer for reading texture image
-    GLuint PBO_buffer;
+    GLuint PBO_buffer{};
 
-    duration offload_duration;
+    duration offload_duration{};
 
     GLubyte* readTextureImage() {
         const unsigned memSize = display_params::width_pixels * display_params::height_pixels * 3;
-        GLubyte*       pixels  = new GLubyte[memSize];
+        auto*       pixels  = new GLubyte[memSize];
 
         // Start timer
         time_point startGetTexTime = _m_clock->now();
@@ -160,10 +166,10 @@ private:
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
 
         // Read texture image to PBO buffer
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) 0);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) nullptr);
 
         // Transfer texture image from GPU to Pinned Memory(CPU)
-        GLubyte* ptr = (GLubyte*) glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
+        auto* ptr = (GLubyte*) glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
 
         // Copy texture to CPU memory
         memcpy(pixels, ptr, memSize);
@@ -235,11 +241,11 @@ private:
                     // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
                     // The distortion is handled by the UVs, not the actual mesh coordinates!
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + eye + ((float) x / hmdInfo.eyeTilesWide));
+                        (-1.0f + static_cast<float>(eye) + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
                     distortion_positions[eye * num_distortion_vertices + index].y =
                         (-1.0f +
-                         2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
-                             ((float) (hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / hmdInfo.displayPixelsHigh));
+                         2.0f * ((static_cast<float>(hmdInfo.eyeTilesHigh) - static_cast<float>(y)) / static_cast<float>(hmdInfo.eyeTilesHigh)) *
+                             (static_cast<float>(hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / static_cast<float>(hmdInfo.displayPixelsHigh)));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
 
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
@@ -260,7 +266,7 @@ private:
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
-    void CalculateTimeWarpTransform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
+    static void CalculateTimeWarpTransform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
                                     const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
@@ -297,7 +303,7 @@ private:
     }
 
 public:
-    virtual skip_option _p_should_skip() override {
+    skip_option _p_should_skip() override {
         using namespace std::chrono_literals;
         // Sleep for approximately 90% of the time until the next vsync.
         // Scheduling granularity can't be assumed to be super accurate here,
@@ -314,7 +320,7 @@ public:
         }
     }
 
-    virtual void _p_thread_setup() override {
+    void _p_thread_setup() override {
         // Wait a vsync for gldemo to go first.
         // This first time_last_swap will be "out of phase" with actual vsync.
         // The second one should be on the dot, since we don't exit the first until actual vsync.
@@ -333,8 +339,7 @@ public:
         assert(gl_result_0 && "glXMakeCurrent should not fail");
 
         // set swap interval for 1
-        glXSwapIntervalEXTProc glXSwapIntervalEXT = 0;
-        glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glXSwapIntervalEXT");
+        auto glXSwapIntervalEXT = (glXSwapIntervalEXTProc) glXGetProcAddressARB((const GLubyte*) "glXSwapIntervalEXT");
         glXSwapIntervalEXT(xwin->dpy, xwin->win, 1);
 
         // Init and verify GLEW
@@ -347,7 +352,7 @@ public:
 
         glEnable(GL_DEBUG_OUTPUT);
 
-        glDebugMessageCallback(MessageCallback, 0);
+        glDebugMessageCallback(MessageCallback, nullptr);
 
         // Create and bind global VAO object
         glGenVertexArrays(1, &tw_vao);
@@ -371,7 +376,7 @@ public:
         tw_eye_index_unif       = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
 
         eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
-        eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
+        //eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
 
         // Config distortion mesh position vbo
         glGenBuffers(1, &distortion_positions_vbo);
@@ -381,10 +386,10 @@ public:
 
         HMD::mesh_coord3d_t* const distortion_positions_data = distortion_positions.data();
         assert(distortion_positions_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::mesh_coord3d_t), distortion_positions_data,
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::mesh_coord3d_t)), distortion_positions_data,
                      GL_STATIC_DRAW);
 
-        glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_pos_attr);
 
         // Config distortion uv0 vbo
@@ -393,9 +398,9 @@ public:
 
         HMD::uv_coord_t* const distortion_uv0_data = distortion_uv0.data();
         assert(distortion_uv0_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::uv_coord_t), distortion_uv0_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv0_data, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_uv0_attr);
 
         // Config distortion uv1 vbo
@@ -404,9 +409,9 @@ public:
 
         HMD::uv_coord_t* const distortion_uv1_data = distortion_uv1.data();
         assert(distortion_uv1_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::uv_coord_t), distortion_uv1_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv1_data, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_uv1_attr);
 
         // Config distortion uv2 vbo
@@ -415,9 +420,9 @@ public:
 
         HMD::uv_coord_t* const distortion_uv2_data = distortion_uv2.data();
         assert(distortion_uv2_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, num_elems_pos_uv * sizeof(HMD::uv_coord_t), distortion_uv2_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv2_data, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_uv2_attr);
 
         // Config distortion mesh indices vbo
@@ -426,13 +431,13 @@ public:
 
         GLuint* const distortion_indices_data = distortion_indices.data();
         assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_distortion_indices * sizeof(GLuint)), distortion_indices_data, GL_STATIC_DRAW);
 
         if (enable_offload) {
             // Config PBO for texture image collection
             glGenBuffers(1, &PBO_buffer);
             glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, 0,
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, nullptr,
                          GL_STREAM_DRAW);
         }
 
@@ -440,7 +445,7 @@ public:
         assert(gl_result_1 && "glXMakeCurrent should not fail");
     }
 
-    virtual void _p_one_iteration() override {
+    void _p_one_iteration() override {
         [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(xwin->dpy, xwin->win, xwin->glc));
         assert(gl_result && "glXMakeCurrent should not fail");
 
@@ -483,12 +488,12 @@ public:
         CalculateTimeWarpTransform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
         CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-        glUniformMatrix4fv(tw_start_transform_unif, 1, GL_FALSE, (GLfloat*) (timeWarpStartTransform4x4.data()));
-        glUniformMatrix4fv(tw_end_transform_unif, 1, GL_FALSE, (GLfloat*) (timeWarpEndTransform4x4.data()));
+        glUniformMatrix4fv(static_cast<GLint>(tw_start_transform_unif), 1, GL_FALSE, (GLfloat*) (timeWarpStartTransform4x4.data()));
+        glUniformMatrix4fv(static_cast<GLint>(tw_end_transform_unif), 1, GL_FALSE, (GLfloat*) (timeWarpEndTransform4x4.data()));
 
         // Debugging aid, toggle switch for rendering in the fragment shader
         glUniform1i(glGetUniformLocation(timewarpShaderProgram, "ArrayIndex"), 0);
-        glUniform1i(eye_sampler_0, 0);
+        glUniform1i(static_cast<GLint>(eye_sampler_0), 0);
 
 #ifndef USE_ALT_EYE_FORMAT
         // Bind the shared texture handle
@@ -550,7 +555,7 @@ public:
             // Interestingly, the element index buffer is identical for both eyes, and is
             // reused for both eyes. Therefore glDrawElements can be immediately called,
             // with the UV and position buffers correctly offset.
-            glDrawElements(GL_TRIANGLES, num_distortion_indices, GL_UNSIGNED_INT, (void*) 0);
+            glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(num_distortion_indices), GL_UNSIGNED_INT, (void*) nullptr);
         }
 
         glFinish();
@@ -569,7 +574,7 @@ public:
         }
 #endif
         // Call Hologram
-        _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
+        _m_hologram.put(_m_hologram.allocate<hologram_input>(hologram_input(++_hologram_seq)));
 
         // Call swap buffers; when vsync is enabled, this will return to the
         // CPU thread once the buffers have been successfully swapped.

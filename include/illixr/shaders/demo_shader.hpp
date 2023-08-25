@@ -1,4 +1,4 @@
-#include <GL/gl.h>
+#pragma once
 
 static const char* const demo_vertex_shader = "#version " GLSL_VERSION "\n"
                                               "layout(location = 0) in vec3 in_position;\n"

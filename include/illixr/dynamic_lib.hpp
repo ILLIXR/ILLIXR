@@ -1,15 +1,13 @@
 #pragma once
 
-#include "error_util.hpp"
-#include "global_module_defs.hpp"
-
-#include <algorithm>
 #include <dlfcn.h>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <string_view>
+#include <utility>
+
+#include "error_util.hpp"
 
 namespace ILLIXR {
 
@@ -26,16 +24,16 @@ Usage:
 
 class dynamic_lib {
 private:
-    dynamic_lib(void_ptr&& handle, const std::string& lib_path = "")
+    explicit dynamic_lib(void_ptr&& handle, std::string lib_path = "")
         : _m_handle{std::move(handle)}
         , _m_lib_path{std::move(lib_path)} { }
 
 public:
-    dynamic_lib(dynamic_lib&& other)
-        : _m_handle{std::move(other._m_handle)}
+    dynamic_lib(dynamic_lib&& other) noexcept
+            : _m_handle{std::move(other._m_handle)}
         , _m_lib_path{std::move(other._m_lib_path)} { }
 
-    dynamic_lib& operator=(dynamic_lib&& other) {
+    dynamic_lib& operator=(dynamic_lib&& other)  noexcept {
         if (this != &other) {
             _m_handle   = std::move(other._m_handle);
             _m_lib_path = std::move(other._m_lib_path);
@@ -52,7 +50,7 @@ public:
     }
 
     static dynamic_lib create(const std::string& path) {
-        return dynamic_lib::create(std::string_view{path.c_str()});
+        return dynamic_lib::create(std::string_view{path});
     }
 
     static dynamic_lib create(const std::string_view& path) {
@@ -91,7 +89,7 @@ public:
         char* error;
         void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
         if ((error = dlerror())) {
-            throw std::runtime_error{"dlsym(\"" + symbol_name + "\"): " + (error == nullptr ? "NULL" : std::string{error})};
+            throw std::runtime_error{"dlsym(\"" + symbol_name + "\"): " + std::string{error}};
         }
         return symbol;
     }

@@ -1,17 +1,21 @@
-// ZED includes
-#include "zed_opencv.hpp"
-
 #include <cassert>
-#include <cerrno>
+#include <chrono>
 #include <cmath>
-#include <opencv2/opencv.hpp>
-#include <sl/Camera.hpp>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 // ILLIXR includes
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/opencv_data_types.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+
+// ZED includes
+#include "zed_opencv.hpp"
 
 using namespace ILLIXR;
 
@@ -26,10 +30,10 @@ const record_header __imu_cam_record{"imu_cam",
 
 struct cam_type_zed : public switchboard::event {
     cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
-        : img0{_img0}
-        , img1{_img1}
-        , rgb{_rgb}
-        , depth{_depth}
+        : img0{std::move(_img0)}
+        , img1{std::move(_img1)}
+        , rgb{std::move(_rgb)}
+        , depth{std::move(_depth)}
         , serial_no{_serial_no} { }
 
     cv::Mat     img0;
@@ -68,12 +72,12 @@ std::shared_ptr<Camera> start_camera() {
 
 class zed_camera_thread : public threadloop {
 public:
-    zed_camera_thread(std::string name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
+    zed_camera_thread(const std::string& name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_cam{sb->get_writer<cam_type_zed>("cam_zed")}
-        , zedm{zedm_}
+        , zedm{std::move(zedm_)}
         , image_size{zedm->getCameraInformation().camera_configuration.resolution} {
         // runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
@@ -110,7 +114,7 @@ private:
     std::optional<ullong> _m_first_imu_time;
 
 protected:
-    virtual skip_option _p_should_skip() override {
+    skip_option _p_should_skip() override {
         if (zedm->grab(runtime_parameters) == ERROR_CODE::SUCCESS) {
             return skip_option::run;
         } else {
@@ -118,11 +122,11 @@ protected:
         }
     }
 
-    virtual void _p_one_iteration() override {
+    void _p_one_iteration() override {
         RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
         // Time as ullong (nanoseconds)
-        ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
+        // ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
 
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
@@ -139,32 +143,32 @@ protected:
 
 class zed_imu_thread : public threadloop {
 public:
-    virtual void stop() override {
+    void stop() override {
         camera_thread_.stop();
         threadloop::stop();
     }
 
-    zed_imu_thread(std::string name_, phonebook* pb_)
+    zed_imu_thread(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
+        , zedm{start_camera()}
+        , camera_thread_{"zed_camera_thread", pb_, zedm}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam_reader{sb->get_reader<cam_type_zed>("cam_zed")}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , zedm{start_camera()}
-        , camera_thread_{"zed_camera_thread", pb_, zedm}
         , it_log{record_logger_} {
         camera_thread_.start();
     }
 
     // destructor
-    virtual ~zed_imu_thread() override {
+    ~zed_imu_thread() override {
         zedm->close();
     }
 
 protected:
-    virtual skip_option _p_should_skip() override {
+    skip_option _p_should_skip() override {
         zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
         if (sensors_data.imu.timestamp > last_imu_ts) {
             std::this_thread::sleep_for(std::chrono::milliseconds{2});
@@ -174,13 +178,13 @@ protected:
         }
     }
 
-    virtual void _p_one_iteration() override {
+    void _p_one_iteration() override {
         RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
         // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
         // Time as ullong (nanoseconds)
-        ullong imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
+        auto imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
 
         // Time as time_point
         if (!_m_first_imu_time) {
@@ -195,9 +199,9 @@ protected:
         Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x,
                               sensors_data.imu.linear_acceleration_uncalibrated.y,
                               sensors_data.imu.linear_acceleration_uncalibrated.z};
-        Eigen::Vector3f av = {sensors_data.imu.angular_velocity_uncalibrated.x * (M_PI / 180),
-                              sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI / 180),
-                              sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI / 180)};
+        Eigen::Vector3f av = {static_cast<float>(sensors_data.imu.angular_velocity_uncalibrated.x * (M_PI / 180)),
+                              static_cast<float>(sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI / 180)),
+                              static_cast<float>(sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI / 180))};
 
         _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
 
@@ -237,4 +241,4 @@ private:
 };
 
 // This line makes the plugin importable by Spindle
-PLUGIN_MAIN(zed_imu_thread);
+PLUGIN_MAIN(zed_imu_thread)

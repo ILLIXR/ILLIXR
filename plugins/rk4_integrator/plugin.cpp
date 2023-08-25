@@ -1,15 +1,20 @@
 // This entire IMU integrator has been ported almost as-is from the original OpenVINS integrator, which
 // can be found here: https://github.com/rpng/open_vins/blob/master/ov_msckf/src/state/Propagator.cpp
 
-#include "illixr/plugin.hpp"
+#include <chrono>
+#include <iomanip>
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include <eigen3/Eigen/Dense>
 
 #include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
-
-#include <chrono>
-#include <eigen3/Eigen/Dense>
-#include <iomanip>
-#include <thread>
 
 using namespace ILLIXR;
 
@@ -18,16 +23,16 @@ constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}};
 class rk4_integrator : public plugin {
 public:
     rk4_integrator(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-        sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
+        sb->schedule<imu_type>(id, "imu", [&](const switchboard::ptr<const imu_type>& datum, size_t) {
             callback(datum);
         });
     }
 
-    void callback(switchboard::ptr<const imu_type> datum) {
+    void callback(const switchboard::ptr<const imu_type>& datum) {
         _imu_vec.emplace_back(datum->time, datum->angular_v, datum->linear_a);
 
         clean_imu_vec(datum->time);
@@ -136,7 +141,7 @@ private:
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-    std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
+    static std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
                                               time_point time_end) {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {
@@ -184,10 +189,10 @@ private:
                         (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
     }
 
-    void predict_mean_rk4(Eigen::Vector4d quat, Eigen::Vector3d pos, Eigen::Vector3d vel, double dt,
-                          const Eigen::Vector3d& w_hat1, const Eigen::Vector3d& a_hat1, const Eigen::Vector3d& w_hat2,
-                          const Eigen::Vector3d& a_hat2, Eigen::Vector4d& new_q, Eigen::Vector3d& new_v,
-                          Eigen::Vector3d& new_p) {
+    static void predict_mean_rk4(const Eigen::Vector4d& quat, const Eigen::Vector3d& pos, const Eigen::Vector3d& vel, double dt,
+                                 const Eigen::Vector3d& w_hat1, const Eigen::Vector3d& a_hat1, const Eigen::Vector3d& w_hat2,
+                                 const Eigen::Vector3d& a_hat2, Eigen::Vector4d& new_q, Eigen::Vector3d& new_v,
+                                 Eigen::Vector3d& new_p) {
         Eigen::Matrix<double, 3, 1> gravity_vec = Eigen::Matrix<double, 3, 1>(0.0, 0.0, 9.81);
 
         // Pre-compute things
@@ -196,20 +201,14 @@ private:
         Eigen::Vector3d w_alpha = (w_hat2 - w_hat1) / dt;
         Eigen::Vector3d a_jerk  = (a_hat2 - a_hat1) / dt;
 
-        // y0 ================
-        Eigen::Vector4d q_0 = quat;
-        Eigen::Vector3d p_0 = pos;
-        Eigen::Vector3d v_0 = vel;
-
         // k1 ================
         Eigen::Vector4d dq_0   = {0, 0, 0, 1};
         Eigen::Vector4d q0_dot = 0.5 * Omega(w_hat) * dq_0;
-        Eigen::Vector3d p0_dot = v_0;
-        Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, q_0));
+        Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, quat));
         Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - gravity_vec;
 
         Eigen::Vector4d k1_q = q0_dot * dt;
-        Eigen::Vector3d k1_p = p0_dot * dt;
+        Eigen::Vector3d k1_p = vel * dt;
         Eigen::Vector3d k1_v = v0_dot * dt;
 
         // k2 ================
@@ -217,30 +216,28 @@ private:
         a_hat += 0.5 * a_jerk * dt;
 
         Eigen::Vector4d dq_1 = quatnorm(dq_0 + 0.5 * k1_q);
-        // Eigen::Vector3d p_1 = p_0+0.5*k1_p;
-        Eigen::Vector3d v_1 = v_0 + 0.5 * k1_v;
+        // Eigen::Vector3d p_1 = pos+0.5*k1_p;
+        Eigen::Vector3d v_1 = vel + 0.5 * k1_v;
 
         Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
-        Eigen::Vector3d p1_dot = v_1;
-        Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, q_0));
+        Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, quat));
         Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - gravity_vec;
 
         Eigen::Vector4d k2_q = q1_dot * dt;
-        Eigen::Vector3d k2_p = p1_dot * dt;
+        Eigen::Vector3d k2_p = v_1 * dt;
         Eigen::Vector3d k2_v = v1_dot * dt;
 
         // k3 ================
         Eigen::Vector4d dq_2 = quatnorm(dq_0 + 0.5 * k2_q);
-        // Eigen::Vector3d p_2 = p_0+0.5*k2_p;
-        Eigen::Vector3d v_2 = v_0 + 0.5 * k2_v;
+        // Eigen::Vector3d p_2 = pos+0.5*k2_p;
+        Eigen::Vector3d v_2 = vel + 0.5 * k2_v;
 
         Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
-        Eigen::Vector3d p2_dot = v_2;
-        Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, q_0));
+        Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, quat));
         Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - gravity_vec;
 
         Eigen::Vector4d k3_q = q2_dot * dt;
-        Eigen::Vector3d k3_p = p2_dot * dt;
+        Eigen::Vector3d k3_p = v_2 * dt;
         Eigen::Vector3d k3_v = v2_dot * dt;
 
         // k4 ================
@@ -248,23 +245,22 @@ private:
         a_hat += 0.5 * a_jerk * dt;
 
         Eigen::Vector4d dq_3 = quatnorm(dq_0 + k3_q);
-        // Eigen::Vector3d p_3 = p_0+k3_p;
-        Eigen::Vector3d v_3 = v_0 + k3_v;
+        // Eigen::Vector3d p_3 = pos+k3_p;
+        Eigen::Vector3d v_3 = vel + k3_v;
 
         Eigen::Vector4d q3_dot = 0.5 * Omega(w_hat) * dq_3;
-        Eigen::Vector3d p3_dot = v_3;
-        Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3, q_0));
+        Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3, quat));
         Eigen::Vector3d v3_dot = R_Gto3.transpose() * a_hat - gravity_vec;
 
         Eigen::Vector4d k4_q = q3_dot * dt;
-        Eigen::Vector3d k4_p = p3_dot * dt;
+        Eigen::Vector3d k4_p = v_3 * dt;
         Eigen::Vector3d k4_v = v3_dot * dt;
 
         // y+dt ================
         Eigen::Vector4d dq = quatnorm(dq_0 + (1.0 / 6.0) * k1_q + (1.0 / 3.0) * k2_q + (1.0 / 3.0) * k3_q + (1.0 / 6.0) * k4_q);
-        new_q              = quat_multiply(dq, q_0);
-        new_p              = p_0 + (1.0 / 6.0) * k1_p + (1.0 / 3.0) * k2_p + (1.0 / 3.0) * k3_p + (1.0 / 6.0) * k4_p;
-        new_v              = v_0 + (1.0 / 6.0) * k1_v + (1.0 / 3.0) * k2_v + (1.0 / 3.0) * k3_v + (1.0 / 6.0) * k4_v;
+        new_q              = quat_multiply(dq, quat);
+        new_p              = pos + (1.0 / 6.0) * k1_p + (1.0 / 3.0) * k2_p + (1.0 / 3.0) * k3_p + (1.0 / 6.0) * k4_p;
+        new_v              = vel + (1.0 / 6.0) * k1_v + (1.0 / 3.0) * k2_v + (1.0 / 3.0) * k3_v + (1.0 / 6.0) * k4_v;
     }
 
     /**
@@ -274,7 +270,7 @@ private:
      * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf).
      *
      */
-    static const inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
+    static inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
         Eigen::Matrix<double, 4, 4> mat;
         mat.block(0, 0, 3, 3) = -skew_x(w);
         mat.block(3, 0, 1, 3) = -w.transpose();
@@ -288,7 +284,7 @@ private:
      * @param q_t Quaternion to normalized
      * @return Normalized quaterion
      */
-    static const inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
+    static inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
         if (q_t(3, 0) < 0) {
             q_t *= -1;
         }
@@ -308,7 +304,7 @@ private:
      * @param[in] w 3x1 vector to be made a skew-symmetric
      * @return 3x3 skew-symmetric matrix
      */
-    static const inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
+    static inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
         Eigen::Matrix<double, 3, 3> w_x;
         w_x << 0, -w(2), w(1), w(2), 0, -w(0), -w(1), w(0), 0;
         return w_x;
@@ -325,7 +321,7 @@ private:
      * @param[in] q JPL quaternion
      * @return 3x3 SO(3) rotation matrix
      */
-    static const inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
+    static inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
         Eigen::Matrix<double, 3, 3> q_x = skew_x(q.block(0, 0, 3, 1));
         Eigen::MatrixXd             Rot = (2 * std::pow(q(3, 0), 2) - 1) * Eigen::MatrixXd::Identity(3, 3) - 2 * q(3, 0) * q_x +
             2 * q.block(0, 0, 3, 1) * (q.block(0, 0, 3, 1).transpose());
@@ -350,7 +346,7 @@ private:
      * @param[in] p Second JPL quaternion
      * @return 4x1 resulting p*q quaternion
      */
-    static const inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
+    static inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
                                                                   const Eigen::Matrix<double, 4, 1>& p) {
         Eigen::Matrix<double, 4, 1> q_t;
         Eigen::Matrix<double, 4, 4> Qm;

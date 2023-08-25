@@ -25,8 +25,9 @@ set(DEBUGVIEW_SOURCES plugin.cpp
         imgui/imstb_rectpack.h
         imgui/imstb_textedit.h
         imgui/imstb_truetype.h
-        shaders/demo_shader.hpp
+        ../../include/illixr/shaders/demo_shader.hpp
         ../../include/illixr/data_format.hpp
+        ../../include/illixr/opencv_data_types.hpp
         ../../include/illixr/error_util.hpp
         ../../include/illixr/gl_util/obj.hpp
         ../../include/illixr/global_module_defs.hpp

@@ -1,8 +1,5 @@
 #include "illixr/record_logger.hpp"
 
-#include <iostream>
-#include <sstream>
-
 namespace ILLIXR {
 class noop_record_logger : public record_logger {
 protected:

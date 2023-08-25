@@ -1,17 +1,17 @@
-#include "illixr/plugin.hpp"
+#include <shared_mutex>
+
+#include <eigen3/Eigen/Dense>
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
-
-#include <eigen3/Eigen/Dense>
-#include <shared_mutex>
 
 using namespace ILLIXR;
 
 class pose_prediction_impl : public pose_prediction {
 public:
-    pose_prediction_impl(const phonebook* const pb)
+    explicit pose_prediction_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
@@ -23,7 +23,7 @@ public:
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
     // So we will predict to `now()`, as a temporary approximation
-    virtual fast_pose_type get_fast_pose() const override {
+    fast_pose_type get_fast_pose() const override {
         switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
 
         if (vsync_estimate == nullptr) {
@@ -33,7 +33,7 @@ public:
         }
     }
 
-    virtual pose_type get_true_pose() const override {
+    pose_type get_true_pose() const override {
         switchboard::ptr<const pose_type>                                   pose_ptr = _m_true_pose.get_ro_nullable();
         switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr =
             _m_ground_truth_offset.get_ro_nullable();
@@ -58,7 +58,7 @@ public:
     }
 
     // future_time: An absolute timepoint in the future
-    virtual fast_pose_type get_fast_pose(time_point future_timestamp) const override {
+    fast_pose_type get_fast_pose(time_point future_timestamp) const override {
         switchboard::ptr<const pose_type> slow_pose = _m_slow_pose.get_ro_nullable();
         if (slow_pose == nullptr) {
             // No slow pose, return 0
@@ -116,7 +116,7 @@ public:
             .pose = predicted_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = future_timestamp};
     }
 
-    virtual void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+    void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
         std::unique_lock   lock{offset_mutex};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
         offset                   = raw_o.inverse();
@@ -135,7 +135,7 @@ public:
         return orientation * offset;
     }
 
-    virtual bool fast_pose_reliable() const override {
+    bool fast_pose_reliable() const override {
         return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
         /*
           SLAM takes some time to initialize, so initially fast_pose
@@ -152,7 +152,7 @@ public:
          */
     }
 
-    virtual bool true_pose_reliable() const override {
+    bool true_pose_reliable() const override {
         // return _m_true_pose.valid();
         /*
           We do not have a "ground truth" available in all cases, such
@@ -161,13 +161,13 @@ public:
         return bool(_m_true_pose.get_ro_nullable());
     }
 
-    virtual Eigen::Quaternionf get_offset() override {
+    Eigen::Quaternionf get_offset() override {
         return offset;
     }
 
     // Correct the orientation of the pose due to the lopsided IMU in the
     // current Dataset we are using (EuRoC)
-    virtual pose_type correct_pose(const pose_type pose) const override {
+    pose_type correct_pose(const pose_type &pose) const override {
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below
@@ -221,12 +221,11 @@ private:
         // k1 ================
         Eigen::Vector4d dq_0   = {0, 0, 0, 1};
         Eigen::Vector4d q0_dot = 0.5 * Omega(w_hat) * dq_0;
-        Eigen::Vector3d p0_dot = v_0;
         Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, q_0));
         Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k1_q = q0_dot * dt;
-        Eigen::Vector3d k1_p = p0_dot * dt;
+        Eigen::Vector3d k1_p = v_0 * dt;
         Eigen::Vector3d k1_v = v0_dot * dt;
 
         // k2 ================
@@ -237,12 +236,11 @@ private:
         Eigen::Vector3d v_1  = v_0 + 0.5 * k1_v;
 
         Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
-        Eigen::Vector3d p1_dot = v_1;
         Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, q_0));
         Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k2_q = q1_dot * dt;
-        Eigen::Vector3d k2_p = p1_dot * dt;
+        Eigen::Vector3d k2_p = v_1 * dt;
         Eigen::Vector3d k2_v = v1_dot * dt;
 
         // k3 ================
@@ -251,12 +249,11 @@ private:
         Eigen::Vector3d v_2 = v_0 + 0.5 * k2_v;
 
         Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
-        Eigen::Vector3d p2_dot = v_2;
         Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, q_0));
         Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k3_q = q2_dot * dt;
-        Eigen::Vector3d k3_p = p2_dot * dt;
+        Eigen::Vector3d k3_p = v_2 * dt;
         Eigen::Vector3d k3_v = v2_dot * dt;
 
         // k4 ================
@@ -268,12 +265,11 @@ private:
         Eigen::Vector3d v_3 = v_0 + k3_v;
 
         Eigen::Vector4d q3_dot = 0.5 * Omega(w_hat) * dq_3;
-        Eigen::Vector3d p3_dot = v_3;
         Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3, q_0));
         Eigen::Vector3d v3_dot = R_Gto3.transpose() * a_hat - Eigen::Vector3d{0.0, 0.0, 9.81};
 
         Eigen::Vector4d k4_q = q3_dot * dt;
-        Eigen::Vector3d k4_p = p3_dot * dt;
+        Eigen::Vector3d k4_p = v_3 * dt;
         Eigen::Vector3d k4_v = v3_dot * dt;
 
         // y+dt ================
@@ -293,7 +289,7 @@ private:
      * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf).
      *
      */
-    static const inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
+    static inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
         Eigen::Matrix<double, 4, 4> mat;
         mat.block(0, 0, 3, 3) = -skew_x(w);
         mat.block(3, 0, 1, 3) = -w.transpose();
@@ -307,7 +303,7 @@ private:
      * @param q_t Quaternion to normalized
      * @return Normalized quaterion
      */
-    static const inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
+    static inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
         if (q_t(3, 0) < 0) {
             q_t *= -1;
         }
@@ -327,7 +323,7 @@ private:
      * @param[in] w 3x1 vector to be made a skew-symmetric
      * @return 3x3 skew-symmetric matrix
      */
-    static const inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
+    static inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
         Eigen::Matrix<double, 3, 3> w_x;
         w_x << 0, -w(2), w(1), w(2), 0, -w(0), -w(1), w(0), 0;
         return w_x;
@@ -344,7 +340,7 @@ private:
      * @param[in] q JPL quaternion
      * @return 3x3 SO(3) rotation matrix
      */
-    static const inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
+    static inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
         Eigen::Matrix<double, 3, 3> q_x = skew_x(q.block(0, 0, 3, 1));
         Eigen::MatrixXd             Rot = (2 * std::pow(q(3, 0), 2) - 1) * Eigen::MatrixXd::Identity(3, 3) - 2 * q(3, 0) * q_x +
             2 * q.block(0, 0, 3, 1) * (q.block(0, 0, 3, 1).transpose());
@@ -369,7 +365,7 @@ private:
      * @param[in] p Second JPL quaternion
      * @return 4x1 resulting p*q quaternion
      */
-    static const inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
+    static inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
                                                                   const Eigen::Matrix<double, 4, 1>& p) {
         Eigen::Matrix<double, 4, 1> q_t;
         Eigen::Matrix<double, 4, 4> Qm;

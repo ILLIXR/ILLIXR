@@ -1,18 +1,9 @@
 #pragma once
 
-#include "phonebook.hpp"
-
-#include <array>
-#include <atomic>
-#include <chrono>
-#include <exception>
-#include <functional>
+#include <iostream>
 #include <list>
-#include <memory>
+#include <mutex>
 #include <shared_mutex>
-#include <sstream>
-#include <string>
-#include <type_traits>
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
 #else
@@ -21,6 +12,7 @@ static std::chrono::nanoseconds thread_cpu_time() {
 }
 #endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "phonebook.hpp"
 #include "managed_thread.hpp"
 #include "record_logger.hpp"
 

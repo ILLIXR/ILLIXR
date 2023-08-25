@@ -1,19 +1,18 @@
-#include "illixr/plugin.hpp"
+#include <iomanip>
+#include <memory>
+#include <thread>
+#include <utility>
 
-#include "illixr/data_format.hpp"
-#include "illixr/switchboard.hpp"
-
-#include <chrono>
-#include <eigen3/Eigen/Dense>
 #include <gtsam/base/Vector.h>
-#include <gtsam/config.h>
 #include <gtsam/navigation/AHRSFactor.h>
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
-#include <iomanip>
-#include <memory>
-#include <thread>
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -24,17 +23,17 @@ using ImuBias = gtsam::imuBias::ConstantBias;
 class gtsam_integrator : public plugin {
 public:
     gtsam_integrator(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-        sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
+        sb->schedule<imu_type>(id, "imu", [&](const switchboard::ptr<const imu_type>& datum, size_t) {
             callback(datum);
         });
     }
 
-    void callback(switchboard::ptr<const imu_type> datum) {
+    void callback(const switchboard::ptr<const imu_type>& datum) {
         _imu_vec.emplace_back(datum->time, datum->angular_v, datum->linear_a);
 
         clean_imu_vec(datum->time);
@@ -55,8 +54,8 @@ private:
 
     std::vector<imu_type> _imu_vec;
 
-    [[maybe_unused]] time_point last_cam_time;
-    duration                    last_imu_offset;
+    [[maybe_unused]] time_point last_cam_time{};
+    duration                    last_imu_offset{};
 
     /**
      * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
@@ -70,7 +69,7 @@ private:
         using pim_t     = gtsam::PreintegratedCombinedMeasurements;
         using pim_ptr_t = gtsam::PreintegrationType*;
 
-        PimObject(const imu_int_t& imu_int_input)
+        explicit PimObject(const imu_int_t& imu_int_input)
             : _imu_bias{imu_int_input.biasAcc, imu_int_input.biasGyro}
             , _pim{nullptr} {
             pim_t::Params _params{imu_int_input.params.n_gravity};
@@ -113,12 +112,12 @@ private:
             _pim->integrateMeasurement(measured_acc, measured_omega, duration2double(delta_t));
         }
 
-        bias_t biasHat() const noexcept {
+        [[nodiscard]] bias_t biasHat() const noexcept {
             assert(_pim != nullptr && "_pim shuold not be null");
             return _pim->biasHat();
         }
 
-        nav_t predict() const noexcept {
+        [[nodiscard]] nav_t predict() const noexcept {
             assert(_pim != nullptr && "_pim should not be null");
             return _pim->predict(_navstate_lkf, _imu_bias);
         }
@@ -221,7 +220,7 @@ private:
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-    std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, const time_point time_begin,
+    static std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, const time_point time_begin,
                                               const time_point time_end) {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {

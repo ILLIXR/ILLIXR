@@ -9,7 +9,7 @@ if(NOT KimeraRPGO_FOUND)
             DEPENDS ${GTSAM_DEP_STR}                                      # dependencies of this module
             PREFIX ${CMAKE_BINARY_DIR}/_deps/kimerarpgo                   # the build directory
             # arguments to pass to CMake
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_BUILD_TYPE=Release
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_FLAGS="-L${CMAKE_INSTALL_PREFIX}/lib" -DCMAKE_BUILD_TYPE=Debug
             )
     # set variables for use by modules that depend on this one
     set(KimeraRPGO_DEP_STR "KimeraRPGO")   # Dependency string for other modules that depend on this one

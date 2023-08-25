@@ -1,4 +1,8 @@
 #pragma once
+#include <memory>
+#include <string>
+#include <typeinfo>
+#include <utility>
 
 #include "phonebook.hpp"
 #include "record_logger.hpp"
@@ -50,8 +54,8 @@ public:
      */
     virtual void stop() { }
 
-    plugin(const std::string& name_, phonebook* pb_)
-        : name{name_}
+    plugin(std::string  name_, phonebook* pb_)
+        : name{std::move(name_)}
         , pb{pb_}
         , record_logger_{pb->lookup_impl<record_logger>()}
         , gen_guid_{pb->lookup_impl<gen_guid>()}
@@ -59,7 +63,7 @@ public:
 
     virtual ~plugin() = default;
 
-    std::string get_name() const noexcept {
+    [[nodiscard]] std::string get_name() const noexcept {
         return name;
     }
 
@@ -73,7 +77,7 @@ protected:
 
 #define PLUGIN_MAIN(plugin_class)                                \
     extern "C" plugin* this_plugin_factory(phonebook* pb) {      \
-        plugin_class* obj = new plugin_class{#plugin_class, pb}; \
+        auto* obj = new plugin_class{#plugin_class, pb};         \
         return obj;                                              \
     }
 } // namespace ILLIXR

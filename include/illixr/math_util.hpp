@@ -1,5 +1,7 @@
 #pragma once
 
+#include <eigen3/Eigen/Core>
+
 namespace ILLIXR {
 namespace math_util {
     /// Calculates a projection matrix with the given tangent angles and clip planes
@@ -33,13 +35,13 @@ namespace math_util {
     /// Calculates a projection matrix with the given FoVs and clip planes
     void projection_fov(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
                         const float fov_down, const float near_z, const float far_z) {
-        const float tan_left  = -tanf(fov_left * (M_PI / 180.0f));
-        const float tan_right = tanf(fov_right * (M_PI / 180.0f));
+        const float tan_left  = -tanf(static_cast<float>(fov_left * (M_PI / 180.0f)));
+        const float tan_right = tanf(static_cast<float>(fov_right * (M_PI / 180.0f)));
 
-        const float tan_down = -tanf(fov_down * (M_PI / 180.0f));
-        const float tan_up   = tanf(fov_up * (M_PI / 180.0f));
+        const float tan_down = -tanf(static_cast<float>(fov_down * (M_PI / 180.0f)));
+        const float tan_up   = tanf(static_cast<float>(fov_up * (M_PI / 180.0f)));
 
         projection(result, tan_left, tan_right, tan_up, tan_down, near_z, far_z);
     }
-}; // namespace math_util
+} // namespace math_util
 } // namespace ILLIXR

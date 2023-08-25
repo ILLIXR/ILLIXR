@@ -1,8 +1,10 @@
-#include "illixr/error_util.hpp"
-
 #include <deque>
-#include <eigen3/Eigen/Dense>
 #include <fstream>
+#include <string>
+
+#include <eigen3/Eigen/Dense>
+
+#include "illixr/error_util.hpp"
 
 Eigen::Matrix<float, 3, 3> skew_x(const Eigen::Matrix<float, 3, 1>& w) {
     Eigen::Matrix<float, 3, 3> w_x;
@@ -57,7 +59,7 @@ void assign_matrix(std::deque<float>& parameters, EigenType& eigen_data) {
     }
 }
 
-void load_align_parameters(std::string path, Eigen::Matrix3f& align_rot, Eigen::Vector3f& align_trans,
+void load_align_parameters(const std::string& path, Eigen::Matrix3f& align_rot, Eigen::Vector3f& align_trans,
                            Eigen::Vector4f& align_quat, double& align_scale) {
     std::ifstream infile;
     infile.open(path);

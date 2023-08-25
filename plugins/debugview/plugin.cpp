@@ -1,30 +1,28 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
+
 // clang-format off
 #include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
 #include <GLFW/glfw3.h> // Also loading first, just to be safe
 // clang-format on
 
-#include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
+#include "illixr/opencv_data_types.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+#include "illixr/shaders/demo_shader.hpp"
+
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
-#include "shaders/demo_shader.hpp"
-
-#include <chrono>
-#include <cmath>
-#include <functional>
-#include <future>
-#include <iostream>
-#include <opencv2/opencv.hpp>
-#include <string_view>
-#include <thread>
 
 using namespace ILLIXR;
 
@@ -34,7 +32,7 @@ constexpr size_t TEST_PATTERN_HEIGHT = 256;
 // Loosely inspired by
 // http://spointeau.blogspot.com/2013/12/hello-i-am-looking-at-opengl-3.html
 
-Eigen::Matrix4f lookAt(Eigen::Vector3f eye, Eigen::Vector3f target, Eigen::Vector3f up) {
+Eigen::Matrix4f lookAt(const Eigen::Vector3f& eye, const Eigen::Vector3f& target, const Eigen::Vector3f& up) {
     using namespace Eigen;
     Vector3f lookDir = (target - eye).normalized();
     Vector3f upDir   = up.normalized();
@@ -62,7 +60,7 @@ public:
     // constructor. In turn, the constructor fills in the private
     // references to the switchboard plugs, so the plugin can read
     // the data whenever it needs to.
-    debugview(std::string name_, phonebook* pb_)
+    debugview(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
@@ -237,7 +235,7 @@ public:
         return true;
     }
 
-    Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
+    static Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
                                              const Eigen::Vector3f& positionOffset) {
         Eigen::Matrix4f headsetPosition;
         headsetPosition << 1, 0, 0, position.x() + positionOffset.x(), 0, 1, 0, position.y() + positionOffset.y(), 0, 0, 1,
@@ -272,7 +270,7 @@ public:
             glfwGetCursorPos(gui_window, &xpos, &ypos);
 
             Eigen::Vector2d new_pos = Eigen::Vector2d{xpos, ypos};
-            if (beingDragged == false) {
+            if (!beingDragged) {
                 last_mouse_pos = new_pos;
                 beingDragged   = true;
             }
@@ -335,8 +333,8 @@ public:
 
         glClearDepth(1);
 
-        glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*) modelView.data());
-        glUniformMatrix4fv(projectionAttr, 1, GL_FALSE, (GLfloat*) (basicProjection.data()));
+        glUniformMatrix4fv(static_cast<GLint>(modelViewAttr), 1, GL_FALSE, (GLfloat*) modelView.data());
+        glUniformMatrix4fv(static_cast<GLint>(projectionAttr), 1, GL_FALSE, (GLfloat*) (basicProjection.data()));
         glBindVertexArray(demo_vao);
 
         // Draw things
@@ -350,7 +348,7 @@ public:
 
         modelView = userView * headsetPose;
 
-        glUniformMatrix4fv(modelViewAttr, 1, GL_FALSE, (GLfloat*) modelView.data());
+        glUniformMatrix4fv(static_cast<GLint>(modelViewAttr), 1, GL_FALSE, (GLfloat*) modelView.data());
 
         headset.Draw();
 
@@ -371,9 +369,9 @@ private:
     switchboard::reader<pose_type>         _m_slow_pose;
     switchboard::reader<imu_raw_type>      _m_fast_pose;
     switchboard::buffered_reader<cam_type> _m_cam;
-    GLFWwindow*                            gui_window;
+    GLFWwindow*                            gui_window{};
 
-    uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT];
+    uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT]{};
 
     Eigen::Vector3d view_euler     = Eigen::Vector3d::Zero();
     Eigen::Vector2d last_mouse_pos = Eigen::Vector2d::Zero();
@@ -388,18 +386,18 @@ private:
 
     switchboard::ptr<const cam_type> cam;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
-    GLuint          camera_textures[2];
+    GLuint          camera_textures[2]{};
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
-    GLuint demo_vao;
-    GLuint demoShaderProgram;
+    GLuint demo_vao{};
+    GLuint demoShaderProgram{};
 
-    GLuint vertexPosAttr;
-    GLuint vertexNormalAttr;
-    GLuint modelViewAttr;
-    GLuint projectionAttr;
+    GLuint vertexPosAttr{};
+    GLuint vertexNormalAttr{};
+    GLuint modelViewAttr{};
+    GLuint projectionAttr{};
 
-    GLuint colorUniform;
+    GLuint colorUniform{};
 
     ObjScene demoscene;
     ObjScene headset;
@@ -410,7 +408,7 @@ public:
     /* compatibility interface */
 
     // Debug view application overrides _p_start to control its own lifecycle/scheduling.
-    virtual void start() override {
+    void start() override {
         RAC_ERRNO_MSG("debugview at the top of start()");
 
         if (!glfwInit()) {
@@ -519,7 +517,7 @@ public:
         RAC_ERRNO_MSG("debuview at bottom of start()");
     }
 
-    virtual ~debugview() override {
+    ~debugview() override {
         RAC_ERRNO_MSG("debugview at start of destructor");
 
         ImGui_ImplOpenGL3_Shutdown();
@@ -534,4 +532,4 @@ public:
     }
 };
 
-PLUGIN_MAIN(debugview);
+PLUGIN_MAIN(debugview)

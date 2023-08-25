@@ -1,3 +1,4 @@
+#pragma once
 #include "csv_iterator.hpp"
 #include "illixr/error_util.hpp"
 

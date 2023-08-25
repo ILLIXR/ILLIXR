@@ -1,19 +1,15 @@
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/vulkan_utils.hpp"
 
 using namespace ILLIXR;
 
 class display_vk : public display_sink {
 public:
-    display_vk(const phonebook* const pb)
+    explicit display_vk(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()} { }
 
     /**
@@ -27,7 +23,7 @@ public:
     /**
      * @brief This function recreates the Vulkan swapchain. See display_sink::recreate_swapchain().
      */
-    virtual void recreate_swapchain() override {
+    void recreate_swapchain() override {
         vkb::SwapchainBuilder swapchain_builder{vkb_device};
         auto                  swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
                                  .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
@@ -123,8 +119,10 @@ private:
 
         // enable timeline semaphore
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES};
-        timeline_semaphore_features.timelineSemaphore = VK_TRUE;
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
+            nullptr,    // pNext
+            VK_TRUE           // timelineSemaphore
+        };
 
         // enable anisotropic filtering
         auto device_ret = device_builder.add_pNext(&timeline_semaphore_features).build();
@@ -190,7 +188,7 @@ public:
         _pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
     }
 
-    virtual void start() override {
+    void start() override {
         main_thread = std::thread(&display_vk_plugin::main_loop, this);
         while (!ready) {
             // yield
@@ -198,7 +196,7 @@ public:
         }
     }
 
-    virtual void stop() override {
+    void stop() override {
         running = false;
     }
 

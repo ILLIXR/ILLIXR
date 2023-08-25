@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 
 #define DEBUG2(x1, x2) \

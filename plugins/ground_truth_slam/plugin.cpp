@@ -1,19 +1,18 @@
+#include <thread>
+#include <utility>
+
+#include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
+#include "illixr/switchboard.hpp"
 
 #include "data_loading.hpp"
-#include "illixr/data_format.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-
-#include <chrono>
-#include <thread>
 
 using namespace ILLIXR;
 
 class ground_truth_slam : public plugin {
 public:
     ground_truth_slam(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_true_pose{sb->get_writer<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
@@ -21,14 +20,14 @@ public:
         , _m_dataset_first_time{_m_sensor_data.cbegin()->first}
         , _m_first_time{true} { }
 
-    virtual void start() override {
+    void start() override {
         plugin::start();
-        sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
+        sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
             this->feed_ground_truth(datum);
         });
     }
 
-    void feed_ground_truth(switchboard::ptr<const imu_type> datum) {
+    void feed_ground_truth(const switchboard::ptr<const imu_type>& datum) {
         ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
         auto   it           = _m_sensor_data.find(rounded_time);
 

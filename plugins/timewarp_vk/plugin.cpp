@@ -1,7 +1,13 @@
+#include <future>
+#include <iostream>
 #include <mutex>
+#include <stack>
+
 #define VMA_IMPLEMENTATION
+
+#include <vulkan/vulkan_core.h>
+
 #include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/phonebook.hpp"
@@ -11,22 +17,8 @@
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
 #include "illixr/vk_util/vulkan_utils.hpp"
-#include "utils/hmd.hpp"
 
-#include <algorithm>
-#include <array>
-#include <chrono>
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <future>
-#include <glm/detail/qualifier.hpp>
-#include <iostream>
-#include <stack>
-#include <thread>
-#include <vector>
-#include <vulkan/vulkan_core.h>
+#include "utils/hmd.hpp"
 
 #ifndef NDEBUG
     #define SHADER_FOLDER "timewarp_vk/build/Debug/shaders"
@@ -90,7 +82,7 @@ struct UniformBufferObject {
 
 class timewarp_vk : public timewarp {
 public:
-    timewarp_vk(const phonebook* const pb)
+    explicit timewarp_vk(const phonebook* const pb)
         : pb{pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
@@ -103,7 +95,7 @@ public:
             this->vma_allocator = ds->vma_allocator;
         } else {
             this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
-            deletion_queue.push([=]() {
+            deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
@@ -111,7 +103,7 @@ public:
         generate_distortion_data();
         command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
         command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
-        deletion_queue.push([=]() {
+        deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
         create_vertex_buffer();
@@ -121,11 +113,11 @@ public:
         create_texture_sampler();
     }
 
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool,
-                       bool input_texture_vulkan_coordinates = true) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
+                       bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
-        this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates;
+        this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
         if (!initialized) {
             initialize();
             initialized = true;
@@ -133,10 +125,10 @@ public:
             partial_destroy();
         }
 
-        if (buffer_pool[0].size() != buffer_pool[1].size()) {
+        if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
             throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
         }
-        this->buffer_pool = buffer_pool;
+        this->buffer_pool = buffer_pool_in;
 
         create_descriptor_pool();
         create_descriptor_sets();
@@ -154,7 +146,7 @@ public:
         descriptor_pool = VK_NULL_HANDLE;
     }
 
-    virtual void update_uniforms(const pose_type render_pose) override {
+    void update_uniforms(const pose_type &render_pose) override {
         num_update_uniforms_calls++;
 
         // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
@@ -185,12 +177,12 @@ public:
         calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
         calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-        UniformBufferObject* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
+        auto* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
         memcpy(&ubo->timewarp_start_transform, timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
         memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
 
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left = true) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -205,10 +197,10 @@ public:
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
                                 &descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices * !left, 0);
+        vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
     }
 
-    virtual void destroy() override {
+    void destroy() override {
         partial_destroy();
         // drain deletion_queue
         while (!deletion_queue.empty()) {
@@ -219,7 +211,15 @@ public:
 
 private:
     void create_vertex_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                                  nullptr,          // pNext
+                                                  0,                // flags
+                                                  0,                // size
+                                                  0,                // usage
+                                                  {},               // sharingMode
+                                                  0,                // queueFamilyIndexCount
+                                                  nullptr           // pQueueFamilyIndices
+        };
         staging_buffer_info.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -230,9 +230,17 @@ private:
         VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
-                                          &staging_alloc, nullptr));
+                                          &staging_alloc, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                          nullptr,          // pNext
+                                          0,                // flags
+                                          0,                // size
+                                          0,                // usage
+                                          {},               // sharingMode
+                                          0,                // queueFamilyIndexCount
+                                          nullptr           // pQueueFamilyIndices
+        };
         buffer_info.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
@@ -240,7 +248,7 @@ private:
         alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation vertex_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr));
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr))
 
         std::vector<Vertex> vertices;
         vertices.resize(num_distortion_vertices * HMD::NUM_EYES);
@@ -252,25 +260,33 @@ private:
         }
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data))
         memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region    = {};
         copy_region.size               = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        vkCmdCopyBuffer(command_buffer, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
-        deletion_queue.push([=]() {
+        deletion_queue.emplace([=]() {
             vmaDestroyBuffer(vma_allocator, vertex_buffer, vertex_alloc);
         });
     }
 
     void create_index_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo staging_buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                                  nullptr,          // pNext
+                                                  0,                // flags
+                                                  0,                // size
+                                                  0,                // usage
+                                                  {},               // sharingMode
+                                                  0,                // queueFamilyIndexCount
+                                                  nullptr           // pQueueFamilyIndices
+        };
         staging_buffer_info.size               = sizeof(uint32_t) * num_distortion_indices;
         staging_buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
@@ -281,9 +297,17 @@ private:
         VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
-                                          &staging_alloc, nullptr));
+                                          &staging_alloc, nullptr))
 
-        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo buffer_info = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                          nullptr,          // pNext
+                                          0,                // flags
+                                          0,                // size
+                                          0,                // usage
+                                          {},               // sharingMode
+                                          0,                // queueFamilyIndexCount
+                                          nullptr           // pQueueFamilyIndices
+        };
         buffer_info.size               = sizeof(uint32_t) * num_distortion_indices;
         buffer_info.usage              = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
@@ -291,22 +315,22 @@ private:
         alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation index_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr));
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data));
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data))
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region    = {};
         copy_region.size               = sizeof(uint32_t) * num_distortion_indices;
-        vkCmdCopyBuffer(command_buffer, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer);
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
-        deletion_queue.push([=]() {
+        deletion_queue.emplace([=]() {
             vmaDestroyBuffer(vma_allocator, index_buffer, index_alloc);
         });
     }
@@ -322,7 +346,25 @@ private:
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
+        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,   // sType
+                                           nullptr,     // pNext
+                                           0,           // flags
+                                           {},          // magFilter
+                                           {},          // minFilter
+                                           {},          // mipmapMode
+                                           {},          // addressModeU
+                                           {},          // addressModeV
+                                           {},          // addressModeW
+                                           0.f,         // mipLodBias
+                                           0,           // anisotropyEnable
+                                           0.f,         // maxAnisotropy
+                                           0,           // compareEnable
+                                           {},          // compareOp
+                                           0.f,         // minLod
+                                           0.f,         // maxLod
+                                           {},          // borderColor
+                                           0            // unnormalizedCoordinates
+        };
         samplerInfo.magFilter           = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
         samplerInfo.minFilter           = VK_FILTER_LINEAR;
 
@@ -341,9 +383,9 @@ private:
         samplerInfo.minLod     = 0.f;
         samplerInfo.maxLod     = 0.f;
 
-        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler));
+        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler))
 
-        deletion_queue.push([=]() {
+        deletion_queue.emplace([=]() {
             vkDestroySampler(ds->vk_device, fb_sampler, nullptr);
         });
     }
@@ -367,14 +409,22 @@ private:
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
         layoutInfo.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout));
-        deletion_queue.push([=]() {
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout))
+        deletion_queue.emplace([=]() {
             vkDestroyDescriptorSetLayout(ds->vk_device, descriptor_set_layout, nullptr);
         });
     }
 
     void create_uniform_buffer() {
-        VkBufferCreateInfo bufferInfo = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        VkBufferCreateInfo bufferInfo = {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+                                         nullptr,          // pNext
+                                         0,                // flags
+                                         0,                // size
+                                         0,                // usage
+                                         {},               // sharingMode
+                                         0,                // queueFamilyIndexCount
+                                         nullptr           // pQueueFamilyIndices
+        };
         bufferInfo.size               = sizeof(UniformBufferObject);
         bufferInfo.usage              = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
@@ -384,8 +434,8 @@ private:
         createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info));
-        deletion_queue.push([=]() {
+            vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info))
+        deletion_queue.emplace([=]() {
             vmaDestroyBuffer(vma_allocator, uniform_buffer, uniform_alloc);
         });
     }
@@ -397,25 +447,36 @@ private:
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         poolSizes[1].descriptorCount                  = 2;
 
-        VkDescriptorPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+        VkDescriptorPoolCreateInfo poolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,   // sType
+                                               nullptr,      // pNext
+                                               0,            // flags
+                                               0,            // maxSets
+                                               0,            // poolSizeCount
+                                               nullptr       // pPoolSizes
+        };
         poolInfo.poolSizeCount              = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes                 = poolSizes.data();
         poolInfo.maxSets                    = buffer_pool[0].size() * 2;
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool));
+        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool))
     }
 
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
             std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
-            VkDescriptorSetAllocateInfo        allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
+            VkDescriptorSetAllocateInfo        allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,   // sType
+                                                            nullptr,      // pNext
+                                                            {},           // descriptorPool
+                                                            0,            // descriptorSetCount
+                                                            nullptr       // pSetLayouts
+            };
             allocInfo.descriptorPool                     = descriptor_pool;
             allocInfo.descriptorSetCount                 = buffer_pool[0].size();
             allocInfo.pSetLayouts                        = layouts.data();
 
             descriptor_sets[eye].resize(buffer_pool[0].size());
-            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()));
+            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
 
             for (size_t i = 0; i < buffer_pool[0].size(); i++) {
                 VkDescriptorBufferInfo bufferInfo = {};
@@ -452,7 +513,7 @@ private:
         }
     }
 
-    VkPipeline create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
+    VkPipeline create_pipeline(VkRenderPass render_pass, [[maybe_unused]]uint32_t subpass) {
         if (pipeline != VK_NULL_HANDLE) {
             throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
         }
@@ -560,7 +621,7 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
 
-        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout));
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType                        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -579,7 +640,7 @@ private:
         pipelineInfo.renderPass = render_pass;
         pipelineInfo.subpass    = 0;
 
-        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline));
+        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline))
 
         vkDestroyShaderModule(device, vert, nullptr);
         vkDestroyShaderModule(device, frag, nullptr);
@@ -638,14 +699,14 @@ private:
                     // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
                     // hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + ((float) x / hmdInfo.eyeTilesWide));
+                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
 
                     // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
                         (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
                         (-1.0f +
-                         2.0f * ((hmdInfo.eyeTilesHigh - (float) y) / hmdInfo.eyeTilesHigh) *
-                             ((float) (hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / hmdInfo.displayPixelsHigh));
+                         2.0f * (static_cast<float>(hmdInfo.eyeTilesHigh - y) / static_cast<float>(hmdInfo.eyeTilesHigh)) *
+                             (static_cast<float>(hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / static_cast<float>(hmdInfo.displayPixelsHigh)));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
 
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
@@ -666,7 +727,7 @@ private:
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
-    void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
+    static void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
                                       const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
@@ -702,31 +763,31 @@ private:
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
-    VmaAllocator                      vma_allocator;
+    VmaAllocator                      vma_allocator{};
 
     std::array<std::vector<VkImageView>, 2> buffer_pool;
-    VkSampler                               fb_sampler;
+    VkSampler                               fb_sampler{};
 
-    VkDescriptorPool                            descriptor_pool;
-    VkDescriptorSetLayout                       descriptor_set_layout;
+    VkDescriptorPool                            descriptor_pool{};
+    VkDescriptorSetLayout                       descriptor_set_layout{};
     std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
 
-    VkPipelineLayout  pipeline_layout;
-    VkBuffer          uniform_buffer;
-    VmaAllocation     uniform_alloc;
-    VmaAllocationInfo uniform_alloc_info;
+    VkPipelineLayout  pipeline_layout{};
+    VkBuffer          uniform_buffer{};
+    VmaAllocation     uniform_alloc{};
+    VmaAllocationInfo uniform_alloc_info{};
 
-    VkCommandPool   command_pool;
-    VkCommandBuffer command_buffer;
+    VkCommandPool   command_pool{};
+    VkCommandBuffer command_buffer{};
 
-    VkBuffer vertex_buffer;
-    VkBuffer index_buffer;
+    VkBuffer vertex_buffer{};
+    VkBuffer index_buffer{};
 
     // distortion data
-    HMD::hmd_info_t hmd_info;
+    HMD::hmd_info_t hmd_info{};
 
-    uint32_t                         num_distortion_vertices;
-    uint32_t                         num_distortion_indices;
+    uint32_t                         num_distortion_vertices{};
+    uint32_t                         num_distortion_indices{};
     Eigen::Matrix4f                  basicProjection;
     std::vector<HMD::mesh_coord3d_t> distortion_positions;
     std::vector<HMD::uv_coord_t>     distortion_uv0;

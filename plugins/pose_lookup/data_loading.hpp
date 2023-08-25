@@ -1,16 +1,14 @@
+#pragma once
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <string>
+
+#include <eigen3/Eigen/Dense>
+
 #include "illixr/csv_iterator.hpp"
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
-
-#include <eigen3/Eigen/Dense>
-#include <fstream>
-#include <map>
-#include <math.h>
-#include <opencv2/core/mat.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <optional>
-#include <string>
 
 // timestamp
 // p_RS_R_x [m], p_RS_R_y [m], p_RS_R_z [m]

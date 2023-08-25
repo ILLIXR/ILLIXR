@@ -1,8 +1,10 @@
 #pragma once
-#include "phonebook.hpp"
 
+#include <cassert>
 #include <chrono>
 #include <ratio>
+
+#include "phonebook.hpp"
 
 namespace ILLIXR {
 
@@ -25,12 +27,12 @@ class time_point {
 public:
     using duration = _clock_duration;
 
-    time_point() { }
+    time_point() = default;
 
     constexpr explicit time_point(const duration& time_since_epoch)
         : _m_time_since_epoch{time_since_epoch} { }
 
-    duration time_since_epoch() const {
+    [[nodiscard]] duration time_since_epoch() const {
         return _m_time_since_epoch;
     }
 
@@ -106,7 +108,7 @@ public:
     static constexpr bool is_steady = true;
     static_assert(std::chrono::steady_clock::is_steady);
 
-    time_point now() const {
+    [[nodiscard]] time_point now() const {
         assert(this->is_started() && "Can't call now() before this clock has been start()ed.");
         return time_point{std::chrono::steady_clock::now() - _m_start};
     }
@@ -126,14 +128,14 @@ public:
     /**
      * @brief Check if the clock is started.
      */
-    bool is_started() const {
+    [[nodiscard]] bool is_started() const {
         return _m_start > std::chrono::steady_clock::time_point{};
     }
 
     /**
      * @brief Get the start time of the clock.
      */
-    time_point start_time() const {
+    [[nodiscard]] time_point start_time() const {
         return time_point{_m_start.time_since_epoch()};
     }
 

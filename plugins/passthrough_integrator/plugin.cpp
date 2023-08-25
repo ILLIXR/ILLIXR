@@ -1,7 +1,11 @@
-#include "illixr/plugin.hpp"
+#include <memory>
+
+#include <eigen3/Eigen/Dense>
+#include <utility>
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;
@@ -9,16 +13,16 @@ using namespace ILLIXR;
 class passthrough_integrator : public plugin {
 public:
     passthrough_integrator(std::string name_, phonebook* pb_)
-        : plugin{name_, pb_}
+        : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-        sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
+        sb->schedule<imu_type>(id, "imu", [&](const switchboard::ptr<const imu_type>& datum, size_t) {
             callback(datum);
         });
     }
 
-    void callback(switchboard::ptr<const imu_type> datum) {
+    void callback(const switchboard::ptr<const imu_type>& datum) {
         auto input_values = _m_imu_integrator_input.get_ro_nullable();
         if (input_values == nullptr) {
             return;

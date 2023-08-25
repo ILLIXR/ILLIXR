@@ -1,19 +1,18 @@
-#include "illixr/plugin.hpp"
+#include <chrono>
+#include <shared_mutex>
+#include <thread>
 
 #include "data_loading.hpp"
-#include "illixr/data_format.hpp"
+#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/threadloop.hpp"
-
-#include <shared_mutex>
 
 using namespace ILLIXR;
 
 class offline_cam : public threadloop {
 public:
-    offline_cam(std::string name_, phonebook* pb_)
+    offline_cam(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
@@ -23,7 +22,7 @@ public:
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} { }
 
-    virtual skip_option _p_should_skip() override {
+    skip_option _p_should_skip() override {
         if (true) {
             return skip_option::run;
         } else {
@@ -31,7 +30,7 @@ public:
         }
     }
 
-    virtual void _p_one_iteration() override {
+    void _p_one_iteration() override {
         duration time_since_start = _m_rtc->now().time_since_epoch();
         // duration begin            = time_since_start;
         ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
@@ -91,4 +90,4 @@ private:
     std::map<ullong, sensor_types>::const_iterator next_row;
 };
 
-PLUGIN_MAIN(offline_cam);
+PLUGIN_MAIN(offline_cam)

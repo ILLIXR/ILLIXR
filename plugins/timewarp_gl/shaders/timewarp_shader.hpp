@@ -1,4 +1,4 @@
-#include <GL/gl.h>
+#pragma once
 
 const char* const timeWarpChromaticVertexProgramGLSL =
     "#version " GLSL_VERSION "\n"
