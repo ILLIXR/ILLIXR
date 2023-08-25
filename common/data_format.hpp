@@ -33,6 +33,12 @@ struct imu_type : switchboard::event {
     Eigen::Vector3d             angular_v;
     Eigen::Vector3d             linear_a;
     std::size_t                 channel;
+
+    imu_type(time_point time, Eigen::Vector3d angular_v, Eigen::Vector3d linear_a, std::size_t channel)
+        : time(time)
+        , angular_v(angular_v)
+        , linear_a(linear_a)
+        , channel(channel) { }
 };
 
 struct rgb_depth_type : public switchboard::event {
@@ -45,11 +51,20 @@ struct image_type : public switchboard::event {
     [[maybe_unused]] time_point time;
     cv::Mat                     image;
     std::size_t                 channel;
+
+    image_type(time_point time, cv::Mat image, std::size_t channel)
+        : time(time)
+        , image(image)
+        , channel(channel) { }
 };
 
 struct ground_truth_type : public switchboard::event {
     [[maybe_unused]] time_point                      time;
     std::unordered_map<std::string, Eigen::VectorXd> data;
+
+    ground_truth_type(time_point time, std::unordered_map<std::string, Eigen::VectorXd> data)
+        : time(time)
+        , data(data) { }
 };
 
 // Values needed to initialize the IMU integrator
