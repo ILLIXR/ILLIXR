@@ -59,19 +59,19 @@ endif()
 
 add_library(plugin SHARED src/dataset_loader.cpp src/config.cpp)
 
-if(DEFINED $ENV{USE_IMAGE_PUBLISHER})
-  add_library(plugin SHARED src/image_publisher_plugin.cpp)
-endif()
-
-if(DEFINED $ENV{USE_IMU_PUBLISHER})
+if(DEFINED $ENV{ILLIXR_DATASET_USE_IMU_PUBLISHER})
   add_library(plugin SHARED src/imu_publisher_plugin.cpp)
 endif()
 
-if(DEFINED $ENV{USE_POSE_PUBLISHER})
+if(DEFINED $ENV{ILLIXR_DATASET_USE_IMAGE_PUBLISHER})
+  add_library(plugin SHARED src/image_publisher_plugin.cpp)
+endif()
+
+if(DEFINED $ENV{ILLIXR_DATASET_USE_POSE_PUBLISHER})
   add_library(plugin SHARED src/pose_publisher_plugin.cpp)
 endif()
 
-if(DEFINED $ENV{USE_GROUND_TRUTH_PUBLISHER})
+if(DEFINED $ENV{ILLIXR_DATASET_USE_GROUND_TRUTH_PUBLISHER})
   add_library(plugin SHARED src/ground_truth_publisher_plugin.cpp)
 endif()
 
