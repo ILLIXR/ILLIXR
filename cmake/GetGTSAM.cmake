@@ -6,7 +6,7 @@ find_package(GTSAM 4.3.0 EXACT QUIET)
 if(NOT GTSAM_FOUND)
     EXTERNALPROJECT_ADD(GTSAM_EXT
             GIT_REPOSITORY https://github.com/ILLIXR/gtsam.git   # Git repo for source code
-            GIT_TAG 9a7d05459a88c27c65b93ea75b68fa1bc0fc0e4b     # sha5 hash for specific commit to pull (if there is no specific tag to use)
+            GIT_TAG d39389fec49a5f65db3c7f46537bb820b5bf80ed     # sha5 hash for specific commit to pull (if there is no specific tag to use)
             PREFIX ${CMAKE_BINARY_DIR}/_deps/GTSAM               # the build directory
             # arguments to pass to CMake
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DGTSAM_WITH_TBB=OFF -DGTSAM_USE_SYSTEM_EIGEN=ON -DGTSAM_POSE3_EXPMAP=ON -DGTSAM_ROT3_EXPMAP=ON -DGTSAM_BUILD_TESTS=OFF -DGTSAM_BUILD_EXAMPLES_ALWAYS=OFF -DCMAKE_INSTALL_LIBDIR=lib
