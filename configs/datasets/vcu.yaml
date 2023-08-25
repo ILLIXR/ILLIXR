@@ -5,12 +5,14 @@ root_path: /home/tirthankar/Downloads/vcu_lab_simple1
 image:
   # timestamp units aren't mentioned, so the default of nanoseconds
   # will be used.
-  - rgb:
+  rgb:
+    path:
       # VCU only has one RGB image stream
-      - path: color
-  - depth:
+      - color
+  depth:
+    path:
       # ... and one depth image stream
-      - path: depth
+      - depth
 
 ground_truth:
   path: lab_simple1_gt.csv

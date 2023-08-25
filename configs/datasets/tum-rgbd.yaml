@@ -5,12 +5,14 @@ root_path: /home/tirthankar/Downloads/rgbd_dataset_freiburg1_360
 image:
   # timestamp units aren't mentioned, so the default of nanoseconds
   # will be used.
-  - rgb:
+  rgb:
+    path:
       # TUM only has one RGB image stream
-      - path: rgb
-  - depth:
+      - rgb
+  depth:
+    path:
       # ... and one depth image stream
-      - path: depth
+      - depth
 
 ground_truth:
   path: groundtruth.txt
