@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream> // for std::clog
 
-// TODO: update the index-related  comments to match the current design.
+// TODO: update the index-related comments to match the current design.
 
 bool DatasetLoader::isImageFile(const std::filesystem::path& filename) {
     std::string extension = filename.extension().string();
@@ -51,7 +51,7 @@ void DatasetLoader::loadIMUData() {
 
         std::ifstream imuFile{m_config.imu_config.path_list[i]};
 
-        if (m_config.imu_config.format[i]) {
+        if (m_config.imu_config.format) {
             // then linear acceleration is first
 
             for (CSVIterator row{imuFile, 1}; row != CSVIterator{}; ++row) {
@@ -226,7 +226,6 @@ void DatasetLoader::loadGroundTruthData() {
     std::clog << "Loading Ground Truth Data...\n";
 #endif
 
-    // TODO: Slowly reason about the ground truth loading function and verify that it's correct.
     std::ifstream groundTruthFile{m_config.ground_truth_config.path};
 
     for (CSVIterator row{groundTruthFile, 1}; row != CSVIterator{}; ++row) {
