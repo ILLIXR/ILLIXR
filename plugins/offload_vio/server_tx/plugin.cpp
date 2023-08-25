@@ -1,17 +1,15 @@
-#include <memory>
-#include <string>
-#include <utility>
-
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/publisher.h>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-
 #include "vio_output.pb.h"
 
+#include <ecal/ecal.h>
+#include <ecal/msg/protobuf/publisher.h>
+#include <memory>
+#include <string>
+#include <utility>
 
 using namespace ILLIXR;
 

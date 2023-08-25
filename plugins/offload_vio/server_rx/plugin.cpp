@@ -1,18 +1,16 @@
-#include <memory>
-#include <opencv2/core/mat.hpp>
-#include <utility>
-
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/subscriber.h>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-
 #include "vio_input.pb.h"
 
+#include <ecal/ecal.h>
+#include <ecal/msg/protobuf/subscriber.h>
+#include <memory>
+#include <opencv2/core/mat.hpp>
+#include <utility>
 
 using namespace ILLIXR;
 

@@ -1,13 +1,13 @@
 #pragma once
 
+#include "error_util.hpp"
+
 #include <dlfcn.h>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
-
-#include "error_util.hpp"
 
 namespace ILLIXR {
 
@@ -30,10 +30,10 @@ private:
 
 public:
     dynamic_lib(dynamic_lib&& other) noexcept
-            : _m_handle{std::move(other._m_handle)}
+        : _m_handle{std::move(other._m_handle)}
         , _m_lib_path{std::move(other._m_lib_path)} { }
 
-    dynamic_lib& operator=(dynamic_lib&& other)  noexcept {
+    dynamic_lib& operator=(dynamic_lib&& other) noexcept {
         if (this != &other) {
             _m_handle   = std::move(other._m_handle);
             _m_lib_path = std::move(other._m_lib_path);

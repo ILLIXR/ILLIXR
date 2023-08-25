@@ -120,11 +120,11 @@ public:
      */
     static VkShaderModule create_shader_module(VkDevice device, std::vector<char>&& code) {
         VkShaderModuleCreateInfo createInfo{
-                VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,   // sType
-                nullptr,       // pNext
-                0,             // flags
-                code.size(),   // codeSize
-                reinterpret_cast<const uint32_t*>(code.data())  // pCode
+            VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,   // sType
+            nullptr,                                       // pNext
+            0,                                             // flags
+            code.size(),                                   // codeSize
+            reinterpret_cast<const uint32_t*>(code.data()) // pCode
         };
 
         VkShaderModule shaderModule;
@@ -153,7 +153,6 @@ public:
         allocatorCreateInfo.instance         = vk_instance;
         allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_0;
 
-
         VmaAllocator allocator;
         VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator))
         return allocator;
@@ -168,21 +167,21 @@ public:
      */
     static VkCommandBuffer begin_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool) {
         VkCommandBufferAllocateInfo allocInfo{
-                VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,    // sType
-                nullptr,     // pNext
-                vk_command_pool,    // commandPool
-                VK_COMMAND_BUFFER_LEVEL_PRIMARY,    // level
-                1    // commandBufferCount
+            VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, // sType
+            nullptr,                                        // pNext
+            vk_command_pool,                                // commandPool
+            VK_COMMAND_BUFFER_LEVEL_PRIMARY,                // level
+            1                                               // commandBufferCount
         };
 
         VkCommandBuffer commandBuffer;
         VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(vk_device, &allocInfo, &commandBuffer))
 
         VkCommandBufferBeginInfo beginInfo{
-                VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,    // sType
-                nullptr,     // pNext
-                VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,    // flags
-                nullptr      // pInheritanceInfo
+            VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, // sType
+            nullptr,                                     // pNext
+            VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, // flags
+            nullptr                                      // pInheritanceInfo
         };
         VK_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &beginInfo))
 
@@ -204,15 +203,15 @@ public:
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer))
 
         VkSubmitInfo submitInfo{
-                VK_STRUCTURE_TYPE_SUBMIT_INFO,    // sType
-                nullptr,     // pNext
-                0,           // waitSemaphoreCount
-                nullptr,     // pWaitSemaphores
-                nullptr,     // pWaitDstStageMask
-                1,           // commandBufferCount
-                &vk_command_buffer,    // pCommandBuffers
-                0,           // signalSemaphoreCount
-                nullptr      // pSignalSemaphores
+            VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
+            nullptr,                       // pNext
+            0,                             // waitSemaphoreCount
+            nullptr,                       // pWaitSemaphores
+            nullptr,                       // pWaitDstStageMask
+            1,                             // commandBufferCount
+            &vk_command_buffer,            // pCommandBuffers
+            0,                             // signalSemaphoreCount
+            nullptr                        // pSignalSemaphores
         };
 
         VK_ASSERT_SUCCESS(vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
@@ -230,10 +229,10 @@ public:
      */
     static VkCommandPool create_command_pool(VkDevice device, uint32_t queue_family_index) {
         VkCommandPoolCreateInfo poolInfo = {
-                VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,    // sType
-                nullptr,      // pNext
-                VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,    // flags
-                queue_family_index    // queueFamilyIndex
+            VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,      // sType
+            nullptr,                                         // pNext
+            VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // flags
+            queue_family_index                               // queueFamilyIndex
         };
 
         VkCommandPool command_pool;
@@ -249,11 +248,11 @@ public:
      */
     static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool command_pool) {
         VkCommandBufferAllocateInfo allocInfo = {
-                VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,    // sType
-                nullptr,    // pNext
-                command_pool,    // commandPool
-                VK_COMMAND_BUFFER_LEVEL_PRIMARY,    // level
-                1    // commandBufferCount
+            VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, // sType
+            nullptr,                                        // pNext
+            command_pool,                                   // commandPool
+            VK_COMMAND_BUFFER_LEVEL_PRIMARY,                // level
+            1                                               // commandBufferCount
         };
 
         VkCommandBuffer command_buffer;
@@ -267,14 +266,14 @@ public:
      * @param path The path to the file.
      * @return The vector of chars.
      */
-    static std::vector<char> read_file(const std::string &path) {
+    static std::vector<char> read_file(const std::string& path) {
         std::ifstream file(path, std::ios::ate | std::ios::binary);
 
         if (!file.is_open()) {
             throw std::runtime_error("failed to open file!");
         }
 
-        size_t fileSize = (size_t) file.tellg();
+        size_t            fileSize = (size_t) file.tellg();
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
@@ -300,17 +299,18 @@ public:
         VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);
 
         VkBufferImageCopy region{
-                0,    // bufferOffset
-                0,    // bufferRowLength
-                0,    // bufferImageHeight
-                {    // imageSubresource
-                        VK_IMAGE_ASPECT_COLOR_BIT,    // aspectMask
-                        0,    // mipLevel
-                        0,    // baseArrayLayer
-                        1,    // layerCount
-                },
-                {0, 0, 0},    // imageOffset
-                {width, height, 1}    // imageExtent
+            0, // bufferOffset
+            0, // bufferRowLength
+            0, // bufferImageHeight
+            {
+                // imageSubresource
+                VK_IMAGE_ASPECT_COLOR_BIT, // aspectMask
+                0,                         // mipLevel
+                0,                         // baseArrayLayer
+                1,                         // layerCount
+            },
+            {0, 0, 0},         // imageOffset
+            {width, height, 1} // imageExtent
         };
         vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 

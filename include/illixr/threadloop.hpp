@@ -1,19 +1,19 @@
 #pragma once
 
-#include <atomic>
-#include <cassert>
-#include <chrono>
-#include <iostream>
-#include <functional>
-#include <memory>
-#include <thread>
-
 #include "cpu_timer.hpp"
 #include "error_util.hpp"
 #include "phonebook.hpp"
 #include "plugin.hpp"
 #include "record_logger.hpp"
 #include "stoplight.hpp"
+
+#include <atomic>
+#include <cassert>
+#include <chrono>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <thread>
 
 namespace ILLIXR {
 
@@ -38,7 +38,7 @@ const record_header __threadloop_iteration_header{
  */
 class threadloop : public plugin {
 public:
-    threadloop(const std::string &name_, phonebook* pb_)
+    threadloop(const std::string& name_, phonebook* pb_)
         : plugin{name_, pb_}
         , _m_stoplight{pb->lookup_impl<Stoplight>()} { }
 

@@ -2,8 +2,8 @@
 
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
-#include <utility>
 #include <GL/gl.h>
+#include <utility>
 //#undef Complex // For 'Complex' conflict
 
 #include "relative_clock.hpp"
@@ -117,7 +117,7 @@ typedef struct {
 struct rendered_frame : public switchboard::event {
     std::array<GLuint, 2> texture_handles{}; // Does not change between swaps in swapchain
     std::array<GLuint, 2> swap_indices{};    // Which element of the swapchain
-    fast_pose_type        render_pose;     // The pose used when rendering this frame.
+    fast_pose_type        render_pose;       // The pose used when rendering this frame.
     time_point            sample_time{};
     time_point            render_time{};
 

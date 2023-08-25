@@ -1,11 +1,11 @@
-#include <shared_mutex>
-
-#include <eigen3/Eigen/Dense>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
+
+#include <eigen3/Eigen/Dense>
+#include <shared_mutex>
 
 using namespace ILLIXR;
 
@@ -167,7 +167,7 @@ public:
 
     // Correct the orientation of the pose due to the lopsided IMU in the
     // current Dataset we are using (EuRoC)
-    pose_type correct_pose(const pose_type &pose) const override {
+    pose_type correct_pose(const pose_type& pose) const override {
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below
@@ -366,7 +366,7 @@ private:
      * @return 4x1 resulting p*q quaternion
      */
     static inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
-                                                                  const Eigen::Matrix<double, 4, 1>& p) {
+                                                            const Eigen::Matrix<double, 4, 1>& p) {
         Eigen::Matrix<double, 4, 1> q_t;
         Eigen::Matrix<double, 4, 4> Qm;
         // create big L matrix

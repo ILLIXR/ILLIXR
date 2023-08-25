@@ -12,8 +12,8 @@ static std::chrono::nanoseconds thread_cpu_time() {
 }
 #endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
-#include "phonebook.hpp"
 #include "managed_thread.hpp"
+#include "phonebook.hpp"
 #include "record_logger.hpp"
 
 namespace ILLIXR {

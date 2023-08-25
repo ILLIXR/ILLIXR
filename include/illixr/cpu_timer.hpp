@@ -2,15 +2,16 @@
 
 //
 
+#include "error_util.hpp"
+
 #include <chrono>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <string>
-#include <cstring>
 #include <thread>
 #include <utility>
 
-#include "error_util.hpp"
 /**
  * @brief A C++ translation of [clock_gettime][1]
  *
@@ -23,7 +24,8 @@ static inline std::chrono::nanoseconds cpp_clock_gettime(clockid_t clock_id) {
                  : /* OutputOperands */
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
-    struct timespec ts{};
+
+    struct timespec ts { };
 
     RAC_ERRNO_MSG("cpu_timer before clock_gettime");
 
@@ -114,7 +116,7 @@ class print_timer {
 private:
     class print_in_destructor {
     public:
-        print_in_destructor(std::string  account_name, const duration& _duration)
+        print_in_destructor(std::string account_name, const duration& _duration)
             : _p_account_name{std::move(account_name)}
             , _p_duration{_duration} { }
 

@@ -1,11 +1,4 @@
 #pragma once
-#include <algorithm>
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <GL/glx.h>
-
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
@@ -17,6 +10,12 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "sqlite_record_logger.hpp"
+
+#include <algorithm>
+#include <GL/glx.h>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace ILLIXR;
 
@@ -78,7 +77,7 @@ public:
         pb.lookup_impl<Stoplight>()->signal_ready();
     }
 
-    virtual void load_so(const std::string_view &so) override {
+    virtual void load_so(const std::string_view& so) override {
         auto           lib                 = dynamic_lib::create(so);
         plugin_factory this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
         load_plugin_factory(this_plugin_factory);

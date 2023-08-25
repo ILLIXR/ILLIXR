@@ -2,15 +2,6 @@
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include <array>
-#include <chrono>
-#include <cmath>
-#include <future>
-#include <iostream>
-#include <thread>
-
-#include <eigen3/Eigen/Core>
-
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
@@ -20,9 +11,17 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
+#include "illixr/shaders/demo_shader.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/shaders/demo_shader.hpp"
+
+#include <array>
+#include <chrono>
+#include <cmath>
+#include <eigen3/Eigen/Core>
+#include <future>
+#include <iostream>
+#include <thread>
 
 using namespace ILLIXR;
 
@@ -121,7 +120,6 @@ public:
         glEnable(GL_DEPTH_TEST);
 
         glClearDepth(1);
-
 
         Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
 

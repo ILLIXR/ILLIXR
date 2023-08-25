@@ -1,12 +1,12 @@
-#include <chrono>
-#include <shared_mutex>
-#include <thread>
-
 #include "data_loading.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/threadloop.hpp"
+
+#include <chrono>
+#include <shared_mutex>
+#include <thread>
 
 using namespace ILLIXR;
 

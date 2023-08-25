@@ -1,9 +1,9 @@
+#include "illixr/plugin.hpp"
+
 #include "illixr/data_format.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-
 #include "vio_input.pb.h"
 
 #include <cassert>

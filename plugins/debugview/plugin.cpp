@@ -1,8 +1,7 @@
-#include <iostream>
-#include <opencv2/opencv.hpp>
-
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 // clang-format off
 #include <GL/glew.h>    // GLEW has to be loaded before other GL libraries
@@ -16,10 +15,9 @@
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
+#include "illixr/shaders/demo_shader.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/shaders/demo_shader.hpp"
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -236,7 +234,7 @@ public:
     }
 
     static Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
-                                             const Eigen::Vector3f& positionOffset) {
+                                                    const Eigen::Vector3f& positionOffset) {
         Eigen::Matrix4f headsetPosition;
         headsetPosition << 1, 0, 0, position.x() + positionOffset.x(), 0, 1, 0, position.y() + positionOffset.y(), 0, 0, 1,
             position.z() + positionOffset.z(), 0, 0, 0, 1;

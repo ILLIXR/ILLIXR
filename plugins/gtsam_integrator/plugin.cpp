@@ -1,18 +1,18 @@
-#include <iomanip>
-#include <memory>
-#include <thread>
-#include <utility>
+#include "illixr/plugin.hpp"
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <gtsam/base/Vector.h>
 #include <gtsam/navigation/AHRSFactor.h>
 #include <gtsam/navigation/CombinedImuFactor.h> // Used if IMU combined is off.
 #include <gtsam/navigation/ImuBias.h>
 #include <gtsam/navigation/ImuFactor.h>
-
-#include "illixr/data_format.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
-#include "illixr/switchboard.hpp"
+#include <iomanip>
+#include <memory>
+#include <thread>
+#include <utility>
 
 using namespace ILLIXR;
 // IMU sample time to live in seconds
@@ -221,7 +221,7 @@ private:
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
     static std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, const time_point time_begin,
-                                              const time_point time_end) {
+                                                     const time_point time_end) {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {
             return prop_data;

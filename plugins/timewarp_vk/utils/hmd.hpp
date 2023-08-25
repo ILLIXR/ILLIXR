@@ -3,10 +3,10 @@
 #include <vector>
 
 #ifdef USE_GL
-#include <GL/gl.h>
-#define FLOAT GLfloat
+    #include <GL/gl.h>
+    #define FLOAT GLfloat
 #else
-#define FLOAT float
+    #define FLOAT float
 #endif
 // HMD utility class for warp mesh structs, spline math, etc
 class HMD {

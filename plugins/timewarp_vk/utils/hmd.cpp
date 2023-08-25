@@ -62,7 +62,8 @@ void HMD::BuildDistortionMeshes(
                 const float xf = (float) x / (float) hmdInfo.eyeTilesWide;
 
                 const float in[2]             = {(eye ? -horizontalShiftView : horizontalShiftView) + xf, yf};
-                const float ndcToPixels[2]    = {static_cast<float>(hmdInfo.visiblePixelsWide) * 0.25f, static_cast<float>(hmdInfo.visiblePixelsHigh) * 0.5f};
+                const float ndcToPixels[2]    = {static_cast<float>(hmdInfo.visiblePixelsWide) * 0.25f,
+                                                 static_cast<float>(hmdInfo.visiblePixelsHigh) * 0.5f};
                 const float pixelsToMeters[2] = {hmdInfo.visibleMetersWide / static_cast<float>(hmdInfo.visiblePixelsWide),
                                                  hmdInfo.visibleMetersHigh / static_cast<float>(hmdInfo.visiblePixelsHigh)};
 
@@ -103,10 +104,11 @@ void HMD::GetDefaultHmdInfo(const int displayPixelsWide, const int displayPixels
     hmd_info.eyeTilesHigh      = displayPixelsHigh / hmd_info.tilePixelsHigh;
     hmd_info.visiblePixelsWide = hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES;
     hmd_info.visiblePixelsHigh = hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh;
-    hmd_info.visibleMetersWide =
-        displayMetersWide * static_cast<float>(hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / static_cast<float>(displayPixelsWide);
-    hmd_info.visibleMetersHigh      = displayMetersHigh * static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) / static_cast<float>(displayPixelsHigh);
-    hmd_info.lensSeparationInMeters = lensSeparation;
+    hmd_info.visibleMetersWide = displayMetersWide *
+        static_cast<float>(hmd_info.eyeTilesWide * hmd_info.tilePixelsWide * NUM_EYES) / static_cast<float>(displayPixelsWide);
+    hmd_info.visibleMetersHigh = displayMetersHigh * static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
+        static_cast<float>(displayPixelsHigh);
+    hmd_info.lensSeparationInMeters    = lensSeparation;
     hmd_info.metersPerTanAngleAtCenter = metersPerTanAngle;
     hmd_info.numKnots                  = 11;
     hmd_info.K[0]                      = 1.0f;

@@ -120,8 +120,8 @@ private:
         // enable timeline semaphore
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
             VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
-            nullptr,    // pNext
-            VK_TRUE           // timelineSemaphore
+            nullptr, // pNext
+            VK_TRUE  // timelineSemaphore
         };
 
         // enable anisotropic filtering

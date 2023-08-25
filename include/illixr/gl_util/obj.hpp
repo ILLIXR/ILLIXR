@@ -219,7 +219,8 @@ public:
                     // Create/bind/fill vbo.
                     glGenBuffers(1, &newObject.vbo_handle);
                     glBindBuffer(GL_ARRAY_BUFFER, newObject.vbo_handle);
-                    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(buffer.size() * sizeof(vertex_t)), &buffer.at(0), GL_STATIC_DRAW);
+                    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(buffer.size() * sizeof(vertex_t)), &buffer.at(0),
+                                 GL_STATIC_DRAW);
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
                     // Compute the number of triangles for this object.

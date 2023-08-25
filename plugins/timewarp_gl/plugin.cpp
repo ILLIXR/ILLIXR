@@ -16,16 +16,14 @@
 #include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
-#include "illixr/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
 #include "shaders/timewarp_shader.hpp"
 #include "utils/hmd.hpp"
-
 
 using namespace ILLIXR;
 
@@ -106,7 +104,7 @@ private:
 
     // Eye sampler array
     GLuint eye_sampler_0{};
-    //GLuint eye_sampler_1;
+    // GLuint eye_sampler_1;
 
     // Eye index uniform
     GLuint tw_eye_index_unif{};
@@ -157,7 +155,7 @@ private:
 
     GLubyte* readTextureImage() {
         const unsigned memSize = display_params::width_pixels * display_params::height_pixels * 3;
-        auto*       pixels  = new GLubyte[memSize];
+        auto*          pixels  = new GLubyte[memSize];
 
         // Start timer
         time_point startGetTexTime = _m_clock->now();
@@ -244,8 +242,11 @@ private:
                         (-1.0f + static_cast<float>(eye) + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
                     distortion_positions[eye * num_distortion_vertices + index].y =
                         (-1.0f +
-                         2.0f * ((static_cast<float>(hmdInfo.eyeTilesHigh) - static_cast<float>(y)) / static_cast<float>(hmdInfo.eyeTilesHigh)) *
-                             (static_cast<float>(hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) / static_cast<float>(hmdInfo.displayPixelsHigh)));
+                         2.0f *
+                             ((static_cast<float>(hmdInfo.eyeTilesHigh) - static_cast<float>(y)) /
+                              static_cast<float>(hmdInfo.eyeTilesHigh)) *
+                             (static_cast<float>(hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) /
+                              static_cast<float>(hmdInfo.displayPixelsHigh)));
                     distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
 
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
@@ -267,7 +268,7 @@ private:
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
     static void CalculateTimeWarpTransform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
-                                    const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
+                                           const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
@@ -376,7 +377,7 @@ public:
         tw_eye_index_unif       = glGetUniformLocation(timewarpShaderProgram, "ArrayLayer");
 
         eye_sampler_0 = glGetUniformLocation(timewarpShaderProgram, "Texture[0]");
-        //eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
+        // eye_sampler_1 = glGetUniformLocation(timewarpShaderProgram, "Texture[1]");
 
         // Config distortion mesh position vbo
         glGenBuffers(1, &distortion_positions_vbo);
@@ -386,8 +387,8 @@ public:
 
         HMD::mesh_coord3d_t* const distortion_positions_data = distortion_positions.data();
         assert(distortion_positions_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::mesh_coord3d_t)), distortion_positions_data,
-                     GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::mesh_coord3d_t)),
+                     distortion_positions_data, GL_STATIC_DRAW);
 
         glVertexAttribPointer(distortion_pos_attr, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_pos_attr);
@@ -398,7 +399,8 @@ public:
 
         HMD::uv_coord_t* const distortion_uv0_data = distortion_uv0.data();
         assert(distortion_uv0_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv0_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv0_data,
+                     GL_STATIC_DRAW);
 
         glVertexAttribPointer(distortion_uv0_attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_uv0_attr);
@@ -409,7 +411,8 @@ public:
 
         HMD::uv_coord_t* const distortion_uv1_data = distortion_uv1.data();
         assert(distortion_uv1_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv1_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv1_data,
+                     GL_STATIC_DRAW);
 
         glVertexAttribPointer(distortion_uv1_attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_uv1_attr);
@@ -420,7 +423,8 @@ public:
 
         HMD::uv_coord_t* const distortion_uv2_data = distortion_uv2.data();
         assert(distortion_uv2_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv2_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_elems_pos_uv * sizeof(HMD::uv_coord_t)), distortion_uv2_data,
+                     GL_STATIC_DRAW);
 
         glVertexAttribPointer(distortion_uv2_attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         // glEnableVertexAttribArray(distortion_uv2_attr);
@@ -431,7 +435,8 @@ public:
 
         GLuint* const distortion_indices_data = distortion_indices.data();
         assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_distortion_indices * sizeof(GLuint)), distortion_indices_data, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(num_distortion_indices * sizeof(GLuint)),
+                     distortion_indices_data, GL_STATIC_DRAW);
 
         if (enable_offload) {
             // Config PBO for texture image collection
@@ -488,7 +493,8 @@ public:
         CalculateTimeWarpTransform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
         CalculateTimeWarpTransform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-        glUniformMatrix4fv(static_cast<GLint>(tw_start_transform_unif), 1, GL_FALSE, (GLfloat*) (timeWarpStartTransform4x4.data()));
+        glUniformMatrix4fv(static_cast<GLint>(tw_start_transform_unif), 1, GL_FALSE,
+                           (GLfloat*) (timeWarpStartTransform4x4.data()));
         glUniformMatrix4fv(static_cast<GLint>(tw_end_transform_unif), 1, GL_FALSE, (GLfloat*) (timeWarpEndTransform4x4.data()));
 
         // Debugging aid, toggle switch for rendering in the fragment shader

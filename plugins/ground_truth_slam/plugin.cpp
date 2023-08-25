@@ -1,11 +1,11 @@
-#include <thread>
-#include <utility>
-
-#include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
-#include "illixr/switchboard.hpp"
 
 #include "data_loading.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
+
+#include <thread>
+#include <utility>
 
 using namespace ILLIXR;
 

@@ -1,14 +1,13 @@
+#include <eigen3/Eigen/Dense>
 #include <iostream>
+#include <librealsense2/rs.hpp> // Include RealSense Cross Platform API
 #include <memory>
 #include <mutex>
+#include <opencv2/opencv.hpp> // Include OpenCV API
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <librealsense2/rs.hpp> // Include RealSense Cross Platform API
-#include <opencv2/opencv.hpp> // Include OpenCV API
-#include <eigen3/Eigen/Dense>
 
 // ILLIXR includes
 #include "illixr/data_format.hpp"
@@ -60,8 +59,8 @@ public:
             std::string s = mf.get_profile().stream_name();
 
             if (s == "Accel") {
-                accel_data.data         = mf.get_motion_data();
-                accel_data.iteration    = iteration_accel;
+                accel_data.data      = mf.get_motion_data();
+                accel_data.iteration = iteration_accel;
                 iteration_accel++;
             }
 
@@ -70,10 +69,10 @@ public:
                     return;
                 }
 
-                last_iteration_accel        = accel_data.iteration;
-                rs2_vector        accel     = accel_data.data;
-                double            ts        = mf.get_timestamp();
-                rs2_vector        gyro_data = mf.get_motion_data();
+                last_iteration_accel = accel_data.iteration;
+                rs2_vector accel     = accel_data.data;
+                double     ts        = mf.get_timestamp();
+                rs2_vector gyro_data = mf.get_motion_data();
 
                 // IMU data
                 Eigen::Vector3f la = {accel.x, accel.y, accel.z};
@@ -96,7 +95,7 @@ public:
 
         if (auto fs = frame.as<rs2::frameset>()) {
             double ts       = fs.get_timestamp();
-            auto cam_time = static_cast<ullong>(ts * 1000000);
+            auto   cam_time = static_cast<ullong>(ts * 1000000);
             if (!_m_first_cam_time) {
                 _m_first_cam_time      = cam_time;
                 _m_first_real_time_cam = _m_clock->now();

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "phonebook.hpp"
+
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
-
-#include "phonebook.hpp"
 
 namespace ILLIXR {
 

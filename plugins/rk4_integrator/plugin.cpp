@@ -1,20 +1,20 @@
 // This entire IMU integrator has been ported almost as-is from the original OpenVINS integrator, which
 // can be found here: https://github.com/rpng/open_vins/blob/master/ov_msckf/src/state/Propagator.cpp
 
+#include "illixr/plugin.hpp"
+
+#include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/switchboard.hpp"
+
 #include <chrono>
+#include <eigen3/Eigen/Dense>
 #include <iomanip>
 #include <memory>
 #include <utility>
 #include <vector>
-
-#include <eigen3/Eigen/Dense>
-
-#include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/plugin.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/relative_clock.hpp"
-#include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;
 
@@ -142,7 +142,7 @@ private:
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
     static std::vector<imu_type> select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
-                                              time_point time_end) {
+                                                     time_point time_end) {
         std::vector<imu_type> prop_data;
         if (imu_data.size() < 2) {
             return prop_data;
@@ -347,7 +347,7 @@ private:
      * @return 4x1 resulting p*q quaternion
      */
     static inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
-                                                                  const Eigen::Matrix<double, 4, 1>& p) {
+                                                            const Eigen::Matrix<double, 4, 1>& p) {
         Eigen::Matrix<double, 4, 1> q_t;
         Eigen::Matrix<double, 4, 4> Qm;
         // create big L matrix

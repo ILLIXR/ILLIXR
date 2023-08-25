@@ -1,10 +1,9 @@
+#include "illixr/error_util.hpp"
+
 #include <deque>
+#include <eigen3/Eigen/Dense>
 #include <fstream>
 #include <string>
-
-#include <eigen3/Eigen/Dense>
-
-#include "illixr/error_util.hpp"
 
 Eigen::Matrix<float, 3, 3> skew_x(const Eigen::Matrix<float, 3, 1>& w) {
     Eigen::Matrix<float, 3, 3> w_x;

@@ -1,11 +1,11 @@
 #pragma once
+#include "phonebook.hpp"
+#include "record_logger.hpp"
+
 #include <memory>
 #include <string>
 #include <typeinfo>
 #include <utility>
-
-#include "phonebook.hpp"
-#include "record_logger.hpp"
 
 namespace ILLIXR {
 
@@ -54,7 +54,7 @@ public:
      */
     virtual void stop() { }
 
-    plugin(std::string  name_, phonebook* pb_)
+    plugin(std::string name_, phonebook* pb_)
         : name{std::move(name_)}
         , pb{pb_}
         , record_logger_{pb->lookup_impl<record_logger>()}
@@ -75,9 +75,9 @@ protected:
     const std::size_t                    id;
 };
 
-#define PLUGIN_MAIN(plugin_class)                                \
-    extern "C" plugin* this_plugin_factory(phonebook* pb) {      \
-        auto* obj = new plugin_class{#plugin_class, pb};         \
-        return obj;                                              \
+#define PLUGIN_MAIN(plugin_class)                           \
+    extern "C" plugin* this_plugin_factory(phonebook* pb) { \
+        auto* obj = new plugin_class{#plugin_class, pb};    \
+        return obj;                                         \
     }
 } // namespace ILLIXR

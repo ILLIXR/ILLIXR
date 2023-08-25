@@ -8,8 +8,8 @@
 #include <unordered_map>
 
 #ifndef NDEBUG
-#include <iostream>
-#include <stdexcept>
+    #include <iostream>
+    #include <stdexcept>
 #endif
 
 namespace ILLIXR {

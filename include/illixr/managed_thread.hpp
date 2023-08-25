@@ -47,7 +47,7 @@ public:
      * @p body is called in a tight loop
      */
     explicit managed_thread(std::function<void()> body, std::function<void()> on_start = std::function<void()>{},
-                   std::function<void()> on_stop = std::function<void()>{}) noexcept
+                            std::function<void()> on_stop = std::function<void()>{}) noexcept
         : _m_body{std::move(body)}
         , _m_on_start{std::move(on_start)}
         , _m_on_stop{std::move(on_stop)} { }

@@ -1,16 +1,16 @@
 #include <array>
-#include <vector>
-#include <string>
 #include <iostream>
-#include <memory>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
-#include "illixr/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
@@ -23,6 +23,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image.h"
+
 #include <unordered_map>
 
 using namespace ILLIXR;
@@ -39,30 +40,26 @@ struct Vertex {
 
     static VkVertexInputBindingDescription get_binding_description() {
         VkVertexInputBindingDescription binding_description{
-                0,    // binding
-                sizeof(Vertex),    // stride
-                VK_VERTEX_INPUT_RATE_VERTEX     // inputRate
+            0,                          // binding
+            sizeof(Vertex),             // stride
+            VK_VERTEX_INPUT_RATE_VERTEX // inputRate
         };
         return binding_description;
     }
 
     static std::array<VkVertexInputAttributeDescription, 2> get_attribute_descriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions{
-            {
-                    {
-                            0,    // location
-                            0,    // binding
-                            VK_FORMAT_R32G32B32_SFLOAT,    // format
-                            offsetof(Vertex, pos)   // offset
-                    },
-                    {
-                            1,    // location
-                            0,    // binding
-                            VK_FORMAT_R32G32_SFLOAT,    // format
-                            offsetof(Vertex, uv)    // offset
-                    }
-            }
-        };
+        std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions{{{
+                                                                                     0,                          // location
+                                                                                     0,                          // binding
+                                                                                     VK_FORMAT_R32G32B32_SFLOAT, // format
+                                                                                     offsetof(Vertex, pos)       // offset
+                                                                                 },
+                                                                                 {
+                                                                                     1,                       // location
+                                                                                     0,                       // binding
+                                                                                     VK_FORMAT_R32G32_SFLOAT, // format
+                                                                                     offsetof(Vertex, uv)     // offset
+                                                                                 }}};
 
         return attribute_descriptions;
     }
@@ -141,7 +138,7 @@ public:
         create_pipeline(render_pass, subpass);
     }
 
-    void update_uniforms(const pose_type &fp) override {
+    void update_uniforms(const pose_type& fp) override {
         update_uniform(fp, 0);
         update_uniform(fp, 1);
     }
@@ -206,9 +203,9 @@ private:
                 continue;
             }
             VkDescriptorImageInfo image_info{
-                    nullptr,    // sampler
-                    textures[i].image_view,    // imageView
-                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,    // imageLayout
+                nullptr,                                  // sampler
+                textures[i].image_view,                   // imageView
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, // imageLayout
             };
             texture_map.insert(std::make_pair(i, image_infos.size()));
             image_infos.push_back(image_info);
@@ -217,38 +214,38 @@ private:
 
     void create_descriptor_set_layout() {
         VkDescriptorSetLayoutBinding ubo_layout_binding{
-                0,    // binding
-                VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType
-                1,    // descriptorCount
-                VK_SHADER_STAGE_VERTEX_BIT,     // stageFlags
-                nullptr     // pImmutableSamplers
+            0,                                 // binding
+            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, // descriptorType
+            1,                                 // descriptorCount
+            VK_SHADER_STAGE_VERTEX_BIT,        // stageFlags
+            nullptr                            // pImmutableSamplers
         };
 
         VkDescriptorSetLayoutBinding sampler_layout_binding{
-                1,    // binding
-                VK_DESCRIPTOR_TYPE_SAMPLER,    // descriptorType
-                1,    // descriptorCount
-                VK_SHADER_STAGE_FRAGMENT_BIT,    // stageFlags
-                nullptr     // pImmutableSamplers
+            1,                            // binding
+            VK_DESCRIPTOR_TYPE_SAMPLER,   // descriptorType
+            1,                            // descriptorCount
+            VK_SHADER_STAGE_FRAGMENT_BIT, // stageFlags
+            nullptr                       // pImmutableSamplers
         };
 
         VkDescriptorSetLayoutBinding sampled_image_layout_binding{
-                2,    // binding
-                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,    // descriptorType
-                static_cast<uint>(texture_map.size()),    // descriptorCount
-                VK_SHADER_STAGE_FRAGMENT_BIT,    // stageFlags
-                nullptr     // pImmutableSamplers
+            2,                                     // binding
+            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,      // descriptorType
+            static_cast<uint>(texture_map.size()), // descriptorCount
+            VK_SHADER_STAGE_FRAGMENT_BIT,          // stageFlags
+            nullptr                                // pImmutableSamplers
         };
 
         VkDescriptorSetLayoutCreateInfo layout_info{
-                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,     // flags
-                3,     // bindingCount
-                nullptr   // pBindings
+            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, // sType
+            nullptr,                                             // pNext
+            0,                                                   // flags
+            3,                                                   // bindingCount
+            nullptr                                              // pBindings
         };
         VkDescriptorSetLayoutBinding bindings[]{ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
-        layout_info.pBindings                   = bindings;
+        layout_info.pBindings = bindings;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout))
     }
@@ -256,14 +253,14 @@ private:
     void create_uniform_buffers() {
         for (auto i = 0; i < 2; i++) {
             VkBufferCreateInfo buffer_info{
-                    VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
-                    nullptr,    // pNext
-                    0,          // flags
-                    sizeof(UniformBufferObject),    // size
-                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,     // usage
-                    {},    // sharingMode
-                    0,     // queueFamilyIndexCount
-                    nullptr  // pQueueFamilyIndices
+                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
+                nullptr,                              // pNext
+                0,                                    // flags
+                sizeof(UniformBufferObject),          // size
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,   // usage
+                {},                                   // sharingMode
+                0,                                    // queueFamilyIndexCount
+                nullptr                               // pQueueFamilyIndices
             };
 
             VmaAllocationCreateInfo alloc_info{};
@@ -276,29 +273,25 @@ private:
     }
 
     void create_descriptor_pool() {
-        std::array<VkDescriptorPoolSize, 3> pool_sizes{
-            {
-                    {
-                            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // type
-                            2     // descriptorCount
-                    },
-                    {
-                            VK_DESCRIPTOR_TYPE_SAMPLER,    // type
-                            2     // descriptorCount
-                    },
-                    {
-                            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,    // type
-                            static_cast<uint32_t>(2 * texture_map.size())     // descriptorCount
-                    }
-            }
-        };
-        VkDescriptorPoolCreateInfo pool_info{
-                VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,    // flags
-                2,    // maxSets
-                static_cast<uint32_t>(pool_sizes.size()),    // poolSizeCount
-                pool_sizes.data()     // pPoolSizes
+        std::array<VkDescriptorPoolSize, 3> pool_sizes{{{
+                                                            VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, // type
+                                                            2                                  // descriptorCount
+                                                        },
+                                                        {
+                                                            VK_DESCRIPTOR_TYPE_SAMPLER, // type
+                                                            2                           // descriptorCount
+                                                        },
+                                                        {
+                                                            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,             // type
+                                                            static_cast<uint32_t>(2 * texture_map.size()) // descriptorCount
+                                                        }}};
+        VkDescriptorPoolCreateInfo          pool_info{
+            VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
+            nullptr,                                       // pNext
+            0,                                             // flags
+            2,                                             // maxSets
+            static_cast<uint32_t>(pool_sizes.size()),      // poolSizeCount
+            pool_sizes.data()                              // pPoolSizes
         };
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool))
@@ -306,117 +299,109 @@ private:
 
     void create_texture_sampler() {
         VkSamplerCreateInfo sampler_info{
-                VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,    // sType
-                nullptr,     // pNext
-                0,           // flags
-                VK_FILTER_LINEAR,    // magFilter
-                VK_FILTER_LINEAR,    // minFilter
-                VK_SAMPLER_MIPMAP_MODE_LINEAR,    // mipmapMode
-                VK_SAMPLER_ADDRESS_MODE_REPEAT,    // addressModeU
-                VK_SAMPLER_ADDRESS_MODE_REPEAT,    // addressModeV
-                VK_SAMPLER_ADDRESS_MODE_REPEAT,    // addressModeW
-                0.f,         // mipLodBias
-                VK_FALSE,    // anisotropyEnable
-                // .maxAnisotropy = 16;
-                0.f,         // maxAnisotropy
-                VK_FALSE,    // compareEnable
-                VK_COMPARE_OP_ALWAYS,    // compareOp
-                0.f,     // minLod
-                0.f,     // maxLod
-                VK_BORDER_COLOR_INT_OPAQUE_BLACK,    // borderColor
-                VK_FALSE     // unnormalizedCoordinates
+            VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, // sType
+            nullptr,                               // pNext
+            0,                                     // flags
+            VK_FILTER_LINEAR,                      // magFilter
+            VK_FILTER_LINEAR,                      // minFilter
+            VK_SAMPLER_MIPMAP_MODE_LINEAR,         // mipmapMode
+            VK_SAMPLER_ADDRESS_MODE_REPEAT,        // addressModeU
+            VK_SAMPLER_ADDRESS_MODE_REPEAT,        // addressModeV
+            VK_SAMPLER_ADDRESS_MODE_REPEAT,        // addressModeW
+            0.f,                                   // mipLodBias
+            VK_FALSE,                              // anisotropyEnable
+            // .maxAnisotropy = 16;
+            0.f,                              // maxAnisotropy
+            VK_FALSE,                         // compareEnable
+            VK_COMPARE_OP_ALWAYS,             // compareOp
+            0.f,                              // minLod
+            0.f,                              // maxLod
+            VK_BORDER_COLOR_INT_OPAQUE_BLACK, // borderColor
+            VK_FALSE                          // unnormalizedCoordinates
         };
 
         VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &sampler_info, nullptr, &texture_sampler))
     }
 
     void create_descriptor_set() {
-        VkDescriptorSetLayout       layouts[]  = {descriptor_set_layout, descriptor_set_layout};
+        VkDescriptorSetLayout       layouts[] = {descriptor_set_layout, descriptor_set_layout};
         VkDescriptorSetAllocateInfo alloc_info{
-                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,    // sType
-                nullptr,    // pNext
-                descriptor_pool,    // descriptorPool
-                2,    // descriptorSetCount
-                layouts     // pSetLayouts
+            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+            nullptr,                                        // pNext
+            descriptor_pool,                                // descriptorPool
+            2,                                              // descriptorSetCount
+            layouts                                         // pSetLayouts
         };
 
         VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &alloc_info, descriptor_sets.data()))
 
-        std::array<VkDescriptorBufferInfo, 2> buffer_infos = {
-                {
-                        {
-                                uniform_buffers[0],    // buffer
-                                0,    // offset
-                                sizeof(UniformBufferObject)     // range
-                        },
-                        {
-                                uniform_buffers[1],    // buffer
-                                0,    // offset
-                                sizeof(UniformBufferObject)     // range
-                        }
-                }
-        };
+        std::array<VkDescriptorBufferInfo, 2> buffer_infos = {{{
+                                                                   uniform_buffers[0],         // buffer
+                                                                   0,                          // offset
+                                                                   sizeof(UniformBufferObject) // range
+                                                               },
+                                                               {
+                                                                   uniform_buffers[1],         // buffer
+                                                                   0,                          // offset
+                                                                   sizeof(UniformBufferObject) // range
+                                                               }}};
 
-        std::array<VkWriteDescriptorSet, 2> descriptor_writes = {
-                {
-                        {
-                                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
-                                nullptr,    // pNext
-                                descriptor_sets[0],    // dstSet
-                                0,    // dstBinding
-                                0,    // dstArrayElement
-                                1,    // descriptorCount
-                                VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType
-                                nullptr,    // pImageInfo
-                                &buffer_infos[0],    // pBufferInfo
-                                nullptr    //pTexelBufferView
-                        },
-                        {
-                                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
-                                nullptr,    // pNext
-                                descriptor_sets[1],    // dstSet
-                                0,    // dstBinding
-                                0,    // dstArrayElement
-                                1,    // descriptorCount
-                                VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType
-                                nullptr,    // pImageInfo
-                                &buffer_infos[1],     // pBufferInfo
-                                nullptr    //pTexelBufferView
-                        }
-                }
-        };
+        std::array<VkWriteDescriptorSet, 2> descriptor_writes = {{{
+                                                                      VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
+                                                                      nullptr,                                // pNext
+                                                                      descriptor_sets[0],                     // dstSet
+                                                                      0,                                      // dstBinding
+                                                                      0,                                      // dstArrayElement
+                                                                      1,                                      // descriptorCount
+                                                                      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,      // descriptorType
+                                                                      nullptr,                                // pImageInfo
+                                                                      &buffer_infos[0],                       // pBufferInfo
+                                                                      nullptr // pTexelBufferView
+                                                                  },
+                                                                  {
+                                                                      VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
+                                                                      nullptr,                                // pNext
+                                                                      descriptor_sets[1],                     // dstSet
+                                                                      0,                                      // dstBinding
+                                                                      0,                                      // dstArrayElement
+                                                                      1,                                      // descriptorCount
+                                                                      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,      // descriptorType
+                                                                      nullptr,                                // pImageInfo
+                                                                      &buffer_infos[1],                       // pBufferInfo
+                                                                      nullptr // pTexelBufferView
+                                                                  }}};
 
         vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0,
                                nullptr);
 
         std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
         for (auto i = 0; i < 2; i++) {
-            VkDescriptorImageInfo image_info      = {texture_sampler, nullptr, {}};
+            VkDescriptorImageInfo image_info = {texture_sampler, nullptr, {}};
             image_descriptor_writes.push_back({
-                    VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
-                    nullptr,    // pNext
-                    descriptor_sets[i],    // dstSet
-                    1,    // dstBinding
-                    0,    // dstArrayElement
-                    1,    // descriptorCount
-                    VK_DESCRIPTOR_TYPE_SAMPLER,    // descriptorType
-                    &image_info,     // pImageInfo
-                    nullptr,    // pBufferInfo
-                    nullptr     // pTexelBufferView
+                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
+                nullptr,                                // pNext
+                descriptor_sets[i],                     // dstSet
+                1,                                      // dstBinding
+                0,                                      // dstArrayElement
+                1,                                      // descriptorCount
+                VK_DESCRIPTOR_TYPE_SAMPLER,             // descriptorType
+                &image_info,                            // pImageInfo
+                nullptr,                                // pBufferInfo
+                nullptr                                 // pTexelBufferView
             });
 
             assert(!image_infos.empty());
             image_descriptor_writes.push_back({
-                    VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
-                    nullptr,    // pNext
-                    descriptor_sets[i],    // dstSet
-                    2,    // dstBinding
-                    0,    // dstArrayElement
-                    static_cast<uint32_t>(image_infos.size()),    // descriptorCount
-                    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,    // descriptorType
-                    image_infos.data(),     // pImageInfo
-                    nullptr,    // pBufferInfo
-                    nullptr     // pTexelBufferView
+                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
+                nullptr,                                   // pNext
+                descriptor_sets[i],                        // dstSet
+                2,                                         // dstBinding
+                0,                                         // dstArrayElement
+                static_cast<uint32_t>(image_infos.size()), // descriptorCount
+                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,          // descriptorType
+                image_infos.data(),                        // pImageInfo
+                nullptr,                                   // pBufferInfo
+                nullptr                                    // pTexelBufferView
             });
         }
 
@@ -456,14 +441,14 @@ private:
         VmaAllocationInfo staging_buffer_allocation_info;
 
         VkBufferCreateInfo buffer_info{
-                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                image_size,    // size
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
-                {},    // sharingMode
-                0,     // queueFamilyIndexCount
-                nullptr  // pQueueFamilyIndices
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
+            nullptr,                              // pNext
+            0,                                    // flags
+            image_size,                           // size
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
+            {},                                   // sharingMode
+            0,                                    // queueFamilyIndexCount
+            nullptr                               // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo alloc_info{};
@@ -478,25 +463,25 @@ private:
         stbi_image_free(data);
 
         VkImageCreateInfo image_info{
-                VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_IMAGE_TYPE_2D,    // imageType
-                VK_FORMAT_R8G8B8A8_SRGB,    // format
-                {
-                        static_cast<uint32_t>(width),    // width
-                        static_cast<uint32_t>(height),    // height
-                        1,    // depth
-                },     // extent
-                1,    // mipLevels
-                1,    // arrayLayers
-                VK_SAMPLE_COUNT_1_BIT,    // samples
-                VK_IMAGE_TILING_OPTIMAL,    // tiling
-                VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,    // usage
-                VK_SHARING_MODE_EXCLUSIVE,    // sharingMode
-                0,    // queueFamilyIndexCount
-                nullptr,  // pQueueFamilyIndices
-                VK_IMAGE_LAYOUT_UNDEFINED     // initialLayout
+            VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
+            nullptr,                             // pNext
+            0,                                   // flags
+            VK_IMAGE_TYPE_2D,                    // imageType
+            VK_FORMAT_R8G8B8A8_SRGB,             // format
+            {
+                static_cast<uint32_t>(width),                             // width
+                static_cast<uint32_t>(height),                            // height
+                1,                                                        // depth
+            },                                                            // extent
+            1,                                                            // mipLevels
+            1,                                                            // arrayLayers
+            VK_SAMPLE_COUNT_1_BIT,                                        // samples
+            VK_IMAGE_TILING_OPTIMAL,                                      // tiling
+            VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, // usage
+            VK_SHARING_MODE_EXCLUSIVE,                                    // sharingMode
+            0,                                                            // queueFamilyIndexCount
+            nullptr,                                                      // pQueueFamilyIndices
+            VK_IMAGE_LAYOUT_UNDEFINED                                     // initialLayout
         };
 
         VmaAllocationCreateInfo image_alloc_info{};
@@ -517,45 +502,47 @@ private:
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
 
         VkImageViewCreateInfo view_info{
-                VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                textures[i].image,    // image
-                VK_IMAGE_VIEW_TYPE_2D,    // viewType
-                VK_FORMAT_R8G8B8A8_SRGB,    // format
-                {},    // components
-                {
-                        VK_IMAGE_ASPECT_COLOR_BIT,    // aspectMask
-                        0,    // baseMipLevel
-                        1,    // levelCount
-                        0,    // baseArrayLayer
-                        1     // layerCount
-                }    // subresourceRange
+            VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
+            nullptr,                                  // pNext
+            0,                                        // flags
+            textures[i].image,                        // image
+            VK_IMAGE_VIEW_TYPE_2D,                    // viewType
+            VK_FORMAT_R8G8B8A8_SRGB,                  // format
+            {},                                       // components
+            {
+                VK_IMAGE_ASPECT_COLOR_BIT, // aspectMask
+                0,                         // baseMipLevel
+                1,                         // levelCount
+                0,                         // baseArrayLayer
+                1                          // layerCount
+            }                              // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view))
     }
 
-    void image_layout_transition(VkImage image, [[maybe_unused]]VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout) {
+    void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
+                                 VkImageLayout new_layout) {
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
 
         VkImageMemoryBarrier barrier{
-                VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,    // sType
-                nullptr,    // pNext
-                {},     // srcAccessMask
-                {},     // dstAccessMask
-                old_layout,    // oldLayout
-                new_layout,    // newLayout
-                VK_QUEUE_FAMILY_IGNORED,    // srcQueueFamilyIndex
-                VK_QUEUE_FAMILY_IGNORED,    // dstQueueFamilyIndex
-                image,    // image
-                {
-                        (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT,    // aspectMask
-                        0,    // baseMipLevel
-                        1,    // levelCount
-                        0,    // baseArrayLayer
-                        1     // layerCount
-                }     // subresourceRange
+            VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, // sType
+            nullptr,                                // pNext
+            {},                                     // srcAccessMask
+            {},                                     // dstAccessMask
+            old_layout,                             // oldLayout
+            new_layout,                             // newLayout
+            VK_QUEUE_FAMILY_IGNORED,                // srcQueueFamilyIndex
+            VK_QUEUE_FAMILY_IGNORED,                // dstQueueFamilyIndex
+            image,                                  // image
+            {
+                (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) ? VK_IMAGE_ASPECT_DEPTH_BIT
+                                                                                 : VK_IMAGE_ASPECT_COLOR_BIT, // aspectMask
+                0,                                                                                            // baseMipLevel
+                1,                                                                                            // levelCount
+                0,                                                                                            // baseArrayLayer
+                1                                                                                             // layerCount
+            } // subresourceRange
         };
 
         VkPipelineStageFlags source_stage;
@@ -644,14 +631,14 @@ private:
 
     void create_vertex_buffer() {
         VkBufferCreateInfo staging_buffer_info{
-                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                sizeof(vertices[0]) * vertices.size(),    // size
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
-                {},    // sharingMode
-                0,     // queueFamilyIndexCount
-                nullptr  // pQueueFamilyIndices
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+            nullptr,                               // pNext
+            0,                                     // flags
+            sizeof(vertices[0]) * vertices.size(), // size
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,      // usage
+            {},                                    // sharingMode
+            0,                                     // queueFamilyIndexCount
+            nullptr                                // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo staging_alloc_info{};
@@ -664,14 +651,14 @@ private:
                                           &staging_buffer_allocation, nullptr))
 
         VkBufferCreateInfo buffer_info{
-                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                sizeof(vertices[0]) * vertices.size(),    // size
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,     // usage
-                {},    // sharingMode
-                0,     // queueFamilyIndexCount
-                nullptr  // pQueueFamilyIndices
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,                                 // sType
+            nullptr,                                                              // pNext
+            0,                                                                    // flags
+            sizeof(vertices[0]) * vertices.size(),                                // size
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, // usage
+            {},                                                                   // sharingMode
+            0,                                                                    // queueFamilyIndexCount
+            nullptr                                                               // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo alloc_info{};
@@ -687,10 +674,10 @@ private:
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy copy_region{
-            0,  // srcOffset
-            0,  // dstOffset
-            sizeof(vertices[0]) * vertices.size()     // size
+        VkBufferCopy    copy_region{
+            0,                                    // srcOffset
+            0,                                    // dstOffset
+            sizeof(vertices[0]) * vertices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
@@ -700,14 +687,14 @@ private:
 
     void create_index_buffer() {
         VkBufferCreateInfo staging_buffer_info{
-                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                sizeof(indices[0]) * indices.size(),    // size
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
-                {},     // sharingMode
-                0,      // queueFamilyIndexCount
-                nullptr  // pQueueFamilyIndices
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
+            nullptr,                              // pNext
+            0,                                    // flags
+            sizeof(indices[0]) * indices.size(),  // size
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
+            {},                                   // sharingMode
+            0,                                    // queueFamilyIndexCount
+            nullptr                               // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo staging_alloc_info{};
@@ -720,22 +707,21 @@ private:
                                           &staging_buffer_allocation, nullptr))
 
         VkBufferCreateInfo buffer_info{
-                VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                sizeof(indices[0]) * indices.size(),    // size
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,     // usage
-                {},     // sharingMode
-                0,      // queueFamilyIndexCount
-                nullptr  // pQueueFamilyIndices
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,                                // sType
+            nullptr,                                                             // pNext
+            0,                                                                   // flags
+            sizeof(indices[0]) * indices.size(),                                 // size
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, // usage
+            {},                                                                  // sharingMode
+            0,                                                                   // queueFamilyIndexCount
+            nullptr                                                              // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo alloc_info{};
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr))
 
         void* mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data))
@@ -743,10 +729,10 @@ private:
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy copy_region{
-            0,   // srcOffset
-            0,   // dstOffset
-            sizeof(indices[0]) * indices.size()     // size
+        VkBufferCopy    copy_region{
+            0,                                  // srcOffset
+            0,                                  // dstOffset
+            sizeof(indices[0]) * indices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
         vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
@@ -766,23 +752,23 @@ private:
             vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info{
-                VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_SHADER_STAGE_VERTEX_BIT,    // stage
-                vert,    // module
-                "main",     // pName
-                nullptr    // pSpecializationInfo
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
+            nullptr,                                             // pNext
+            0,                                                   // flags
+            VK_SHADER_STAGE_VERTEX_BIT,                          // stage
+            vert,                                                // module
+            "main",                                              // pName
+            nullptr                                              // pSpecializationInfo
         };
 
         VkPipelineShaderStageCreateInfo frag_shader_stage_info{
-                VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_SHADER_STAGE_FRAGMENT_BIT,    // stage
-                frag,    // module
-                "main",     // pName
-                nullptr    // pSpecializationInfo
+            VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
+            nullptr,                                             // pNext
+            0,                                                   // flags
+            VK_SHADER_STAGE_FRAGMENT_BIT,                        // stage
+            frag,                                                // module
+            "main",                                              // pName
+            nullptr                                              // pSpecializationInfo
         };
 
         VkPipelineShaderStageCreateInfo shader_stages[] = {vert_shader_stage_info, frag_shader_stage_info};
@@ -791,149 +777,150 @@ private:
         auto attribute_descriptions = Vertex::get_attribute_descriptions();
 
         VkPipelineVertexInputStateCreateInfo vertex_input_info{
-                VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                1,    // vertexBindingDescriptionCount
-                &binding_description,    // pVertexBindingDescriptions
-                static_cast<uint32_t>(attribute_descriptions.size()),    // vertexAttributeDescriptionCount
-                attribute_descriptions.data()     // pVertexAttributeDescriptions
+            VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO, // sType
+            nullptr,                                                   // pNext
+            0,                                                         // flags
+            1,                                                         // vertexBindingDescriptionCount
+            &binding_description,                                      // pVertexBindingDescriptions
+            static_cast<uint32_t>(attribute_descriptions.size()),      // vertexAttributeDescriptionCount
+            attribute_descriptions.data()                              // pVertexAttributeDescriptions
         };
 
         VkPipelineInputAssemblyStateCreateInfo input_assembly{
-                VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,    // topology
-                VK_FALSE     // primitiveRestartEnable
+            VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, // sType
+            nullptr,                                                     // pNext
+            0,                                                           // flags
+            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,                         // topology
+            VK_FALSE                                                     // primitiveRestartEnable
         };
 
         VkViewport viewport{
-                0.0f,    // x
-                0.0f,    // y
-                static_cast<float>(ds->swapchain_extent.width),    // width
-                static_cast<float>(ds->swapchain_extent.height),    // height
-                0.0f,    // minDepth
-                1.0f     // maxDepth
+            0.0f,                                            // x
+            0.0f,                                            // y
+            static_cast<float>(ds->swapchain_extent.width),  // width
+            static_cast<float>(ds->swapchain_extent.height), // height
+            0.0f,                                            // minDepth
+            1.0f                                             // maxDepth
         };
 
         VkRect2D scissor{
-                {0, 0},    // offset
-                ds->swapchain_extent     // extent
+            {0, 0},              // offset
+            ds->swapchain_extent // extent
         };
 
         VkPipelineViewportStateCreateInfo viewport_state{
-                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                1,    // viewportCount
-                &viewport,    // pViewports
-                1,    // scissorCount
-                &scissor     // pScissors
+            VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, // sType
+            nullptr,                                               // pNext
+            0,                                                     // flags
+            1,                                                     // viewportCount
+            &viewport,                                             // pViewports
+            1,                                                     // scissorCount
+            &scissor                                               // pScissors
         };
 
         VkPipelineRasterizationStateCreateInfo rasterizer{
-                VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_FALSE,    // depthClampEnable
-                VK_FALSE,    // rasterizerDiscardEnable
-                VK_POLYGON_MODE_FILL,    // polygonMode
-                VK_CULL_MODE_NONE,    // cullMode
-                VK_FRONT_FACE_COUNTER_CLOCKWISE,    // frontFace
-                VK_FALSE,    // depthBiasEnable
-                0.f,     // depthBiasConstantFactor
-                0.f,     // depthBiasClamp
-                0.f,     // depthBiasSlopeFactor
-                1.0f     // lineWidth
+            VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, // sType
+            nullptr,                                                    // pNext
+            0,                                                          // flags
+            VK_FALSE,                                                   // depthClampEnable
+            VK_FALSE,                                                   // rasterizerDiscardEnable
+            VK_POLYGON_MODE_FILL,                                       // polygonMode
+            VK_CULL_MODE_NONE,                                          // cullMode
+            VK_FRONT_FACE_COUNTER_CLOCKWISE,                            // frontFace
+            VK_FALSE,                                                   // depthBiasEnable
+            0.f,                                                        // depthBiasConstantFactor
+            0.f,                                                        // depthBiasClamp
+            0.f,                                                        // depthBiasSlopeFactor
+            1.0f                                                        // lineWidth
         };
 
         VkPipelineMultisampleStateCreateInfo multisampling{
-                VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_SAMPLE_COUNT_1_BIT,    // rasterizationSamples
-                VK_FALSE,     // sampleShadingEnable
-                0.f,       // minSampleShading
-                nullptr,   // pSampleMask
-                0,         // alphaToCoverageEnable
-                0          // alphaToOneEnable
+            VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, // sType
+            nullptr,                                                  // pNext
+            0,                                                        // flags
+            VK_SAMPLE_COUNT_1_BIT,                                    // rasterizationSamples
+            VK_FALSE,                                                 // sampleShadingEnable
+            0.f,                                                      // minSampleShading
+            nullptr,                                                  // pSampleMask
+            0,                                                        // alphaToCoverageEnable
+            0                                                         // alphaToOneEnable
         };
 
         VkPipelineColorBlendAttachmentState color_blend_attachment{
-                VK_FALSE,    // blendEnable
-                {},          // srcColorBlendFactor
-                {},          // dstColorBlendFactor
-                {},          // colorBlendOp
-                {},          // srcAlphaBlendFactor
-                {},          // dstAlphaBlendFactor
-                {},          // alphaBlendOp
-                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT     // colorWriteMask
+            VK_FALSE, // blendEnable
+            {},       // srcColorBlendFactor
+            {},       // dstColorBlendFactor
+            {},       // colorBlendOp
+            {},       // srcAlphaBlendFactor
+            {},       // dstAlphaBlendFactor
+            {},       // alphaBlendOp
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+                VK_COLOR_COMPONENT_A_BIT // colorWriteMask
         };
         VkPipelineColorBlendStateCreateInfo color_blending{
-                VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                0,    // logicOpEnable
-                {},   // logicOp
-                1,    // attachmentCount
-                &color_blend_attachment,     // pAttachments
-                {0.f, 0.f, 0.f, 0.f}    // blendConstants
+            VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, // sType
+            nullptr,                                                  // pNext
+            0,                                                        // flags
+            0,                                                        // logicOpEnable
+            {},                                                       // logicOp
+            1,                                                        // attachmentCount
+            &color_blend_attachment,                                  // pAttachments
+            {0.f, 0.f, 0.f, 0.f}                                      // blendConstants
         };
 
         VkPushConstantRange push_constant_range{
-                VK_SHADER_STAGE_FRAGMENT_BIT,    // stageFlags
-                0,    // offset
-                sizeof(ModelPushConstant)     // size
+            VK_SHADER_STAGE_FRAGMENT_BIT, // stageFlags
+            0,                            // offset
+            sizeof(ModelPushConstant)     // size
         };
 
         VkPipelineLayoutCreateInfo pipeline_layout_info{
-                VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                1,    // setLayoutCount
-                &descriptor_set_layout,    // pSetLayouts
-                1,    // pushConstantRangeCount
-                &push_constant_range     // pPushConstantRanges
+            VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, // sType
+            nullptr,                                       // pNext
+            0,                                             // flags
+            1,                                             // setLayoutCount
+            &descriptor_set_layout,                        // pSetLayouts
+            1,                                             // pushConstantRangeCount
+            &push_constant_range                           // pPushConstantRanges
         };
 
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout))
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil{
-                VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                VK_TRUE,    // depthTestEnable
-                VK_TRUE,    // depthWriteEnable
-                VK_COMPARE_OP_LESS,    // depthCompareOp
-                VK_FALSE,    // depthBoundsTestEnable
-                VK_FALSE,    // stencilTestEnable
-                {},    // front
-                {},    // back
-                0.0f,    // minDepthBounds
-                1.0f     // maxDepthBounds
+            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, // sType
+            nullptr,                                                    // pNext
+            0,                                                          // flags
+            VK_TRUE,                                                    // depthTestEnable
+            VK_TRUE,                                                    // depthWriteEnable
+            VK_COMPARE_OP_LESS,                                         // depthCompareOp
+            VK_FALSE,                                                   // depthBoundsTestEnable
+            VK_FALSE,                                                   // stencilTestEnable
+            {},                                                         // front
+            {},                                                         // back
+            0.0f,                                                       // minDepthBounds
+            1.0f                                                        // maxDepthBounds
         };
 
         VkGraphicsPipelineCreateInfo pipeline_info{
-                VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,    // sType
-                nullptr,    // pNext
-                0,          // flags
-                2,    // stageCount
-                shader_stages,    // pStages
-                &vertex_input_info,    // pVertexInputState
-                &input_assembly,    // pInputAssemblyState
-                nullptr,            // pTessellationState
-                &viewport_state,    // pViewportState
-                &rasterizer,    // pRasterizationState
-                &multisampling,    // pMultisampleState
-                &depth_stencil,    // pDepthStencilState
-                &color_blending,    // pColorBlendState
-                nullptr,            // pDynamicState
-                pipeline_layout,    // layout
-                render_pass,    // renderPass
-                subpass,     // subpass
-                {},          // basePipelineHandle
-                0            // basePipelineIndex
+            VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO, // sType
+            nullptr,                                         // pNext
+            0,                                               // flags
+            2,                                               // stageCount
+            shader_stages,                                   // pStages
+            &vertex_input_info,                              // pVertexInputState
+            &input_assembly,                                 // pInputAssemblyState
+            nullptr,                                         // pTessellationState
+            &viewport_state,                                 // pViewportState
+            &rasterizer,                                     // pRasterizationState
+            &multisampling,                                  // pMultisampleState
+            &depth_stencil,                                  // pDepthStencilState
+            &color_blending,                                 // pColorBlendState
+            nullptr,                                         // pDynamicState
+            pipeline_layout,                                 // layout
+            render_pass,                                     // renderPass
+            subpass,                                         // subpass
+            {},                                              // basePipelineHandle
+            0                                                // basePipelineIndex
         };
 
         VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))

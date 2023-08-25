@@ -1,12 +1,12 @@
-#include <memory>
-
-#include <eigen3/Eigen/Dense>
-#include <utility>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
+
+#include <eigen3/Eigen/Dense>
+#include <memory>
+#include <utility>
 
 using namespace ILLIXR;
 

@@ -28,18 +28,18 @@
 /*   * (This version uploaded to ILLIXR github)                              */
 /*                                                                           */
 
-#include <cstdlib>
-#include <iostream>
-#include <memory>
-#include <mutex>
-
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
+
+#include <cstdlib>
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
+#include <iostream>
+#include <memory>
+#include <mutex>
 
 using namespace ILLIXR;
 
@@ -118,7 +118,7 @@ public:
     }
 
     // ********************************************************************
-    pose_type correct_pose([[maybe_unused]] const pose_type &pose) const override {
+    pose_type correct_pose([[maybe_unused]] const pose_type& pose) const override {
 #ifndef NDEBUG
         std::cout << "[fauxpose] Returning (passthru) pose\n";
 #endif

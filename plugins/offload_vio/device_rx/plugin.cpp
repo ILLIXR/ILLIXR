@@ -1,14 +1,13 @@
-#include <ecal/ecal.h>
-#include <ecal/msg/protobuf/subscriber.h>
-
-#include <utility>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-
 #include "vio_output.pb.h"
+
+#include <ecal/ecal.h>
+#include <ecal/msg/protobuf/subscriber.h>
+#include <utility>
 
 using namespace ILLIXR;
 
@@ -31,7 +30,7 @@ public:
 private:
     void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output) {
         const vio_output_proto::SlowPose& slow_pose = vio_output.slow_pose();
-        pose_type                  datum_pose_tmp{
+        pose_type                         datum_pose_tmp{
             time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
             Eigen::Vector3f{static_cast<float>(slow_pose.position().x()), static_cast<float>(slow_pose.position().y()),
                             static_cast<float>(slow_pose.position().z())},

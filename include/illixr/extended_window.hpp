@@ -1,12 +1,12 @@
 #pragma once
 
-#include <cassert>
-#include <cerrno>
-#include <GL/glx.h>
-
 #include "error_util.hpp"
 #include "global_module_defs.hpp"
 #include "phonebook.hpp"
+
+#include <cassert>
+#include <cerrno>
+#include <GL/glx.h>
 
 // GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091

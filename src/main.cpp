@@ -1,3 +1,10 @@
+#include "cxxopts.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/runtime.hpp"
+#include "runtime_impl.hpp"
+#include "yaml-cpp/yaml.h"
+
 #include <algorithm>
 #include <atomic>
 #include <cassert>
@@ -7,15 +14,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
-#include "illixr/error_util.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/runtime.hpp"
-
-#include "cxxopts.hpp"
-#include "runtime_impl.hpp"
-#include "yaml-cpp/yaml.h"
-
 
 #define GET_STRING(NAME, ENV)                                        \
     if (result.count(#NAME)) {                                       \

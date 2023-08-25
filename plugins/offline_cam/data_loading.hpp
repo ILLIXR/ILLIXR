@@ -1,16 +1,15 @@
 #pragma once
 
+#include "illixr/csv_iterator.hpp"
+#include "illixr/data_format.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <string>
-
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <string>
 #include <utility>
-
-#include "illixr/csv_iterator.hpp"
-#include "illixr/data_format.hpp"
 
 typedef unsigned long long ullong;
 
@@ -26,7 +25,7 @@ class lazy_load_image {
 public:
     lazy_load_image() { }
 
-    lazy_load_image(std::string  path)
+    lazy_load_image(std::string path)
         : _m_path(std::move(path)) {
 #ifndef LAZY
         _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);

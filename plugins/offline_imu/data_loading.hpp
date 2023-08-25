@@ -1,13 +1,12 @@
 #pragma once
+#include "illixr/csv_iterator.hpp"
+#include "illixr/data_format.hpp"
+
+#include <eigen3/Eigen/Dense>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
-
-#include <eigen3/Eigen/Dense>
-
-#include "illixr/csv_iterator.hpp"
-#include "illixr/data_format.hpp"
 
 typedef unsigned long long ullong;
 

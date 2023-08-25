@@ -12,8 +12,8 @@
 
 // ILLIXR includes
 #include "illixr/data_format.hpp"
-#include "illixr/phonebook.hpp"
 #include "illixr/opencv_data_types.hpp"
+#include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -87,17 +87,20 @@ public:
 
             time_point cam_time_point{*_m_first_real_time_cam + std::chrono::nanoseconds(cam_time - *_m_first_cam_time)};
 
-            cv::Mat color = cv::Mat(static_cast<int>(colorFrame->getHeight()), static_cast<int>(colorFrame->getWidth()), CV_8UC3, colorFrame->getData().data());
+            cv::Mat color = cv::Mat(static_cast<int>(colorFrame->getHeight()), static_cast<int>(colorFrame->getWidth()),
+                                    CV_8UC3, colorFrame->getData().data());
             cv::Mat rgb_out{color.clone()};
-            cv::Mat rectifiedLeftFrame = cv::Mat(static_cast<int>(rectifL->getHeight()), static_cast<int>(rectifL->getWidth()), CV_8UC1, rectifL->getData().data());
+            cv::Mat rectifiedLeftFrame = cv::Mat(static_cast<int>(rectifL->getHeight()), static_cast<int>(rectifL->getWidth()),
+                                                 CV_8UC1, rectifL->getData().data());
             cv::Mat LeftOut{rectifiedLeftFrame.clone()};
             cv::flip(LeftOut, LeftOut, 1);
-            cv::Mat rectifiedRightFrame =
-                cv::Mat(static_cast<int>(rectifR->getHeight()), static_cast<int>(rectifR->getWidth()), CV_8UC1, rectifR->getData().data());
+            cv::Mat rectifiedRightFrame = cv::Mat(static_cast<int>(rectifR->getHeight()), static_cast<int>(rectifR->getWidth()),
+                                                  CV_8UC1, rectifR->getData().data());
             cv::Mat RightOut{rectifiedRightFrame.clone()};
             cv::flip(RightOut, RightOut, 1);
 
-            cv::Mat depth = cv::Mat(static_cast<int>(depthFrame->getHeight()), static_cast<int>(depthFrame->getWidth()), CV_16UC1, depthFrame->getData().data());
+            cv::Mat depth = cv::Mat(static_cast<int>(depthFrame->getHeight()), static_cast<int>(depthFrame->getWidth()),
+                                    CV_16UC1, depthFrame->getData().data());
             cv::Mat converted_depth;
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 

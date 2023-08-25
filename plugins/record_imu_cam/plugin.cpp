@@ -1,18 +1,18 @@
-#include <iomanip>
-#include <fstream>
-#include <memory>
-#include <string>
-
-#include <boost/filesystem.hpp>
-#include <eigen3/Eigen/Dense>
-#include <opencv2/imgcodecs.hpp>
-#include <utility>
+#include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
 #include "illixr/opencv_data_types.hpp"
-#include "illixr/plugin.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
+
+#include <boost/filesystem.hpp>
+#include <eigen3/Eigen/Dense>
+#include <fstream>
+#include <iomanip>
+#include <memory>
+#include <opencv2/imgcodecs.hpp>
+#include <string>
+#include <utility>
 
 using namespace ILLIXR;
 
