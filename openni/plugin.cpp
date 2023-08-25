@@ -101,7 +101,7 @@ protected:
             printf("Depth Mode %i: %ix%i, %i fps, %i format\n", i, modesDepth[i].getResolutionX(),
                    modesDepth[i].getResolutionY(), modesDepth[i].getFps(), modesDepth[i].getPixelFormat());
         }
-        rc = depth.setVideoMode(modesDepth[4]);
+        rc = depth.setVideoMode(modesDepth[0]);
         if (openni::STATUS_OK != rc)
             std::cout << "error: depth fromat not supprted..." << std::endl;
         // start depth stream
@@ -122,7 +122,7 @@ protected:
             printf("Color Mode %i: %ix%i, %i fps, %i format\n", i, modesColor[i].getResolutionX(),
                    modesColor[i].getResolutionY(), modesColor[i].getFps(), modesColor[i].getPixelFormat());
         }
-        rc = color.setVideoMode(modesColor[9]);
+        rc = color.setVideoMode(modesColor[0]);
         if (openni::STATUS_OK != rc)
             std::cout << "error: color format not supprted..." << std::endl;
         // start color stream
