@@ -163,57 +163,93 @@ properties:
         description: The delimiter used in the dataset to separate data values.
       root_path:
         $ref: '#/definitions/path'
-        description: Path to the directory containing the dataset
+        description: Path to the directory containing the dataset.
       imu:
-        timestamp_units:
-          default: 'nanoseconds'
-          type: string
-        layout:
-          type: string
-          default: ''
-        data_path:
-          $ref: '#/definitions/path' # add description
+        type: object
+        default: {}
+        additionalProperties: false
+        properties:
+          timestamp_units:
+            default: 'nanoseconds'
+            type: string
+          format:
+            type: string
+            default: ''
+          path:
+            type: array
+            default: []
+            items:
+                $ref: '#/definitions/path'
+                description: List of paths to the directories containing the IMU.
       image:
-        timestamp_units:
-          default: 'nanoseconds'
-          type: string
-        rgb:
-          type: array
-          default: []
-          items:
-            path:
-              $ref: '#/definitions/path'
-              description: Path to the directory containing the RGB images.
-        depth:
-          type: array
-          default: []
-          items:
-            data_path:
-              $ref: '#/definitions/path'
-              description: Path to the directory containing the Depth images.
-        grayscale:
-          type: array
-          default: []
-          items:
-            data_path:
-              $ref: '#/definitions/path'
-              description: Path to the directory containing the grayscale images.
+        type: object
+        default: {}
+        additionalProperties: false
+        properties:
+          timestamp_units:
+            default: 'nanoseconds'
+            type: string
+          rgb:
+            type: object
+            default: {}
+            additionalProperties: false
+            properties:
+              path:
+                type: array
+                default: []
+                items:
+                    $ref: '#/definitions/path'
+                    description: List of paths to the directories containing the RGB Images.
+          depth:
+            type: object
+            default: {}
+            additionalProperties: false
+            properties:
+              path:
+                type: array
+                default: []
+                items:
+                    $ref: '#/definitions/path'
+                    description: List of paths to the directories containing the Depth Images.
+          grayscale:
+            type: object
+            default: {}
+            additionalProperties: false
+            properties:
+              path:
+                type: array
+                default: []
+                items:
+                    $ref: '#/definitions/path'
+                    description: List of paths to the directories containing the Grayscale Images.
       pose:
-        timestamp_units:
-          default: 'nanoseconds'
-          type: string
-        data_path:
-          $ref: '#/definitions/path' # add description
+        type: object
+        default: {}
+        additionalProperties: false
+        properties:
+          timestamp_units:
+            default: 'nanoseconds'
+            type: string
+          path:
+            $ref: '#/definitions/path'
+            description: List of paths to the directories containing the pose data.              
       ground_truth:
-        timestamp_units:
-          default: 'nanoseconds'
-          type: string
-        data_path:
-          $ref: '#/definitions/path' # add description
-        layout:
-          type: string
-        name:
-          type: string
+        type: object
+        default: {}
+        additionalProperties: false
+        properties:
+          timestamp_units:
+            default: 'nanoseconds'
+            type: string
+          path:
+            $ref: '#/definitions/path'
+            description: Path to the file containing the Ground Truth data.
+          format:
+            default: ''
+            type: string
+          name:
+            default: ''
+            type: string
   demo_data:
     $ref: '#/definitions/path'
     description: URL to OBJs to render in gldemo.
