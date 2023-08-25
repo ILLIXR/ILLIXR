@@ -2,12 +2,6 @@ delimiter: ','
 
 root_path: /home/tirthankar/Downloads/rgbd_dataset_freiburg1_360
 
-# data:
-#   subpath: mav0
-#   relative_to:
-#     archive_path:
-#       download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-
 image:
   # timestamp units aren't mentioned, so the default of nanoseconds
   # will be used.
@@ -19,8 +13,6 @@ image:
       - path: depth
 
 ground_truth:
-	- pose:
-    # datatype isn't mentioned, so the default of `double` will be used.
-    # timestamp units aren't mentioned, so the default of nanoseconds
-    # will be used.
-	  - path: groundtruth.txt
+  path: groundtruth.txt
+  format: 3, 4
+  name: position, orientation

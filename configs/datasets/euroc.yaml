@@ -1,28 +1,28 @@
-dataset:
-  delimiter: ','
+delimiter: ","
 
-  root_path:
-    relative_to:
-      archive_path:
-        download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
+root_path:
+  subpath: mav0
+  relative_to:
+    archive_path:
+      download_url: "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip"
 
-  imu:
-    - datatype: float
-    - timestamp_units: nanoseconds
-    - format: ang_vel,lin_accel
-    - path: mav0/imu0/data.csv
+imu:
+  timestamp_units: nanoseconds
+  format: ang_vel, lin_accel
+  path:
+    - imu0/data.csv
 
-  image:
-    # timestamp units aren't mentioned, so the default of nanoseconds
-    # will be used.
-    - grayscale:
-        # EuRoC has two grayscale image streams
-        - path: mav0/cam0/data
-        - path: mav0/cam1/data
+image:
+  # timestamp units aren't mentioned, so the default of nanoseconds
+  # will be used.
+  grayscale:
+    # EuRoC has two grayscale image streams
+    path:
+      - cam0/data
+      - cam1/data
 
-  ground_truth:
-    - datatype: float
-    - timestamp_units: nanoseconds
-    - path: mav0/state_groundtruth_estimate0/data.csv
-    - format: 3, 4, 3, 3, 3
-    - name: position, orientation, linear_velocity, angular_velocity, linear_acceleration
+ground_truth:
+  timestamp_units: nanoseconds
+  path: state_groundtruth_estimate0/data.csv
+  format: 3, 4, 3, 3, 3
+  name: position, orientation, linear_velocity, angular_velocity, linear_acceleration
