@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-// We assume that defaults are filled (to be done) and that all the environment variables exist.
+// We assume that defaults are filled and that all the environment variables exist.
 
 enum class TimestampUnit { second, millisecond, microsecond, nanosecond };
 
@@ -19,7 +19,7 @@ struct IMUConfig {
     std::vector<std::filesystem::path> path_list;
 
     // format-related info
-    std::vector<bool> format;
+    bool format;
     // if true, then linear acceleration is first. Else, angular velocity is first.
     // This was an arbitrary choice.
 };
