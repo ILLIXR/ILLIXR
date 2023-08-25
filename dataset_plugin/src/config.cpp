@@ -63,15 +63,12 @@ void ConfigParser::initIMUConfig(Config& config) {
         ILLIXR::abort();
     }
 
-    std::istringstream input_stream(format_env_var);
-    std::string        lin_accel_first;
+    std::string format{format_env_var};
 
-    while (std::getline(input_stream, lin_accel_first, ',')) {
-        if (lin_accel_first == "true") {
-            config.imu_config.format.emplace_back(true);
-        } else {
-            config.imu_config.format.emplace_back(false);
-        }
+    if (format == "true") {
+        config.imu_config.format = true;
+    } else {
+        config.imu_config.format = false;
     }
 
     // sanity checking
@@ -244,11 +241,23 @@ void ConfigParser::initFromConfig(Config& config) {
 
     config.root_path = root_path_env_var;
 
-    initIMUConfig(config);
+    const char* use_imu_env_var = std::getenv("ILLIXR_DATASET_USE_IMU_PUBLISHER");
+    if (use_imu_env_var) {
+        initIMUConfig(config);
+    }
 
-    initImageConfig(config);
+    const char* use_image_env_var = std::getenv("ILLIXR_DATASET_USE_IMAGE_PUBLISHER");
+    if (use_image_env_var) {
+        initImageConfig(config);
+    }
 
-    initPoseConfig(config);
+    const char* use_pose_env_var = std::getenv("ILLIXR_DATASET_USE_POSE_PUBLISHER");
+    if (use_imu_env_var) {
+        initPoseConfig(config);
+    }
 
-    initGroundTruthConfig(config);
+    const char* use_ground_truth_env_var = std::getenv("ILLIXR_DATASET_USE_GROUND_TRUTH_PUBLISHER");
+    if (use_ground_truth_env_var) {
+        initGroundTruthConfig(config);
+    }
 }
