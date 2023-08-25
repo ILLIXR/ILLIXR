@@ -1,6 +1,5 @@
 #include "../common/data_format.hpp"
 #include "../common/phonebook.hpp"
-#include "../common/pose_prediction.hpp"
 #include "../common/relative_clock.hpp"
 #include "../common/switchboard.hpp"
 #include "../common/threadloop.hpp"
