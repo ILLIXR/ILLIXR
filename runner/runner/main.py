@@ -470,7 +470,7 @@ def load_dataset(config: Mapping[str, Any]) -> None:
     # ILLIXR_DATASET_DELIMITER
     # ILLIXR_DATASET_ROOT_PATH
     delimiter = dataset_config["delimiter"]
-    dataset_path = pathify(dataset_config["root_path"], root_dir, cache_path, True, True)
+    dataset_path = dataset_config["root_path"]
 
     if imu_config:
         # ILLIXR_DATASET_IMU_TIMESTAMP_UNITS
@@ -483,9 +483,15 @@ def load_dataset(config: Mapping[str, Any]) -> None:
         # ILLIXR_DATASET_IMU_FORMAT
         imu_format = imu_config["format"]
 
+        # arbitrary choice. The C++ side follows the same arbitrary convention.
+        if imu_format.startswith("lin_accel"):
+            imu_format = "true"
+        else:
+            imu_format = "false"
+
         os.environ["ILLIXR_DATASET_IMU_TIMESTAMP_UNITS"] = imu_timestamp_units
         os.environ["ILLIXR_DATASET_IMU_PATH"] = ",".join(imu_path)
-        # os.environ["ILLIXR_DATASET_IMU_FORMAT"] = imu_format
+        os.environ["ILLIXR_DATASET_IMU_FORMAT"] = imu_format
 
     if image_config:
         # ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS
