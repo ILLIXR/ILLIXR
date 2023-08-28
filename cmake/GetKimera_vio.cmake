@@ -3,6 +3,8 @@
 # get dependencies
 get_external(opengv)
 get_external(KimeraRPGO)
+get_external(GTSAM)
+get_external(DBoW2)
 
 set(KIMERA_VIO_CMAKE_ARGS "")
 # if building on CentOS make sure we use the correct OpenCV

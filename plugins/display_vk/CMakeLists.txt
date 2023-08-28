@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Vulkan REQUIRED)
+get_external_for_plugin(Monado_vk)
 
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)

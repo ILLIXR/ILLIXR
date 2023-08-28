@@ -211,7 +211,6 @@ if(HAVE_CENTOS)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
 	    message("Building OpenCV")
         include(cmake/GetOpenCV_Viz.cmake)
-        add_dependencies(main${ILLIXR_BUILD_SUFFIX}.exe OpenCV_Viz)
         set(OpenCV_DEP_STR OpenCV_Viz)
         set(INTERNAL_OPENCV ${OpenCV_DIR})
         set(BUILD_OPENCV Yes)
@@ -245,9 +244,6 @@ endif()
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
 
-if(USE_GTSAM_INTEGRATOR OR USE_KIMERA_VIO)
-    get_external(GTSAM)
-endif()
 
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} dl pthread stdc++fs ${yaml-cpp_LIBRARIES})
@@ -260,11 +256,6 @@ foreach(ITEM IN LISTS PLUGIN_LIST)
     endif()
 endforeach()
 
-# external plugin dependecnies
-if(USE_KIMERA_VIO OR USE_ORB_SLAM)
-    get_external(DBoW2)
-endif()
-
 # external plugins
 foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
@@ -272,10 +263,6 @@ foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
         include(cmake/Get${ITEM}.cmake)
     endif()
 endforeach()
-
-if(USE_DISPLAY_VK OR USE_TIMEWARP_VK OR USE_VKDEMO OR USE_NATIVE_REDERER)
-    get_external(MonadoVK)
-endif()
 
 if(DATA_FILE)
     if(EXISTS "./data.zip")

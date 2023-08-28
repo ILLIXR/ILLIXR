@@ -1,5 +1,5 @@
 # module to build and install the gtsam_integrator ILLIXR plugin
-
+get_external_for_plugin(GTSAM)
 set(PLUGIN_NAME plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
@@ -10,7 +10,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         )
 
 # if GTSAM is being built from source
-if(NOT GTSAM_FOUND)
+if(GTSAM_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${GTSAM_DEP_STR})
 endif()
 

@@ -1,6 +1,6 @@
 internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo
-external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP,Monado,OpenVINS
-
+external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP
+vis_pipelines: Kimera,OpenVINS
 # core plugins: audio_pipeline
 # rt_slam_plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction
 # rt_slam_plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction
@@ -25,8 +25,8 @@ group:
   enable_pre_sleep: False
 
 group:
-  name: monado
-  plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline,monado,open_xr
+  name: monado_gl
+  plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline,monado_gl,open_xr
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -70,7 +70,7 @@ group:
 
 group:
   name: fauxpose
-  plugins: fauxpose,gldemo,debugview,timewarp_gl,audio_pipeline,kimera_vio
+  plugins: fauxpose,gldemo,debugview,timewarp_gl,audio_pipeline
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -78,7 +78,7 @@ group:
 
 group:
   name: monado_vk
-  plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,timewarp_vk,openxr_app
+  plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,timewarp_vk,openxr_app,audio_pipeline
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False

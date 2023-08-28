@@ -1,5 +1,5 @@
 # module to build and install the timewarp_gl ILLIXR plugin
-
+get_external_for_plugin(Monado_gl)
 if(NOT DEFINED BUILDING_ILLIXR)
     message(ERROR "The timewarp_gl plugin cannot be built outside of the main ILLIXR build")
 endif()
