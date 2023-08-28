@@ -19,16 +19,9 @@
 
 using namespace ILLIXR;
 
-template<typename T>
-std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
-    std::vector<T> c = a;
-    c.insert(c.end(), b.begin(), b.end());
-    return c;
-}
-
 class runtime_impl : public runtime {
 public:
-    runtime_impl(
+    explicit runtime_impl(
 #ifndef ILLIXR_MONADO_MAINLINE
         GLXContext appGLCtx
 #endif /// ILLIXR_MONADO_MAINLINE
@@ -44,7 +37,7 @@ public:
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
     }
 
-    virtual void load_so(const std::vector<std::string>& so_paths) override {
+    void load_so(const std::vector<std::string>& so_paths) override {
         RAC_ERRNO_MSG("runtime_impl before creating any dynamic library");
 
         std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
@@ -77,25 +70,25 @@ public:
         pb.lookup_impl<Stoplight>()->signal_ready();
     }
 
-    virtual void load_so(const std::string_view& so) override {
-        auto           lib                 = dynamic_lib::create(so);
-        plugin_factory this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
+    void load_so(const std::string_view& so) override {
+        auto lib                 = dynamic_lib::create(so);
+        auto this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
         load_plugin_factory(this_plugin_factory);
         libs.push_back(std::move(lib));
     }
 
-    virtual void load_plugin_factory(plugin_factory plugin_main) override {
+    void load_plugin_factory(plugin_factory plugin_main) override {
         plugins.emplace_back(plugin_main(&pb));
         plugins.back()->start();
     }
 
-    virtual void wait() override {
+    void wait() override {
         // We don't want wait() returning before all the plugin threads have been joined.
         // That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
         pb.lookup_impl<Stoplight>()->wait_for_shutdown_complete();
     }
 
-    virtual void stop() override {
+    void stop() override {
         pb.lookup_impl<Stoplight>()->signal_should_stop();
         // After this point, threads may exit their main loops
         // They still have destructors and still have to be joined.
@@ -112,7 +105,7 @@ public:
         pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
     }
 
-    virtual ~runtime_impl() override {
+    ~runtime_impl() override {
         if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
             stop();
         }

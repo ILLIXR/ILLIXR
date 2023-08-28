@@ -183,8 +183,6 @@ endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 
 add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
-add_executable(main${ILLIXR_BUILD_SUFFIX}.exe src/main.cpp)
-
 ##############
 # dependencies
 ##############
@@ -243,10 +241,7 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
-
-
-target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SQLite3_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${SQLite3_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} dl pthread stdc++fs ${yaml-cpp_LIBRARIES})
+include(src/CMakeLists.txt)
 
 # set any plugins that are being built
 foreach(ITEM IN LISTS PLUGIN_LIST)
@@ -278,9 +273,16 @@ if(DATA_FILE)
     endif()
 endif()
 
-install(TARGETS main${ILLIXR_BUILD_SUFFIX}.exe DESTINATION bin)
 
 include(cmake/ConfigurationSummary.cmake)
+if(ILLIXR_GROUP_NAMES)
+    foreach(GRP IN LISTS ILLIXR_GROUP_NAMES)
+        install(FILES "profiles/${GRP}.yaml"
+                DESTINATION $ENV{HOME}/.illixr/profiles)
+        install(FILES "profiles/${GRP}.yaml"
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
+    endforeach()
+endif()
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
