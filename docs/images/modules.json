@@ -34,18 +34,21 @@
       "name": "debugview",
       "cmake_flag": "USE_DEBUGVIEW",
       "dependencies": [
-        "glfw3"
+        "glfw3",
+        "OpenCV"
       ]
     },
     {
       "name": "depthai",
       "cmake_flag": "USE_DEPTHAI",
-      "dependencies": []
+      "dependencies": [
+        "OpenCV"
+      ]
     },
     {
       "name": "display_vk",
       "cmake_flag": "USE_DISPLAY_VK",
-      "dependencies:": [
+      "dependencies": [
         "OpenCV",
         "Vulkan",
         "glfw3",
@@ -101,7 +104,7 @@
     {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER",
-      "dependencies:": [
+      "dependencies": [
         "OpenCV",
         "Vulkan"
       ]
@@ -109,7 +112,9 @@
     {
       "name": "offline_cam",
       "cmake_flag": "USE_OFFLINE_CAM",
-      "dependencies": []
+      "dependencies": [
+        "OpenCV"
+      ]
     },
     {
       "name": "offline_imu",
@@ -129,6 +134,7 @@
       "dependencies": [
         "git",
         "protobuf",
+        "OpenCV",
         "ecal"
       ]
     },
@@ -176,6 +182,7 @@
       "name": "realsense",
       "cmake_flag": "USE_REALSENSE",
       "dependencies": [
+        "OpenCV",
         "realsense"
       ]
     },
@@ -183,7 +190,8 @@
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM",
       "dependencies": [
-        "boost"
+        "boost",
+        "OpenCV"
       ]
     },
     {
@@ -199,7 +207,7 @@
     {
       "name": "timewarp_vk",
       "cmake_flag": "USE_TIMEWARP_VK",
-      "dependencies:": [
+      "dependencies": [
         "OpenCV",
         "Vulkan",
         "glfw3",
@@ -209,17 +217,18 @@
     {
       "name": "vkdemo",
       "cmake_flag": "USE_VKDEMO",
-      "dependencies:": [
+      "dependencies": [
         "OpenCV",
         "Vulkan",
         "glfw3",
         "glm"
-        ]
+      ]
     },
     {
       "name": "zed",
       "cmake_flag": "USE_ZED",
       "dependencies": [
+        "OpenCV",
         "zed_SDK"
       ]
     }
@@ -269,12 +278,12 @@
             "20": {
               "pkg": "ecal",
               "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, bit it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             },
             "22": {
               "pkg": "ecal",
               "postnotes": "",
-              "notes": "Ubuntu 22 does not have a system supplied package for OpenXR, bit it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu 22 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             }
           },
           "Fedora": {
@@ -448,6 +457,43 @@
       }
     },
     {
+      "glm": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libglm-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libglm-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "glm-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "glm-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "glm-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "glog": {
         "pkg": {
           "Ubuntu": {
@@ -596,13 +642,50 @@
       }
     },
     {
+      "OpenCV": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libopencv-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libopencv-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "opencv-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "opencv-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "vtk-devel",
+              "postnotes": ",",
+              "notes": "Centos does not provide a complete version of OpenCV in their repos, in particular the 'viz' component is missing. You will need to install the VTK-devel package and the ILLIXR build system will compile OpenCV from source.<P>You may also need to run the following:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#opencvC\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"opencvC\">sudo dnf -y install dnf-plugins-core epel-release\nsudo dnf config-manager --set-enabled crb</pre></div>"
+            }
+          }
+        }
+      }
+    },
+    {
       "OpenXR": {
         "pkg": {
           "Ubuntu": {
             "20": {
               "pkg": "libopenxr-dev libopenxr1-monado",
               "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, bit it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#openU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"openU20\">sudo apt-get -y install wget software-properties-common\nsudo apt-get update\nsudo add-apt-repository ppa:monado-xr/monado -y -u\nsudo wget -nv https://monado.freedesktop.org/keys/monado-ci.asc -O /etc/apt/trusted.gpg.d/monado-ci.asc\nsudo echo 'deb https://monado.pages.freedesktop.org/monado/apt focal main' | tee /etc/apt/sources.list.d/monado-ci.list\nsudo apt update</pre></div>"
+              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#openU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"openU20\">sudo apt-get -y install wget software-properties-common\nsudo apt-get update\nsudo add-apt-repository ppa:monado-xr/monado -y -u\nsudo wget -nv https://monado.freedesktop.org/keys/monado-ci.asc -O /etc/apt/trusted.gpg.d/monado-ci.asc\nsudo echo 'deb https://monado.pages.freedesktop.org/monado/apt focal main' | tee /etc/apt/sources.list.d/monado-ci.list\nsudo apt update</pre></div>"
             },
             "22": {
               "pkg": "libopenxr-dev libopenxr1-monado",
