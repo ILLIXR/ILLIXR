@@ -1,18 +1,18 @@
+#include "illixr.hpp"
+#include "illixr/error_util.hpp"
+
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
-
-#include "illixr.hpp"
-#include "illixr/error_util.hpp"
 #include <yaml-cpp/yaml.h>
 
-ILLIXR::runtime *r = nullptr;
+ILLIXR::runtime* r = nullptr;
 
 using namespace ILLIXR;
 
-int ILLIXR::run(const cxxopts::ParseResult &options) {
-    std::chrono::seconds run_duration;
+int ILLIXR::run(const cxxopts::ParseResult& options) {
+    std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
 
 #ifdef ILLIXR_MONADO_MAINLINE
@@ -45,8 +45,8 @@ int ILLIXR::run(const cxxopts::ParseResult &options) {
         run_duration = std::chrono::seconds{config["duration"].as<long>()};
     } else {
         run_duration = getenv("ILLIXR_RUN_DURATION")
-                       ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
-                       : ILLIXR_RUN_DURATION_DEFAULT;
+            ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
+            : ILLIXR_RUN_DURATION_DEFAULT;
     }
     GET_STRING(data, ILLIXR_DATA)
     GET_STRING(demo_data, ILLIXR_DEMO_DATA)
