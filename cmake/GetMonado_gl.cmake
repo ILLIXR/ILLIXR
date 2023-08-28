@@ -30,7 +30,7 @@ set(MONADO_CMAKE_ARGS "")
 if(HAVE_CENTOS)
     set(MONADO_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")
 endif()
-EXTERNALPROJECT_ADD(Monado
+EXTERNALPROJECT_ADD(MonadoGL
         GIT_REPOSITORY https://github.com/ILLIXR/monado_integration.git   # Git repo for source code
         GIT_TAG c210722a2648cf38e3515fdf25f91b91250a7144       # sha5 hash for specific commit to pull (if there is no specific tag to use)
         PREFIX ${CMAKE_BINARY_DIR}/_deps/monado                # the build directory
@@ -38,5 +38,7 @@ EXTERNALPROJECT_ADD(Monado
         #arguments to pass to CMake
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DILLIXR_PATH=${CMAKE_SOURCE_DIR}/include -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_LIBUSB=0 -DBUILD_WITH_LIBUVC=0 -DBUILD_WITH_NS=0 -DBUILD_WITH_PSMV=0 -DBUILD_WITH_PSVR=0 -DBUILD_WITH_OPENHMD=0 -DBUILD_WITH_VIVE=0 -DCMAKE_INSTALL_LIBDIR=lib ${MONADO_CMAKE_ARGS}
         # custom install command to get the name of the plugin correct
-        INSTALL_COMMAND make install && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado.so ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado${ILLIXR_BUILD_SUFFIX}.so
+        INSTALL_COMMAND make install && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado.so ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_gl${ILLIXR_BUILD_SUFFIX}.so
         )
+set(Monado_gl_EXTERNAL YES)
+set(Monado_gl_DEP_STR MonadoGL)
