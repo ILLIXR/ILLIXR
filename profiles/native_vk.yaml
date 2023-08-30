@@ -1,6 +1,0 @@
-group: native_vk
-plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview,audio_pipeline
-enable_offload: false
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false

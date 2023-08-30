@@ -1,0 +1,6 @@
+plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,openxr_app,pose_prediction,timewarp_vk
+visualizers: openvins,kimera_vio
+enable_offload: False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False

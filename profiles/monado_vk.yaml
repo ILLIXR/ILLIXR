@@ -1,2 +1,0 @@
-group: monado_vk
-plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,timewarp_vk,openxr_app
