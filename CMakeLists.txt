@@ -67,6 +67,10 @@ add_definitions(-DGLSL_VERSION="330")
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+set(MONADO_RUNTIME_VK "")
+set(MONADO_RUNTIME_GL "")
+set(OPENXR_RUNTIME "")
+set(OPENXR_PLUGINS "")
 
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")

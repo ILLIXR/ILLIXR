@@ -1,4 +1,4 @@
-# module to download, build and install the ORM_SLAM ILLIXR plugin
+# module to download, build and install the Monado_gl ILLIXR plugin
 
 # get dependencies
 pkg_check_modules(glslang glslang)
@@ -18,6 +18,7 @@ pkg_check_modules(xcb-randr REQUIRED xcb-randr)
 pkg_check_modules(xkbcommon REQUIRED xkbcommon)
 pkg_check_modules(xrandr REQUIRED xrandr)
 find_package(OpenXR REQUIRED)
+get_external_for_plugin(OpenXR_APP)
 pkg_check_modules(Vulkan vulkan)
 if(NOT Vulkan_FOUND)
     find_package(Vulkan REQUIRED)
@@ -38,7 +39,8 @@ EXTERNALPROJECT_ADD(MonadoGL
         #arguments to pass to CMake
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DILLIXR_PATH=${CMAKE_SOURCE_DIR}/include -DBUILD_WITH_LIBUDEV=0 -DBUILD_WITH_LIBUSB=0 -DBUILD_WITH_LIBUVC=0 -DBUILD_WITH_NS=0 -DBUILD_WITH_PSMV=0 -DBUILD_WITH_PSVR=0 -DBUILD_WITH_OPENHMD=0 -DBUILD_WITH_VIVE=0 -DCMAKE_INSTALL_LIBDIR=lib ${MONADO_CMAKE_ARGS}
         # custom install command to get the name of the plugin correct
-        INSTALL_COMMAND make install && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado.so ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_gl${ILLIXR_BUILD_SUFFIX}.so
+        INSTALL_COMMAND make install && ln -sf ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_gl.so ${CMAKE_INSTALL_PREFIX}/lib/libopenxr_monado_gl${ILLIXR_BUILD_SUFFIX}.so
         )
 set(Monado_gl_EXTERNAL YES)
 set(Monado_gl_DEP_STR MonadoGL)
+set(MONADO_RUNTIME_GL "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_gl.json" PARENT_SCOPE)
