@@ -1,8 +1,8 @@
 # OpenCV
-find_package(OpenCV 3 REQUIRED)
+find_package(OpenCV 3.4.6 EXACT)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-set(OPENNI_ROOT "/home/henrydc/Downloads/OpenNI-Linux-x64-2.2" CACHE FILEPATH "Root directory of OpenNI2")
+set(OPENNI_ROOT "/opt/ILLIXR/OpenNI" CACHE FILEPATH "Root directory of OpenNI2")
 
 FIND_PATH(OPENNI_INCLUDE_DIR OpenNI.h HINTS "${OPENNI_ROOT}/Include")
 FIND_LIBRARY(OPENNI_LIBRARY OpenNI2 HINTS "${OPENNI_ROOT}/Bin/x64-Release" "${OPENNI_ROOT}/Lib" "${OPENNI_ROOT}/Redist")
