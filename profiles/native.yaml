@@ -1,6 +1,0 @@
-group: native
-plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,offload_data,timewarp_gl,audio_pipeline
-enable_offload: false
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false

@@ -1,3 +1,4 @@
+# This file was auto generated, take caution if manually editing.
 plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,openxr_app,pose_prediction,timewarp_vk
 visualizers: openvins,kimera_vio
 enable_offload: False

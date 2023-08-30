@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,offload_data,timewarp_gl,audio_pipeline
+plugins: audio_pipeline,vkdemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,pose_prediction,timewarp_vk,display_vk,native_renderer
 visualizers: openvins,kimera_vio
 enable_offload: false
 enable_alignment: false

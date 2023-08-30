@@ -1,13 +1,9 @@
-internal_plugins: debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo
-external_plugins: Kimera_vio,Audio_Pipeline,OpenXR_APP
-vis_pipelines: Kimera,OpenVINS
-# core plugins: audio_pipeline
-# rt_slam_plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction
-# rt_slam_plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction
+all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo
+all_visualizers: openvins,kimera_vio
 
 profile:
   name: ci
-  plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
   data: robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
   duration: 10
   build_type: Debug
@@ -18,7 +14,7 @@ profile:
 
 profile:
   name: headless
-  plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
@@ -26,7 +22,7 @@ profile:
 
 profile:
   name: monado_gl
-  plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline,monado_gl,open_xr
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -34,7 +30,7 @@ profile:
 
 profile:
   name: native_gl
-  plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,offload_data,timewarp_gl,audio_pipeline
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,offload_data,timewarp_gl,audio_pipeline
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -42,7 +38,7 @@ profile:
 
 profile:
   name: native_vulkan
-  plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview,audio_pipeline
+  plugins: audio_pipeline,vkdemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,pose_prediction,timewarp_vk,display_vk,native_renderer
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -50,8 +46,8 @@ profile:
 
 profile:
   name: offload_device
-  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio,timewarp_gl,audio_pipeline,kimera_vio
-  run: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio.device_rx,offload_vio.device_tx,timewarp_gl,audio_pipeline,kimera_vio
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio,timewarp_gl,audio_pipeline
+  run: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio.device_rx,offload_vio.device_tx,timewarp_gl,audio_pipeline
   duration: 85
   enable_offload: False
   enable_alignment: False
@@ -60,8 +56,8 @@ profile:
 
 profile:
   name: offload_server
-  plugins: offload_vio,kimera_vio,audio_pipeline
-  run: offload_vio.server_rx,offload_vio.server_tx,kimera_vio,audio_pipeline
+  plugins: offload_vio,audio_pipeline
+  run: offload_vio.server_rx,offload_vio.server_tx,audio_pipeline
   duration: 90
   enable_offload: False
   enable_alignment: False
@@ -78,7 +74,7 @@ profile:
 
 profile:
   name: monado_vulkan
-  plugins: offline_imu,offline_cam,openvins,gtsam_integrator,pose_prediction,timewarp_vk,openxr_app,audio_pipeline
+  plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,openxr_app,pose_prediction,timewarp_vk
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False

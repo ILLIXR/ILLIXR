@@ -1,7 +1,8 @@
-group: offload_device
-plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio,timewarp_gl,audio_pipeline,kimera_vio
-run: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio.device_rx,offload_vio.device_tx,timewarp_gl,audio_pipeline,kimera_vio
+# This file was auto generated, take caution if manually editing.
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio,timewarp_gl,audio_pipeline
+run: offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio.device_rx,offload_vio.device_tx,timewarp_gl,audio_pipeline
 duration: 85
+visualizers: openvins,kimera_vio
 enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False

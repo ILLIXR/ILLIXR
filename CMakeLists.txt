@@ -83,6 +83,13 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 include(cmake/HelperFunctions.cmake)
 
+set(VISUALIZER "" CACHE STRING "")
+set(VISUALIZER_TO_USE "ALL" CACHE INTERNAL "")
+if(VISUALIZER)
+    string(TOUPPER ${VISUALIZER} VISUALIZER)
+    set(VISUALIZER_TO_USE ${VISUALIZER} CACHE INTERNAL "")
+endif()
+
 generate_yaml()
 check_plugins()
 
@@ -190,12 +197,6 @@ foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     endif()
     unset(ITEM_LOWER)
     unset(ITEM_UPPER)
-# external plugins
-foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
-    string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-    if(${ITEM_UPPER})
-        include(cmake/Get${ITEM}.cmake)
-    endif()
 endforeach()
 
 if(DATA_FILE)
@@ -222,6 +223,8 @@ if(ILLIXR_PROFILE_NAMES)
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
+set(VISUALIZER "" CACHE STRING "")
+
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")

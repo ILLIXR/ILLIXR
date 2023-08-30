@@ -48,15 +48,6 @@ std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
     return c;
 }
 
-const std::vector<std::string> core_plugins = {"audio_pipeline", "timewarp_gl"},
-        rt_plugins = {"gtsam_integrator", "kimera_vio", "offline_imu", "offline_cam", "pose_prediction"},
-        monado_plugins = core_plugins + rt_plugins + std::vector<std::string>{"monado"},
-        native_plugins = core_plugins + rt_plugins +
-                         std::vector<std::string>{"ground_truth_slam", "gldemo", "debugview", "offload_data"},
-        ci_plugins = core_plugins + rt_plugins + std::vector<std::string>{"ground_truth_slam", "gldemo"},
-        all_plugins = core_plugins + rt_plugins +
-                      std::vector<std::string>{"monado", "ground_truth_slam", "gldemo", "debugview", "offload_data"};
-
 extern ILLIXR::runtime *r;
 namespace ILLIXR {
     int run(const cxxopts::ParseResult &options);

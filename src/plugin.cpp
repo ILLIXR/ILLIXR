@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <unistd.h>
 
 #include "illixr.hpp"
@@ -37,6 +38,7 @@ int ILLIXR::run(const cxxopts::ParseResult &options) {
     // read in yaml config file
     YAML::Node config;
     if (options.count("yaml")) {
+        std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
         config = YAML::LoadFile(options["yaml"].as<std::string>());
     }
     if (options.count("duration")) {
@@ -58,42 +60,33 @@ int ILLIXR::run(const cxxopts::ParseResult &options) {
 
     setenv("__GL_MaxFramesAllowed", "1", false);
     setenv("__GL_SYNC_TO_VBLANK", "1", false);
-    bool have_group = false;
-    if (options.count("group") || config["group"]) {
-        std::string group;
-        if (options.count("group")) {
-            group = options["group"].as<std::string>();
-        } else {
-            group = config["group"].as<std::string>();
+    if (options.count("plugins")) {
+        plugins = options["plugins"].as<std::vector<std::string>>();
+    } else if (config["plugins"]) {
+        std::stringstream tss(config["plugins"].as<std::string>());
+        while(tss.good()) {
+            std::string substr;
+            getline(tss, substr, ',');
+            plugins.push_back(substr);
         }
-        if (group == "monado" || group == "MONADO") {
-            plugins    = monado_plugins;
-            have_group = true;
-        } else if (group == "native" || group == "NATIVE") {
-            plugins    = native_plugins;
-            have_group = true;
-        } else if (group == "ci" || group == "CI") {
-            plugins    = ci_plugins;
-            have_group = true;
-        } else if (group == "all" || group == "ALL") {
-            plugins    = all_plugins;
-            have_group = true;
-        } else {
-            have_group = false;
-        }
+    } else {
+        std::cout << "No plugins specified." << std::endl;
+        std::cout << "A list of plugins must be given on the command line or in a YAML file"
+                  << std::endl;
+        return EXIT_FAILURE;
     }
-    if (!have_group) {
-        if (options.count("plugins")) {
-            plugins = options["plugins"].as<std::vector<std::string>>();
-        } else if (config["plugins"]) {
-            plugins = config["plugins"].as<std::vector<std::string>>();
-        } else {
-            std::cout << "No plugins specified." << std::endl;
-            std::cout << "Either a list of plugins or a group name must be given. Groups are monado, native, ci, all, or none"
-                      << std::endl;
-            return EXIT_FAILURE;
-        }
+    std::vector<std::string> visualizers;
+    if (options.count("vis")) {
+        visualizers = options["vis"].as<std::vector<std::string>>();
+    } else if (config["visualizers"]) {
+        visualizers = config["visualizers"].as<std::vector<std::string>>();
+    } else {
+        std::cout << "No visualizer specified." << std::endl;
+        std::cout << "A visualizer must be given (one of " << STRINGIZE(ILLIXR_VISUALIZERS) << ")"
+                  << std::endl;
+        return EXIT_FAILURE;
     }
+    plugins.push_back(visualizers[0]);
 
     RAC_ERRNO_MSG("main after creating runtime");
 

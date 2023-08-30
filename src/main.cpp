@@ -45,13 +45,19 @@ int main(int argc, const char* argv[]) {
     // bool offload_enable, alignment_enable, enable_verbose_errors, enable_pre_sleep;
     // offload_enable = alignment_enable = enable_verbose_errors = enable_pre_sleep = false;
     // long run_dur = 0;
-    options.add_options()("d,duration", "The duration to run for", cxxopts::value<long>())(
-        "data", "The data", cxxopts::value<std::string>())("demo_data", "The demo data", cxxopts::value<std::string>())(
-        "enable_offload", "")("enable_alignment", "")("enable_verbose_errors", "")("enable_pre_sleep", "")(
-        "h,help", "Produce help message")("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))(
-        "p,plugins", "The plugins to use", cxxopts::value<std::vector<std::string>>())(
-        "g,group", "The group of plugins to use: monado, native, ci, all",
-        cxxopts::value<std::string>())("y,yaml", "Yaml config file", cxxopts::value<std::string>());
+    options.add_options()
+            ("d,duration", "The duration to run for", cxxopts::value<long>())
+            ("data", "The data", cxxopts::value<std::string>())
+            ("demo_data", "The demo data", cxxopts::value<std::string>())
+            ("enable_offload", "")
+            ("enable_alignment", "")
+            ("enable_verbose_errors", "")
+            ("enable_pre_sleep", "")
+            ("h,help", "Produce help message")
+            ("realsense_cam", "", cxxopts::value<std::string>()->default_value("auto"))
+            ("p,plugins", "The plugins to use", cxxopts::value<std::vector<std::string> >())
+            ("vis", "The visualizer to use", cxxopts::value<std::vector<std::string> >())
+            ("y,yaml", "Yaml config file", cxxopts::value<std::string>());
     auto result = options.parse(argc, argv);
     if (result.count("help")) {
         std::cout << options.help() << std::endl;

@@ -1,5 +1,6 @@
-group: headless
-plugins: offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+# This file was auto generated, take caution if manually editing.
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+visualizers: openvins,kimera_vio
 enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False

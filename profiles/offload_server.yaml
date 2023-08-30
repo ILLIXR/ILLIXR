@@ -1,7 +1,8 @@
-group: offload_server
-plugins: offload_vio,kimera_vio,audio_pipeline
-run: offload_vio.server_rx,offload_vio.server_tx,kimera_vio,audio_pipeline
+# This file was auto generated, take caution if manually editing.
+plugins: offload_vio,audio_pipeline
+run: offload_vio.server_rx,offload_vio.server_tx,audio_pipeline
 duration: 90
+visualizers: openvins,kimera_vio
 enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False
