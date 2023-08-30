@@ -244,13 +244,15 @@ find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 include(src/CMakeLists.txt)
 
 # set any plugins that are being built
-foreach(ITEM IN LISTS PLUGIN_LIST)
+foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
+    string(TOLOWER ${ITEM} ITEM_LOWER)
     if(${ITEM_UPPER})
-        add_subdirectory(plugins/${ITEM})
+        list(APPEND OPENXR_PLUGINS ${ITEM_LOWER})
+        add_subdirectory(plugins/${ITEM_LOWER})
     endif()
-endforeach()
-
+    unset(ITEM_LOWER)
+    unset(ITEM_UPPER)
 # external plugins
 foreach(ITEM IN LISTS EXT_PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
@@ -275,8 +277,8 @@ endif()
 
 
 include(cmake/ConfigurationSummary.cmake)
-if(ILLIXR_GROUP_NAMES)
-    foreach(GRP IN LISTS ILLIXR_GROUP_NAMES)
+if(ILLIXR_PROFILE_NAMES)
+    foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
         install(FILES "profiles/${GRP}.yaml"
                 DESTINATION $ENV{HOME}/.illixr/profiles)
         install(FILES "profiles/${GRP}.yaml"
