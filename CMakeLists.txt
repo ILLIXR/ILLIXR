@@ -3,9 +3,6 @@
 # This is the install script for ILLIXR
 # This will compile the main ILLIXR binary along with any requested plugins.
 #
-# In addition to the standard CMake options, the following arguments can be used:
-#
-# BUILD_GROUP : which subgroup of plugins are to be built
 #
 # To build specific plugins use the following format:
 #   USE_<PLUGIN>=ON
@@ -48,6 +45,12 @@ if(UNIX)
     else()
         set(HAVE_CENTOS No)
     endif()
+elseif(WIN32)
+    message(FATAL_ERROR "Windows is currently not supported")
+elseif(APPLE)
+    message(FATAL_ERROR "MacOS is currently not supported")
+else()
+    message(FATAL_ERROR "Unknown operating system")
 endif()
 
 if(PACKAGE_VERSION_LABEL)
@@ -75,20 +78,12 @@ set(OPENXR_PLUGINS "")
 # set the CMake search path to include the local files
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
-set(BUILD_GROUP "NONE" CACHE STRING "Which components to build")
 option(DATA_FILE "The data file to get" ON)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 include(cmake/HelperFunctions.cmake)
 
 generate_yaml()
-
-# plugins, only exposed if BUILD_GROUP is OFF
-foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
-    string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-    option("${ITEM_UPPER}" "" OFF)
-endforeach()
-
 check_plugins()
 
 set(CORE_PLUGINS OFF)
@@ -119,64 +114,6 @@ set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
-
-#STILL NEED DEMO DATA
-if(BUILD_GROUP STREQUAL "NATIVE")
-    set(RT_SLAM_PLUGINS ON)
-    set(USE_GROUND_TRUTH_SLAM ON)
-    set(USE_GLDEMO ON)
-    set(USE_DEBUGVIEW ON)
-    set(USE_OFFLOAD_DATA ON)
-    set(CORE_PLUGINS ON)
-    set(USE_ORB_SLAM ON)
-elseif(BUILD_GROUP STREQUAL "CI")
-    set(RT_SLAM_PLUGINS ON)
-    set(USE_GROUND_TRUTH_SLAM ON)
-    set(USE_GLDEMO ON)
-    set(CORE_PLUGINS ON)
-elseif(BUILD_GROUP STREQUAL "MONADO")
-    set(RT_SLAM_PLUGINS ON)
-    set(CORE_PLUGINS ON)
-    set(USE_MONADO ON)
-    set(USE_OPENXR_APP ON)
-elseif(BUILD_GROUP STREQUAL "TESTS")
-    set(USE_AUDIO_PIPELINE ON)
-    set(USE_KIMERA_VIO ON)
-elseif(BUILD_GROUP STREQUAL "ALL")
-    foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
-        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-        set(${ITEM_UPPER} ON)
-    endforeach()
-elseif(BUILD_GROUP STREQUAL "HEADLESS")
-    set(RT_SLAM_PLUGINS ON)
-    set(CORE_PLUGINS ON)
-    set(USE_GROUND_TRUTH_SLAM ON)
-    set(USE_GLDEMO ON)
-else()
-    set(SUBTARGETS No)
-    foreach(ITEM IN LISTS PLUGIN_LIST EXT_PLUGIN_LIST)
-        string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-        if(${ITEM_UPPER})
-            set(SUBTARGETS Yes)
-        endif()
-    endforeach()
-    if(NOT SUBTARGETS)
-        message(WARNING "BUILD_GROUP is not defined and no Plugins were selected. Only the main binary will be built.")
-    endif()
-endif()
-
-if(RT_SLAM_PLUGINS)
-    set(USE_OFFLINE_CAM ON)
-    set(USE_OFFLINE_IMU ON)
-    set(USE_KIMERA_VIO ON)
-    set(USE_GTSAM_INTEGRATOR ON)
-    set(USE_POSE_PREDICTION ON)
-endif()
-
-if(CORE_PLUGINS)
-    set(USE_TIMEWARP_GL ON)
-    set(USE_AUDIO_PIPELINE ON)
-endif()
 
 find_package(PkgConfig REQUIRED)
 
@@ -238,10 +175,6 @@ find_package(Eigen3 REQUIRED)
 #############
 
 find_package(Git REQUIRED)
-
-if (BUILD_GROUP STREQUAL "TESTS")
-    find_package(GTest REQUIRED)
-endif()
 
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
