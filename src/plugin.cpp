@@ -64,15 +64,14 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         plugins = options["plugins"].as<std::vector<std::string>>();
     } else if (config["plugins"]) {
         std::stringstream tss(config["plugins"].as<std::string>());
-        while(tss.good()) {
+        while (tss.good()) {
             std::string substr;
             getline(tss, substr, ',');
             plugins.push_back(substr);
         }
     } else {
         std::cout << "No plugins specified." << std::endl;
-        std::cout << "A list of plugins must be given on the command line or in a YAML file"
-                  << std::endl;
+        std::cout << "A list of plugins must be given on the command line or in a YAML file" << std::endl;
         return EXIT_FAILURE;
     }
     std::vector<std::string> visualizers;
@@ -82,8 +81,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         visualizers = config["visualizers"].as<std::vector<std::string>>();
     } else {
         std::cout << "No visualizer specified." << std::endl;
-        std::cout << "A visualizer must be given (one of " << STRINGIZE(ILLIXR_VISUALIZERS) << ")"
-                  << std::endl;
+        std::cout << "A visualizer must be given (one of " << STRINGIZE(ILLIXR_VISUALIZERS) << ")" << std::endl;
         return EXIT_FAILURE;
     }
     plugins.push_back(visualizers[0]);

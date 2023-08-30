@@ -49,7 +49,8 @@ std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
     return c;
 }
 
-extern ILLIXR::runtime *r;
+extern ILLIXR::runtime* r;
+
 namespace ILLIXR {
 int run(const cxxopts::ParseResult& options);
 
