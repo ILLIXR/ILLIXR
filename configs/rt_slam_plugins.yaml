@@ -1,27 +1,27 @@
 plugin_group:
   # load dataset
-  # - path: offline_imu/
-  # - path: offline_cam/
+  - path: offline_imu/
+  - path: offline_cam/
 
   # sensors
   # - path: zed/
   # - path: realsense/
-  - path: openni/
+  # - path: openni/
   # - path: depthai/
 
   # recorder
   # - path: record_imu_cam/
-  - path: record_rgb_depth/
+  # - path: record_rgb_depth/
 
   # head tracking
-  # - name: Kimera-VIO/
-  #   path:
-  #     git_repo: https://github.com/ILLIXR/Kimera-VIO.git
-  #     version: "3.3"
-  - name: OpenVINS
+  - name: Kimera-VIO/
     path:
-      git_repo: https://github.com/ILLIXR/open_vins.git
-      version: "3.2"
+      git_repo: https://github.com/ILLIXR/Kimera-VIO.git
+      version: "3.3"
+  # - name: OpenVINS
+  #   path:
+  #     git_repo: https://github.com/ILLIXR/open_vins.git
+  #     version: "3.2"
 
   # pose prediction
   # - path: rk4_integrator/
