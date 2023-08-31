@@ -60,16 +60,24 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
     setenv("__GL_MaxFramesAllowed", "1", false);
     setenv("__GL_SYNC_TO_VBLANK", "1", false);
-    if (options.count("plugins")) {
-        plugins = options["plugins"].as<std::vector<std::string>>();
-    } else if (config["plugins"]) {
-        std::stringstream tss(config["plugins"].as<std::string>());
-        while (tss.good()) {
-            std::string substr;
-            getline(tss, substr, ',');
-            plugins.push_back(substr);
+    bool have_plugins = false;
+    // run entry supersedes plugins entry
+    for(auto item: {"plugins", "run"}) {
+        if (options.count(item)) {
+            plugins = options[item].as<std::vector<std::string>>();
+            have_plugins = true;
+        } else if (config[item]) {
+            std::stringstream tss(config[item].as<std::string>());
+            while (tss.good()) {
+                std::string substr;
+                getline(tss, substr, ',');
+                plugins.push_back(substr);
+            }
+            have_plugins = true;
         }
-    } else {
+    }
+
+    if (!have_plugins) {
         std::cout << "No plugins specified." << std::endl;
         std::cout << "A list of plugins must be given on the command line or in a YAML file" << std::endl;
         return EXIT_FAILURE;
@@ -85,6 +93,12 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         return EXIT_FAILURE;
     }
     plugins.push_back(visualizers[0]);
+
+    if (config["install_prefix"]) {
+        std::string temp_path(getenv("LD_LIBRARY_PATH"));
+        temp_path = config["install_prefix"].as<std::string>() + ":" + temp_path;
+        setenv("LD_LIBRARY_PATH", temp_path.c_str(), true);
+    }
 
     RAC_ERRNO_MSG("main after creating runtime");
 
