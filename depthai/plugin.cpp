@@ -24,7 +24,7 @@ public:
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
         , device{createCameraPipeline()} {
-        spdlogger(ILLIXR::getenv_or("DEPTHAI_LOG_LEVEL", "off"));
+        spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
 #ifndef NDEBUG
         spdlog::get(name)->debug("pipeline started");
 #endif

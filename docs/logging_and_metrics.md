@@ -22,14 +22,14 @@ export ILLIXR_LOG_LEVEL=warn
 ./runner.sh configs/native.yaml
 ``` 
 
-When writing a new plugin, the `plugin.spdlogger(std::string log_level)` method should be called, e.g., using `ILLIXR::getenv_or("<PLUGIN_NAME>_LOG_LEVEL","<level>")` This creates a logger with two sinks (console and file). This logger is then registered in the global spdlog registry. 
+When writing a new plugin, the `plugin.spdlogger(std::string log_level)` method should be called, e.g., using `std::getenv("<PLUGIN_NAME>_LOG_LEVEL")` This creates a logger with two sinks (console and file). This logger is then registered in the global spdlog registry. 
 
 To log inside of a plugin method, use the plugin's name attribute to get the particular logger from the registry and call the desired log level method, e.g.
 ```
 spdlog::get(name)->info("informative message");
 ```
 
-Outside of the plugin class hierarchy, one can use the global ILLIXR logger which is registered under "illixr", e.g., `spdlog::get("illixr")`. This usage requires explicitly adding the name of the component or file to the output message, if desired.
+Outside of the plugin class hierarchy, one can use the global ILLIXR logger which is registered under "illixr", e.g., `spdlog::get("illixr")`.  It will look for `$ILLIXR_LOG_LEVEL` in the environtment or use `warn` by default. This usage requires explicitly adding the name of the component or file to the output message, if desired.
 
 Log files are appended. To merge to a single log do `$ cat *log | sort > combined.log` This will sort correctly because the entries start with an ISO-8601 timestamp. For this reason, if a plugin uses `spdlog::set_pattern()` to create a custom log pattern, it is highly recommended that the custom pattern start with an ISO-8601 timestamp and it is required to reset to the default log message pattern after use.
 

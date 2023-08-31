@@ -32,7 +32,7 @@ public:
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
         , _m_dataset_first_time{ViconRoom1Medium}
         , _m_first_time{true} {
-        spdlogger(ILLIXR::getenv_or("GROUND_TRUTH_SLAM_LOG_LEVEL", "off"));
+        spdlogger(std::getenv("GROUND_TRUTH_SLAM_LOG_LEVEL"));
     }
 
     virtual void start() override {

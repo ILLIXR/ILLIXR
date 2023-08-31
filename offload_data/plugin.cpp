@@ -29,7 +29,7 @@ public:
         , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
         , is_success{true} /// TODO: Set with #198
         , obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
-        spdlogger(ILLIXR::getenv_or("OFFLOAD_DATA_LOG_LEVEL", "off"));
+        spdlogger(std::getenv("OFFLOAD_DATA_LOG_LEVEL"));
         sb->schedule<texture_pose>(id, "texture_pose", [&](switchboard::ptr<const texture_pose> datum, size_t) {
             callback(datum);
         });

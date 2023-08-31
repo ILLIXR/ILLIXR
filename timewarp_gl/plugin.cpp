@@ -81,7 +81,7 @@ public:
 #endif
         , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
-	    spdlogger(ILLIXR::getenv_or("TIMEWARP_GL_LOG_LEVEL", "off"));       
+            spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
@@ -786,7 +786,6 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, display_params::width_pixels, display_params::height_pixels);
 
-<<<<<<< HEAD
         // Blit the left and right color buffers onto the default color buffer
         glBindFramebuffer(GL_READ_FRAMEBUFFER, _m_eye_framebuffers[0]);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -798,19 +797,6 @@ public:
         glBlitFramebuffer(0, 0, display_params::width_pixels * 0.5, display_params::height_pixels,
                           display_params::width_pixels * 0.5, 0, display_params::width_pixels, display_params::height_pixels,
                           GL_COLOR_BUFFER_BIT, GL_NEAREST);
-=======
-        if (log_count > LOG_PERIOD) {
-            const double time_since_render_ms_d = duration2double<std::milli>(time_since_render);
-            spdlog::get(name)->debug("Time since render: {} ms", time_since_render_ms_d);
-        }
-
-        if (time_since_render > display_params::period) {
-            spdlog::get(name)->warn("Stale frame!");
-        }
-#endif
-        // Call Hologram
-        _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
->>>>>>> [pre-commit.ci] Run clang-format
 
         // Call swap buffers; when vsync is enabled, this will return to the
         // CPU thread once the buffers have been successfully swapped.
