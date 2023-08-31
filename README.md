@@ -25,7 +25,7 @@ You can find the complete ILLIXR system [here][38].
 
 ILLIXR also provides its components in standalone configurations to enable architects and
     system designers to research each component in isolation.
-The standalone components are packaged together in the [v3.1.0 release][39] of ILLIXR. 
+The standalone components are packaged together in the as of the [v3.1.0 release][39] of ILLIXR. 
 
 ILLIXR's modular and extensible runtime allows adding new components and swapping different
     implementations of a given component.

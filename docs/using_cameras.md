@@ -35,7 +35,7 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
     Both OpenVINS and Kimera have a decent calirbation parameters for ZED. But if you wish to add your own: 
     
-        ./usr/local/zed/tools/ZED_Calibration
+        /usr/local/zed/tools/ZED_Calibration
 
     Your original factory calibration file is stored here
 
@@ -45,7 +45,7 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
 3. **Run ILLIXR with ZED:**  
 
-    Uncomment `zed` in `configs\native` and run ILLIXR normally.
+    Uncomment `zed` in `configs/native.yaml` and run ILLIXR normally.
 
 ## Intel Realsense 
 
@@ -67,7 +67,7 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 
 3. **Run ILLIXR with RealSense:**  
 
-    Uncomment `realsense` in `configs\native` and run ILLIXR normally.
+    Uncomment `realsense` in `configs/native.yaml` and run ILLIXR normally.
 
 
 
