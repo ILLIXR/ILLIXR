@@ -4,7 +4,7 @@ all_visualizers: openvins,kimera_vio
 profile:
   name: ci
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-  data: robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
+  data: https://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
   duration: 10
   build_type: Debug
   enable_offload:   False
