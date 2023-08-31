@@ -69,7 +69,7 @@ public:
         return name;
     }
 
-    void spdlogger(std::string log_level = "off") {
+    void spdlogger(std::string log_level = "warn") {
         std::vector<spdlog::sink_ptr> sinks;
         auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log");
         auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

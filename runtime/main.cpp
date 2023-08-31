@@ -67,7 +67,7 @@ private:
     std::atomic<bool> _m_terminate{false};
 };
 
-void spdlogger(std::string name, std::string log_level = "off") {
+void spdlogger(std::string name, std::string log_level = "warn") {
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log"));
