@@ -1,0 +1,7 @@
+# This file was auto generated, take caution if editing manually.
+plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth
+visualizers: openvins,orb_slam
+enable_offload: false
+enable_alignment: false
+enable_verbose_errors: false
+enable_pre_sleep: false
