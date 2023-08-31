@@ -211,6 +211,9 @@ public:
 
         if (use_rgbd) {
             ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
+
+            // if there are RGBD stream and Stereo images stream, than move the RGBD display window up 
+            // eseentially making the display images of RGBD on top of stereo
             if (use_cam)
                 ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350),
                                         ImGuiCond_Once, ImVec2(1.0f, 1.0f));
