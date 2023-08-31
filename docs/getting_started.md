@@ -42,7 +42,7 @@ ILLIXR may compile with other versions of the above operating systems, but some 
 
 #### Pick the ILLIXR plugins you want to use
 
-<table id="group_table" style="border-spacing: 8px; border: 1px solid black;"></table>
+<table id="profile_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 <table id="listing_table" style="border-spacing: 8px; border: 1px solid black;"></table>
 
 <table style="border-spaceing: 20px; border: 1px solid black;">
@@ -86,24 +86,16 @@ Common CMake command line arguments (always prepend with a `-D`):
    The root path to install the libraries and binary to. This defaults to `/usr/local`.
 -  ***CMAKE_BUILD_TYPE***
    The build type to do: Debug, Release, RelWithDebInfo
--  ***BUILD_GROUP***
-   The [group][21] of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually.
--  ***USE_<PLUGIN_NAME>=ON***
+-  ***YAML_FILE***
+   The [_profile_][23] file of [plugins][22] to build and install. The default is None, meaning plugins should be specified individually on the command line.
+-  ***USE_&lt;PLUGIN_NAME&gt;=ON***
    Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
 plugins to build. Using `-DYAML_FILE=<FILE_NAME>` as the command line argument specifying the [_YAML_][2] file to use.
-The format for the [_YAML_][2] [profile][23] file is:
-```yaml
-group: none
-plugins: timewarp_gl,gldemo,ground_truth_slam
-data: http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
-install_prefix: /home/user/illixr
-build_type: Release
-```
-Where **group** is one of `all`, `ci`, `headless`, `monado`, `native`, or `none`; **plugins** is a group of comma separated plugin names
-(case sensitive, no spaces); **data** is the location of the data to download (if any). The current list of plugins is
+See [profile][23] for the format.
 
+The current list of plugins is:
 - audio_pipeline
 - debugview
 - depthai
@@ -126,15 +118,6 @@ Where **group** is one of `all`, `ci`, `headless`, `monado`, `native`, or `none`
 - rk4_integrator
 - timewarp_gl
 
-The current groups are defined as
-
-- **all:** All current plugins
-- **ci:** audio_pipeline, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio, offline_cam, offline_imu, pose_prediction, timewarp_gl
-- **headless:** offline_imu,offline_cam,kimera_vio,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
-- **monado:** audio_pipeline, gtsam_integrator, kimera_vio, monado, offline_cam, offline_imu, openxr_app, pose_prediction, timewarp_gl
-- **native:** audio_pipeline, debugview, gldemo, ground_truth_slam, gtsam_integrator, kimera_vio, offline_cam, offline_imu, offload_data, pose_prediction, timewarp_gl
-- **none:** only plugins which are individually specified in the `plugins` entry are used
-
 The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which can be used as input to the binary.
 
 ## Running ILLIXR
@@ -150,8 +133,9 @@ an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `op
 - --enable_verbose_errors, give more information about errors
 - --enable_pre_sleep, ??
 - -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
-- -g,--group=<>, the group of plugins to use.
+- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
 - -y,--yaml<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
+- --vis, the visualizer to use (openvins or kimera_vio currently)
 
 Regarding parameters for the binary, the following priority will be used:
 1. If the parameter is specified on the command line it will have the highest priority
@@ -161,15 +145,59 @@ Regarding parameters for the binary, the following priority will be used:
 ### Profile file format
 An example of a [_YAML_][2] [profile][23] file is
 ```yaml
-group: none
-plugins: timewarp_gl,gldemo,ground_truth_slam
-data: mav0
-demo_data: demo_data/
+plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
+run: timewarp_gl,gldemo,ground_truth_slam,offload_vio.device_rx
+visualizers: kimera_vio,openvins
+duration: 5
+data: data/mav0
+demo_data: demo_data
+build_type: Debug
+install_prefix: /home/user/illixr
 enable_offload: true
+enable_alignment: false
 enable_verbose_errors: false
+enable_pre_sleep: false
 ```
 
-In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file.
+Where the entries are defined as (* indicates required field):
+
+- plugins *
+: Comma separated list of plugins (case sensitive) to build or load at runtime.
+
+- run
+: Comma separated list of plugins (case sensitive) which are used at run time. This is only needed in cases like offload_vio where multiple plugin libraries are built by a single plugin, but must be loaded individually. (e.g. offload_vio.server_rx)
+
+- visualizers *
+: Comma separated list of visualizers to build or load at runtime (currently kimera_vio and openvins are available). At runtime, if multiple visualizers are listed, only the first one will be used.
+
+- duration
+: The duration to run ILLIXR for in seconds.
+
+- data
+: Path to the data file to dowload (build step) or use at runtime. If a URL is given (must start with http or https) the file will be downloaded and extracted; the path to the extracted data will be put in the illixr.yaml file.
+
+- demo_data
+: The path to the demonstration data to use at runtime (ignored by build steps)
+
+- build_type
+: The type of build to perform (Debug, Release, or RelWithDebInfo). Ignored at run time.
+
+- install_prefix
+: The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin). **Note**: The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
+
+- enable_offload
+: ? Default is *false*
+
+- enable_alignment
+: ? Default is *false*
+
+- enable_verbose_errors
+: Controls the verbosity of error messages. Default is *false*
+
+- enable_pre_sleep
+: ? Default is *false*
+
+In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
 
 ## Rationale
 
@@ -217,7 +245,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
     const dependencies = {};
     const plugs = {};
     const operatingSystems = {};
-    const groups = [];
+    const profiles = [];
     var selectedOS = "";
     var selectedOSv = "";
     const plugins = new Set();
@@ -250,11 +278,11 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                         dependencies[dep].plugins.push(item.name);
                     }
                 }
-                for(var grp of json.groups) {
-                    groups.push(grp.name);
-                    groups[grp.name] = [];
+                for(var grp of json.profiles) {
+                    profiles.push(grp.name);
+                    profiles[grp.name] = [];
                     for(var plug of grp.plugins) {
-                        groups[grp.name].push(plug);
+                        profiles[grp.name].push(plug);
                     }
                 }
             });
@@ -312,20 +340,20 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         document.getElementById("output").innerHTML = sudoLine;
 
         cmakeLine = "cd ILLIXR\nmkdir build\ncd build\ncmake .. -DCMAKE_INSTALL_PREFIX=&lt;LOCATION&gt;";
-        var group_check = false;
+        var profile_check = false;
         if(document.getElementById("ALL_plugins").checked) {
-            cmakeLine += " -DBUILD_GROUP=ALL";
-            group_check = true;
+            cmakeLine += " -DYAML_FILE=profiles/all.yaml";
+            profile_check = true;
         } else {
-            for(var g of groups) {
-                if(document.getElementById("group_" + g).checked) {
-                    cmakeLine += " -DBUILD_GROUP=" + g.toUpperCase();
-                    group_check = true;
+            for(var g of profiles) {
+                if(document.getElementById("profile_" + g).checked) {
+                    cmakeLine += " -DYAML_FILE=profiles/" + g.toLowerCase() + ".yaml";
+                    profile_check = true;
                     break;
                 }
             }
         }
-        if(!group_check) {
+        if(!profile_check) {
             for(var p of plugins) {
                 if(document.getElementById(p).checked) {
                     cmakeLine += " -D" + plugs[p];
@@ -349,10 +377,10 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         }
         updateSudo();
     }
-    function checkGroup(group_name) {
+    function checkProfile(profile_name) {
         for(var p of plugins) {
             var setChecked = false;
-            for(var pl of groups[group_name]) {
+            for(var pl of profiles[profile_name]) {
                 if(p == pl) {
                     setChecked = true;
                     break;
@@ -383,14 +411,14 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         selectedOS = "Ubuntu";
         selectedOSv = "22";
         document.getElementById(selectedOS + "." + selectedOSv).checked = true;
-        let tabRef = document.getElementById("group_table");
+        let tabRef = document.getElementById("profile_table");
 
         let count = 0;
         let currentRow = tabRef.insertRow(-1);
         
-        let groupcell = currentRow.insertCell(-1);
-        groupcell.innerHTML = "<b>Groups:</b>";
-        groupcell.setAttribute("colspan", groups.length + 2);
+        let profilecell = currentRow.insertCell(-1);
+        profilecell.innerHTML = "<b>Profiles:</b>";
+        profilecell.setAttribute("colspan", profiles.length + 2);
         currentRow = tabRef.insertRow(-1);
 
         let all_cell = currentRow.insertCell(-1);
@@ -399,23 +427,23 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         all_check.setAttribute("onclick", "checkAll();");
         all_check.setAttribute("id", "ALL_plugins");
         all_check.setAttribute("value", "ALL_plugins");
-        all_check.setAttribute("name", "group_selection");
+        all_check.setAttribute("name", "profile_selection");
         let all_label = document.createElement("LABEL");
         all_label.setAttribute("for", "ALL_plugins");
         all_label.appendChild(document.createTextNode("All"));
         all_cell.appendChild(all_check);
         all_cell.appendChild(all_label);
 
-        for(var g of groups) {
+        for(var g of profiles) {
             let cell = currentRow.insertCell(-1);
             let radio = document.createElement("INPUT");
             radio.setAttribute("type", "radio");
-            radio.setAttribute("onclick", "checkGroup('" +  g + "');");
-            radio.setAttribute("id", "group_" + g);
-            radio.setAttribute("value", "group_" + g);
-            radio.setAttribute("name", "group_selection");
+            radio.setAttribute("onclick", "checkProfile('" +  g + "');");
+            radio.setAttribute("id", "profile_" + g);
+            radio.setAttribute("value", "profile_" + g);
+            radio.setAttribute("name", "profile_selection");
             let label = document.createElement("LABEL");
-            label.setAttribute("for", "group_" + g);
+            label.setAttribute("for", "profile_" + g);
             label.appendChild(document.createTextNode(g));
             cell.appendChild(radio);
             cell.appendChild(label);
@@ -426,7 +454,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         none_check.setAttribute("onclick", "updateSudo();");
         none_check.setAttribute("id", "None_plugins");
         none_check.setAttribute("value", "None_plugins");
-        none_check.setAttribute("name", "group_selection");
+        none_check.setAttribute("name", "profile_selection");
         none_check.checked = true;
         let none_label = document.createElement("LABEL");
         none_label.setAttribute("for", "None_plugins");
@@ -474,6 +502,5 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 [18]:   glossary.md#monado
 [19]:   glossary.md#openxr
 [20]:   glossary.md#qemu-kvm
-[21]:   glossary.md#group
 [22]:   glossary.md#plugin
 [23]:   glossary.md#profile

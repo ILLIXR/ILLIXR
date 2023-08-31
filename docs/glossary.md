@@ -86,10 +86,6 @@ or other data source is not as accurate or reliable as the source for the ground
 
 See the [ILLIXR Plugins][68] page for information about sensors implemented in ILLIXR.
 
-#### Group
-
-A _group_ is a selection of [plugins][67] used for a common purpose. For example the group `MONADO` contains all the [plugins][67] necessary to run [Monado][58] in ILLIXR. _Groups_ are generally used as shortcuts for commonly grouped [plugins][67]. A _group_ can be defined in one a [profile][80] file.
-
 #### Head-mounted Display
 
 A display device worn on the head and face for use with VR and XR applications.
@@ -111,7 +107,7 @@ For more information, see the [Wikipedia article][14].
 A modular component that can be detected and enabled for use by an ILLIXR application.
 A plugin can be internal or external to the [ILLIXR project][4].
 Each plugin is compiled and launched dynamically at runtime based on the command line options given or
-    ILLIXR [_profile_][20] file being used.
+    ILLIXR [_profile_][50] file being used.
 ILLIXR also implements a [_Monado_][58] runtime [_translation Plugin_][75].
 
 For a list of supported plugins and their details, see the [ILLIXR Plugins][68] page.
@@ -125,11 +121,11 @@ See the [_Plugin_ API documentation][53].
 A _profile_ describes the environment to be used for the build system and running ILLIXR. _Profiles_ are defined in [YAML][66] files. There are several provided in the `profiles` directory in the repository. A _profile_ file defines what [plugins][67] are to be used, as well as additional information specific to where it is being used.
 
 -  ***As input to CMake***:
-   If a _profile_ file is given to cmake via the `-DYAML_FILE=` directive then the [group][69] (if defined) and listed [plugins][67] will be built.
+   If a _profile_ file is given to cmake via the `-DYAML_FILE=` directive then the listed [plugins][67] will be built.
 -  ***As input to the ILLIXR binary***
    If a _profile_ file is given on the ILLIXR binary via the `--yaml=` command line option, then any listed [plugins][67] will be loaded and any other command line options given in the _profile_ file will be used. See [Running ILLIXR][78] for details.
 
-The same _profile_ file can be given to both cmake and the ILLIXR binary (you may need to change the `data:` entry), as any unrecognized options are ignored by both systems.
+The same _profile_ file can be given to both cmake and the ILLIXR binary (you may need to change the `data:` entry), as any unrecognized options are ignored by both systems. See [Profile file format][80] for details on the _profile_ file format.
 
 #### Pose
 
@@ -374,7 +370,6 @@ For more information, visit the [official YAML page][7].
 [66]:   glossary.md#yaml
 [67]:   glossary.md#plugin
 [68]:   illixr_plugins.md
-[69]:   glossary.md#group
 [70]:   glossary.md#openxr
 [71]:   glossary.md#head-mounted-display
 [72]:   glossary.md#framebuffer
@@ -384,5 +379,4 @@ For more information, visit the [official YAML page][7].
 [76]:   glossary.md#simultaneous-localization-and-mapping
 [77]:   glossary.md#visual-interial-odometry
 [78]:   getting_started.md#running-illixr
-[79]:   glossary.md#group
-[80]:   glossary.md#profile
+[80]:   getting_started.md#profile-file-format
