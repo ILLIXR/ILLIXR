@@ -62,9 +62,9 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     setenv("__GL_SYNC_TO_VBLANK", "1", false);
     bool have_plugins = false;
     // run entry supersedes plugins entry
-    for(auto item: {"plugins", "run"}) {
+    for (auto item : {"plugins", "run"}) {
         if (options.count(item)) {
-            plugins = options[item].as<std::vector<std::string>>();
+            plugins      = options[item].as<std::vector<std::string>>();
             have_plugins = true;
         } else if (config[item]) {
             std::stringstream tss(config[item].as<std::string>());
@@ -88,7 +88,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     } else if (config["visualizers"]) {
         visualizers = config["visualizers"].as<std::vector<std::string>>();
     }
-    if(visualizers.size() > 0)
+    if (visualizers.size() > 0)
         plugins.push_back(visualizers[0]);
 
     if (config["install_prefix"]) {

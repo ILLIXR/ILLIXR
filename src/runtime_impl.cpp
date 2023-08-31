@@ -1,3 +1,5 @@
+#include "illixr/runtime.hpp"
+
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
@@ -5,7 +7,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/record_logger.hpp"
-#include "illixr/runtime.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "sqlite_record_logger.hpp"
