@@ -87,12 +87,9 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         visualizers = options["vis"].as<std::vector<std::string>>();
     } else if (config["visualizers"]) {
         visualizers = config["visualizers"].as<std::vector<std::string>>();
-    } else {
-        std::cout << "No visualizer specified." << std::endl;
-        std::cout << "A visualizer must be given (one of " << STRINGIZE(ILLIXR_VISUALIZERS) << ")" << std::endl;
-        return EXIT_FAILURE;
     }
-    plugins.push_back(visualizers[0]);
+    if(visualizers.size() > 0)
+        plugins.push_back(visualizers[0]);
 
     if (config["install_prefix"]) {
         std::string temp_path(getenv("LD_LIBRARY_PATH"));

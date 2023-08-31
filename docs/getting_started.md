@@ -167,7 +167,7 @@ Where the entries are defined as (* indicates required field):
 - run
 : Comma separated list of plugins (case sensitive) which are used at run time. This is only needed in cases like offload_vio where multiple plugin libraries are built by a single plugin, but must be loaded individually. (e.g. offload_vio.server_rx)
 
-- visualizers *
+- visualizers
 : Comma separated list of visualizers to build or load at runtime (currently kimera_vio and openvins are available). At runtime, if multiple visualizers are listed, only the first one will be used.
 
 - duration
@@ -435,6 +435,10 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         all_cell.appendChild(all_label);
 
         for(var g of profiles) {
+            if(count >= 4) {
+                currentRow = tabRef.insertRow(-1);
+                count = 0;
+            }
             let cell = currentRow.insertCell(-1);
             let radio = document.createElement("INPUT");
             radio.setAttribute("type", "radio");
@@ -447,7 +451,9 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
             label.appendChild(document.createTextNode(g));
             cell.appendChild(radio);
             cell.appendChild(label);
+            count++;
         }
+        count = 0;
         let none_cell = currentRow.insertCell(-1);
         let none_check = document.createElement("INPUT");
         none_check.setAttribute("type", "radio");

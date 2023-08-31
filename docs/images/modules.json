@@ -24,7 +24,7 @@
   ],
   "plugins": [
     {
-      "name": "Audio Pipeline",
+      "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE",
       "dependencies": [
         "git"
@@ -52,7 +52,19 @@
         "OpenCV",
         "Vulkan",
         "glfw3",
-        "glm"
+        "glm",
+        "OpenXR",
+        "libusb",
+        "udev",
+        "JPEG",
+        "PNG",
+        "TIFF",
+        "wayland-server",
+        "x11-xcb",
+        "xcb-glx",
+        "xcb-randr",
+        "xkbcommon",
+        "SDL2"
       ]
     },
     {
@@ -73,7 +85,7 @@
       ]
     },
     {
-      "name": "Kimera-VIO",
+      "name": "kimera_vio",
       "cmake_flag": "USE_KIMERA_VIO",
       "dependencies": [
         "git",
@@ -81,32 +93,25 @@
       ]
     },
     {
-      "name": "Monado",
-      "cmake_flag": "USE_MONADO",
+      "name": "native_renderer",
+      "cmake_flag": "USE_NATIVE_RENDERER",
       "dependencies": [
-        "git",
-        "glslang",
-        "gflags",
+        "OpenCV",
+        "Vulkan",
+        "glfw3",
+        "glm",
+        "OpenXR",
+        "libusb",
+        "udev",
         "JPEG",
         "PNG",
         "TIFF",
-        "udev",
         "wayland-server",
         "x11-xcb",
         "xcb-glx",
         "xcb-randr",
         "xkbcommon",
-        "OpenXR",
-        "Vulkan",
-        "libusb"
-      ]
-    },
-    {
-      "name": "native_renderer",
-      "cmake_flag": "USE_NATIVE_RENDERER",
-      "dependencies": [
-        "OpenCV",
-        "Vulkan"
+        "SDL2"
       ]
     },
     {
@@ -139,22 +144,14 @@
       ]
     },
     {
-      "name": "OpenVINS",
+      "name": "openvins",
       "cmake_flag": "USE_OPENVINS",
       "dependencies": [
         "boost"
       ]
     },
     {
-      "name": "OpenXr_APP",
-      "cmake_flag": "USE_OPENXR_APP",
-      "dependencies": [
-        "git",
-        "SDL2"
-      ]
-    },
-    {
-      "name": "ORB_SLAM",
+      "name": "orb_slam",
       "cmake_flag": "USE_ORB_SLAM",
       "dependencies": [
         "git",
@@ -202,7 +199,24 @@
     {
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL",
-      "dependencies": []
+      "dependencies": [
+        "git",
+        "glslang",
+        "gflags",
+        "JPEG",
+        "PNG",
+        "TIFF",
+        "udev",
+        "wayland-server",
+        "x11-xcb",
+        "xcb-glx",
+        "xcb-randr",
+        "xkbcommon",
+        "OpenXR",
+        "Vulkan",
+        "libusb",
+        "SDL2"
+      ]
     },
     {
       "name": "timewarp_vk",
@@ -211,7 +225,19 @@
         "OpenCV",
         "Vulkan",
         "glfw3",
-        "glm"
+        "glm",
+        "OpenXR",
+        "libusb",
+        "udev",
+        "JPEG",
+        "PNG",
+        "TIFF",
+        "wayland-server",
+        "x11-xcb",
+        "xcb-glx",
+        "xcb-randr",
+        "xkbcommon",
+        "SDL2"
       ]
     },
     {
@@ -221,7 +247,19 @@
         "OpenCV",
         "Vulkan",
         "glfw3",
-        "glm"
+        "glm",
+        "OpenXR",
+        "libusb",
+        "udev",
+        "JPEG",
+        "PNG",
+        "TIFF",
+        "wayland-server",
+        "x11-xcb",
+        "xcb-glx",
+        "xcb-randr",
+        "xkbcommon",
+        "SDL2"
       ]
     },
     {
@@ -278,12 +316,12 @@
             "20": {
               "pkg": "ecal",
               "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu 20 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             },
             "22": {
               "pkg": "ecal",
               "postnotes": "",
-              "notes": "Ubuntu 22 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu 22 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
             }
           },
           "Fedora": {
@@ -1272,18 +1310,51 @@
 
     }
   ],
-  "groups": [
+  "profiles": [
     {
       "name": "CI",
-      "plugins": ["Audio Pipeline", "gldemo", "ground_truth_slam", "gtsam_integrator", "Kimera-VIO", "offline_imu", "offline_cam", "pose_prediction", "timewarp_gl"]
+      "plugins": ["offline_imu", "offline_cam", "gtsam_integrator", "pose_prediction", "ground_truth_slam", "gldemo", "timewarp_gl", "audio_pipeline"],
+      "run": ""
     },
     {
-      "name": "Monado",
-      "plugins": ["Audio Pipeline", "gtsam_integrator", "Kimera-VIO", "Monado", "offline_imu", "offline_cam", "OpenXr_APP", "pose_prediction", "timewarp_gl"]
+      "name": "headless",
+      "plugins": ["offline_imu", "offline_cam", "gtsam_integrator", "pose_prediction", "ground_truth_slam", "gldemo", "timewarp_gl","audio_pipeline"],
+      "run": ""
     },
     {
-      "name": "Native",
-      "plugins": ["Audio Pipeline", "debugview", "gtsam_integrator", "ground_truth_slam", "gldemo", "Kimera-VIO", "offline_imu", "offline_cam", "offload_data", "pose_prediction", "timewarp_gl"]
+      "name": "monado_gl",
+      "plugins": ["offline_imu", "offline_cam", "gtsam_integrator", "pose_prediction", "timewarp_gl", "audio_pipeline"],
+      "run": ""
+    },
+    {
+      "name": "native_gl",
+      "plugins": ["offline_imu", "offline_cam", "gtsam_integrator", "pose_prediction", "ground_truth_slam", "gldemo", "debugview", "offload_data", "timewarp_gl", "audio_pipeline"],
+      "run": ""
+    },
+    {
+      "name": "native_vulkan",
+      "plugins": ["audio_pipeline", "vkdemo", "ground_truth_slam", "gtsam_integrator", "offline_cam", "offline_imu", "offload_data", "pose_prediction", "timewarp_vk", "display_vk", "native_renderer"],
+      "run": ""
+    },
+    {
+      "name": "offload_device",
+      "plugins": ["offline_imu", "offline_cam", "gtsam_integrator", "pose_prediction", "gldemo", "debugview", "offload_vio", "timewarp_gl", "audio_pipeline"],
+      "run": "offline_imu,offline_cam,gtsam_integrator,pose_prediction,gldemo,debugview,offload_vio.device_rx,offload_vio.device_tx,timewarp_gl,audio_pipeline"
+    },
+    {
+      "name": "offload_server",
+      "plugins": ["offload_vio", "audio_pipeline"],
+      "run": "offload_vio.server_rx,offload_vio.server_tx,audio_pipeline"
+    },
+    {
+      "name": "fauxpose",
+      "plugins": ["fauxpose", "gldemo", "debugview", "timewarp_gl", "audio_pipeline"],
+      "run": ""
+    },
+    {
+      "name": "monado_vulkan",
+      "plugins": ["audio_pipeline", "gtsam_integrator", "offline_cam", "offline_imu", "pose_prediction", "timewarp_vk"],
+      "run": ""
     }
   ]
 }
