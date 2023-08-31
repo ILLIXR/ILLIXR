@@ -10,7 +10,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <OpenNI.h>
 
-#define RGB_MODE 0
+#define RGB_MODE   0
 #define DEPTH_MODE 0
 
 using namespace ILLIXR;
@@ -35,7 +35,7 @@ public:
 
 protected:
     virtual skip_option _p_should_skip() override {
-        auto now = std::chrono::steady_clock::now();
+        auto now  = std::chrono::steady_clock::now();
         _cam_time = std::chrono::time_point_cast<std::chrono::milliseconds>(now).time_since_epoch().count();
         if (_cam_time > _last_ts) {
             std::this_thread::sleep_for(std::chrono::milliseconds{_time_sleep});
@@ -133,8 +133,8 @@ protected:
             printf("Couldn't start color stream:\n%s\n", openni::OpenNI::getExtendedError());
 
         int min_fps = std::min(modesColor[RGB_MODE].getFps(), modesDepth[DEPTH_MODE].getFps());
-        _time_sleep = static_cast<uint64_t>((1.0f / min_fps)*1000);
-        
+        _time_sleep = static_cast<uint64_t>((1.0f / min_fps) * 1000);
+
         return _depth.isValid() && _color.isValid();
     }
 
