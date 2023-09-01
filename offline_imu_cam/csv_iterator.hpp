@@ -109,4 +109,3 @@ private:
     std::istream* m_str;
     CSVRow        m_row;
 };
-

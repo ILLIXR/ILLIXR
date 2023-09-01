@@ -16,13 +16,14 @@ namespace ILLIXR {
 //        reinterpret_cast<video_encoder*>(user_data)->want = 1;
 //    }
 // EuRoc
-#define IMG_WIDTH 752
+#define IMG_WIDTH  752
 #define IMG_HEIGHT 480
 // ZED
 // #define IMG_WIDTH 672
 // #define IMG_HEIGHT 376
 
 #define ILLIXR_BITRATE 5242880
+
 // 50Mbps = 52428800
 // 20Mbps = 20971520
 // 10Mbps = 10485760
@@ -61,21 +62,14 @@ void video_encoder::create_pipelines() {
     auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
     auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
 
-    auto caps_8uc1 = gst_caps_new_simple ("video/x-raw",
-        "format", G_TYPE_STRING, "GRAY8",
-        "framerate", GST_TYPE_FRACTION, 0, 1,
-        "width", G_TYPE_INT, IMG_WIDTH,
-        "height", G_TYPE_INT, IMG_HEIGHT,
-        NULL);
+    auto caps_8uc1 = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "GRAY8", "framerate", GST_TYPE_FRACTION, 0, 1,
+                                         "width", G_TYPE_INT, IMG_WIDTH, "height", G_TYPE_INT, IMG_HEIGHT, NULL);
     g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_8uc1, nullptr);
     g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
     gst_caps_unref(caps_8uc1);
 
-    auto caps_convert_to = gst_caps_new_simple ("video/x-raw",
-        "format", G_TYPE_STRING, "NV12",
-        "width", G_TYPE_INT, IMG_WIDTH,
-        "height", G_TYPE_INT, IMG_HEIGHT,
-        NULL);
+    auto caps_convert_to = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "NV12", "width", G_TYPE_INT, IMG_WIDTH,
+                                               "height", G_TYPE_INT, IMG_HEIGHT, NULL);
     g_object_set(G_OBJECT(caps_filter_0), "caps", caps_convert_to, nullptr);
     g_object_set(G_OBJECT(caps_filter_1), "caps", caps_convert_to, nullptr);
     gst_caps_unref(caps_convert_to);

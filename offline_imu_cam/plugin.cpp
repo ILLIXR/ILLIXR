@@ -57,18 +57,12 @@ protected:
             cv::Mat cam0 = *(sensor_datum.cam0.value().load().release());
             cv::Mat cam1 = *(sensor_datum.cam1.value().load().release());
             _m_cam.put(_m_cam.allocate<cam_type>(
-                cam_type{time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)},
-                        cam0,
-                        cam1
-                }
-            ));
+                cam_type{time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)}, cam0, cam1}));
         }
 
-        _m_imu.put(_m_imu.allocate<imu_type>(
-            imu_type{time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)},
-                    (sensor_datum.imu0.value().angular_v),
-                    (sensor_datum.imu0.value().linear_a)}
-        ));
+        _m_imu.put(
+            _m_imu.allocate<imu_type>(imu_type{time_point{std::chrono::nanoseconds(dataset_now - dataset_first_time)},
+                                               (sensor_datum.imu0.value().angular_v), (sensor_datum.imu0.value().linear_a)}));
 
         RAC_ERRNO_MSG("offline_imu_cam at bottom of iteration");
     }
@@ -91,4 +85,3 @@ private:
 };
 
 PLUGIN_MAIN(offline_imu_cam)
-
