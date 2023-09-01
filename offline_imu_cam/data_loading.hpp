@@ -90,4 +90,3 @@ static std::map<ullong, sensor_types> load_data() {
 
     return data;
 }
-

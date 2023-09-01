@@ -11,8 +11,9 @@
 
 namespace ILLIXR {
 // EuRoc
-#define IMG_WIDTH 752
+#define IMG_WIDTH  752
 #define IMG_HEIGHT 480
+
 // ZED
 // #define IMG_WIDTH 672
 // #define IMG_HEIGHT 376
@@ -134,7 +135,8 @@ GstFlowReturn video_decoder::cb_appsink(GstElement* sink) {
         }
 
         if (_img0_ready && _img1_ready) {
-            _callback(cv::Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1, _img0_map.data), cv::Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1, _img1_map.data));
+            _callback(cv::Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1, _img0_map.data),
+                      cv::Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1, _img1_map.data));
             _img0_ready = false;
             _img1_ready = false;
             lock.unlock(); // unlock and notify the waiting thread to clean up
