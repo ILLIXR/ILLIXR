@@ -54,6 +54,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     GET_BOOL(enable_pre_sleep, ILLIXR_ENABLE_PRE_SLEEP)
     GET_STRING(realsense_cam, REALSENSE_CAM)
 
+    GET_STRING(orb_slam_source_dir, ORB_SLAM_ROOT)
+
     setenv("__GL_MaxFramesAllowed", "1", false);
     setenv("__GL_SYNC_TO_VBLANK", "1", false);
     bool have_plugins = false;
