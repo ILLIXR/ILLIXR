@@ -182,28 +182,4 @@ string get_working_directory(void) {
     return cwd_ptr.get();
 }
 
-// class TemporarilyUnprivileged {
-// private:
-//     const uid_t orig_euid;
-//     const gid_t orig_egid;
-
-// public:
-//     TemporarilyUnprivileged()
-//     : orig_euid( geteuid() ),
-//       orig_egid( getegid() )
-//     {
-//         SystemCall( "setegid", setegid( getgid() ) );
-//         SystemCall( "seteuid", seteuid( getuid() ) );
-
-// assert_not_root();
-// }
-
-// ~TemporarilyUnprivileged()
-// {
-//     SystemCall( "seteuid", seteuid( orig_euid ) );
-//     SystemCall( "setegid", setegid( orig_egid ) );
-// }
-
-// };
-
 #endif /* UTIL_HPP */

@@ -185,11 +185,11 @@ struct rendered_frame : public switchboard::event {
 };
 
 struct hologram_input : public switchboard::event {
-    int seq;
+    uint seq;
 
     hologram_input() { }
 
-    hologram_input(int seq_)
+    hologram_input(uint seq_)
         : seq{seq_} { }
 };
 

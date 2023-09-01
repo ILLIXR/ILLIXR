@@ -213,12 +213,7 @@ private:
         // TODO last_imu_offset is 0, t_offset only take effects when it's negative.
         // However, why would we want to integrate to a past time point rather than the current time point?
         time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
-<<<<<<< HEAD
-        // time_point time_end   = input_values->t_offset + real_time;
-        time_point time_end = real_time;
-=======
         time_point time_end   = real_time;
->>>>>>> 2a4f231c... updates and doc
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
