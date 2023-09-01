@@ -12,6 +12,7 @@
 #include <thread>
 
 using namespace ILLIXR;
+// These are the first IMU timestamp of the datasets. See line#31 for more info.
 #define ViconRoom1Easy      1403715273262142976
 #define ViconRoom1Medium    1403715523912143104
 #define ViconRoom1Difficult 1403715886544058112
