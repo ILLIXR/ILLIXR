@@ -6,7 +6,9 @@ The ILLIXR project supports several ways for an ILLIXR application to log and re
 ## Logging
 ILLIXR uses the [spdlog](https://github.com/gabime/spdlog) library for logging. Logging goes to both `STDOUT` and one or more log files in `$ILLIXR_ROOT/logs/`
 
-Available levels, from low to high are: `trace`, `debug`, `info`, `warn` (default), `error`, `critical`, `off`.
+Available levels, from low to high are: `trace`, `debug`, `info`, `warn`, `error`, `critical`, `off`.
+
+If `NDEBUG` is not defined, then the default logging level is `warn`, otherwise it is `debug`.
 
 Logging is activated by exporting environment variables to a particular level before running ILLIXR. These take the form of `<PLUGIN_NAME>_LOG_LEVEL`, e.g.,
 

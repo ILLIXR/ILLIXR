@@ -68,7 +68,13 @@ private:
 };
 
 void spdlogger(std::string name, const char* log_level) {
-    if (!log_level) { log_level = "warn"; }
+    if (!log_level) { 
+#ifndef NDEBUG
+        log_level = "warn"; 
+#else
+        log_level = "debug";
+#endif
+    }
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log"));
