@@ -68,9 +68,9 @@ private:
 };
 
 void spdlogger(std::string name, const char* log_level) {
-    if (!log_level) { 
+    if (!log_level) {
 #ifndef NDEBUG
-        log_level = "warn"; 
+        log_level = "warn";
 #else
         log_level = "debug";
 #endif

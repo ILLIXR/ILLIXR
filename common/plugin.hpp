@@ -70,13 +70,13 @@ public:
     }
 
     void spdlogger(const char* log_level) {
-	if (!log_level) { 
+        if (!log_level) {
 #ifndef NDEBUG
-	    log_level = "warn"; 
+            log_level = "warn";
 #else
-	    log_level = "debug";
+            log_level = "debug";
 #endif
-	}
+        }
         std::vector<spdlog::sink_ptr> sinks;
         auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log");
         auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();

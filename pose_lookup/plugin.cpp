@@ -1,10 +1,11 @@
 #include "common/plugin.hpp"
-#include "spdlog/spdlog.h"
+
 #include "common/data_format.hpp"
 #include "common/global_module_defs.hpp"
 #include "common/phonebook.hpp"
 #include "common/pose_prediction.hpp"
 #include "data_loading.hpp"
+#include "spdlog/spdlog.h"
 #include "utils.hpp"
 
 #include <cmath>
@@ -131,15 +132,15 @@ public:
         if (nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) after last datum {}", lookup_time,
-                                     std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
-                                     _m_sensor_data.rbegin()->first);
+                                         std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
+                                         _m_sensor_data.rbegin()->first);
 #endif
             nearest_row--;
         } else if (nearest_row == _m_sensor_data.cbegin()) {
 #ifndef NDEBUG
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) before first datum {}", lookup_time,
-                                     std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
-                                     _m_sensor_data.cbegin()->first);
+                                         std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
+                                         _m_sensor_data.cbegin()->first);
 #endif
         } else {
             // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
