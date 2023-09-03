@@ -33,11 +33,11 @@ Outside of the plugin class hierarchy, one can use the global ILLIXR logger whic
 
 Log files are appended. To merge to a single log do `$ cat *log | sort > combined.log` This will sort correctly because the entries start with an ISO-8601 timestamp. For this reason, if a plugin uses `spdlog::set_pattern()` to create a custom log pattern, it is highly recommended that the custom pattern start with an ISO-8601 timestamp and it is required to reset to the default log message pattern after use.
 
-### partial Kimera-VIO logging workaround
+### Partial Kimera-VIO logging workaround
 
 The ILLIXR/Kimera-VIO fork uses [glog](https://github.com/google/glog). A partial workaround is to `export GLOG_logtostderr=1` and then redirect STDERR. This will not capture `std::cout` usage in Kimera-VIO (nor in OpenCV, or other components). It will capture the plugin-build progress bar created by the Python app runner.
 
-### note about #ifndef NDEBUG/#endif blocks
+### Note about #ifndef NDEBUG/#endif blocks
 Many of the plugins contain their logging statements inside of blocks which are only active when doing a debug build. This is a historical artifact. New plugins should carefully consider the difference between logging a debug message and conditionally compiling blocks of code based on build type.
 
 
