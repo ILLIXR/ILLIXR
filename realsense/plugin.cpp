@@ -207,7 +207,7 @@ private:
         }
         if (!T26X_found && !D4XXI_found) {
 #ifndef NDEBUG
-            spdlog::get(name)->debug("No supported Realsense device detected!");
+            spdlog::get(name)->warn("No supported Realsense device detected!");
 #endif
         }
     }
