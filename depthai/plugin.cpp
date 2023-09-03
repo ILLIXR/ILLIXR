@@ -148,7 +148,7 @@ public:
 
     virtual ~depthai() override {
 #ifndef NDEBUG
-        spdlog::get(name)->debug("Destructor: Packets Received {} Published: IMU {} RGB-D: {}", imu_packet, imu_pub, rgbd_pub);
+        spdlog::get(name)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet, imu_pub, rgbd_pub);
         auto dur = std::chrono::steady_clock::now() - first_packet_time;
         spdlog::get(name)->debug("Time since first packet: {} ms",
                                  std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
