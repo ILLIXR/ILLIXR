@@ -29,7 +29,7 @@ To log inside of a plugin method, use the plugin's name attribute to get the par
 spdlog::get(name)->info("informative message");
 ```
 
-Outside of the plugin class hierarchy, one can use the global ILLIXR logger which is registered under "illixr", e.g., `spdlog::get("illixr")`.  It will look for `$ILLIXR_LOG_LEVEL` in the environtment or use `warn` by default. This usage requires explicitly adding the name of the component or file to the output message, if desired.
+Outside of the plugin class hierarchy, one can use the global ILLIXR logger which is registered under "illixr", e.g., `spdlog::get("illixr")`.  It will look for `$ILLIXR_LOG_LEVEL` in the environment or use `warn` by default. This usage requires explicitly adding the name of the component or file to the output message, if desired.
 
 Log files are appended. To merge to a single log do `$ cat *log | sort > combined.log` This will sort correctly because the entries start with an ISO-8601 timestamp. For this reason, if a plugin uses `spdlog::set_pattern()` to create a custom log pattern, it is highly recommended that the custom pattern start with an ISO-8601 timestamp and it is required to reset to the default log message pattern after use.
 
