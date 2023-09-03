@@ -62,7 +62,7 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
-            spdlog::get(name)->debug("First vysnc is in {} ms", vsync_in);
+            spdlog::get(name)->debug("First vsync is in {} ms", vsync_in);
         }
 #endif
 
