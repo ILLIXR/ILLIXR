@@ -295,7 +295,7 @@ private:
 
     public:
         topic_buffer() {
-            //spdlog::get("illixr")->info("[switchboard] topic buffer created");
+            spdlog::get("illixr")->info("[switchboard] topic buffer created");
         }
 
         void enqueue(ptr<const event>&& this_event) {
