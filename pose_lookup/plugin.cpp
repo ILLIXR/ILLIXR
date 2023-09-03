@@ -42,7 +42,7 @@ public:
         const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync =
             _m_vsync_estimate.get_ro_nullable();
         if (estimated_vsync == nullptr) {
-            spdlog::get("illixr")->info("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
+            spdlog::get("illixr")->warn("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
             return get_fast_pose(_m_clock->now());
         } else {
             return get_fast_pose(**estimated_vsync);
