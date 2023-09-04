@@ -43,9 +43,13 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
     Or download it from [calib.stereolabs.com][8].
 
-3. **Run ILLIXR with ZED:**  
+3. **Enable ZED in OpenVINS plugin**
 
-    Uncomment `zed` in `configs/native.yaml` and run ILLIXR normally.
+    This step is only required if using OpenVINS. Uncomment this [line](9) in the OpenVINS plugin. 
+
+4. **Run ILLIXR with ZED:**  
+
+    Uncomment `zed` in `configs/rt_slam_plugins.yaml` and run ILLIXR normally.
 
 ## Intel Realsense 
 
@@ -67,7 +71,7 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 
 3. **Run ILLIXR with RealSense:**  
 
-    Uncomment `realsense` in `configs/native.yaml` and run ILLIXR normally.
+    Uncomment `realsense` in `configs/rt_slam_plugins.yaml` and run ILLIXR normally.
 
 
 
@@ -81,6 +85,7 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 [6]: https://github.com/ILLIXR/open_vins
 [7]: https://github.com/ILLIXR/Kimera-VIO/blob/4ba8c4a8deede4fa089b545fd34ce100a38bf4b2/examples/plugin.cpp#L26
 [8]: https://www.stereolabs.com/developers/calib/
+[9]: https://github.com/ILLIXR/open_vins/blob/820a4dcba4423366233da1cb60d8b3b4bf2960e4/ov_msckf/src/slam2.cpp#L24
 
 [//]: # (- Internal -)
 

@@ -3,6 +3,7 @@
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
 ![Discord](https://img.shields.io/discord/830812443189444698)
+[![Discord](https://discordapp.com/api/guilds/830812443189444698/widget.png?style=shield)](47)
 
 <a href="https://youtu.be/GVcCW8WgEDY">
     <img
@@ -82,7 +83,7 @@ The [ILLIXR consortium][37] is an industry-supported community effort to democra
     XR systems research, development, and benchmarking.
 Visit our [web site][37] for more information.
 
-The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. 
+The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. Please join our [Discord](47) for announcement. 
 
 # Citation
 
