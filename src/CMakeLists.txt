@@ -14,6 +14,12 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
         ../include/illixr/phonebook.hpp
         )
 
+##############
+# yaml parser
+##############
+
+get_external(Yamlcpp)
+
 target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VISUALIZERS='${VIS_NAMES}'")
 
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${CMAKE_SOURCE_DIR}/include)
