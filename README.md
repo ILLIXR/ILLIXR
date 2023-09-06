@@ -2,8 +2,8 @@
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
-![Discord](https://img.shields.io/discord/830812443189444698)
-[![Discord](https://discordapp.com/api/guilds/830812443189444698/widget.png?style=shield)](47)
+[![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][47]
+
 
 <a href="https://youtu.be/GVcCW8WgEDY">
     <img
@@ -37,13 +37,13 @@ ILLIXR currently contains the following components:
         1.  [RITNet][3] **
     -   Scene Reconstruction
         1.  [ElasticFusion][2] **
-        1.  [KinectFusion][40] **
+        2.  [KinectFusion][40] **
     -   Simultaneous Localization and Mapping
         1.  [OpenVINS][1] **
-        1.  [Kimera-VIO][29] **
+        2.  [Kimera-VIO][29] **
     -   Cameras and IMUs
         1.  [ZED Mini][42]
-        1.  [Intel RealSense][41]
+        2.  [Intel RealSense][41]
 
 -   *Visual*
     -   [Chromatic aberration correction][5]
@@ -83,7 +83,7 @@ The [ILLIXR consortium][37] is an industry-supported community effort to democra
     XR systems research, development, and benchmarking.
 Visit our [web site][37] for more information.
 
-The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. Please join our [Discord](47) for announcement. 
+The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. Please join our [Discord][47] for announcement. 
 
 # Citation
 
