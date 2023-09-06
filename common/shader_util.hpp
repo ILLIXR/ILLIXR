@@ -12,7 +12,7 @@ using namespace ILLIXR;
 
 static constexpr std::size_t GL_MAX_LOG_LENGTH = 4096U;
 
-static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
+[[maybe_unused]] static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
                                        [[maybe_unused]] GLenum severity, [[maybe_unused]] GLsizei length,
                                        [[maybe_unused]] const GLchar* message, [[maybe_unused]] const void* userParam) {
 #ifndef NDEBUG
