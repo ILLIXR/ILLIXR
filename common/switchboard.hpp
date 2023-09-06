@@ -214,7 +214,7 @@ private:
                             this->thread_on_stop();
                         }} {
             _m_thread.start();
-	    _m_plugin_id = plugin_id;
+            _m_plugin_id = plugin_id;
         }
 
         /**

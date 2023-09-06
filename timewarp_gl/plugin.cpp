@@ -561,7 +561,6 @@ public:
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
 
-
         if (enable_offload) {
             // Read texture image from texture buffer
             GLubyte* image = readTextureImage();
