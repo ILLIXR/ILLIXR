@@ -1,7 +1,5 @@
-diff --git a/include/DBoW2/TemplatedVocabulary.h b/include/DBoW2/TemplatedVocabulary.h
-index 6d8d621..33d23f6 100644
---- a/include/DBoW2/TemplatedVocabulary.h
-+++ b/include/DBoW2/TemplatedVocabulary.h
+--- include/DBoW2/TemplatedVocabulary.h
++++ include/DBoW2/TemplatedVocabulary.h.new
 @@ -1,3 +1,10 @@
 +/**
 + * This is a modified version of TemplatedVocabulary.h from DBoW2 (see below).
