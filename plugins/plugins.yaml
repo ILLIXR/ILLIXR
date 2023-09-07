@@ -37,7 +37,7 @@ profile:
   enable_pre_sleep: false
 
 profile:
-  name: native_vulkan
+  name: native_vk
   plugins: audio_pipeline,vkdemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,pose_prediction,timewarp_vk,display_vk,native_renderer
   enable_offload: false
   enable_alignment: false
@@ -73,7 +73,7 @@ profile:
   enable_pre_sleep: false
 
 profile:
-  name: monado_vulkan
+  name: monado_vk
   plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,openxr_app,pose_prediction,timewarp_vk
   enable_offload: False
   enable_alignment: False
