@@ -25,14 +25,14 @@
   "plugins": [
     {
       "name": "audio_pipeline",
-      "cmake_flag": "USE_AUDIO_PIPELINE",
+      "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
         "git"
       ]
     },
     {
       "name": "debugview",
-      "cmake_flag": "USE_DEBUGVIEW",
+      "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
         "glfw3",
         "OpenCV"
@@ -40,14 +40,14 @@
     },
     {
       "name": "depthai",
-      "cmake_flag": "USE_DEPTHAI",
+      "cmake_flag": "USE_DEPTHAI=ON",
       "dependencies": [
         "OpenCV"
       ]
     },
     {
       "name": "display_vk",
-      "cmake_flag": "USE_DISPLAY_VK",
+      "cmake_flag": "USE_DISPLAY_VK=ON",
       "dependencies": [
         "OpenCV",
         "Vulkan",
@@ -69,24 +69,24 @@
     },
     {
       "name": "gldemo",
-      "cmake_flag": "USE_GLDEMO",
+      "cmake_flag": "USE_GLDEMO=ON",
       "dependencies": []
     },
     {
       "name": "ground_truth_slam",
-      "cmake_flag": "USE_GROUND_TRUTH_SLAM",
+      "cmake_flag": "USE_GROUND_TRUTH_SLAM=ON",
       "dependencies": []
     },
     {
       "name": "gtsam_integrator",
-      "cmake_flag": "USE_GTSAM_INTEGRATOR",
+      "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
       "dependencies": [
         "git"
       ]
     },
     {
       "name": "kimera_vio",
-      "cmake_flag": "USE_KIMERA_VIO",
+      "cmake_flag": "USE_KIMERA_VIO=ON",
       "dependencies": [
         "git",
         "glog"
@@ -94,7 +94,7 @@
     },
     {
       "name": "native_renderer",
-      "cmake_flag": "USE_NATIVE_RENDERER",
+      "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "OpenCV",
         "Vulkan",
@@ -116,26 +116,26 @@
     },
     {
       "name": "offline_cam",
-      "cmake_flag": "USE_OFFLINE_CAM",
+      "cmake_flag": "USE_OFFLINE_CAM=ON",
       "dependencies": [
         "OpenCV"
       ]
     },
     {
       "name": "offline_imu",
-      "cmake_flag": "USE_OFFLINE_IMU",
+      "cmake_flag": "USE_OFFLINE_IMU=ON",
       "dependencies": []
     },
     {
       "name": "offload_data",
-      "cmake_flag": "USE_OFFLOAD_DATA",
+      "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [
         "boost"
       ]
     },
     {
       "name": "offload_vio",
-      "cmake_flag": "USE_OFFLOAD_VIO",
+      "cmake_flag": "USE_OFFLOAD_VIO=ON",
       "dependencies": [
         "git",
         "protobuf",
@@ -145,14 +145,14 @@
     },
     {
       "name": "openvins",
-      "cmake_flag": "USE_OPENVINS",
+      "cmake_flag": "USE_OPENVINS=ON",
       "dependencies": [
         "boost"
       ]
     },
     {
       "name": "orb_slam",
-      "cmake_flag": "USE_ORB_SLAM",
+      "cmake_flag": "USE_ORB_SLAM=ON",
       "dependencies": [
         "git",
         "boost",
@@ -162,22 +162,22 @@
     },
     {
       "name": "passthrough_integrator",
-      "cmake_flag": "USE_PASSTHROUGH_INTEGRATOR",
+      "cmake_flag": "USE_PASSTHROUGH_INTEGRATOR=ON",
       "dependencies": []
     },
     {
       "name": "pose_lookup",
-      "cmake_flag": "USE_POSE_LOOKUP",
+      "cmake_flag": "USE_POSE_LOOKUP=ON",
       "dependencies": []
     },
     {
       "name": "pose_prediction",
-      "cmake_flag": "USE_POSE_PREDICTION",
+      "cmake_flag": "USE_POSE_PREDICTION=ON",
       "dependencies": []
     },
     {
       "name": "realsense",
-      "cmake_flag": "USE_REALSENSE",
+      "cmake_flag": "USE_REALSENSE=ON",
       "dependencies": [
         "OpenCV",
         "realsense"
@@ -185,7 +185,7 @@
     },
     {
       "name": "record_imu_cam",
-      "cmake_flag": "USE_RECORD_IMU_CAM",
+      "cmake_flag": "USE_RECORD_IMU_CAM=ON",
       "dependencies": [
         "boost",
         "OpenCV"
@@ -193,12 +193,12 @@
     },
     {
       "name": "rk4_integrator",
-      "cmake_flag": "USE_RK4_INTEGRATOR",
+      "cmake_flag": "USE_RK4_INTEGRATOR=ON",
       "dependencies": []
     },
     {
       "name": "timewarp_gl",
-      "cmake_flag": "USE_TIMEWARP_GL",
+      "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
         "git",
         "glslang",
@@ -220,7 +220,7 @@
     },
     {
       "name": "timewarp_vk",
-      "cmake_flag": "USE_TIMEWARP_VK",
+      "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
         "OpenCV",
         "Vulkan",
@@ -242,7 +242,7 @@
     },
     {
       "name": "vkdemo",
-      "cmake_flag": "USE_VKDEMO",
+      "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
         "OpenCV",
         "Vulkan",
@@ -264,7 +264,7 @@
     },
     {
       "name": "zed",
-      "cmake_flag": "USE_ZED",
+      "cmake_flag": "USE_ZED=ON",
       "dependencies": [
         "OpenCV",
         "zed_SDK"
