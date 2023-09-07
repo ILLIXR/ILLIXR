@@ -216,10 +216,19 @@ macro(giveExecString)
     message("After building and installing ILLIXR, use one of the following command(s) to run it.")
     message("${COLOR_YELLOW_BOLD}Note${RESET_FORMAT}: please ensure that ${CMAKE_INSTALL_PREFIX}/bin is in your ${BOLD}PATH${RESET_FORMAT} and ${CMAKE_INSTALL_PREFIX}/lib is in your ${BOLD}LD_LIBRARY_PATH${RESET_FORMAT}")
     message("")
+
+    message("${BOLD}HEAD TRACKING OPTIONS: ${RESET_FORMAT}")
     if(USE_OPENVINS)
         message("To use OpenVINS")
         message("  main${ILLIXR_BUILD_SUFFIX}.exe --yaml=${CMAKE_SOURCE_DIR}/illixr.yaml --vis=openvins")
     endif()
+
+    if(USE_ORB_SLAM)
+        message("To use ORB-SLAM3")
+        message("  main${ILLIXR_BUILD_SUFFIX}.exe --yaml=${CMAKE_SOURCE_DIR}/illixr.yaml --vis=orb_slam")
+    endif()
+
+
     if(OPENXR_RUNTIME)
         string(REGEX MATCH "tcsh$" TCSHELL $ENV{SHELL})
         string(REGEX MATCH "csh$" CSHELL $ENV{SHELL})
