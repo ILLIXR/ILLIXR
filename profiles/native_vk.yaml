@@ -1,6 +1,8 @@
 # This file was auto generated, take caution if manually editing.
-plugins: audio_pipeline,vkdemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,pose_prediction,timewarp_vk,display_vk,native_renderer
-visualizers: openvins,kimera_vio
+plugins: audio_pipeline,offline_cam,offline_imu,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview
+build_flags: -DILLIXR_MONADO_MAINLINE
+build_type: Release
+visualizers: openvins
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false

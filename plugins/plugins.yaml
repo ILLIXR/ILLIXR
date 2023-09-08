@@ -38,7 +38,10 @@ profile:
 
 profile:
   name: native_vk
-  plugins: audio_pipeline,vkdemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,pose_prediction,timewarp_vk,display_vk,native_renderer
+  plugins: audio_pipeline,offline_cam,offline_imu,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview
+  visualizers: openvins
+  build_flags: -DILLIXR_MONADO_MAINLINE
+  build_type: Release
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -75,6 +78,9 @@ profile:
 profile:
   name: monado_vk
   plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,openxr_app,pose_prediction,timewarp_vk
+  visualizers: openvins
+  build_flags: -DILLIXR_MONADO_MAINLINE
+  build_type: Release
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False

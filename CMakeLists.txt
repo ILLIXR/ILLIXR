@@ -67,7 +67,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
 
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(MONADO_RUNTIME_VK "")
@@ -98,6 +98,9 @@ set(RT_SLAM_PLUGINS OFF)
 
 if(YAML_FILE)
     read_yaml(${YAML_FILE})
+    if(LOCAL_BUILD_FLAGS)
+        add_definitions("${LOCAL_BUILD_FLAGS}")
+    endif()
 endif()
 
 set(ILLIXR_BUILD_SUFFIX "")

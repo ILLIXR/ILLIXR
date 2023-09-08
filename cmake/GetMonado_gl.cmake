@@ -33,7 +33,7 @@ if(HAVE_CENTOS)
 endif()
 EXTERNALPROJECT_ADD(MonadoGL
         GIT_REPOSITORY https://github.com/ILLIXR/monado_integration.git   # Git repo for source code
-        GIT_TAG d0ce7172bcd01b14e95b82149af05c1fd35b7e3f       # sha5 hash for specific commit to pull (if there is no specific tag to use)
+        GIT_TAG c2e5fc808717f6d1f05cc1813888752c6e8bf6ef       # sha5 hash for specific commit to pull (if there is no specific tag to use)
         PREFIX ${CMAKE_BINARY_DIR}/_deps/monado                # the build directory
         DEPENDS ${OpenCV_DEP_STR}                              # dependencies of this module
         #arguments to pass to CMake
