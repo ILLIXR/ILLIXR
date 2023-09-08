@@ -47,7 +47,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         )
 
 add_dependencies(${PLUGIN_NAME} Display_VK_Shaders)
-set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME "plugin")
+set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
 target_link_libraries(${PLUGIN_NAME} glfw)
 target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
