@@ -295,8 +295,10 @@ private:
 
     public:
         topic_buffer() {
+#ifndef NDEBUG
             spdlog::get("illixr")->info("[switchboard] topic buffer created");
-        }
+#endif
+	}
 
         void enqueue(ptr<const event>&& this_event) {
             _m_queue_size++;
