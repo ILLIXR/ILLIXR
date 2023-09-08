@@ -85,14 +85,6 @@
       ]
     },
     {
-      "name": "kimera_vio",
-      "cmake_flag": "USE_KIMERA_VIO=ON",
-      "dependencies": [
-        "git",
-        "glog"
-      ]
-    },
-    {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [

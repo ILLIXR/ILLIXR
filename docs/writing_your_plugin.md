@@ -159,11 +159,10 @@ named `GetPlotter.cmake` (case matters, it must match the call to `get_external`
 | 14     | Set which libraries are built by the Plotter package. In this example `libplotter.so` and `libalt_plotter.so` are being built. |
 
 ### External Plugins
-For plugins that are external packages (e.g. Kimera_VIO) you need only create a `GetX.cmake` file as above and add the
+For plugins that are external packages (e.g. Audio_Pipeline) you need only create a `GetX.cmake` file as above and add the
 plugin name to the `external_plugins` list in `profiles/plugins.yaml`.
 
-External plugins with external dependencies are a bit more work, but are straight forward. See how Kimera_VIO is handled
-in the main CMakeLists.txt file.
+External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.
 
 ## Tutorial
 

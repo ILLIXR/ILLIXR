@@ -12,10 +12,6 @@ if(BUILD_OPENCV)
 endif()
 
 set(MONADO_CMAKE_ARGS "")
-if(USE_KIMERA_VIO)
-    set(MONADO_VK_DEPS "${MONADO_VK_DEPS}${Kimera_vio_DEP_STR}")
-    set(MONADO_CMAKE_ARGS "-Dkimera_vio_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/kimera_vio")
-endif()
 
 # if building on CentOS make sure we use the correct OpenCV
 if(HAVE_CENTOS)

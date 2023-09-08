@@ -2,7 +2,7 @@
 plugins: offload_vio,audio_pipeline
 run: offload_vio.server_rx,offload_vio.server_tx,audio_pipeline
 duration: 90
-visualizers: openvins,kimera_vio
+visualizers: openvins
 enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False

@@ -92,7 +92,7 @@ Common CMake command line arguments (always prepend with a `-D`):
    Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
-plugins to build. Using `-DYAML_FILE=<FILE_NAME>` as the command line argument specifying the [_YAML_][2] file to use.
+plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use.
 See [profile][23] for the format.
 
 The current list of plugins is:
@@ -102,8 +102,6 @@ The current list of plugins is:
 - gldemo
 - ground_truth_slam
 - gtsam_integrator
-- kimera_vio
-- monado
 - offline_cam
 - offline_imu
 - offload_data
@@ -122,20 +120,20 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
-- --duration=<>, the duration to run for in seconds (default is 60)
-- --data=<>, the data file to use
-- --demo_data=<>, the demo data to use
+- --duration=&lt;&gt;, the duration to run for in seconds (default is 60)
+- --data=&lt;&gt;, the data file to use
+- --demo_data=&lt;&gt;, the demo data to use
 - --enable_offload, ??
 - --enable_alignment, ??
 - --enable_verbose_errors, give more information about errors
 - --enable_pre_sleep, ??
-- -p,--plugins=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
-- -r,--run=<>, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
-- -y,--yaml<>, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
-- --vis, the visualizer to use (openvins or kimera_vio currently)
+- -p,--plugins=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces)
+- -r,--run=&lt;&gt;, comma separated list of plugins to use (case sensitive, all lowercase, no spaces), supersedes plugins entry.  This is only necessary if a plugin builds more than one library (e.g. offload_vio builds 4 libraries) as each must be loaded individually.
+- -y,--yaml&lt;&gt;, the [profile][23] file to use which specifies some or all of the above arguments (e.g. the generated `illixr.yaml`)
+- --vis, the visualizer to use (openvins currently)
 
 Regarding parameters for the binary, the following priority will be used:
 1. If the parameter is specified on the command line it will have the highest priority
@@ -147,7 +145,7 @@ An example of a [_YAML_][2] [profile][23] file is
 ```yaml
 plugins: timewarp_gl,gldemo,ground_truth_slam,offload_vio
 run: timewarp_gl,gldemo,ground_truth_slam,offload_vio.device_rx
-visualizers: kimera_vio,openvins
+visualizers: openvins
 duration: 5
 data: data/mav0
 demo_data: demo_data
@@ -168,7 +166,7 @@ Where the entries are defined as (* indicates required field):
 : Comma separated list of plugins (case sensitive) which are used at run time. This is only needed in cases like offload_vio where multiple plugin libraries are built by a single plugin, but must be loaded individually. (e.g. offload_vio.server_rx)
 
 - visualizers
-: Comma separated list of visualizers to build or load at runtime (currently kimera_vio and openvins are available). At runtime, if multiple visualizers are listed, only the first one will be used.
+: Comma separated list of visualizers to build or load at runtime (currently openvins is available). At runtime, if multiple visualizers are listed, only the first one will be used.
 
 - duration
 : The duration to run ILLIXR for in seconds.

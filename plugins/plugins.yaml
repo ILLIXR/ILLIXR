@@ -1,5 +1,5 @@
 all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo
-all_visualizers: openvins,kimera_vio
+all_visualizers: openvins
 
 profile:
   name: ci
