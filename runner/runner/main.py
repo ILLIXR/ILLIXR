@@ -98,7 +98,7 @@ def build_runtime(
 
     if is_vulkan:
         runtime_config.update(ILLIXR_VULKAN="ON")
-    elif illixr_monado:
+    if illixr_monado:
         runtime_config.update(ILLIXR_MONADO="ON")
 
     make(runtime_path, targets, runtime_config, env_override=env_override)
@@ -228,7 +228,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     realsense_cam_string = config["realsense_cam"]
 
     is_vulkan: bool = bool(config["action"]["is_vulkan"]) if "is_vulkan" in config["action"] else False
-    build_runtime(config, "so", is_vulkan = is_vulkan)
+    build_runtime(config, "so", is_vulkan=is_vulkan, illixr_monado=True)
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
         plugin_config.update(ILLIXR_MONADO="ON")
