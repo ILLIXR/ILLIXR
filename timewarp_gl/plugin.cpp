@@ -378,8 +378,6 @@ private:
         // Calculate the number of vertices+indices in the distortion mesh.
         num_distortion_vertices = (hmdInfo.eyeTilesHigh + 1) * (hmdInfo.eyeTilesWide + 1);
         num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6;
-        // What is the 6 here? What's the difference between vertices and indices? Each rectangular has two triangles, each
-        // triangle has three vertices (i.e., three indices to represent).
 
         // Allocate memory for the elements/indices array.
         distortion_indices.resize(num_distortion_indices);

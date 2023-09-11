@@ -304,12 +304,7 @@ public:
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(MessageCallback, 0);
 
-        // Create two shared eye textures.
-        // Note; each "eye texture" actually contains two eyes.
-        // The two eye textures here are actually for double-buffering
-        // the Switchboard connection.
-        // ^ The above comment seems to be related non-Monado style eyebuffers,
-        // ^ which seem to no longer be used.
+        // Create two shared textures, one for each eye.
         createSharedEyebuffer(&(eyeTextures[0]));
         _m_image_handle.put(
             _m_image_handle.allocate<image_handle>(image_handle{eyeTextures[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
