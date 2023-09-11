@@ -74,7 +74,7 @@ public:
         // which results in a "multipath" between the pose and the video stream.
         // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} 
+        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 #else
         , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
 #endif
@@ -847,7 +847,7 @@ public:
             // Publish image and pose
             _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
                 texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
-                            most_recent_frame->render_pose.pose.orientation}));
+                             most_recent_frame->render_pose.pose.orientation}));
         }
 #endif
 
