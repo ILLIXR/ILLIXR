@@ -66,7 +66,15 @@ public:
 #ifndef ILLIXR_MONADO
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+        , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
         , mtp_logger{record_logger_}
+        // TODO: Use #198 to configure this. Delete getenv_or.
+        // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
+        // Timewarp poses a "second channel" by which pose data can correct the video stream,
+        // which results in a "multipath" between the pose and the video stream.
+        // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
+        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
+        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))} 
 #else
         , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
 #endif
@@ -208,6 +216,9 @@ private:
     // Switchboard plug for publishing vsync estimates
     switchboard::writer<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
 
+    // Switchboard plug for publishing offloaded data
+    switchboard::writer<texture_pose> _m_offload_data;
+
     // Timewarp only has vsync estimates with native-gl
     record_coalescer mtp_logger;
 #endif
@@ -270,6 +281,8 @@ private:
 
     bool disable_warp;
 
+    bool enable_offload;
+
     // PBO buffer for reading texture image
     GLuint PBO_buffer;
 
@@ -282,22 +295,9 @@ private:
         // Start timer
         time_point startGetTexTime = _m_clock->now();
 
-        // Enable PBO buffer
+        // Read the contents of the default framebuffer to the PBO
         glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
-
-        // Read texture image to PBO buffer
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) 0);
-
-        // Transfer texture image from GPU to Pinned Memory(CPU)
-        GLubyte* ptr = (GLubyte*) glMapNamedBuffer(PBO_buffer, GL_READ_ONLY);
-
-        // Copy texture to CPU memory
-        memcpy(pixels, ptr, memSize);
-
-        // Unmap the buffer
-        glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-
-        // Unbind the buffer
+        glReadPixels(0, 0, display_params::width_pixels, display_params::height_pixels, GL_RGB, GL_UNSIGNED_BYTE, pixels);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
         // Record the image collection time
@@ -600,6 +600,14 @@ public:
         assert(distortion_indices_data != nullptr && "Timewarp allocation should not fail");
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_distortion_indices * sizeof(GLuint), distortion_indices_data, GL_STATIC_DRAW);
 
+        if (enable_offload) {
+            // Config PBO for texture image collection
+            glGenBuffers(1, &PBO_buffer);
+            glBindBuffer(GL_PIXEL_PACK_BUFFER, PBO_buffer);
+            glBufferData(GL_PIXEL_PACK_BUFFER, display_params::width_pixels * display_params::height_pixels * 3, 0,
+                         GL_STREAM_DRAW);
+        }
+
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");
     }
@@ -829,17 +837,19 @@ public:
                       << "Next swap in: " << timewarp_estimate << "ms in the future" << std::endl;
         }
     #endif
+
+        // For now, it only makes sense to enable offloading in native mode
+        // because running timewarp with Monado will not produce a single texture.
+        if (enable_offload) {
+            // Read texture image from texture buffer
+            GLubyte* image = readTextureImage();
+
+            // Publish image and pose
+            _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
+                texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
+                            most_recent_frame->render_pose.pose.orientation}));
+        }
 #endif
-
-        // if (enable_offload) {
-        //     // Read texture image from texture buffer
-        //     GLubyte* image = readTextureImage();
-
-        // // Publish image and pose
-        // _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
-        //     texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
-        //                 most_recent_frame->render_pose.pose.orientation}));
-        // }
 
         // retrieving the recorded elapsed time
         // wait until the query result is available
