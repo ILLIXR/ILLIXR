@@ -4,7 +4,7 @@
 get_external(Pangolin)
 get_external(g2o)
 get_external(Sophus)
-get_external_for_plugin(DBoW2)
+get_external(DBoW2)
 
 set(ORB_SLAM_CMAKE_ARGS "")
 set(ORB_SLAM_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/ORB_Slam")
@@ -15,9 +15,9 @@ endif()
 
 EXTERNALPROJECT_ADD(ORB_Slam
         GIT_REPOSITORY https://github.com/ILLIXR/ORB_SLAM3.git   # Git repo for source code
-        GIT_TAG f1cf13e4b4c30e97350e065324233cacf9f97e70         # sha5 hash for specific commit to pull (if there is no specific tag to use)
+        GIT_TAG 150d92ebca7c6ac1c21b1a595d4ac1e98f31f53a         # sha5 hash for specific commit to pull (if there is no specific tag to use)
         PREFIX ${ORB_SLAM_SOURCE_DIR}                            # the build directory
-        DEPENDS ${DBoW2_DEP_STR} ${Pangolin_DEP_STR} ${g2o_DEP_STR} ${Sophus_DEP_STR} ${OpenCV_DEP_STR}   # dependencies of this module
+        DEPENDS ${DBoW2_OS3_DEP_STR} ${Pangolin_DEP_STR} ${g2o_DEP_STR} ${Sophus_DEP_STR} ${OpenCV_DEP_STR}   # dependencies of this module
         # force serialized build, otherwise the machine might get slogged down
         BUILD_COMMAND cmake --build . -j1
         #arguments to pass to CMake
