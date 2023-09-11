@@ -216,11 +216,11 @@ struct rendered_frame : public switchboard::event {
 };
 
 struct hologram_input : public switchboard::event {
-    int seq;
+    uint seq;
 
     hologram_input() { }
 
-    hologram_input(int seq_)
+    hologram_input(uint seq_)
         : seq{seq_} { }
 };
 
@@ -230,15 +230,6 @@ struct signal_to_quad : public switchboard::event {
     signal_to_quad(ullong seq_)
         : seq{seq_} { }
 };
-
-typedef struct {
-    int seq;
-} imu_integrator_seq;
-
-/* I use "accel" instead of "3-vector" as a datatype, because
-this checks that you meant to use an acceleration in a certain
-place. */
-struct accel { };
 
 // High-level HMD specification, timewarp plugin
 // may/will calculate additional HMD info based on these specifications
