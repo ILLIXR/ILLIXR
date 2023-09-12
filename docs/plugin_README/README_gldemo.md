@@ -1,1 +1,0 @@
-../../plugins/gldemo/README.md

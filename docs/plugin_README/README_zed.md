@@ -1,1 +1,0 @@
-../../plugins/zed/README.md

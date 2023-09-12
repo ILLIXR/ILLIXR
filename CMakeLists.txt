@@ -81,6 +81,8 @@ option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
+option(BUILD_DOCS "Build documentation" OFF)
+
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")
@@ -185,9 +187,11 @@ find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 include(src/CMakeLists.txt)
 
 # set any plugins that are being built
+set(FULL_PLUGIN_LIST "")
 foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
     string(TOLOWER ${ITEM} ITEM_LOWER)
+    list(APPEND FULL_PLUGIN_LIST ${ITEM})
     if(${ITEM_UPPER})
         list(APPEND OPENXR_PLUGINS ${ITEM_LOWER})
         add_subdirectory(plugins/${ITEM_LOWER})
@@ -195,6 +199,14 @@ foreach(ITEM IN LISTS PLUGIN_LIST VISUALIZER_LIST)
     unset(ITEM_LOWER)
     unset(ITEM_UPPER)
 endforeach()
+
+list(SORT FULL_PLUGIN_LIST COMPARE STRING CASE INSENSITIVE ORDER ASCENDING)
+set(FULL_PLUGIN_LIST_STRING "")
+foreach(PLUGIN_NAME IN LISTS FULL_PLUGIN_LIST)
+    set(FULL_PLUGIN_LIST_STRING "${FULL_PLUGIN_LIST_STRING}\n- ${PLUGIN_NAME}")
+endforeach()
+set(CURRENT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "")
+add_subdirectory(docs)
 
 if(DATA_FILE)
     string(REGEX MATCH "^http" HAVE_MATCH ${DATA_FILE})
