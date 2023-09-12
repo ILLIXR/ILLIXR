@@ -12,12 +12,6 @@ Before running any of these plugins below, it is important to comment out `offli
 ## Add Calibration Parameters
 In order to add your camera's calibration extrinsics, you need to modify your choice of SLAM/VIO plugin. Follow these instructions to [modify a plugin][21].
 
--   [`Kimera-VIO`][5]:
-    
-    Navigate to `params`. <br>
-    Add your calibration here. Look at the other folders for reference. <br>
-    Modify [this line][7] in `examples/plugin.cpp` to point to your calibration folder. 
-
 -   [`OpenVINS`][6]:
     
     Navigate to `ov_msckf/src`.<br>
@@ -33,7 +27,7 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
 2. **Get ZED's calibration parameters**
 
-    Both OpenVINS and Kimera have a decent calirbation parameters for ZED. But if you wish to add your own: 
+    Both OpenVINS have a decent calirbation parameters for ZED. But if you wish to add your own: 
     
         /usr/local/zed/tools/ZED_Calibration
 
@@ -81,9 +75,7 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 [2]: https://www.stereolabs.com/docs/api/
 [3]: https://github.com/ILLIXR/open_vins/blob/43b42dddaf9d3b8e6257e0bb8a91053b59a677e4/ov_msckf/src/slam2.cpp#L24
 [4]: https://github.com/IntelRealSense/librealsense/blob/development/doc/distribution_linux.md
-[5]: https://github.com/ILLIXR/Kimera-VIO
 [6]: https://github.com/ILLIXR/open_vins
-[7]: https://github.com/ILLIXR/Kimera-VIO/blob/4ba8c4a8deede4fa089b545fd34ce100a38bf4b2/examples/plugin.cpp#L26
 [8]: https://www.stereolabs.com/developers/calib/
 [9]: https://github.com/ILLIXR/open_vins/blob/820a4dcba4423366233da1cb60d8b3b4bf2960e4/ov_msckf/src/slam2.cpp#L24
 

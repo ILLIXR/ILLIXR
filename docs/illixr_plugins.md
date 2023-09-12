@@ -30,17 +30,6 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   *Publishes* `pose_type` on `true_pose` topic.
     -   Asynchronously *reads* `imu_cam_type` on `imu_cam` topic.
 
--   [`kimera_vio`][10]:
-    Runs Kimera-VIO ([upstream][1]) on the input, and outputs the [_headset's_][38] [_pose_][37].
-    In practice, the Kimera-VIO plugin publishes a fairly [_slow pose_][37], so [_IMU_][36] integration
-        and [_pose prediction_][37] is required to infer a [_fast pose_][37].
-
-    Topic details:
-
-    -   *Publishes* `pose_type` on `slow_pose` topic.
-    -   *Publishes* `imu_integrator_input` on `imu_integrator_input` topic.
-    -   Synchronously *reads*/*subscribes* to `imu_cam_type` on `imu_cam` topic.
-
 -   [`gtsam_integrator`][12]:
     Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] pose to provide a
         [_fast pose_][37] every time a new IMU sample arrives using the GTSAM library ([upstream][11]).
@@ -162,7 +151,9 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
     Topic details:
 
-    -   Same interface as `Kimera-VIO`.
+    -   *Publishes* `pose_type` on `slow_pose` topic.
+    -   *Publishes* `imu_integrator_input` on `imu_integrator_input` topic.
+    -   Synchronously *reads*/*subscribes* to `imu_cam_type` on `imu_cam` topic.
 
 -   [`rk4_integrator`][16]:
     Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] [_pose_][37] to
@@ -210,7 +201,6 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 
 [//]: # (- References -)
 
-[1]:    https://github.com/MIT-SPARK/Kimera-VIO
 [2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu_cam
 [3]:    https://github.com/ILLIXR/ILLIXR/tree/master/ground_truth_slam
 [4]:    https://github.com/ILLIXR/open_vins
@@ -219,7 +209,6 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [7]:    https://github.com/ILLIXR/ILLIXR/tree/master/debugview
 [8]:    https://github.com/ILLIXR/audio_pipeline/tree/illixr-integration
 [9]:    https://github.com/ILLIXR/HOTlab/tree/illixr-integration
-[10]:   https://github.com/ILLIXR/Kimera-VIO
 [11]:   https://gtsam.org/
 [12]:   https://github.com/ILLIXR/ILLIXR/tree/master/gtsam_integrator
 [16]:   https://github.com/ILLIXR/ILLIXR/tree/master/rk4_integrator

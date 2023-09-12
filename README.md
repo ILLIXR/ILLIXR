@@ -40,7 +40,6 @@ ILLIXR currently contains the following components:
         2.  [KinectFusion][40] **
     -   Simultaneous Localization and Mapping
         1.  [OpenVINS][1] **
-        2.  [Kimera-VIO][29] **
     -   Cameras and IMUs
         1.  [ZED Mini][42]
         2.  [Intel RealSense][41]
@@ -189,8 +188,6 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 -   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
 
--   [Kimera-VIO][29] \ [Simplified BSD License][30]
-
 -   [libspatialaudio][18] \ [GNU Lesser General Public License v2.1][19]
 
 -   [Monado][22] \ [Boost Software License 1.0][23]
@@ -248,8 +245,6 @@ You can join
 [26]:   https://www.khronos.org/openxr
 [27]:   https://github.com/ILLIXR/gtsam
 [28]:   https://github.com/borglab/gtsam/blob/develop/LICENSE.BSD
-[29]:   https://github.com/ILLIXR/Kimera-VIO
-[30]:   https://github.com/MIT-SPARK/Kimera-VIO/blob/master/LICENSE.BSD
 [31]:   https://github.com/cameron314/concurrentqueue
 [32]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
 [33]:   https://illixr.github.io/ILLIXR/getting_started/
