@@ -4,7 +4,7 @@
 get_external(Pangolin)
 get_external(g2o)
 get_external(Sophus)
-get_external(DBoW2)
+get_external_for_plugin(DBoW2)
 
 set(ORB_SLAM_CMAKE_ARGS "")
 
