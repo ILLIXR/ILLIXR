@@ -7,10 +7,8 @@
 
 #include <string>
 
-using namespace std;
-
 /* convert string to long integer */
-long int myatoi(const string& str, const int base = 10) {
+long int myatoi(const std::string& str, const int base = 10) {
     if (str.empty()) {
         throw runtime_error("Invalid integer string: empty");
     }
@@ -30,7 +28,7 @@ long int myatoi(const string& str, const int base = 10) {
 }
 
 /* convert string to floating points */
-double myatof(const string& str) {
+double myatof(const std::string& str) {
     if (str.empty()) {
         throw runtime_error("Invalid floating-point string: empty");
     }
@@ -49,4 +47,4 @@ double myatof(const string& str) {
     return ret;
 }
 
-#endif /* EZIO_HH */
+#endif /* EZIO_HPP */

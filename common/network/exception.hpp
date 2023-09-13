@@ -33,7 +33,7 @@ inline void print_exception(const std::exception& e, std::ostream& output = std:
 }
 
 /* error-checking wrapper for most syscalls */
-inline int SystemCall(const std::string& s_attempt, const int return_value) {
+inline int system_call(const std::string& s_attempt, const int return_value) {
     if (return_value >= 0) {
         return return_value;
     }

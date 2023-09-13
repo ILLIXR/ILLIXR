@@ -101,8 +101,6 @@ public:
                                           static_cast<float>(state_plus(6))},
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
-        last_pose      = state_plus;
-        last_pose_time = future_timestamp;
 
         // Make the first valid fast pose be straight ahead.
         if (first_time) {
@@ -204,8 +202,6 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>>      _m_vsync_estimate;
     mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex;
-    mutable Eigen::Matrix<double, 13, 1>                             last_pose;
-    mutable time_point                                               last_pose_time;
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the

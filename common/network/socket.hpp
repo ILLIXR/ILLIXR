@@ -15,14 +15,13 @@
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 
-using namespace std;
 
 /* class for network sockets (UDP, TCP, etc.) */
 class Socket : public FileDescriptor {
 protected:
     /* default constructor */
     Socket(const int domain, const int type)
-        : FileDescriptor(SystemCall("socket", socket(domain, type, 0))) { }
+        : FileDescriptor(system_call("socket", socket(domain, type, 0))) { }
 
     /* construct from file descriptor */
     Socket(FileDescriptor&& fd, const int domain, const int type)
@@ -47,24 +46,24 @@ protected:
     template<typename option_type>
     socklen_t getsockopt(const int level, const int option, option_type& option_value) const {
         socklen_t optlen = sizeof(option_value);
-        SystemCall("getsockopt", ::getsockopt(fd_num(), level, option, &option_value, &optlen));
+        system_call("getsockopt", ::getsockopt(fd_num(), level, option, &option_value, &optlen));
         return optlen;
     }
 
     template<typename option_type>
     void setsockopt(const int level, const int option, const option_type& option_value) {
-        SystemCall("setsockopt", ::setsockopt(fd_num(), level, option, &option_value, sizeof(option_value)));
+        system_call("setsockopt", ::setsockopt(fd_num(), level, option, &option_value, sizeof(option_value)));
     }
 
 public:
     /* bind socket to a specified local address (usually to listen/accept) */
     void bind(const Address& address) {
-        SystemCall("bind", ::bind(fd_num(), &address.to_sockaddr(), address.size()));
+        system_call("bind", ::bind(fd_num(), &address.to_sockaddr(), address.size()));
     }
 
     /* connect socket to a specified peer address */
     void connect(const Address& address) {
-        SystemCall("connect", ::connect(fd_num(), &address.to_sockaddr(), address.size()));
+        system_call("connect", ::connect(fd_num(), &address.to_sockaddr(), address.size()));
     }
 
     /* accessors */
@@ -87,7 +86,7 @@ public:
         Address::raw address;
         socklen_t    size = sizeof(address);
 
-        SystemCall(name_of_function, function(fd_num(), &address.as_sockaddr, &size));
+        system_call(name_of_function, function(fd_num(), &address.as_sockaddr, &size));
 
         return Address(address, size);
     }
@@ -107,7 +106,7 @@ public:
         : Socket(AF_INET, SOCK_DGRAM) { }
 
     /* receive datagram and where it came from */
-    pair<Address, string> recv_from(void) {
+    pair<Address, std::string> recv_from(void) {
         static const ssize_t RECEIVE_MTU = 65536;
 
         /* receive source address and payload */
@@ -117,7 +116,7 @@ public:
         socklen_t fromlen = sizeof(datagram_source_address);
 
         ssize_t recv_len =
-            SystemCall("recvfrom",
+            system_call("recvfrom",
                        ::recvfrom(fd_num(), buffer, sizeof(buffer), MSG_TRUNC, &datagram_source_address.as_sockaddr, &fromlen));
 
         if (recv_len > RECEIVE_MTU) {
@@ -126,13 +125,13 @@ public:
 
         register_read();
 
-        return make_pair(Address(datagram_source_address, fromlen), string(buffer, recv_len));
+        return make_pair(Address(datagram_source_address, fromlen), std::string(buffer, recv_len));
     }
 
     /* receive datagram and where it came from */
-    vector<pair<Address, string>> recv_from_nonblocking(int wait_time_ms) {
+    vector<pair<Address, std::string>> recv_from_nonblocking(int wait_time_ms) {
         static const ssize_t          RECEIVE_MTU = 65536;
-        vector<pair<Address, string>> result;
+        vector<pair<Address, std::string>> result;
 
         chrono::time_point<chrono::steady_clock> start_time = chrono::steady_clock::now();
         chrono::duration<double>                 duration   = std::chrono::seconds(0);
@@ -152,7 +151,7 @@ public:
             }
 
             if (recv_len >= 0) {
-                result.push_back(make_pair(Address(datagram_source_address, fromlen), string(buffer, recv_len)));
+                result.push_back(make_pair(Address(datagram_source_address, fromlen), std::string(buffer, recv_len)));
                 register_read();
             }
 
@@ -163,8 +162,8 @@ public:
     }
 
     /* send datagram to specified address */
-    void sendto(const Address& destination, const string& payload) {
-        const ssize_t bytes_sent = SystemCall(
+    void sendto(const Address& destination, const std::string& payload) {
+        const ssize_t bytes_sent = system_call(
             "sendto", ::sendto(fd_num(), payload.data(), payload.size(), 0, &destination.to_sockaddr(), destination.size()));
 
         register_write();
@@ -175,8 +174,8 @@ public:
     }
 
     /* send datagram to connected address */
-    void send(const string& payload) {
-        const ssize_t bytes_sent = SystemCall("send", ::send(fd_num(), payload.data(), payload.size(), 0));
+    void send(const std::string& payload) {
+        const ssize_t bytes_sent = system_call("send", ::send(fd_num(), payload.data(), payload.size(), 0));
 
         register_write();
 
@@ -205,22 +204,17 @@ public:
     /* enable tcp socket to immediately send data whenever it receives one */
     void enable_no_delay(void) {
         setsockopt(IPPROTO_TCP, TCP_NODELAY, int(true));
-        // int flag = 1;
-        // if(setsockopt(IPPROTO_TCP , TCP_NODELAY, (char *) & flag, sizeof(flag) ) == -1)
-        // {
-        //     printf("setsockopt TCP_NODELAY failed for client socket\n");
-        // }
     }
 
     /* mark the socket as listening for incoming connections */
     void listen(const int backlog = 16) {
-        SystemCall("listen", ::listen(fd_num(), backlog));
+        system_call("listen", ::listen(fd_num(), backlog));
     }
 
     /* accept a new incoming connection */
     TCPSocket accept(void) {
         register_read();
-        return TCPSocket(FileDescriptor(SystemCall("accept", ::accept(fd_num(), nullptr, nullptr))));
+        return TCPSocket(FileDescriptor(system_call("accept", ::accept(fd_num(), nullptr, nullptr))));
     }
 
     /* original destination of a DNAT connection */
@@ -239,7 +233,7 @@ public:
     /* recreate socket */
     void recreate_socket(void) {
         // Recreate new socket
-        int fd = SystemCall("socket", socket(AF_INET, SOCK_STREAM, 0));
+        int fd = system_call("socket", socket(AF_INET, SOCK_STREAM, 0));
         replace_fd(fd);
     }
 
@@ -247,20 +241,20 @@ public:
     void accept_nonblocking(TCPSocket* read_socket) {
         register_read();
         read_socket =
-            new TCPSocket(FileDescriptor(SystemCall("accept4", ::accept4(fd_num(), nullptr, nullptr, SOCK_NONBLOCK))));
+            new TCPSocket(FileDescriptor(system_call("accept4", ::accept4(fd_num(), nullptr, nullptr, SOCK_NONBLOCK))));
     }
 
-    string recv_non_blocking() {
+    std::string recv_non_blocking() {
         char   buffer[FileDescriptor::BUFFER_SIZE];
-        string result    = "";
+        std::string result    = "";
         int    recv_size = recv(fd_num(), buffer, sizeof(buffer), 0);
         if (recv_size > 0) {
             register_read();
-            return string(buffer, recv_size);
+            return std::string(buffer, recv_size);
         } else {
             return "";
         }
     }
 };
 
-#endif /* SOCKET_HH */
+#endif /* SOCKET_HPP */

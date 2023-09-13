@@ -4,8 +4,6 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-#include "address.hpp"
-
 #include <cstring>
 #include <string>
 #include <sys/types.h>
@@ -32,10 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-using namespace std;
-
 /* Get the user's shell */
-string shell_path(void) {
+std::string shell_path(void) {
     passwd* pw = getpwuid(getuid());
     if (pw == nullptr) {
         throw unix_error("getpwuid");
@@ -57,12 +53,12 @@ void drop_privileges(void) {
 
     /* change real group id if necessary */
     if (real_gid != eff_gid) {
-        SystemCall("setregid", setregid(real_gid, real_gid));
+        system_call("setregid", setregid(real_gid, real_gid));
     }
 
     /* change real user id if necessary */
     if (real_uid != eff_uid) {
-        SystemCall("setreuid", setreuid(real_uid, real_uid));
+        system_call("setreuid", setreuid(real_uid, real_uid));
     }
 
     /* verify that the changes were successful. if not, abort */
@@ -84,7 +80,7 @@ void check_requirements(const int argc, const char* const argv[]) {
     }
 
     /* verify normal fds are present (stderr hasn't been closed) */
-    FileDescriptor(SystemCall("open /dev/null", open("/dev/null", O_RDONLY)));
+    FileDescriptor(system_call("open /dev/null", open("/dev/null", O_RDONLY)));
 
     /* verify running as euid root, but not ruid root */
     if (geteuid() != 0) {
@@ -101,7 +97,7 @@ void check_requirements(const int argc, const char* const argv[]) {
     }
 
     /* verify IP forwarding is enabled */
-    FileDescriptor ipf(SystemCall("open /proc/sys/net/ipv4/ip_forward", open("/proc/sys/net/ipv4/ip_forward", O_RDONLY)));
+    FileDescriptor ipf(system_call("open /proc/sys/net/ipv4/ip_forward", open("/proc/sys/net/ipv4/ip_forward", O_RDONLY)));
     if (ipf.read() != "1\n") {
         throw runtime_error(string(argv[0]) + ": Please run \"sudo sysctl -w net.ipv4.ip_forward=1\" to enable IP forwarding");
     }
@@ -118,7 +114,7 @@ void make_directory(const string& directory) {
     assert(not directory.empty());
     assert(directory.back() == '/');
 
-    SystemCall("mkdir " + directory, mkdir(directory.c_str(), 00700));
+    system_call("mkdir " + directory, mkdir(directory.c_str(), 00700));
 }
 
 /* tag bash-like shells with the delay parameter */
@@ -127,8 +123,8 @@ void prepend_shell_prefix(const string& str) {
     string      mahimahi_prefix = prefix ? prefix : "";
     mahimahi_prefix.append(str);
 
-    SystemCall("setenv", setenv("MAHIMAHI_SHELL_PREFIX", mahimahi_prefix.c_str(), true));
-    SystemCall("setenv", setenv("PROMPT_COMMAND", "PS1=\"$MAHIMAHI_SHELL_PREFIX$PS1\" PROMPT_COMMAND=", true));
+    system_call("setenv", setenv("MAHIMAHI_SHELL_PREFIX", mahimahi_prefix.c_str(), true));
+    system_call("setenv", setenv("PROMPT_COMMAND", "PS1=\"$MAHIMAHI_SHELL_PREFIX$PS1\" PROMPT_COMMAND=", true));
 }
 
 /* initialize memory with zero */
@@ -137,12 +133,12 @@ void zero(T& x) {
     memset(&x, 0, sizeof(x));
 }
 
-vector<string> list_directory_contents(const string& dir) {
+vector<std::string> list_directory_contents(const std::string& dir) {
     assert_not_root();
 
     struct Closedir {
         void operator()(DIR* x) const {
-            SystemCall("closedir", closedir(x));
+            system_call("closedir", closedir(x));
         }
     };
 
@@ -151,9 +147,9 @@ vector<string> list_directory_contents(const string& dir) {
         throw unix_error("opendir (" + dir + ")");
     }
 
-    vector<string> ret;
+    vector<std::string> ret;
     while (const dirent* dirp = readdir(dp.get())) {
-        if (string(dirp->d_name) != "." and string(dirp->d_name) != "..") {
+        if (std::string(dirp->d_name) != "." and std::string(dirp->d_name) != "..") {
             ret.push_back(dir + dirp->d_name);
         }
     }
@@ -161,13 +157,13 @@ vector<string> list_directory_contents(const string& dir) {
     return ret;
 }
 
-string join(const vector<string>& command) {
-    return accumulate(command.begin() + 1, command.end(), command.front(), [](const string& a, const string& b) {
+std::string join(const vector<std::string>& command) {
+    return accumulate(command.begin() + 1, command.end(), command.front(), [](const std::string& a, const std::string& b) {
         return a + " " + b;
     });
 }
 
-string get_working_directory(void) {
+std::string get_working_directory(void) {
     struct Free {
         void operator()(char* x) const {
             free(x);

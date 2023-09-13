@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/optional.hpp>
+#include <optional>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -192,10 +192,6 @@ struct hologram_input : public switchboard::event {
     hologram_input(uint seq_)
         : seq{seq_} { }
 };
-
-typedef struct {
-    int seq;
-} imu_integrator_seq;
 
 /* I use "accel" instead of "3-vector" as a datatype, because
 this checks that you meant to use an acceleration in a certain

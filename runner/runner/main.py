@@ -41,7 +41,7 @@ cache_path.mkdir(parents=True, exist_ok=True)
 # Environment variables for configuring the GPU
 env_gpu : Mapping[str, str] = dict(
     __GL_MaxFramesAllowed="1", # Double buffer framebuffer
-    __GL_SYNC_TO_VBLANK="0",   # Block on vsync
+    __GL_SYNC_TO_VBLANK="1",   # Block on vsync
 )
 
 
@@ -123,7 +123,7 @@ def load_native(config: Mapping[str, Any]) -> None:
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 600)),
+        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 60)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
@@ -345,7 +345,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(5)
+    time.sleep(10)
 
     # Launch all OpenXR apps after the service is launched
     for openxr_app_bin_path in openxr_app_bin_paths:

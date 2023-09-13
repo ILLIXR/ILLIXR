@@ -11,8 +11,6 @@
 #include <string>
 #include <unistd.h>
 
-using namespace std;
-
 /* Unix file descriptors (sockets, files, etc.) */
 class FileDescriptor {
 private:
@@ -50,7 +48,7 @@ public:
 
         /* set close-on-exec flag so our file descriptors
         aren't passed on to unrelated children (like a shell) */
-        SystemCall("fcntl FD_CLOEXEC", fcntl(fd_, F_SETFD, FD_CLOEXEC));
+        system_call("fcntl FD_CLOEXEC", fcntl(fd_, F_SETFD, FD_CLOEXEC));
     }
 
     /* move constructor */
@@ -97,14 +95,14 @@ public:
     std::string read(const size_t limit = BUFFER_SIZE) {
         char buffer[BUFFER_SIZE];
 
-        ssize_t bytes_read = SystemCall("read", ::read(fd_, buffer, min(BUFFER_SIZE, limit)));
+        ssize_t bytes_read = system_call("read", ::read(fd_, buffer, min(BUFFER_SIZE, limit)));
         if (bytes_read == 0) {
             set_eof();
         }
 
         register_read();
 
-        return string(buffer, bytes_read);
+        return std::string(buffer, bytes_read);
     }
 
     std::string::const_iterator write(const std::string& buffer, const bool write_all = true) {
@@ -122,7 +120,7 @@ public:
             throw runtime_error("nothing to write");
         }
 
-        ssize_t bytes_written = SystemCall("write", ::write(fd_, &*begin, end - begin));
+        ssize_t bytes_written = system_call("write", ::write(fd_, &*begin, end - begin));
         if (bytes_written == 0) {
             throw runtime_error("write returned 0");
         }
@@ -137,12 +135,14 @@ public:
     }
 
     void replace_fd(const int new_fd) {
+        // check if new_fd is valid
+        system_call("fcntl F_GETFD", fcntl(new_fd, F_GETFD));
         if (fd_ < 0) { /* has already been moved away */
             return;
         }
 
         try {
-            SystemCall("close", close(fd_));
+            system_call("close", close(fd_));
         } catch (const exception& e) { /* don't throw from destructor */
             print_exception(e);
         }
@@ -158,7 +158,7 @@ public:
 
         /* set close-on-exec flag so our file descriptors
         aren't passed on to unrelated children (like a shell) */
-        SystemCall("fcntl FD_CLOEXEC", fcntl(fd_, F_SETFD, FD_CLOEXEC));
+        system_call("fcntl FD_CLOEXEC", fcntl(fd_, F_SETFD, FD_CLOEXEC));
     }
 
     /* forbid copying FileDescriptor objects or assigning them */
