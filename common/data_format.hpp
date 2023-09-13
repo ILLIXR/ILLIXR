@@ -1,10 +1,10 @@
 #pragma once
 
-#include <optional>
 #include <chrono>
 #include <iostream>
 #include <memory>
 #include <opencv2/core/mat.hpp>
+#include <optional>
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
