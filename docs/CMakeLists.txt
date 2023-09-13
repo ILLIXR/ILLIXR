@@ -1,4 +1,4 @@
-file(READ docs/images/modules.json MODULE_TEMP)
+file(READ docs/modules.json MODULE_TEMP)
 string(REPLACE "||" "\n" MODULE_PLUGIN_JSON "${MODULE_PLUGINS}")
 string(REPLACE "@PROFILES@" "${MODULE_PLUGIN_JSON}" MODULE_JSON "${MODULE_TEMP}")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/getting_started.md.in ${CMAKE_CURRENT_SOURCE_DIR}/docs/getting_started.md)

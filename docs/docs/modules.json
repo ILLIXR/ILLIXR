@@ -136,6 +136,14 @@
       ]
     },
     {
+      "name": "openni",
+      "cmake_flag": "USE_OPENNI=ON",
+      "dependencies": [
+        "libopenni2",
+        "OpenCV"
+      ]
+    },
+    {
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
       "dependencies": [
@@ -178,6 +186,14 @@
     {
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
+      "dependencies": [
+        "boost",
+        "OpenCV"
+      ]
+    },
+    {
+      "name": "record_rgb_depth",
+      "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
       "dependencies": [
         "boost",
         "OpenCV"
@@ -629,6 +645,43 @@
               "pkg": "libjpeg-turbo-devel",
               "postnotes": "",
               "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libopenni2": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libopenni2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libopenni2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "openni-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "openni-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "No OpenNI package is natively available for CentOS"
             }
           }
         }
