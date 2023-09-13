@@ -1,1 +1,0 @@
-../../plugins/display_vk/README.md
