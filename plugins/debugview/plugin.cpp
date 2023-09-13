@@ -197,11 +197,11 @@ public:
             ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
                                     ImVec2(1.0f, 1.0f));
             ImGui::Begin("Onboard camera views");
-            auto windowSize = ImGui::GetWindowSize();
+            auto windowSize     = ImGui::GetWindowSize();
             auto verticalOffset = ImGui::GetCursorPos().y;
-            ImGui::Image((void *) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::Image((void*) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
             ImGui::SameLine();
-            ImGui::Image((void *) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::Image((void*) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
             ImGui::End();
         }
 
@@ -438,7 +438,7 @@ private:
 
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const cam_type> cam;
+    switchboard::ptr<const cam_type>       cam;
     switchboard::ptr<const rgb_depth_type> rgbd;
     bool                                   use_cam  = false;
     bool                                   use_rgbd = false;

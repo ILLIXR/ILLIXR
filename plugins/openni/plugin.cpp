@@ -5,8 +5,8 @@
 #include "illixr/threadloop.hpp"
 
 #include <iomanip>
-#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
 #include <openni2/OpenNI.h>
 
 #define RGB_MODE   0
@@ -16,7 +16,7 @@ using namespace ILLIXR;
 
 class openni_plugin : public ILLIXR::threadloop {
 public:
-    openni_plugin(const std::string &name_, phonebook* pb_)
+    openni_plugin(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
