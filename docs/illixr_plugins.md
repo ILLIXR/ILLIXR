@@ -4,13 +4,35 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
 ## Default Plugins
 
--   [`offline_imu_cam`][2]:
-    Reads [_IMU_][36] data and images from files on disk, emulating a real sensor on the [_headset_][38]
-        (feeds the application input measurements with timing similar to an actual IMU).
+-   [`audio_pipeline`][8]:
+    Launches a thread for [binaural][19] recording and one for binaural playback.
+    Audio output is not yet routed to the system's speakers or microphone,
+    but the plugin's compute workload is still representative of a real system.
+    By default this plugin is enabled (see `native` [_configuration_][40]).
 
     Topic details:
 
-    -   *Publishes* `imu_cam_type` on `imu_cam` topic.
+    -   *Calls* `pose_prediction`.
+
+-   [`debugview`][7]:
+    Renders incoming [_frames_][34] from the graphics pipeline for debugging live executions of the application.
+
+    Topic details:
+
+    -   *Calls* `pose_prediction`.
+    -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
+    -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
+    -   Synchronously *reads* `imu_cam` on `imu_cam` topic.
+
+-   [`gldemo`][5]:
+    Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
+    from `pose_prediction`.
+
+    Topic details:
+
+    -   *Calls* `pose_prediction`.
+    -   *Publishes* `rendered_frame` on `eyebuffer` topic.
+    -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
 
 -   [`ground_truth_slam`][3]:
     Reads the [_ground truth_][34] from the same dataset as the `offline_imu_cam` plugin.
@@ -22,26 +44,18 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   *Publishes* `pose_type` on `true_pose` topic.
     -   Asynchronously *reads* `imu_cam_type` on `imu_cam` topic.
 
--   [`kimera_vio`][10]:
-    Runs Kimera-VIO ([upstream][1]) on the input, and outputs the [_headset's_][38] [_pose_][37].
-    In practice, the Kimera-VIO plugin publishes a fairly [_slow pose_][37], so [_IMU_][36] integration
-        and [_pose prediction_][37] is required to infer a [_fast pose_][37].
-
-    Topic details:
-
-    -   *Publishes* `pose_type` on `slow_pose` topic.
-    -   *Publishes* `imu_integrator_input` on `imu_integrator_input` topic.
-    -   Synchronously *reads*/*subscribes* to `imu_cam_type` on `imu_cam` topic.
-
 -   [`gtsam_integrator`][12]:
     Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] pose to provide a
-        [_fast pose_][37] every time a new IMU sample arrives using the GTSAM library ([upstream][11]).
+    [_fast pose_][37] every time a new IMU sample arrives using the GTSAM library ([upstream][11]).
 
     Topic details:
 
     -   *Publishes* `imu_raw_type` on `imu_raw` topic.
     -   Synchronously *reads/subscribes* to `imu_cam_type` on `imu_cam` topic.
     -   Asynchronously *reads* `imu_integrator_input` on `imu_integrator_input` topic.
+  
+-   [`kimera_vio`]:
+    This plugin is no longer supported.
 
 -   [`pose_prediction`][17]:
     Uses the latest [_IMU_][36] value to predict a [_pose_][37] for a future point in time.
@@ -58,16 +72,6 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
         This tells `pose_predict` what time to estimate for.
 
--   [`gldemo`][5]:
-    Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
-        from `pose_prediction`.
-
-    Topic details:
-
-    -   *Calls* `pose_prediction`.
-    -   *Publishes* `rendered_frame` on `eyebuffer` topic.
-    -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
-
 -   [`timewarp_gl`][6]:
     [Asynchronous reprojection][35] of the [_eye buffers_][34].
     The timewarp ends just after [_vsync_][34], so it can deduce when the next vsync will be.
@@ -79,26 +83,6 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   *Publishes* `time_type` on `vsync_estimate` topic.
     -   *Publishes* `hologram_input` on `hologram_in` topic.
     -   *Publishes* `texture_pose` on `texture_pose` topic if `ILLIXR_OFFLOAD_ENABLE` is set in the env.
-
--   [`debugview`][7]:
-    Renders incoming [_frames_][34] from the graphics pipeline for debugging live executions of the application.
-
-    Topic details:
-
-    -   *Calls* `pose_prediction`.
-    -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
-    -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
-    -   Synchronously *reads* `imu_cam` on `imu_cam` topic.
-
--   [`audio_pipeline`][8]:
-    Launches a thread for [binaural][19] recording and one for binaural playback.
-    Audio output is not yet routed to the system's speakers or microphone,
-        but the plugin's compute workload is still representative of a real system.
-    By default this plugin is enabled (see `native` [_configuration_][40]).
-
-    Topic details:
-
-    -   *Calls* `pose_prediction`.
 
 Below this point, we will use Switchboard terminology.
 Read the [API documentation on _Switchboard_][32] for more information.
@@ -148,21 +132,16 @@ ILLIXR supports additional plugins to replace some of the default plugins.
         Hologram is too slow to run for every input,
             so the plugin implements an asynchronous reader which can drop inputs.
 
+-   [`offload_data`][21]:
+    Writes [_frames_][34] and [_poses_][37] output from the [_asynchronous reprojection_][35] plugin to disk for analysis.
+
+    Topic details:
+
+    -   Synchronously *reads* `texture_pose` on `texture_pose` topic.
+
 -   [`open_vins`][4]:
     An alternate [_SLAM_][39] ([upstream][18]) implementation that uses a MSCKF
         (Multi-State Constrained Kalman Filter) to determine poses via camera/[_IMU_][36].
-
-    Topic details:
-
-    -   Same interface as `Kimera-VIO`.
-
--   [`rk4_integrator`][16]:
-    Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] [_pose_][37] to
-        provide a [_fast pose_][37] every time a new IMU sample arrives using RK4 integration.
-
-    Topic details:
-
-    -   Same interface as `gtsam_integrator`.
 
 -   [`pose_lookup`][20]:
     Implements the `pose_predict` service, but uses [_ground truth_][33] from the dataset.
@@ -173,12 +152,20 @@ ILLIXR supports additional plugins to replace some of the default plugins.
     -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
         This tells `pose_lookup` what time to lookup.
 
--   [`offload_data`][21]:
-    Writes [_frames_][34] and [_poses_][37] output from the [_asynchronous reprojection_][35] plugin to disk for analysis.
+-   [`realsense`][23]:
+    Reads images and [_IMU_][36] measurements from the [Intel Realsense][25].
 
     Topic details:
 
-    -   Synchronously *reads* `texture_pose` on `texture_pose` topic.
+    -   Same interface as `zed`.
+
+-   [`rk4_integrator`][16]:
+    Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] [_pose_][37] to
+        provide a [_fast pose_][37] every time a new IMU sample arrives using RK4 integration.
+
+    Topic details:
+
+    -   Same interface as `gtsam_integrator`.
 
 -   [`zed`][22]:
     Reads images and [_IMU_][36] measurements from the [ZED Mini][24].
@@ -190,19 +177,11 @@ ILLIXR supports additional plugins to replace some of the default plugins.
     -   *Publishes* `imu_cam_type` on `imu_cam` topic.
     -   *Publishes* `rgb_depth_type` on `rgb_depth` topic.
 
--   [`realsense`][23]:
-    Reads images and [_IMU_][36] measurements from the [Intel Realsense][25].
-
-    Topic details:
-
-    -   Same interface as `zed`.
-
-See [Building ILLIXR][31] for more information on adding plugins to a [_config_][40] file.
+See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
 
 
 [//]: # (- References -)
 
-[1]:    https://github.com/MIT-SPARK/Kimera-VIO
 [2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu_cam
 [3]:    https://github.com/ILLIXR/ILLIXR/tree/master/ground_truth_slam
 [4]:    https://github.com/ILLIXR/open_vins
@@ -211,7 +190,6 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [7]:    https://github.com/ILLIXR/ILLIXR/tree/master/debugview
 [8]:    https://github.com/ILLIXR/audio_pipeline/tree/illixr-integration
 [9]:    https://github.com/ILLIXR/HOTlab/tree/illixr-integration
-[10]:   https://github.com/ILLIXR/Kimera-VIO
 [11]:   https://gtsam.org/
 [12]:   https://github.com/ILLIXR/ILLIXR/tree/master/gtsam_integrator
 [16]:   https://github.com/ILLIXR/ILLIXR/tree/master/rk4_integrator
@@ -228,7 +206,7 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [//]: # (- Internal -)
 
 [30]:   writing_your_plugin.md
-[31]:   building_illixr.md
+[31]:   getting_started.md
 [32]:   api/html/classILLIXR_1_1switchboard.html
 [33]:   glossary.md#ground-truth
 [34]:   glossary.md#framebuffer
@@ -236,7 +214,7 @@ See [Building ILLIXR][31] for more information on adding plugins to a [_config_]
 [36]:   glossary.md#inertial-measurement-unit
 [37]:   glossary.md#pose
 [38]:   glossary.md#head-mounted-display
-[39]:   glossary.md#simulataneous-localization-and-mapping
-[40]:   glossary.md#configuration
+[39]:   glossary.md#simultaneous-localization-and-mapping
+[40]:   glossary.md#profile
 [41]:   glossary.md#plugin
-[42]:	README_fauxpose.md
+[42]:	plugin_README/README_fauxpose.md

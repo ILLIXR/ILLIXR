@@ -1,65 +1,177 @@
 # Writing Your Plugin
 
-## Adding a New Plugin (Common Case)
+## Adding a New Plugin
 
-In the common case, you only need to define a `Makefile` with the line `include common/common.mk`
-    and symlink common (`ln -s ../common common`).
-The included recipe file provides the necessary targets and uses the compiler `$(CXX)`,
-    which is defined based on the OS and environment variables.
-The included `Makefile`:
+To add a new plugin
 
--   Compiles `plugin.cpp` and any other `*.cpp` files into the plugin.
+1. create a new subdirectory in the `plugins` directory named for your plugin (no spaces)
+2. put your code in this new subdirectory (additional subdirectories containing parts of your code are allowed)
+3. create a CMakeLists.txt file in this new subdirectory. See the template below
+4. add the plugin to the `profiles/plugins.yaml` file, the name must match the subdirectory you created; it should go in the `internal_plugins` entry
 
--   Will invoke a recompile of the target any time any `*.hpp` or `*.cpp` file changes.
+For the examples below is for a plugin called tracker, so just replace any instance of tracker with
+the name of your plugin.
 
--   Compiles with C++17.
-    You can change this in your plugin by defining
-        `STDCXX = ...` before the `include`.
-    This change will not affect other plugins; just yours.
+### Simple Example
+```cmake
+1   set(TRACKER_SOURCES plugin.cpp
+2                       src/tracker.cpp
+3                       src/tracker.hpp)
+4
+5   set(PLUGIN_NAME plugin.tracker${ILLIXR_BUILD_SUFFIX})
+6
+7   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
+8
+9   target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
+10
+11  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+12
+13  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+```
 
--   Accepts specifying libraries by appending to `LDFLAGS` and `CFLAGS`.
-    For example:
+| Line # | Notes                                                                                                                                                                                                        |
+|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1-3    | Specify the source code files individually, we discourage using  ` GLOB `  or  ` GLOB_RECURSE ` to generate a list of files as these functions do not always notice when files change.                       |
+| 5      | Put the plugin name into a variable (will also be the name of the library).                                                                                                                                  |
+| 7      | Tell the system we are building a shared library with the name  ` PLUGIN_NAME ` from the specified source files.                                                                                             |
+| 9      | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR_SOURCE_DIR/include` in this, as this is where plugin.hpp and other ILLIXR common headers are. |
+| 11     | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                |
+| 13     | Add the install directive. This should not need to change.                                                                                                                                                   |
 
-    <!--- language: lang-makefile -->
+### More Complex Example
+In this example the plugin has external dependencies provided by OS repos, specifically glfw3, x11, glew, glu, opencv, and eigen3.
+```cmake
+1   set(TRACKER_SOURCES plugin.cpp
+2                       src/tracker.cpp
+3                       src/tracker.hpp)
+4
+5   set(PLUGIN_NAME plugin.tracker${ILLIXR_BUILD_SUFFIX})
+6
+7   find_package(glfw3 REQUIRED)
+8
+9   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
+10
+11  if(BUILD_OPENCV)
+12      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
+13  endif()
+14
+15  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
+16  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} dl pthread)
+17  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+18
+19  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+```
 
-        LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
-        CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
+| Line# | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|-------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1-3   | Specify the source code files individually, we discourage using  ` GLOB `  or  ` GLOB_RECURSE ` to generate a list of files as these functions do not always notice when files change.                                                                                                                                                                                                                                                      |
+| 5     | Put the plugin name into a variable (will also be the name of the library).                                                                                                                                                                                                                                                                                                                                                                 |
+| 7     | Use the `find_package` directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. `find_package` assumes that there is an appropriate .cmake config file for the dependency on your system. If not the `pkg_check_module` function will perform the same task, but for dependencies which have associated .pc files on your system. |
+| 9     | Tell the system we are building a shared library with the name   ` PLUGIN_NAME `  from the specified source files.                                                                                                                                                                                                                                                                                                                          |
+| 11-13 | OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use `find_package(OpenCV)`.                                                                                                                                                                                                                                                                                |
+| 15    | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR _SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are.                                                                                                                                                                                                                                       |
+| 16    | Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).                                                                                                                                                                                                                                                                                                                         |
+| 17    | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                                                                                                                                                                                                                                               |
+| 19    | Add the install directive. This should not need to change.                                                                                                                                                                                                                                                                                                                                                                                  |
 
-    See the source for the other flags and variables that you can set.
+**Note:** Not all the dependencies were searched for by `find_package` in this example. This is because there is a set
+of dependencies which are very common to many plugins and their `find_package` calls are in the main ILLIXR CMakeLists.txt
+file and do not need to be searched for again. These packages are
 
-Finally, place the path of your plugin directory in the `plugin_group` list
-    for the configuration you would like to run (e.g. `ILLIXR/configs/native.yaml`).
+- Glew
+- Glu
+- SQLite3
+- X11
+- Eigen3
 
+### Very Complex Example
+In this example the plugin has dependencies provided by OS repos, and a third party dependency provided by a git repo.
+```cmake
+1   set(TRACKER_SOURCES plugin.cpp
+2                       src/tracker.cpp
+3                       src/tracker.hpp)
+4
+5   set(PLUGIN_NAME plugin.tracker${ILLIXR_BUILD_SUFFIX})
+6
+7   find_package(glfw3 REQUIRED)
+8
+9   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
+10
+11  get_external(Plotter)
+12
+13  add_dependencies(${PLUGIN_NAME} Plotter)
+14
+15  if(BUILD_OPENCV)
+16      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
+17  endif()
+18
+19  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Plotter_INCLUDE_DIRS})
+20  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} ${Plotter_LIBRARIES} dl pthread)
+21  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+22
+23  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+```
 
-## Adding a New Plugin (General Case)
+| Line# | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|-------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1-3   | Specify the source code files individually, we discourage using  ` GLOB `  or  ` GLOB_RECURSE ` to generate a list of files as these functions do not always notice when files change.                                                                                                                                                                                                                                                      |
+| 5     | Put the plugin name into a variable (will also be the name of the library).                                                                                                                                                                                                                                                                                                                                                                 |
+| 7     | Use the `find_package` directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. `find_package` assumes that there is an appropriate .cmake config file for the dependency on your system. If not the `pkg_check_module` function will perform the same task, but for dependencies which have associated .pc files on your system. |
+| 9     | Tell the system we are building a shared library with the name   ` PLUGIN_NAME `  from the specified source files.                                                                                                                                                                                                                                                                                                                          |
+| 11    | Get the external project called Plotter.                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 13    | Add the external package as a build dependency, this ensures that this plugin won't be built until after the dependency is.                                                                                                                                                                                                                                                                                                                 |
+| 15-17 | OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use   `find_package(OpenCV)` .                                                                                                                                                                                                                                                                             |
+| 19    | Tell the system about any non-standard include paths the compiler needs to be aware of. Always include `ILLIXR _SOURCE_DIR` in this, as this is where plugin.hpp and other ILLIXR common headers are.                                                                                                                                                                                                                                       |
+| 20    | Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).                                                                                                                                                                                                                                                                                                                         |
+| 21    | Any compile options specific to this plugin. Usually this will be left as is.                                                                                                                                                                                                                                                                                                                                                               |
+| 23    | Add the install directive. This should not need to change.                                                                                                                                                                                                                                                                                                                                                                                  |
 
-Each plugin can have a completely independent build system, as long as:
+Additionally, to build and install the Plotter dependency you will need to create a cmake file in the `cmake` directory
+named `GetPlotter.cmake` (case matters, it must match the call to `get_external`) with the following content.
+```cmake
+1   find_package(Plotter QUIET)
+2
+3   if(Plotter_FOUND)
+4       set(Plotter_VERSION "${Plotter_VERSION_MAJOR}")
+5   else()
+6       EXTERNALPROJECT_ADD(Plotter
+7               GIT_REPOSITORY https://github.com/mygit/Plotter.git
+8               GIT_TAG 4ff860838726a5e8ac0cbe59128c58a8f6143c6c
+9               PREFIX ${CMAKE_BINARY_DIR}/_deps/plotter
+10              CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
+11              )
+12      set(Plotter_EXTERNAL Yes)
+13      set(Plotter_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
+14      set(Plotter_LIBRARIES plotter;alt_plotter)
+15endif()
+```
+| Line # | Notes                                                                                                                          |
+|--------|--------------------------------------------------------------------------------------------------------------------------------|
+| 1      | See if the package has been previously installed, quietly fail if not.                                                         |
+| 4      | If it was found, just record the installed version for reporting.                                                              |
+| 6-11   | Add the Plotter package as a project called `Plotter` (also case sensitive)                                                    |
+| 7      | The git repo where the Plotter package is located.                                                                             |
+| 8      | The git tag to use (can be a tag name or sha5 from a commit).                                                                  |
+| 9      | The build directory for the package.                                                                                           |
+| 10     | Any camke arguments to pass to the Plotter build. The ones specified here are required, but any others can be added.           |
+| 12     | Denote that this is an external package (this is used for internal tracking).                                                  |
+| 13     | Set where the Plotter include files will land. Usually this will not need to change.                                           |
+| 14     | Set which libraries are built by the Plotter package. In this example `libplotter.so` and `libalt_plotter.so` are being built. |
 
--   It defines a `Makefile` with targets for `plugin.dbg.so`, `plugin.opt.so`, and `clean`.
-    Inside this `Makefile`, one can defer to another build system.
+### External Plugins
+For plugins that are external packages (e.g. Audio_Pipeline) you need only create a `GetX.cmake` file as above and add the
+plugin name to the `external_plugins` list in `profiles/plugins.yaml`.
 
--   Its compiler maintains _ABI compatibility_ with the compilers used in every other plugin.
-    Using the same version of Clang or GCC on the same architecture is sufficient for this.
-
--   Its path is in the `plugin_group` list for the configuration you would like
-        to run (e.g. `ILLIXR/configs/native.yaml`).
-
+External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.
 
 ## Tutorial
 
 You can extend ILLIXR for your own purposes.
 To add your own functionality via the plugin interface:
 
-1.  Create a new directory anywhere for your new plugin and set it up for ILLIXR.
-    We recommend you also push this plugin to a git repository on Github/Gitlab if you want it
-        as a part of upstream ILLIXR in the future.
-
-    -   Create a `Makefile` with the following contents.
-        See [Building ILLIXR][10] for more details and alternative setups.
-
-        <!--- language: lang-makefile -->
-
-            include common/common.mk
+1.  Create a new directory for your plugin in one of these ways 
+    1. in the plugins directory of the main ILLIXR tree, then follow [these instructions](#adding-a-new-plugin)
+    2. anywhere for your new plugin so it can be pushed as a git repository, the follow [these instructions](#adding-a-new-plugin) focussing on [external plugins](#external-plugins)
 
 1.  You must decide if your plugin should inherit the standardized [`threadloop`][12]
         or [`plugin`][13].
@@ -93,9 +205,9 @@ To add your own functionality via the plugin interface:
 
         /// A minimal/no-op ILLIXR plugin
 
-        #include "common/phonebook.hpp"
-        #include "common/plugin.hpp"
-        #include "common/threadloop.hpp"
+        #include "illixr/phonebook.hpp"
+        #include "illixr/plugin.hpp"
+        #include "illixr/threadloop.hpp"
         #include <chrono>
         #include <thread>
 
@@ -129,41 +241,12 @@ To add your own functionality via the plugin interface:
         /// This line makes the plugin importable by Spindle
         PLUGIN_MAIN(basic_plugin);
 
-1.  At this point, you should be able to build your plugin with ILLIXR.
-    Move to the ILLIXR repo and update `configs/native.yaml`.
-    If the new plugin is the same type as one of the other components you will need to
-        remove that component from the config before running the new component.
-    For example, if the new component is a SLAM then the old SLAM needs to be removed from
-        the config.
-    See [Building ILLIXR][10] for more details on the config file.
+1.  At this point, you should be able to build your plugin with ILLIXR using -DUSE<YOUR_PLUGIN_NAME>=ON as a command line argument to cmake.
+     See [Getting Started][10] for more details.
 
-    <!--- language: lang-yaml -->
 
-        plugin_groups:
-          - !include "rt_slam_plugins.yaml"
-          - !include "core_plugins.yaml"
-          - plugin_group:
-             - path: /PATH/TO/NEW/PLUGIN
-             - path: ground_truth_slam/
-             - path: gldemo/
-             - path: debugview/
-   
-        data:
-          subpath: mav0
-          relative_to:
-          archive_path:
-          download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-          demo_data: demo_data/
-          loader:
-            name: native
-            # command: gdb -q --args %a
-            profile: opt
+1.  Finally, run ILLIXR with your new plugin following the instructions in [Getting Started][10]:
 
-1.  Finally, run ILLIXR with your new plugin with the following command:
-
-    <!--- language: lang-shell -->
-
-        ./runner.sh configs/native.yaml
 
 1.  This is all that is required to be a plugin which can be loaded by Spindle in
         the ILLIXR runtime.
@@ -179,9 +262,9 @@ To add your own functionality via the plugin interface:
 
     <!--- language: lang-cpp -->
 
-        #include "common/phonebook.hpp"
-        #include "common/plugin.hpp"
-        #include "common/threadloop.hpp"
+        #include "illixr/phonebook.hpp"
+        #include "illixr/plugin.hpp"
+        #include "illixr/threadloop.hpp"
     
         /* When datatypes have to be common across plugins
          *     (e.g. a phonebook service or switchboard topic),
@@ -256,7 +339,7 @@ To add your own functionality via the plugin interface:
 
 [//]: # (- Internal -)
 
-[10]:   building_illixr.md
+[10]:   getting_started.md
 [11]:   api/html/classILLIXR_1_1phonebook.html
 [12]:   api/html/classILLIXR_1_1threadloop.html
 [13]:   api/html/classILLIXR_1_1plugin.html

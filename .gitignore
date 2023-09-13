@@ -10,6 +10,11 @@ imgui.ini
 output.*
 metrics/
 .cache
-install/
 .deps
 data_record/
+.idea
+build
+deps
+cmake-build*
+
+illixr.yaml

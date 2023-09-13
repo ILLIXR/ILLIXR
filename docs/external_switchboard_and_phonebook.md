@@ -7,20 +7,20 @@ Phonebook][phonebook_api].
 One simply needs to copy these files, maintaining directory structure.
 
 ```
-common/switchboard.hpp
-common/phonebook.hpp
-common/record_logger.hpp
-common/managed_thread.hpp
-common/concurrentqueue/blockingconcurrentqueue.hpp
-common/concurrentqueue/concurrentqueue.hpp
-common/concurrentqueue/lightweightsemaphore.hpp
+illixr/switchboard.hpp
+illixr/phonebook.hpp
+illixr/record_logger.hpp
+illixr/managed_thread.hpp
+illixr/concurrentqueue/blockingconcurrentqueue.hpp
+illixr/concurrentqueue/concurrentqueue.hpp
+illixr/concurrentqueue/lightweightsemaphore.hpp
 ```
 
 This will serve as our `main.cpp`:
 
 ```
 #include <iostream>
-#include "common/switchboard.hpp"
+#include "illixr/switchboard.hpp"
 
 class service : public ILLIXR::phonebook::service {
 public:
@@ -50,21 +50,20 @@ int main() {
 }
 ```
 
-We use Switchboard and Phonebook with `clang` 10 or greater, but you can probably make this work in
-GCC or other compilers as long as they support C++17.
+Switchboard and Phonebook will only work with compilers that support C++17 or better.
 
 For example:
 
 ```
 # Must copy with directory structure
-mkdir -p common/concurrentqueue
-cp path/to/ILLIXR/common/switchboard.hpp common
-cp path/to/ILLIXR/common/phonebook.hpp common
-cp path/to/ILLIXR/common/record_logger.hpp common
-cp path/to/ILLIXR/common/managed_thread.hpp common
-cp path/to/ILLIXR/common/concurrentqueue/blockingconcurrentqueue.hpp common/concurrentqueue/blockingconcurrentqueue.hpp
-cp path/to/ILLIXR/common/concurrentqueue/concurrentqueue.hpp common/concurrentqueue/concurrentqueue.hpp
-cp path/to/ILLIXR/common/concurrentqueue/lightweightsemaphore.hpp common/concurrentqueue/lightweightsemaphore.hpp
+mkdir -p illixr/concurrentqueue
+cp path/to/ILLIXR/illixr/switchboard.hpp illixr
+cp path/to/ILLIXR/illixr/phonebook.hpp illixr
+cp path/to/ILLIXR/illixr/record_logger.hpp illixr
+cp path/to/ILLIXR/illixr/managed_thread.hpp illixr
+cp path/to/ILLIXR/illixr/concurrentqueue/blockingconcurrentqueue.hpp illixr/concurrentqueue/blockingconcurrentqueue.hpp
+cp path/to/ILLIXR/illixr/concurrentqueue/concurrentqueue.hpp illixr/concurrentqueue/concurrentqueue.hpp
+cp path/to/ILLIXR/illixr/concurrentqueue/lightweightsemaphore.hpp illixr/concurrentqueue/lightweightsemaphore.hpp
 emacs main.cpp # copy and paste from this doc
 
 # This will *probbaly* work with any C++-17 compatible compiler, but I've tested with clang-10.
