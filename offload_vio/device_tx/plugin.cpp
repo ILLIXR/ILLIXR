@@ -20,7 +20,7 @@
 #include <opencv2/core/mat.hpp>
 
 using namespace ILLIXR;
-#define USE_COMPRESSION
+// #define USE_COMPRESSION
 
 class offload_writer : public threadloop {
 private:

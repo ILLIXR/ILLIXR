@@ -11,10 +11,7 @@
 #include <thread>
 
 namespace ILLIXR {
-//
-//    void cb_need_data(GstElement *appsrc, guint size, gpointer* user_data) {
-//        reinterpret_cast<video_encoder*>(user_data)->want = 1;
-//    }
+
 // EuRoc
 #define IMG_WIDTH  752
 #define IMG_HEIGHT 480
@@ -47,20 +44,11 @@ void video_encoder::create_pipelines() {
     _appsink_img0 = gst_element_factory_make("appsink", "appsink_img0");
     _appsink_img1 = gst_element_factory_make("appsink", "appsink_img1");
 
-    auto videoconvert_0 = gst_element_factory_make("videoconvert", "videoconvert0");
-    auto videoconvert_1 = gst_element_factory_make("videoconvert", "videoconvert1");
-
-    auto caps_filter_0 = gst_element_factory_make("capsfilter", "caps_filter0");
-    auto caps_filter_1 = gst_element_factory_make("capsfilter", "caps_filter1");
-
     auto nvvideoconvert_0 = gst_element_factory_make("nvvideoconvert", "nvvideoconvert0");
     auto nvvideoconvert_1 = gst_element_factory_make("nvvideoconvert", "nvvideoconvert1");
 
     auto encoder_img0 = gst_element_factory_make("nvv4l2h264enc", "encoder_img0");
     auto encoder_img1 = gst_element_factory_make("nvv4l2h264enc", "encoder_img1");
-
-    auto h265parse_0 = gst_element_factory_make("h265parse", "h265parse0");
-    auto h265parse_1 = gst_element_factory_make("h265parse", "h265parse1");
 
     auto caps_8uc1 = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "GRAY8", "framerate", GST_TYPE_FRACTION, 0, 1,
                                          "width", G_TYPE_INT, IMG_WIDTH, "height", G_TYPE_INT, IMG_HEIGHT, NULL);
@@ -68,15 +56,11 @@ void video_encoder::create_pipelines() {
     g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_8uc1, nullptr);
     gst_caps_unref(caps_8uc1);
 
-    auto caps_convert_to = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "NV12", "width", G_TYPE_INT, IMG_WIDTH,
-                                               "height", G_TYPE_INT, IMG_HEIGHT, NULL);
-    g_object_set(G_OBJECT(caps_filter_0), "caps", caps_convert_to, nullptr);
-    g_object_set(G_OBJECT(caps_filter_1), "caps", caps_convert_to, nullptr);
-    gst_caps_unref(caps_convert_to);
-
     // set bitrate from environment variables
     // g_object_set(G_OBJECT(encoder_img0), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
     // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
+
+    // set bitrate from defined variables
     g_object_set(G_OBJECT(encoder_img0), "bitrate", ILLIXR_BITRATE, nullptr);
     g_object_set(G_OBJECT(encoder_img1), "bitrate", ILLIXR_BITRATE, nullptr);
 
@@ -92,10 +76,8 @@ void video_encoder::create_pipelines() {
     _pipeline_img0 = gst_pipeline_new("pipeline_img0");
     _pipeline_img1 = gst_pipeline_new("pipeline_img1");
 
-    gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, nvvideoconvert_0, encoder_img0, h265parse_0, caps_filter_0,
-                     videoconvert_0, _appsink_img0, nullptr);
-    gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, nvvideoconvert_1, encoder_img1, h265parse_1, caps_filter_1,
-                     videoconvert_1, _appsink_img1, nullptr);
+    gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, nvvideoconvert_0, encoder_img0, _appsink_img0, nullptr);
+    gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, nvvideoconvert_1, encoder_img1, _appsink_img1, nullptr);
 
     // link elements
     if (!gst_element_link_many(_appsrc_img0, nvvideoconvert_0, encoder_img0, _appsink_img0, nullptr) ||
@@ -127,12 +109,6 @@ void video_encoder::enqueue(cv::Mat& img0, cv::Mat& img1) {
     GST_BUFFER_OFFSET(buffer_img0) = _num_samples;
     GST_BUFFER_OFFSET(buffer_img1) = _num_samples;
 
-    // GST_BUFFER_TIMESTAMP (buffer_img0) = gst_util_uint64_scale(_num_samples, GST_SECOND, _sample_rate);
-    // GST_BUFFER_TIMESTAMP (buffer_img1) = gst_util_uint64_scale(_num_samples, GST_SECOND, _sample_rate);
-    //
-    // GST_BUFFER_DURATION (buffer_img0) = gst_util_uint64_scale(1, GST_SECOND, _sample_rate);
-    // GST_BUFFER_DURATION (buffer_img1) = gst_util_uint64_scale(1, GST_SECOND, _sample_rate);
-
     _num_samples++;
 
     auto ret_img0 = gst_app_src_push_buffer(reinterpret_cast<GstAppSrc*>(_appsrc_img0), buffer_img0);
@@ -147,7 +123,6 @@ void video_encoder::init() {
 }
 
 GstFlowReturn video_encoder::cb_appsink(GstElement* sink) {
-    // print thread id
     GstSample* sample;
     g_signal_emit_by_name(sink, "pull-sample", &sample);
     if (sample) {

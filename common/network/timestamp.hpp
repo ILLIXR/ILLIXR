@@ -10,7 +10,7 @@
 
 uint64_t raw_timestamp(void) {
     timespec ts;
-    SystemCall("clock_gettime", clock_gettime(CLOCK_REALTIME, &ts));
+    system_call("clock_gettime", clock_gettime(CLOCK_REALTIME, &ts));
 
     uint64_t millis = ts.tv_nsec / 1000000;
     millis += uint64_t(ts.tv_sec) * 1000;
@@ -27,4 +27,4 @@ uint64_t timestamp(void) {
     return raw_timestamp() - initial_timestamp();
 }
 
-#endif /* TIMESTAMP_HH */
+#endif /* TIMESTAMP_HPP */

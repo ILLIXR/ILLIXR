@@ -16,8 +16,6 @@
 #include <string>
 #include <utility>
 
-using namespace std;
-
 /* error category for getaddrinfo and getnameinfo */
 class gai_error_category : public error_category {
 public:
@@ -25,7 +23,7 @@ public:
         return "gai_error_category";
     }
 
-    string message(const int return_value) const noexcept override {
+    std::string message(const int return_value) const noexcept override {
         return gai_strerror(return_value);
     }
 };
@@ -43,7 +41,7 @@ private:
     raw       addr_;
 
     /* private constructor given ip/host, service/port, and optional hints */
-    Address(const string& node, const string& service, const addrinfo& hints)
+    Address(const std::string& node, const std::string& service, const addrinfo& hints)
         : size_()
         , addr_() {
         /* prepare for the answer */
@@ -52,7 +50,7 @@ private:
         /* look up the name or names */
         const int gai_ret = getaddrinfo(node.c_str(), service.c_str(), &hints, &resolved_address);
         if (gai_ret) {
-            string explanation = "getaddrinfo(" + node + ":" + service;
+            std::string explanation = "getaddrinfo(" + node + ":" + service;
             if (hints.ai_flags | (AI_NUMERICHOST | AI_NUMERICSERV)) {
                 explanation += ", numeric";
             }
@@ -66,7 +64,7 @@ private:
         }
 
         /* put resolved_address in a wrapper so it will get freed if we have to throw an exception */
-        unique_ptr<addrinfo, function<void(addrinfo*)>> wrapped_address{resolved_address, [](addrinfo* x) {
+        std::unique_ptr<addrinfo, function<void(addrinfo*)>> wrapped_address{resolved_address, [](addrinfo* x) {
                                                                             freeaddrinfo(x);
                                                                         }};
 
@@ -122,11 +120,11 @@ public:
         hints.ai_family = AF_INET;
         hints.ai_flags  = AI_NUMERICHOST | AI_NUMERICSERV;
 
-        *this = Address(ip, ::to_string(port), hints);
+        *this = Address(ip, std::to_string(port), hints);
     }
 
     /* accessors */
-    pair<string, uint16_t> ip_port(void) const {
+    pair<std::string, uint16_t> ip_port(void) const {
         char ip[NI_MAXHOST], port[NI_MAXSERV];
 
         const int gni_ret =
@@ -138,7 +136,7 @@ public:
         return make_pair(ip, myatoi(port));
     }
 
-    string ip(void) const {
+    std::string ip(void) const {
         return ip_port().first;
     }
 
@@ -146,9 +144,9 @@ public:
         return ip_port().second;
     }
 
-    string str(const string port_separator) const {
+    std::string str(const std::string port_separator) const {
         const auto ip_and_port = ip_port();
-        return ip_and_port.first + port_separator + to_string(ip_and_port.second);
+        return ip_and_port.first + port_separator + std::to_string(ip_and_port.second);
     }
 
     socklen_t size(void) const {
@@ -170,7 +168,7 @@ public:
 
     /* generate carrier-grade NAT address */
     Address cgnat(const uint8_t last_octet) {
-        return Address("100.64.0." + to_string(last_octet), 0);
+        return Address("100.64.0." + std::to_string(last_octet), 0);
     }
 };
 
