@@ -15,7 +15,6 @@
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 
-
 /* class for network sockets (UDP, TCP, etc.) */
 class Socket : public FileDescriptor {
 protected:
@@ -115,9 +114,9 @@ public:
 
         socklen_t fromlen = sizeof(datagram_source_address);
 
-        ssize_t recv_len =
-            system_call("recvfrom",
-                       ::recvfrom(fd_num(), buffer, sizeof(buffer), MSG_TRUNC, &datagram_source_address.as_sockaddr, &fromlen));
+        ssize_t recv_len = system_call(
+            "recvfrom",
+            ::recvfrom(fd_num(), buffer, sizeof(buffer), MSG_TRUNC, &datagram_source_address.as_sockaddr, &fromlen));
 
         if (recv_len > RECEIVE_MTU) {
             throw runtime_error("recvfrom (oversized datagram)");
@@ -130,7 +129,7 @@ public:
 
     /* receive datagram and where it came from */
     vector<pair<Address, std::string>> recv_from_nonblocking(int wait_time_ms) {
-        static const ssize_t          RECEIVE_MTU = 65536;
+        static const ssize_t               RECEIVE_MTU = 65536;
         vector<pair<Address, std::string>> result;
 
         chrono::time_point<chrono::steady_clock> start_time = chrono::steady_clock::now();
@@ -245,9 +244,9 @@ public:
     }
 
     std::string recv_non_blocking() {
-        char   buffer[FileDescriptor::BUFFER_SIZE];
+        char        buffer[FileDescriptor::BUFFER_SIZE];
         std::string result    = "";
-        int    recv_size = recv(fd_num(), buffer, sizeof(buffer), 0);
+        int         recv_size = recv(fd_num(), buffer, sizeof(buffer), 0);
         if (recv_size > 0) {
             register_read();
             return std::string(buffer, recv_size);

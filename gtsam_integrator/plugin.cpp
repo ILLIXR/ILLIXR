@@ -1,5 +1,6 @@
-#include "common/data_format.hpp"
 #include "common/plugin.hpp"
+
+#include "common/data_format.hpp"
 #include "common/switchboard.hpp"
 #include "third_party/filter.h"
 

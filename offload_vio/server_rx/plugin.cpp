@@ -13,6 +13,7 @@
 #include <fstream>
 
 using namespace ILLIXR;
+
 // #define USE_COMPRESSION
 
 class server_reader : public threadloop {
