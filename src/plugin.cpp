@@ -86,9 +86,14 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     if (options.count("vis")) {
         visualizers = options["vis"].as<std::vector<std::string>>();
     } else if (config["visualizers"]) {
-        visualizers = config["visualizers"].as<std::vector<std::string>>();
+        std::stringstream vss(config["visualizers"].as<std::string>());
+        while (vss.good()) {
+            std::string substr;
+            getline(vss, substr, ',');
+            visualizers.push_back(substr);
+        }
     }
-    if (visualizers.size() > 0)
+    if (!visualizers.empty())
         plugins.push_back(visualizers[0]);
 
     if (config["install_prefix"]) {
