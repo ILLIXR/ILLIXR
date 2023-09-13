@@ -19,8 +19,10 @@ plugin_groups:
     ## Sensors
     - path: depthai
     - path: offline_imu_cam
+    - path: record_imu_cam/
     - path: realsense
     - path: zed
+    - path: openni
     ## Real-Time SLAM Plugins
     - name: Kimera-VIO
       path:

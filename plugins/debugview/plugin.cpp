@@ -64,6 +64,7 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+        , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
 
     void draw_GUI() {
@@ -191,16 +192,38 @@ public:
                     camera_texture_sizes[1].y(), camera_textures[1]);
         ImGui::End();
 
-        ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
-                                ImVec2(1.0f, 1.0f));
-        ImGui::Begin("Onboard camera views");
-        auto windowSize     = ImGui::GetWindowSize();
-        auto verticalOffset = ImGui::GetCursorPos().y;
-        ImGui::Image((void*) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
-        ImGui::SameLine();
-        ImGui::Image((void*) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
-        ImGui::End();
+        if (use_cam) {
+            ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
+                                    ImVec2(1.0f, 1.0f));
+            ImGui::Begin("Onboard camera views");
+            auto windowSize = ImGui::GetWindowSize();
+            auto verticalOffset = ImGui::GetCursorPos().y;
+            ImGui::Image((void *) (intptr_t) camera_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::SameLine();
+            ImGui::Image((void *) (intptr_t) camera_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::End();
+        }
+
+        if (use_rgbd) {
+            ImGui::SetNextWindowSize(ImVec2(700, 350), ImGuiCond_Once);
+
+            // if there are RGBD stream and Stereo images stream, than move the RGBD display window up
+            // eseentially making the display images of RGBD on top of stereo
+            if (use_cam)
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350),
+                                        ImGuiCond_Once, ImVec2(1.0f, 1.0f));
+            else
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
+                                        ImVec2(1.0f, 1.0f));
+            ImGui::Begin("Onboard RGBD views");
+            auto windowSize     = ImGui::GetWindowSize();
+            auto verticalOffset = ImGui::GetCursorPos().y;
+            ImGui::Image((void*) (intptr_t) rgbd_textures[0], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::SameLine();
+            ImGui::Image((void*) (intptr_t) rgbd_textures[1], ImVec2(windowSize.x / 2, windowSize.y - verticalOffset * 2));
+            ImGui::End();
+        }
 
         ImGui::Render();
 
@@ -214,6 +237,9 @@ public:
         if (cam == nullptr) {
             return false;
         }
+
+        if (!use_cam)
+            use_cam = true;
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
         cv::Mat img0{cam->img0.clone()};
@@ -233,8 +259,36 @@ public:
         return true;
     }
 
-    static Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
-                                                    const Eigen::Vector3f& positionOffset) {
+    bool load_rgb_depth() {
+        RAC_ERRNO_MSG("debugview at start of load_rgb_depth");
+
+        rgbd = _m_rgb_depth.get_ro_nullable();
+        if (rgbd == nullptr) {
+            return false;
+        }
+
+        if (!use_rgbd)
+            use_rgbd = true;
+
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
+        cv::Mat rgb{rgbd->rgb.clone()};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
+        rgbd_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
+
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[1]);
+        cv::Mat depth{rgbd->depth.clone()};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
+                     depth.ptr());
+        rgbd_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
+        GLint swizzleMask[]   = {GL_RED, GL_RED, GL_RED, 1};
+        glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+
+        RAC_ERRNO_MSG("debugview at end of load_rgb_depth");
+        return true;
+    }
+
+    Eigen::Matrix4f generateHeadsetTransform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
+                                             const Eigen::Vector3f& positionOffset) {
         Eigen::Matrix4f headsetPosition;
         headsetPosition << 1, 0, 0, position.x() + positionOffset.x(), 0, 1, 0, position.y() + positionOffset.y(), 0, 0, 1,
             position.z() + positionOffset.z(), 0, 0, 0, 1;
@@ -284,6 +338,7 @@ public:
         mouse_velocity = mouse_velocity * 0.95;
 
         load_camera_images();
+        load_rgb_depth();
 
         glUseProgram(demoShaderProgram);
 
@@ -366,6 +421,7 @@ private:
 
     switchboard::reader<pose_type>         _m_slow_pose;
     switchboard::reader<imu_raw_type>      _m_fast_pose;
+    switchboard::reader<rgb_depth_type>    _m_rgb_depth;
     switchboard::buffered_reader<cam_type> _m_cam;
     GLFWwindow*                            gui_window{};
 
@@ -383,19 +439,24 @@ private:
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
     switchboard::ptr<const cam_type> cam;
+    switchboard::ptr<const rgb_depth_type> rgbd;
+    bool                                   use_cam  = false;
+    bool                                   use_rgbd = false;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
-    GLuint          camera_textures[2]{};
+    GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
+    GLuint          rgbd_textures[2];
+    Eigen::Vector2i rgbd_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
-    GLuint demo_vao{};
-    GLuint demoShaderProgram{};
+    GLuint demo_vao;
+    GLuint demoShaderProgram;
 
-    GLuint vertexPosAttr{};
-    GLuint vertexNormalAttr{};
-    GLuint modelViewAttr{};
-    GLuint projectionAttr{};
+    GLuint vertexPosAttr;
+    GLuint vertexNormalAttr;
+    GLuint modelViewAttr;
+    GLuint projectionAttr;
 
-    GLuint colorUniform{};
+    GLuint colorUniform;
 
     ObjScene demoscene;
     ObjScene headset;
@@ -503,6 +564,14 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glGenTextures(2, &(rgbd_textures[0]));
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, rgbd_textures[1]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

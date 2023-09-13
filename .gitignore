@@ -13,7 +13,7 @@ metrics/
 .deps
 data_record/
 .idea
-build/
+build
 deps
 cmake-build*
 
