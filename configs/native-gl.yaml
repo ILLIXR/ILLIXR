@@ -1,10 +1,11 @@
 plugin_groups:
   - !include "rt_slam_plugins.yaml"
   - plugin_group:
-      # - path: ground_truth_slam/
+      - path: ground_truth_slam/
       - path: gldemo/
       - path: debugview/
-      # - path: offload_data/
+      - path: offload_data/
+      - path: timewarp_gl/
   - !include "core_plugins.yaml"
 
 data:
