@@ -33,14 +33,12 @@ public:
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
         , _m_dataset_first_time{ViconRoom1Medium}
         , _m_first_time{true} {
-#ifdef ILLIXR_OFFLOADING_LOGGING
         if (!std::filesystem::exists(data_path)) {
             if (!std::filesystem::create_directory(data_path)) {
                 std::cerr << "Failed to create data directory.";
             }
         }
         truth_csv.open(data_path + "/truth.csv");
-#endif
     }
 
     virtual void start() override {
@@ -80,11 +78,9 @@ public:
         }
 
         _m_true_pose.put(std::move(true_pose));
-#ifdef ILLIXR_OFFLOADING_LOGGING
         truth_csv << datum->time.time_since_epoch().count() << "," << true_pose->position.x() << "," << true_pose->position.y()
                   << "," << true_pose->position.z() << "," << true_pose->orientation.w() << "," << true_pose->orientation.x()
                   << "," << true_pose->orientation.y() << "," << true_pose->orientation.z() << std::endl;
-#endif
     }
 
 private:
@@ -95,10 +91,9 @@ private:
     const std::map<ullong, sensor_types>                             _m_sensor_data;
     ullong                                                           _m_dataset_first_time;
     bool                                                             _m_first_time;
-#ifdef ILLIXR_OFFLOADING_LOGGING
+
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     truth_csv;
-#endif
 };
 
 PLUGIN_MAIN(ground_truth_slam);

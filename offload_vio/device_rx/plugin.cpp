@@ -25,7 +25,7 @@ public:
         pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
-#ifdef ILLIXR_OFFLOADING_LOGGING
+
         if (!filesystem::exists(data_path)) {
             if (!filesystem::create_directory(data_path)) {
                 std::cerr << "Failed to create data directory.";
@@ -34,7 +34,7 @@ public:
 
         pose_transfer_csv.open(data_path + "/pose_transfer_time.csv");
         roundtrip_csv.open(data_path + "/roundtrip_time.csv");
-#endif
+
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
         socket.enable_no_delay();
@@ -43,9 +43,9 @@ public:
 
     virtual skip_option _p_should_skip() override {
         if (!is_socket_connected) {
-            std::cout << "device_rx: Connecting to " << server_addr.str(":") << endl;
+            cout << "device_rx: Connecting to " << server_addr.str(":") << endl;
             socket.connect(server_addr);
-            std::cout << "device_rx: Connected to " << server_addr.str(":") << endl;
+            cout << "device_rx: Connected to " << server_addr.str(":") << endl;
             is_socket_connected = true;
         }
         return skip_option::run;
@@ -81,7 +81,7 @@ private:
     void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output, const string& str_data) {
         vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
 
-#ifdef ILLIXR_OFFLOADING_LOGGING
+        /** Logging **/
         unsigned long long curr_time =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
@@ -90,7 +90,7 @@ private:
 
         double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
         roundtrip_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
-#endif
+
         pose_type datum_pose_tmp{
             time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
             Eigen::Vector3f{static_cast<float>(slow_pose.position().x()), static_cast<float>(slow_pose.position().y()),
@@ -145,12 +145,10 @@ private:
     Address   server_addr;
     string    buffer_str;
 
-#ifdef ILLIXR_OFFLOADING_LOGGING
     const string  data_path = filesystem::current_path().string() + "/recorded_data";
     std::ofstream pose_transfer_csv;
     std::ofstream roundtrip_csv;
     int           frame_id = 0;
-#endif
 };
 
 PLUGIN_MAIN(offload_reader)
