@@ -8,9 +8,6 @@
 #include "common/switchboard.hpp"
 #include "vio_output.pb.h"
 
-#include <filesystem>
-#include <fstream>
-
 using namespace ILLIXR;
 
 class server_writer : public plugin {
@@ -20,11 +17,6 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_addr(CLIENT_IP, CLIENT_PORT_2) {
-        if (!filesystem::exists(data_path)) {
-            if (!std::filesystem::create_directory(data_path)) {
-                std::cerr << "Failed to create data directory.";
-            }
-        }
 
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
@@ -156,7 +148,6 @@ private:
     Address    client_addr;
     bool       is_client_connected;
 
-    const string data_path = filesystem::current_path().string() + "/recorded_data";
 };
 
 PLUGIN_MAIN(server_writer)

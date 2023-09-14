@@ -9,8 +9,6 @@
 #include "vio_input.pb.h"
 
 #include <boost/lockfree/spsc_queue.hpp>
-#include <filesystem>
-#include <fstream>
 
 using namespace ILLIXR;
 
@@ -36,11 +34,6 @@ public:
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_addr(SERVER_IP, SERVER_PORT_1)
         , buffer_str("") {
-        if (!filesystem::exists(data_path)) {
-            if (!std::filesystem::create_directory(data_path)) {
-                std::cerr << "Failed to create data directory.";
-            }
-        }
 
         socket.set_reuseaddr();
         socket.bind(server_addr);
@@ -182,7 +175,6 @@ private:
     Address    server_addr;
     string     buffer_str;
 
-    const std::string data_path = filesystem::current_path().string() + "/recorded_data";
 };
 
 PLUGIN_MAIN(server_reader)

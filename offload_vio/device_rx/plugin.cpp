@@ -8,8 +8,6 @@
 
 #include <ecal/ecal.h>
 #include <ecal/msg/protobuf/subscriber.h>
-#include <filesystem>
-#include <fstream>
 
 using namespace ILLIXR;
 
@@ -25,15 +23,6 @@ public:
         pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
-
-        if (!filesystem::exists(data_path)) {
-            if (!filesystem::create_directory(data_path)) {
-                std::cerr << "Failed to create data directory.";
-            }
-        }
-
-        pose_transfer_csv.open(data_path + "/pose_transfer_time.csv");
-        roundtrip_csv.open(data_path + "/roundtrip_time.csv");
 
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
@@ -81,16 +70,6 @@ private:
     void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output, const string& str_data) {
         vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
 
-        /** Logging **/
-        unsigned long long curr_time =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-        double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
-        pose_transfer_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
-
-        double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
-        roundtrip_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
-
         pose_type datum_pose_tmp{
             time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},
             Eigen::Vector3f{static_cast<float>(slow_pose.position().x()), static_cast<float>(slow_pose.position().y()),
@@ -132,7 +111,6 @@ private:
             _m_imu_integrator_input.allocate<imu_integrator_input>(std::move(datum_imu_int_tmp));
         _m_imu_integrator_input.put(std::move(datum_imu_int));
 
-        frame_id++;
     }
 
     const std::shared_ptr<switchboard>        sb;
@@ -144,11 +122,6 @@ private:
     bool      is_socket_connected;
     Address   server_addr;
     string    buffer_str;
-
-    const string  data_path = filesystem::current_path().string() + "/recorded_data";
-    std::ofstream pose_transfer_csv;
-    std::ofstream roundtrip_csv;
-    int           frame_id = 0;
 };
 
 PLUGIN_MAIN(offload_reader)
