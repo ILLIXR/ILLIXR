@@ -810,15 +810,6 @@ public:
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
 
-        pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
-        if (uncorrected_pose.position.x() != 0) {
-            pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
-                          << uncorrected_pose.position.x() << "," << uncorrected_pose.position.y() << ","
-                          << uncorrected_pose.position.z() << "," << uncorrected_pose.orientation.w() << ","
-                          << uncorrected_pose.orientation.x() << "," << uncorrected_pose.orientation.y() << ","
-                          << uncorrected_pose.orientation.z() << std::endl;
-        }
-
         std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
         std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
         std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;

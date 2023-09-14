@@ -14,8 +14,6 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <cstdlib>
 #include <ctime>
-#include <filesystem>
-#include <fstream>
 #include <opencv/cv.hpp>
 #include <opencv2/core/mat.hpp>
 
@@ -41,19 +39,6 @@ public:
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , server_addr(SERVER_IP, SERVER_PORT_1) {
-        if (!filesystem::exists(data_path)) {
-            if (!filesystem::create_directory(data_path)) {
-                std::cerr << "Failed to create data directory.";
-            }
-        }
-        pub_to_send_csv.open(data_path + "/pub_to_send.csv");
-        frame_info_csv.open(data_path + "/frame_info.csv");
-        frame_info_csv << "frame no."
-                       << ","
-                       << "IMU (0) or Cam (1)"
-                       << ","
-                       << "Timestamp" << std::endl;
-
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
         socket.enable_no_delay();
@@ -110,7 +95,6 @@ public:
         string delimitter      = "EEND!";
 
         socket.write(data_to_be_sent + delimitter);
-        pub_to_send_csv << (_m_clock->now() - cam_time.value()).count() << std::endl;
 
         frame_id++;
         delete data_buffer;
@@ -144,10 +128,6 @@ public:
         linear_accel->set_z(datum->linear_a.z());
         imu_data->set_allocated_linear_accel(linear_accel);
 
-        frame_info_csv << frame_id << ","
-                       << "0"
-                       << "," << datum->time.time_since_epoch().count() << std::endl;
-
         if (latest_cam_time && latest_imu_time > latest_cam_time) {
             send_imu_cam_data(latest_cam_time);
         }
@@ -167,9 +147,6 @@ public:
             cam_data->set_timestamp(cam->time.time_since_epoch().count());
             cam_data->set_rows(cam_img0.rows);
             cam_data->set_cols(cam_img0.cols);
-            frame_info_csv << frame_id << ","
-                           << "1"
-                           << "," << cam->time.time_since_epoch().count() << std::endl;
 
 #ifdef USE_COMPRESSION
             /** WITH COMPRESSION **/
@@ -231,10 +208,6 @@ private:
 
     TCPSocket socket;
     Address   server_addr;
-
-    const string  data_path = filesystem::current_path().string() + "/recorded_data";
-    std::ofstream pub_to_send_csv;
-    std::ofstream frame_info_csv;
 };
 
 PLUGIN_MAIN(offload_writer)
