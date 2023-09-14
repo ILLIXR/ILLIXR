@@ -8,7 +8,6 @@ plugin_groups:
       # - path: passthrough_integrator/
       - path: pose_prediction/
       # - path: ground_truth_slam/
-      # - path: gldemo/
       # - path: debugview/
       # - path: offload_data/
       # - path: record_imu_cam/

@@ -71,7 +71,7 @@ public:
 
         try {
             close(fd_);
-        } catch (const exception& e) { /* don't throw from destructor */
+        } catch (const std::exception& e) { /* don't throw from destructor */
             print_exception(e);
         }
     }
@@ -97,7 +97,7 @@ public:
     std::string read(const size_t limit = BUFFER_SIZE) {
         char buffer[BUFFER_SIZE];
 
-        ssize_t bytes_read = system_call("read", ::read(fd_, buffer, min(BUFFER_SIZE, limit)));
+        ssize_t bytes_read = system_call("read", ::read(fd_, buffer, std::min(BUFFER_SIZE, limit)));
         if (bytes_read == 0) {
             set_eof();
         }
@@ -119,12 +119,12 @@ public:
 
     std::string::const_iterator write(const std::string::const_iterator& begin, const std::string::const_iterator& end) {
         if (begin >= end) {
-            throw runtime_error("nothing to write");
+            throw std::runtime_error("nothing to write");
         }
 
         ssize_t bytes_written = system_call("write", ::write(fd_, &*begin, end - begin));
         if (bytes_written == 0) {
-            throw runtime_error("write returned 0");
+            throw std::runtime_error("write returned 0");
         }
 
         register_write();
@@ -145,7 +145,7 @@ public:
 
         try {
             system_call("close", close(fd_));
-        } catch (const exception& e) { /* don't throw from destructor */
+        } catch (const std::exception& e) { /* don't throw from destructor */
             print_exception(e);
         }
 

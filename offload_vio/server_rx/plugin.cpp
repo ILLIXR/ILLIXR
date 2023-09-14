@@ -47,26 +47,26 @@ public:
         if (read_socket == NULL) {
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.listen();
-            cout << "server_rx: Waiting for connection!" << endl;
+            std::cout << "server_rx: Waiting for connection!" << std::endl;
             read_socket = new TCPSocket(FileDescriptor(system_call(
                 "accept",
                 ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-            cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
+            std::cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << std::endl;
         } else {
             auto   now        = timestamp();
-            string delimitter = "EEND!";
-            string recv_data  = read_socket->read(); /* Blocking operation, wait for the data to come */
+            std::string delimitter = "EEND!";
+            std::string recv_data  = read_socket->read(); /* Blocking operation, wait for the data to come */
             buffer_str        = buffer_str + recv_data;
             if (recv_data.size() > 0) {
-                string::size_type end_position = buffer_str.find(delimitter);
-                while (end_position != string::npos) {
-                    string before = buffer_str.substr(0, end_position);
+                std::string::size_type end_position = buffer_str.find(delimitter);
+                while (end_position != std::string::npos) {
+                    std::string before = buffer_str.substr(0, end_position);
                     buffer_str    = buffer_str.substr(end_position + delimitter.size());
                     // process the data
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
-                        cout << "Error parsing the protobuf, vio input size = " << before.size() << endl;
+                        std::cout << "Error parsing the protobuf, vio input size = " << before.size() << std::endl;
                     } else {
                         ReceiveVioInput(vio_input);
                     }
@@ -172,7 +172,7 @@ private:
     TCPSocket  socket;
     TCPSocket* read_socket = NULL;
     Address    server_addr;
-    string     buffer_str;
+    std::string     buffer_str;
 };
 
 PLUGIN_MAIN(server_reader)

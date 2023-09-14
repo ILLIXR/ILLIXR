@@ -19,7 +19,7 @@
 namespace ILLIXR {
 
 /* error category for getaddrinfo and getnameinfo */
-class gai_error_category : public error_category {
+class gai_error_category : public std::error_category {
 public:
     const char* name(void) const noexcept override {
         return "gai_error_category";
@@ -62,11 +62,11 @@ private:
 
         /* if success, should always have at least one entry */
         if (not resolved_address) {
-            throw runtime_error("getaddrinfo returned successfully but with no results");
+            throw std::runtime_error("getaddrinfo returned successfully but with no results");
         }
 
         /* put resolved_address in a wrapper so it will get freed if we have to throw an exception */
-        std::unique_ptr<addrinfo, function<void(addrinfo*)>> wrapped_address{resolved_address, [](addrinfo* x) {
+        std::unique_ptr<addrinfo, std::function<void(addrinfo*)>> wrapped_address{resolved_address, [](addrinfo* x) {
                                                                                  freeaddrinfo(x);
                                                                              }};
 
@@ -87,7 +87,7 @@ public:
         , addr_() {
         /* make sure proposed sockaddr can fit */
         if (size > sizeof(addr_)) {
-            throw runtime_error("invalid sockaddr size");
+            throw std::runtime_error("invalid sockaddr size");
         }
 
         memcpy(&addr_, &addr, size_);
@@ -126,7 +126,7 @@ public:
     }
 
     /* accessors */
-    pair<std::string, uint16_t> ip_port(void) const {
+    std::pair<std::string, uint16_t> ip_port(void) const {
         char ip[NI_MAXHOST], port[NI_MAXSERV];
 
         const int gni_ret =
@@ -135,7 +135,7 @@ public:
             throw tagged_error(gai_error_category(), "getnameinfo", gni_ret);
         }
 
-        return make_pair(ip, myatoi(port));
+        return std::make_pair(ip, myatoi(port));
     }
 
     std::string ip(void) const {
