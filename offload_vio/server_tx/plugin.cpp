@@ -17,7 +17,6 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_addr(CLIENT_IP, CLIENT_PORT_2) {
-
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
         socket.enable_no_delay();
@@ -147,7 +146,6 @@ private:
     TCPSocket* write_socket = NULL;
     Address    client_addr;
     bool       is_client_connected;
-
 };
 
 PLUGIN_MAIN(server_writer)

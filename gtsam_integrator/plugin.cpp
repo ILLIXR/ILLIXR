@@ -232,7 +232,7 @@ private:
         std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
 #endif
 
-        auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
+        auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
         auto                        original_quaternion = out_pose.rotation().toQuaternion();
         Eigen::Matrix<double, 3, 1> rotation_angles =
             original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();

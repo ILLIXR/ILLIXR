@@ -34,7 +34,6 @@ public:
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_addr(SERVER_IP, SERVER_PORT_1)
         , buffer_str("") {
-
         socket.set_reuseaddr();
         socket.bind(server_addr);
         socket.enable_no_delay();
@@ -174,7 +173,6 @@ private:
     TCPSocket* read_socket = NULL;
     Address    server_addr;
     string     buffer_str;
-
 };
 
 PLUGIN_MAIN(server_reader)
