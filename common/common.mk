@@ -13,11 +13,6 @@ else ifeq ($(ILLIXR_MONADO), ON)
 	GRAPHICS_BACKEND_FLAGS := -DILLIXR_MONADO
 endif
 
-## A compilation flag that controls the information logging when running offloading VIO
-ifeq ($(ILLIXR_OFFLOADING_LOGGING),ON)
-	LOGGING_FLAGS := -DILLIXR_OFFLOADING_LOGGING
-endif
-
 ## DBG Notes:
 #> -Og and -g provide additional debugging symbols
 #> -rdynamic is used for catchsegv needing (lib)backtrace for dynamic symbol information
