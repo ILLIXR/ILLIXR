@@ -66,8 +66,10 @@ void video_decoder::create_pipelines() {
     _pipeline_img0 = gst_pipeline_new("pipeline_img0");
     _pipeline_img1 = gst_pipeline_new("pipeline_img1");
 
-    gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, decoder_img0, nvvideoconvert_0, caps_filter_0, _appsink_img0, nullptr);
-    gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, decoder_img1, nvvideoconvert_1, caps_filter_1, _appsink_img1, nullptr);
+    gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, decoder_img0, nvvideoconvert_0, caps_filter_0, _appsink_img0,
+                     nullptr);
+    gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, decoder_img1, nvvideoconvert_1, caps_filter_1, _appsink_img1,
+                     nullptr);
 
     // link elements
     if (!gst_element_link_many(_appsrc_img0, decoder_img0, nvvideoconvert_0, caps_filter_0, _appsink_img0, nullptr) ||
