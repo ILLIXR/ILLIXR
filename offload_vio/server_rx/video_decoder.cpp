@@ -13,7 +13,7 @@ namespace ILLIXR {
 // #define ZED
 
 #ifdef ZED
-    #define IMG_WIDTH 672
+    #define IMG_WIDTH  672
     #define IMG_HEIGHT 376
 #else
     #define IMG_WIDTH  752
