@@ -19,14 +19,13 @@ for one terminal and configs/offload-server.yaml on the other terminal. The defa
 config files will run OpenVINS on the server and will feed it with the EuRoC dataset from the device.
 
 To run more complicated experiment setups where the device and server are not on the same machine, you will need
-to establish TCP communication between machines, you'll need to configure both the server and client settings. The IP address and port number can be set in the configuration file:
+to establish TCP communication between machines, you'll need to configure both the server and client settings.
+The IP address and port number can be set in the configuration file:
 
 `common/network/net_config.hpp`
 
-This file contains variables where you can enter the respective IP addresses and port numbers for the server and client. Edit these fields to suit your network setup.
-
-
-The offloading vio plugins have basic support for logging pose_transfer_time and round trip time. The logging files are written to directory recorded_data/. Other information can be logged the same way as in the existing plugins (e.g. offload_vio/device_rx/plugin.cpp).
+This file contains variables where you can enter the respective IP addresses and port numbers for the server and client.
+Edit these fields to suit your network setup.
 
 ## Compression
 
