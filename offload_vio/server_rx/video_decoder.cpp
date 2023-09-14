@@ -38,6 +38,19 @@ void video_decoder::create_pipelines() {
     auto decoder_img0 = gst_element_factory_make("nvv4l2decoder", "decoder_img0");
     auto decoder_img1 = gst_element_factory_make("nvv4l2decoder", "decoder_img1");
 
+    auto caps_filter_0 = gst_element_factory_make("capsfilter", "caps_filter_0");
+    auto caps_filter_1 = gst_element_factory_make("capsfilter", "caps_filter_1");
+
+    g_object_set(G_OBJECT(caps_filter_0), "caps", gst_caps_from_string("video/x-raw,format=GRAY8"), nullptr);
+    g_object_set(G_OBJECT(caps_filter_1), "caps", gst_caps_from_string("video/x-raw,format=GRAY8"), nullptr);
+
+    // create caps with width and height
+    auto caps_x265 = gst_caps_new_simple("video/x-h264", "stream-format", G_TYPE_STRING, "byte-stream", "alignment",
+                                         G_TYPE_STRING, "au", nullptr);
+    g_object_set(G_OBJECT(_appsrc_img0), "caps", caps_x265, nullptr);
+    g_object_set(G_OBJECT(_appsrc_img1), "caps", caps_x265, nullptr);
+    gst_caps_unref(caps_x265);
+
     g_object_set(G_OBJECT(_appsrc_img0), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
     g_object_set(G_OBJECT(_appsrc_img1), "stream-type", 0, "format", GST_FORMAT_BYTES, "is-live", TRUE, nullptr);
 
@@ -53,12 +66,12 @@ void video_decoder::create_pipelines() {
     _pipeline_img0 = gst_pipeline_new("pipeline_img0");
     _pipeline_img1 = gst_pipeline_new("pipeline_img1");
 
-    gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, decoder_img0, nvvideoconvert_0, _appsink_img0, nullptr);
-    gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, decoder_img1, nvvideoconvert_1, _appsink_img1, nullptr);
+    gst_bin_add_many(GST_BIN(_pipeline_img0), _appsrc_img0, decoder_img0, nvvideoconvert_0, caps_filter_0, _appsink_img0, nullptr);
+    gst_bin_add_many(GST_BIN(_pipeline_img1), _appsrc_img1, decoder_img1, nvvideoconvert_1, caps_filter_1, _appsink_img1, nullptr);
 
     // link elements
-    if (!gst_element_link_many(_appsrc_img0, decoder_img0, nvvideoconvert_0, _appsink_img0, nullptr) ||
-        !gst_element_link_many(_appsrc_img1, decoder_img1, nvvideoconvert_1, _appsink_img1, nullptr)) {
+    if (!gst_element_link_many(_appsrc_img0, decoder_img0, nvvideoconvert_0, caps_filter_0, _appsink_img0, nullptr) ||
+        !gst_element_link_many(_appsrc_img1, decoder_img1, nvvideoconvert_1, caps_filter_1, _appsink_img1, nullptr)) {
         abort("Failed to link elements");
     }
 
