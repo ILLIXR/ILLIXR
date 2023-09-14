@@ -54,7 +54,7 @@ After recording, the dataset will be stored in the ILLIXR project directory, wit
 
         data_path = pathify(config["data"], root_dir, root_dir / "data_record", True, True)
 
-4. Make sure other plugins that feed poses are commented, such as `offline_imu_cam`, `zed`, and `realsense`.
+4. Make sure other plugins that feed images and IMU are commented, such as `offline_cam`, `offline_imu`, `zed`, and `realsense`.
 
 [//]: # (- External -)
 

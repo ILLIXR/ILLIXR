@@ -7,7 +7,7 @@ ILLIXR supports a wide range of cameras, most of which are for the purpose of fe
 
 
 **Important Note**: <br>
-Before running any of these plugins below, it is important to comment out `offline_imu_cam` in `configs\native.yaml`. <br>
+Before running any of these plugins below, it is important to comment out `offline_cam` and `offline_imu` in `configs\native.yaml`. <br>
 
 ## Add Calibration Parameters
 In order to add your camera's calibration extrinsics, you need to modify your choice of SLAM/VIO plugin. Follow these instructions to [modify a plugin][21].
@@ -39,7 +39,7 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
 3. **Enable ZED in OpenVINS plugin**
 
-    This step is only required if using OpenVINS. Uncomment this [line](9) in the OpenVINS plugin. 
+    This step is only required if using OpenVINS. Uncomment this [line][9] in the OpenVINS plugin. 
 
 4. **Run ILLIXR with ZED:**  
 
@@ -66,6 +66,8 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 3. **Run ILLIXR with RealSense:**  
 
     Uncomment `realsense` in `configs/rt_slam_plugins.yaml` and run ILLIXR normally.
+    
+    *Note:* We will release the corresponding `#define realsense` soon for OpenVINS + Realsense
 
 
 
