@@ -23,8 +23,8 @@ action:
   monado:
     path:
       git_repo : https://github.com/ILLIXR/monado_integration.git
-      version  : "add-timewarp-semaphore" # Note: this should be changed to master when the corresponding branch is merged
-
+      version  : master
+      
     config: # For CMake
       XRT_HAVE_LIBUDEV              : ON
       XRT_HAVE_LIBUSB               : ON
