@@ -79,7 +79,6 @@ private:
     const std::map<ullong, sensor_types>                             _m_sensor_data;
     ullong                                                           _m_dataset_first_time;
     bool                                                             _m_first_time;
-
 };
 
 PLUGIN_MAIN(ground_truth_slam);
