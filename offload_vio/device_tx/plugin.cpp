@@ -42,18 +42,18 @@ public:
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , server_addr(SERVER_IP, SERVER_PORT_1) {
 #ifdef ILLIXR_OFFLOADING_LOGGING
-            if (!filesystem::exists(data_path)) {
-                if (!filesystem::create_directory(data_path)) {
-                    std::cerr << "Failed to create data directory.";
-                }
+        if (!filesystem::exists(data_path)) {
+            if (!filesystem::create_directory(data_path)) {
+                std::cerr << "Failed to create data directory.";
             }
-            pub_to_send_csv.open(data_path + "/pub_to_send.csv");
-            frame_info_csv.open(data_path + "/frame_info.csv");
-            frame_info_csv << "frame no."
-                        << ","
-                        << "IMU (0) or Cam (1)"
-                        << ","
-                        << "Timestamp" << std::endl;
+        }
+        pub_to_send_csv.open(data_path + "/pub_to_send.csv");
+        frame_info_csv.open(data_path + "/frame_info.csv");
+        frame_info_csv << "frame no."
+                       << ","
+                       << "IMU (0) or Cam (1)"
+                       << ","
+                       << "Timestamp" << std::endl;
 #endif
 
         socket.set_reuseaddr();

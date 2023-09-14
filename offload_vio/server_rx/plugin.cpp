@@ -36,7 +36,7 @@ public:
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_addr(SERVER_IP, SERVER_PORT_1)
         , buffer_str("") {
-#ifdef ILLIXR_OFFLOADING_LOGGING    
+#ifdef ILLIXR_OFFLOADING_LOGGING
         if (!filesystem::exists(data_path)) {
             if (!std::filesystem::create_directory(data_path)) {
                 std::cerr << "Failed to create data directory.";
