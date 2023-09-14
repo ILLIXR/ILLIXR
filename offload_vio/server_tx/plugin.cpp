@@ -20,11 +20,13 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_addr(CLIENT_IP, CLIENT_PORT_2) {
+#ifdef ILLIXR_OFFLOADING_LOGGING
         if (!filesystem::exists(data_path)) {
             if (!std::filesystem::create_directory(data_path)) {
                 std::cerr << "Failed to create data directory.";
             }
         }
+#endif
 
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
@@ -155,8 +157,9 @@ private:
     TCPSocket* write_socket = NULL;
     Address    client_addr;
     bool       is_client_connected;
-
+#ifdef ILLIXR_OFFLOADING_LOGGING
     const string data_path = filesystem::current_path().string() + "/recorded_data";
+#endif
 };
 
 PLUGIN_MAIN(server_writer)

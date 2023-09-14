@@ -36,12 +36,13 @@ public:
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_addr(SERVER_IP, SERVER_PORT_1)
         , buffer_str("") {
+#ifdef ILLIXR_OFFLOADING_LOGGING    
         if (!filesystem::exists(data_path)) {
             if (!std::filesystem::create_directory(data_path)) {
                 std::cerr << "Failed to create data directory.";
             }
         }
-
+#endif
         socket.set_reuseaddr();
         socket.bind(server_addr);
         socket.enable_no_delay();
@@ -55,11 +56,11 @@ public:
         if (read_socket == NULL) {
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.listen();
-            cout << "server_rx: Waiting for connection!" << endl;
+            std::cout << "server_rx: Waiting for connection!" << endl;
             read_socket = new TCPSocket(FileDescriptor(system_call(
                 "accept",
                 ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-            cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
+            std::cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
         } else {
             auto   now        = timestamp();
             string delimitter = "EEND!";
@@ -74,7 +75,7 @@ public:
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
-                        cout << "Error parsing the protobuf, vio input size = " << before.size() << endl;
+                        std::cout << "Error parsing the protobuf, vio input size = " << before.size() << endl;
                     } else {
                         ReceiveVioInput(vio_input);
                     }
@@ -181,8 +182,9 @@ private:
     TCPSocket* read_socket = NULL;
     Address    server_addr;
     string     buffer_str;
-
+#ifdef ILLIXR_OFFLOADING_LOGGING
     const std::string data_path = filesystem::current_path().string() + "/recorded_data";
+#endif
 };
 
 PLUGIN_MAIN(server_reader)
