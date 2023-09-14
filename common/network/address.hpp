@@ -16,6 +16,8 @@
 #include <string>
 #include <utility>
 
+namespace ILLIXR {
+
 /* error category for getaddrinfo and getnameinfo */
 class gai_error_category : public error_category {
 public:
@@ -171,5 +173,7 @@ public:
         return Address("100.64.0." + std::to_string(last_octet), 0);
     }
 };
+
+} // namespace ILLIXR
 
 #endif /* ADDRESS_HPP */

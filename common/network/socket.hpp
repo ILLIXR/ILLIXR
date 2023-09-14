@@ -15,6 +15,7 @@
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 
+namespace ILLIXR {
 /* class for network sockets (UDP, TCP, etc.) */
 class Socket : public FileDescriptor {
 protected:
@@ -255,5 +256,7 @@ public:
         }
     }
 };
+
+} // namespace ILLIXR
 
 #endif /* SOCKET_HPP */

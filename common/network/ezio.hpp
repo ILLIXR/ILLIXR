@@ -7,6 +7,8 @@
 
 #include <string>
 
+namespace ILLIXR {
+
 /* convert string to long integer */
 long int myatoi(const std::string& str, const int base = 10) {
     if (str.empty()) {
@@ -46,5 +48,7 @@ double myatof(const std::string& str) {
 
     return ret;
 }
+
+} // namespace ILLIXR
 
 #endif /* EZIO_HPP */
