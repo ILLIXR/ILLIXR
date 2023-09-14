@@ -77,7 +77,7 @@ profile:
 
 profile:
   name: monado_vk
-  plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,openxr_app,pose_prediction,timewarp_vk
+  plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk
   visualizers: openvins
   build_flags: -DILLIXR_MONADO_MAINLINE
   build_type: Release
