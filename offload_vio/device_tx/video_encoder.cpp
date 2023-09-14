@@ -14,7 +14,7 @@ namespace ILLIXR {
 // #define ZED
 
 #ifdef ZED
-    #define IMG_WIDTH 672
+    #define IMG_WIDTH  672
     #define IMG_HEIGHT 376
 #else
     #define IMG_WIDTH  752
@@ -22,6 +22,7 @@ namespace ILLIXR {
 #endif
 
 #define ILLIXR_BITRATE 5242880
+
 // Alternative encoding bitrates
 // 50Mbps = 52428800
 // 20Mbps = 20971520
