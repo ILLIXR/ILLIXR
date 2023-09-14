@@ -11,6 +11,8 @@
 #include <string>
 #include <unistd.h>
 
+namespace ILLIXR {
+
 /* Unix file descriptors (sockets, files, etc.) */
 class FileDescriptor {
 private:
@@ -165,5 +167,7 @@ public:
     FileDescriptor(const FileDescriptor& other)                  = delete;
     const FileDescriptor& operator=(const FileDescriptor& other) = delete;
 };
+
+} // namespace ILLIXR
 
 #endif /* FILE_DESCRIPTOR_HPP */

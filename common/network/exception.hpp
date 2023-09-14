@@ -8,6 +8,8 @@
 #include <system_error>
 #include <typeinfo>
 
+namespace ILLIXR {
+
 class tagged_error : public std::system_error {
 private:
     std::string attempt_and_error_;
@@ -41,4 +43,6 @@ inline int system_call(const std::string& s_attempt, const int return_value) {
     throw unix_error(s_attempt);
 }
 
-#endif
+} // namespace ILLIXR
+
+#endif /* EXCEPTION_HPP */

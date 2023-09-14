@@ -7,6 +7,7 @@
 #include "exception.hpp"
 #include "socket.hpp"
 
+namespace ILLIXR {
 /* class for network sockets (UDP, TCP, etc.) */
 class SocketInstance {
 public:
@@ -16,5 +17,7 @@ public:
 
 UDPSocket SocketInstance::socket;
 Address   SocketInstance::client_addr;
+
+} // namespace ILLIXR
 
 #endif /* SOCKETINSTANCE_HPP */

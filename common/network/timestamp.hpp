@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <ctime>
 
+namespace ILLIXR {
+
 uint64_t raw_timestamp(void) {
     timespec ts;
     system_call("clock_gettime", clock_gettime(CLOCK_REALTIME, &ts));
@@ -26,5 +28,7 @@ uint64_t initial_timestamp(void) {
 uint64_t timestamp(void) {
     return raw_timestamp() - initial_timestamp();
 }
+
+} // namespace ILLIXR
 
 #endif /* TIMESTAMP_HPP */
