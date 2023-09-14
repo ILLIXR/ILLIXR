@@ -131,9 +131,8 @@ private:
         switchboard::ptr<imu_integrator_input> datum_imu_int =
             _m_imu_integrator_input.allocate<imu_integrator_input>(std::move(datum_imu_int_tmp));
         _m_imu_integrator_input.put(std::move(datum_imu_int));
-#ifdef ILLIXR_OFFLOADING_LOGGING
+
         frame_id++;
-#endif
     }
 
     const std::shared_ptr<switchboard>        sb;

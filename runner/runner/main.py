@@ -62,7 +62,7 @@ def build_one_plugin(
     plugin_config: Mapping[str, Any],
     test: bool = False,
     illixr_monado: bool = False,
-    enable_offloading_logging: bool = False,
+    enable_offloading_logging = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -75,8 +75,7 @@ def build_one_plugin(
     if illixr_monado:
         plugin_config["config"].update(ILLIXR_MONADO="ON")
     if enable_offloading_logging:
-        plugin_config["config"].update(ILLIXR_OFFLOADING_LOGGING="ON")
-    print(plugin_config["config"])
+        plugin_config.update(ILLIXR_OFFLOADING_LOGGING="ON")
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
