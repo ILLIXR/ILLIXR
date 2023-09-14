@@ -19,12 +19,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-#ifndef NDEBUG
-    #define SHADER_FOLDER "timewarp_vk/build/Debug/shaders"
-#else
-    #define SHADER_FOLDER "timewarp_vk/build/Release/shaders"
-#endif
-
 using namespace ILLIXR;
 
 struct Vertex {

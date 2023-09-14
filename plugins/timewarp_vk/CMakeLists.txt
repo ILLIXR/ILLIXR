@@ -56,11 +56,6 @@ target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 
-add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PLUGIN_NAME}>/shaders/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${PROJECT_BINARY_DIR}/shaders"
-        "$<TARGET_FILE_DIR:${PLUGIN_NAME}>/shaders"
-        )
+install_shaders(SPIRV_BINARY_FILES timewarp_vk ${PLUGIN_NAME})
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

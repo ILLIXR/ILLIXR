@@ -114,6 +114,7 @@ endif()
 # the plugin library names will depend on the build type
 string(TOLOWER "${CMAKE_BUILD_TYPE}" lower_type)
 if(lower_type MATCHES "debug")
+    set(DO_DEBUG Yes)
     set(ILLIXR_BUILD_SUFFIX ".dbg")
 elseif(lower_type MATCHES "release")
     set(ILLIXR_BUILD_SUFFIX ".opt")

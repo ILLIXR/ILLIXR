@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: audio_pipeline,offline_cam,offline_imu,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview
+plugins: pose_prediction,display_vk,timewarp_vk,vkdemo,audio_pipeline,debugview,gtsam_integrator,offline_cam,offline_imu,native_renderer
 build_flags: -DILLIXR_MONADO_MAINLINE
 build_type: Release
 visualizers: openvins

@@ -28,12 +28,6 @@
 
 using namespace ILLIXR;
 
-#ifndef NDEBUG
-    #define SHADER_FOLDER "vkdemo/build/Debug/shaders"
-#else
-    #define SHADER_FOLDER "vkdemo/build/Release/shaders"
-#endif
-
 struct Vertex {
     glm::vec3 pos;
     glm::vec2 uv;
