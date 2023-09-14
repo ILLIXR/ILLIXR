@@ -62,7 +62,6 @@ def build_one_plugin(
     plugin_config: Mapping[str, Any],
     test: bool = False,
     illixr_monado: bool = False,
-    enable_offloading_logging = False,
 ) -> Path:
     profile = config["profile"]
     path: Path = pathify(plugin_config["path"], root_dir, cache_path, True, True)
@@ -74,8 +73,6 @@ def build_one_plugin(
     targets = [plugin_so_name] + (["tests/run"] if test else [])
     if illixr_monado:
         plugin_config["config"].update(ILLIXR_MONADO="ON")
-    if enable_offloading_logging:
-        plugin_config.update(ILLIXR_OFFLOADING_LOGGING="ON")
 
     ## When building using runner, enable ILLIXR integrated mode (compilation)
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="yes")
@@ -116,9 +113,7 @@ def load_native(config: Mapping[str, Any]) -> None:
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
     plugin_paths = threading_map(
-        lambda plugin_config: build_one_plugin(config, plugin_config,
-                                               enable_offloading_logging=(bool(config["action"]["enable_offloading_logging"])
-                                               if "enable_offloading_logging" in config["action"] else False)),
+        lambda plugin_config: build_one_plugin(config, plugin_config),
         [plugin_config for plugin_group in config["plugin_groups"] for plugin_config in plugin_group["plugin_group"]],
         desc="Building plugins",
     )

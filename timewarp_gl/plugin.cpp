@@ -105,7 +105,6 @@ public:
             exit(1);
         }
         pred_pose_csv.open(data_path + "/pred_pose.csv");
-#endif
     }
 
         /* create a context using the root window */
@@ -811,7 +810,6 @@ public:
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
 
-#ifdef ILLIXR_OFFLOADING_LOGGING
         pose_type uncorrected_pose = uncorrect_pose(latest_pose.pose);
         if (uncorrected_pose.position.x() != 0) {
             pred_pose_csv << std::fixed << latest_pose.predict_target_time.time_since_epoch().count() << ","
@@ -820,7 +818,6 @@ public:
                           << uncorrected_pose.orientation.x() << "," << uncorrected_pose.orientation.y() << ","
                           << uncorrected_pose.orientation.z() << std::endl;
         }
-#endif
 
         std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
         std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
