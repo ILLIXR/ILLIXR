@@ -34,6 +34,7 @@ public:
         sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
             callback(datum);
         });
+#ifdef ILLIXR_OFFLOADING_LOGGING
         if (!std::filesystem::exists(data_path)) {
             if (!std::filesystem::create_directory(data_path)) {
                 std::cerr << "Failed to create data directory.";
@@ -41,7 +42,7 @@ public:
         }
         raw_csv.open(data_path + "/imu_raw.csv");
         filtered_csv.open(data_path + "/imu_filtered.csv");
-
+#endif
         const double frequency = 200;
         const double mincutoff = 10;
         const double beta      = 1;
@@ -67,9 +68,11 @@ public:
     }
 
 private:
+#ifdef ILLIXR_OFFLOADING_LOGGING
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     raw_csv;
     std::ofstream     filtered_csv;
+#endif
     std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters;
     bool                                                             has_prev = false;
     Eigen::Matrix<double, 3, 1>                                      prev_euler_angles;
@@ -246,10 +249,12 @@ private:
 
         auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
 
+#ifdef ILLIXR_OFFLOADING_LOGGING
         raw_csv << std::fixed << real_time.time_since_epoch().count() << "," << out_pose.x() << "," << out_pose.y() << ","
                 << out_pose.z() << "," << out_pose.rotation().toQuaternion().w() << ","
                 << out_pose.rotation().toQuaternion().x() << "," << out_pose.rotation().toQuaternion().y() << ","
                 << out_pose.rotation().toQuaternion().z() << std::endl;
+#endif
 
         auto                        original_quaternion = out_pose.rotation().toQuaternion();
         Eigen::Matrix<double, 3, 1> rotation_angles =
@@ -282,9 +287,11 @@ private:
 
         auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
 
+#ifdef ILLIXR_OFFLOADING_LOGGING
         filtered_csv << std::fixed << real_time.time_since_epoch().count() << "," << filtered_pos.x() << "," << filtered_pos.y()
                      << "," << filtered_pos.z() << "," << new_quaternion.w() << "," << new_quaternion.x() << ","
                      << new_quaternion.y() << "," << new_quaternion.z() << std::endl;
+#endif
 
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
             imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
