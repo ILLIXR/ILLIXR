@@ -11,16 +11,18 @@
 #include <thread>
 
 namespace ILLIXR {
+// #define ZED
 
-// EuRoc
-#define IMG_WIDTH  752
-#define IMG_HEIGHT 480
-// ZED
-// #define IMG_WIDTH 672
-// #define IMG_HEIGHT 376
+#ifdef ZED
+    #define IMG_WIDTH 672
+    #define IMG_HEIGHT 376
+#else
+    #define IMG_WIDTH  752
+    #define IMG_HEIGHT 480
+#endif
 
 #define ILLIXR_BITRATE 5242880
-
+// Alternative encoding bitrates
 // 50Mbps = 52428800
 // 20Mbps = 20971520
 // 10Mbps = 10485760

@@ -113,7 +113,7 @@ private:
             _params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
             _params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-            _pim = new pim_t{std::make_shared<pim_t::Params>(std::move(_params)), _imu_bias};
+            _pim = new pim_t{boost::make_shared<pim_t::Params>(std::move(_params)), _imu_bias};
             resetIntegrationAndSetBias(imu_int_input);
         }
 

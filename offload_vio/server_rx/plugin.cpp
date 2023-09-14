@@ -56,7 +56,7 @@ public:
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.listen();
             cout << "server_rx: Waiting for connection!" << endl;
-            read_socket = new TCPSocket(FileDescriptor(SystemCall(
+            read_socket = new TCPSocket(FileDescriptor(system_call(
                 "accept",
                 ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
             cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;

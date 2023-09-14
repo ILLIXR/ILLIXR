@@ -48,7 +48,7 @@ public:
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
         socket.listen();
         cout << "server_tx: Waiting for connection!" << endl;
-        write_socket = new TCPSocket(FileDescriptor(SystemCall(
+        write_socket = new TCPSocket(FileDescriptor(system_call(
             "accept", ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
         cout << "server_tx: Connection is established with " << write_socket->peer_address().str(":") << endl;
     }
