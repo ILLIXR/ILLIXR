@@ -25,20 +25,20 @@ protected:
 
     /* construct from file descriptor */
     Socket(FileDescriptor&& fd, const int domain, const int type)
-        : FileDescriptor(move(fd)) {
+        : FileDescriptor(std::move(fd)) {
         int       actual_value;
         socklen_t len;
 
         /* verify domain */
         len = getsockopt(SOL_SOCKET, SO_DOMAIN, actual_value);
         if ((len != sizeof(actual_value)) or (actual_value != domain)) {
-            throw runtime_error("socket domain mismatch");
+            throw std::runtime_error("socket domain mismatch");
         }
 
         /* verify type */
         len = getsockopt(SOL_SOCKET, SO_TYPE, actual_value);
         if ((len != sizeof(actual_value)) or (actual_value != type)) {
-            throw runtime_error("socket type mismatch");
+            throw std::runtime_error("socket type mismatch");
         }
     }
 
@@ -106,7 +106,7 @@ public:
         : Socket(AF_INET, SOCK_DGRAM) { }
 
     /* receive datagram and where it came from */
-    pair<Address, std::string> recv_from(void) {
+    std::pair<Address, std::string> recv_from(void) {
         static const ssize_t RECEIVE_MTU = 65536;
 
         /* receive source address and payload */
@@ -120,21 +120,21 @@ public:
             ::recvfrom(fd_num(), buffer, sizeof(buffer), MSG_TRUNC, &datagram_source_address.as_sockaddr, &fromlen));
 
         if (recv_len > RECEIVE_MTU) {
-            throw runtime_error("recvfrom (oversized datagram)");
+            throw std::runtime_error("recvfrom (oversized datagram)");
         }
 
         register_read();
 
-        return make_pair(Address(datagram_source_address, fromlen), std::string(buffer, recv_len));
+        return std::make_pair(Address(datagram_source_address, fromlen), std::string(buffer, recv_len));
     }
 
     /* receive datagram and where it came from */
-    vector<pair<Address, std::string>> recv_from_nonblocking(int wait_time_ms) {
+    std::vector<std::pair<Address, std::string>> recv_from_nonblocking(int wait_time_ms) {
         static const ssize_t               RECEIVE_MTU = 65536;
-        vector<pair<Address, std::string>> result;
+        std::vector<std::pair<Address, std::string>> result;
 
-        chrono::time_point<chrono::steady_clock> start_time = chrono::steady_clock::now();
-        chrono::duration<double>                 duration   = std::chrono::seconds(0);
+        std::chrono::time_point<std::chrono::steady_clock> start_time = std::chrono::steady_clock::now();
+        std::chrono::duration<double>                 duration   = std::chrono::seconds(0);
 
         /* receive source address and payload */
         Address::raw datagram_source_address;
@@ -147,15 +147,15 @@ public:
             recv_len = recvfrom(fd_num(), buffer, sizeof(buffer), MSG_TRUNC, &datagram_source_address.as_sockaddr, &fromlen);
 
             if (recv_len > RECEIVE_MTU) {
-                throw runtime_error("recvfrom (oversized datagram)");
+                throw std::runtime_error("recvfrom (oversized datagram)");
             }
 
             if (recv_len >= 0) {
-                result.push_back(make_pair(Address(datagram_source_address, fromlen), std::string(buffer, recv_len)));
+                result.push_back(std::make_pair(Address(datagram_source_address, fromlen), std::string(buffer, recv_len)));
                 register_read();
             }
 
-            duration = chrono::steady_clock::now() - start_time;
+            duration = std::chrono::steady_clock::now() - start_time;
         }
 
         return result;
@@ -169,7 +169,7 @@ public:
         register_write();
 
         if (size_t(bytes_sent) != payload.size()) {
-            throw runtime_error("datagram payload too big for sendto()");
+            throw std::runtime_error("datagram payload too big for sendto()");
         }
     }
 
@@ -180,7 +180,7 @@ public:
         register_write();
 
         if (size_t(bytes_sent) != payload.size()) {
-            throw runtime_error("datagram payload too big for send()");
+            throw std::runtime_error("datagram payload too big for send()");
         }
     }
 

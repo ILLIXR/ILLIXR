@@ -66,9 +66,9 @@ public:
         });
         encoder->init();
 
-        cout << "TEST: Connecting to " << server_addr.str(":") << endl;
+        std::cout << "TEST: Connecting to " << server_addr.str(":") << std::endl;
         socket.connect(server_addr);
-        cout << "Connected to " << server_addr.str(":") << endl;
+        std::cout << "Connected to " << server_addr.str(":") << std::endl;
 
         sb->schedule<imu_type>(id, "imu", [this](switchboard::ptr<const imu_type> datum, std::size_t) {
             this->prepare_imu_cam_data(datum);
@@ -91,8 +91,8 @@ public:
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         data_buffer->set_frame_id(frame_id);
 
-        string data_to_be_sent = data_buffer->SerializeAsString();
-        string delimitter      = "EEND!";
+        std::string data_to_be_sent = data_buffer->SerializeAsString();
+        std::string delimitter      = "EEND!";
 
         socket.write(data_to_be_sent + delimitter);
 

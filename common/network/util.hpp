@@ -30,6 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+namespace ILLIXR {
+
 /* Get the user's shell */
 std::string shell_path(void) {
     passwd* pw = getpwuid(getuid());
@@ -37,7 +39,7 @@ std::string shell_path(void) {
         throw unix_error("getpwuid");
     }
 
-    string shell_path(pw->pw_shell);
+    std::string shell_path(pw->pw_shell);
     if (shell_path.empty()) { /* empty shell means Bourne shell */
         shell_path = _PATH_BSHELL;
     }
@@ -63,12 +65,12 @@ void drop_privileges(void) {
 
     /* verify that the changes were successful. if not, abort */
     if (real_gid != eff_gid && (setegid(eff_gid) != -1 || getegid() != real_gid)) {
-        cerr << "BUG: dropping privileged gid failed" << endl;
+        std::cerr << "BUG: dropping privileged gid failed" << std::endl;
         _exit(EXIT_FAILURE);
     }
 
     if (real_uid != eff_uid && (seteuid(eff_uid) != -1 || geteuid() != real_uid)) {
-        cerr << "BUG: dropping privileged uid failed" << endl;
+        std::cerr << "BUG: dropping privileged uid failed" << std::endl;
         _exit(EXIT_FAILURE);
     }
 }
@@ -76,7 +78,7 @@ void drop_privileges(void) {
 void check_requirements(const int argc, const char* const argv[]) {
     if (argc <= 0) {
         /* really crazy user */
-        throw runtime_error("missing argv[ 0 ]: argc <= 0");
+        throw std::runtime_error("missing argv[ 0 ]: argc <= 0");
     }
 
     /* verify normal fds are present (stderr hasn't been closed) */
@@ -84,32 +86,32 @@ void check_requirements(const int argc, const char* const argv[]) {
 
     /* verify running as euid root, but not ruid root */
     if (geteuid() != 0) {
-        throw runtime_error(string(argv[0]) + ": needs to be installed setuid root");
+        throw std::runtime_error(std::string(argv[0]) + ": needs to be installed setuid root");
     }
 
     if ((getuid() == 0) || (getgid() == 0)) {
-        throw runtime_error(string(argv[0]) + ": please run as non-root");
+        throw std::runtime_error(std::string(argv[0]) + ": please run as non-root");
     }
 
     /* verify environment has been cleared */
     if (environ) {
-        throw runtime_error("BUG: environment not cleared in sensitive region");
+        throw std::runtime_error("BUG: environment not cleared in sensitive region");
     }
 
     /* verify IP forwarding is enabled */
     FileDescriptor ipf(system_call("open /proc/sys/net/ipv4/ip_forward", open("/proc/sys/net/ipv4/ip_forward", O_RDONLY)));
     if (ipf.read() != "1\n") {
-        throw runtime_error(string(argv[0]) + ": Please run \"sudo sysctl -w net.ipv4.ip_forward=1\" to enable IP forwarding");
+        throw std::runtime_error(std::string(argv[0]) + ": Please run \"sudo sysctl -w net.ipv4.ip_forward=1\" to enable IP forwarding");
     }
 }
 
 void assert_not_root(void) {
     if ((geteuid() == 0) or (getegid() == 0)) {
-        throw runtime_error("BUG: privileges not dropped in sensitive region");
+        throw std::runtime_error("BUG: privileges not dropped in sensitive region");
     }
 }
 
-void make_directory(const string& directory) {
+void make_directory(const std::string& directory) {
     assert_not_root();
     assert(not directory.empty());
     assert(directory.back() == '/');
@@ -118,9 +120,9 @@ void make_directory(const string& directory) {
 }
 
 /* tag bash-like shells with the delay parameter */
-void prepend_shell_prefix(const string& str) {
+void prepend_shell_prefix(const std::string& str) {
     const char* prefix          = getenv("MAHIMAHI_SHELL_PREFIX");
-    string      mahimahi_prefix = prefix ? prefix : "";
+    std::string      mahimahi_prefix = prefix ? prefix : "";
     mahimahi_prefix.append(str);
 
     system_call("setenv", setenv("MAHIMAHI_SHELL_PREFIX", mahimahi_prefix.c_str(), true));
@@ -133,7 +135,7 @@ void zero(T& x) {
     memset(&x, 0, sizeof(x));
 }
 
-vector<std::string> list_directory_contents(const std::string& dir) {
+std::vector<std::string> list_directory_contents(const std::string& dir) {
     assert_not_root();
 
     struct Closedir {
@@ -142,12 +144,12 @@ vector<std::string> list_directory_contents(const std::string& dir) {
         }
     };
 
-    unique_ptr<DIR, Closedir> dp(opendir(dir.c_str()));
+    std::unique_ptr<DIR, Closedir> dp(opendir(dir.c_str()));
     if (not dp) {
         throw unix_error("opendir (" + dir + ")");
     }
 
-    vector<std::string> ret;
+    std::vector<std::string> ret;
     while (const dirent* dirp = readdir(dp.get())) {
         if (std::string(dirp->d_name) != "." and std::string(dirp->d_name) != "..") {
             ret.push_back(dir + dirp->d_name);
@@ -157,7 +159,7 @@ vector<std::string> list_directory_contents(const std::string& dir) {
     return ret;
 }
 
-std::string join(const vector<std::string>& command) {
+std::string join(const std::vector<std::string>& command) {
     return accumulate(command.begin() + 1, command.end(), command.front(), [](const std::string& a, const std::string& b) {
         return a + " " + b;
     });
@@ -170,12 +172,14 @@ std::string get_working_directory(void) {
         }
     };
 
-    unique_ptr<char, Free> cwd_ptr{get_current_dir_name()};
+    std::unique_ptr<char, Free> cwd_ptr{get_current_dir_name()};
     if (not cwd_ptr) {
         throw unix_error("getcwd");
     }
 
     return cwd_ptr.get();
 }
+
+} // namespace ILLIXR
 
 #endif /* UTIL_HPP */

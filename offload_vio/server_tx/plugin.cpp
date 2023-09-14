@@ -38,10 +38,10 @@ public:
 
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
         socket.listen();
-        cout << "server_tx: Waiting for connection!" << endl;
+        std::cout << "server_tx: Waiting for connection!" << std::endl;
         write_socket = new TCPSocket(FileDescriptor(system_call(
             "accept", ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-        cout << "server_tx: Connection is established with " << write_socket->peer_address().str(":") << endl;
+        std::cout << "server_tx: Connection is established with " << write_socket->peer_address().str(":") << std::endl;
     }
 
     void send_vio_output(switchboard::ptr<const pose_type> datum) {
@@ -127,14 +127,14 @@ public:
             vio_output_params->set_end_server_timestamp(end_pose_time);
 
             // Prepare data delivery
-            string data_to_be_sent = vio_output_params->SerializeAsString();
-            string delimitter      = "END!";
+            std::string data_to_be_sent = vio_output_params->SerializeAsString();
+            std::string delimitter      = "END!";
 
             write_socket->write(data_to_be_sent + delimitter);
 
             delete vio_output_params;
         } else {
-            cout << "server_tx ERROR: write_socket is not yet created!" << endl;
+            std::cout << "server_tx ERROR: write_socket is not yet created!" << std::endl;
         }
     }
 

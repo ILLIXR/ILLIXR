@@ -32,9 +32,9 @@ public:
 
     virtual skip_option _p_should_skip() override {
         if (!is_socket_connected) {
-            cout << "device_rx: Connecting to " << server_addr.str(":") << endl;
+            std::cout << "device_rx: Connecting to " << server_addr.str(":") << std::endl;
             socket.connect(server_addr);
-            cout << "device_rx: Connected to " << server_addr.str(":") << endl;
+            std::cout << "device_rx: Connected to " << server_addr.str(":") << std::endl;
             is_socket_connected = true;
         }
         return skip_option::run;
@@ -43,13 +43,13 @@ public:
     void _p_one_iteration() override {
         if (is_socket_connected) {
             auto   now        = timestamp();
-            string delimitter = "END!";
-            string recv_data  = socket.read(); /* Blocking operation, wait for the data to come */
+            std::string delimitter = "END!";
+            std::string recv_data  = socket.read(); /* Blocking operation, wait for the data to come */
             if (recv_data.size() > 0) {
                 buffer_str                     = buffer_str + recv_data;
-                string::size_type end_position = buffer_str.find(delimitter);
-                while (end_position != string::npos) {
-                    string before = buffer_str.substr(0, end_position);
+                std::string::size_type end_position = buffer_str.find(delimitter);
+                while (end_position != std::string::npos) {
+                    std::string before = buffer_str.substr(0, end_position);
                     buffer_str    = buffer_str.substr(end_position + delimitter.size());
 
                     // process the data
@@ -58,7 +58,7 @@ public:
                     if (success) {
                         ReceiveVioOutput(vio_output, before);
                     } else {
-                        cout << "client_rx: Cannot parse VIO output!!" << endl;
+                        std::cout << "client_rx: Cannot parse VIO output!!" << std::endl;
                     }
                     end_position = buffer_str.find(delimitter);
                 }
@@ -67,7 +67,7 @@ public:
     }
 
 private:
-    void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output, const string& str_data) {
+    void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output, const std::string& str_data) {
         vio_output_proto::SlowPose slow_pose = vio_output.slow_pose();
 
         pose_type datum_pose_tmp{
@@ -120,7 +120,7 @@ private:
     TCPSocket socket;
     bool      is_socket_connected;
     Address   server_addr;
-    string    buffer_str;
+    std::string    buffer_str;
 };
 
 PLUGIN_MAIN(offload_reader)

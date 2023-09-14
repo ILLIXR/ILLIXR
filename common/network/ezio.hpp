@@ -12,7 +12,7 @@ namespace ILLIXR {
 /* convert string to long integer */
 long int myatoi(const std::string& str, const int base = 10) {
     if (str.empty()) {
-        throw runtime_error("Invalid integer string: empty");
+        throw std::runtime_error("Invalid integer string: empty");
     }
 
     char* end;
@@ -23,7 +23,7 @@ long int myatoi(const std::string& str, const int base = 10) {
     if (errno != 0) {
         throw unix_error("strtol");
     } else if (end != str.c_str() + str.size()) {
-        throw runtime_error("Invalid integer: " + str);
+        throw std::runtime_error("Invalid integer: " + str);
     }
 
     return ret;
@@ -32,7 +32,7 @@ long int myatoi(const std::string& str, const int base = 10) {
 /* convert string to floating points */
 double myatof(const std::string& str) {
     if (str.empty()) {
-        throw runtime_error("Invalid floating-point string: empty");
+        throw std::runtime_error("Invalid floating-point string: empty");
     }
 
     char* end;
@@ -43,7 +43,7 @@ double myatof(const std::string& str) {
     if (errno != 0) {
         throw unix_error("strtod");
     } else if (end != str.c_str() + str.size()) {
-        throw runtime_error("Invalid floating-point number: " + str);
+        throw std::runtime_error("Invalid floating-point number: " + str);
     }
 
     return ret;
