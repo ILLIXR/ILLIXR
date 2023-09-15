@@ -107,7 +107,9 @@ def build_runtime(
 
 def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe", is_vulkan=(bool(config["action"]["is_vulkan"]) if "is_vulkan" in config["action"] else False))
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    
+    load_dataset(config)
+
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
@@ -120,7 +122,6 @@ def load_native(config: Mapping[str, Any]) -> None:
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(
-        ILLIXR_DATA=str(data_path),
         ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
@@ -165,10 +166,11 @@ def load_native(config: Mapping[str, Any]) -> None:
             check=True,
         )
 
-
 def load_tests(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe", test=True)
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+
+    load_dataset(config)
+
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
@@ -186,11 +188,10 @@ def load_tests(config: Mapping[str, Any]) -> None:
     enable_pre_sleep : bool      = config["enable_pre_sleep"]
     cmd_list_tail    : List[str] = ["xvfb-run", str(runtime_exe_path), *map(str, plugin_paths)]
     cmd_list         : List[str] = (["catchsegv"] if not enable_pre_sleep else list()) + cmd_list_tail
-
+    
     subprocess_run(
         cmd_list,
         env_override=dict(
-            ILLIXR_DATA=str(data_path),
             ILLIXR_DEMO_DATA=str(demo_data_path),
             ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 10)),
             ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
@@ -221,7 +222,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+
+    load_dataset(config)
+    
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
@@ -343,6 +346,31 @@ def load_monado(config: Mapping[str, Any]) -> None:
     ## Launch the Monado service before any OpenXR apps are opened
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
 
+    load_dataset(config)
+    
+    ## Give the Monado service some time to boot up and the user some time to initialize VIO
+    time.sleep(5)
+    
+    subprocess_run(
+        [str(openxr_app_bin_path)],
+        env_override=dict(
+            ILLIXR_DEMO_DATA=str(demo_data_path),
+            ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
+            ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
+            ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
+            ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
+            KIMERA_ROOT=config["action"]["kimera_path"],
+            AUDIO_ROOT=config["action"]["audio_path"],
+            REALSENSE_CAM=str(realsense_cam_string),
+            **env_monado,
+            **env_gpu,
+        ),
+        check=True,
+    )
+
+    ## Launch the Monado service before any OpenXR apps are opened
+    monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
+
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
     time.sleep(10)
 
@@ -395,6 +423,155 @@ def make_docs(config: Mapping[str, Any]) -> None:
         check=True,
         capture_output=False,
     )
+
+def load_dataset(config: Mapping[str, Any]) -> None:
+    dataset_config = config["dataset"]
+
+    imu_config = ""
+    image_config = ""
+    pose_config = ""
+    ground_truth_config = ""
+
+    # IMU
+    try:
+        imu_config = dataset_config["imu"]
+        os.environ["ILLIXR_DATASET_USE_IMU_PUBLISHER"] = "1"
+    except KeyError:
+        # IMU configuration wasn't mentioned so we assume that it doesn't exist for this dataset
+        # We don't need to do anything special in this case.
+        pass
+
+    # Image
+    try:
+        image_config = dataset_config["image"]
+        os.environ["ILLIXR_DATASET_USE_IMAGE_PUBLISHER"] = "1"
+    except KeyError:
+        # Image configuration wasn't mentioned so we assume that it doesn't exist for this dataset
+        # We don't need to do anything special in this case.
+        pass
+
+    # Pose
+    try:
+        pose_config = dataset_config["pose"]
+        os.environ["ILLIXR_DATASET_USE_POSE_PUBLISHER"] = "1"
+    except KeyError:
+        # Pose configuration wasn't mentioned so we assume that it doesn't exist for this dataset
+        # We don't need to do anything special in this case.
+        pass
+
+    # Ground Truth
+    try:
+        ground_truth_config = dataset_config["ground_truth"]
+        os.environ["ILLIXR_DATASET_USE_GROUND_TRUTH_PUBLISHER"] = "1"
+    except KeyError:
+        # Ground truth configuration wasn't mentioned so we assume that it doesn't exist for this dataset
+        # We don't need to do anything special in this case.
+        pass
+    
+    # These two must always exist in the config
+    # ILLIXR_DATASET_DELIMITER
+    # ILLIXR_DATASET_ROOT_PATH
+    delimiter = dataset_config["delimiter"]
+    dataset_path = dataset_config["root_path"]
+
+    if imu_config:
+        # ILLIXR_DATASET_IMU_TIMESTAMP_UNITS
+        imu_timestamp_units = imu_config["timestamp_units"]
+        
+        # ILLIXR_DATASET_IMU_PATH
+        imu_path = imu_config["path"]
+
+        # TODO: Deal with the format thing and fix the relevant portion in the config and dataset loader.
+        # ILLIXR_DATASET_IMU_FORMAT
+        imu_format = imu_config["format"]
+
+        # arbitrary choice. The C++ side follows the same arbitrary convention.
+        if imu_format.startswith("lin_accel"):
+            imu_format = "true"
+        else:
+            imu_format = "false"
+
+        os.environ["ILLIXR_DATASET_IMU_TIMESTAMP_UNITS"] = imu_timestamp_units
+        os.environ["ILLIXR_DATASET_IMU_PATH"] = ",".join(imu_path)
+        os.environ["ILLIXR_DATASET_IMU_FORMAT"] = imu_format
+
+    if image_config:
+        # ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS
+        image_timestamp_units = image_config["timestamp_units"]
+
+        # ILLIXR_DATASET_IMAGE_RGB_PATH
+        rgb_path = image_config["rgb"]["path"]
+
+        # ILLIXR_DATASET_IMAGE_DEPTH_PATH
+        depth_path = image_config["depth"]["path"]
+
+        # ILLIXR_DATASET_IMAGE_GRAYSCALE_PATH
+        grayscale_path = dataset_config["image"]["grayscale"]["path"]
+
+        os.environ["ILLIXR_DATASET_IMAGE_TIMESTAMP_UNITS"] = image_timestamp_units
+        os.environ["ILLIXR_DATASET_IMAGE_RGB_PATH"] = ",".join(rgb_path)
+        os.environ["ILLIXR_DATASET_IMAGE_DEPTH_PATH"] = ",".join(depth_path)
+        os.environ["ILLIXR_DATASET_IMAGE_GRAYSCALE_PATH"] = ",".join(grayscale_path)
+        
+
+    if pose_config:
+        # ILLIXR_DATASET_POSE_TIMESTAMP_UNITS
+        pose_timestamp_units = pose_config["timestamp_units"]
+
+        # ILLIXR_DATASET_POSE_PATH
+        pose_path = pose_config["path"]
+
+        os.environ["ILLIXR_DATASET_POSE_TIMESTAMP_UNITS"] = pose_timestamp_units
+        os.environ["ILLIXR_DATASET_POSE_PATH"] = ",".join(pose_path)
+
+    if ground_truth_config:
+        # ILLIXR_DATASET_GROUND_TRUTH_TIMESTAMP_UNITS
+        ground_truth_timestamp_units = ground_truth_config["timestamp_units"]
+
+        # ILLIXR_GROUND_TRUTH_PATH
+        ground_truth_path = ground_truth_config["path"]
+        
+        # ILLIXR_DATASET_GROUND_TRUTH_FORMAT
+        ground_truth_format = ground_truth_config["format"]
+
+        # ILLIXR_DATASET_GROUND_TRUTH_NAMES
+        ground_truth_name = ground_truth_config["name"]
+        
+        os.environ["ILLIXR_DATASET_GROUND_TRUTH_TIMESTAMP_UNITS"] = ground_truth_timestamp_units
+        os.environ["ILLIXR_GROUND_TRUTH_PATH"] = ground_truth_path
+        os.environ["ILLIXR_DATASET_GROUND_TRUTH_FORMAT"] = ground_truth_format
+        os.environ["ILLIXR_DATASET_GROUND_TRUTH_NAMES"] = ground_truth_name
+
+    # print("Printing config...\n", dataset_config)
+
+    # print(f"imu_config = {imu_config}")
+    # print(f"image_config = {image_config}")
+    # print(f"pose_config = {pose_config}")
+    # print(f"ground_truth_config = {ground_truth_config}")
+
+    # print(f"delimiter = {delimiter}")
+    # print(f"dataset_path = {dataset_path}")
+
+    # if imu_config:
+    #     print(f"imu_timestamp_units = {imu_timestamp_units}")
+    #     print(f"imu_path = {imu_path}")
+    #     print(f"imu_format = {imu_format}")
+
+    # if image_config:
+    #     print(f"image_timestamp_units = {image_timestamp_units}")
+    #     print(f"rgb_path = {rgb_path}")
+    #     print(f"depth_path = {depth_path}")
+    #     print(f"grayscale_path = {grayscale_path}")
+
+    # if pose_config:
+    #     print(f"pose_timestamp_units = {pose_timestamp_units}")
+    #     print(f"pose_path = {pose_path}")
+
+    # if ground_truth_config:
+    #     print(f"ground_truth_timestamp_units = {ground_truth_timestamp_units}")
+    #     print(f"ground_truth_path = {ground_truth_path}")
+    #     print(f"ground_truth_format = {ground_truth_format}")
+    #     print(f"ground_truth_name = {ground_truth_name}")
 
 
 actions = {
