@@ -42,15 +42,15 @@ public:
 
     void _p_one_iteration() override {
         if (is_socket_connected) {
-            auto   now        = timestamp();
+            auto        now        = timestamp();
             std::string delimitter = "END!";
             std::string recv_data  = socket.read(); /* Blocking operation, wait for the data to come */
             if (recv_data.size() > 0) {
-                buffer_str                     = buffer_str + recv_data;
+                buffer_str                          = buffer_str + recv_data;
                 std::string::size_type end_position = buffer_str.find(delimitter);
                 while (end_position != std::string::npos) {
                     std::string before = buffer_str.substr(0, end_position);
-                    buffer_str    = buffer_str.substr(end_position + delimitter.size());
+                    buffer_str         = buffer_str.substr(end_position + delimitter.size());
 
                     // process the data
                     vio_output_proto::VIOOutput vio_output;
@@ -117,10 +117,10 @@ private:
     switchboard::writer<pose_type>            _m_pose;
     switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
 
-    TCPSocket socket;
-    bool      is_socket_connected;
-    Address   server_addr;
-    std::string    buffer_str;
+    TCPSocket   socket;
+    bool        is_socket_connected;
+    Address     server_addr;
+    std::string buffer_str;
 };
 
 PLUGIN_MAIN(offload_reader)

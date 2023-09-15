@@ -50,8 +50,8 @@ struct connection_signal : public switchboard::event {
 
 class rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
-    cv::Mat      rgb;
-    cv::Mat      depth;
+    cv::Mat                     rgb;
+    cv::Mat                     depth;
 
 public:
     rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
@@ -59,7 +59,6 @@ public:
         , rgb{_rgb}
         , depth{_depth} { }
 };
-
 
 // Values needed to initialize the IMU integrator
 typedef struct {

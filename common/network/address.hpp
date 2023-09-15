@@ -67,8 +67,8 @@ private:
 
         /* put resolved_address in a wrapper so it will get freed if we have to throw an exception */
         std::unique_ptr<addrinfo, std::function<void(addrinfo*)>> wrapped_address{resolved_address, [](addrinfo* x) {
-                                                                                 freeaddrinfo(x);
-                                                                             }};
+                                                                                      freeaddrinfo(x);
+                                                                                  }};
 
         /* assign to our private members (making sure size fits) */
         *this = Address(*wrapped_address->ai_addr, wrapped_address->ai_addrlen);

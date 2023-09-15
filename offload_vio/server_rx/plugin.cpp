@@ -53,15 +53,15 @@ public:
                 ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
             std::cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << std::endl;
         } else {
-            auto   now        = timestamp();
+            auto        now        = timestamp();
             std::string delimitter = "EEND!";
             std::string recv_data  = read_socket->read(); /* Blocking operation, wait for the data to come */
-            buffer_str        = buffer_str + recv_data;
+            buffer_str             = buffer_str + recv_data;
             if (recv_data.size() > 0) {
                 std::string::size_type end_position = buffer_str.find(delimitter);
                 while (end_position != std::string::npos) {
                     std::string before = buffer_str.substr(0, end_position);
-                    buffer_str    = buffer_str.substr(end_position + delimitter.size());
+                    buffer_str         = buffer_str.substr(end_position + delimitter.size());
                     // process the data
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
@@ -169,10 +169,10 @@ private:
     switchboard::writer<cam_type>          _m_cam;
     switchboard::writer<connection_signal> _conn_signal;
 
-    TCPSocket  socket;
-    TCPSocket* read_socket = NULL;
-    Address    server_addr;
-    std::string     buffer_str;
+    TCPSocket   socket;
+    TCPSocket*  read_socket = NULL;
+    Address     server_addr;
+    std::string buffer_str;
 };
 
 PLUGIN_MAIN(server_reader)
