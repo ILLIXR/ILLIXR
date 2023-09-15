@@ -111,11 +111,66 @@ typedef struct {
     time_point predict_target_time;   // Time that prediction targeted.
 } fast_pose_type;
 
+// Used to identify which graphics API is being used (for swapchain construction)
+enum class graphics_api { OPENGL, VULKAN, TBD };
+
+// Used to distinguish between different image handles
+enum class swapchain_usage { LEFT_SWAPCHAIN, RIGHT_SWAPCHAIN, LEFT_RENDER, RIGHT_RENDER, NA };
+
+typedef struct vk_image_handle {
+    int      file_descriptor;
+    int64_t  format;
+    size_t   allocation_size;
+    uint32_t width;
+    uint32_t height;
+
+    vk_image_handle(int fd_, int64_t format_, size_t alloc_size, uint32_t width_, uint32_t height_)
+            : file_descriptor{fd_}
+            , format{format_}
+            , allocation_size{alloc_size}
+            , width{width_}
+            , height{height_} { }
+} vk_image_handle;
+
+// This is used to share swapchain images between ILLIXR and Monado.
+// When Monado uses its GL pipeline, it's enough to just share a context during creation.
+// Otherwise, file descriptors are needed to share the images.
+struct image_handle : public switchboard::event {
+    graphics_api type;
+
+    union {
+        GLuint          gl_handle;
+        vk_image_handle vk_handle;
+    };
+
+    uint32_t        num_images;
+    swapchain_usage usage;
+
+    image_handle()
+            : type{graphics_api::TBD}
+            , gl_handle{0}
+            , num_images{0}
+            , usage{swapchain_usage::NA} { }
+
+    image_handle(GLuint gl_handle_, uint32_t num_images_, swapchain_usage usage_)
+            : type{graphics_api::OPENGL}
+            , gl_handle{gl_handle_}
+            , num_images{num_images_}
+            , usage{usage_} { }
+
+    image_handle(int vk_fd_, int64_t format, size_t alloc_size, uint32_t width_, uint32_t height_, uint32_t num_images_,
+                 swapchain_usage usage_)
+            : type{graphics_api::VULKAN}
+            , vk_handle{vk_fd_, format, alloc_size, width_, height_}
+            , num_images{num_images_}
+            , usage{usage_} { }
+};
+
 // Using arrays as a swapchain
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-    std::array<GLuint, 2> texture_handles{}; // Does not change between swaps in swapchain
+    std::array<GLuint, 2> swapchain_indices{}; // Does not change between swaps in swapchain
     std::array<GLuint, 2> swap_indices{};    // Which element of the swapchain
     fast_pose_type        render_pose;       // The pose used when rendering this frame.
     time_point            sample_time{};
@@ -123,9 +178,9 @@ struct rendered_frame : public switchboard::event {
 
     rendered_frame() = default;
 
-    rendered_frame(std::array<GLuint, 2>&& texture_handles_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
+    rendered_frame(std::array<GLuint, 2>&& swapchain_indices_, std::array<GLuint, 2>&& swap_indices_, fast_pose_type render_pose_,
                    time_point sample_time_, time_point render_time_)
-        : texture_handles{texture_handles_}
+        : swapchain_indices{swapchain_indices_}
         , swap_indices{swap_indices_}
         , render_pose(std::move(render_pose_))
         , sample_time(sample_time_)
@@ -139,6 +194,13 @@ struct hologram_input : public switchboard::event {
 
     explicit hologram_input(uint seq_)
         : seq{seq_} { }
+};
+
+struct signal_to_quad : public switchboard::event {
+    ullong seq;
+
+    signal_to_quad(ullong seq_)
+            : seq{seq_} { }
 };
 
 // High-level HMD specification, timewarp plugin

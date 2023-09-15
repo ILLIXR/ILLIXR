@@ -1,6 +1,6 @@
 # This file was auto generated, take caution if manually editing.
 plugins: audio_pipeline,gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk
-build_flags: -DILLIXR_MONADO_MAINLINE
+build_flags: -DILLIXR_VULKAN
 build_type: Release
 visualizers: openvins
 enable_offload: False

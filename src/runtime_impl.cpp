@@ -21,18 +21,14 @@ using namespace ILLIXR;
 
 class runtime_impl : public runtime {
 public:
-    explicit runtime_impl(
-#ifndef ILLIXR_MONADO_MAINLINE
-        GLXContext appGLCtx
-#endif /// ILLIXR_MONADO_MAINLINE
-    ) {
+    explicit runtime_impl() {
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
-#ifndef ILLIXR_MONADO_MAINLINE
+#if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
         pb.register_impl<xlib_gl_extended_window>(
-            std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, appGLCtx));
-#endif /// ILLIXR_MONADO_MAINLINE
+                std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
+#endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
     }
@@ -132,14 +128,7 @@ private:
     std::vector<std::unique_ptr<plugin>> plugins;
 };
 
-#ifdef ILLIXR_MONADO_MAINLINE
 extern "C" runtime* runtime_factory() {
     RAC_ERRNO_MSG("runtime_impl before creating the runtime");
     return new runtime_impl{};
 }
-#else
-extern "C" runtime* runtime_factory(GLXContext appGLCtx) {
-    RAC_ERRNO_MSG("runtime_impl before creating the runtime");
-    return new runtime_impl{appGLCtx};
-}
-#endif /// ILLIXR_MONADO_MAINLINE

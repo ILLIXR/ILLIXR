@@ -16,11 +16,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
 
-#ifdef ILLIXR_MONADO_MAINLINE
     r = ILLIXR::runtime_factory();
-#else
-    r = ILLIXR::runtime_factory(nullptr);
-#endif /// ILLIXR_MONADO_MAINLINE
 
 #ifndef NDEBUG
     /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
