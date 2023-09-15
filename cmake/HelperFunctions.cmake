@@ -287,7 +287,6 @@ macro(get_external_for_plugin proj)
 endmacro()
 
 macro(install_shaders SHADER_LIST PLUG LIB_NAME)
-    message("${LIB_NAME}")
     foreach(ITEM IN LISTS ${SHADER_LIST})
         if(DO_DEBUG)
             set(LOC "Debug")

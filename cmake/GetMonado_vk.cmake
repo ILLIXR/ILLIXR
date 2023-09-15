@@ -33,4 +33,4 @@ ExternalProject_Add(MonadoVK
         )
 set(Monado_vk_EXTERNAL Yes)
 set(Monado_vk_DEP_STR "Monado_VK")
-set(MONADO_RUNTIME_VK "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_vk.json" PARENT_SCOPE)
+set(MONADO_RUNTIME_vk "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_vk.json" PARENT_SCOPE)

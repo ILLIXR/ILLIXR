@@ -20,3 +20,7 @@ cmake-build*
 illixr.yaml
 
 docs/docs/getting_started.md
+
+illixr_monado_*.csh
+illixr_monado_*.sh
+

@@ -43,4 +43,4 @@ EXTERNALPROJECT_ADD(MonadoGL
         )
 set(Monado_gl_EXTERNAL YES)
 set(Monado_gl_DEP_STR MonadoGL)
-set(MONADO_RUNTIME_GL "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_gl.json" PARENT_SCOPE)
+set(MONADO_RUNTIME_gl "${CMAKE_INSTALL_PREFIX}/share/openxr/1/openxr_monado_gl.json" PARENT_SCOPE)
