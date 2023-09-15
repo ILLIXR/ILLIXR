@@ -1,5 +1,5 @@
 /*(utf8)
-1â‚¬ Filter, template-compliant version
+1€ Filter, template-compliant version
 
 Copyright (c) 2014-2020 Jonathan Aceituno <join@oin.name>
 
