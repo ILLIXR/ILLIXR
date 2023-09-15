@@ -886,7 +886,7 @@ public:
 #endif
 
         // Call Hologram
-        _m_hologram.put(_m_hologram.allocate<hologram_input>(++_hologram_seq));
+        _m_hologram.put(_m_hologram.allocate<hologram_input>(hologram_input(++_hologram_seq)));
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
