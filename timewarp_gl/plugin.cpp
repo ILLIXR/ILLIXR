@@ -104,8 +104,6 @@ public:
             fprintf(stderr, "no appropriate visual found\n\n");
             exit(1);
         }
-        pred_pose_csv.open(data_path + "/pred_pose.csv");
-    }
 
         /* create a context using the root window */
         if (!(glc = glXCreateContext(dpy, vi, NULL, GL_TRUE))) {
