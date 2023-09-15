@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Vulkan COMPONENTS glslc)
-get_external_for_plugin(Monado_vk)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/global_module_defs.hpp
