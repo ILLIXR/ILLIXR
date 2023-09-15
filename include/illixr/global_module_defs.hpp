@@ -3,6 +3,7 @@
 
 #include "relative_clock.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -64,8 +65,10 @@ struct rendering_params {
  * @brief Convert a string containing a (python) boolean to the bool type
  */
 inline bool str_to_bool(const std::string& var) {
-    return (var == "True") ? true
-        : (var == "False") ? false
+    std::string temp = var;
+    std::transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
+    return (temp == "TRUE") ? true
+        : (temp == "FALSE") ? false
                            : throw std::runtime_error("Invalid conversion from std::string to bool");
 }
 
