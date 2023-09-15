@@ -18,7 +18,8 @@ plugin_groups:
         version: "3.1"
     ## Sensors
     - path: depthai
-    - path: offline_imu_cam
+    - path: offline_imu
+    - path: offline_cam
     - path: realsense
     - path: zed
     ## Real-Time SLAM Plugins
