@@ -306,6 +306,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
 
+    ## Remove the socket file from unclean exit
+    if os.path.exists("/run/user/1000/monado_comp_ipc"):
+        os.remove("/run/user/1000/monado_comp_ipc")
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(monado_target_path), *map(str, plugin_paths)]

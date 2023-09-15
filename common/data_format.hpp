@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/optional.hpp>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -40,6 +39,13 @@ struct imu_type : switchboard::event {
         : time{time_}
         , angular_v{angular_v_}
         , linear_a{linear_a_} { }
+};
+
+struct connection_signal : public switchboard::event {
+    bool start;
+
+    connection_signal(bool start_)
+        : start{start_} { }
 };
 
 class rgb_depth_type : public switchboard::event {

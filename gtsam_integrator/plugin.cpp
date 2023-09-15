@@ -1,11 +1,9 @@
 #include "common/plugin.hpp"
 
 #include "common/data_format.hpp"
-#include "common/plugin.hpp"
 #include "common/switchboard.hpp"
+#include "third_party/filter.h"
 
-#include <boost/smart_ptr/make_shared.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <chrono>
 #include <eigen3/Eigen/Dense>
 #include <gtsam/base/Matrix.h>
@@ -34,10 +32,24 @@ public:
         sb->schedule<imu_type>(id, "imu", [&](switchboard::ptr<const imu_type> datum, size_t) {
             callback(datum);
         });
+
+        const double frequency = 200;
+        const double mincutoff = 10;
+        const double beta      = 1;
+        const double dcutoff   = 10;
+
+        for (int i = 0; i < 8; ++i) {
+            filters.emplace_back(frequency, Eigen::Array<double, 3, 1>{mincutoff, mincutoff, mincutoff},
+                                 Eigen::Array<double, 3, 1>{beta, beta, beta},
+                                 Eigen::Array<double, 3, 1>{dcutoff, dcutoff, dcutoff}, Eigen::Array<double, 3, 1>::Zero(),
+                                 Eigen::Array<double, 3, 1>::Ones(), [](auto& in) {
+                                     return in.abs();
+                                 });
+        }
     }
 
     void callback(switchboard::ptr<const imu_type> datum) {
-        _imu_vec.emplace_back(datum->time, datum->angular_v, datum->linear_a);
+        _imu_vec.emplace_back(datum->time, datum->angular_v.cast<double>(), datum->linear_a.cast<double>());
 
         clean_imu_vec(datum->time);
         propagate_imu_values(datum->time);
@@ -46,6 +58,10 @@ public:
     }
 
 private:
+    std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters;
+    bool                                                             has_prev = false;
+    Eigen::Matrix<double, 3, 1>                                      prev_euler_angles;
+
     const std::shared_ptr<switchboard>   sb;
     const std::shared_ptr<RelativeClock> _m_clock;
 
@@ -56,6 +72,8 @@ private:
     switchboard::writer<imu_raw_type> _m_imu_raw;
 
     std::vector<imu_type> _imu_vec;
+
+    // std::vector<pose_type> filtered_poses;
 
     [[maybe_unused]] time_point last_cam_time;
     duration                    last_imu_offset;
@@ -151,6 +169,7 @@ private:
     // Timestamp we are propagating the biases to (new IMU reading time)
     void propagate_imu_values(time_point real_time) {
         auto input_values = _m_imu_integrator_input.get_ro_nullable();
+
         if (input_values == nullptr) {
             return;
         }
@@ -179,8 +198,7 @@ private:
         // TODO last_imu_offset is 0, t_offset only take effects when it's negative.
         // However, why would we want to integrate to a past time point rather than the current time point?
         time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
-        // time_point time_end   = input_values->t_offset + real_time;
-        time_point time_end = real_time;
+        time_point time_end   = real_time;
 
         const std::vector<imu_type> prop_data = select_imu_readings(_imu_vec, time_begin, time_end);
 
@@ -214,12 +232,44 @@ private:
         std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
 #endif
 
-        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(),
-                                                                      bias.gyroscope(), bias.accelerometer(),
-                                                                      out_pose.translation(),             /// Position
-                                                                      navstate_k.velocity(),              /// Velocity
-                                                                      out_pose.rotation().toQuaternion(), /// Eigen Quat
-                                                                      real_time}));
+        auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
+        auto                        original_quaternion = out_pose.rotation().toQuaternion();
+        Eigen::Matrix<double, 3, 1> rotation_angles =
+            original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
+        Eigen::Matrix<double, 3, 1> filtered_sins    = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
+        Eigen::Matrix<double, 3, 1> filtered_angles{atan2(filtered_sins[0], filtered_cosines[0]),
+                                                    atan2(filtered_sins[1], filtered_cosines[1]),
+                                                    atan2(filtered_sins[2], filtered_cosines[2])};
+
+        if (has_prev &&
+            (abs(rotation_angles[0] - prev_euler_angles[0]) > M_PI / 2 ||
+             abs(rotation_angles[1] - prev_euler_angles[1]) > M_PI / 2 ||
+             abs(rotation_angles[2] - prev_euler_angles[2]) > M_PI / 2)) {
+            filters[6].clear();
+            filters[7].clear();
+            filtered_sins    = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
+            filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
+            filtered_angles  = {atan2(filtered_sins[0], filtered_cosines[0]), atan2(filtered_sins[1], filtered_cosines[1]),
+                                atan2(filtered_sins[2], filtered_cosines[2])};
+        } else {
+            has_prev = true;
+        }
+
+        prev_euler_angles = std::move(rotation_angles);
+
+        __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX()) *
+            Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY()) *
+            Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
+
+        auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
+
+        _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+            imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
+                         filtered_pos,                                                   /// Position
+                         filters[5](navstate_k.velocity().array(), seconds_since_epoch), /// Velocity
+                         new_quaternion,                                                 /// Eigen Quat
+                         real_time}));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
