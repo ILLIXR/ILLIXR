@@ -101,7 +101,8 @@ void check_requirements(const int argc, const char* const argv[]) {
     /* verify IP forwarding is enabled */
     FileDescriptor ipf(system_call("open /proc/sys/net/ipv4/ip_forward", open("/proc/sys/net/ipv4/ip_forward", O_RDONLY)));
     if (ipf.read() != "1\n") {
-        throw std::runtime_error(std::string(argv[0]) + ": Please run \"sudo sysctl -w net.ipv4.ip_forward=1\" to enable IP forwarding");
+        throw std::runtime_error(std::string(argv[0]) +
+                                 ": Please run \"sudo sysctl -w net.ipv4.ip_forward=1\" to enable IP forwarding");
     }
 }
 
@@ -122,7 +123,7 @@ void make_directory(const std::string& directory) {
 /* tag bash-like shells with the delay parameter */
 void prepend_shell_prefix(const std::string& str) {
     const char* prefix          = getenv("MAHIMAHI_SHELL_PREFIX");
-    std::string      mahimahi_prefix = prefix ? prefix : "";
+    std::string mahimahi_prefix = prefix ? prefix : "";
     mahimahi_prefix.append(str);
 
     system_call("setenv", setenv("MAHIMAHI_SHELL_PREFIX", mahimahi_prefix.c_str(), true));

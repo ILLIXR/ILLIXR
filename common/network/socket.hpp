@@ -130,11 +130,11 @@ public:
 
     /* receive datagram and where it came from */
     std::vector<std::pair<Address, std::string>> recv_from_nonblocking(int wait_time_ms) {
-        static const ssize_t               RECEIVE_MTU = 65536;
+        static const ssize_t                         RECEIVE_MTU = 65536;
         std::vector<std::pair<Address, std::string>> result;
 
         std::chrono::time_point<std::chrono::steady_clock> start_time = std::chrono::steady_clock::now();
-        std::chrono::duration<double>                 duration   = std::chrono::seconds(0);
+        std::chrono::duration<double>                      duration   = std::chrono::seconds(0);
 
         /* receive source address and payload */
         Address::raw datagram_source_address;
