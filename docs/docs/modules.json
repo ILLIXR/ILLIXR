@@ -126,13 +126,43 @@
       ]
     },
     {
-      "name": "offload_vio",
-      "cmake_flag": "USE_OFFLOAD_VIO=ON",
+      "name": "offload_vio.device_rx",
+      "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_RX=ON",
       "dependencies": [
         "git",
         "protobuf",
-        "OpenCV",
-        "ecal"
+        "OpenCV"
+      ]
+    },
+    {
+      "name": "offload_vio.device_tx",
+      "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
+      "dependencies": [
+        "git",
+        "glib",
+        "gstreamer",
+        "protobuf",
+        "OpenCV"
+      ]
+    },
+    {
+      "name": "offload_vio.server_tx",
+      "cmake_flag": "USE_OFFLOAD_VIO.SERVER_TX=ON",
+      "dependencies": [
+        "git",
+        "protobuf",
+        "OpenCV"
+      ]
+    },
+    {
+      "name": "offload_vio.server_rx",
+      "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
+      "dependencies": [
+        "git",
+        "glib",
+        "gstreamer",
+        "protobuf",
+        "OpenCV"
       ]
     },
     {
@@ -318,43 +348,6 @@
       }
     },
     {
-      "ecal": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "ecal",
-              "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
-            },
-            "22": {
-              "pkg": "ecal",
-              "postnotes": "",
-              "notes": "Ubuntu 22 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "fmt": {
         "pkg": {
           "Ubuntu": {
@@ -503,6 +496,43 @@
       }
     },
     {
+      "glib": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libglib2.0-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libglib2.0-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "glib-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "glib-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "glib-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "glm": {
         "pkg": {
           "Ubuntu": {
@@ -606,6 +636,43 @@
           "CentOS": {
             "9": {
               "pkg": "glslang-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "gstreamer": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "gstreamer-devel gstreamer1-plugins-base-devel",
               "postnotes": "",
               "notes": ""
             }

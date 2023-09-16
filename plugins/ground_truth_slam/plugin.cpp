@@ -8,6 +8,13 @@
 #include <utility>
 
 using namespace ILLIXR;
+// These are the first IMU timestamp of the datasets. See line#31 for more info.
+#define ViconRoom1Easy      1403715273262142976
+#define ViconRoom1Medium    1403715523912143104
+#define ViconRoom1Difficult 1403715886544058112
+#define ViconRoom2Easy      1413393212225760512
+#define ViconRoom2Medium    1413393885975760384
+#define ViconRoom2Hard      1413394881555760384
 
 class ground_truth_slam : public plugin {
 public:
@@ -17,7 +24,10 @@ public:
         , _m_true_pose{sb->get_writer<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
         , _m_sensor_data{load_data()}
-        , _m_dataset_first_time{_m_sensor_data.cbegin()->first}
+        // The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
+        // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
+        // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
+        , _m_dataset_first_time{ViconRoom1Medium}
         , _m_first_time{true} { }
 
     void start() override {
@@ -30,7 +40,6 @@ public:
     void feed_ground_truth(const switchboard::ptr<const imu_type>& datum) {
         ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
         auto   it           = _m_sensor_data.find(rounded_time);
-
         if (it == _m_sensor_data.end()) {
 #ifndef NDEBUG
             std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
@@ -61,8 +70,9 @@ public:
     }
 
 private:
-    const std::shared_ptr<switchboard>                               sb;
-    switchboard::writer<pose_type>                                   _m_true_pose;
+    const std::shared_ptr<switchboard> sb;
+    switchboard::writer<pose_type>     _m_true_pose;
+
     switchboard::writer<switchboard::event_wrapper<Eigen::Vector3f>> _m_ground_truth_offset;
     const std::map<ullong, sensor_types>                             _m_sensor_data;
     ullong                                                           _m_dataset_first_time;

@@ -5,6 +5,7 @@
 #include "illixr/pose_prediction.hpp"
 
 #include <eigen3/Eigen/Dense>
+#include <filesystem>
 #include <shared_mutex>
 
 using namespace ILLIXR;

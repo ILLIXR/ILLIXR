@@ -1,6 +1,8 @@
 # module to build and install the offload_vio.device_rx ILLIXR plugin
 
 cmake_minimum_required(VERSION 3.16)
+find_package(Protobuf REQUIRED)
+include(../protoc_generate_cpp.cmake)
 
 set(PLUGIN_NAME plugin.offload_vio.device_rx${ILLIXR_BUILD_SUFFIX})
 
@@ -16,11 +18,10 @@ set(protobuf_files
         ${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_output.proto
 )
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${eCAL_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../proto ${protobuf_files})
 target_link_libraries(${PLUGIN_NAME}
-        eCAL::core
         protobuf::libprotobuf
         )
 

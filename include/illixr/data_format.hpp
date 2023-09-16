@@ -26,7 +26,14 @@ struct imu_type : switchboard::event {
         , linear_a{std::move(linear_a_)} { }
 };
 
-// Values needed to initialize the IMU integrator
+struct connection_signal : public switchboard::event {
+    bool start;
+
+    connection_signal(bool start_)
+            : start{start_} { }
+};
+
+    // Values needed to initialize the IMU integrator
 typedef struct {
     double                      gyro_noise;
     double                      acc_noise;

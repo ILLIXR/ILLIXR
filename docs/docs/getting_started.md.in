@@ -323,18 +323,15 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 
         cmakeLine = "cd ILLIXR\nmkdir build\ncd build\ncmake .. -DCMAKE_INSTALL_PREFIX=&lt;LOCATION&gt;";
         let profile_check = false;
-        if(document.getElementById("ALL_plugins").checked) {
-            cmakeLine += " -DYAML_FILE=profiles/all.yaml";
-            profile_check = true;
-        } else {
-            for(let g of profiles) {
-                if(document.getElementById("profile_" + g).checked) {
-                    cmakeLine += " -DYAML_FILE=profiles/" + g.toLowerCase() + ".yaml";
-                    profile_check = true;
-                    break;
-                }
+
+        for(let g of profiles) {
+            if(document.getElementById("profile_" + g).checked) {
+                cmakeLine += " -DYAML_FILE=profiles/" + g.toLowerCase() + ".yaml";
+                profile_check = true;
+                break;
             }
         }
+
         if(!profile_check) {
             for(let p of plugins) {
                 if(document.getElementById(p).checked) {
@@ -402,19 +399,6 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         profilecell.innerHTML = "<b>Profiles:</b>";
         profilecell.setAttribute("colspan", profiles.length + 2);
         currentRow = tabRef.insertRow(-1);
-
-        let all_cell = currentRow.insertCell(-1);
-        let all_check = document.createElement("INPUT");
-        all_check.setAttribute("type", "radio");
-        all_check.setAttribute("onclick", "checkAll();");
-        all_check.setAttribute("id", "ALL_plugins");
-        all_check.setAttribute("value", "ALL_plugins");
-        all_check.setAttribute("name", "profile_selection");
-        let all_label = document.createElement("LABEL");
-        all_label.setAttribute("for", "ALL_plugins");
-        all_label.appendChild(document.createTextNode("All"));
-        all_cell.appendChild(all_check);
-        all_cell.appendChild(all_label);
 
         for(let g of profiles) {
             if(count >= 4) {
