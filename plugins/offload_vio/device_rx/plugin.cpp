@@ -64,6 +64,7 @@ public:
             }
         }
     }
+
 private:
     void ReceiveVioOutput(const vio_output_proto::VIOOutput& vio_output, const std::string& str_data) {
         const vio_output_proto::SlowPose& slow_pose = vio_output.slow_pose();

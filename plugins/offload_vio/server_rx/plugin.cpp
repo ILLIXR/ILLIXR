@@ -31,10 +31,10 @@ public:
         : threadloop{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
-            , _m_cam{sb->get_writer<cam_type>("cam")}
-            , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
-            , server_addr(SERVER_IP, SERVER_PORT_1)
-            , buffer_str("") {
+        , _m_cam{sb->get_writer<cam_type>("cam")}
+        , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
+        , server_addr(SERVER_IP, SERVER_PORT_1)
+        , buffer_str("") {
         socket.set_reuseaddr();
         socket.bind(server_addr);
         socket.enable_no_delay();
@@ -50,8 +50,8 @@ public:
             socket.listen();
             std::cout << "server_rx: Waiting for connection!" << std::endl;
             read_socket = new TCPSocket(FileDescriptor(system_call(
-                    "accept",
-                    ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+                "accept",
+                ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
             std::cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << std::endl;
         } else {
             auto        now        = timestamp();
@@ -87,8 +87,8 @@ public:
         decoder = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr =
-                        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                                .count();
+                    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+                        .count();
                 // std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
@@ -106,7 +106,7 @@ private:
     void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
         // Logging the transmitting time
         unsigned long long curr_time =
-                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
 
         // Loop through and publish all IMU values first
@@ -148,9 +148,9 @@ private:
         // Without compression end
 #endif
         _m_cam.put(_m_cam.allocate<cam_type>(cam_type{
-                time_point{std::chrono::nanoseconds{cam_data.timestamp()}},
-                img0.clone(),
-                img1.clone(),
+            time_point{std::chrono::nanoseconds{cam_data.timestamp()}},
+            img0.clone(),
+            img1.clone(),
         }));
         // If we publish all IMU samples before the camera data, the camera data may not be captured in any of the IMU callbacks
         // in the tracking algorithm (e.g. OpenVINS), and has to wait for another camera frame time (until the next packet
@@ -158,9 +158,9 @@ private:
         // camera data will be captured.
         vio_input_proto::IMUData last_imu = vio_input.imu_data(vio_input.imu_data_size() - 1);
         _m_imu.put(_m_imu.allocate<imu_type>(
-                imu_type{time_point{std::chrono::nanoseconds{last_imu.timestamp()}},
-                         Eigen::Vector3d{last_imu.angular_vel().x(), last_imu.angular_vel().y(), last_imu.angular_vel().z()},
-                         Eigen::Vector3d{last_imu.linear_accel().x(), last_imu.linear_accel().y(), last_imu.linear_accel().z()}}));
+            imu_type{time_point{std::chrono::nanoseconds{last_imu.timestamp()}},
+                     Eigen::Vector3d{last_imu.angular_vel().x(), last_imu.angular_vel().y(), last_imu.angular_vel().z()},
+                     Eigen::Vector3d{last_imu.linear_accel().x(), last_imu.linear_accel().y(), last_imu.linear_accel().z()}}));
     }
 
 private:

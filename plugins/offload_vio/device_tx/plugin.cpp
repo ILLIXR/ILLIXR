@@ -51,8 +51,8 @@ public:
         encoder = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr =
-                        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                                .count();
+                    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+                        .count();
             });
             {
                 std::lock_guard<std::mutex> lock{mutex};
@@ -86,7 +86,7 @@ protected:
 public:
     void send_imu_cam_data(std::optional<time_point>& cam_time) {
         data_buffer->set_real_timestamp(
-                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         data_buffer->set_frame_id(frame_id);
 
         std::string data_to_be_sent = data_buffer->SerializeAsString();

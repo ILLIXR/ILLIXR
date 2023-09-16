@@ -19,8 +19,8 @@ public:
     server_writer(std::string name_, phonebook* pb_)
         : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
-            , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-            , client_addr(CLIENT_IP, CLIENT_PORT_2) {
+        , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
+        , client_addr(CLIENT_IP, CLIENT_PORT_2) {
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
         socket.enable_no_delay();
@@ -45,7 +45,7 @@ public:
         socket.listen();
         std::cout << "server_tx: Waiting for connection!" << std::endl;
         write_socket = new TCPSocket(FileDescriptor(system_call(
-                "accept", ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+            "accept", ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
         std::cout << "server_tx: Connection is established with " << write_socket->peer_address().str(":") << std::endl;
     }
 
@@ -75,7 +75,7 @@ public:
             vio_output_proto::IMUIntInput* protobuf_imu_int_input = new vio_output_proto::IMUIntInput();
             protobuf_imu_int_input->set_t_offset(imu_int_input->t_offset.count());
             protobuf_imu_int_input->set_last_cam_integration_time(
-                    imu_int_input->last_cam_integration_time.time_since_epoch().count());
+                imu_int_input->last_cam_integration_time.time_since_epoch().count());
 
             vio_output_proto::IMUParams* imu_params = new vio_output_proto::IMUParams();
             imu_params->set_gyro_noise(imu_int_input->params.gyro_noise);
@@ -127,8 +127,8 @@ public:
             vio_output_params->set_allocated_imu_int_input(protobuf_imu_int_input);
 
             unsigned long long end_pose_time =
-                    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                            .count();
+                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+                    .count();
             vio_output_params->set_end_server_timestamp(end_pose_time);
 
             // Prepare data delivery

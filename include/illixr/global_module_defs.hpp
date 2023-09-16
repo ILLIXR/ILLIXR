@@ -69,7 +69,7 @@ inline bool str_to_bool(const std::string& var) {
     std::transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
     return (temp == "TRUE") ? true
         : (temp == "FALSE") ? false
-                           : throw std::runtime_error("Invalid conversion from std::string to bool");
+                            : throw std::runtime_error("Invalid conversion from std::string to bool");
 }
 
 /// Temporary environment variable getter. Not needed once #198 is merged.

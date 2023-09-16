@@ -42,8 +42,8 @@ public:
                                  Eigen::Array<double, 3, 1>{beta, beta, beta},
                                  Eigen::Array<double, 3, 1>{dcutoff, dcutoff, dcutoff}, Eigen::Array<double, 3, 1>::Zero(),
                                  Eigen::Array<double, 3, 1>::Ones(), [](auto& in) {
-                        return in.abs();
-                    });
+                                     return in.abs();
+                                 });
         }
     }
 
@@ -230,10 +230,10 @@ private:
         std::cout << "New  Position (x, y, z) = " << out_pose.x() << ", " << out_pose.y() << ", " << out_pose.z() << std::endl;
 #endif
 
-        auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
-        auto original_quaternion = out_pose.rotation().toQuaternion();
+        auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
+        auto                        original_quaternion = out_pose.rotation().toQuaternion();
         Eigen::Matrix<double, 3, 1> rotation_angles =
-                original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
+            original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
         Eigen::Matrix<double, 3, 1> filtered_sins    = filters[6](rotation_angles.array().sin(), seconds_since_epoch);
         Eigen::Matrix<double, 3, 1> filtered_cosines = filters[7](rotation_angles.array().cos(), seconds_since_epoch);
         Eigen::Matrix<double, 3, 1> filtered_angles{atan2(filtered_sins[0], filtered_cosines[0]),
@@ -257,17 +257,17 @@ private:
         prev_euler_angles = std::move(rotation_angles);
 
         __attribute__((unused)) auto new_quaternion = Eigen::AngleAxisd(filtered_angles(0, 0), Eigen::Vector3d::UnitX()) *
-                                                      Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY()) *
-                                                      Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
+            Eigen::AngleAxisd(filtered_angles(1, 0), Eigen::Vector3d::UnitY()) *
+            Eigen::AngleAxisd(filtered_angles(2, 0), Eigen::Vector3d::UnitZ());
 
         auto filtered_pos = filters[4](out_pose.translation().array(), seconds_since_epoch).matrix();
 
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
-                imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
-                             filtered_pos,                                                   /// Position
-                             filters[5](navstate_k.velocity().array(), seconds_since_epoch), /// Velocity
-                             new_quaternion,                                                 /// Eigen Quat
-                             real_time}));
+            imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
+                         filtered_pos,                                                   /// Position
+                         filters[5](navstate_k.velocity().array(), seconds_since_epoch), /// Velocity
+                         new_quaternion,                                                 /// Eigen Quat
+                         real_time}));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

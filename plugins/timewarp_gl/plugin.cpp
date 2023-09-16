@@ -78,12 +78,12 @@ public:
         // which results in a "multipath" between the pose and the video stream.
         // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-            , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
 #else
-            , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
+        , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
 #endif
-            , timewarp_gpu_logger{record_logger_}
-            , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
+        , timewarp_gpu_logger{record_logger_}
+        , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
@@ -120,7 +120,7 @@ public:
         image_handles_ready = false;
 
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
-            // only 2 swapchains (for the left and right eye) are supported for now.
+        // only 2 swapchains (for the left and right eye) are supported for now.
 #ifdef ILLIXR_MONADO
             static bool left_output_ready = false, right_output_ready = false;
 #else
@@ -128,18 +128,18 @@ public:
 #endif
 
             switch (handle->usage) {
-                case swapchain_usage::LEFT_SWAPCHAIN: {
-                    this->_m_eye_image_handles[0].push_back(*handle);
-                    this->_m_eye_swapchains_size[0] = handle->num_images;
-                    break;
-                }
-                case swapchain_usage::RIGHT_SWAPCHAIN: {
-                    this->_m_eye_image_handles[1].push_back(*handle);
-                    this->_m_eye_swapchains_size[1] = handle->num_images;
-                    break;
-                }
+            case swapchain_usage::LEFT_SWAPCHAIN: {
+                this->_m_eye_image_handles[0].push_back(*handle);
+                this->_m_eye_swapchains_size[0] = handle->num_images;
+                break;
+            }
+            case swapchain_usage::RIGHT_SWAPCHAIN: {
+                this->_m_eye_image_handles[1].push_back(*handle);
+                this->_m_eye_swapchains_size[1] = handle->num_images;
+                break;
+            }
 #ifdef ILLIXR_MONADO
-                    case swapchain_usage::LEFT_RENDER: {
+            case swapchain_usage::LEFT_RENDER: {
                 this->_m_eye_output_handles[0] = *handle;
                 left_output_ready              = true;
                 break;
@@ -150,10 +150,10 @@ public:
                 break;
             }
 #endif
-                default: {
-                    std::cout << "Invalid swapchain usage provided" << std::endl;
-                    break;
-                }
+            default: {
+                std::cout << "Invalid swapchain usage provided" << std::endl;
+                break;
+            }
             }
 
             if (client_backend == graphics_api::TBD) {
@@ -177,10 +177,11 @@ public:
         });
 #endif
     }
+
 private:
-    const std::shared_ptr<switchboard>             sb;
-    const std::shared_ptr<pose_prediction>         pp;
-    const std::shared_ptr<const RelativeClock>     _m_clock;
+    const std::shared_ptr<switchboard>         sb;
+    const std::shared_ptr<pose_prediction>     pp;
+    const std::shared_ptr<const RelativeClock> _m_clock;
 
     // OpenGL objects
     Display*   dpy;
@@ -221,7 +222,7 @@ private:
 
     // Switchboard plug for publishing offloaded data
     switchboard::writer<texture_pose> _m_offload_data;
-// Timewarp only has vsync estimates with native-gl
+    // Timewarp only has vsync estimates with native-gl
     record_coalescer mtp_logger;
 #endif
 
@@ -316,13 +317,13 @@ private:
 
     GLuint ConvertVkFormatToGL(int64_t vk_format) {
         switch (vk_format) {
-            case VK_FORMAT_R8G8B8A8_UNORM:
-                return GL_RGBA8;
-            case VK_FORMAT_B8G8R8A8_SRGB:
-            case VK_FORMAT_R8G8B8A8_SRGB:
-                return GL_SRGB8_ALPHA8;
-            default:
-                return 0;
+        case VK_FORMAT_R8G8B8A8_UNORM:
+            return GL_RGBA8;
+        case VK_FORMAT_B8G8R8A8_SRGB:
+        case VK_FORMAT_R8G8B8A8_SRGB:
+            return GL_SRGB8_ALPHA8;
+        default:
+            return 0;
         }
     }
 
@@ -354,26 +355,26 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
         switch (usage) {
-            case swapchain_usage::LEFT_SWAPCHAIN: {
-                _m_eye_swapchains[0].push_back(image_handle);
-                break;
-            }
-            case swapchain_usage::RIGHT_SWAPCHAIN: {
-                _m_eye_swapchains[1].push_back(image_handle);
-                break;
-            }
-            case swapchain_usage::LEFT_RENDER: {
-                _m_eye_output_textures[0] = image_handle;
-                break;
-            }
-            case swapchain_usage::RIGHT_RENDER: {
-                _m_eye_output_textures[1] = image_handle;
-                break;
-            }
-            default: {
-                assert(false && "Invalid swapchain usage");
-                break;
-            }
+        case swapchain_usage::LEFT_SWAPCHAIN: {
+            _m_eye_swapchains[0].push_back(image_handle);
+            break;
+        }
+        case swapchain_usage::RIGHT_SWAPCHAIN: {
+            _m_eye_swapchains[1].push_back(image_handle);
+            break;
+        }
+        case swapchain_usage::LEFT_RENDER: {
+            _m_eye_output_textures[0] = image_handle;
+            break;
+        }
+        case swapchain_usage::RIGHT_RENDER: {
+            _m_eye_output_textures[1] = image_handle;
+            break;
+        }
+        default: {
+            assert(false && "Invalid swapchain usage");
+            break;
+        }
         }
     }
 
@@ -457,7 +458,7 @@ private:
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
     void CalculateTimeWarpTransform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
-                                           const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
+                                    const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
@@ -693,7 +694,7 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const fast_pose_type latest_pose = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
+        const fast_pose_type latest_pose  = disable_warp ? most_recent_frame->render_pose : pp->get_fast_pose();
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -739,7 +740,7 @@ public:
             glDepthFunc(GL_LEQUAL);
 
             [[maybe_unused]] const bool isTexture =
-                    static_cast<bool>(glIsTexture(_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]));
+                static_cast<bool>(glIsTexture(_m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]));
             assert(isTexture && "The requested image is not a texture!");
             // std::cout << "Binding the texture\n";
             glBindTexture(GL_TEXTURE_2D, _m_eye_swapchains[eye][most_recent_frame->swapchain_indices[eye]]);
@@ -828,7 +829,7 @@ public:
                                   {render_to_display},
                               }});
 
-#ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
+    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
         if (log_count > LOG_PERIOD) {
             const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
@@ -844,7 +845,7 @@ public:
                       << "\033[1;36m[TIMEWARP]\033[0m Render-to-display latency: " << latency_rtd << "ms" << std::endl
                       << "Next swap in: " << timewarp_estimate << "ms in the future" << std::endl;
         }
-#endif
+    #endif
 
         // For now, it only makes sense to enable offloading in native mode
         // because running timewarp with Monado will not produce a single texture.
@@ -854,8 +855,8 @@ public:
 
             // Publish image and pose
             _m_offload_data.put(_m_offload_data.allocate<texture_pose>(
-                    texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
-                                 most_recent_frame->render_pose.pose.orientation}));
+                texture_pose{offload_duration, image, time_last_swap, latest_pose.pose.position, latest_pose.pose.orientation,
+                             most_recent_frame->render_pose.pose.orientation}));
         }
 #endif
 
