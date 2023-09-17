@@ -53,7 +53,17 @@ set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
 target_link_libraries(${PLUGIN_NAME} glfw)
 target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
-target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${LIBDRM_INCLUDE_DIRS})
+
+# include libdrm
+target_link_libraries(${PLUGIN_NAME} PkgConfig::LIBDRM)
+
+pkg_get_variable(WAYLAND_PROTOCOLS_PKGDATADIR wayland-protocols pkgdatadir)
+ecm_add_wayland_client_protocol(WAYLAND_HEADERS PROTOCOL ${WAYLAND_PROTOCOLS_PKGDATADIR}/staging/drm-lease/drm-lease-v1.xml BASENAME drm-lease-v1)
+MESSAGE(STATUS "WAYLAND_HEADERS: ${WAYLAND_HEADERS}")
+add_library(${PLUGIN_NAME}_WAYLAND STATIC ${WAYLAND_HEADERS})
+target_include_directories(${PLUGIN_NAME}_WAYLAND PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(${PLUGIN_NAME} Wayland::Client ${PLUGIN_NAME}_WAYLAND)
 
 add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PLUGIN_NAME}>/shaders/"

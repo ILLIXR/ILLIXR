@@ -5,7 +5,29 @@
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
 
+#include <wayland-drm-lease-v1-client-protocol.h>
+#include <wayland-client.h>
+#include <xf86drm.h>
+
 using namespace ILLIXR;
+
+struct wayland_drm_lease_device_connector {
+    struct wp_drm_lease_connector_v1 *connector;
+    std::string name;
+    std::string description;
+    uint32_t connector_id;
+};
+
+struct wayland_drm_lease_device {
+    struct wp_drm_lease_device_v1 *device;
+    int fd;
+    std::vector<std::shared_ptr<wayland_drm_lease_device_connector>> connectors;
+    std::atomic<bool> done {false};
+
+    wayland_drm_lease_device(struct wp_drm_lease_device_v1 *device, int fd)
+        : device(device)
+        , fd(fd) { }
+};
 
 class display_vk : public display_sink {
 public:
@@ -15,8 +37,15 @@ public:
     /**
      * @brief This function sets up the GLFW and Vulkan environments. See display_sink::setup().
      */
-    void setup() {
-        setup_glfw();
+    void setup(int direct_mode) {
+        this->direct_mode = direct_mode;
+        if (direct_mode == -1) {
+            std::cout << "Using GLFW" << std::endl;
+            setup_glfw();
+        } else {
+            std::cout << "Using direct mode" << std::endl;
+            setup_drm();
+        }
         setup_vk();
     }
 
@@ -48,6 +77,159 @@ public:
     }
 
 private:
+
+    std::shared_ptr<wayland_drm_lease_device> get_device_wrapper(struct wp_drm_lease_device_v1 *device) {
+        for (auto device_wrapper : lease_devices) {
+            if (device_wrapper->device == device) {
+                return device_wrapper;
+            }
+        }
+        return nullptr;
+    }
+
+    std::shared_ptr<wayland_drm_lease_device_connector> get_connector_wrapper(struct wp_drm_lease_connector_v1 *connector) {
+        for (auto device_wrapper : lease_devices) {
+            for (auto connector_wrapper : device_wrapper->connectors) {
+                if (connector_wrapper->connector == connector) {
+                    return connector_wrapper;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    static void device_listener_drm_fd(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1, int32_t fd) {
+        auto this_ = reinterpret_cast<display_vk *>(data);
+        this_->get_device_wrapper(wp_drm_lease_device_v1)->fd = fd;
+    }
+
+    static void connector_listener_name(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1, const char *name) {
+        auto this_ = reinterpret_cast<display_vk *>(data);
+        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
+        connector->name = name;
+    }
+
+    static void connector_listener_description(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1, const char *description) {
+        auto this_ = reinterpret_cast<display_vk *>(data);
+        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
+        connector->description = description;
+    }
+
+    static void connector_listener_done(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1) {
+        auto this_ = reinterpret_cast<display_vk *>(data);
+        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
+        std::cout << "Lease connector " << connector->name << "(" << connector->description << ") done" << std::endl;
+    }
+
+    static void connector_listener_withdrawn(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1) {
+        auto this_ = reinterpret_cast<display_vk *>(data);
+        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
+        std::cerr << "Lease connector " << connector->name << "(" << connector->description << ") withdrawn" << std::endl;
+    }
+
+    static void connector_listener_connector_id(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1, uint32_t connector_id) {
+        auto this_ = reinterpret_cast<display_vk *>(data);
+        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
+        connector->connector_id = connector_id;
+    }
+
+    constexpr static const wp_drm_lease_connector_v1_listener connector_listener = {
+        .name = connector_listener_name,
+        .description = connector_listener_description,
+        .connector_id = connector_listener_connector_id,
+        .done = connector_listener_done,
+        .withdrawn = connector_listener_withdrawn
+    };
+
+    static void device_listener_connector(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1) {
+        auto this_ = reinterpret_cast<display_vk*>(data);
+        auto device = this_->get_device_wrapper(wp_drm_lease_device_v1);
+        auto connector = std::make_shared<wayland_drm_lease_device_connector>();
+        connector->connector = wp_drm_lease_connector_v1;
+        device->connectors.push_back(connector);
+        wp_drm_lease_connector_v1_add_listener(wp_drm_lease_connector_v1, &connector_listener, this_);
+    }
+
+    static void device_listener_done(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1) {
+        auto this_ = reinterpret_cast<display_vk*>(data);
+        auto device = this_->get_device_wrapper(wp_drm_lease_device_v1);
+        device->done = true;
+        std::cout << "Lease device done" << std::endl;
+    }
+
+    static void device_listener_released(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1) {
+        auto this_ = reinterpret_cast<display_vk*>(data);
+        auto device = this_->get_device_wrapper(wp_drm_lease_device_v1);
+        std::cerr << "Lease device released" << std::endl;
+        // remove device from list
+        this_->lease_devices.erase(std::remove(this_->lease_devices.begin(), this_->lease_devices.end(), device), this_->lease_devices.end());
+    }
+
+    constexpr static const struct wp_drm_lease_device_v1_listener lease_device_listener = {
+        .drm_fd = device_listener_drm_fd,
+        .connector = device_listener_connector,
+        .done = device_listener_done,
+        .released = device_listener_released
+    };
+
+    static void global(display_vk *this_, struct wl_registry *wl_registry,
+         uint32_t name,
+         const char *interface,
+         uint32_t version) {
+        if (strcmp(interface, wp_drm_lease_device_v1_interface.name) == 0) {
+            auto device = std::make_shared<wayland_drm_lease_device>(
+                reinterpret_cast<wp_drm_lease_device_v1 *>(
+                    wl_registry_bind(wl_registry, name, &wp_drm_lease_device_v1_interface, 1)),
+                -1
+            );
+            this_->lease_devices.push_back(device);
+            wp_drm_lease_device_v1_add_listener(device->device, &lease_device_listener, this_);
+        }
+    }
+
+    static void global_remove(display_vk *this_, struct wl_registry *wl_registry,
+         uint32_t name) {
+        // for a one-time query, this is not needed
+    }
+
+    void setup_drm() {
+        auto display = wl_display_connect(nullptr);
+        if (!display) {
+            ILLIXR::abort("Failed to connect to Wayland display");
+        }
+
+        auto registry = wl_display_get_registry(display);
+        if (!registry) {
+            ILLIXR::abort("Failed to get Wayland registry");
+        }
+
+        const struct wl_registry_listener registry_listener = {
+            .global = reinterpret_cast<void (*)(void*, wl_registry*, uint32_t, const char*, uint32_t)>(global),
+            .global_remove = reinterpret_cast<void (*)(void*, wl_registry*, uint32_t)>(global_remove)};
+
+        wl_registry_add_listener(registry, &registry_listener, this);
+
+        wl_display_roundtrip(display);
+
+        for (auto device_wrapper : lease_devices) {
+            while (!device_wrapper->done) {
+                wl_display_dispatch(display);
+            }
+        }
+
+        wl_registry_destroy(registry);
+
+        // print out devices
+        for (auto device_wrapper : lease_devices) {
+            std::cout << "Lease device " << device_wrapper->fd << std::endl;
+            for (auto connector_wrapper : device_wrapper->connectors) {
+                std::cout << "Lease connector " << connector_wrapper->name << "(" << connector_wrapper->description << ")" << std::endl;
+            }
+        }
+
+        std::cout << "Waiting for lease devices to be done" << std::endl;
+    }
+
     /**
      * @brief Sets up the GLFW environment.
      *
@@ -169,6 +351,8 @@ private:
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 
+    int direct_mode{-1};
+
     const std::shared_ptr<switchboard> sb;
     vkb::Instance                      vkb_instance;
     vkb::PhysicalDevice                physical_device;
@@ -176,6 +360,8 @@ private:
     vkb::Swapchain                     vkb_swapchain;
 
     std::atomic<bool> should_poll{true};
+
+    std::vector<std::shared_ptr<wayland_drm_lease_device>> lease_devices;
 
     friend class display_vk_plugin;
 };
@@ -190,11 +376,21 @@ public:
     }
 
     void start() override {
-        main_thread = std::thread(&display_vk_plugin::main_loop, this);
-        while (!ready) {
-            // yield
-            std::this_thread::yield();
+        // Check if we are using direct mode
+        char* env_var = std::getenv("ILLIXR_DIRECT_MODE");
+        int direct_mode = env_var ? std::stoi(env_var) : -1;
+
+        _dvk->setup(direct_mode);
+
+        if (direct_mode == -1) {
+            // if not using direct mode, start the main loop to poll glfw events
+            main_thread = std::thread(&display_vk_plugin::main_loop, this);
+            while (!ready) {
+                // yield
+                std::this_thread::yield();
+            }
         }
+        
     }
 
     void stop() override {
@@ -209,8 +405,6 @@ private:
     phonebook*                  _pb;
 
     void main_loop() {
-        _dvk->setup();
-
         ready = true;
 
         while (running) {
