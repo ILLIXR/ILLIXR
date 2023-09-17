@@ -81,7 +81,7 @@ public:
 #endif
         , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
-            spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
+        spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;

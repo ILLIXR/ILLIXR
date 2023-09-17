@@ -2,8 +2,8 @@
 
 #include "common/data_format.hpp"
 #include "common/switchboard.hpp"
-#include "third_party/filter.h"
 #include "spdlog/spdlog.h"
+#include "third_party/filter.h"
 
 #include <chrono>
 #include <eigen3/Eigen/Dense>
