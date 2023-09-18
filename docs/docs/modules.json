@@ -1207,31 +1207,31 @@
         "pkg": {
           "Ubuntu": {
             "20": {
-              "pkg": "libvulkan-dev",
+              "pkg": "libvulkan-dev vulkan-validationlayers",
               "postnotes": "",
               "notes": ""
             },
             "22": {
-              "pkg": "libvulkan-dev",
+              "pkg": "libvulkan-dev vulkan-validationlayers",
               "postnotes": "",
               "notes": ""
             }
           },
           "Fedora": {
             "37": {
-              "pkg": "vulkan-loader-devel",
+              "pkg": "vulkan-loader-devel vulkan-validation-layers",
               "postnotes": "",
               "notes": ""
             },
             "38": {
-              "pkg": "vulkan-loader-devel",
+              "pkg": "vulkan-loader-devel vulkan-validation-layers",
               "postnotes": "",
               "notes": ""
             }
           },
           "CentOS": {
             "9": {
-              "pkg": "vulkan-loader-devel",
+              "pkg": "vulkan-loader-devel vulkan-validation-layers",
               "postnotes": "",
               "notes": ""
             }

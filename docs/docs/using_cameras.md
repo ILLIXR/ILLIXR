@@ -2,7 +2,7 @@
 # Using Cameras with ILLIXR
 
 ILLIXR supports a wide range of cameras, most of which are for the purpose of feeding images and IMU measurements to the system. <br>
-*To learn more about how it works, checkout [Building ILLIXR][12].* <br>
+*To learn more about how it works, checkout [Getting Started][12].* <br>
 *If you are interested in what topics these cameras feed into, checkout [ILLIXR plugins][10].*
 
 
@@ -27,7 +27,7 @@ In order to add your camera's calibration extrinsics, you need to modify your ch
 
 2. **Get ZED's calibration parameters**
 
-    Both OpenVINS have a decent calirbation parameters for ZED. But if you wish to add your own: 
+    Both OpenVINS have a decent calibration parameters for ZED. But if you wish to add your own: 
     
         /usr/local/zed/tools/ZED_Calibration
 
@@ -85,7 +85,7 @@ ILLIXR has been tested with Inteal RealSense D455, but it should work with any D
 
 [10]:   illixr_plugins.md
 [11]:   writing_your_plugin.md
-[12]:   building_illixr.md
+[12]:   getting_started.md
 [13]:   glossary.md#spindle
 [14]:   glossary.md#switchboard
 [15]:   glossary.md#phonebook
