@@ -14,14 +14,18 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
+#include <set>
 #include <vulkan/vulkan_core.h>
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
 #define VMA_STATIC_VULKAN_FUNCTIONS  0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/vk_util/vulkan_utils.hpp"
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
@@ -36,6 +40,41 @@
 
 class vulkan_utils {
 public:
+    struct queue_families {
+        std::optional<uint32_t> graphics_family;
+        std::optional<uint32_t> present_family;
+        std::optional<uint32_t> encode_family;
+        std::optional<uint32_t> decode_family;
+
+        bool has_presentation() {
+            return graphics_family.has_value() && present_family.has_value();
+        }
+
+        bool has_compression() {
+            return graphics_family && encode_family.has_value() && decode_family.has_value();
+        }
+    };
+
+    struct queue {
+        enum queue_type {
+            GRAPHICS,
+            PRESENT,
+            ENCODE,
+            DECODE
+        };
+
+        VkQueue vk_queue;
+        uint32_t family;
+        queue_type type;
+    };
+
+    struct swapchain_details {
+        VkSurfaceCapabilitiesKHR capabilities{};
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR>   present_modes;
+    };
+
+
     /**
      * @brief Returns the string representation of a VkResult.
      * @param err_code The VkResult to convert to a string.
@@ -316,5 +355,86 @@ public:
         vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
         end_one_time_command(vk_device, vk_command_pool, vk_queue, command_buffer);
+    }
+
+    static swapchain_details query_swapchain_details(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface) {
+        swapchain_details details;
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, vk_surface, &details.capabilities);
+
+        uint32_t format_count;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, vk_surface, &format_count, nullptr);
+
+        if (format_count != 0) {
+            details.formats.resize(format_count);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, vk_surface, &format_count, details.formats.data());
+        }
+
+        uint32_t present_mode_count;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, vk_surface, &present_mode_count, nullptr);
+
+        if (present_mode_count != 0) {
+            details.present_modes.resize(present_mode_count);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, vk_surface, &present_mode_count, details.present_modes.data());
+        }
+
+        return details;
+    }
+
+    static queue_families find_queue_families(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface) {
+        queue_families indices;
+
+        uint32_t queue_family_count = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, nullptr);
+
+        std::vector<VkQueueFamilyProperties> queueFamilies(queue_family_count);
+        vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, queueFamilies.data());
+
+        int i = 0;
+        for (const auto& queue_family : queueFamilies) {
+            if (queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                indices.graphics_family = i;
+            }
+
+            if (queue_family.queueFlags & VK_QUEUE_VIDEO_DECODE_BIT_KHR) {
+                indices.encode_family = i;
+            }
+
+            if (queue_family.queueFlags & VK_QUEUE_VIDEO_ENCODE_BIT_KHR) {
+                indices.decode_family = i;
+            }
+
+            VkBool32 present_support = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
+
+            if (present_support) {
+                indices.present_family = i;
+            }
+
+            if (indices.has_compression()) {
+                break;
+            }
+
+            i++;
+        }
+
+        return indices;
+    }
+
+    static VkImageView create_image_view(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspect_flags) {
+        VkImageViewCreateInfo vk_image_view_create_info {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        vk_image_view_create_info.image                           = image;
+        vk_image_view_create_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
+        vk_image_view_create_info.format                          = format;
+        vk_image_view_create_info.subresourceRange.aspectMask     = aspect_flags;
+        vk_image_view_create_info.subresourceRange.baseMipLevel   = 0;
+        vk_image_view_create_info.subresourceRange.levelCount     = 1;
+        vk_image_view_create_info.subresourceRange.baseArrayLayer = 0;
+        vk_image_view_create_info.subresourceRange.layerCount     = 1;
+        vk_image_view_create_info.pNext                           = nullptr;
+
+        VkImageView vk_image_view;
+        VK_ASSERT_SUCCESS(vkCreateImageView(device, &vk_image_view_create_info, nullptr, &vk_image_view))
+        return vk_image_view;
     }
 };

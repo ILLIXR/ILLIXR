@@ -15,6 +15,17 @@ endif()
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 
+# X11
+find_package(X11 REQUIRED)
+
+# Wayland
+find_package(PkgConfig REQUIRED)
+pkg_search_module(LIBDRM REQUIRED IMPORTED_TARGET libdrm)
+
+find_package(Wayland REQUIRED Client)
+find_package(WaylandProtocols REQUIRED)
+find_package(WaylandScanner REQUIRED)
+
 file(GLOB_RECURSE GLSL_SOURCE_FILES
         "shaders/*.frag"
         "shaders/*.vert"
@@ -36,6 +47,8 @@ add_custom_target(
         DEPENDS ${SPIRV_BINARY_FILES}
 )
 
+add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
+
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         third_party/VkBootstrap.cpp
         ../../include/illixr/vk_util/third_party/VkBootstrap.h
@@ -46,7 +59,14 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/threadloop.hpp
         ../../include/illixr/vk_util/display_sink.hpp
         ../../include/illixr/vk_util/vulkan_utils.hpp
-        )
+        wayland_drm.h
+        wayland_drm.cpp
+        display_backend.h
+        x11_direct.cpp
+        x11_direct.h
+        glfw_extended.cpp
+        glfw_extended.h
+)
 
 add_dependencies(${PLUGIN_NAME} Display_VK_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
@@ -55,7 +75,11 @@ target_link_libraries(${PLUGIN_NAME} glfw)
 target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${LIBDRM_INCLUDE_DIRS})
 
-# include libdrm
+# X11
+target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES})
+target_include_directories(${PLUGIN_NAME} PUBLIC ${X11_INCLUDE_DIR})
+
+# Wayland
 target_link_libraries(${PLUGIN_NAME} PkgConfig::LIBDRM)
 
 pkg_get_variable(WAYLAND_PROTOCOLS_PKGDATADIR wayland-protocols pkgdatadir)

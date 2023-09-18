@@ -94,7 +94,7 @@ public:
         }
 
         generate_distortion_data();
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
+        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
@@ -263,7 +263,7 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -323,7 +323,7 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 

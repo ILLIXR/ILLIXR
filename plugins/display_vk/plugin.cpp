@@ -1,72 +1,78 @@
 #define VMA_IMPLEMENTATION
+#include "glfw_extended.h"
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/display_sink.hpp"
+#include "illixr/vk_util/vulkan_utils.hpp"
+#include "wayland_drm.h"
+#include "x11_direct.h"
 
-#include <wayland-drm-lease-v1-client-protocol.h>
-#include <wayland-client.h>
-#include <xf86drm.h>
+#include <set>
 
 using namespace ILLIXR;
 
-struct wayland_drm_lease_device_connector {
-    struct wp_drm_lease_connector_v1 *connector;
-    std::string name;
-    std::string description;
-    uint32_t connector_id;
-};
-
-struct wayland_drm_lease_device {
-    struct wp_drm_lease_device_v1 *device;
-    int fd;
-    std::vector<std::shared_ptr<wayland_drm_lease_device_connector>> connectors;
-    std::atomic<bool> done {false};
-
-    wayland_drm_lease_device(struct wp_drm_lease_device_v1 *device, int fd)
-        : device(device)
-        , fd(fd) { }
-};
-
 class display_vk : public display_sink {
+    std::vector<const char*> required_device_extensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
 public:
     explicit display_vk(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()} { }
+        : sb{pb->lookup_impl<switchboard>()} {
+        auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
+        // convert to int
+        selected_gpu = manual_device_selection ? std::stoi(manual_device_selection) : -1;
+    }
 
     /**
      * @brief This function sets up the GLFW and Vulkan environments. See display_sink::setup().
      */
     void setup(int direct_mode) {
         this->direct_mode = direct_mode;
+
         if (direct_mode == -1) {
             std::cout << "Using GLFW" << std::endl;
-            setup_glfw();
+            backend = std::make_shared<glfw_extended>();
         } else {
             std::cout << "Using direct mode" << std::endl;
-            setup_drm();
+            backend = std::make_shared<x11_direct>();
         }
-        setup_vk();
+
+        create_vk_instance();
+        if (direct_mode == -1) {
+            backend->setup_display(vk_instance, nullptr);
+            vk_surface = backend->create_surface();
+            select_physical_device();
+        } else {
+            select_physical_device();
+            backend->setup_display(vk_instance, vk_physical_device);
+            vk_surface = backend->create_surface();
+        }
+        create_logical_device();
+
+        create_swapchain();
     }
 
     /**
      * @brief This function recreates the Vulkan swapchain. See display_sink::recreate_swapchain().
      */
     void recreate_swapchain() override {
-        vkb::SwapchainBuilder swapchain_builder{vkb_device};
-        auto                  swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
-                                 .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-                                 .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
-                                 .build();
-        if (!swapchain_ret) {
-            ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
+        uint32_t width, height;
+        if (direct_mode == -1) {
+            auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
+            width  = std::clamp(fb_size.first, swapchain_extent.width, swapchain_extent.width);
+            height = std::clamp(fb_size.second, swapchain_extent.height, swapchain_extent.height);
+        } else {
+            width  = swapchain_extent.width;
+            height = swapchain_extent.height;
         }
-        vkb_swapchain          = swapchain_ret.value();
-        vk_swapchain           = vkb_swapchain.swapchain;
-        swapchain_images       = vkb_swapchain.get_images().value();
-        swapchain_image_views  = vkb_swapchain.get_image_views().value();
-        swapchain_image_format = vkb_swapchain.image_format;
-        swapchain_extent       = vkb_swapchain.extent;
+
+        vkDeviceWaitIdle(vk_device);
+
+        destroy_swapchain();
+
+        create_swapchain();
     }
 
     /**
@@ -78,187 +84,7 @@ public:
 
 private:
 
-    std::shared_ptr<wayland_drm_lease_device> get_device_wrapper(struct wp_drm_lease_device_v1 *device) {
-        for (auto device_wrapper : lease_devices) {
-            if (device_wrapper->device == device) {
-                return device_wrapper;
-            }
-        }
-        return nullptr;
-    }
-
-    std::shared_ptr<wayland_drm_lease_device_connector> get_connector_wrapper(struct wp_drm_lease_connector_v1 *connector) {
-        for (auto device_wrapper : lease_devices) {
-            for (auto connector_wrapper : device_wrapper->connectors) {
-                if (connector_wrapper->connector == connector) {
-                    return connector_wrapper;
-                }
-            }
-        }
-        return nullptr;
-    }
-
-    static void device_listener_drm_fd(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1, int32_t fd) {
-        auto this_ = reinterpret_cast<display_vk *>(data);
-        this_->get_device_wrapper(wp_drm_lease_device_v1)->fd = fd;
-    }
-
-    static void connector_listener_name(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1, const char *name) {
-        auto this_ = reinterpret_cast<display_vk *>(data);
-        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
-        connector->name = name;
-    }
-
-    static void connector_listener_description(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1, const char *description) {
-        auto this_ = reinterpret_cast<display_vk *>(data);
-        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
-        connector->description = description;
-    }
-
-    static void connector_listener_done(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1) {
-        auto this_ = reinterpret_cast<display_vk *>(data);
-        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
-        std::cout << "Lease connector " << connector->name << "(" << connector->description << ") done" << std::endl;
-    }
-
-    static void connector_listener_withdrawn(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1) {
-        auto this_ = reinterpret_cast<display_vk *>(data);
-        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
-        std::cerr << "Lease connector " << connector->name << "(" << connector->description << ") withdrawn" << std::endl;
-    }
-
-    static void connector_listener_connector_id(void *data, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1, uint32_t connector_id) {
-        auto this_ = reinterpret_cast<display_vk *>(data);
-        auto connector = this_->get_connector_wrapper(wp_drm_lease_connector_v1);
-        connector->connector_id = connector_id;
-    }
-
-    constexpr static const wp_drm_lease_connector_v1_listener connector_listener = {
-        .name = connector_listener_name,
-        .description = connector_listener_description,
-        .connector_id = connector_listener_connector_id,
-        .done = connector_listener_done,
-        .withdrawn = connector_listener_withdrawn
-    };
-
-    static void device_listener_connector(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1, struct wp_drm_lease_connector_v1 *wp_drm_lease_connector_v1) {
-        auto this_ = reinterpret_cast<display_vk*>(data);
-        auto device = this_->get_device_wrapper(wp_drm_lease_device_v1);
-        auto connector = std::make_shared<wayland_drm_lease_device_connector>();
-        connector->connector = wp_drm_lease_connector_v1;
-        device->connectors.push_back(connector);
-        wp_drm_lease_connector_v1_add_listener(wp_drm_lease_connector_v1, &connector_listener, this_);
-    }
-
-    static void device_listener_done(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1) {
-        auto this_ = reinterpret_cast<display_vk*>(data);
-        auto device = this_->get_device_wrapper(wp_drm_lease_device_v1);
-        device->done = true;
-        std::cout << "Lease device done" << std::endl;
-    }
-
-    static void device_listener_released(void *data, struct wp_drm_lease_device_v1 *wp_drm_lease_device_v1) {
-        auto this_ = reinterpret_cast<display_vk*>(data);
-        auto device = this_->get_device_wrapper(wp_drm_lease_device_v1);
-        std::cerr << "Lease device released" << std::endl;
-        // remove device from list
-        this_->lease_devices.erase(std::remove(this_->lease_devices.begin(), this_->lease_devices.end(), device), this_->lease_devices.end());
-    }
-
-    constexpr static const struct wp_drm_lease_device_v1_listener lease_device_listener = {
-        .drm_fd = device_listener_drm_fd,
-        .connector = device_listener_connector,
-        .done = device_listener_done,
-        .released = device_listener_released
-    };
-
-    static void global(display_vk *this_, struct wl_registry *wl_registry,
-         uint32_t name,
-         const char *interface,
-         uint32_t version) {
-        if (strcmp(interface, wp_drm_lease_device_v1_interface.name) == 0) {
-            auto device = std::make_shared<wayland_drm_lease_device>(
-                reinterpret_cast<wp_drm_lease_device_v1 *>(
-                    wl_registry_bind(wl_registry, name, &wp_drm_lease_device_v1_interface, 1)),
-                -1
-            );
-            this_->lease_devices.push_back(device);
-            wp_drm_lease_device_v1_add_listener(device->device, &lease_device_listener, this_);
-        }
-    }
-
-    static void global_remove(display_vk *this_, struct wl_registry *wl_registry,
-         uint32_t name) {
-        // for a one-time query, this is not needed
-    }
-
-    void setup_drm() {
-        auto display = wl_display_connect(nullptr);
-        if (!display) {
-            ILLIXR::abort("Failed to connect to Wayland display");
-        }
-
-        auto registry = wl_display_get_registry(display);
-        if (!registry) {
-            ILLIXR::abort("Failed to get Wayland registry");
-        }
-
-        const struct wl_registry_listener registry_listener = {
-            .global = reinterpret_cast<void (*)(void*, wl_registry*, uint32_t, const char*, uint32_t)>(global),
-            .global_remove = reinterpret_cast<void (*)(void*, wl_registry*, uint32_t)>(global_remove)};
-
-        wl_registry_add_listener(registry, &registry_listener, this);
-
-        wl_display_roundtrip(display);
-
-        for (auto device_wrapper : lease_devices) {
-            while (!device_wrapper->done) {
-                wl_display_dispatch(display);
-            }
-        }
-
-        wl_registry_destroy(registry);
-
-        // print out devices
-        for (auto device_wrapper : lease_devices) {
-            std::cout << "Lease device " << device_wrapper->fd << std::endl;
-            for (auto connector_wrapper : device_wrapper->connectors) {
-                std::cout << "Lease connector " << connector_wrapper->name << "(" << connector_wrapper->description << ")" << std::endl;
-            }
-        }
-
-        std::cout << "Waiting for lease devices to be done" << std::endl;
-    }
-
-    /**
-     * @brief Sets up the GLFW environment.
-     *
-     * This function initializes the GLFW library, sets the window hints for the client API and resizability,
-     * and creates a GLFW window with the specified width and height.
-     *
-     * @throws runtime_error If GLFW initialization fails.
-     */
-    void setup_glfw() {
-        if (!glfwInit()) {
-            ILLIXR::abort("Failed to initalize glfw");
-        }
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-        window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
-                                  "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
-    }
-
-    /**
-     * @brief Sets up the Vulkan environment.
-     *
-     * This function initializes the Vulkan instance, selects the physical device, creates the Vulkan device,
-     * gets the graphics and present queues, creates the swapchain, and sets up the VMA allocator.
-     *
-     * @throws runtime_error If any of the Vulkan setup steps fail.
-     */
-    void setup_vk() {
+    void create_vk_instance() {
         vkb::InstanceBuilder builder;
         auto                 instance_ret =
             builder.set_app_name("ILLIXR Vulkan Display")
@@ -279,89 +105,284 @@ private:
         }
         vkb_instance = instance_ret.value();
         vk_instance  = vkb_instance.instance;
+    }
 
-        vkb::PhysicalDeviceSelector selector{vkb_instance};
-        if (glfwCreateWindowSurface(vkb_instance.instance, (GLFWwindow*) window, nullptr, &vk_surface) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create window surface!");
+    bool is_physical_device_suitable(VkPhysicalDevice const& physical_device) {
+        VkPhysicalDeviceProperties device_properties;
+        vkGetPhysicalDeviceProperties(physical_device, &device_properties);
+
+        VkPhysicalDeviceFeatures device_features;
+        vkGetPhysicalDeviceFeatures(physical_device, &device_features);
+
+        // check if the device supports the extensions we need
+        std::set<std::string> unmet_extensions(required_device_extensions.begin(), required_device_extensions.end());
+
+        uint32_t extension_count;
+        vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count, nullptr);
+        std::vector<VkExtensionProperties> available_extensions(extension_count);
+        vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count, available_extensions.data());
+
+        for (const auto& extension : available_extensions) {
+            unmet_extensions.erase(extension.extensionName);
         }
 
-        auto physical_device_ret = selector.set_surface(vk_surface)
-                                       .set_minimum_version(1, 2)
-                                       .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
-                                       // .add_required_extension(VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME)
-                                       .select();
 
-        if (!physical_device_ret) {
-            ILLIXR::abort("Failed to select Vulkan Physical Device. Error: " + physical_device_ret.error().message());
+        if (!unmet_extensions.empty()) {
+            return false;
         }
-        physical_device    = physical_device_ret.value();
-        vk_physical_device = physical_device.physical_device;
 
-        vkb::DeviceBuilder device_builder{physical_device};
+        if (direct_mode == -1) {
+            // check if the device supports the swapchain we need
+            auto swapchain_details = vulkan_utils::query_swapchain_details(physical_device, vk_surface);
+            if (swapchain_details.formats.empty() || swapchain_details.present_modes.empty()) {
+                return false;
+            }
+        }
 
-        // enable timeline semaphore
+        return true;
+    }
+
+    void select_physical_device() {
+        uint32_t device_count = 0;
+        vkEnumeratePhysicalDevices(vk_instance, &device_count, nullptr);
+
+        if (device_count == 0) {
+            ILLIXR::abort("No Vulkan devices found!");
+        }
+
+        std::vector<VkPhysicalDevice> devices(device_count);
+        vkEnumeratePhysicalDevices(vk_instance, &device_count, devices.data());
+
+        std::vector<VkPhysicalDevice> suitable_devices;
+        std::vector<VkPhysicalDevice> unsuitable_devices;
+        for (const auto& device : devices) {
+            if (is_physical_device_suitable(device)) {
+                suitable_devices.push_back(device);
+            } else {
+                unsuitable_devices.push_back(device);
+            }
+        }
+
+        std::cout << "Found " << device_count << " Vulkan devices" << std::endl;
+        int index = 0;
+        for (const auto& device : suitable_devices) {
+            VkPhysicalDeviceProperties device_properties;
+            vkGetPhysicalDeviceProperties(device, &device_properties);
+            std::cout << "\t" << "[" << index << "] " << device_properties.deviceName << std::endl;
+            index++;
+        }
+        if (unsuitable_devices.size() > 0) {
+            std::cout << "Found " << unsuitable_devices.size() << " unsuitable Vulkan devices" << std::endl;
+            for (const auto& device : unsuitable_devices) {
+                VkPhysicalDeviceProperties device_properties;
+                vkGetPhysicalDeviceProperties(device, &device_properties);
+                std::cout << "\t" << device_properties.deviceName << std::endl;
+            }
+        }
+
+        if (selected_gpu == -1) {
+            // select the first suitable device
+            vk_physical_device = suitable_devices[0];
+        } else {
+            // select the device specified by the user
+            vk_physical_device = suitable_devices[selected_gpu];
+        }
+
+        VkPhysicalDeviceProperties device_properties;
+        vkGetPhysicalDeviceProperties(vk_physical_device, &device_properties);
+        std::cout << "Selected device: " << device_properties.deviceName << std::endl;
+    }
+
+    void create_logical_device() {
+        vulkan_utils::queue_families indices = vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
+
+        std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
+        std::set<uint32_t> unique_queue_families = {indices.graphics_family.value(),
+                                                       indices.present_family.value()};
+
+        if (indices.has_compression()) {
+            unique_queue_families.insert(indices.encode_family.value());
+            unique_queue_families.insert(indices.decode_family.value());
+        }
+
+        float queue_priority = 1.0f;
+        for (uint32_t queue_family : unique_queue_families) {
+            VkDeviceQueueCreateInfo queue_create_info{};
+            queue_create_info.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queue_create_info.queueFamilyIndex = queue_family;
+            queue_create_info.queueCount       = 1;
+            queue_create_info.pQueuePriorities = &queue_priority;
+            queue_create_infos.push_back(queue_create_info);
+        }
+
+        VkPhysicalDeviceFeatures device_features{};
+        device_features.samplerAnisotropy = VK_TRUE;
+
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
             VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
             nullptr, // pNext
             VK_TRUE  // timelineSemaphore
         };
 
-        // enable anisotropic filtering
-        auto device_ret = device_builder.add_pNext(&timeline_semaphore_features).build();
-        if (!device_ret) {
-            ILLIXR::abort("Failed to create Vulkan device. Error: " + device_ret.error().message());
+        VkDeviceCreateInfo create_info{VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
+        create_info.pQueueCreateInfos       = queue_create_infos.data();
+        create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
+        create_info.pEnabledFeatures        = &device_features;
+        create_info.enabledExtensionCount   = static_cast<uint32_t>(required_device_extensions.size());
+        create_info.ppEnabledExtensionNames = required_device_extensions.data();
+        create_info.pNext                   = &timeline_semaphore_features;
+
+        if (vkCreateDevice(vk_physical_device, &create_info, nullptr, &vk_device) != VK_SUCCESS) {
+            ILLIXR::abort("Failed to create Vulkan logical device!");
         }
-        vkb_device = device_ret.value();
-        vk_device  = vkb_device.device;
 
-        auto graphics_queue_ret = vkb_device.get_queue(vkb::QueueType::graphics);
-        if (!graphics_queue_ret) {
-            ILLIXR::abort("Failed to get Vulkan graphics queue. Error: " + graphics_queue_ret.error().message());
+        vulkan_utils::queue graphics_queue{};
+        vkGetDeviceQueue(vk_device, indices.graphics_family.value(), 0, &graphics_queue.vk_queue);
+        graphics_queue.family = indices.graphics_family.value();
+        graphics_queue.type   = vulkan_utils::queue::GRAPHICS;
+        queues[graphics_queue.type] = graphics_queue;
+
+        if (indices.present_family.has_value()) {
+            vulkan_utils::queue present_queue{};
+            vkGetDeviceQueue(vk_device, indices.present_family.value(), 0, &present_queue.vk_queue);
+            present_queue.family = indices.present_family.value();
+            present_queue.type   = vulkan_utils::queue::PRESENT;
+            queues[present_queue.type] = present_queue;
         }
-        graphics_queue        = graphics_queue_ret.value();
-        graphics_queue_family = vkb_device.get_queue_index(vkb::QueueType::graphics).value();
 
-        auto present_queue_ret = vkb_device.get_queue(vkb::QueueType::present);
-        if (!present_queue_ret) {
-            ILLIXR::abort("Failed to get Vulkan present queue. Error: " + present_queue_ret.error().message());
-        }
-        present_queue        = present_queue_ret.value();
-        present_queue_family = vkb_device.get_queue_index(vkb::QueueType::present).value();
+        if (indices.has_compression()) {
+            vulkan_utils::queue encode_queue{};
+            vkGetDeviceQueue(vk_device, indices.encode_family.value(), 0, &encode_queue.vk_queue);
+            encode_queue.family = indices.encode_family.value();
+            encode_queue.type   = vulkan_utils::queue::ENCODE;
+            queues[encode_queue.type] = encode_queue;
 
-        vkb::SwapchainBuilder swapchain_builder{vkb_device};
-        auto swapchain_ret = swapchain_builder.set_desired_format({VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR})
-                                 .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-                                 .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
-                                 .build();
-        if (!swapchain_ret) {
-            ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
-        }
-        vkb_swapchain = swapchain_ret.value();
-        vk_swapchain  = vkb_swapchain.swapchain;
+        std::cout << "present_mode: " << vkb_swapchain.present_mode << std::endl;
+        std::cout << "swapchain_extent: " << swapchain_extent.width << " " << swapchain_extent.height << std::endl;
 
-        swapchain_images       = vkb_swapchain.get_images().value();
-        swapchain_image_views  = vkb_swapchain.get_image_views().value();
-        swapchain_image_format = vkb_swapchain.image_format;
-        swapchain_extent       = vkb_swapchain.extent;
-
-#ifndef NDEBUG
-        spdlog::get("illixr")->debug("[display_vk] present_mode: {}", vkb_swapchain.present_mode);
-        spdlog::get("illixr")->debug("[display_vk] swapchain_extent: {} {}", swapchain_extent.width, swapchain_extent.height);
-#endif
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 
+    /**
+     * @brief Sets up the Vulkan environment.
+     *
+     * This function initializes the Vulkan instance, selects the physical device, creates the Vulkan device,
+     * gets the graphics and present queues, creates the swapchain, and sets up the VMA allocator.
+     *
+     * @throws runtime_error If any of the Vulkan setup steps fail.
+     */
+    void create_swapchain() {
+        // create surface
+        vulkan_utils::swapchain_details swapchain_details = vulkan_utils::query_swapchain_details(vk_physical_device, vk_surface);
+
+        // choose surface format
+        for (const auto& available_format : swapchain_details.formats) {
+            if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+                available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                swapchain_image_format = available_format;
+                break;
+            }
+        }
+
+        // choose present mode
+        VkPresentModeKHR swapchain_present_mode = VK_PRESENT_MODE_FIFO_KHR;
+        for (const auto& available_present_mode : swapchain_details.present_modes) {
+            if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                swapchain_present_mode = available_present_mode;
+                break;
+            }
+        }
+
+        // choose swapchain extent
+        if (swapchain_details.capabilities.currentExtent.width != UINT32_MAX) {
+            swapchain_extent = swapchain_details.capabilities.currentExtent;
+        } else if (std::dynamic_pointer_cast<glfw_extended>(backend) != nullptr) {
+            auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
+            swapchain_extent.width  = std::clamp(fb_size.first, swapchain_details.capabilities.minImageExtent.width, swapchain_details.capabilities.maxImageExtent.width);
+            swapchain_extent.height = std::clamp(fb_size.second, swapchain_details.capabilities.minImageExtent.height, swapchain_details.capabilities.maxImageExtent.height);
+        }
+
+        uint32_t image_count = std::max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
+        if (swapchain_details.capabilities.maxImageCount > 0 && image_count > swapchain_details.capabilities.maxImageCount) {
+            image_count = swapchain_details.capabilities.maxImageCount;
+        }
+
+        VkSwapchainCreateInfoKHR create_info{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
+        create_info.surface          = vk_surface;
+        create_info.minImageCount    = image_count;
+        create_info.imageFormat      = swapchain_image_format.format;
+        create_info.imageColorSpace  = swapchain_image_format.colorSpace;
+        create_info.imageExtent      = swapchain_extent;
+        create_info.imageArrayLayers = 1;
+        create_info.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        vulkan_utils::queue_families indices = vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
+        uint32_t queue_family_indices[] = {indices.graphics_family.value(), indices.present_family.value()};
+
+        if (indices.graphics_family != indices.present_family) {
+            create_info.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
+            create_info.queueFamilyIndexCount = 2;
+            create_info.pQueueFamilyIndices   = queue_family_indices;
+        } else {
+            create_info.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
+            create_info.queueFamilyIndexCount = 0;
+            create_info.pQueueFamilyIndices   = nullptr;
+        }
+
+        create_info.preTransform   = swapchain_details.capabilities.currentTransform;
+        create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        create_info.presentMode   = swapchain_present_mode;
+        create_info.clipped       = VK_TRUE;
+        create_info.oldSwapchain  = VK_NULL_HANDLE;
+
+        if (vkCreateSwapchainKHR(vk_device, &create_info, nullptr, &vk_swapchain) != VK_SUCCESS) {
+            ILLIXR::abort("Failed to create Vulkan swapchain!");
+        }
+
+        // get swapchain images
+        vkGetSwapchainImagesKHR(vk_device, vk_swapchain, &image_count, nullptr);
+        swapchain_images.resize(image_count);
+        vkGetSwapchainImagesKHR(vk_device, vk_swapchain, &image_count, swapchain_images.data());
+
+        swapchain_image_views.resize(swapchain_images.size());
+        for (size_t i = 0; i < swapchain_images.size(); i++) {
+            swapchain_image_views[i] = vulkan_utils::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format, VK_IMAGE_ASPECT_COLOR_BIT);
+        }
+    }
+
+    void destroy_swapchain() {
+        for (auto& image_view : swapchain_image_views) {
+            vkDestroyImageView(vk_device, image_view, nullptr);
+        }
+        vkDestroySwapchainKHR(vk_device, vk_swapchain, nullptr);
+    }
+
+    void cleanup() {
+        vkDeviceWaitIdle(vk_device);
+        destroy_swapchain();
+
+        vkDestroyDevice(vk_device, nullptr);
+
+        vmaDestroyAllocator(vma_allocator);
+
+        if (direct_mode == -1) {
+            vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
+        }
+
+        vkDestroyInstance(vk_instance, nullptr);
+
+        backend->cleanup();
+    }
+
     int direct_mode{-1};
+    int selected_gpu{-1};
+
+    std::shared_ptr<display_backend> backend;
 
     const std::shared_ptr<switchboard> sb;
     vkb::Instance                      vkb_instance;
-    vkb::PhysicalDevice                physical_device;
-    vkb::Device                        vkb_device;
-    vkb::Swapchain                     vkb_swapchain;
 
     std::atomic<bool> should_poll{true};
-
-    std::vector<std::shared_ptr<wayland_drm_lease_device>> lease_devices;
 
     friend class display_vk_plugin;
 };
@@ -395,6 +416,10 @@ public:
 
     void stop() override {
         running = false;
+        if (main_thread.joinable()) {
+            main_thread.join();
+        }
+        _dvk->cleanup();
     }
 
 private:
@@ -409,7 +434,9 @@ private:
 
         while (running) {
             if (_dvk->should_poll.exchange(false)) {
-                glfwPollEvents();
+                auto glfw_backend = std::dynamic_pointer_cast<glfw_extended>(_dvk->backend);
+                assert(glfw_backend != nullptr);
+                glfw_backend->poll_window_events();
             }
         }
     }

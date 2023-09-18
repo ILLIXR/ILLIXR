@@ -24,11 +24,10 @@ public:
 
     // required by timewarp_vk as a service
 
-    VkInstance       vk_instance;
-    VkPhysicalDevice vk_physical_device;
-    VkDevice         vk_device;
-    VkQueue          graphics_queue;
-    uint32_t         graphics_queue_family;
+    VkInstance                                                               vk_instance = VK_NULL_HANDLE;
+    VkPhysicalDevice                                                         vk_physical_device = VK_NULL_HANDLE;
+    VkDevice                                                                 vk_device = VK_NULL_HANDLE;
+    std::unordered_map<vulkan_utils::queue::queue_type, vulkan_utils::queue> queues;
 
     /**
      * @brief Polls window events using whatever the windowing backend is.
@@ -42,12 +41,9 @@ public:
      */
     virtual void recreate_swapchain(){};
 
-    void*                    window;
-    VkSurfaceKHR             vk_surface;
-    VkQueue                  present_queue;
-    uint32_t                 present_queue_family;
-    VkSwapchainKHR           vk_swapchain;
-    VkFormat                 swapchain_image_format;
+    VkSurfaceKHR             vk_surface = VK_NULL_HANDLE;
+    VkSwapchainKHR           vk_swapchain = VK_NULL_HANDLE;
+    VkSurfaceFormatKHR       swapchain_image_format;
     std::vector<VkImage>     swapchain_images;
     std::vector<VkImageView> swapchain_image_views;
     VkExtent2D               swapchain_extent;

@@ -108,7 +108,7 @@ public:
             this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
 
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
+        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan_utils::queue::GRAPHICS].family);
         command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         load_model();
         bake_models();
@@ -489,7 +489,7 @@ private:
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->graphics_queue, command_pool, staging_buffer, textures[i].image,
+        vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_pool, staging_buffer, textures[i].image,
                                            width, height);
 
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -569,7 +569,7 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
     }
 
     void load_model() {
@@ -678,7 +678,7 @@ private:
             sizeof(vertices[0]) * vertices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -733,7 +733,7 @@ private:
             sizeof(indices[0]) * indices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }

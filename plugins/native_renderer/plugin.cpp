@@ -50,7 +50,7 @@ public:
             create_offscreen_target(&offscreen_images[i], &offscreen_image_allocations[i], &offscreen_image_views[i],
                                     &offscreen_framebuffers[i]);
         }
-        command_pool            = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
+        command_pool            = vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan_utils::queue::GRAPHICS].family);
         app_command_buffer      = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         timewarp_command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         create_sync_objects();
@@ -127,7 +127,7 @@ public:
             &app_render_finished_semaphore // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, nullptr))
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
 
         // Wait for the application to finish rendering
         VkSemaphoreWaitInfo wait_info{
@@ -157,7 +157,7 @@ public:
             &timewarp_render_finished_semaphore // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence))
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &timewarp_submit_info, frame_fence))
 
         // Present the rendered image
         VkPresentInfoKHR present_info{
@@ -171,7 +171,7 @@ public:
             nullptr                              // pResults
         };
 
-        ret = (vkQueuePresentKHR(ds->graphics_queue, &present_info));
+        ret = (vkQueuePresentKHR(ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
             ds->recreate_swapchain();
         } else {
@@ -601,7 +601,7 @@ private:
     void create_timewarp_pass() {
         std::array<VkAttachmentDescription, 1> attchmentDescriptions{{{
             0,                                // flags
-            ds->swapchain_image_format,       // format
+            ds->swapchain_image_format.format,       // format
             VK_SAMPLE_COUNT_1_BIT,            // samples
             VK_ATTACHMENT_LOAD_OP_CLEAR,      // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,     // storeOp
