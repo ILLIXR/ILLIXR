@@ -1,0 +1,10 @@
+--- src/config.h.in	2023-04-12 13:30:25.915335613 -0500
++++ src/config.h.in.new	2023-04-26 12:15:42.814327179 -0500
+@@ -9,6 +9,7 @@
+ #define PANGOLIN_VERSION_MAJOR @PANGOLIN_VERSION_MAJOR@
+ #define PANGOLIN_VERSION_MINOR @PANGOLIN_VERSION_MINOR@
+ #define PANGOLIN_VERSION_STRING "@PANGOLIN_VERSION@"
++#include <cstdint>
+
+ /// Pangolin options
+ #cmakedefine BUILD_PANGOLIN_GUI
