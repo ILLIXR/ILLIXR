@@ -177,7 +177,7 @@ public:
         // #ifndef NDEBUG
         // Print the FPS
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
-            //std::cout << "FPS: " << fps << std::endl;
+            // std::cout << "FPS: " << fps << std::endl;
             fps             = 0;
             last_fps_update = _m_clock->now();
         } else {

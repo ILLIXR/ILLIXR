@@ -355,7 +355,8 @@ private:
         int  width, height, channels;
         auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 #ifndef NDEBUG
-        spdlog::get("illixr")->debug("[vkdemo] Loaded texture {} with dimensions {}x{} and {} channels", path, width, height, channels);
+        spdlog::get("illixr")->debug("[vkdemo] Loaded texture {} with dimensions {}x{} and {} channels", path, width, height,
+                                     channels);
 #endif
         if (data == nullptr) {
             throw std::runtime_error("Failed to load texture image!");

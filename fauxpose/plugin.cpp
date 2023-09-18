@@ -83,7 +83,8 @@ public:
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Period is {}", period);
         spdlog::get("illixr")->debug("[fauxpose] Amplitude is {}", amplitude);
-        spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location[0], center_location[1], center_location[2]);
+        spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location[0], center_location[1],
+                                     center_location[2]);
 #endif
     }
 

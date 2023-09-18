@@ -754,7 +754,7 @@ public:
         auto fps = tw->num_record_calls.exchange(0) / 2; // two eyes
         auto ups = tw->num_update_uniforms_calls.exchange(0);
 
-        //std::cout << "timewarp_vk: cb records: " << fps << ", uniform updates: " << ups << std::endl;
+        // std::cout << "timewarp_vk: cb records: " << fps << ", uniform updates: " << ups << std::endl;
     }
 
     skip_option _p_should_skip() override {
