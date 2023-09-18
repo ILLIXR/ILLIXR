@@ -22,7 +22,8 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   *Calls* `pose_prediction`.
     -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
     -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
-    -   Synchronously *reads* `imu_cam` on `imu_cam` topic.
+    -   Synchronously *reads* `imu` on `imu` topic.
+    -   Asynchronously *reads* buffered `cam_type` on `cam` topic.
 
 -   [`gldemo`][5]:
     Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
@@ -35,14 +36,14 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   Asynchronously *reads* `time_type` on `vsync_estimate` topic.
 
 -   [`ground_truth_slam`][3]:
-    Reads the [_ground truth_][34] from the same dataset as the `offline_imu_cam` plugin.
-    Ground truth data can be compared against the measurements from `offline_imu_cam` for accuracy.
-    Timing information is taken from the `offline_imu_cam` measurements/data.
+    Reads the [_ground truth_][34] from the same dataset as the `offline_imu` plugin.
+    Ground truth data can be compared against the measurements from `offline_imu` for accuracy.
+    Timing information is taken from the `offline_imu` measurements/data.
 
     Topic details:
 
     -   *Publishes* `pose_type` on `true_pose` topic.
-    -   Asynchronously *reads* `imu_cam_type` on `imu_cam` topic.
+    -   Asynchronously *reads* `imu_type` on `imu` topic.
 
 -   [`gtsam_integrator`][12]:
     Integrates over all [_IMU_][36] samples since the last published [_SLAM_][39] pose to provide a
@@ -51,12 +52,24 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     Topic details:
 
     -   *Publishes* `imu_raw_type` on `imu_raw` topic.
-    -   Synchronously *reads/subscribes* to `imu_cam_type` on `imu_cam` topic.
+    -   Synchronously *reads/subscribes* to `imu_type` on `imu` topic.
     -   Asynchronously *reads* `imu_integrator_input` on `imu_integrator_input` topic.
-  
--   [`kimera_vio`]:
-    This plugin is no longer supported.
 
+-   [`offline_imu`][1]:
+    Reads [_IMU_][36] data files on disk, emulating a real sensor on the [_headset_][38]
+    (feeds the application input measurements with timing similar to an actual IMU).
+
+    Topic details:
+
+    -   *Publishes* `imu_type` on `imu` topic.
+
+-   [`offline_cam`][2]:
+    Reads camera images from files on disk, emulating real cameras on the [_headset_][38]
+    (feeds the application input measurements with timing similar to an actual camera).
+
+    Topic details:
+
+    -   *Publishes* `cam_type` on `cam` topic.
 -   [`pose_prediction`][17]:
     Uses the latest [_IMU_][36] value to predict a [_pose_][37] for a future point in time.
     Implements the `pose_prediction` service (defined in `common`),
@@ -143,6 +156,12 @@ ILLIXR supports additional plugins to replace some of the default plugins.
     An alternate [_SLAM_][39] ([upstream][18]) implementation that uses a MSCKF
         (Multi-State Constrained Kalman Filter) to determine poses via camera/[_IMU_][36].
 
+    Topic details:
+
+    -   *Publishes* `pose_type` on `slow_pose` topic.
+    -   *Publishes* `imu_integrator_input` on `imu_integrator_input` topic.
+    -   Synchronously *reads*/*subscribes* to `imu_type` on `imu` topic.
+
 -   [`pose_lookup`][20]:
     Implements the `pose_predict` service, but uses [_ground truth_][33] from the dataset.
     The plugin peeks "into the future" to determine what the exact [_pose_][37] will be at a certain time.
@@ -169,12 +188,12 @@ ILLIXR supports additional plugins to replace some of the default plugins.
 
 -   [`zed`][22]:
     Reads images and [_IMU_][36] measurements from the [ZED Mini][24].
-    Unlike `offline_imu_cam`, `zed` additionally has RGB and [_depth_][34] data.
+    Unlike `offline_imu`, `zed` additionally has RGB and [_depth_][34] data.
     Note that this plugin implements two threads: one for the camera, and one for the IMU.
 
     Topic details:
 
-    -   *Publishes* `imu_cam_type` on `imu_cam` topic.
+    -   *Publishes* `imu_type` on `imu` topic.
     -   *Publishes* `rgb_depth_type` on `rgb_depth` topic.
 
 See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
@@ -182,7 +201,8 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 
 [//]: # (- References -)
 
-[2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu_cam
+[1]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_imu
+[2]:    https://github.com/ILLIXR/ILLIXR/tree/master/offline_cam
 [3]:    https://github.com/ILLIXR/ILLIXR/tree/master/ground_truth_slam
 [4]:    https://github.com/ILLIXR/open_vins
 [5]:    https://github.com/ILLIXR/ILLIXR/tree/master/gldemo
