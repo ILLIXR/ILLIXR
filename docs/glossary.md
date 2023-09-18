@@ -193,7 +193,7 @@ See the [ILLIXR Plugins][68] page for information about sensors implemented in I
 A device that reports its orientation in space and any forces applied it.
 Also known as an _IMU_.
 
-An IMU is implemented in the [`offline_imu_cam` ILLIXR plugin][68].
+An IMU is implemented in the [`offline_imu` ILLIXR plugin][68].
 
 For more information, see the [Wikipedia article][14].
 

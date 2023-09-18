@@ -7,6 +7,7 @@ nav:
         - 'ILLIXR': index.md
         - 'Getting Started': getting_started.md
         - 'Building ILLIXR': building_illixr.md
+        - 'Using ILLIXR with Cameras': using_cameras.md
         - 'ILLIXR Debugging Tips': debugging_illixr.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugins': illixr_plugins.md

@@ -2,7 +2,8 @@
 
 [![NCSA licensed](https://img.shields.io/badge/license-NCSA-blue.svg)](LICENSE)
 [![CI](https://github.com/ILLIXR/ILLIXR/workflows/illixr-tests-master/badge.svg)](https://github.com/ILLIXR/ILLIXR/actions)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/ILLIXR/community)
+[![Discord](https://img.shields.io/discord/830812443189444698?logo=discord&logoColor=white&label=Discord)][47]
+
 
 <a href="https://youtu.be/GVcCW8WgEDY">
     <img
@@ -25,7 +26,7 @@ You can find the complete ILLIXR system [here][38].
 
 ILLIXR also provides its components in standalone configurations to enable architects and
     system designers to research each component in isolation.
-The standalone components are packaged together in the [v1-latest release][39] of ILLIXR. 
+The standalone components are packaged together in the as of the [v3.1.0 release][39] of ILLIXR. 
 
 ILLIXR's modular and extensible runtime allows adding new components and swapping different
     implementations of a given component.
@@ -36,13 +37,12 @@ ILLIXR currently contains the following components:
         1.  [RITNet][3] **
     -   Scene Reconstruction
         1.  [ElasticFusion][2] **
-        1.  [KinectFusion][40] **
+        2.  [KinectFusion][40] **
     -   Simultaneous Localization and Mapping
         1.  [OpenVINS][1] **
-        1.  [Kimera-VIO][29] **
     -   Cameras and IMUs
         1.  [ZED Mini][42]
-        1.  [Intel RealSense][41]
+        2.  [Intel RealSense][41]
 
 -   *Visual*
     -   [Chromatic aberration correction][5]
@@ -76,9 +76,13 @@ A [talk presented at NVIDIA GTC'21][42] describing ILLIXR and announcing the ILL
 
 A [demo][45] of an OpenXR application running with ILLIXR.
 
+For more up-to-date list of related papers, demos, and talks, please visit [illixr.org][37].
+
 The [ILLIXR consortium][37] is an industry-supported community effort to democratize
     XR systems research, development, and benchmarking.
 Visit our [web site][37] for more information.
+
+The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. Please join our [Discord][47] for announcement. 
 
 # Citation
 
@@ -184,8 +188,6 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 -   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
 
--   [Kimera-VIO][29] \ [Simplified BSD License][30]
-
 -   [libspatialaudio][18] \ [GNU Lesser General Public License v2.1][19]
 
 -   [Monado][22] \ [Boost Software License 1.0][23]
@@ -243,8 +245,6 @@ You can join
 [26]:   https://www.khronos.org/openxr
 [27]:   https://github.com/ILLIXR/gtsam
 [28]:   https://github.com/borglab/gtsam/blob/develop/LICENSE.BSD
-[29]:   https://github.com/ILLIXR/Kimera-VIO
-[30]:   https://github.com/MIT-SPARK/Kimera-VIO/blob/master/LICENSE.BSD
 [31]:   https://github.com/cameron314/concurrentqueue
 [32]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
 [33]:   https://illixr.github.io/ILLIXR/getting_started/
@@ -253,10 +253,10 @@ You can join
 [36]:   https://illixr.github.io/ILLIXR/writing_your_plugin/
 [37]:   http://illixr.org
 [38]:   https://github.com/ILLIXR/ILLIXR
-[39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v1-latest
+[39]:   https://github.com/ILLIXR/ILLIXR/releases/tag/v3.1.0
 [40]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
 [41]:   https://github.com/ILLIXR/ILLIXR/tree/master/realsense
-[42]:   https://www.nvidia.com/en-us/gtc/catalog/?search.primarytopic=option_1564595704881&search.sessiontype=option_1614028602338&search.primaryindustrysegment=option_1563402697134&search=An%20Open-Source%20Testbed#/
+[42]:   https://www.stereolabs.com/zed-mini/
 [43]:   https://youtu.be/ZY98lWksnpM
 [44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
 [45]:   https://youtu.be/GVcCW8WgEDY
@@ -264,3 +264,4 @@ You can join
 [47]:   https://discord.gg/upkvy7x3W4
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
+[50]:   https://illixr.org/open_meetings
