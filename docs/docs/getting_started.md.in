@@ -339,7 +339,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 }
             }
         }
-        cmakeLine += "\ncmake --build . -- -j4\ncmake --install .";
+        cmakeLine += "\ncmake --build . -j4\ncmake --build . -t docs   # if you want to build the documentation\ncmake --install .";
         document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
         $('.code-box-copy').codeBoxCopy();
     }

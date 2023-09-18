@@ -130,6 +130,7 @@
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_RX=ON",
       "dependencies": [
         "git",
+        "ecal",
         "protobuf",
         "OpenCV"
       ]
@@ -141,6 +142,7 @@
         "git",
         "glib",
         "gstreamer",
+        "ecal",
         "protobuf",
         "OpenCV"
       ]
@@ -150,6 +152,7 @@
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_TX=ON",
       "dependencies": [
         "git",
+        "ecal",
         "protobuf",
         "OpenCV"
       ]
@@ -161,6 +164,7 @@
         "git",
         "glib",
         "gstreamer",
+        "ecal",
         "protobuf",
         "OpenCV"
       ]
@@ -340,6 +344,43 @@
           "CentOS": {
             "9": {
               "pkg": "boost-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "ecal": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "ecal",
+              "postnotes": "",
+              "notes": "Ubuntu 20 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal20\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+            },
+            "22": {
+              "pkg": "ecal",
+              "postnotes": "",
+              "notes": "Ubuntu 22 does not have a system supplied package for eCAL, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#ecal22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"ecal22\">sudo add-apt-repository ppa:ecal/ecal-latest -y -u\nsudo apt-get update</pre></div>"
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
               "postnotes": "",
               "notes": ""
             }

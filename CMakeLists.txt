@@ -3,10 +3,8 @@
 # This is the install script for ILLIXR
 # This will compile the main ILLIXR binary along with any requested plugins.
 #
-#
-# To build specific plugins use the following format:
-#   USE_<PLUGIN>=ON
-# where <PLUGIN> is the name of the plugin in upper case.
+# See the documentation at https://illixr.github.io/ILLIXR/getting_started/
+# for complete build instructions.#
 #
 ########################################################################################
 
@@ -59,7 +57,6 @@ else()
     set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 endif()
 
-include(CMakeDependentOption)
 include(ExternalProject)
 
 project(ILLIXR VERSION 3.2.0)
@@ -70,6 +67,8 @@ add_definitions(-DGLSL_VERSION="330")
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
+
+# needed to generate runtime scripts
 set(MONADO_RUNTIME_VK "")
 set(MONADO_RUNTIME_GL "")
 set(OPENXR_RUNTIME "")
@@ -178,7 +177,7 @@ pkg_check_modules(gl REQUIRED gl)
 find_package(Eigen3 REQUIRED)
 
 #############
-# plugin specific dependencies
+# plugin specific dependencies that are used by several plugins
 #############
 
 find_package(Git REQUIRED)
@@ -209,8 +208,11 @@ foreach(PLUGIN_NAME IN LISTS FULL_PLUGIN_LIST)
     set(FULL_PLUGIN_LIST_STRING "${FULL_PLUGIN_LIST_STRING}\n- ${PLUGIN_NAME}")
 endforeach()
 set(CURRENT_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "")
+
+# set up documentaiton build
 add_subdirectory(docs)
 
+# deal with the data file if there is one
 if(DATA_FILE)
     string(REGEX MATCH "^http" HAVE_MATCH ${DATA_FILE})
     if(NOT HAVE_MATCH)
@@ -229,8 +231,10 @@ if(DATA_FILE)
     endif()
 endif()
 
-
+# give a summary of what will be done
 include(cmake/ConfigurationSummary.cmake)
+
+# set up to install profile files
 if(ILLIXR_PROFILE_NAMES)
     foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
         install(FILES "profiles/${GRP}.yaml"
@@ -239,6 +243,8 @@ if(ILLIXR_PROFILE_NAMES)
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
+
+# reset this, so it is clean for subsequent runs of cmake
 set(VISUALIZER "" CACHE STRING "")
 
 #get_cmake_property(_variableNames VARIABLES)
