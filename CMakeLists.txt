@@ -184,6 +184,9 @@ find_package(Git REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads)
+
 include(src/CMakeLists.txt)
 
 # set any plugins that are being built
