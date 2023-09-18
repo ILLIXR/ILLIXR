@@ -1,0 +1,110 @@
+all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,display_vk,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth
+all_visualizers: openvins
+
+profile:
+  name: ci
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,audio_pipeline
+  data: https://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip
+  duration: 10
+  build_type: Debug
+  enable_offload:   False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
+  name: headless
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,audio_pipeline
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
+  name: monado_gl
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
+  visualizers: openvins
+  build_flags: -DILLIXR_MONADO
+  use_monado: true
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: monado_vk
+  plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline
+  visualizers: openvins
+  use_monado: true
+  build_flags: -DILLIXR_VULKAN
+  build_type: Release
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
+  name: native_gl
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
+  visualizers: openvins
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: native_vk
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview
+  visualizers: openvins
+  build_flags: -DILLIXR_VULKAN
+  build_type: Release
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: native_lookup
+  plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
+  visualizers: openvins
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: offload_device
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
+  duration: 85
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
+  name: offload_monado_vk
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
+  visualizers: openvins
+  use_monado: true
+  build_flags: -DILLIXR_VULKAN
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: offload_server
+  plugins: offload_vio.server_rx,offload_vio.server_tx
+  duration: 90
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
+  name: fauxpose
+  plugins: fauxpose,gldemo,debugview,audio_pipeline
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false

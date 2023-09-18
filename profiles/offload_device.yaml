@@ -1,0 +1,8 @@
+# This file was auto generated, take caution if manually editing.
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
+duration: 85
+visualizers: openvins
+enable_offload: False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False

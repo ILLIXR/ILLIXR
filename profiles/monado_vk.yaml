@@ -1,0 +1,10 @@
+# This file was auto generated, take caution if manually editing.
+plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline
+use_monado: true
+build_flags: -DILLIXR_VULKAN
+build_type: Release
+visualizers: openvins
+enable_offload: False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False

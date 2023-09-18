@@ -106,7 +106,6 @@ SpacesInLineCommentPrefix:
   Maximum: 1
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-SpaceBeforeSquareBrackets: false
 Standard: c++17
 StatementMacros:
   - Q_UNUSED
