@@ -9,6 +9,8 @@
 #include "common/vk_util/display_sink.hpp"
 #include "common/vk_util/vulkan_utils.hpp"
 
+#include <spdlog/spdlog.h>
+
 using namespace ILLIXR;
 
 class display_vk : public display_sink {
@@ -164,9 +166,10 @@ private:
         swapchain_image_format = vkb_swapchain.image_format;
         swapchain_extent       = vkb_swapchain.extent;
 
-        std::cout << "present_mode: " << vkb_swapchain.present_mode << std::endl;
-        std::cout << "swapchain_extent: " << swapchain_extent.width << " " << swapchain_extent.height << std::endl;
-
+#ifndef NDEBUG
+        spdlog::get("illixr")->debug("[display_vk] present_mode: {}", vkb_swapchain.present_mode);
+        spdlog::get("illixr")->debug("[display_vk] swapchain_extent: {} {}", swapchain_extent.width, swapchain_extent.height);
+#endif
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 

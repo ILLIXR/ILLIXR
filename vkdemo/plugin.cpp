@@ -28,6 +28,7 @@
 #include <glm/detail/qualifier.hpp>
 #include <glm/fwd.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <thread>
 #include <vulkan/vulkan_core.h>
 
@@ -353,8 +354,9 @@ private:
     void load_texture(std::string path, int i) {
         int  width, height, channels;
         auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        std::cout << "Loaded texture " << path << " with dimensions " << width << "x" << height << " and " << channels
-                  << " channels" << std::endl;
+#ifndef NDEBUG
+        spdlog::get("illixr")->debug("[vkdemo] Loaded texture {} with dimensions {}x{} and {} channels", path, width, height, channels);
+#endif
         if (data == nullptr) {
             throw std::runtime_error("Failed to load texture image!");
         }
@@ -512,8 +514,9 @@ private:
                 load_texture(path, i);
             }
         }
-
-        std::cout << "Loaded " << textures.size() << " textures" << std::endl;
+#ifndef NDEBUG
+        spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures", textures.size());
+#endif
 
         std::unordered_map<Vertex, uint32_t> unique_vertices{};
         for (const auto& shape : shapes) {

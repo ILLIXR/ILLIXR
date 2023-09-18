@@ -27,6 +27,7 @@
 #include <glm/detail/qualifier.hpp>
 #include <glm/fwd.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <thread>
 #include <vulkan/vulkan_core.h>
 
@@ -43,7 +44,9 @@ public:
         , src{pb->lookup_impl<app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-        , last_fps_update{std::chrono::duration<long, std::nano>{0}} { }
+        , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
+        spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
+    }
 
     /**
      * @brief Sets up the thread for the plugin.
@@ -174,7 +177,7 @@ public:
         // #ifndef NDEBUG
         // Print the FPS
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
-            std::cout << "FPS: " << fps << std::endl;
+            //std::cout << "FPS: " << fps << std::endl;
             fps             = 0;
             last_fps_update = _m_clock->now();
         } else {

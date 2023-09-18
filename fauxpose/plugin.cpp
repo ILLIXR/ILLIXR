@@ -33,6 +33,7 @@
 #include "common/pose_prediction.hpp"
 
 #include <cstring>
+#include <spdlog/spdlog.h>
 
 using namespace ILLIXR;
 
@@ -47,18 +48,18 @@ public:
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
         char* env_input; /* pointer to environment variable input */
 #ifndef NDEBUG
-        std::cout << "[fauxpose] Starting Service\n";
+        spdlog::get("illixr")->debug("[fauxpose] Starting Service");
 #endif
 
         // Store the initial time
         if (_m_clock->is_started()) {
             sim_start_time = _m_clock->now();
 #ifndef NDEBUG
-            std::cout << "[fauxpose] Starting Service\n";
+            spdlog::get("illixr")->debug("[fauxpose] Starting Service");
 #endif
         } else {
 #ifndef NDEBUG
-            std::cout << "[fauxpose] Warning: the clock isn't started yet\n";
+            spdlog::get("illixr")->debug("[fauxpose] Warning: the clock isn't started yet");
 #endif
         }
 
@@ -80,18 +81,16 @@ public:
             center_location[2] = atof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1);
         }
 #ifndef NDEBUG
-        std::cout << "[fauxpose] Period is " << period << "\n";
-        std::cout << "[fauxpose] Amplitude is " << amplitude << "\n";
-        std::cout << "[fauxpose] Center is " << center_location[0] << ", " << center_location[1] << ", " << center_location[2]
-                  << ", "
-                  << "\n";
+        spdlog::get("illixr")->debug("[fauxpose] Period is {}", period);
+        spdlog::get("illixr")->debug("[fauxpose] Amplitude is {}", amplitude);
+        spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location[0], center_location[1], center_location[2]);
 #endif
     }
 
     // ********************************************************************
     virtual ~faux_pose_impl() {
 #ifndef NDEBUG
-        std::cout << "[fauxpose] Ending Service\n";
+        spdlog::get("illixr")->debug("[fauxpose] Ending Service");
 #endif
     }
 
@@ -113,7 +112,7 @@ public:
     // ********************************************************************
     virtual pose_type correct_pose([[maybe_unused]] const pose_type pose) const override {
 #ifndef NDEBUG
-        std::cout << "[fauxpose] Returning (passthru) pose\n";
+        spdlog::get("illixr")->debug("[fauxpose] Returning (passthru) pose");
 #endif
         return pose;
     }
@@ -168,7 +167,7 @@ public:
 
         // Return the new pose
 #ifndef NDEBUG
-        std::cout << "[fauxpose] Returning pose\n";
+        spdlog::get("illixr")->debug("[fauxpose] Returning pose");
 #endif
         return fast_pose_type{.pose = simulated_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = time};
     }
@@ -210,7 +209,7 @@ public:
     // ********************************************************************
     virtual ~faux_pose() override {
 #ifndef NDEBUG
-        std::cout << "[fauxpose] Ending Plugin\n";
+        spdlog::get("illixr")->debug("[fauxpose] Ending Plugin");
 #endif
     }
 };
