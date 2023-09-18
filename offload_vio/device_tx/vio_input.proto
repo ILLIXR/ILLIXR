@@ -8,18 +8,24 @@ message Vec3 {
   double z = 3;
 }
 
-message IMUCamData
+message IMUData
 {
   fixed64 timestamp = 1;
   Vec3 angular_vel = 2;
   Vec3 linear_accel = 3;
+}
 
-  int32 rows = 4;
-  int32 cols = 5;
-  bytes img0_data = 6;
-  bytes img1_data = 7;
+message CamData {
+  fixed64 timestamp = 1;
+  int32 rows = 2;
+  int32 cols = 3;
+  bytes img0_data = 4;
+  bytes img1_data = 5;
 }
 
 message IMUCamVec {
-  repeated IMUCamData imu_cam_data = 1;
+  repeated IMUData imu_data = 1;
+  CamData cam_data = 2;
+  fixed64 real_timestamp = 3;
+  int32 frame_id = 4;
 }

@@ -86,6 +86,7 @@ def build_runtime(
     suffix: str,
     test: bool = False,
     is_vulkan: bool = False,
+    illixr_monado: bool = False,
 ) -> Path:
     profile = config["profile"]
     name = "main" if suffix == "exe" else "plugin"
@@ -94,10 +95,11 @@ def build_runtime(
     runtime_path: Path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     targets = [runtime_name] + (["tests/run"] if test else [])
     env_override: Mapping[str, str] = dict(ILLIXR_INTEGRATION="ON")
-    runtime_config.update(ILLIXR_MONADO="ON")
 
     if is_vulkan:
-        runtime_config.update(ILLIXR_MONADO_VULKAN="ON")
+        runtime_config.update(ILLIXR_VULKAN="ON")
+    if illixr_monado:
+        runtime_config.update(ILLIXR_MONADO="ON")
 
     make(runtime_path, targets, runtime_config, env_override=env_override)
     return runtime_path / runtime_name
@@ -225,8 +227,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
 
-    is_vulkan: bool = bool(config["action"]["is_vulkan"])
-    build_runtime(config, "so", is_vulkan = True)
+    is_vulkan: bool = bool(config["action"]["is_vulkan"]) if "is_vulkan" in config["action"] else False
+    build_runtime(config, "so", is_vulkan=is_vulkan, illixr_monado=True)
 
     def process_plugin(plugin_config: Mapping[str, Any]) -> Path:
         plugin_config.update(ILLIXR_MONADO="ON")
@@ -304,6 +306,9 @@ def load_monado(config: Mapping[str, Any]) -> None:
     if not monado_target_path.exists():
         raise RuntimeError(f"[{action_name}] Failed to build monado, path={monado_target_path})")
 
+    ## Remove the socket file from unclean exit
+    if os.path.exists("/run/user/1000/monado_comp_ipc"):
+        os.remove("/run/user/1000/monado_comp_ipc")
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(monado_target_path), *map(str, plugin_paths)]

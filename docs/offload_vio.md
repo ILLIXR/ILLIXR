@@ -19,11 +19,18 @@ for one terminal and configs/offload-server.yaml on the other terminal. The defa
 config files will run OpenVINS on the server and will feed it with the EuRoC dataset from the device.
 
 To run more complicated experiment setups where the device and server are not on the same machine, you will need
-to setup each machine to be able to send/recieve UDP multicasts, and configure your local network. A detailed 
-guide on how to do this can be found [here][1]. Currently, this set of plugins only supports offloading within 
-your local area network. This is due to a constraint of eCAL which doesnt support communication outside of the LAN.
+to establish TCP communication between machines, you'll need to configure both the server and client settings.
+The IP address and port number can be set in the configuration file:
+
+`common/network/net_config.hpp`
+
+This file contains variables where you can enter the respective IP addresses and port numbers for the server and client.
+Edit these fields to suit your network setup.
+
+## Compression
+
+H.264 codec is supported for compressing the camera images to save bandwidth. To enable compression, define `USE_COMPRESSION` in `device_tx/plugin.cpp` and `server_rx/plugin.cpp`. In `device_tx/video_encoder.cpp` and `server_rx/video_decoder.cpp`, define appropriate image dimensions and desired target bitrate (defaults to 5Mbps). The codec library is implemented based on GStreamer and DeepStream. Please follow the instructions [here][1] to install GStreamer and DeepStream SDK. You don't have to reinstall CUDA and NVIDIA Driver if you have a relatively new version. TensorRT and librdkafka are not required either.
 
 
 [//]: # (- References -)
-
-[1]:    https://continental.github.io/ecal/getting_started/cloud.html
+[1]: https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#dgpu-setup-for-ubuntu

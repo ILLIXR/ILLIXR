@@ -75,6 +75,11 @@ Because of a low-level driver issue, Monado only supports Ubuntu 18.04+.
         ./runner.sh configs/monado.yaml
 
 
+## ILLIXR Graphics Backends
+
+ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and `vk` in the config suffixes). Since some plugins should behave differently (and compile differently) based on what backend is being used, it's important to run `./clean.sh` if you want to try swapping between the two backends.
+
+
 ## ILLIXR under Virtualization
 
 ILLIXR can be run inside a [_QEMU-KVM_][20] image.

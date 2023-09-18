@@ -40,6 +40,7 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+        , _m_image_handle{sb->get_writer<image_handle>("image_handle")}
         , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} { }
 
     // Essentially, a crude equivalent of XRWaitFrame.
@@ -186,7 +187,7 @@ public:
             // Somehow, C++ won't let me construct this object if I remove the `rendered_frame{` and `}`.
             // `allocate<rendered_frame>(...)` _should_ forward the arguments to rendered_frame's constructor, but I guess
             // not.
-            std::array<GLuint, 2>{eyeTextures[0], eyeTextures[1]}, std::array<GLuint, 2>{which_buffer, which_buffer}, fast_pose,
+            std::array<GLuint, 2>{0, 0}, std::array<GLuint, 2>{which_buffer, which_buffer}, fast_pose,
             fast_pose.predict_computed_time, lastTime}));
 
         which_buffer = !which_buffer;
@@ -216,6 +217,7 @@ private:
     // We're not "writing" the actual buffer data,
     // we're just atomically writing the handle to the
     // correct eye/framebuffer in the "swapchain".
+    switchboard::writer<image_handle>   _m_image_handle;
     switchboard::writer<rendered_frame> _m_eyebuffer;
 
     GLuint eyeTextures[2];
@@ -302,9 +304,13 @@ public:
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(MessageCallback, 0);
 
-        // Create two shared eye textures, one for each eye
+        // Create two shared textures, one for each eye.
         createSharedEyebuffer(&(eyeTextures[0]));
+        _m_image_handle.put(
+            _m_image_handle.allocate<image_handle>(image_handle{eyeTextures[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
         createSharedEyebuffer(&(eyeTextures[1]));
+        _m_image_handle.put(
+            _m_image_handle.allocate<image_handle>(image_handle{eyeTextures[1], 1, swapchain_usage::RIGHT_SWAPCHAIN}));
 
         // Initialize FBO and depth targets, attaching to the frame handle
         createFBO(&(eyeTextures[0]), &eyeTextureFBO, &eyeTextureDepthTarget);
