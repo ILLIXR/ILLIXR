@@ -14,6 +14,7 @@ nav:
     - 'Latest Documentation':
         - 'ILLIXR': index.md
         - 'Getting Started': getting_started.md
+        - 'Using ILLIXR with Cameras': using_cameras.md
         - 'ILLIXR Debugging Tips': debugging_illixr.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
@@ -29,6 +30,7 @@ nav:
             - 'Native Renderer': plugin_README/README_native_renderer.md
             - 'Offload VIO': plugin_README/offload_vio.md
             - 'OpenNI': plugin_README/README_openni.md
+            - 'Record_imu_cam': plugin_README/README_record_imu-cam.md
             - 'Timewarp_gl': plugin_README/README_timewarp_gl.md
             - 'Timewarp_VK': plugin_README/README_timewarp_vk.md
             - 'Vkdemo': plugin_README/README_vkdemo.md
