@@ -1,8 +1,0 @@
-cmake-build-debug
-build
-Build
-build/
-*.*~
-.idea
-doxgen_generated
-*.so
