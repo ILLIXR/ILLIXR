@@ -7,7 +7,7 @@ set(PLUGIN_NAME plugin.timewarp_vk${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Vulkan)
+find_package(FullVulkan REQUIRED)
 if(USE_MONADO)
     get_external_for_plugin(Monado_vk)
 endif()
@@ -27,6 +27,7 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
             COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${GLSL} -V -o ${SPIRV}
             DEPENDS ${GLSL})
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
+    message("${SPIRV}   ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}   ${GLSL}   ${FILE_NAME}")
 endforeach (GLSL)
 
 add_custom_target(

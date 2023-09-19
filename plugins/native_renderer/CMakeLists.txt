@@ -7,7 +7,7 @@ set(PLUGIN_NAME plugin.native_renderer${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Vulkan COMPONENTS glslc)
+find_package(FullVulkan COMPONENTS glslc)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/global_module_defs.hpp
