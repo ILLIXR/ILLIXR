@@ -396,6 +396,7 @@ public:
                 indices.graphics_family = i;
             }
 
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
             if (queue_family.queueFlags & VK_QUEUE_VIDEO_DECODE_BIT_KHR) {
                 indices.encode_family = i;
             }
@@ -403,6 +404,7 @@ public:
             if (queue_family.queueFlags & VK_QUEUE_VIDEO_ENCODE_BIT_KHR) {
                 indices.decode_family = i;
             }
+#endif
 
             VkBool32 present_support = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
