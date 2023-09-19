@@ -1,3 +1,11 @@
+#include "illixr/global_module_defs.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
+
 #include <array>
 #include <cassert>
 #include <chrono>
@@ -7,17 +15,11 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-#define VMA_IMPLEMENTATION
-#include "illixr/global_module_defs.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-#include "illixr/vk/display_sink.hpp"
-#include "illixr/vk/render_pass.hpp"
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 
 using namespace ILLIXR;
 
@@ -27,9 +29,9 @@ public:
         : threadloop{name_, pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-        , ds{pb->lookup_impl<display_sink>()}
-        , tw{pb->lookup_impl<timewarp>()}
-        , src{pb->lookup_impl<app>()}
+        , ds{pb->lookup_impl<vulkan::display_provider>()}
+        , tw{pb->lookup_impl<vulkan::timewarp>()}
+        , src{pb->lookup_impl<vulkan::app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
         spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
@@ -50,9 +52,10 @@ public:
             create_offscreen_target(&offscreen_images[i], &offscreen_image_allocations[i], &offscreen_image_views[i],
                                     &offscreen_framebuffers[i]);
         }
-        command_pool            = vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan_utils::queue::GRAPHICS].family);
-        app_command_buffer      = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
-        timewarp_command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool =
+            vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].family);
+        app_command_buffer      = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        timewarp_command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         create_sync_objects();
         create_app_pass();
         create_timewarp_pass();
@@ -127,7 +130,8 @@ public:
             &app_render_finished_semaphore // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
+        VK_ASSERT_SUCCESS(
+            vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
 
         // Wait for the application to finish rendering
         VkSemaphoreWaitInfo wait_info{
@@ -157,7 +161,8 @@ public:
             &timewarp_render_finished_semaphore // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &timewarp_submit_info, frame_fence))
+        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1,
+                                        &timewarp_submit_info, frame_fence))
 
         // Present the rendered image
         VkPresentInfoKHR present_info{
@@ -171,7 +176,7 @@ public:
             nullptr                              // pResults
         };
 
-        ret = (vkQueuePresentKHR(ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+        ret = (vkQueuePresentKHR(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
             ds->recreate_swapchain();
         } else {
@@ -262,11 +267,11 @@ private:
                 app_pass,                                 // renderPass
                 offscreen_framebuffers[eye],              // framebuffer
                 {
-                    {0, 0},              // offset
+                    {0, 0},                                                       // offset
                     {ds->swapchain_extent.width / 2, ds->swapchain_extent.height} // extent
-                },                       // renderArea
-                clear_values.size(),     // clearValueCount
-                clear_values.data()      // pClearValues
+                },                                                                // renderArea
+                clear_values.size(),                                              // clearValueCount
+                clear_values.data()                                               // pClearValues
             };
 
             vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
@@ -381,8 +386,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                ds->swapchain_extent.width / 2,                                         // width
-                ds->swapchain_extent.height,                                        // height
+                ds->swapchain_extent.width / 2,                                       // width
+                ds->swapchain_extent.height,                                          // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
@@ -438,8 +443,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                ds->swapchain_extent.width / 2,                                 // width
-                ds->swapchain_extent.height,                                // height
+                ds->swapchain_extent.width / 2,                               // width
+                ds->swapchain_extent.height,                                  // height
                 1                                                             // depth
             },                                                                // extent
             1,                                                                // mipLevels
@@ -493,8 +498,8 @@ private:
                 app_pass,                                  // renderPass
                 static_cast<uint32_t>(attachments.size()), // attachmentCount
                 attachments.data(),                        // pAttachments
-                ds->swapchain_extent.width / 2,              // width
-                ds->swapchain_extent.height,             // height
+                ds->swapchain_extent.width / 2,            // width
+                ds->swapchain_extent.height,               // height
                 1                                          // layers
             };
 
@@ -600,15 +605,15 @@ private:
      */
     void create_timewarp_pass() {
         std::array<VkAttachmentDescription, 1> attchmentDescriptions{{{
-            0,                                // flags
-            ds->swapchain_image_format.format,       // format
-            VK_SAMPLE_COUNT_1_BIT,            // samples
-            VK_ATTACHMENT_LOAD_OP_CLEAR,      // loadOp
-            VK_ATTACHMENT_STORE_OP_STORE,     // storeOp
-            VK_ATTACHMENT_LOAD_OP_DONT_CARE,  // stencilLoadOp
-            VK_ATTACHMENT_STORE_OP_DONT_CARE, // stencilStoreOp
-            VK_IMAGE_LAYOUT_UNDEFINED,        // initialLayout
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR   // finalLayout
+            0,                                 // flags
+            ds->swapchain_image_format.format, // format
+            VK_SAMPLE_COUNT_1_BIT,             // samples
+            VK_ATTACHMENT_LOAD_OP_CLEAR,       // loadOp
+            VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
+            VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp
+            VK_IMAGE_LAYOUT_UNDEFINED,         // initialLayout
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR    // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{
@@ -646,9 +651,9 @@ private:
 
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<display_sink>        ds;
-    const std::shared_ptr<timewarp>            tw;
-    const std::shared_ptr<app>                 src;
+    const std::shared_ptr<vulkan::display_provider>        ds;
+    const std::shared_ptr<vulkan::timewarp>            tw;
+    const std::shared_ptr<vulkan::app>                 src;
     const std::shared_ptr<const RelativeClock> _m_clock;
 
     VkCommandPool   command_pool{};

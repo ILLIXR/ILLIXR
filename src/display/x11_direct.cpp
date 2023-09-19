@@ -3,6 +3,7 @@
 //
 #include "x11_direct.h"
 
+#include "illixr/vk/vulkan_utils.hpp"
 #include "X11/extensions/Xrandr.h"
 #include "X11/Xlib.h"
 

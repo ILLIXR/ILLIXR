@@ -14,7 +14,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/pose_prediction.hpp
         ../../include/illixr/switchboard.hpp
         ../../include/illixr/threadloop.hpp
-        ../../include/illixr/vk/display_sink.hpp
+        ../../include/illixr/vk/display_provider.hpp
         ../../include/illixr/vk/render_pass.hpp
         ../../include/illixr/gl_util/lib/tiny_obj_loader.h
         )

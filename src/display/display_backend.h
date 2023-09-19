@@ -5,7 +5,7 @@
 #ifndef ILLIXR_DISPLAY_BACKEND_H
 #define ILLIXR_DISPLAY_BACKEND_H
 
-#include "illixr/vk/display_sink.hpp"
+#include "illixr/vk/display_provider.hpp"
 
 class display_backend {
 protected:

@@ -28,15 +28,16 @@
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
-#define VK_ASSERT_SUCCESS(x)                                                                        \
-    {                                                                                               \
-        VkResult result = (x);                                                                      \
-        if (result != VK_SUCCESS) {                                                                 \
-            spdlog::get("illixr")->debug("[Vulkan] error: {}", vulkan_utils::error_string(result)); \
-            throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
-        }                                                                                           \
+#define VK_ASSERT_SUCCESS(x)                                                                  \
+    {                                                                                         \
+        VkResult result = (x);                                                                \
+        if (result != VK_SUCCESS) {                                                           \
+            spdlog::get("illixr")->debug("[Vulkan] error: {}", ILLIXR::vulkan::vulkan_utils::error_string(result)); \
+            throw std::runtime_error("Vulkan error: " + ILLIXR::vulkan::vulkan_utils::error_string(result));  \
+        }                                                                                     \
     }
 
+namespace ILLIXR::vulkan {
 class vulkan_utils {
 public:
     struct queue_families {
@@ -437,3 +438,4 @@ public:
         return vk_image_view;
     }
 };
+} // namespace ILLIXR::vulkan

@@ -1,10 +1,3 @@
-#include <future>
-#include <iostream>
-#include <mutex>
-#include <stack>
-
-#define VMA_IMPLEMENTATION
-
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
@@ -12,11 +5,15 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk/display_sink.hpp"
+#include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
 #include "utils/hmd.hpp"
 
+#include <future>
+#include <iostream>
+#include <mutex>
+#include <stack>
 #include <vulkan/vulkan_core.h>
 
 using namespace ILLIXR;
@@ -73,7 +70,7 @@ struct UniformBufferObject {
     glm::mat4 timewarp_end_transform;
 };
 
-class timewarp_vk : public timewarp {
+class timewarp_vk : public vulkan::timewarp {
 public:
     explicit timewarp_vk(const phonebook* const pb)
         : pb{pb}
@@ -82,20 +79,20 @@ public:
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
-        ds = pb->lookup_impl<display_sink>();
+        ds = pb->lookup_impl<vulkan::display_provider>();
 
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
         generate_distortion_data();
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool   = vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
+        command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
@@ -259,11 +256,11 @@ private:
         memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -319,11 +316,11 @@ private:
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -522,8 +519,8 @@ private:
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.vert.spv"));
-        VkShaderModule frag   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.frag.spv"));
+        VkShaderModule vert   = vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.vert.spv"));
+        VkShaderModule frag   = vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -757,7 +754,7 @@ private:
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
     bool                                   disable_warp = false;
-    std::shared_ptr<display_sink>          ds           = nullptr;
+    std::shared_ptr<vulkan::display_provider>          ds           = nullptr;
     std::mutex                             m_setup;
 
     bool initialized                      = false;
@@ -810,7 +807,7 @@ public:
     timewarp_vk_plugin(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , tw{std::make_shared<timewarp_vk>(pb)} {
-        pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
+        pb->register_impl<vulkan::timewarp>(std::static_pointer_cast<vulkan::timewarp>(tw));
     }
 
     void _p_one_iteration() override {
@@ -836,7 +833,7 @@ public:
 
 private:
     std::shared_ptr<timewarp_vk>  tw;
-    std::shared_ptr<display_sink> ds;
+    std::shared_ptr<vulkan::display_provider> ds;
 
     int64_t last_print = 0;
 };

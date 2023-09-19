@@ -20,7 +20,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/phonebook.hpp
         ../../include/illixr/switchboard.hpp
         ../../include/illixr/threadloop.hpp
-        ../../include/illixr/vk/display_sink.hpp
+        ../../include/illixr/vk/display_provider.hpp
         ../../include/illixr/vk/vulkan_utils.hpp
 )
 

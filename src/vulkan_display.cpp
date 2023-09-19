@@ -1,10 +1,12 @@
 #define VMA_IMPLEMENTATION
+
+#include "display/glfw_extended.h"
+#include "display/x11_direct.h"
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk/display/glfw_extended.h"
-#include "illixr/vk/display/x11_direct.h"
+#include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
 
 #include <set>
@@ -12,7 +14,7 @@
 
 using namespace ILLIXR;
 
-class display_vk : public display_sink {
+class display_vk : public vulkan::display_provider {
     std::vector<const char*> required_device_extensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
@@ -20,13 +22,25 @@ class display_vk : public display_sink {
 public:
     explicit display_vk(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()} {
+
+    }
+
+    ~display_vk() override {
+        running = false;
+        if (main_thread.joinable()) {
+            main_thread.join();
+        }
+        cleanup();
+    }
+
+    void start(std::set<const char*> instance_extensions, std::set<const char*> device_extensions) {
         auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
         selected_gpu = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
         char* env_var = std::getenv("ILLIXR_DIRECT_MODE");
-        int direct_mode = env_var ? std::stoi(env_var) : -1;
+        direct_mode = env_var ? std::stoi(env_var) : -1;
 
-        setup(direct_mode);
+        setup(std::move(instance_extensions), std::move(device_extensions));
 
         if (direct_mode == -1) {
             // if not using direct mode, start the main loop to poll glfw events
@@ -38,20 +52,10 @@ public:
         }
     }
 
-    ~display_vk() override {
-        running = false;
-        if (main_thread.joinable()) {
-            main_thread.join();
-        }
-        cleanup();
-    }
-
     /**
-     * @brief This function sets up the GLFW and Vulkan environments. See display_sink::setup().
+     * @brief This function sets up the GLFW and Vulkan environments. See display_provider::setup().
      */
-    void setup(int direct_mode) {
-        this->direct_mode = direct_mode;
-
+    void setup(std::set<const char*> instance_extensions, std::set<const char*> device_extensions) {
         if (direct_mode == -1) {
             std::cout << "Using GLFW" << std::endl;
             backend = std::make_shared<glfw_extended>();
@@ -60,7 +64,7 @@ public:
             backend = std::make_shared<x11_direct>();
         }
 
-        create_vk_instance();
+        create_vk_instance(std::move(instance_extensions));
         if (direct_mode == -1) {
             backend->setup_display(vk_instance, nullptr);
             vk_surface = backend->create_surface();
@@ -70,13 +74,13 @@ public:
             backend->setup_display(vk_instance, vk_physical_device);
             vk_surface = backend->create_surface();
         }
-        create_logical_device();
+        create_logical_device(std::move(device_extensions));
 
         create_swapchain();
     }
 
     /**
-     * @brief This function recreates the Vulkan swapchain. See display_sink::recreate_swapchain().
+     * @brief This function recreates the Vulkan swapchain. See display_provider::recreate_swapchain().
      */
     void recreate_swapchain() override {
         uint32_t width, height;
@@ -97,7 +101,7 @@ public:
     }
 
     /**
-     * @brief This function polls GLFW events. See display_sink::poll_window_events().
+     * @brief This function polls GLFW events. See display_provider::poll_window_events().
      */
     void poll_window_events() override {
         should_poll = true;
@@ -105,7 +109,7 @@ public:
 
 private:
 
-    void create_vk_instance() {
+    void create_vk_instance(std::set<const char*> instance_extensions) {
         bool enable_validation_layers = true;
 
         VkApplicationInfo app_info{VK_STRUCTURE_TYPE_APPLICATION_INFO};
@@ -120,6 +124,8 @@ private:
         if (enable_validation_layers) {
             backend_required_instance_extensions_vec.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
+        backend_required_instance_extensions_vec.insert(backend_required_instance_extensions_vec.end(),
+                                                        instance_extensions.begin(), instance_extensions.end());
 
         VkInstanceCreateInfo create_info{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
         create_info.pApplicationInfo        = &app_info;
@@ -203,7 +209,7 @@ private:
 
         if (direct_mode == -1) {
             // check if the device supports the swapchain we need
-            auto swapchain_details = vulkan_utils::query_swapchain_details(physical_device, vk_surface);
+            auto swapchain_details = vulkan::vulkan_utils::query_swapchain_details(physical_device, vk_surface);
             if (swapchain_details.formats.empty() || swapchain_details.present_modes.empty()) {
                 return false;
             }
@@ -263,8 +269,8 @@ private:
         std::cout << "Selected device: " << device_properties.deviceName << std::endl;
     }
 
-    void create_logical_device() {
-        vulkan_utils::queue_families indices = vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
+    void create_logical_device(std::set<const char*> device_extensions) {
+        vulkan::vulkan_utils::queue_families indices = vulkan::vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
         std::set<uint32_t> unique_queue_families = {indices.graphics_family.value(),
@@ -294,6 +300,8 @@ private:
             VK_TRUE  // timelineSemaphore
         };
 
+        required_device_extensions.insert(required_device_extensions.end(), device_extensions.begin(), device_extensions.end());
+
         VkDeviceCreateInfo create_info{VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
         create_info.pQueueCreateInfos       = queue_create_infos.data();
         create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
@@ -306,35 +314,35 @@ private:
             ILLIXR::abort("Failed to create Vulkan logical device!");
         }
 
-        vulkan_utils::queue graphics_queue{};
+        vulkan::vulkan_utils::queue graphics_queue{};
         vkGetDeviceQueue(vk_device, indices.graphics_family.value(), 0, &graphics_queue.vk_queue);
         graphics_queue.family = indices.graphics_family.value();
-        graphics_queue.type   = vulkan_utils::queue::GRAPHICS;
+        graphics_queue.type   = vulkan::vulkan_utils::queue::GRAPHICS;
         queues[graphics_queue.type] = graphics_queue;
 
         if (indices.present_family.has_value()) {
-            vulkan_utils::queue present_queue{};
+            vulkan::vulkan_utils::queue present_queue{};
             vkGetDeviceQueue(vk_device, indices.present_family.value(), 0, &present_queue.vk_queue);
             present_queue.family = indices.present_family.value();
-            present_queue.type   = vulkan_utils::queue::PRESENT;
+            present_queue.type   = vulkan::vulkan_utils::queue::PRESENT;
             queues[present_queue.type] = present_queue;
         }
 
         if (indices.has_compression()) {
-            vulkan_utils::queue encode_queue{};
+            vulkan::vulkan_utils::queue encode_queue{};
             vkGetDeviceQueue(vk_device, indices.encode_family.value(), 0, &encode_queue.vk_queue);
             encode_queue.family = indices.encode_family.value();
-            encode_queue.type   = vulkan_utils::queue::ENCODE;
+            encode_queue.type   = vulkan::vulkan_utils::queue::ENCODE;
             queues[encode_queue.type] = encode_queue;
 
-            vulkan_utils::queue decode_queue{};
+            vulkan::vulkan_utils::queue decode_queue{};
             vkGetDeviceQueue(vk_device, indices.decode_family.value(), 0, &decode_queue.vk_queue);
             decode_queue.family = indices.decode_family.value();
-            decode_queue.type   = vulkan_utils::queue::DECODE;
+            decode_queue.type   = vulkan::vulkan_utils::queue::DECODE;
             queues[decode_queue.type] = decode_queue;
         }
 
-        vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
+        vma_allocator = vulkan::vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 
     /**
@@ -347,7 +355,7 @@ private:
      */
     void create_swapchain() {
         // create surface
-        vulkan_utils::swapchain_details swapchain_details = vulkan_utils::query_swapchain_details(vk_physical_device, vk_surface);
+        vulkan::vulkan_utils::swapchain_details swapchain_details = vulkan::vulkan_utils::query_swapchain_details(vk_physical_device, vk_surface);
 
         // choose surface format
         for (const auto& available_format : swapchain_details.formats) {
@@ -390,7 +398,7 @@ private:
         create_info.imageArrayLayers = 1;
         create_info.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        vulkan_utils::queue_families indices = vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
+        vulkan::vulkan_utils::queue_families indices = vulkan::vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
         uint32_t queue_family_indices[] = {indices.graphics_family.value(), indices.present_family.value()};
 
         if (indices.graphics_family != indices.present_family) {
@@ -420,7 +428,7 @@ private:
 
         swapchain_image_views.resize(swapchain_images.size());
         for (size_t i = 0; i < swapchain_images.size(); i++) {
-            swapchain_image_views[i] = vulkan_utils::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format, VK_IMAGE_ASPECT_COLOR_BIT);
+            swapchain_image_views[i] = vulkan::vulkan_utils::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format, VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
 

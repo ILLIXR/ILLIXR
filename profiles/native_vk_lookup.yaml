@@ -2,6 +2,7 @@
 plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 build_flags: -DILLIXR_VULKAN
 visualizers: ""
+vulkan: true
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false

@@ -8,18 +8,19 @@
 
 using namespace ILLIXR;
 
-/**
- * @brief A display sink is a service that can display the rendered images to the screen.
- *
- * @details
- * A display sink is a service created with the necessary Vulkan resources to display the rendered images to the screen.
- * It is created either by display_vk, a plugin that configures the Vulkan resources and swapchain,
- * or by monado_vulkan_integration, which populate the Vulkan resources and swapchain from Monado.
- * Previously with the GL implementation, this was not required since we were using GL and Monado was using Vulkan.
- */
-class display_sink : public phonebook::service {
+namespace ILLIXR::vulkan { /**
+                            * @brief A display sink is a service that can display the rendered images to the screen.
+                            *
+                            * @details
+                            * A display sink is a service created with the necessary Vulkan resources to display the rendered
+                            * images to the screen. It is created either by display_vk, a plugin that configures the Vulkan
+                            * resources and swapchain, or by monado_vulkan_integration, which populate the Vulkan resources and
+                            * swapchain from Monado. Previously with the GL implementation, this was not required since we were
+                            * using GL and Monado was using Vulkan.
+                            */
+class display_provider : public phonebook::service {
 public:
-    ~display_sink() override = default;
+    ~display_provider() override = default;
 
     // required by timewarp_vk as a service
 
@@ -50,3 +51,4 @@ public:
     // optional
     VmaAllocator vma_allocator;
 };
+} // namespace ILLIXR::vulkan

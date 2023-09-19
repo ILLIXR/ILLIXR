@@ -1,11 +1,3 @@
-#include <array>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-
-#define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
@@ -13,9 +5,15 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk/display_sink.hpp"
+#include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
 
+#include <array>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 #include <vulkan/vulkan_core.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -23,6 +21,9 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image.h"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 
 #include <unordered_map>
 
@@ -94,22 +95,24 @@ struct UniformBufferObject {
     glm::mat4 proj;
 };
 
-class vkdemo : public app {
+class vkdemo : public vulkan::app {
 public:
     explicit vkdemo(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
-        , ds{pb->lookup_impl<display_sink>()}
+        , ds{pb->lookup_impl<vulkan::display_provider>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()} { }
 
     void initialize() {
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator =
+                vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
 
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan_utils::queue::GRAPHICS].family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool =
+            vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].family);
+        command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         load_model();
         bake_models();
         create_texture_sampler();
@@ -489,8 +492,8 @@ private:
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_pool, staging_buffer, textures[i].image,
-                                           width, height);
+        vulkan::vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue,
+                                                   command_pool, staging_buffer, textures[i].image, width, height);
 
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -519,7 +522,7 @@ private:
 
     void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
                                  VkImageLayout new_layout) {
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
 
         VkImageMemoryBarrier barrier{
             VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, // sType
@@ -569,7 +572,8 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(
+            ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
     }
 
     void load_model() {
@@ -671,14 +675,15 @@ private:
         memcpy(mapped_data, vertices.data(), sizeof(vertices[0]) * vertices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region{
             0,                                    // srcOffset
             0,                                    // dstOffset
             sizeof(vertices[0]) * vertices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(
+            ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -726,14 +731,15 @@ private:
         memcpy(mapped_data, indices.data(), sizeof(indices[0]) * indices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region{
             0,                                  // srcOffset
             0,                                  // dstOffset
             sizeof(indices[0]) * indices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(
+            ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -744,10 +750,10 @@ private:
         }
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert =
-            vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.vert.spv"));
-        VkShaderModule frag =
-            vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
+        VkShaderModule vert   = vulkan::vulkan_utils::create_shader_module(
+            ds->vk_device, vulkan::vulkan_utils::read_file(folder + "/demo.vert.spv"));
+        VkShaderModule frag = vulkan::vulkan_utils::create_shader_module(
+            ds->vk_device, vulkan::vulkan_utils::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info{
             VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
@@ -792,19 +798,19 @@ private:
             VK_FALSE                                                     // primitiveRestartEnable
         };
 
-        auto per_eye_extent = VkExtent2D {ds->swapchain_extent.width / 2, ds->swapchain_extent.height};
+        auto per_eye_extent = VkExtent2D{ds->swapchain_extent.width / 2, ds->swapchain_extent.height};
 
         VkViewport viewport{
-            0.0f,                                            // x
-            0.0f,                                            // y
+            0.0f,                                      // x
+            0.0f,                                      // y
             static_cast<float>(per_eye_extent.width),  // width
             static_cast<float>(per_eye_extent.height), // height
-            0.0f,                                            // minDepth
-            1.0f                                             // maxDepth
+            0.0f,                                      // minDepth
+            1.0f                                       // maxDepth
         };
 
         VkRect2D scissor{
-            {0, 0},              // offset
+            {0, 0},        // offset
             per_eye_extent // extent
         };
 
@@ -931,7 +937,7 @@ private:
 
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<display_sink>        ds = nullptr;
+    const std::shared_ptr<vulkan::display_provider>        ds = nullptr;
     const std::shared_ptr<const RelativeClock> _m_clock;
 
     Eigen::Matrix4f       basic_projection;
@@ -969,7 +975,7 @@ public:
     vkdemo_plugin(const std::string& name, phonebook* pb)
         : plugin{name, pb}
         , vkd{std::make_shared<vkdemo>(pb)} {
-        pb->register_impl<app>(std::static_pointer_cast<vkdemo>(vkd));
+        pb->register_impl<vulkan::app>(std::static_pointer_cast<vkdemo>(vkd));
     }
 
     void start() override {
