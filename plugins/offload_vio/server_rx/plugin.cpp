@@ -35,6 +35,7 @@ public:
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_addr(SERVER_IP, SERVER_PORT_1)
         , buffer_str("") {
+        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
         socket.set_reuseaddr();
         socket.bind(server_addr);
         socket.enable_no_delay();
@@ -48,11 +49,16 @@ public:
         if (read_socket == NULL) {
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.listen();
-            std::cout << "server_rx: Waiting for connection!" << std::endl;
+#ifndef NDEBUG
+            spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
+#endif
             read_socket = new TCPSocket(FileDescriptor(system_call(
                 "accept",
                 ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-            std::cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << std::endl;
+#ifndef NDEBUG
+            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}",
+                                     read_socket->peer_address().str(":"));
+#endif
         } else {
             auto        now        = timestamp();
             std::string delimitter = "EEND!";
@@ -67,7 +73,8 @@ public:
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
-                        std::cout << "Error parsing the protobuf, vio input size = " << before.size() << std::endl;
+                        spdlog::get(name)->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
+                                                 before.size());
                     } else {
                         ReceiveVioInput(vio_input);
                     }

@@ -88,7 +88,7 @@ private:
                                        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
                     auto severity = vkb::to_string_message_severity(messageSeverity);
                     auto type     = vkb::to_string_message_type(messageType);
-                    printf("[%s: %s] %s\n", severity, type, pCallbackData->pMessage);
+                    spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, pCallbackData->pMessage);
                     return VK_FALSE;
                 })
                 .build();

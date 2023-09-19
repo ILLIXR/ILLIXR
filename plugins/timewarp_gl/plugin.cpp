@@ -152,7 +152,7 @@ public:
             }
 #endif
             default: {
-                std::cout << "Invalid swapchain usage provided" << std::endl;
+                spdlog::get(name)->warn("Invalid swapchain usage provided");
                 break;
             }
             }

@@ -19,6 +19,7 @@ public:
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
         , server_addr(SERVER_IP, SERVER_PORT_2) {
+        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
         pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
@@ -31,9 +32,13 @@ public:
 
     skip_option _p_should_skip() override {
         if (!is_socket_connected) {
-            std::cout << "device_rx: Connecting to " << server_addr.str(":") << std::endl;
+#ifndef NDEBUG
+            spdlog::get(name)->debug("[offload_vio.device_rx]: Connecting to {}", server_addr.str(":"));
+#endif
             socket.connect(server_addr);
-            std::cout << "device_rx: Connected to " << server_addr.str(":") << std::endl;
+#ifndef NDEBUG
+            spdlog::get(name)->debug("[offload_vio.device_rx]: Connected to {}", server_addr.str(":"));
+#endif
             is_socket_connected = true;
         }
         return skip_option::run;
@@ -57,7 +62,7 @@ public:
                     if (success) {
                         ReceiveVioOutput(vio_output, before);
                     } else {
-                        std::cout << "client_rx: Cannot parse VIO output!!" << std::endl;
+                        spdlog::get(name)->error("[offload_vio.device_rx: Cannot parse VIO output!!");
                     }
                     end_position = buffer_str.find(delimitter);
                 }

@@ -8,6 +8,7 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <thread>
 #include <utility>
@@ -125,7 +126,7 @@ private:
             // os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
             if (rand() % 100 == 0) {
 #ifndef NDEBUG
-                std::cout << "cpu_timer.hpp is DEPRECATED. See logging.hpp.\n";
+                spdlog::get("illixr")->info("cpu_timer.hpp is DEPRECATED. See logging.hpp.");
 #endif
             }
         }
@@ -195,8 +196,8 @@ public:
                                       std::chrono::high_resolution_clock::now().time_since_epoch())
                                       .count();
 
-            std::cout << "cpu_timer," << name << "," << serial_no << "," << wall_time_start << "," << wall_time_stop << ","
-                      << cpu_time_start << "," << cpu_time_stop << "\n";
+            spdlog::get("illixr")->info("[cpu_timer]  cpu_timer,{},{},{},{},{},{}", name, serial_no, wall_time_start, wall_time_stop,
+                                        cpu_time_start, cpu_time_stop);
         }
     }
 };

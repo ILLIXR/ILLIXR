@@ -21,8 +21,9 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} {
+        spdlogger(std::getenv("OPENNI_LOG_LEVEL"));
         if (!camera_initialize()) {
-            std::cout << "Initialization failed" << std::endl;
+            spdlog::get(name)->error("Initialization failed");
             exit(0);
         }
     }
@@ -82,55 +83,62 @@ protected:
         // initialize openni
         _device_status = openni::OpenNI::initialize();
         if (_device_status != openni::STATUS_OK)
-            std::cout << "Initialize failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            spdlog::get(name)->error("Initialize failed: {}", openni::OpenNI::getExtendedError());
 
         // open _device
         _device_status = _device.open(openni::ANY_DEVICE);
         if (_device_status != openni::STATUS_OK)
-            std::cout << "Device open failed: " << openni::OpenNI::getExtendedError() << std::endl;
+            spdlog::get(name)->error("Device open failed: {}", openni::OpenNI::getExtendedError());
 
         /*_____________________________ DEPTH ___________________________*/
         // create _depth channel
         _device_status = _depth.create(_device, openni::SENSOR_DEPTH);
         if (_device_status != openni::STATUS_OK)
-            printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+            spdlog::get(name)->warn("Couldn't find depth stream:\n{}", openni::OpenNI::getExtendedError());
 
         // get _depth options
         const openni::SensorInfo*               depthInfo  = _device.getSensorInfo(openni::SENSOR_DEPTH);
         const openni::Array<openni::VideoMode>& modesDepth = depthInfo->getSupportedVideoModes();
+#ifndef NDEBUG
         for (int i = 0; i < modesDepth.getSize(); i++) {
-            printf("Depth Mode %i: %ix%i, %i fps, %i format\n", i, modesDepth[i].getResolutionX(),
+            spdlog::get(name)->debug("Depth Mode {}: {}x{}, {} fps, {} format", i, modesDepth[i].getResolutionX(),
                    modesDepth[i].getResolutionY(), modesDepth[i].getFps(), modesDepth[i].getPixelFormat());
         }
+#endif
         _device_status = _depth.setVideoMode(modesDepth[DEPTH_MODE]);
         if (openni::STATUS_OK != _device_status)
-            std::cout << "error: depth fromat not supprted..." << std::endl;
+            spdlog::get(name)->error("error: depth fromat not supprted...");
         // start _depth stream
         _device_status = _depth.start();
         if (_device_status != openni::STATUS_OK)
-            std::cout << "Couldn't start the _depth stream" << openni::OpenNI::getExtendedError() << std::endl;
+            spdlog::get(name)->error("Couldn't start the _depth stream {}", openni::OpenNI::getExtendedError());
 
         /*_____________________________ COLOR ___________________________*/
         // create _color channel
         _device_status = _color.create(_device, openni::SENSOR_COLOR);
+#ifndef NDEBUG
         if (_device_status != openni::STATUS_OK)
-            printf("Couldn't find color stream:\n%s\n", openni::OpenNI::getExtendedError());
+            spdlog::get(name)->debug("Couldn't find color stream:\n{}", openni::OpenNI::getExtendedError());
+#endif
 
         // get _color options
         const openni::SensorInfo*               colorInfo  = _device.getSensorInfo(openni::SENSOR_COLOR);
         const openni::Array<openni::VideoMode>& modesColor = colorInfo->getSupportedVideoModes();
+#ifndef NDEBUG
         for (int i = 0; i < modesColor.getSize(); i++) {
-            printf("Color Mode %i: %ix%i, %i fps, %i format\n", i, modesColor[i].getResolutionX(),
+            spdlog::get(name)->debug("Color Mode {}: {}x{}, {} fps, {} format", i, modesColor[i].getResolutionX(),
                    modesColor[i].getResolutionY(), modesColor[i].getFps(), modesColor[i].getPixelFormat());
         }
+#endif
         _device_status = _color.setVideoMode(modesColor[RGB_MODE]);
         if (openni::STATUS_OK != _device_status)
-            std::cout << "error: color format not supprted..." << std::endl;
+            spdlog::get(name)->error("error: color format not supprted...");
         // start _color stream
         _device_status = _color.start();
+#ifndef NDEBUG
         if (_device_status != openni::STATUS_OK)
-            printf("Couldn't start color stream:\n%s\n", openni::OpenNI::getExtendedError());
-
+            spdlog::get(name)->debug("Couldn't start color stream:\n{}", openni::OpenNI::getExtendedError());
+#endif
         int min_fps = std::min(modesColor[RGB_MODE].getFps(), modesDepth[DEPTH_MODE].getFps());
         _time_sleep = static_cast<uint64_t>((1.0f / static_cast<float>(min_fps)) * 1000);
 

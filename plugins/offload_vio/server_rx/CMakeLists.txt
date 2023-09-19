@@ -32,6 +32,7 @@ PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../proto ${protob
 target_link_libraries(${PLUGIN_NAME}
         ${OpenCV_LIBS}
         protobuf::libprotobuf
+        spdlog::spdlog
         )
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)

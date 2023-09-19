@@ -37,6 +37,7 @@ public:
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , server_addr(SERVER_IP, SERVER_PORT_1) {
+        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
         socket.set_reuseaddr();
         socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
         socket.enable_no_delay();
@@ -64,9 +65,13 @@ public:
         });
         encoder->init();
 
-        std::cout << "TEST: Connecting to " << server_addr.str(":") << std::endl;
+#ifndef NDEBUG
+        spdlog::get(name)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
+#endif
         socket.connect(server_addr);
-        std::cout << "Connected to " << server_addr.str(":") << std::endl;
+#ifndef NDEBUG
+        spdlog::get(name)->debug("[offload_vio.revice_tx] Connected to {}", server_addr.str(":"));
+#endif
 
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
             this->prepare_imu_cam_data(datum);
