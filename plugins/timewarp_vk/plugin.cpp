@@ -12,9 +12,9 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/render_pass.hpp"
-#include "illixr/vk_util/vulkan_utils.hpp"
+#include "illixr/vk/display_sink.hpp"
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 #include "utils/hmd.hpp"
 
 #include <vulkan/vulkan_core.h>

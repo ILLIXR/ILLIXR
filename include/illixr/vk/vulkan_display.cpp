@@ -1,14 +1,14 @@
 #define VMA_IMPLEMENTATION
-#include "glfw_extended.h"
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/vulkan_utils.hpp"
-#include "wayland_drm.h"
-#include "x11_direct.h"
+#include "illixr/vk/display/glfw_extended.h"
+#include "illixr/vk/display/x11_direct.h"
+#include "illixr/vk/vulkan_utils.hpp"
 
 #include <set>
+#include <thread>
 
 using namespace ILLIXR;
 
@@ -21,8 +21,29 @@ public:
     explicit display_vk(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()} {
         auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
-        // convert to int
         selected_gpu = manual_device_selection ? std::stoi(manual_device_selection) : -1;
+
+        char* env_var = std::getenv("ILLIXR_DIRECT_MODE");
+        int direct_mode = env_var ? std::stoi(env_var) : -1;
+
+        setup(direct_mode);
+
+        if (direct_mode == -1) {
+            // if not using direct mode, start the main loop to poll glfw events
+            main_thread = std::thread(&display_vk::main_loop, this);
+            while (!ready) {
+                // yield
+                std::this_thread::yield();
+            }
+        }
+    }
+
+    ~display_vk() override {
+        running = false;
+        if (main_thread.joinable()) {
+            main_thread.join();
+        }
+        cleanup();
     }
 
     /**
@@ -427,6 +448,24 @@ private:
         backend->cleanup();
     }
 
+    void main_loop() {
+        ready = true;
+
+        while (running) {
+            if (should_poll.exchange(false)) {
+                auto glfw_backend = std::dynamic_pointer_cast<glfw_extended>(backend);
+                assert(glfw_backend != nullptr);
+                glfw_backend->poll_window_events();
+            }
+        }
+    }
+
+
+private:
+    std::thread                 main_thread;
+    std::atomic<bool>           ready{false};
+    std::atomic<bool>           running{true};
+
     int direct_mode{-1};
     int selected_gpu{-1};
 
@@ -436,62 +475,5 @@ private:
 
     std::atomic<bool> should_poll{true};
 
-    friend class display_vk_plugin;
+    friend class display_vk_runner;
 };
-
-class display_vk_plugin : public plugin {
-public:
-    display_vk_plugin(const std::string& name, phonebook* pb)
-        : plugin{name, pb}
-        , _dvk{std::make_shared<display_vk>(pb)}
-        , _pb{pb} {
-        _pb->register_impl<display_sink>(std::static_pointer_cast<display_sink>(_dvk));
-    }
-
-    void start() override {
-        // Check if we are using direct mode
-        char* env_var = std::getenv("ILLIXR_DIRECT_MODE");
-        int direct_mode = env_var ? std::stoi(env_var) : -1;
-
-        _dvk->setup(direct_mode);
-
-        if (direct_mode == -1) {
-            // if not using direct mode, start the main loop to poll glfw events
-            main_thread = std::thread(&display_vk_plugin::main_loop, this);
-            while (!ready) {
-                // yield
-                std::this_thread::yield();
-            }
-        }
-        
-    }
-
-    void stop() override {
-        running = false;
-        if (main_thread.joinable()) {
-            main_thread.join();
-        }
-        _dvk->cleanup();
-    }
-
-private:
-    std::thread                 main_thread;
-    std::atomic<bool>           ready{false};
-    std::shared_ptr<display_vk> _dvk;
-    std::atomic<bool>           running{true};
-    phonebook*                  _pb;
-
-    void main_loop() {
-        ready = true;
-
-        while (running) {
-            if (_dvk->should_poll.exchange(false)) {
-                auto glfw_backend = std::dynamic_pointer_cast<glfw_extended>(_dvk->backend);
-                assert(glfw_backend != nullptr);
-                glfw_backend->poll_window_events();
-            }
-        }
-    }
-};
-
-PLUGIN_MAIN(display_vk_plugin)

@@ -3,6 +3,9 @@
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
+#ifdef ILLIXR_VULKAN
+    #include "illixr/vk/vulkan_display.cpp"
+#endif
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
@@ -48,6 +51,9 @@ public:
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
         pb.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
+#endif
+#if !defined(ILLIXR_MONADO) && defined(ILLIXR_VULKAN)
+        pb.register_impl<display_sink>(std::make_shared<display_vk>(&pb));
 #endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());

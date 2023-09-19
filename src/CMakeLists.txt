@@ -1,10 +1,29 @@
+if(ILLIXR_VULKAN)
+    find_package(Vulkan REQUIRED)
+    find_package(glfw3 3.3 REQUIRED)
+    find_package(glm REQUIRED)
+
+    # X11
+    find_package(X11 REQUIRED)
+
+    add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
+
+    set(VULKAN_FILES
+            ../include/illixr/vk/vulkan_display.cpp
+            ../include/illixr/vk/display/x11_direct.h
+            ../include/illixr/vk/display/x11_direct.cpp
+            ../include/illixr/vk/display/glfw_extended.h
+            ../include/illixr/vk/display/glfw_extended.cpp)
+endif()
+
 add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
         src/main.cpp
         src/illixr.hpp
         src/cxxopts.hpp
         ../include/illixr/runtime.hpp
         ../include/illixr/phonebook.hpp
-        )
+        ${VULKAN_FILES}
+)
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
         src/plugin.cpp
         src/runtime_impl.cpp
@@ -12,7 +31,7 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
         src/cxxopts.hpp
         ../include/illixr/runtime.hpp
         ../include/illixr/phonebook.hpp
-        )
+)
 
 ##############
 # yaml parser
@@ -21,6 +40,16 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
 get_external(Yamlcpp)
 
 target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VISUALIZERS='${VIS_NAMES}'")
+
+if (ILLIXR_VULKAN)
+    target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe glfw)
+    target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${Vulkan_LIBRARIES})
+    target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${LIBDRM_INCLUDE_DIRS})
+
+    # X11
+    target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe ${X11_LIBRARIES})
+    target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${X11_INCLUDE_DIR})
+endif ()
 
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(main${ILLIXR_BUILD_SUFFIX}.exe dl stdc++fs plugin.main${ILLIXR_BUILD_SUFFIX})
