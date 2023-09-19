@@ -263,7 +263,7 @@ private:
                 offscreen_framebuffers[eye],              // framebuffer
                 {
                     {0, 0},              // offset
-                    ds->swapchain_extent // extent
+                    {ds->swapchain_extent.width / 2, ds->swapchain_extent.height} // extent
                 },                       // renderArea
                 clear_values.size(),     // clearValueCount
                 clear_values.data()      // pClearValues
@@ -381,8 +381,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                display_params::width_pixels,                                         // width
-                display_params::height_pixels,                                        // height
+                ds->swapchain_extent.width / 2,                                         // width
+                ds->swapchain_extent.height,                                        // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
@@ -438,8 +438,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                display_params::width_pixels,                                 // width
-                display_params::height_pixels,                                // height
+                ds->swapchain_extent.width / 2,                                 // width
+                ds->swapchain_extent.height,                                // height
                 1                                                             // depth
             },                                                                // extent
             1,                                                                // mipLevels
@@ -493,8 +493,8 @@ private:
                 app_pass,                                  // renderPass
                 static_cast<uint32_t>(attachments.size()), // attachmentCount
                 attachments.data(),                        // pAttachments
-                display_params::width_pixels,              // width
-                display_params::height_pixels,             // height
+                ds->swapchain_extent.width / 2,              // width
+                ds->swapchain_extent.height,             // height
                 1                                          // layers
             };
 

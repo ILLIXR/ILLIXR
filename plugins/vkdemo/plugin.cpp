@@ -792,18 +792,20 @@ private:
             VK_FALSE                                                     // primitiveRestartEnable
         };
 
+        auto per_eye_extent = VkExtent2D {ds->swapchain_extent.width / 2, ds->swapchain_extent.height};
+
         VkViewport viewport{
             0.0f,                                            // x
             0.0f,                                            // y
-            static_cast<float>(ds->swapchain_extent.width),  // width
-            static_cast<float>(ds->swapchain_extent.height), // height
+            static_cast<float>(per_eye_extent.width),  // width
+            static_cast<float>(per_eye_extent.height), // height
             0.0f,                                            // minDepth
             1.0f                                             // maxDepth
         };
 
         VkRect2D scissor{
             {0, 0},              // offset
-            ds->swapchain_extent // extent
+            per_eye_extent // extent
         };
 
         VkPipelineViewportStateCreateInfo viewport_state{

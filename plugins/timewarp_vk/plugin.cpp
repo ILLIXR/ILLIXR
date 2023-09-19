@@ -334,7 +334,7 @@ private:
 
     void generate_distortion_data() {
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, display_params::width_meters,
+        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width, ds->swapchain_extent.height, display_params::width_meters,
                                display_params::height_meters, display_params::lens_separation,
                                display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 

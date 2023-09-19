@@ -85,26 +85,75 @@ public:
 private:
 
     void create_vk_instance() {
-        vkb::InstanceBuilder builder;
-        auto                 instance_ret =
-            builder.set_app_name("ILLIXR Vulkan Display")
-                .require_api_version(1, 2)
-                .request_validation_layers()
-                .enable_validation_layers()
-                .set_debug_callback([](VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
-                                       VkDebugUtilsMessageTypeFlagsEXT             messageType,
-                                       const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
-                    auto severity = vkb::to_string_message_severity(messageSeverity);
-                    auto type     = vkb::to_string_message_type(messageType);
-                    spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, pCallbackData->pMessage);
-                    return VK_FALSE;
-                })
-                .build();
-        if (!instance_ret) {
-            ILLIXR::abort("Failed to create Vulkan instance. Error: " + instance_ret.error().message());
+        bool enable_validation_layers = true;
+
+        VkApplicationInfo app_info{VK_STRUCTURE_TYPE_APPLICATION_INFO};
+        app_info.pApplicationName   = "ILLIXR Vulkan Display";
+        app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+        app_info.pEngineName        = "ILLIXR";
+        app_info.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
+        app_info.apiVersion         = VK_API_VERSION_1_2;
+
+        auto backend_required_instance_extensions = backend->get_required_instance_extensions();
+        std::vector<const char*> backend_required_instance_extensions_vec(backend_required_instance_extensions.begin(), backend_required_instance_extensions.end());
+        if (enable_validation_layers) {
+            backend_required_instance_extensions_vec.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
-        vkb_instance = instance_ret.value();
-        vk_instance  = vkb_instance.instance;
+
+        VkInstanceCreateInfo create_info{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
+        create_info.pApplicationInfo        = &app_info;
+        create_info.enabledExtensionCount   = static_cast<uint32_t>(backend_required_instance_extensions_vec.size());
+        create_info.ppEnabledExtensionNames = backend_required_instance_extensions_vec.data();
+
+        // enable validation layers
+        const std::vector<const char*> validation_layers = {
+            "VK_LAYER_KHRONOS_validation"
+        };
+
+        if (enable_validation_layers) {
+            create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
+            create_info.ppEnabledLayerNames = validation_layers.data();
+
+            // debug messenger
+            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info{VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
+            debug_messenger_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+            debug_messenger_create_info.messageType     = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+            debug_messenger_create_info.pfnUserCallback = [](VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
+                                                             VkDebugUtilsMessageTypeFlagsEXT             messageType,
+                                                             const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
+                // convert severity flag to string
+                const char* severity = "???";
+                if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
+                    severity = "VERBOSE";
+                } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
+                    severity = "INFO";
+                } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+                    severity = "WARNING";
+                } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+                    severity = "ERROR";
+                }
+
+                // convert message type flag to string
+                const char* type = "???";
+                if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
+                    type = "GENERAL";
+                } else if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) {
+                    type = "VALIDATION";
+                } else if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) {
+                    type = "PERFORMANCE";
+                }
+                spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, pCallbackData->pMessage);
+                return VK_FALSE;
+            };
+
+            create_info.pNext = &debug_messenger_create_info;
+        } else {
+            create_info.enabledLayerCount = 0;
+        }
+
+        if (vkCreateInstance(&create_info, nullptr, &vk_instance) != VK_SUCCESS) {
+            ILLIXR::abort("Failed to create Vulkan instance!");
+        }
     }
 
     bool is_physical_device_suitable(VkPhysicalDevice const& physical_device) {
@@ -257,8 +306,12 @@ private:
             encode_queue.type   = vulkan_utils::queue::ENCODE;
             queues[encode_queue.type] = encode_queue;
 
-        std::cout << "present_mode: " << vkb_swapchain.present_mode << std::endl;
-        std::cout << "swapchain_extent: " << swapchain_extent.width << " " << swapchain_extent.height << std::endl;
+            vulkan_utils::queue decode_queue{};
+            vkGetDeviceQueue(vk_device, indices.decode_family.value(), 0, &decode_queue.vk_queue);
+            decode_queue.family = indices.decode_family.value();
+            decode_queue.type   = vulkan_utils::queue::DECODE;
+            queues[decode_queue.type] = decode_queue;
+        }
 
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
@@ -277,7 +330,7 @@ private:
 
         // choose surface format
         for (const auto& available_format : swapchain_details.formats) {
-            if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+            if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM &&
                 available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
                 swapchain_image_format = available_format;
                 break;
@@ -380,7 +433,6 @@ private:
     std::shared_ptr<display_backend> backend;
 
     const std::shared_ptr<switchboard> sb;
-    vkb::Instance                      vkb_instance;
 
     std::atomic<bool> should_poll{true};
 

@@ -31,10 +31,10 @@ struct display_params {
     static constexpr float lens_vertical_position = height_meters / 2.0f;
 
     // Display horizontal field-of-view in degrees
-    static constexpr float fov_x = 90.0f;
+    static constexpr float fov_x = 108.06f;
 
     // Display vertical field-of-view in degrees
-    static constexpr float fov_y = 90.0f;
+    static constexpr float fov_y = 109.16f;
 
     // Meters per tangent angle at the center of the HMD (required by timewarp_gl's distortion correction)
     static constexpr float meters_per_tan_angle = width_meters / (2 * (fov_x * M_PI / 180.0f));

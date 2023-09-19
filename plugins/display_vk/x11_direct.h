@@ -15,6 +15,7 @@ public:
     std::set<const char*> get_required_instance_extensions() override;
     VkDisplayKHR          display;
     VkPhysicalDevice      vk_physical_device;
+    VkDisplayModePropertiesKHR select_display_mode(std::vector<VkDisplayModePropertiesKHR> modes);
 };
 
 #endif // ILLIXR_X11_DIRECT_H

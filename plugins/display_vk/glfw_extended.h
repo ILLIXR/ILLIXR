@@ -11,6 +11,7 @@ class glfw_extended : public display_backend {
     void* window = nullptr;
 
 public:
+    glfw_extended();
     /**
      * @brief Sets up the GLFW environment.
      *

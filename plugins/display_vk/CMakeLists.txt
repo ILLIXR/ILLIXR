@@ -50,9 +50,6 @@ add_custom_target(
 add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        third_party/VkBootstrap.cpp
-        ../../include/illixr/vk_util/third_party/VkBootstrap.h
-        ../../include/illixr/vk_util/third_party/VkBootstrapDispatch.h
         ../../include/illixr/data_format.hpp
         ../../include/illixr/phonebook.hpp
         ../../include/illixr/switchboard.hpp

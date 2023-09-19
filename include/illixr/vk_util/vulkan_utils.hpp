@@ -25,7 +25,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/vulkan_utils.hpp"
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
