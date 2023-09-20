@@ -65,7 +65,7 @@ public:
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
-            , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
+        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
         spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
     }
 

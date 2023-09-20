@@ -31,9 +31,10 @@ public:
         , tw{pb->lookup_impl<timewarp>()}
         , src{pb->lookup_impl<app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-            , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
+        , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
         spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
     }
+
     /**
      * @brief Sets up the thread for the plugin.
      *

@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <spdlog//spdlog.h>
+#include <spdlog //spdlog.h>
 #include <string>
 
 typedef unsigned long long ullong;

@@ -102,7 +102,7 @@ protected:
 #ifndef NDEBUG
         for (int i = 0; i < modesDepth.getSize(); i++) {
             spdlog::get(name)->debug("Depth Mode {}: {}x{}, {} fps, {} format", i, modesDepth[i].getResolutionX(),
-                   modesDepth[i].getResolutionY(), modesDepth[i].getFps(), modesDepth[i].getPixelFormat());
+                                     modesDepth[i].getResolutionY(), modesDepth[i].getFps(), modesDepth[i].getPixelFormat());
         }
 #endif
         _device_status = _depth.setVideoMode(modesDepth[DEPTH_MODE]);
@@ -127,7 +127,7 @@ protected:
 #ifndef NDEBUG
         for (int i = 0; i < modesColor.getSize(); i++) {
             spdlog::get(name)->debug("Color Mode {}: {}x{}, {} fps, {} format", i, modesColor[i].getResolutionX(),
-                   modesColor[i].getResolutionY(), modesColor[i].getFps(), modesColor[i].getPixelFormat());
+                                     modesColor[i].getResolutionY(), modesColor[i].getFps(), modesColor[i].getPixelFormat());
         }
 #endif
         _device_status = _color.setVideoMode(modesColor[RGB_MODE]);

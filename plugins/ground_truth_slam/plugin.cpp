@@ -28,9 +28,10 @@ public:
         // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
         , _m_dataset_first_time{ViconRoom1Medium}
-            , _m_first_time{true} {
+        , _m_first_time{true} {
         spdlogger(std::getenv("GROUND_TRUTH_SLAM_LOG_LEVEL"));
     }
+
     void start() override {
         plugin::start();
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {

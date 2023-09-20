@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../error_util.hpp"
+
 #include <spdlog/spdlog.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION

@@ -25,13 +25,13 @@
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
-#define VK_ASSERT_SUCCESS(x)                                                                  \
-    {                                                                                         \
-        VkResult result = (x);                                                                \
-        if (result != VK_SUCCESS) {                                                           \
+#define VK_ASSERT_SUCCESS(x)                                                                        \
+    {                                                                                               \
+        VkResult result = (x);                                                                      \
+        if (result != VK_SUCCESS) {                                                                 \
             spdlog::get("illixr")->debug("[Vulkan] error: {}", vulkan_utils::error_string(result)); \
-            throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));  \
-        }                                                                                     \
+            throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
+        }                                                                                           \
     }
 
 class vulkan_utils {

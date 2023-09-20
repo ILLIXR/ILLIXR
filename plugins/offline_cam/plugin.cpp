@@ -20,9 +20,10 @@ public:
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
-            , next_row{_m_sensor_data.cbegin()} {
+        , next_row{_m_sensor_data.cbegin()} {
         spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
     }
+
     skip_option _p_should_skip() override {
         if (true) {
             return skip_option::run;

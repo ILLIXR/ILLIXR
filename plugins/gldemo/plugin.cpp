@@ -43,9 +43,10 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_image_handle{sb->get_writer<image_handle>("image_handle")}
-            , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} {
+        , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} {
         spdlogger(std::getenv("GLDEMO_LOG_LEVEL"));
     }
+
     // Essentially, a crude equivalent of XRWaitFrame.
     void wait_vsync() {
         switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();

@@ -196,8 +196,8 @@ public:
                                       std::chrono::high_resolution_clock::now().time_since_epoch())
                                       .count();
 
-            spdlog::get("illixr")->info("[cpu_timer]  cpu_timer,{},{},{},{},{},{}", name, serial_no, wall_time_start, wall_time_stop,
-                                        cpu_time_start, cpu_time_stop);
+            spdlog::get("illixr")->info("[cpu_timer]  cpu_timer,{},{},{},{},{},{}", name, serial_no, wall_time_start,
+                                        wall_time_stop, cpu_time_start, cpu_time_stop);
         }
     }
 };

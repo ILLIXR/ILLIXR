@@ -5,7 +5,7 @@
 #include <mutex>
 #include <shared_mutex>
 #ifndef NDEBUG
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
