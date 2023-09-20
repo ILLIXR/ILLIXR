@@ -1,0 +1,1 @@
+../../../plugins/vkdemo/README.md
