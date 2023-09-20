@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <utility>
 
@@ -44,7 +45,7 @@ public:
     ~dynamic_lib() {
 #ifndef NDEBUG
         if (!_m_lib_path.empty()) {
-            std::cout << "[dynamic_lib] Destructing library : " << _m_lib_path << std::endl;
+            spdlog::get("illixr")->debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
         }
 #endif /// NDEBUG
     }
@@ -75,7 +76,7 @@ public:
                          int   ret = dlclose(handle);
                          if ((error = dlerror()) || ret) {
                              const std::string msg_error{"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
-                             std::cerr << "[dynamic_lib] " << msg_error << std::endl;
+                             spdlog::get("illixr")->error("[dynamic_lib] {}", msg_error);
                              throw std::runtime_error{msg_error};
                          }
                      }},

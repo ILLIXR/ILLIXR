@@ -28,6 +28,7 @@ public:
         , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
         , is_success{true} /// TODO: Set with #198
         , obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
+        spdlogger(std::getenv("OFFLOAD_DATA_LOG_LEVEL"));
         sb->schedule<texture_pose>(id, "texture_pose", [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
             callback(datum);
         });
@@ -35,7 +36,7 @@ public:
 
     void callback(const switchboard::ptr<const texture_pose>& datum) {
 #ifndef NDEBUG
-        std::cout << "Image index: " << img_idx++ << std::endl;
+        spdlog::get(name)->debug("Image index: {}", img_idx++);
 #endif
         /// A texture pose is present. Store it back to our container.
         _offload_data_container.push_back(datum);
@@ -100,7 +101,7 @@ private:
     void writeDataToDisk() {
         stbi_flip_vertically_on_write(true);
 
-        std::cout << "Writing offloaded images to disk ... " << std::endl;
+        spdlog::get(name)->info("Writing offloaded images to disk...");
         img_idx = 0;
         for (auto& container_it : _offload_data_container) {
             // Get collecting time for each frame

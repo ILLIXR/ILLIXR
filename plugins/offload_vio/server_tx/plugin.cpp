@@ -21,6 +21,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_addr(CLIENT_IP, CLIENT_PORT_2) {
+        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
         socket.enable_no_delay();
@@ -43,10 +44,15 @@ public:
 
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
         socket.listen();
-        std::cout << "server_tx: Waiting for connection!" << std::endl;
+#ifndef NDEBUG
+        spdlog::get(name)->debug("[offload_vio.server_tx]: Waiting for connection!");
+#endif
         write_socket = new TCPSocket(FileDescriptor(system_call(
             "accept", ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-        std::cout << "server_tx: Connection is established with " << write_socket->peer_address().str(":") << std::endl;
+#ifndef NDEBUG
+        spdlog::get(name)->debug("[offload_vio.server_tx]: Connection is established with {}",
+                                 write_socket->peer_address().str(":"));
+#endif
     }
 
     void send_vio_output(const switchboard::ptr<const pose_type>& datum) {
@@ -139,7 +145,7 @@ public:
 
             delete vio_output_params;
         } else {
-            std::cout << "server_tx ERROR: write_socket is not yet created!" << std::endl;
+            spdlog::get(name)->error("[offload_vio.server_tx] ERROR: write_socket is not yet created!");
         }
     }
 

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <spdlog//spdlog.h>
 #include <string>
 
 typedef unsigned long long ullong;
@@ -22,7 +23,7 @@ typedef struct {
 static std::map<ullong, sensor_types> load_data() {
     const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
     if (!illixr_data_c_str) {
-        std::cerr << "Please define ILLIXR_DATA" << std::endl;
+        spdlog::get("illixr")->error("[offline_imu] Please define ILLIXR_DATA");
         ILLIXR::abort();
     }
     std::string illixr_data = std::string{illixr_data_c_str};
@@ -32,8 +33,7 @@ static std::map<ullong, sensor_types> load_data() {
     const std::string imu0_subpath = "/imu0/data.csv";
     std::ifstream     imu0_file{illixr_data + imu0_subpath};
     if (!imu0_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << imu0_subpath << " (" << illixr_data << imu0_subpath << ") is not a good path"
-                  << std::endl;
+        spdlog::get("illixr")->error("[offline_imu] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", imu0_subpath, illixr_data);
         ILLIXR::abort();
     }
     for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {

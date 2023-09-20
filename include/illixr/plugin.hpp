@@ -1,8 +1,12 @@
 #pragma once
 #include "phonebook.hpp"
 #include "record_logger.hpp"
+#include "spdlog/common.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <typeinfo>
 #include <utility>
@@ -51,6 +55,8 @@ public:
      * class's destructor is called before its parent (threadloop), so threadloop doesn't get a
      * chance to join the thread before the derived class is destroyed, and the thread accesses
      * freed memory. Instead, we call plugin->stop manually before destrying anything.
+     *
+     * Concrete plugins are responsible for initializing their specific logger and sinks.
      */
     virtual void stop() { }
 
@@ -65,6 +71,24 @@ public:
 
     [[nodiscard]] std::string get_name() const noexcept {
         return name;
+    }
+
+    void spdlogger(const char* log_level) {
+        if (!log_level) {
+#ifdef NDEBUG
+            log_level = "warn";
+#else
+            log_level = "debug";
+#endif
+        }
+        std::vector<spdlog::sink_ptr> sinks;
+        auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log");
+        auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        sinks.push_back(file_sink);
+        sinks.push_back(console_sink);
+        auto plugin_logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
+        plugin_logger->set_level(spdlog::level::from_str(log_level));
+        spdlog::register_logger(plugin_logger);
     }
 
 protected:

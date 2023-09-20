@@ -88,7 +88,7 @@ private:
                                        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
                     auto severity = vkb::to_string_message_severity(messageSeverity);
                     auto type     = vkb::to_string_message_type(messageType);
-                    printf("[%s: %s] %s\n", severity, type, pCallbackData->pMessage);
+                    spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, pCallbackData->pMessage);
                     return VK_FALSE;
                 })
                 .build();
@@ -162,9 +162,10 @@ private:
         swapchain_image_format = vkb_swapchain.image_format;
         swapchain_extent       = vkb_swapchain.extent;
 
-        std::cout << "present_mode: " << vkb_swapchain.present_mode << std::endl;
-        std::cout << "swapchain_extent: " << swapchain_extent.width << " " << swapchain_extent.height << std::endl;
-
+#ifndef NDEBUG
+        spdlog::get("illixr")->debug("[display_vk] present_mode: {}", vkb_swapchain.present_mode);
+        spdlog::get("illixr")->debug("[display_vk] swapchain_extent: {} {}", swapchain_extent.width, swapchain_extent.height);
+#endif
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 

@@ -61,7 +61,7 @@ std::shared_ptr<Camera> start_camera() {
     // Open the camera
     ERROR_CODE err = zedm->open(init_params);
     if (err != ERROR_CODE::SUCCESS) {
-        printf("%s\n", toString(err).c_str());
+        spdlog::get("illixr")->info("[zed] {}", toString(err).c_str());
         zedm->close();
     }
 

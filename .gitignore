@@ -5,6 +5,7 @@
 docs/build
 site/
 log/
+logs/
 imgui.ini
 .gdb_history
 output.*

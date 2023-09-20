@@ -5,6 +5,7 @@
 #define UTIL_HPP
 
 #include <cstring>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <sys/types.h>
 #include <vector>
@@ -65,12 +66,12 @@ void drop_privileges(void) {
 
     /* verify that the changes were successful. if not, abort */
     if (real_gid != eff_gid && (setegid(eff_gid) != -1 || getegid() != real_gid)) {
-        std::cerr << "BUG: dropping privileged gid failed" << std::endl;
+        spdlog::get("illixr")->error("[network.util] BUG: dropping privileged gid failed");
         _exit(EXIT_FAILURE);
     }
 
     if (real_uid != eff_uid && (seteuid(eff_uid) != -1 || geteuid() != real_uid)) {
-        std::cerr << "BUG: dropping privileged uid failed" << std::endl;
+        spdlog::get("illixr")->error("[network.util] BUG: dropping privileged uid failed");
         _exit(EXIT_FAILURE);
     }
 }

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <vector>
 
@@ -28,7 +29,7 @@
     {                                                                                         \
         VkResult result = (x);                                                                \
         if (result != VK_SUCCESS) {                                                           \
-            std::cerr << "Vulkan error: " << vulkan_utils::error_string(result) << std::endl; \
+            spdlog::get("illixr")->debug("[Vulkan] error: {}", vulkan_utils::error_string(result)); \
             throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));  \
         }                                                                                     \
     }

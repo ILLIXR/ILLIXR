@@ -1,6 +1,9 @@
 #include <chrono>
 #include <mutex>
 #include <list>
+#ifndef NDEBUG
+#include <spdlog/spdlog.h>
+#endif
 #include <thread>
 
 namespace moodycamel {
@@ -13,7 +16,9 @@ namespace moodycamel {
 		LockQueue(size_t) { }
 
 		bool try_dequeue(T& elem) {
-			std::cerr << "try_dequeue\n";
+#ifndef NDEBUG
+            spdlog::get("illixr")->debug("[queue] try_dequeue");
+#endif
 			std::lock_guard{mut};
 			if (!list.empty()) {
 				elem = list.front();
@@ -24,7 +29,7 @@ namespace moodycamel {
 		}
 
 		bool wait_dequeue_timed(T& elem, size_t usecs_) {
-			std::cerr << "wait_dequeue_timed\n";
+            spdlog::get("illixr")->debug("[queue] wait_dequeue_timed");
 			std::chrono::microseconds usecs {usecs_};
 			auto start = std::chrono::system_clock::now();
 			while (std::chrono::system_clock::now() < start + usecs) {
@@ -37,7 +42,7 @@ namespace moodycamel {
 		}
 
 		bool enqueue(T&& elem) {
-			std::cerr << "enqueue\n";
+            spdlog::get("illixr")->debug("[queue] enqueue");
 			std::lock_guard{mut};
 			list.emplace_back(elem);
 			return true;

@@ -48,7 +48,7 @@ Eigen::Matrix4f lookAt(const Eigen::Vector3f& eye, const Eigen::Vector3f& target
  * @brief Callback function to handle glfw errors
  */
 static void glfw_error_callback(int error, const char* description) {
-    std::cerr << "|| glfw error_callback: " << error << std::endl << "|> " << description << std::endl;
+    spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
     ILLIXR::abort();
 }
 
@@ -65,7 +65,9 @@ public:
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} { }
+            , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
+        spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
+    }
 
     void draw_GUI() {
         RAC_ERRNO_MSG("debugview at start of draw_GUI");
@@ -492,7 +494,7 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
         if (gui_window == nullptr) {
-            std::cerr << "Debug view couldn't create window " << __FILE__ << ":" << __LINE__ << std::endl;
+            spdlog::get(name)->error("couldn't create window {}:{}", __FILE__, __LINE__);
             ILLIXR::abort();
         }
 
@@ -510,7 +512,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            std::cerr << "[debugview] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
+            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
             glfwDestroyWindow(gui_window);
             ILLIXR::abort("[debugview] Failed to initialize GLEW");
         }
@@ -533,7 +535,7 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-        std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+        spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

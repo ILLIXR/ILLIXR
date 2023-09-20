@@ -28,8 +28,9 @@ public:
         // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
         , _m_dataset_first_time{ViconRoom1Medium}
-        , _m_first_time{true} { }
-
+            , _m_first_time{true} {
+        spdlogger(std::getenv("GROUND_TRUTH_SLAM_LOG_LEVEL"));
+    }
     void start() override {
         plugin::start();
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
@@ -42,7 +43,7 @@ public:
         auto   it           = _m_sensor_data.find(rounded_time);
         if (it == _m_sensor_data.end()) {
 #ifndef NDEBUG
-            std::cout << "True pose not found at timestamp: " << rounded_time << std::endl;
+            spdlog::get(name)->debug("True pose not found at timestamp: {}", rounded_time);
 #endif
             return;
         }
@@ -51,12 +52,10 @@ public:
             _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
 #ifndef NDEBUG
-        std::cout << "Ground truth pose was found at T: " << rounded_time << " | "
-                  << "Pos: (" << true_pose->position[0] << ", " << true_pose->position[1] << ", " << true_pose->position[2]
-                  << ")"
-                  << " | "
-                  << "Quat: (" << true_pose->orientation.w() << ", " << true_pose->orientation.x() << ", "
-                  << true_pose->orientation.y() << "," << true_pose->orientation.z() << ")" << std::endl;
+        spdlog::get(name)->debug("Ground truth pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
+                                 rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
+                                 true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(),
+                                 true_pose->orientation.z());
 #endif
 
         /// Ground truth position offset is the first ground truth position

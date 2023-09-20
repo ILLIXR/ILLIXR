@@ -4,6 +4,9 @@
 #include <list>
 #include <mutex>
 #include <shared_mutex>
+#ifndef NDEBUG
+#include <spdlog/spdlog.h>
+#endif
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
 #else
@@ -178,7 +181,9 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-            std::cerr << "Thread " << std::this_thread::get_id() << " start" << std::endl;
+            spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
+            spdlog::get("illixr")->debug("start");
+            spdlog::get("illixr")->set_pattern("%+");
 #endif
         }
 
@@ -284,7 +289,9 @@ private:
 
     public:
         topic_buffer() {
-            printf("topic buffer created");
+#ifndef NDEBUG
+            spdlog::get("illixr")->info("[switchboard] topic buffer created");
+#endif
         }
 
         void enqueue(ptr<const event>&& this_event) {
@@ -452,8 +459,8 @@ public:
             : _m_topic{topic_} {
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
-                std::cerr << "topic '" << _m_topic.name() << "' holds type " << _m_topic.ty().name() << ", but caller used type"
-                          << typeid(specific_event).name() << std::endl;
+                spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", _m_topic.name(),
+                                             _m_topic.ty().name(), typeid(specific_event).name());
                 abort();
             }
 #endif
@@ -590,8 +597,8 @@ private:
                 topic& topic_ = found->second;
 #ifndef NDEBUG
                 if (typeid(specific_event) != topic_.ty()) {
-                    std::cerr << "topic '" << topic_name << "' holds type " << topic_.ty().name() << ", but caller used type"
-                              << typeid(specific_event).name() << std::endl;
+                    spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_name,
+                                                 topic_.ty().name(), typeid(specific_event).name());
                     abort();
                 }
 #endif
@@ -600,7 +607,7 @@ private:
         }
 
 #ifndef NDEBUG
-        std::cerr << "Creating: " << topic_name << " for " << typeid(specific_event).name() << std::endl;
+        spdlog::get("illixr")->debug("[switchboard] Creating: {} for {}", topic_name, typeid(specific_event).name());
 #endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{_m_registry_lock};

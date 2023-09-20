@@ -8,6 +8,7 @@
 #include <map>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <utility>
 
@@ -54,7 +55,7 @@ typedef struct {
 static std::map<ullong, sensor_types> load_data() {
     const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
     if (!illixr_data_c_str) {
-        std::cerr << "Please define ILLIXR_DATA" << std::endl;
+        spdlog::get("illixr")->error("[offline_cam] Please define ILLIXR_DATA");
         ILLIXR::abort();
     }
     std::string illixr_data = std::string{illixr_data_c_str};
@@ -64,8 +65,7 @@ static std::map<ullong, sensor_types> load_data() {
     const std::string cam0_subpath = "/cam0/data.csv";
     std::ifstream     cam0_file{illixr_data + cam0_subpath};
     if (!cam0_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << cam0_subpath << " (" << illixr_data << cam0_subpath << ") is not a good path"
-                  << std::endl;
+        spdlog::get("illixr")->error("[offline_cam] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", cam0_subpath, illixr_data);
         ILLIXR::abort();
     }
     for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
@@ -76,8 +76,7 @@ static std::map<ullong, sensor_types> load_data() {
     const std::string cam1_subpath = "/cam1/data.csv";
     std::ifstream     cam1_file{illixr_data + cam1_subpath};
     if (!cam1_file.good()) {
-        std::cerr << "${ILLIXR_DATA}" << cam1_subpath << " (" << illixr_data << cam1_subpath << ") is not a good path"
-                  << std::endl;
+        spdlog::get("illixr")->error("[offline_cam] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", cam1_subpath, illixr_data);
         ILLIXR::abort();
     }
     for (CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {

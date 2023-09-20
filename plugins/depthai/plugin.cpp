@@ -30,8 +30,9 @@ public:
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
         , device{createCameraPipeline()} {
+        spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
 #ifndef NDEBUG
-        std::cout << "Depthai pipeline started" << std::endl;
+        spdlog::get(name)->debug("pipeline started");
 #endif
         colorQueue                             = device.getOutputQueue("preview", 1, false);
         depthQueue                             = device.getOutputQueue("depth", 1, false);
@@ -156,11 +157,12 @@ public:
 
     ~depthai() override {
 #ifndef NDEBUG
-        std::printf("Depthai Destructor: Packets Received %d Published: IMU: %d RGB-D: %d\n", imu_packet, imu_pub, rgbd_pub);
+        spdlog::get(name)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet, imu_pub, rgbd_pub);
         auto dur = std::chrono::steady_clock::now() - first_packet_time;
-        std::printf("Time since first packet: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
-        std::printf("Depthai RGB: %d Left: %d Right: %d Depth: %d All: %d\n", rgb_count, left_count, right_count, depth_count,
-                    all_count);
+        spdlog::get(name)->debug("Time since first packet: {} ms",
+                                 std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
+        spdlog::get(name)->debug("RGB: {} Left: {} Right: {} Depth: {} All: {}", rgb_count, left_count, right_count,
+                                 depth_count, all_count);
 #endif
     }
 
@@ -201,7 +203,7 @@ private:
 
     dai::Pipeline createCameraPipeline() const {
 #ifndef NDEBUG
-        std::cout << "Depthai creating pipeline" << std::endl;
+        spdlog::get(name)->debug("creating pipeline");
 #endif
         dai::Pipeline p;
 

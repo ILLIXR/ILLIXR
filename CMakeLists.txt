@@ -186,6 +186,8 @@ find_package(Git REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
+find_package(spdlog REQUIRED)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
 

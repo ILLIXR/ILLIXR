@@ -94,7 +94,6 @@ protected:
 private:
     void thread_main() {
         record_coalescer it_log{record_logger_};
-        std::cout << "thread," << std::this_thread::get_id() << ",threadloop," << name << std::endl;
 
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in

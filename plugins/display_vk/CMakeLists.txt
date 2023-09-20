@@ -52,7 +52,7 @@ add_dependencies(${PLUGIN_NAME} Display_VK_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
 target_link_libraries(${PLUGIN_NAME} glfw)
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD

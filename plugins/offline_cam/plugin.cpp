@@ -20,8 +20,9 @@ public:
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
-        , next_row{_m_sensor_data.cbegin()} { }
-
+            , next_row{_m_sensor_data.cbegin()} {
+        spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
+    }
     skip_option _p_should_skip() override {
         if (true) {
             return skip_option::run;
@@ -41,9 +42,9 @@ public:
 
         if (after_nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-            std::cerr << "Running out of the dataset! "
-                      << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
+            spdlog::get(name)->warn("Running out of the dataset! Time {} ({} + {}) after last datum {}", lookup_time,
+                                    _m_rtc->now().time_since_epoch().count(), dataset_first_time,
+                                    _m_sensor_data.rbegin()->first);
 #endif
             // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
             // to be nearest_row to avoiding sleeping at the end.
@@ -54,8 +55,9 @@ public:
         } else if (after_nearest_row == _m_sensor_data.cbegin()) {
             // Should not happen because lookup_time is bigger than dataset_first_time
 #ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
+            spdlog::get(name)->warn("Time {} ({} + {}) before first datum {}", lookup_time,
+                                    _m_rtc->now().time_since_epoch().count(), dataset_first_time,
+                                    _m_sensor_data.cbegin()->first);
 #endif
         } else {
             // Most recent

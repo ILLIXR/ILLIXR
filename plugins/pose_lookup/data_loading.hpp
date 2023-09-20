@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <spdlog/spdlog.h>
 #include <string>
 
 // timestamp
@@ -32,8 +33,9 @@ static std::map<ullong, sensor_types> load_data() {
     std::ifstream gt_file{illixr_data + "/state_groundtruth_estimate0/data.csv"};
 
     if (!gt_file.good()) {
-        std::cerr << "${ILLIXR_DATA}/state_groundtruth_estimate0/data.csv (" << illixr_data
-                  << "/state_groundtruth_estimate0/data.csv) is not a good path" << std::endl;
+        spdlog::get("illixr")->error("[poselookup] ${ILLIXR_DATA}/state_groundtruth_estimate0/data.csv "
+                                     "({})/state_groundtruth_estimate0/data.csv) is not a good path",
+                                     illixr_data);
         ILLIXR::abort();
     }
 

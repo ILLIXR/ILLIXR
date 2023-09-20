@@ -43,8 +43,9 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_image_handle{sb->get_writer<image_handle>("image_handle")}
-        , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} { }
-
+            , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} {
+        spdlogger(std::getenv("GLDEMO_LOG_LEVEL"));
+    }
     // Essentially, a crude equivalent of XRWaitFrame.
     void wait_vsync() {
         switchboard::ptr<const switchboard::event_wrapper<time_point>> next_vsync = _m_vsync.get_ro_nullable();
@@ -61,7 +62,7 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
-            std::cout << "\033[1;32m[GL DEMO APP]\033[0m First vsync is in " << vsync_in << "ms" << std::endl;
+            spdlog::get(name)->debug("First vsync is in {} ms", vsync_in);
         }
 #endif
 
@@ -82,7 +83,7 @@ public:
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
                 double wait_in = duration2double<std::milli>(wait_time - now);
-                std::cout << "\033[1;32m[GL DEMO APP]\033[0m Waiting until next vsync, in " << wait_in << "ms" << std::endl;
+                spdlog::get(name)->debug("Waiting until next vsync, in {} ms", wait_in);
             }
 #endif
             // Perform the sleep.
@@ -92,7 +93,7 @@ public:
         } else {
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
-                std::cout << "\033[1;32m[GL DEMO APP]\033[0m We haven't rendered yet, rendering immediately." << std::endl;
+                spdlog::get(name)->debug("We haven't rendered yet, rendering immediately");
             }
 #endif
         }
@@ -176,8 +177,8 @@ public:
         const double fps              = 1.0 / frame_duration_s;
 
         if (log_count > LOG_PERIOD) {
-            std::cout << "\033[1;32m[GL DEMO APP]\033[0m Submitting frame to buffer " << which_buffer
-                      << ", frametime: " << frame_duration_s << ", FPS: " << fps << std::endl;
+            spdlog::get(name)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s,
+                                     fps);
         }
 #endif
         lastTime = _m_clock->now();
@@ -260,7 +261,7 @@ private:
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    static void createFBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth_target) {
+    void createFBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth_target) {
         // Create a framebuffer to draw some things to the eye texture
         glGenFramebuffers(1, fbo);
 
@@ -275,7 +276,7 @@ private:
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         // Bind eyebuffer texture
-        std::cout << "About to bind eyebuffer texture, texture handle: " << *texture_handle << std::endl;
+        spdlog::get(name)->info("About to bind eyebuffer texture, texture handle: {}", *texture_handle);
 
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
         glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
@@ -297,8 +298,8 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            std::cerr << "[gldemo] GLEW Error: " << glewGetErrorString(glew_err) << std::endl;
-            ILLIXR::abort("[gldemo] Failed to initialize GLEW");
+            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            ILLIXR::abort("Failed to initialize GLEW");
         }
 
         glEnable(GL_DEBUG_OUTPUT);
@@ -321,7 +322,7 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-        std::cout << "Demo app shader program is program " << demoShaderProgram << std::endl;
+        spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");
