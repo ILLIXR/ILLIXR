@@ -95,7 +95,7 @@ Common CMake command line arguments (always prepend with a `-D`):
    Build the specifically named [plugin][22] (e.g `-DUSE_TIMEWARP_GL=ON` to build the timewarp_gl [plugin][22]). Any number of [plugins][22] can be specified on the command line in this fashion.
 
 An alternate to specifying the plugins as command line arguments is to create a [_YAML_][2] file which specifies the
-plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use.
+plugins to build. Using `-DYAML_FILE=&lt;FILE_NAME&gt;` as the command line argument specifying the [_YAML_][2] file to use. Note: You may need to specify the full path to the YAML_FILE.
 See [profile][23] for the format.
 
 The current list of plugins is: @FULL_PLUGIN_LIST_STRING@
