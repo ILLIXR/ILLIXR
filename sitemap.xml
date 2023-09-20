@@ -2,117 +2,142 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/CONTRIBUTING/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/LICENSE/</loc>
-         <lastmod>2022-04-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/building_illixr/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/debugging_illixr/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/external_switchboard_and_phonebook/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/getting_started/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/glossary/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/illixr_plugins/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/logging_and_metrics/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/modifying_a_plugin/</loc>
-         <lastmod>2022-04-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/monado_illixr_runtime_overview/</loc>
-         <lastmod>2022-04-08</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/monado_integration_dataflow/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/updating_tags_and_docs/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/using_cameras/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/virtualization/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://illixr.github.io/ILLIXR/docs/writing_your_plugin/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_debugview/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-audio/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_display_vk/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-efusion/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_fauxpose/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-hotlab/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_gldemo/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-openvins/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_native_renderer/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-ritnet/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_openni/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://illixr.github.io/ILLIXR/docs/legacy/v1/README-visualpp/</loc>
-         <lastmod>2022-04-08</lastmod>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_record_imu_cam/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_timewarp_gl/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_timewarp_vk/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_vkdemo/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/README_zed/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/monado_illixr_runtime_overview/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/monado_integration_dataflow/</loc>
+         <lastmod>2023-09-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://illixr.github.io/ILLIXR/docs/plugin_README/offload_vio/</loc>
+         <lastmod>2023-09-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

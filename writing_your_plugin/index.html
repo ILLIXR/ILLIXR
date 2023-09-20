@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="../css/code-box-copy.css" rel="stylesheet" />
+        <link href="../css/prism.min.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -34,7 +36,7 @@
           <a href=".." class="icon icon-home"> ILLIXR Docs
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -46,35 +48,71 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../building_illixr/">Building ILLIXR</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../using_cameras/">Using ILLIXR with Cameras</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../virtualization/">ILLIXR Under Virtualization</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugins</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../illixr_plugins/">ILLIXR Plugin Overview</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../modifying_a_plugin/">Modifying a Plugin</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Writing Your Plugin</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-plugin-common-case">Adding a New Plugin (Common Case)</a>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-plugin">Adding a New Plugin</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#simple-example">Simple Example</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-plugin-general-case">Adding a New Plugin (General Case)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#more-complex-example">More Complex Example</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#very-complex-example">Very Complex Example</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#external-plugins">External Plugins</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a>
     </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow</a>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Plugin Details</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_debugview/">Debugview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_display_vk/">Display_VK</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_fauxpose/">Fauxpose</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_gldemo/">Gldemo</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/monado_illixr_runtime_overview/">Monado Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/monado_integration_dataflow/">Monado Dataflow</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_native_renderer/">Native Renderer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/offload_vio/">Offload VIO</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_openni/">OpenNI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_record_imu_cam/">Record_imu_cam</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_timewarp_gl/">Timewarp_gl</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_timewarp_vk/">Timewarp_VK</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_vkdemo/">Vkdemo</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plugin_README/README_zed/">Zed</a>
+                </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../logging_and_metrics/">Logging and Metrics</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API</a>
+                  <li class="toctree-l1"><a class="" href="../api/html/annotated.html">ILLIXR API</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License</a>
                   </li>
@@ -83,23 +121,6 @@
                   <li class="toctree-l1"><a class="reference internal" href="../updating_tags_and_docs/">Updating Tags and Documentation</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../external_switchboard_and_phonebook/">Using Switchboard and Phonebook Externally</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Legacy Documentation (Version 1)</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/">ILLIXR</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-audio/">Audio Pipeline</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-efusion/">ElasticFusion</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-hotlab/">HOTlab</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-openvins/">OpenVINS</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-ritnet/">RITnet</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../legacy/v1/README-visualpp/">Visual Post-processing</a>
                   </li>
               </ul>
       </div>
@@ -115,90 +136,325 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Latest Documentation &raquo;</li><li>Writing Your Plugin</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+          <li>Latest Documentation &raquo;</li>
+      <li>Writing Your Plugin</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
   <hr/>
 </div>
-
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
                 <h1 id="writing-your-plugin">Writing Your Plugin</h1>
-<h2 id="adding-a-new-plugin-common-case">Adding a New Plugin (Common Case)</h2>
-<p>In the common case, you only need to define a <code>Makefile</code> with the line <code>include common/common.mk</code>
-    and symlink common (<code>ln -s ../common common</code>).
-The included recipe file provides the necessary targets and uses the compiler <code>$(CXX)</code>,
-    which is defined based on the OS and environment variables.
-The included <code>Makefile</code>:</p>
-<ul>
-<li>
-<p>Compiles <code>plugin.cpp</code> and any other <code>*.cpp</code> files into the plugin.</p>
-</li>
-<li>
-<p>Will invoke a recompile of the target any time any <code>*.hpp</code> or <code>*.cpp</code> file changes.</p>
-</li>
-<li>
-<p>Compiles with C++17.
-    You can change this in your plugin by defining
-        <code>STDCXX = ...</code> before the <code>include</code>.
-    This change will not affect other plugins; just yours.</p>
-</li>
-<li>
-<p>Accepts specifying libraries by appending to <code>LDFLAGS</code> and <code>CFLAGS</code>.
-    For example:</p>
-<!--- language: lang-makefile -->
-<pre><code>LDFLAGS := $(LDFLAGS) $(shell pkg-config --ldflags eigen3)
-CFLAGS  := $(CFLAGS) $(shell pkg-config --cflags eigen3)
+<h2 id="adding-a-new-plugin">Adding a New Plugin</h2>
+<p>To add a new plugin</p>
+<ol>
+<li>create a new subdirectory in the <code>plugins</code> directory named for your plugin (no spaces)</li>
+<li>put your code in this new subdirectory (additional subdirectories containing parts of your code are allowed)</li>
+<li>create a CMakeLists.txt file in this new subdirectory. See the template below</li>
+<li>add the plugin to the <code>profiles/plugins.yaml</code> file, the name must match the subdirectory you created; it should go in the <code>internal_plugins</code> entry</li>
+</ol>
+<p>For the examples below is for a plugin called tracker, so just replace any instance of tracker with
+the name of your plugin.</p>
+<h3 id="simple-example">Simple Example</h3>
+<pre><code class="language-cmake">1   set(TRACKER_SOURCES plugin.cpp
+2                       src/tracker.cpp
+3                       src/tracker.hpp)
+4
+5   set(PLUGIN_NAME plugin.tracker${ILLIXR_BUILD_SUFFIX})
+6
+7   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
+8
+9   target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include)
+10
+11  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+12
+13  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 </code></pre>
-<p>See the source for the other flags and variables that you can set.</p>
-</li>
-</ul>
-<p>Finally, place the path of your plugin directory in the <code>plugin_group</code> list
-    for the configuration you would like to run (e.g. <code>ILLIXR/configs/native.yaml</code>).</p>
-<h2 id="adding-a-new-plugin-general-case">Adding a New Plugin (General Case)</h2>
-<p>Each plugin can have a completely independent build system, as long as:</p>
+<table>
+<thead>
+<tr>
+<th>Line #</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3</td>
+<td>Specify the source code files individually, we discourage using  <code>GLOB</code>  or  <code>GLOB_RECURSE</code> to generate a list of files as these functions do not always notice when files change.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Put the plugin name into a variable (will also be the name of the library).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Tell the system we are building a shared library with the name  <code>PLUGIN_NAME</code> from the specified source files.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Tell the system about any non-standard include paths the compiler needs to be aware of. Always include <code>ILLIXR_SOURCE_DIR/include</code> in this, as this is where plugin.hpp and other ILLIXR common headers are.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Any compile options specific to this plugin. Usually this will be left as is.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Add the install directive. This should not need to change.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="more-complex-example">More Complex Example</h3>
+<p>In this example the plugin has external dependencies provided by OS repos, specifically glfw3, x11, glew, glu, opencv, and eigen3.</p>
+<pre><code class="language-cmake">1   set(TRACKER_SOURCES plugin.cpp
+2                       src/tracker.cpp
+3                       src/tracker.hpp)
+4
+5   set(PLUGIN_NAME plugin.tracker${ILLIXR_BUILD_SUFFIX})
+6
+7   find_package(glfw3 REQUIRED)
+8
+9   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
+10
+11  if(BUILD_OPENCV)
+12      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
+13  endif()
+14
+15  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
+16  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} dl pthread)
+17  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+18
+19  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Line#</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3</td>
+<td>Specify the source code files individually, we discourage using  <code>GLOB</code>  or  <code>GLOB_RECURSE</code> to generate a list of files as these functions do not always notice when files change.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Put the plugin name into a variable (will also be the name of the library).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Use the <code>find_package</code> directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. <code>find_package</code> assumes that there is an appropriate .cmake config file for the dependency on your system. If not the <code>pkg_check_module</code> function will perform the same task, but for dependencies which have associated .pc files on your system.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Tell the system we are building a shared library with the name   <code>PLUGIN_NAME</code>  from the specified source files.</td>
+</tr>
+<tr>
+<td>11-13</td>
+<td>OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use <code>find_package(OpenCV)</code>.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Tell the system about any non-standard include paths the compiler needs to be aware of. Always include <code>ILLIXR _SOURCE_DIR</code> in this, as this is where plugin.hpp and other ILLIXR common headers are.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Any compile options specific to this plugin. Usually this will be left as is.</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Add the install directive. This should not need to change.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Not all the dependencies were searched for by <code>find_package</code> in this example. This is because there is a set
+of dependencies which are very common to many plugins and their <code>find_package</code> calls are in the main ILLIXR CMakeLists.txt
+file and do not need to be searched for again. These packages are</p>
 <ul>
-<li>
-<p>It defines a <code>Makefile</code> with targets for <code>plugin.dbg.so</code>, <code>plugin.opt.so</code>, and <code>clean</code>.
-    Inside this <code>Makefile</code>, one can defer to another build system.</p>
-</li>
-<li>
-<p>Its compiler maintains <em>ABI compatibility</em> with the compilers used in every other plugin.
-    Using the same version of Clang or GCC on the same architecture is sufficient for this.</p>
-</li>
-<li>
-<p>Its path is in the <code>plugin_group</code> list for the configuration you would like
-        to run (e.g. <code>ILLIXR/configs/native.yaml</code>).</p>
-</li>
+<li>Glew</li>
+<li>Glu</li>
+<li>SQLite3</li>
+<li>X11</li>
+<li>Eigen3</li>
 </ul>
+<h3 id="very-complex-example">Very Complex Example</h3>
+<p>In this example the plugin has dependencies provided by OS repos, and a third party dependency provided by a git repo.</p>
+<pre><code class="language-cmake">1   set(TRACKER_SOURCES plugin.cpp
+2                       src/tracker.cpp
+3                       src/tracker.hpp)
+4
+5   set(PLUGIN_NAME plugin.tracker${ILLIXR_BUILD_SUFFIX})
+6
+7   find_package(glfw3 REQUIRED)
+8
+9   add_library(${PLUGIN_NAME} SHARED ${TRACKER_SOURCES})
+10
+11  get_external(Plotter)
+12
+13  add_dependencies(${PLUGIN_NAME} Plotter)
+14
+15  if(BUILD_OPENCV)
+16      add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
+17  endif()
+18
+19  target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${glfw3_INCLUDE_DIRS} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS} ${Plotter_INCLUDE_DIRS})
+20  target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${OpenCV_LIBRARIES} ${glfw3_LIBRARIES} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} ${Plotter_LIBRARIES} dl pthread)
+21  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
+22
+23  install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Line#</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3</td>
+<td>Specify the source code files individually, we discourage using  <code>GLOB</code>  or  <code>GLOB_RECURSE</code> to generate a list of files as these functions do not always notice when files change.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Put the plugin name into a variable (will also be the name of the library).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Use the <code>find_package</code> directive to locate any required dependencies. This will automatically populate variables containing header path and library names associated with the dependency. <code>find_package</code> assumes that there is an appropriate .cmake config file for the dependency on your system. If not the <code>pkg_check_module</code> function will perform the same task, but for dependencies which have associated .pc files on your system.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Tell the system we are building a shared library with the name   <code>PLUGIN_NAME</code>  from the specified source files.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Get the external project called Plotter.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Add the external package as a build dependency, this ensures that this plugin won't be built until after the dependency is.</td>
+</tr>
+<tr>
+<td>15-17</td>
+<td>OpenCV is a special case for a dependency. If your plugin requires OpenCV add these lines to your CMakeLists.txt file and do not use   <code>find_package(OpenCV)</code> .</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Tell the system about any non-standard include paths the compiler needs to be aware of. Always include <code>ILLIXR _SOURCE_DIR</code> in this, as this is where plugin.hpp and other ILLIXR common headers are.</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Tell the system about any libraries this plugin needs to link against (usually those associated with dependencies).</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Any compile options specific to this plugin. Usually this will be left as is.</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Add the install directive. This should not need to change.</td>
+</tr>
+</tbody>
+</table>
+<p>Additionally, to build and install the Plotter dependency you will need to create a cmake file in the <code>cmake</code> directory
+named <code>GetPlotter.cmake</code> (case matters, it must match the call to <code>get_external</code>) with the following content.</p>
+<pre><code class="language-cmake">1   find_package(Plotter QUIET)
+2
+3   if(Plotter_FOUND)
+4       set(Plotter_VERSION &quot;${Plotter_VERSION_MAJOR}&quot;)
+5   else()
+6       EXTERNALPROJECT_ADD(Plotter
+7               GIT_REPOSITORY https://github.com/mygit/Plotter.git
+8               GIT_TAG 4ff860838726a5e8ac0cbe59128c58a8f6143c6c
+9               PREFIX ${CMAKE_BINARY_DIR}/_deps/plotter
+10              CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release
+11              )
+12      set(Plotter_EXTERNAL Yes)
+13      set(Plotter_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
+14      set(Plotter_LIBRARIES plotter;alt_plotter)
+15endif()
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Line #</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>See if the package has been previously installed, quietly fail if not.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>If it was found, just record the installed version for reporting.</td>
+</tr>
+<tr>
+<td>6-11</td>
+<td>Add the Plotter package as a project called <code>Plotter</code> (also case sensitive)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>The git repo where the Plotter package is located.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>The git tag to use (can be a tag name or sha5 from a commit).</td>
+</tr>
+<tr>
+<td>9</td>
+<td>The build directory for the package.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Any camke arguments to pass to the Plotter build. The ones specified here are required, but any others can be added.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Denote that this is an external package (this is used for internal tracking).</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Set where the Plotter include files will land. Usually this will not need to change.</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Set which libraries are built by the Plotter package. In this example <code>libplotter.so</code> and <code>libalt_plotter.so</code> are being built.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-plugins">External Plugins</h3>
+<p>For plugins that are external packages (e.g. Audio_Pipeline) you need only create a <code>GetX.cmake</code> file as above and add the
+plugin name to the <code>external_plugins</code> list in <code>profiles/plugins.yaml</code>.</p>
+<p>External plugins with external dependencies are a bit more work, but are straight forward. See how Audio Pipeline is handled.</p>
 <h2 id="tutorial">Tutorial</h2>
 <p>You can extend ILLIXR for your own purposes.
 To add your own functionality via the plugin interface:</p>
 <ol>
 <li>
-<p>Create a new directory anywhere for your new plugin and set it up for ILLIXR.
-    We recommend you also push this plugin to a git repository on Github/Gitlab if you want it
-        as a part of upstream ILLIXR in the future.</p>
-<ul>
-<li>
-<p>Create a <code>Makefile</code> with the following contents.
-    See <a href="../building_illixr/">Building ILLIXR</a> for more details and alternative setups.</p>
-<!--- language: lang-makefile -->
-<pre><code>include common/common.mk
-</code></pre>
-</li>
-</ul>
+<p>Create a new directory for your plugin in one of these ways </p>
+<ol>
+<li>in the plugins directory of the main ILLIXR tree, then follow <a href="#adding-a-new-plugin">these instructions</a></li>
+<li>anywhere for your new plugin so it can be pushed as a git repository, the follow <a href="#adding-a-new-plugin">these instructions</a> focussing on <a href="#external-plugins">external plugins</a></li>
+</ol>
 </li>
 <li>
-<p>You must decide if your plugin should inherit the standardized <a href="../api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>
-        or <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
+<p>You must decide if your plugin should inherit the standardized <a href="api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>
+        or <a href="api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
 <ul>
 <li>
 <p>If your plugin just needs to run one computation repeatedly, then your
-        plugin class should extend <a href="../api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>. Your code goes in
+        plugin class should extend <a href="api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>. Your code goes in
         <code>_p_one_iteration</code>, which gets called in a hot loop. <code>threadloop</code>
         inherits from plugin, but adds threading functionality. If you don't
         use <code>_p_one_iteration</code>, inheriting from <code>threadloop</code> is superfluous;
@@ -207,12 +463,12 @@ To add your own functionality via the plugin interface:</p>
 <li>
 <p>If you need custom concurrency (more complicated than a loop), triggered
         concurrency (by events fired in other plugins), or no concurrency
-        then your plugin class should extend <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>. Your code goes
+        then your plugin class should extend <a href="api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>. Your code goes
         in the <code>start</code> method.</p>
 </li>
 <li>
 <p>If you want to schedule data-driven work in either case, call
-  <a href="../api/html/classILLIXR_1_1switchboard.html"><code>sb-&gt;schedule(...)</code></a>.</p>
+  <a href="api/html/classILLIXR_1_1switchboard.html"><code>sb-&gt;schedule(...)</code></a>.</p>
 </li>
 <li>
 <p>If you spin your own threads, they <strong>must</strong> wait for
@@ -231,9 +487,9 @@ To add your own functionality via the plugin interface:</p>
 <!--- language: lang-cpp -->
 <pre><code>/// A minimal/no-op ILLIXR plugin
 
-#include "common/phonebook.hpp"
-#include "common/plugin.hpp"
-#include "common/threadloop.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/threadloop.hpp"
 #include &lt;chrono&gt;
 #include &lt;thread&gt;
 
@@ -269,40 +525,11 @@ PLUGIN_MAIN(basic_plugin);
 </code></pre>
 </li>
 <li>
-<p>At this point, you should be able to build your plugin with ILLIXR.
-    Move to the ILLIXR repo and update <code>configs/native.yaml</code>.
-    If the new plugin is the same type as one of the other components you will need to
-        remove that component from the config before running the new component.
-    For example, if the new component is a SLAM then the old SLAM needs to be removed from
-        the config.
-    See <a href="../building_illixr/">Building ILLIXR</a> for more details on the config file.</p>
-<!--- language: lang-yaml -->
-<pre><code>plugin_groups:
-  - !include "rt_slam_plugins.yaml"
-  - !include "core_plugins.yaml"
-  - plugin_group:
-     - path: /PATH/TO/NEW/PLUGIN
-     - path: ground_truth_slam/
-     - path: gldemo/
-     - path: debugview/
-
-data:
-  subpath: mav0
-  relative_to:
-  archive_path:
-  download_url: 'http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip'
-  demo_data: demo_data/
-  loader:
-    name: native
-    # command: gdb -q --args %a
-    profile: opt
-</code></pre>
+<p>At this point, you should be able to build your plugin with ILLIXR using -DUSE<YOUR_PLUGIN_NAME>=ON as a command line argument to cmake.
+     See <a href="../getting_started/">Getting Started</a> for more details.</p>
 </li>
 <li>
-<p>Finally, run ILLIXR with your new plugin with the following command:</p>
-<!--- language: lang-shell -->
-<pre><code>./runner.sh configs/native.yaml
-</code></pre>
+<p>Finally, run ILLIXR with your new plugin following the instructions in <a href="../getting_started/">Getting Started</a>:</p>
 </li>
 <li>
 <p>This is all that is required to be a plugin which can be loaded by Spindle in
@@ -310,15 +537,15 @@ data:
     Reading and writing from Phonebook and Switchboard is optional,
         but nearly every plugin does it.
     See <code>default_plugins.md</code> for more details.</p>
-<p>First, we can query the <a href="../api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a> to get various services
-    including <a href="../api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a>.
-Then we query <a href="../api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics).
+<p>First, we can query the <a href="api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a> to get various services
+    including <a href="api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a>.
+Then we query <a href="api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics).
 We will read <code>topic1</code>, write to <code>topic2</code>, and schedule computation on <code>topic 3</code>.
 See the API documentation for <code>phonebook</code> and <code>switchboard</code> for more details.</p>
 <!--- language: lang-cpp -->
-<pre><code>#include "common/phonebook.hpp"
-#include "common/plugin.hpp"
-#include "common/threadloop.hpp"
+<pre><code>#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/threadloop.hpp"
 
 /* When datatypes have to be common across plugins
  *     (e.g. a phonebook service or switchboard topic),
@@ -397,7 +624,7 @@ PLUGIN_MAIN(plugin_name);
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../modifying_a_plugin/" class="btn btn-neutral float-left" title="Modifying a Plugin"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../monado_illixr_runtime_overview/" class="btn btn-neutral float-right" title="Monado Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../plugin_README/README_debugview/" class="btn btn-neutral float-right" title="Debugview">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -423,13 +650,16 @@ PLUGIN_MAIN(plugin_name);
       <span><a href="../modifying_a_plugin/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../monado_illixr_runtime_overview/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../plugin_README/README_debugview/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme_extra.js" defer></script>
     <script src="../js/theme.js" defer></script>
+      <script src="../js/clipboard.min.js" defer></script>
+      <script src="../js/code-box-copy.js" defer></script>
+      <script src="../js/prism.min.js" defer></script>
       <script src="../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

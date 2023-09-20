@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/updating_tags_and_docs/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/using_cameras/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Updating Tags and Documentation - ILLIXR Docs</title>
+    <title>Using ILLIXR with Cameras - ILLIXR Docs</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
@@ -14,9 +14,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Updating Tags and Documentation";
-        var mkdocs_page_input_path = "updating_tags_and_docs.md";
-        var mkdocs_page_url = "/ILLIXR/docs/updating_tags_and_docs/";
+        var mkdocs_page_name = "Using ILLIXR with Cameras";
+        var mkdocs_page_input_path = "using_cameras.md";
+        var mkdocs_page_url = "/ILLIXR/docs/using_cameras/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -48,7 +48,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../using_cameras/">Using ILLIXR with Cameras</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Using ILLIXR with Cameras</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#add-calibration-parameters">Add Calibration Parameters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#zed-mini">ZED Mini</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#intel-realsense">Intel Realsense</a>
+    </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging_illixr/">ILLIXR Debugging Tips</a>
                   </li>
@@ -102,13 +110,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contributing Guidelines</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Updating Tags and Documentation</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#updating-tags">Updating Tags</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#updating-documentation">Updating Documentation</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../updating_tags_and_docs/">Updating Tags and Documentation</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../external_switchboard_and_phonebook/">Using Switchboard and Phonebook Externally</a>
                   </li>
@@ -128,7 +130,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
           <li>Latest Documentation &raquo;</li>
-      <li>Updating Tags and Documentation</li>
+      <li>Using ILLIXR with Cameras</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -137,57 +139,76 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="updating-tags-and-documentation">Updating Tags and Documentation</h1>
-<h2 id="updating-tags">Updating Tags</h2>
-<p>For releases, perform these steps from <code>master</code> once the desired features have been merged in.</p>
+                <h1 id="using-cameras-with-illixr">Using Cameras with ILLIXR</h1>
+<p>ILLIXR supports a wide range of cameras, most of which are for the purpose of feeding images and IMU measurements to the system. <br>
+<em>To learn more about how it works, checkout <a href="../getting_started/">Getting Started</a>.</em> <br>
+<em>If you are interested in what topics these cameras feed into, checkout <a href="../illixr_plugins/">ILLIXR plugins</a>.</em></p>
+<p><strong>Important Note</strong>: <br>
+Before running any of these plugins below, it is important to comment out <code>offline_cam</code> and <code>offline_imu</code> in <code>configs\native.yaml</code>. <br></p>
+<h2 id="add-calibration-parameters">Add Calibration Parameters</h2>
+<p>In order to add your camera's calibration extrinsics, you need to modify your choice of SLAM/VIO plugin. Follow these instructions to <a href="../modifying_a_plugin/">modify a plugin</a>.</p>
+<ul>
+<li>
+<p><a href="https://github.com/ILLIXR/open_vins"><code>OpenVINS</code></a>:</p>
+<p>Navigate to <code>ov_msckf/src</code>.<br>
+Uncomment <a href="https://github.com/ILLIXR/open_vins/blob/43b42dddaf9d3b8e6257e0bb8a91053b59a677e4/ov_msckf/src/slam2.cpp#L24">this line</a> out in <code>slam2.cpp</code> in order to use ZED's calibration parameter for OpenVins. <br>
+You can add your own calibration parameters in the same file.     </p>
+</li>
+</ul>
+<h2 id="zed-mini">ZED Mini</h2>
 <ol>
 <li>
-<p>Get latest tags:</p>
-<!--- language: lang-none -->
-<pre><code>git pull --tags -f
-</code></pre>
+<p><strong>Install ZED SDK</strong> </p>
+<p>Install the latest version of the ZED SDK on <a href="https://www.stereolabs.com/docs/installation/linux/">stereolabs.com</a>.<br>
+For more information, checkout the <a href="https://www.stereolabs.com/docs/api/">ZED API documentation</a>.</p>
 </li>
 <li>
-<p>Tag your branch. Please use semantic versioning to name the tag; i.e., <code>v&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</code>:</p>
-<!--- language: lang-none -->
-<pre><code>git tag -f &lt;tag-name&gt; ## `-f` is required if updating an existing tag
+<p><strong>Get ZED's calibration parameters</strong></p>
+<p>Both OpenVINS have a decent calibration parameters for ZED. But if you wish to add your own: </p>
+<pre><code>/usr/local/zed/tools/ZED_Calibration
 </code></pre>
+<p>Your original factory calibration file is stored here</p>
+<pre><code>/usr/local/zed/settings/
+</code></pre>
+<p>Or download it from <a href="https://www.stereolabs.com/developers/calib/">calib.stereolabs.com</a>.</p>
 </li>
 <li>
-<p>Push your tag upstream:</p>
-<!--- language: lang-none -->
-<pre><code>git push origin --tags
-</code></pre>
+<p><strong>Enable ZED in OpenVINS plugin</strong></p>
+<p>This step is only required if using OpenVINS. Uncomment this <a href="https://github.com/ILLIXR/open_vins/blob/820a4dcba4423366233da1cb60d8b3b4bf2960e4/ov_msckf/src/slam2.cpp#L24">line</a> in the OpenVINS plugin. </p>
+</li>
+<li>
+<p><strong>Run ILLIXR with ZED:</strong>  </p>
+<p>Uncomment <code>zed</code> in <code>configs/rt_slam_plugins.yaml</code> and run ILLIXR normally.</p>
 </li>
 </ol>
-<h2 id="updating-documentation">Updating Documentation</h2>
-<p>Perform these steps from the root directory of the project.</p>
+<h2 id="intel-realsense">Intel Realsense</h2>
+<p>ILLIXR has been tested with Inteal RealSense D455, but it should work with any D or T series RealSense Camera. </p>
 <ol>
 <li>
-<p>Create the directory where the generated files will be placed:</p>
-<!--- language: lang-none -->
-<pre><code>mkdir -p site/api
+<p><strong>Install librealsense (if you haven't already):</strong></p>
+<p>Instruction on how to install can be found <a href="https://github.com/IntelRealSense/librealsense/blob/development/doc/distribution_linux.md">here</a>.</p>
+</li>
+<li>
+<p><strong>Get RealSense calibration parameters:</strong></p>
+<p>Navigate to <code>enumerate-devices</code></p>
+<pre><code>./PATH/TO/LIBREALSENSE/build/tools/enumerate-devices
+</code></pre>
+<p>Run this command to obtain the calibration parameters</p>
+<pre><code>./rs-enumerate-devices -c
 </code></pre>
 </li>
 <li>
-<p>Run <code>doxygen</code> to generate API documentation:</p>
-<!--- language: lang-none -->
-<pre><code>doxygen doxygen.conf
-</code></pre>
-</li>
-<li>
-<p>Run <code>mkdocs</code> to deploy new documentation:</p>
-<!--- language: lang-none -->
-<pre><code>mkdocs gh-deploy
-</code></pre>
+<p><strong>Run ILLIXR with RealSense:</strong>  </p>
+<p>Uncomment <code>realsense</code> in <code>configs/rt_slam_plugins.yaml</code> and run ILLIXR normally.</p>
+<p><em>Note:</em> We will release the corresponding <code>#define realsense</code> soon for OpenVINS + Realsense</p>
 </li>
 </ol>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../CONTRIBUTING/" class="btn btn-neutral float-left" title="Contributing Guidelines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../external_switchboard_and_phonebook/" class="btn btn-neutral float-right" title="Using Switchboard and Phonebook Externally">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../getting_started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../debugging_illixr/" class="btn btn-neutral float-right" title="ILLIXR Debugging Tips">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -210,10 +231,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../CONTRIBUTING/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../getting_started/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../external_switchboard_and_phonebook/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../debugging_illixr/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -1,7 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classILLIXR_1_1phonebook_1_1service.html" title="A &#39;service&#39; that can be registered in the phonebook. " alt="" coords="5,74,148,115"/>
-<area shape="rect" id="node2" href="$classILLIXR_1_1gen__guid.html" title="This class generates unique IDs. " alt="" coords="209,5,332,32"/>
-<area shape="rect" id="node3" href="$classILLIXR_1_1record__logger.html" title="The ILLIXR logging service for structured records. " alt="" coords="196,56,345,83"/>
-<area shape="rect" id="node4" href="$classILLIXR_1_1Stoplight.html" title="Start/stop synchronization for the whole application. " alt="" coords="209,107,332,133"/>
-<area shape="rect" id="node5" href="$classILLIXR_1_1switchboard.html" title="A manager for typesafe, threadsafe, named event&#45;streams (called topics). " alt="" coords="200,157,341,184"/>
-</map>

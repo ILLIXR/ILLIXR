@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://illixr.github.io/ILLIXR/docs/plugin_README/README_timewarp_gl/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Timewarp_gl - ILLIXR Docs</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="../../css/code-box-copy.css" rel="stylesheet" />
+        <link href="../../css/prism.min.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Timewarp_gl";
+        var mkdocs_page_input_path = "plugin_README/README_timewarp_gl.md";
+        var mkdocs_page_url = "/ILLIXR/docs/plugin_README/README_timewarp_gl/";
+      </script>
+    
+    <script src="../../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> ILLIXR Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Latest Documentation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../..">ILLIXR</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../using_cameras/">Using ILLIXR with Cameras</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../debugging_illixr/">ILLIXR Debugging Tips</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../virtualization/">ILLIXR Under Virtualization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../illixr_plugins/">ILLIXR Plugin Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../modifying_a_plugin/">Modifying a Plugin</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../writing_your_plugin/">Writing Your Plugin</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Plugin Details</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../README_debugview/">Debugview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_display_vk/">Display_VK</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_fauxpose/">Fauxpose</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_gldemo/">Gldemo</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../monado_illixr_runtime_overview/">Monado Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../monado_integration_dataflow/">Monado Dataflow</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_native_renderer/">Native Renderer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../offload_vio/">Offload VIO</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_openni/">OpenNI</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_record_imu_cam/">Record_imu_cam</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Timewarp_gl</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#switchboard-connection">Switchboard connection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#known-issues">Known Issues</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contributions">Contributions</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_timewarp_vk/">Timewarp_VK</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_vkdemo/">Vkdemo</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../README_zed/">Zed</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../logging_and_metrics/">Logging and Metrics</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">ILLIXR Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../../api/html/annotated.html">ILLIXR API</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../LICENSE/">ILLIXR License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../CONTRIBUTING/">Contributing Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../updating_tags_and_docs/">Updating Tags and Documentation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../external_switchboard_and_phonebook/">Using Switchboard and Phonebook Externally</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">ILLIXR Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+          <li>Latest Documentation &raquo;</li>
+          <li>Plugin Details &raquo;</li>
+      <li>Timewarp_gl</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="timewarp_gl">timewarp_gl</h1>
+<h2 id="summary">Summary</h2>
+<p><code>timewarp_gl</code> is an OpenGL-based asynchronous rotational reprojection plugin intended for use in the ILLIXR architecture. This plugin implements a rotational reprojection algorithm (i.e. does not reproject position, only rotation). </p>
+<h2 id="switchboard-connection">Switchboard connection</h2>
+<p><code>timewarp_gl</code> subscribes to and publishes to several Switchboard plugs and Phonebook resources.</p>
+<ul>
+<li>The plugin grabs the GL context from Phonebook. This is necessary to share the eyebuffers with the rendering application (or <code>gldemo</code>). As this is an OpenGL-based reprojection plugin, it relies on OpenGL resources for the eyebuffers.</li>
+<li><code>timewarp_gl</code> subscribes to the most recent pose published by the system. Currently, as our pose-prediction system is still under development, this is not technically accurate; the final, intended functionality is that the timewarp plugin will sample a pose prediction algorithm through an RPC-like mechanism. As we complete our work on our pose prediction system, this plugin will be modified to use this mechanism.</li>
+<li><code>timewarp_gl</code> also subscribes to the most recent frame published by the system. This frame data also includes the pose that was used to render the frame; this is how the timewarp algorithm calcuates the "diff" to be used to reproject the frame.</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<p>The rotational reprojection algorithm implemented in this plugin is a re-implementation of the algorithm used by the late Jan Paul van Waveren. His invaluable, priceless work in the area of AR/VR has made our project possible. View his codebase <a href="https://github.com/KhronosGroup/Vulkan-Samples-Deprecated/tree/master/samples/apps/atw">here.</a></p>
+<h2 id="known-issues">Known Issues</h2>
+<p>As noted above, this plugin currently samples <code>slow_pose</code>. This will be changed to sample a <code>fast_pose</code> topic through an RPC mechanism. In addition, JMP Van Waveren's algorithm includes a method for warping between two reprojection matrices based on the actual progress of the display controller's "scanline"; this is simply commented out in our code, but can be re-enabled when our pose prediction system comes online.</p>
+<h2 id="contributions">Contributions</h2>
+<p>Contributions are welcome; please raise an issue first, though, as many issues are known and may be a part of our existing internal backlog.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../README_record_imu_cam/" class="btn btn-neutral float-left" title="Record_imu_cam"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../README_timewarp_vk/" class="btn btn-neutral float-right" title="Timewarp_VK">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../README_record_imu_cam/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../README_timewarp_vk/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme_extra.js" defer></script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../js/clipboard.min.js" defer></script>
+      <script src="../../js/code-box-copy.js" defer></script>
+      <script src="../../js/prism.min.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
