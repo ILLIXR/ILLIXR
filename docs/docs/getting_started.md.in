@@ -281,13 +281,13 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         notes.innerHTML = "";
 
         if(selectedOS == "Ubuntu") {
-            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev";
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev";
             postnotes.innerHTML = "";
         } else if(selectedOS == "Fedora") {
-            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel";
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
         } else {
-            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel glibc-devel";
+            sudoLine = "sudo yum install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config vtk-devel eigen3-devel glibc-devel spdlog-devel";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postC") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2C") + "</li></ul>";
         }
 
