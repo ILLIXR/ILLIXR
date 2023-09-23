@@ -84,14 +84,16 @@ public:
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator = vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator =
+                vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
         generate_distortion_data();
-        command_pool   = vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
+        command_pool = vulkan::vulkan_utils::create_command_pool(
+            ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
@@ -260,7 +262,9 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+                                                   command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -320,7 +324,9 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+                                                   command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -331,8 +337,9 @@ private:
 
     void generate_distortion_data() {
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width, ds->swapchain_extent.height, display_params::width_meters,
-                               display_params::height_meters, display_params::lens_separation,
+        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width,
+                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height,
+                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
                                display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 
         // Construct timewarp meshes and other data
@@ -463,11 +470,11 @@ private:
         for (int eye = 0; eye < 2; eye++) {
             std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
-                       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-                       nullptr,                                        // pNext
-                       {},                                             // descriptorPool
-                       0,                                              // descriptorSetCount
-                       nullptr                                         // pSetLayouts
+                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+                nullptr,                                        // pNext
+                {},                                             // descriptorPool
+                0,                                              // descriptorSetCount
+                nullptr                                         // pSetLayouts
             };
             allocInfo.descriptorPool     = descriptor_pool;
             allocInfo.descriptorSetCount = buffer_pool[0].size();
@@ -519,8 +526,10 @@ private:
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.vert.spv"));
-        VkShaderModule frag   = vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.frag.spv"));
+        VkShaderModule vert =
+            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.vert.spv"));
+        VkShaderModule frag =
+            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -750,12 +759,12 @@ private:
         transform = texCoordProjection * deltaViewMatrix;
     }
 
-    const phonebook* const                 pb;
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<pose_prediction> pp;
-    bool                                   disable_warp = false;
-    std::shared_ptr<vulkan::display_provider>          ds           = nullptr;
-    std::mutex                             m_setup;
+    const phonebook* const                    pb;
+    const std::shared_ptr<switchboard>        sb;
+    const std::shared_ptr<pose_prediction>    pp;
+    bool                                      disable_warp = false;
+    std::shared_ptr<vulkan::display_provider> ds           = nullptr;
+    std::mutex                                m_setup;
 
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
@@ -832,7 +841,7 @@ public:
     }
 
 private:
-    std::shared_ptr<timewarp_vk>  tw;
+    std::shared_ptr<timewarp_vk>              tw;
     std::shared_ptr<vulkan::display_provider> ds;
 
     int64_t last_print = 0;

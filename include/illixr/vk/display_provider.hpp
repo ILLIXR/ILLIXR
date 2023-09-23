@@ -46,7 +46,7 @@ public:
     VkSurfaceFormatKHR       swapchain_image_format;
     std::vector<VkImage>     swapchain_images;
     std::vector<VkImageView> swapchain_image_views;
-    VkExtent2D               swapchain_extent;
+    VkExtent2D               swapchain_extent = {0, 0};
 
     // optional
     VmaAllocator vma_allocator;
