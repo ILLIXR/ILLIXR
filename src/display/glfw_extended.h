@@ -27,6 +27,7 @@ public:
     std::pair<uint32_t, uint32_t> get_framebuffer_size();
     void                          cleanup() override;
     std::set<const char*>         get_required_instance_extensions() override;
+    std::set<const char*>         get_required_device_extensions() override;
 
 private:
     VkSurfaceKHR create_surface() override;

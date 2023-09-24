@@ -17,6 +17,7 @@ public:
     virtual void         cleanup()        = 0;
 
     virtual std::set<const char*> get_required_instance_extensions() = 0;
+    virtual std::set<const char*> get_required_device_extensions()   = 0;
 };
 
 #endif // ILLIXR_DISPLAY_BACKEND_H

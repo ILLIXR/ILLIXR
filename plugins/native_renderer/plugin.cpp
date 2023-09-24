@@ -33,7 +33,8 @@ public:
         , tw{pb->lookup_impl<vulkan::timewarp>()}
         , src{pb->lookup_impl<vulkan::app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
+        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+        , last_fps_update{std::chrono::duration<long, std::nano>{0}}{
         spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
     }
 
@@ -145,7 +146,15 @@ public:
         VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
 
         // TODO: for DRM, get vsync estimate
-        std::this_thread::sleep_for(display_params::period / 6.0 * 5);
+        auto next_swap = _m_vsync.get_ro_nullable();
+        if (next_swap == nullptr) {
+            std::this_thread::sleep_for(display_params::period / 6.0 * 5);
+        } else {
+            // convert next_swap_time to std::chrono::time_point
+            auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
+            next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
+            std::this_thread::sleep_until(next_swap_time_point);
+        }
 
         // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
         tw->update_uniforms(fast_pose.pose);
@@ -186,7 +195,7 @@ public:
         // #ifndef NDEBUG
         // Print the FPS
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
-            // std::cout << "FPS: " << fps << std::endl;
+             std::cout << "renderer FPS: " << fps << std::endl;
             fps             = 0;
             last_fps_update = _m_clock->now();
         } else {
@@ -683,5 +692,6 @@ private:
 
     int        fps{};
     time_point last_fps_update;
+    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
 };
 PLUGIN_MAIN(native_renderer)

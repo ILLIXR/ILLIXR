@@ -64,3 +64,7 @@ glfw_extended::glfw_extended() {
     window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
                               "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
 }
+
+std::set<const char*> glfw_extended::get_required_device_extensions() {
+    return std::set<const char*>();
+}

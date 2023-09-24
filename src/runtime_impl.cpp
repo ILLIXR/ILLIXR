@@ -47,6 +47,7 @@ class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
+        pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
@@ -58,7 +59,6 @@ public:
         pb.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&pb));
 #endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
-        pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
     }
 
     void load_so(const std::vector<std::string>& so_paths) override {

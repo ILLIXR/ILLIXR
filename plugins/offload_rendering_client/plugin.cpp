@@ -13,12 +13,13 @@ using namespace ILLIXR;
 class offload_rendering_client : public threadloop, public vulkan::vk_extension_request {
 public:
     offload_rendering_client(const std::string& name, phonebook* pb)
-        : threadloop{name, pb} {
-
+        : threadloop{name, pb}
+        , log {spdlogger(nullptr)}{
     }
 
     void start() override {
         threadloop::start();
+        log->info("offload_rendering_client start");
     }
 
     void stop() override {
@@ -32,6 +33,7 @@ public:
     std::vector<const char*> get_required_devices_extensions() override {
         std::vector<const char*> device_extensions;
         device_extensions.push_back(VK_KHR_VIDEO_QUEUE_EXTENSION_NAME);
+        device_extensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
         device_extensions.push_back(VK_KHR_VIDEO_DECODE_QUEUE_EXTENSION_NAME);
         device_extensions.push_back(VK_KHR_VIDEO_DECODE_H264_EXTENSION_NAME);
         return device_extensions;
@@ -49,7 +51,7 @@ protected:
     void _p_one_iteration() override { }
 
 private:
-
+    std::shared_ptr<spdlog::logger> log;
 };
 
 PLUGIN_MAIN(offload_rendering_client)

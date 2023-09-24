@@ -73,7 +73,7 @@ public:
         return name;
     }
 
-    void spdlogger(const char* log_level) {
+    auto spdlogger(const char* log_level) {
         if (!log_level) {
 #ifdef NDEBUG
             log_level = "warn";
@@ -89,6 +89,7 @@ public:
         auto plugin_logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
         plugin_logger->set_level(spdlog::level::from_str(log_level));
         spdlog::register_logger(plugin_logger);
+        return plugin_logger;
     }
 
 protected:

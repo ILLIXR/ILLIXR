@@ -21,7 +21,7 @@ class display_vk : public vulkan::display_provider {
 
 public:
     explicit display_vk(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()} {
+        : sb{pb->lookup_impl<switchboard>()}, rc {pb->lookup_impl<RelativeClock>()} {
 
     }
 
@@ -42,13 +42,10 @@ public:
 
         setup(std::move(instance_extensions), std::move(device_extensions));
 
-        if (direct_mode == -1) {
-            // if not using direct mode, start the main loop to poll glfw events
-            main_thread = std::thread(&display_vk::main_loop, this);
-            while (!ready) {
-                // yield
-                std::this_thread::yield();
-            }
+        main_thread = std::thread(&display_vk::main_loop, this);
+        while (!ready) {
+            // yield
+            std::this_thread::yield();
         }
     }
 
@@ -61,7 +58,7 @@ public:
             backend = std::make_shared<glfw_extended>();
         } else {
             std::cout << "Using direct mode" << std::endl;
-            backend = std::make_shared<x11_direct>();
+            backend = std::make_shared<x11_direct>(rc, sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate"));
         }
 
         create_vk_instance(std::move(instance_extensions));
@@ -74,6 +71,9 @@ public:
             backend->setup_display(vk_instance, vk_physical_device);
             vk_surface = backend->create_surface();
         }
+
+        auto backend_device_extensions = backend->get_required_device_extensions();
+        device_extensions.insert(backend_device_extensions.begin(), backend_device_extensions.end());
         create_logical_device(std::move(device_extensions));
 
         create_swapchain();
@@ -310,9 +310,7 @@ private:
         create_info.ppEnabledExtensionNames = required_device_extensions.data();
         create_info.pNext                   = &timeline_semaphore_features;
 
-        if (vkCreateDevice(vk_physical_device, &create_info, nullptr, &vk_device) != VK_SUCCESS) {
-            ILLIXR::abort("Failed to create Vulkan logical device!");
-        }
+        VK_ASSERT_SUCCESS(vkCreateDevice(vk_physical_device, &create_info, nullptr, &vk_device));
 
         vulkan::vulkan_utils::queue graphics_queue{};
         vkGetDeviceQueue(vk_device, indices.graphics_family.value(), 0, &graphics_queue.vk_queue);
@@ -384,7 +382,7 @@ private:
             swapchain_extent.height = std::clamp(fb_size.second, swapchain_details.capabilities.minImageExtent.height, swapchain_details.capabilities.maxImageExtent.height);
         }
 
-        uint32_t image_count = std::max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
+        uint32_t image_count = std::min(swapchain_details.capabilities.minImageCount, 2u); // double buffering
         if (swapchain_details.capabilities.maxImageCount > 0 && image_count > swapchain_details.capabilities.maxImageCount) {
             image_count = swapchain_details.capabilities.maxImageCount;
         }
@@ -416,6 +414,8 @@ private:
         create_info.presentMode   = swapchain_present_mode;
         create_info.clipped       = VK_TRUE;
         create_info.oldSwapchain  = VK_NULL_HANDLE;
+
+        auto create_shared_swapchains = (PFN_vkCreateSharedSwapchainsKHR)vkGetInstanceProcAddr(vk_instance, "vkCreateSharedSwapchainsKHR");
 
         if (vkCreateSwapchainKHR(vk_device, &create_info, nullptr, &vk_swapchain) != VK_SUCCESS) {
             ILLIXR::abort("Failed to create Vulkan swapchain!");
@@ -460,10 +460,18 @@ private:
         ready = true;
 
         while (running) {
-            if (should_poll.exchange(false)) {
-                auto glfw_backend = std::dynamic_pointer_cast<glfw_extended>(backend);
-                assert(glfw_backend != nullptr);
-                glfw_backend->poll_window_events();
+            if (direct_mode == -1) {
+                if (should_poll.exchange(false)) {
+                    auto glfw_backend = std::dynamic_pointer_cast<glfw_extended>(backend);
+                    glfw_backend->poll_window_events();
+                }
+            } else {
+                auto x11_backend = std::dynamic_pointer_cast<x11_direct>(backend);
+                if (!x11_backend->display_timings_event_registered) {
+                    x11_backend->register_display_timings_event(vk_device);
+                } else {
+                    x11_backend->tick();
+                }
             }
         }
     }
@@ -484,4 +492,5 @@ private:
     std::atomic<bool> should_poll{true};
 
     friend class display_vk_runner;
+    std::shared_ptr<RelativeClock> rc;
 };
