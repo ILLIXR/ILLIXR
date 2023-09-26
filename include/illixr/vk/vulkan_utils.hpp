@@ -37,6 +37,8 @@
         }                                                                                     \
     }
 
+#define VK_GET_PROC_ADDR(instance, name) ((PFN_##name) vkGetInstanceProcAddr(instance, #name))
+
 namespace ILLIXR::vulkan {
 class vulkan_utils {
 public:

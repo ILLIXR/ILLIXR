@@ -2,8 +2,9 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk/vulkan_utils.hpp"
+#include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/vk_extension_request.h"
+#include "illixr/vk/vulkan_utils.hpp"
 
 #include <cstdlib>
 #include <set>
@@ -14,12 +15,12 @@ class offload_rendering_client : public threadloop, public vulkan::vk_extension_
 public:
     offload_rendering_client(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
+        , dp {pb->lookup_impl<vulkan::display_provider>()}
         , log {spdlogger(nullptr)}{
     }
 
     void start() override {
         threadloop::start();
-        log->info("offload_rendering_client start");
     }
 
     void stop() override {
@@ -52,6 +53,7 @@ protected:
 
 private:
     std::shared_ptr<spdlog::logger> log;
+    std::shared_ptr<vulkan::display_provider> dp;
 };
 
 PLUGIN_MAIN(offload_rendering_client)
