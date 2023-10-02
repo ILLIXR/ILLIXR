@@ -23,7 +23,7 @@ profile:
 profile:
   name: monado_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
-  visualizers: openvins
+  visualizers: openvins,orb_slam
   build_flags: -DILLIXR_MONADO
   use_monado: true
   enable_offload: false
@@ -34,7 +34,7 @@ profile:
 profile:
   name: monado_vk
   plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk,audio_pipeline
-  visualizers: openvins
+  visualizers: openvins,orb_slam
   use_monado: true
   build_flags: -DILLIXR_VULKAN
   build_type: Release
@@ -46,7 +46,7 @@ profile:
 profile:
   name: native_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
-  visualizers: openvins
+  visualizers: openvins,orb_slam
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -55,7 +55,7 @@ profile:
 profile:
   name: native_vk
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,timewarp_vk,vkdemo,native_renderer,debugview
-  visualizers: openvins
+  visualizers: openvins,orb_slam
   build_flags: -DILLIXR_VULKAN
   build_type: Release
   enable_offload: false
@@ -66,7 +66,7 @@ profile:
 profile:
   name: native_lookup
   plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
-  visualizers: openvins
+  visualizers: openvins,orb_slam
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -84,7 +84,7 @@ profile:
 profile:
   name: offload_monado_vk
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
-  visualizers: openvins
+  visualizers: openvins,orb_slam
   use_monado: true
   build_flags: -DILLIXR_VULKAN
   enable_offload: false
