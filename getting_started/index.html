@@ -128,7 +128,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="../api/html/annotated.html">ILLIXR API</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License</a>
                   </li>
@@ -483,6 +483,7 @@ If you want to add your own plugin, see <a href="../writing_your_plugin/">Writin
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -522,6 +523,7 @@ If you want to add your own plugin, see <a href="../writing_your_plugin/">Writin
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -685,6 +687,7 @@ If you want to add your own plugin, see <a href="../writing_your_plugin/">Writin
         "OpenXR",
         "Vulkan",
         "libusb",
+        "libuvc",
         "SDL2"
       ]
     },
@@ -698,6 +701,7 @@ If you want to add your own plugin, see <a href="../writing_your_plugin/">Writin
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -720,6 +724,7 @@ If you want to add your own plugin, see <a href="../writing_your_plugin/">Writin
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -1255,6 +1260,43 @@ If you want to add your own plugin, see <a href="../writing_your_plugin/">Writin
               "pkg": "libusb1-devel",
               "postnotes": "",
               "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libuvc": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            },
+            "38": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "CentOS does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
             }
           }
         }

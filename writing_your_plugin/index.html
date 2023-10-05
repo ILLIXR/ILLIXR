@@ -112,7 +112,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../glossary/">ILLIXR Glossary</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="../api/html/annotated.html">ILLIXR API</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../api/html/annotated.html">ILLIXR API</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../LICENSE/">ILLIXR License</a>
                   </li>
@@ -449,12 +449,12 @@ To add your own functionality via the plugin interface:</p>
 </ol>
 </li>
 <li>
-<p>You must decide if your plugin should inherit the standardized <a href="api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>
-        or <a href="api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
+<p>You must decide if your plugin should inherit the standardized <a href="../api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>
+        or <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>.</p>
 <ul>
 <li>
 <p>If your plugin just needs to run one computation repeatedly, then your
-        plugin class should extend <a href="api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>. Your code goes in
+        plugin class should extend <a href="../api/html/classILLIXR_1_1threadloop.html"><code>threadloop</code></a>. Your code goes in
         <code>_p_one_iteration</code>, which gets called in a hot loop. <code>threadloop</code>
         inherits from plugin, but adds threading functionality. If you don't
         use <code>_p_one_iteration</code>, inheriting from <code>threadloop</code> is superfluous;
@@ -463,12 +463,12 @@ To add your own functionality via the plugin interface:</p>
 <li>
 <p>If you need custom concurrency (more complicated than a loop), triggered
         concurrency (by events fired in other plugins), or no concurrency
-        then your plugin class should extend <a href="api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>. Your code goes
+        then your plugin class should extend <a href="../api/html/classILLIXR_1_1plugin.html"><code>plugin</code></a>. Your code goes
         in the <code>start</code> method.</p>
 </li>
 <li>
 <p>If you want to schedule data-driven work in either case, call
-  <a href="api/html/classILLIXR_1_1switchboard.html"><code>sb-&gt;schedule(...)</code></a>.</p>
+  <a href="../api/html/classILLIXR_1_1switchboard.html"><code>sb-&gt;schedule(...)</code></a>.</p>
 </li>
 <li>
 <p>If you spin your own threads, they <strong>must</strong> wait for
@@ -537,9 +537,9 @@ PLUGIN_MAIN(basic_plugin);
     Reading and writing from Phonebook and Switchboard is optional,
         but nearly every plugin does it.
     See <code>default_plugins.md</code> for more details.</p>
-<p>First, we can query the <a href="api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a> to get various services
-    including <a href="api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a>.
-Then we query <a href="api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics).
+<p>First, we can query the <a href="../api/html/classILLIXR_1_1phonebook.html"><code>phonebook</code></a> to get various services
+    including <a href="../api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a>.
+Then we query <a href="../api/html/classILLIXR_1_1switchboard.html"><code>switchboard</code></a> for event-streams (topics).
 We will read <code>topic1</code>, write to <code>topic2</code>, and schedule computation on <code>topic 3</code>.
 See the API documentation for <code>phonebook</code> and <code>switchboard</code> for more details.</p>
 <!--- language: lang-cpp -->
