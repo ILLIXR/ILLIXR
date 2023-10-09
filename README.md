@@ -62,7 +62,7 @@ Many of the current components of ILLIXR were developed by domain experts and ob
     publicly available repositories.
 They were modified for one or more of the following reasons: fixing compilation, adding features,
     or removing extraneous code or dependencies.
-Each component not developed by us is available as a forked github repository for
+Each component not developed by us is available as a forked GitHub repository for
     proper attribution to its authors.
 
 # Papers, talks, demos, consortium
@@ -80,7 +80,7 @@ For more up-to-date list of related papers, demos, and talks, please visit [illi
 
 The [ILLIXR consortium][37] is an industry-supported community effort to democratize
     XR systems research, development, and benchmarking.
-Visit our [web site][37] for more information.
+Visit our [website][37] for more information.
 
 The ILLIXR consortium is also holding a biweekly consortium meeting. For past meetings, for more information, past meeting recordings, and request for presenting, please visit [here][50]. Please join our [Discord][47] for announcement. 
 
@@ -90,15 +90,21 @@ We request that you cite our following [paper][8] when you use ILLIXR for a publ
 We would also appreciate it if you send us a citation once your work has been published.
 
 ```
-@inproceedings{HuzaifaDesai2021,
-  author={Huzaifa, Muhammad and Desai, Rishi and Grayson, Samuel and Jiang, Xutao and Jing, Ying and Lee, Jae and Lu, Fang and Pang, Yihan and Ravichandran, Joseph and Sinclair, Finn and Tian, Boyuan and Yuan, Hengzhi and Zhang, Jeffrey and Adve, Sarita V.},
-  booktitle={2021 IEEE International Symposium on Workload Characterization (IISWC)}, 
-  title={ILLIXR: Enabling End-to-End Extended Reality Research}, 
-  year={2021},
-  volume={},
-  number={},
-  pages={24-38},
-  doi={10.1109/IISWC53511.2021.00014}
+@ARTICLE {9741292,
+author = {M. Huzaifa and R. Desai and S. Grayson and X. Jiang and Y. Jing and J. Lee and F. Lu and Y. Pang and J. Ravichandran and F. Sinclair and B. Tian and H. Yuan and J. Zhang and S. V. Adve},
+journal = {IEEE Micro},
+title = {ILLIXR: An Open Testbed to Enable Extended Reality Systems Research},
+year = {2022},
+volume = {42},
+number = {04},
+issn = {1937-4143},
+pages = {97-106},
+abstract = {We present Illinois Extended Reality testbed (ILLIXR), the first fully open-source XR system and research testbed. ILLIXR enables system innovations with end-to-end co-designed hardware, compiler, OS, and algorithms, and driven by end-user perceived Quality-of-Experience (QoE) metrics. Using ILLIXR, we provide the first comprehensive quantitative analysis of performance, power, and QoE for a complete XR system and its individual components. We describe several implications of our results that propel new directions in architecture, systems, and algorithms research for domain-specific systems in general, and XR in particular.},
+keywords = {x reality;pipelines;measurement;visualization;cameras;runtime;headphones},
+doi = {10.1109/MM.2022.3161018},
+publisher = {IEEE Computer Society},
+address = {Los Alamitos, CA, USA},
+month = {jul}
 }
 ```
 
@@ -177,7 +183,7 @@ As mentioned above, ILLIXR largely consists of components developed by domain ex
     modified for the purposes of inclusion in ILLIXR.
 However, ILLIXR does contain software developed solely by us.
 **The NCSA license is limited to only this software**.
-The external libraries and softwares included in ILLIXR each have their own licenses and
+The external libraries and software included in ILLIXR each have their own licenses and
     must be used according to those licenses:
 
 -   [ElasticFusion][14] \ [ElasticFusion license][15]
@@ -224,7 +230,7 @@ You can join
 [5]:    https://github.com/ILLIXR/visual_postprocessing
 [6]:    https://github.com/ILLIXR/HOTlab
 [7]:    https://github.com/ILLIXR
-[8]:    https://ieeexplore.ieee.org/abstract/document/9668280
+[8]:    https://ieeexplore.ieee.org/abstract/document/9741292
 [9]:    http://rsim.cs.illinois.edu
 [10]:   https://monado.dev
 [11]:   https://research.fb.com/programs/openeds-challenge
