@@ -140,6 +140,15 @@ public:
         return this_specific_service;
     }
 
+    template<typename specific_service>
+    bool has_impl() const {
+        const std::shared_lock<std::shared_mutex> lock{_m_mutex};
+
+        const std::type_index type_index = std::type_index(typeid(specific_service));
+
+        return _m_registry.count(type_index) == 1;
+    }
+
 private:
     std::unordered_map<std::type_index, const std::shared_ptr<service>> _m_registry;
     mutable std::shared_mutex                                           _m_mutex;

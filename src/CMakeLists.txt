@@ -4,7 +4,9 @@ add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
         src/cxxopts.hpp
         ../include/illixr/runtime.hpp
         ../include/illixr/phonebook.hpp
-        )
+        ../include/illixr/network/topic_config.hpp
+        ../include/illixr/network/network_backend.hpp
+)
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
         src/plugin.cpp
         src/runtime_impl.cpp
