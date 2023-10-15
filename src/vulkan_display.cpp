@@ -127,6 +127,8 @@ private:
         backend_required_instance_extensions_vec.insert(backend_required_instance_extensions_vec.end(),
                                                         instance_extensions.begin(), instance_extensions.end());
 
+        this->enabled_instance_extensions = backend_required_instance_extensions_vec;
+
         VkInstanceCreateInfo create_info{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
         create_info.pApplicationInfo        = &app_info;
         create_info.enabledExtensionCount   = static_cast<uint32_t>(backend_required_instance_extensions_vec.size());
@@ -300,15 +302,22 @@ private:
             VK_TRUE  // timelineSemaphore
         };
 
+        features = VkPhysicalDeviceFeatures2 {
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+            &timeline_semaphore_features,
+            device_features
+        };
+
         required_device_extensions.insert(required_device_extensions.end(), device_extensions.begin(), device_extensions.end());
+
+        this->enabled_device_extensions = required_device_extensions;
 
         VkDeviceCreateInfo create_info{VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
         create_info.pQueueCreateInfos       = queue_create_infos.data();
         create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
-        create_info.pEnabledFeatures        = &device_features;
         create_info.enabledExtensionCount   = static_cast<uint32_t>(required_device_extensions.size());
         create_info.ppEnabledExtensionNames = required_device_extensions.data();
-        create_info.pNext                   = &timeline_semaphore_features;
+        create_info.pNext                   = &features;
 
         VK_ASSERT_SUCCESS(vkCreateDevice(vk_physical_device, &create_info, nullptr, &vk_device));
 
@@ -338,6 +347,14 @@ private:
             decode_queue.family = indices.decode_family.value();
             decode_queue.type   = vulkan::vulkan_utils::queue::DECODE;
             queues[decode_queue.type] = decode_queue;
+        }
+
+        if (indices.compute_family.has_value()) {
+            vulkan::vulkan_utils::queue compute_queue{};
+            vkGetDeviceQueue(vk_device, indices.compute_family.value(), 0, &compute_queue.vk_queue);
+            compute_queue.family = indices.compute_family.value();
+            compute_queue.type   = vulkan::vulkan_utils::queue::COMPUTE;
+            queues[compute_queue.type] = compute_queue;
         }
 
         vma_allocator = vulkan::vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
@@ -493,4 +510,5 @@ private:
 
     friend class display_vk_runner;
     std::shared_ptr<RelativeClock> rc;
+
 };

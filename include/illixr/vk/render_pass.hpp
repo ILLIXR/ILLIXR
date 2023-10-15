@@ -4,13 +4,16 @@
 #define GLFW_INCLUDE_VULKAN
 #include "../data_format.hpp"
 #include "../phonebook.hpp"
+#include "vulkan_objects.hpp"
 
 #include <GLFW/glfw3.h>
 
 using namespace ILLIXR;
 
-namespace ILLIXR::vulkan { // render_pass defines the interface for a render pass. For now, it is only used for timewarp and
-                           // app.
+namespace ILLIXR::vulkan {
+
+// render_pass defines the interface for a render pass. For now, it is only used for timewarp and
+// app.
 class render_pass : public phonebook::service {
 public:
     /**
@@ -29,7 +32,9 @@ public:
     ~render_pass() override = default;
 
     VkPipeline pipeline = VK_NULL_HANDLE;
-}; // timewarp defines the interface for a warping render pass as a service.
+};
+
+// timewarp defines the interface for a warping render pass as a service.
 class timewarp : public render_pass {
 public:
     /**
@@ -40,7 +45,8 @@ public:
      * @param buffer_pool The buffer pool to use.
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool,
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<buffer_pool<pose_type>> buffer_pool,
                        bool input_texture_vulkan_coordinates) = 0;
     /**
      * @brief Record a command buffer for a given eye.
@@ -50,7 +56,9 @@ public:
      * @param left Whether to render the left eye or the right eye. True for left eye, false for right eye.
      */
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) = 0;
-}; // app defines the interface for an application render pass as a service.
+};
+
+// app defines the interface for an application render pass as a service.
 class app : public render_pass {
 public:
     /**

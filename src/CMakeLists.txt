@@ -11,6 +11,7 @@ if(ILLIXR_VULKAN)
             src/display/glfw_extended.h
             src/display/glfw_extended.cpp
             ../include/illixr/vk/vk_extension_request.h
+            ../include/illixr/vk/vulkan_objects.hpp
     )
 else ()
     message("Vulkan disabled")

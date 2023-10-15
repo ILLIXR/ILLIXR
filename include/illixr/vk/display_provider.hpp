@@ -18,15 +18,16 @@ namespace ILLIXR::vulkan { /**
                             * swapchain from Monado. Previously with the GL implementation, this was not required since we were
                             * using GL and Monado was using Vulkan.
                             */
+
 class display_provider : public phonebook::service {
 public:
     ~display_provider() override = default;
 
     // required by timewarp_vk as a service
 
-    VkInstance                                                               vk_instance = VK_NULL_HANDLE;
+    VkInstance                                                               vk_instance        = VK_NULL_HANDLE;
     VkPhysicalDevice                                                         vk_physical_device = VK_NULL_HANDLE;
-    VkDevice                                                                 vk_device = VK_NULL_HANDLE;
+    VkDevice                                                                 vk_device          = VK_NULL_HANDLE;
     std::unordered_map<vulkan_utils::queue::queue_type, vulkan_utils::queue> queues;
 
     /**
@@ -41,14 +42,19 @@ public:
      */
     virtual void recreate_swapchain(){};
 
-    VkSurfaceKHR             vk_surface = VK_NULL_HANDLE;
-    VkSwapchainKHR           vk_swapchain = VK_NULL_HANDLE;
-    VkSurfaceFormatKHR       swapchain_image_format;
-    std::vector<VkImage>     swapchain_images;
-    std::vector<VkImageView> swapchain_image_views;
-    VkExtent2D               swapchain_extent = {0, 0};
+    VkSurfaceKHR              vk_surface   = VK_NULL_HANDLE;
+    VkSwapchainKHR            vk_swapchain = VK_NULL_HANDLE;
+    VkSurfaceFormatKHR        swapchain_image_format;
+    std::vector<VkImage>      swapchain_images;
+    std::vector<VkImageView>  swapchain_image_views;
+    VkExtent2D                swapchain_extent = {0, 0};
 
     // optional
     VmaAllocator vma_allocator;
+
+    // for ffmpeg
+    VkPhysicalDeviceFeatures2 features;
+    std::vector<const char*>  enabled_instance_extensions;
+    std::vector<const char*>  enabled_device_extensions;
 };
 } // namespace ILLIXR::vulkan

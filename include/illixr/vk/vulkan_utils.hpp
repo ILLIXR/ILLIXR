@@ -47,6 +47,7 @@ public:
         std::optional<uint32_t> present_family;
         std::optional<uint32_t> encode_family;
         std::optional<uint32_t> decode_family;
+        std::optional<uint32_t> compute_family;
 
         bool has_presentation() {
             return graphics_family.has_value() && present_family.has_value();
@@ -62,7 +63,8 @@ public:
             GRAPHICS,
             PRESENT,
             ENCODE,
-            DECODE
+            DECODE,
+            COMPUTE,
         };
 
         VkQueue vk_queue;
@@ -407,6 +409,9 @@ public:
                 indices.decode_family = i;
             }
 #endif
+            if (queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                indices.compute_family = i;
+            }
 
             VkBool32 present_support = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);

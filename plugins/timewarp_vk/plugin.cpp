@@ -1,5 +1,5 @@
 #if defined(ILLIXR_MONADO)
-#define VMA_IMPLEMENTATION
+    #define VMA_IMPLEMENTATION
 #endif
 
 #include "illixr/data_format.hpp"
@@ -109,7 +109,7 @@ public:
         create_texture_sampler();
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool,
                bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
@@ -121,10 +121,7 @@ public:
             partial_destroy();
         }
 
-        if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
-            throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
-        }
-        this->buffer_pool = buffer_pool_in;
+        this->buffer_pool = std::move(buffer_pool);
 
         create_descriptor_pool();
         create_descriptor_sets();
@@ -464,7 +461,7 @@ private:
         };
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes    = poolSizes.data();
-        poolInfo.maxSets       = buffer_pool[0].size() * 2;
+        poolInfo.maxSets       = buffer_pool->image_pool.size() * 2;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool))
     }
@@ -472,7 +469,7 @@ private:
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
+            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool->image_pool.size(), descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
@@ -481,13 +478,13 @@ private:
                 nullptr                                         // pSetLayouts
             };
             allocInfo.descriptorPool     = descriptor_pool;
-            allocInfo.descriptorSetCount = buffer_pool[0].size();
+            allocInfo.descriptorSetCount = buffer_pool->image_pool.size();
             allocInfo.pSetLayouts        = layouts.data();
 
-            descriptor_sets[eye].resize(buffer_pool[0].size());
+            descriptor_sets[eye].resize(buffer_pool->image_pool.size());
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
 
-            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
+            for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
                 VkDescriptorBufferInfo bufferInfo = {};
                 bufferInfo.buffer                 = uniform_buffer;
                 bufferInfo.offset                 = 0;
@@ -495,7 +492,7 @@ private:
 
                 VkDescriptorImageInfo imageInfo = {};
                 imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView             = buffer_pool[eye][i];
+                imageInfo.imageView             = eye == 0 ? buffer_pool->image_pool[i][0].image_view : buffer_pool->image_pool[i][1].image_view;
                 imageInfo.sampler               = fb_sampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
@@ -777,8 +774,8 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
-    std::array<std::vector<VkImageView>, 2> buffer_pool;
-    VkSampler                               fb_sampler{};
+    std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
+    VkSampler                                                  fb_sampler{};
 
     VkDescriptorPool                            descriptor_pool{};
     VkDescriptorSetLayout                       descriptor_set_layout{};

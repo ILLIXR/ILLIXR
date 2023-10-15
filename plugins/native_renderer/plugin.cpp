@@ -5,6 +5,7 @@
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
 #include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_objects.hpp"
 
 #include <array>
 #include <cassert>
@@ -18,10 +19,11 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
 #include "illixr/vk/display_provider.hpp"
-#include "illixr/vk/render_pass.hpp"
 #include "illixr/vk/vulkan_utils.hpp"
 
 using namespace ILLIXR;
+
+#define NATIVE_RENDERER_BUFFER_POOL_SIZE 4
 
 class native_renderer : public threadloop {
 public:
@@ -34,7 +36,7 @@ public:
         , src{pb->lookup_impl<vulkan::app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
-        , last_fps_update{std::chrono::duration<long, std::nano>{0}}{
+        , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
         spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
     }
 
@@ -46,13 +48,17 @@ public:
      * application and timewarp with their respective passes.
      */
     void _p_thread_setup() override {
-        for (auto i = 0; i < 2; i++) {
-            create_depth_image(&depth_images[i], &depth_image_allocations[i], &depth_image_views[i]);
+        depth_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
+        offscreen_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
+
+        for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
+            for (auto eye = 0; eye < 2; eye++) {
+                create_offscreen_target(offscreen_images[i][eye]);
+                create_depth_image(depth_images[i][eye]);
+            }
         }
-        for (auto i = 0; i < 2; i++) {
-            create_offscreen_target(&offscreen_images[i], &offscreen_image_allocations[i], &offscreen_image_views[i],
-                                    &offscreen_framebuffers[i]);
-        }
+        this->buffer_pool = std::make_shared<vulkan::buffer_pool<pose_type>>(offscreen_images, depth_images);
+
         command_pool =
             vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].family);
         app_command_buffer      = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
@@ -64,7 +70,7 @@ public:
         create_offscreen_framebuffers();
         create_swapchain_framebuffers();
         src->setup(app_pass, 0);
-        tw->setup(timewarp_pass, 0, {std::vector{offscreen_image_views[0]}, std::vector{offscreen_image_views[1]}}, true);
+        tw->setup(timewarp_pass, 0, buffer_pool, true);
     }
 
     /**
@@ -151,8 +157,10 @@ public:
             std::this_thread::sleep_for(display_params::period / 6.0 * 5);
         } else {
             // convert next_swap_time to std::chrono::time_point
-            auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
-            next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
+            auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
+                std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
+            next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(
+                display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
             std::this_thread::sleep_until(next_swap_time_point);
         }
 
@@ -195,7 +203,7 @@ public:
         // #ifndef NDEBUG
         // Print the FPS
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
-             std::cout << "renderer FPS: " << fps << std::endl;
+            std::cout << "renderer FPS: " << fps << std::endl;
             fps             = 0;
             last_fps_update = _m_clock->now();
         } else {
@@ -274,7 +282,7 @@ private:
                 VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
                 nullptr,                                  // pNext
                 app_pass,                                 // renderPass
-                offscreen_framebuffers[eye],              // framebuffer
+                offscreen_framebuffers[0][eye],              // framebuffer
                 {
                     {0, 0},                                                       // offset
                     {ds->swapchain_extent.width / 2, ds->swapchain_extent.height} // extent
@@ -387,7 +395,7 @@ private:
      * @param depth_image_allocation Pointer to the depth image memory allocation handle.
      * @param depth_image_view Pointer to the depth image view handle.
      */
-    void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation, VkImageView* depth_image_view) {
+    void create_depth_image(vulkan::vk_image& depth_image) {
         VkImageCreateInfo image_info{
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
             nullptr,                             // pNext
@@ -410,17 +418,19 @@ private:
             {}                                                                        // initialLayout
         };
 
+        depth_image.image_info = image_info;
+
         VmaAllocationCreateInfo alloc_info{};
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr))
+            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, &depth_image.image, &depth_image.allocation, &depth_image.allocation_info))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
             nullptr,                                  // pNext
             0,                                        // flags
-            *depth_image,                             // image
+            depth_image.image,                             // image
             VK_IMAGE_VIEW_TYPE_2D,                    // viewType
             VK_FORMAT_D32_SFLOAT,                     // format
             {},                                       // components
@@ -433,19 +443,15 @@ private:
             }                              // subresourceRange
         };
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, depth_image_view))
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &depth_image.image_view))
     }
 
     /**
      * @brief Creates an offscreen target for the application to render to.
-     * @param offscreen_image Pointer to the offscreen image handle.
-     * @param offscreen_image_allocation Pointer to the offscreen image memory allocation handle.
-     * @param offscreen_image_view Pointer to the offscreen image view handle.
-     * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
+     * @param image Pointer to the offscreen image handle.
      */
-    void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
-                                 VkImageView* offscreen_image_view, [[maybe_unused]] VkFramebuffer* offscreen_framebuffer) {
-        VkImageCreateInfo image_info{
+    void create_offscreen_target(vulkan::vk_image& image) {
+        image.image_info = {
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
             nullptr,                             // pNext
             0,                                   // flags
@@ -469,14 +475,14 @@ private:
 
         VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
 
-        VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, offscreen_image, offscreen_image_allocation, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image.image_info, &alloc_info, &image.image, &image.allocation,
+                                         &image.allocation_info))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
             nullptr,                                  // pNext
             0,                                        // flags
-            *offscreen_image,                         // image
+            image.image,                              // image
             VK_IMAGE_VIEW_TYPE_2D,                    // viewType
             VK_FORMAT_B8G8R8A8_UNORM,                 // format
             {},                                       // components
@@ -489,30 +495,34 @@ private:
             }                              // subresourceRange
         };
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, offscreen_image_view))
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &image.image_view))
     }
 
     /**
      * @brief Creates the offscreen framebuffers for the application.
      */
     void create_offscreen_framebuffers() {
-        for (auto eye = 0; eye < 2; eye++) {
-            std::array<VkImageView, 2> attachments = {offscreen_image_views[eye], depth_image_views[eye]};
+        offscreen_framebuffers.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
 
-            assert(app_pass != VK_NULL_HANDLE);
-            VkFramebufferCreateInfo framebuffer_info{
-                VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
-                nullptr,                                   // pNext
-                0,                                         // flags
-                app_pass,                                  // renderPass
-                static_cast<uint32_t>(attachments.size()), // attachmentCount
-                attachments.data(),                        // pAttachments
-                ds->swapchain_extent.width / 2,            // width
-                ds->swapchain_extent.height,               // height
-                1                                          // layers
-            };
+        for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
+            for (auto eye = 0; eye < 2; eye++) {
+                std::array<VkImageView, 2> attachments = {offscreen_images[i][eye].image_view, depth_images[i][eye].image_view};
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]))
+                assert(app_pass != VK_NULL_HANDLE);
+                VkFramebufferCreateInfo framebuffer_info{
+                    VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
+                    nullptr,                                   // pNext
+                    0,                                         // flags
+                    app_pass,                                  // renderPass
+                    static_cast<uint32_t>(attachments.size()), // attachmentCount
+                    attachments.data(),                        // pAttachments
+                    ds->swapchain_extent.width / 2,            // width
+                    ds->swapchain_extent.height,               // height
+                    1                                          // layers
+                };
+
+                VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[i][eye]))
+            }
         }
     }
 
@@ -658,25 +668,21 @@ private:
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
     }
 
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<vulkan::display_provider>        ds;
-    const std::shared_ptr<vulkan::timewarp>            tw;
-    const std::shared_ptr<vulkan::app>                 src;
-    const std::shared_ptr<const RelativeClock> _m_clock;
+    const std::shared_ptr<switchboard>              sb;
+    const std::shared_ptr<pose_prediction>          pp;
+    const std::shared_ptr<vulkan::display_provider> ds;
+    const std::shared_ptr<vulkan::timewarp>         tw;
+    const std::shared_ptr<vulkan::app>              src;
+    const std::shared_ptr<const RelativeClock>      _m_clock;
 
     VkCommandPool   command_pool{};
     VkCommandBuffer app_command_buffer{};
     VkCommandBuffer timewarp_command_buffer{};
 
-    std::array<VkImage, 2>       depth_images{};
-    std::array<VmaAllocation, 2> depth_image_allocations{};
-    std::array<VkImageView, 2>   depth_image_views{};
+    std::vector<std::array<vulkan::vk_image, 2>>       depth_images{};
 
-    std::array<VkImage, 2>       offscreen_images{};
-    std::array<VmaAllocation, 2> offscreen_image_allocations{};
-    std::array<VkImageView, 2>   offscreen_image_views{};
-    std::array<VkFramebuffer, 2> offscreen_framebuffers{};
+    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
+    std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
 
     std::vector<VkFramebuffer> swapchain_framebuffers;
 
@@ -690,8 +696,9 @@ private:
 
     uint64_t timeline_semaphore_value = 1;
 
-    int        fps{};
-    time_point last_fps_update;
+    int                                                         fps{};
+    time_point                                                  last_fps_update;
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
+    std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
 };
 PLUGIN_MAIN(native_renderer)
