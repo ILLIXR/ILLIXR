@@ -4,7 +4,7 @@
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
 #ifdef ILLIXR_VULKAN
-    #include "vulkan_display.cpp"
+    #include "vulkan_display.hpp"
     #include "illixr/vk/vk_extension_request.h"
 #endif
 #include "illixr/global_module_defs.hpp"
