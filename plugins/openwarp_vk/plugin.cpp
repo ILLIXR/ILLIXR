@@ -351,26 +351,7 @@ private:
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo samplerInfo = {
-            VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, // sType
-            nullptr,                               // pNext
-            0,                                     // flags
-            {},                                    // magFilter
-            {},                                    // minFilter
-            {},                                    // mipmapMode
-            {},                                    // addressModeU
-            {},                                    // addressModeV
-            {},                                    // addressModeW
-            0.f,                                   // mipLodBias
-            0,                                     // anisotropyEnable
-            0.f,                                   // maxAnisotropy
-            0,                                     // compareEnable
-            {},                                    // compareOp
-            0.f,                                   // minLod
-            0.f,                                   // maxLod
-            {},                                    // borderColor
-            0                                      // unnormalizedCoordinates
-        };
+        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
         samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
         samplerInfo.minFilter = VK_FILTER_LINEAR;
 
@@ -403,13 +384,19 @@ private:
         uboLayoutBinding.descriptorCount              = 1;
         uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; // shader stages that can access the descriptor
 
-        VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding                      = 1;
-        samplerLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.descriptorCount              = 1;
-        samplerLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+        VkDescriptorSetLayoutBinding imageLayoutBinding = {};
+        imageLayoutBinding.binding                      = 1;
+        imageLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        imageLayoutBinding.descriptorCount              = 1;
+        imageLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, samplerLayoutBinding};
+        VkDescriptorSetLayoutBinding depthLayoutBinding = {};
+        depthLayoutBinding.binding                      = 2;
+        depthLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        depthLayoutBinding.descriptorCount              = 1;
+        depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        std::array<VkDescriptorSetLayoutBinding, 33> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
         layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
@@ -448,11 +435,13 @@ private:
     }
 
     void create_descriptor_pool() {
-        std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+        std::array<VkDescriptorPoolSize, 3> poolSizes = {};
         poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         poolSizes[0].descriptorCount                  = 2;
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         poolSizes[1].descriptorCount                  = 2;
+        poolSizes[2].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        poolSizes[2].descriptorCount                  = 2;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -487,7 +476,7 @@ private:
             descriptor_sets[eye].resize(buffer_pool[0].size());
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
 
-            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
+            for (size_t i = 0; i < buffer_pool[0].size(); i += 2) {
                 VkDescriptorBufferInfo bufferInfo = {};
                 bufferInfo.buffer                 = uniform_buffer;
                 bufferInfo.offset                 = 0;
@@ -496,6 +485,11 @@ private:
                 VkDescriptorImageInfo imageInfo = {};
                 imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView             = buffer_pool[eye][i];
+                imageInfo.sampler               = fb_sampler;
+
+                VkDescriptorImageInfo depthInfo = {};
+                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView             = buffer_pool[eye][i + 1];
                 imageInfo.sampler               = fb_sampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
@@ -515,6 +509,14 @@ private:
                 descriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 descriptorWrites[1].descriptorCount = 1;
                 descriptorWrites[1].pImageInfo      = &imageInfo;
+
+                descriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[1].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[1].dstBinding      = 2;
+                descriptorWrites[1].dstArrayElement = 0;
+                descriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrites[1].descriptorCount = 1;
+                descriptorWrites[1].pImageInfo      = &depthInfo;
 
                 vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(),
                                        0, nullptr);
@@ -777,6 +779,8 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
+    // Note that each frame occupies 2 elements in the buffer pool:
+    // i for the image itself, and i + 1 for the depth image.
     std::array<std::vector<VkImageView>, 2> buffer_pool;
     VkSampler                               fb_sampler{};
 
