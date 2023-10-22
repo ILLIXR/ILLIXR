@@ -69,7 +69,7 @@ public:
         create_sync_objects();
         create_offscreen_framebuffers();
         create_swapchain_framebuffers();
-        src->setup(app_pass, 0);
+        src->setup(app_pass, 0, buffer_pool);
         tw->setup(timewarp_pass, 0, buffer_pool, true);
     }
 
@@ -83,73 +83,78 @@ public:
      * @throws runtime_error If any Vulkan operation fails.
      */
     void _p_one_iteration() override {
-        ds->poll_window_events();
-
-        // Wait for the previous frame to finish rendering
-        VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
-
-        // Acquire the next image from the swapchain
         uint32_t swapchain_image_index;
-        auto     ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
-                                              VK_NULL_HANDLE, &swapchain_image_index));
+        if (!tw->is_external()) {
+            ds->poll_window_events();
 
-        // Check if the swapchain is out of date or suboptimal
-        if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
-            ds->recreate_swapchain();
-            return;
-        } else {
-            VK_ASSERT_SUCCESS(ret)
+            // Acquire the next image from the swapchain
+            auto     ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
+                                                  VK_NULL_HANDLE, &swapchain_image_index));
+
+            // Check if the swapchain is out of date or suboptimal
+            if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
+                ds->recreate_swapchain();
+                return;
+            } else {
+                VK_ASSERT_SUCCESS(ret)
+            }
+            VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence))
         }
-        VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence))
 
-        // Get the current fast pose and update the uniforms
         auto fast_pose = pp->get_fast_pose();
-        src->update_uniforms(fast_pose.pose);
+        if (!src->is_external()) {
+            // Get the current fast pose and update the uniforms
+            src->update_uniforms(fast_pose.pose);
 
-        // Record the command buffer
-        VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
-        record_command_buffer(swapchain_image_index);
+            VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
 
-        // Submit the command buffer to the graphics queue
-        const uint64_t ignored     = 0;
-        const uint64_t fired_value = timeline_semaphore_value + 1;
+            vulkan::image_index_t buffer_index = buffer_pool->src_acquire_image();
 
-        timeline_semaphore_value += 1;
-        VkTimelineSemaphoreSubmitInfo timeline_submit_info{
-            VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO, // sType
-            nullptr,                                          // pNext
-            1,                                                // waitSemaphoreValueCount
-            &ignored,                                         // pWaitSemaphoreValues
-            1,                                                // signalSemaphoreValueCount
-            &fired_value                                      // pSignalSemaphoreValues
-        };
+            // Record the command buffer
+            record_src_command_buffer(buffer_index);
 
-        VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-        VkSubmitInfo         submit_info{
-            VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
-            &timeline_submit_info,         // pNext
-            1,                             // waitSemaphoreCount
-            &image_available_semaphore,    // pWaitSemaphores
-            wait_stages,                   // pWaitDstStageMask
-            1,                             // commandBufferCount
-            &app_command_buffer,           // pCommandBuffers
-            1,                             // signalSemaphoreCount
-            &app_render_finished_semaphore // pSignalSemaphores
-        };
+            // Submit the command buffer to the graphics queue
+            const uint64_t ignored     = 0;
+            const uint64_t fired_value = timeline_semaphore_value + 1;
 
-        VK_ASSERT_SUCCESS(
-            vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
+            timeline_semaphore_value += 1;
+            VkTimelineSemaphoreSubmitInfo timeline_submit_info{
+                VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO, // sType
+                nullptr,                                          // pNext
+                1,                                                // waitSemaphoreValueCount
+                &ignored,                                         // pWaitSemaphoreValues
+                1,                                                // signalSemaphoreValueCount
+                &fired_value                                      // pSignalSemaphoreValues
+            };
 
-        // Wait for the application to finish rendering
-        VkSemaphoreWaitInfo wait_info{
-            VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO, // sType
-            nullptr,                               // pNext
-            0,                                     // flags
-            1,                                     // semaphoreCount
-            &app_render_finished_semaphore,        // pSemaphores
-            &fired_value                           // pValues
-        };
-        VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
+            VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+            VkSubmitInfo         submit_info{
+                VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
+                &timeline_submit_info,         // pNext
+                1,                             // waitSemaphoreCount
+                &image_available_semaphore,    // pWaitSemaphores
+                wait_stages,                   // pWaitDstStageMask
+                1,                             // commandBufferCount
+                &app_command_buffer,           // pCommandBuffers
+                1,                             // signalSemaphoreCount
+                &app_render_finished_semaphore // pSignalSemaphores
+            };
+
+            VK_ASSERT_SUCCESS(
+                vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
+
+            // Wait for the application to finish rendering
+            VkSemaphoreWaitInfo wait_info{
+                VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO, // sType
+                nullptr,                               // pNext
+                0,                                     // flags
+                1,                                     // semaphoreCount
+                &app_render_finished_semaphore,        // pSemaphores
+                &fired_value                           // pValues
+            };
+            VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
+            buffer_pool->src_release_image(buffer_index, pose_type{});
+        }
 
         // TODO: for DRM, get vsync estimate
         auto next_swap = _m_vsync.get_ro_nullable();
@@ -164,40 +169,51 @@ public:
             std::this_thread::sleep_until(next_swap_time_point);
         }
 
-        // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
-        tw->update_uniforms(fast_pose.pose);
-        VkSubmitInfo timewarp_submit_info{
-            VK_STRUCTURE_TYPE_SUBMIT_INFO,      // sType
-            nullptr,                            // pNext
-            0,                                  // waitSemaphoreCount
-            nullptr,                            // pWaitSemaphores
-            nullptr,                            // pWaitDstStageMask
-            1,                                  // commandBufferCount
-            &timewarp_command_buffer,           // pCommandBuffers
-            1,                                  // signalSemaphoreCount
-            &timewarp_render_finished_semaphore // pSignalSemaphores
-        };
+        if (!tw->is_external()) {
+            // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
+            tw->update_uniforms(fast_pose.pose);
+            auto buffer_index = buffer_pool->post_processing_acquire_image();
+            record_post_processing_command_buffer(buffer_index, swapchain_image_index);
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1,
-                                        &timewarp_submit_info, frame_fence))
+            VkSubmitInfo timewarp_submit_info{
+                VK_STRUCTURE_TYPE_SUBMIT_INFO,      // sType
+                nullptr,                            // pNext
+                0,                                  // waitSemaphoreCount
+                nullptr,                            // pWaitSemaphores
+                nullptr,                            // pWaitDstStageMask
+                1,                                  // commandBufferCount
+                &timewarp_command_buffer,           // pCommandBuffers
+                1,                                  // signalSemaphoreCount
+                &timewarp_render_finished_semaphore // pSignalSemaphores
+            };
 
-        // Present the rendered image
-        VkPresentInfoKHR present_info{
-            VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,  // sType
-            nullptr,                             // pNext
-            1,                                   // waitSemaphoreCount
-            &timewarp_render_finished_semaphore, // pWaitSemaphores
-            1,                                   // swapchainCount
-            &ds->vk_swapchain,                   // pSwapchains
-            &swapchain_image_index,              // pImageIndices
-            nullptr                              // pResults
-        };
+            VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1,
+                                            &timewarp_submit_info, frame_fence))
 
-        ret = (vkQueuePresentKHR(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
-        if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
-            ds->recreate_swapchain();
-        } else {
-            VK_ASSERT_SUCCESS(ret)
+            // Present the rendered image
+            VkPresentInfoKHR present_info{
+                VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,  // sType
+                nullptr,                             // pNext
+                1,                                   // waitSemaphoreCount
+                &timewarp_render_finished_semaphore, // pWaitSemaphores
+                1,                                   // swapchainCount
+                &ds->vk_swapchain,                   // pSwapchains
+                &swapchain_image_index,              // pImageIndices
+                nullptr                              // pResults
+            };
+
+            auto ret = (vkQueuePresentKHR(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+
+            // Wait for the previous frame to finish rendering
+            VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
+
+            buffer_pool->post_processing_release_image(buffer_index);
+
+            if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
+                ds->recreate_swapchain();
+            } else {
+                VK_ASSERT_SUCCESS(ret)
+            }
         }
 
         // #ifndef NDEBUG
@@ -258,46 +274,46 @@ private:
         }
     }
 
-    /**
-     * @brief Records the command buffer for a single frame.
-     * @param swapchain_image_index The index of the swapchain image to render to.
-     */
-    void record_command_buffer(uint32_t swapchain_image_index) {
-        // Begin recording app command buffer
-        VkCommandBufferBeginInfo begin_info = {
-            VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, // sType
-            nullptr,                                     // pNext
-            0,                                           // flags
-            nullptr                                      // pInheritanceInfo
-        };
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info))
-
-        for (auto eye = 0; eye < 2; eye++) {
-            assert(app_pass != VK_NULL_HANDLE);
-            std::array<VkClearValue, 2> clear_values = {};
-            clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
-            clear_values[1].depthStencil             = {1.0f, 0};
-
-            VkRenderPassBeginInfo render_pass_info{
-                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
-                nullptr,                                  // pNext
-                app_pass,                                 // renderPass
-                offscreen_framebuffers[0][eye],              // framebuffer
-                {
-                    {0, 0},                                                       // offset
-                    {ds->swapchain_extent.width / 2, ds->swapchain_extent.height} // extent
-                },                                                                // renderArea
-                clear_values.size(),                                              // clearValueCount
-                clear_values.data()                                               // pClearValues
+    void record_src_command_buffer(vulkan::image_index_t buffer_index) {
+        if (!src->is_external()) {
+            // Begin recording app command buffer
+            VkCommandBufferBeginInfo begin_info = {
+                VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, // sType
+                nullptr,                                     // pNext
+                0,                                           // flags
+                nullptr                                      // pInheritanceInfo
             };
+            VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info))
 
-            vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-            // Call app service to record the command buffer
-            src->record_command_buffer(app_command_buffer, eye);
-            vkCmdEndRenderPass(app_command_buffer);
+            for (auto eye = 0; eye < 2; eye++) {
+                assert(app_pass != VK_NULL_HANDLE);
+                std::array<VkClearValue, 2> clear_values = {};
+                clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
+                clear_values[1].depthStencil             = {1.0f, 0};
+
+                VkRenderPassBeginInfo render_pass_info{
+                    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
+                    nullptr,                                  // pNext
+                    app_pass,                                 // renderPass
+                    offscreen_framebuffers[buffer_index][eye],              // framebuffer
+                    {
+                        {0, 0},                                                       // offset
+                        {ds->swapchain_extent.width / 2, ds->swapchain_extent.height} // extent
+                    },                                                                // renderArea
+                    clear_values.size(),                                              // clearValueCount
+                    clear_values.data()                                               // pClearValues
+                };
+
+                vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+                // Call app service to record the command buffer
+                src->record_command_buffer(app_command_buffer, buffer_index, eye);
+                vkCmdEndRenderPass(app_command_buffer);
+            }
+            VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
         }
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
+    }
 
+    void record_post_processing_command_buffer(vulkan::image_index_t buffer_index, uint32_t swapchain_image_index) {
         // Begin recording timewarp command buffer
         VkCommandBufferBeginInfo timewarp_begin_info = {
             VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, // sType
@@ -341,7 +357,7 @@ private:
                 vkCmdSetScissor(timewarp_command_buffer, 0, 1, &scissor);
 
                 // Call timewarp service to record the command buffer
-                tw->record_command_buffer(timewarp_command_buffer, 0, eye == 0);
+                tw->record_command_buffer(timewarp_command_buffer, buffer_index, eye);
             }
             vkCmdEndRenderPass(timewarp_command_buffer);
         }

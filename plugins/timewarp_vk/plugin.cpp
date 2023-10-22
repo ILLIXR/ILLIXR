@@ -175,7 +175,7 @@ public:
         memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) override {
         num_record_calls++;
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -188,9 +188,13 @@ public:
         //     eye, 0);
         // }
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
-                                &descriptor_sets[!left][buffer_ind], 0, nullptr);
+                                &descriptor_sets[eye][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+        vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * eye), 0);
+    }
+
+    bool is_external() override {
+        return false;
     }
 
     void destroy() override {

@@ -17,6 +17,15 @@ namespace ILLIXR::vulkan {
 class render_pass : public phonebook::service {
 public:
     /**
+     * @brief Record a command buffer for a given eye.
+     *
+     * @param commandBuffer The command buffer to record to.
+     * @param buffer_ind The index of the buffer to use.
+     * @param left 0 for left eye, 1 for right eye.
+     */
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) = 0;
+
+    /**
      * @brief Update the uniforms for the render pass.
      *
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
@@ -28,6 +37,8 @@ public:
      * @brief Destroy the render pass and free all Vulkan resources.
      */
     virtual void destroy() = 0;
+
+    virtual bool is_external() = 0;
 
     ~render_pass() override = default;
 
@@ -48,14 +59,6 @@ public:
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
                        std::shared_ptr<buffer_pool<pose_type>> buffer_pool,
                        bool input_texture_vulkan_coordinates) = 0;
-    /**
-     * @brief Record a command buffer for a given eye.
-     *
-     * @param commandBuffer The command buffer to record to.
-     * @param buffer_ind The index of the buffer to use.
-     * @param left Whether to render the left eye or the right eye. True for left eye, false for right eye.
-     */
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) = 0;
 };
 
 // app defines the interface for an application render pass as a service.
@@ -67,14 +70,6 @@ public:
      * @param render_pass The render pass to use.
      * @param subpass The subpass to use.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass) = 0;
-
-    /**
-     * @brief Record a command buffer for a given eye.
-     *
-     * @param commandBuffer The command buffer to record to.
-     * @param eye The eye to render.
-     */
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int eye) = 0;
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<pose_type>> buffer_pool) = 0;
 };
 } // namespace ILLIXR::vulkan

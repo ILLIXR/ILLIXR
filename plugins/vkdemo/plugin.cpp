@@ -131,7 +131,7 @@ public:
                                   rendering_params::far_z);
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> _) override {
         create_pipeline(render_pass, subpass);
     }
 
@@ -140,7 +140,7 @@ public:
         update_uniform(fp, 1);
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer     vertexBuffers[] = {vertex_buffer};
         VkDeviceSize offsets[]       = {0};
@@ -156,6 +156,10 @@ public:
                                &push_constant);
             vkCmdDrawIndexed(commandBuffer, model.index_count, 1, model.index_offset, 0, 0);
         }
+    }
+
+    bool is_external() override {
+        return false;
     }
 
     void destroy() override { }

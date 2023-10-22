@@ -26,27 +26,16 @@ void AV_ASSERT_SUCCESS(int ret) {
     }
 }
 
-class offload_rendering_client_service : public vulkan::app {
-public:
-    void update_uniforms(const pose_type& render_pose) override { }
-
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool) override { }
-
-    void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override { }
-
-    void destroy() override { }
-};
-
-class offload_rendering_client
+class offload_rendering_server
     : public threadloop
-    , public vulkan::vk_extension_request {
+    , public vulkan::timewarp
+    , public vulkan::vk_extension_request
+    , std::enable_shared_from_this<plugin>{
 public:
-    offload_rendering_client(const std::string& name, phonebook* pb)
+    offload_rendering_server(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
-        , dp{pb->lookup_impl<vulkan::display_provider>()}
-        , log{spdlogger(nullptr)} {
-
-    }
+        , log{spdlogger(nullptr)}
+        , dp{pb->lookup_impl<vulkan::display_provider>()} {}
 
     void start() override {
         auto ref              = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
@@ -101,6 +90,28 @@ public:
         return device_extensions;
     }
 
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool,
+                       bool input_texture_vulkan_coordinates) override {
+
+    }
+
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) override {
+
+    }
+
+    void update_uniforms(const pose_type& render_pose) override {
+
+    }
+
+    void destroy() override {
+
+    }
+
+    bool is_external() override {
+        return true;
+    }
+
 protected:
     skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
@@ -122,4 +133,23 @@ private:
     }
 };
 
-PLUGIN_MAIN(offload_rendering_client)
+class offload_rendering_server_loader : public plugin {
+public:
+    offload_rendering_server_loader(const std::string& name, phonebook* pb)
+        : plugin(name, pb), offload_rendering_server_plugin{std::make_shared<offload_rendering_server>(name, pb)} {
+        pb->register_impl<vulkan::timewarp>(offload_rendering_server_plugin);
+    }
+
+    void start() override {
+        offload_rendering_server_plugin->start();
+    }
+
+    void stop() override {
+        offload_rendering_server_plugin->stop();
+    }
+
+private:
+    std::shared_ptr<offload_rendering_server> offload_rendering_server_plugin;
+};
+
+PLUGIN_MAIN(offload_rendering_server)

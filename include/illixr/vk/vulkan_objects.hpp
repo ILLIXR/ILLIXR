@@ -19,10 +19,9 @@ template <typename T>
 struct buffer_pool {
     enum image_state {
         FREE,
-        DECODE_IN_FLIGHT,
-        DECODED,
-        RENDER_IN_FLIGHT
-    };
+        SRC_IN_FLIGHT,
+        AVAILABLE,
+        POST_PROCESSING_IN_FLIGHT };
 
     std::vector<std::array<vk_image, 2>> image_pool;
     std::vector<std::array<vk_image, 2>> depth_image_pool;
@@ -33,14 +32,15 @@ struct buffer_pool {
 
     image_index_t latest_decoded_image = -1;
 
-    image_index_t decode_acquire_image() {
+    image_index_t src_acquire_image() {
         std::lock_guard<std::mutex> lock(image_state_mutex);
         for (image_index_t i = 0; i < image_states.size(); i++) {
             if (image_states[i] == FREE) {
-                image_states[i] = DECODE_IN_FLIGHT;
+                image_states[i] = SRC_IN_FLIGHT;
                 return i;
             }
         }
+        assert(false && "No free images in buffer pool");
         return -1;
     }
 
@@ -52,35 +52,35 @@ struct buffer_pool {
      * will be marked as free.
      * @param image_index The index of the image to release.
      */
-    void decode_release_image(image_index_t image_index, T&& image_data) {
+    void src_release_image(image_index_t image_index, T&& data) {
         std::lock_guard<std::mutex> lock(image_state_mutex);
         // Mark the previous images as free
-        for (image_index_t i = 0; i < image_index; i++) {
-            if (image_states[i] == DECODED) {
+        for (image_index_t i = 0; i < image_states.size(); i++) {
+            if (image_states[i] == AVAILABLE) {
                 image_states[i] = FREE;
             }
         }
-        assert(image_states[image_index] == DECODE_IN_FLIGHT);
-        image_states[image_index] = DECODED;
-        this->image_data[image_index] = std::move(image_data);
+        assert(image_states[image_index] == SRC_IN_FLIGHT);
+        image_states[image_index] = AVAILABLE;
+        this->image_data[image_index] = std::move(data);
         latest_decoded_image = image_index;
     }
 
-    image_index_t render_acquire_image() {
+    image_index_t post_processing_acquire_image() {
         std::lock_guard<std::mutex> lock(image_state_mutex);
         assert(latest_decoded_image != -1);
-        assert(image_states[latest_decoded_image] == DECODED);
-        image_states[latest_decoded_image] = RENDER_IN_FLIGHT;
+        assert(image_states[latest_decoded_image] == AVAILABLE);
+        image_states[latest_decoded_image] = POST_PROCESSING_IN_FLIGHT;
         return latest_decoded_image;
     }
 
-    void render_release_image(image_index_t image_index) {
+    void post_processing_release_image(image_index_t image_index) {
         std::lock_guard<std::mutex> lock(image_state_mutex);
-        assert(image_states[image_index] == RENDER_IN_FLIGHT);
+        assert(image_states[image_index] == POST_PROCESSING_IN_FLIGHT);
         if (image_index != latest_decoded_image) {
             image_states[image_index] = FREE;
         } else {
-            image_states[image_index] = DECODED;
+            image_states[image_index] = AVAILABLE;
         }
     }
 
@@ -88,8 +88,8 @@ struct buffer_pool {
                 const std::vector<std::array<vk_image, 2>>& depth_image_pool)
         : image_pool(image_pool)
         , depth_image_pool(depth_image_pool) {
-        assert(image_pool.size() == depth_image_pool.size());
         image_states.resize(image_pool.size());
+        image_data.resize(image_pool.size());
     }
 };
 
