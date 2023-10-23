@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
+plugins: pose_lookup,offload_rendering_server,vkdemo,native_renderer
 build_flags: -DILLIXR_VULKAN
 visualizers: ""
 vulkan: true

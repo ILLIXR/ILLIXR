@@ -23,7 +23,7 @@ public:
      * @param buffer_ind The index of the buffer to use.
      * @param left 0 for left eye, 1 for right eye.
      */
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) = 0;
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) {};
 
     /**
      * @brief Update the uniforms for the render pass.
@@ -31,12 +31,12 @@ public:
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
      * previously supplied to the app pass.
      */
-    virtual void update_uniforms(const pose_type& render_pose) = 0;
+    virtual void update_uniforms(const pose_type& render_pose) {};
 
     /**
      * @brief Destroy the render pass and free all Vulkan resources.
      */
-    virtual void destroy() = 0;
+    virtual void destroy() {};
 
     virtual bool is_external() = 0;
 

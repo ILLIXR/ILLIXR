@@ -88,8 +88,8 @@ public:
             ds->poll_window_events();
 
             // Acquire the next image from the swapchain
-            auto     ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
-                                                  VK_NULL_HANDLE, &swapchain_image_index));
+            auto ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
+                                              VK_NULL_HANDLE, &swapchain_image_index));
 
             // Check if the swapchain is out of date or suboptimal
             if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
@@ -139,6 +139,11 @@ public:
                 1,                             // signalSemaphoreCount
                 &app_render_finished_semaphore // pSignalSemaphores
             };
+            if (tw->is_external()) {
+                submit_info.waitSemaphoreCount = 0;
+                submit_info.pWaitSemaphores    = nullptr;
+                submit_info.pWaitDstStageMask  = nullptr;
+            }
 
             VK_ASSERT_SUCCESS(
                 vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
@@ -202,7 +207,8 @@ public:
                 nullptr                              // pResults
             };
 
-            auto ret = (vkQueuePresentKHR(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+            auto ret =
+                (vkQueuePresentKHR(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
 
             // Wait for the previous frame to finish rendering
             VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
@@ -292,10 +298,10 @@ private:
                 clear_values[1].depthStencil             = {1.0f, 0};
 
                 VkRenderPassBeginInfo render_pass_info{
-                    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
-                    nullptr,                                  // pNext
-                    app_pass,                                 // renderPass
-                    offscreen_framebuffers[buffer_index][eye],              // framebuffer
+                    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
+                    nullptr,                                   // pNext
+                    app_pass,                                  // renderPass
+                    offscreen_framebuffers[buffer_index][eye], // framebuffer
                     {
                         {0, 0},                                                       // offset
                         {ds->swapchain_extent.width / 2, ds->swapchain_extent.height} // extent
@@ -439,14 +445,14 @@ private:
         VmaAllocationCreateInfo alloc_info{};
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-        VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, &depth_image.image, &depth_image.allocation, &depth_image.allocation_info))
+        VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, &depth_image.image,
+                                         &depth_image.allocation, &depth_image.allocation_info))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
             nullptr,                                  // pNext
             0,                                        // flags
-            depth_image.image,                             // image
+            depth_image.image,                        // image
             VK_IMAGE_VIEW_TYPE_2D,                    // viewType
             VK_FORMAT_D32_SFLOAT,                     // format
             {},                                       // components
@@ -474,19 +480,21 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                ds->swapchain_extent.width / 2,                               // width
-                ds->swapchain_extent.height,                                  // height
-                1                                                             // depth
-            },                                                                // extent
-            1,                                                                // mipLevels
-            1,                                                                // arrayLayers
-            VK_SAMPLE_COUNT_1_BIT,                                            // samples
-            VK_IMAGE_TILING_OPTIMAL,                                          // tiling
-            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, // usage
-            {},                                                               // sharingMode
-            0,                                                                // queueFamilyIndexCount
-            nullptr,                                                          // pQueueFamilyIndices
-            {}                                                                // initialLayout
+                ds->swapchain_extent.width / 2, // width
+                ds->swapchain_extent.height,    // height
+                1                               // depth
+            },                                  // extent
+            1,                                  // mipLevels
+            1,                                  // arrayLayers
+            VK_SAMPLE_COUNT_1_BIT,              // samples
+            VK_IMAGE_TILING_OPTIMAL,            // tiling
+            static_cast<VkImageUsageFlags>(
+                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
+            {},                                                                                      // sharingMode
+            0,                                                                                       // queueFamilyIndexCount
+            nullptr,                                                                                 // pQueueFamilyIndices
+            {}                                                                                       // initialLayout
         };
 
         VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
@@ -537,7 +545,8 @@ private:
                     1                                          // layers
                 };
 
-                VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[i][eye]))
+                VK_ASSERT_SUCCESS(
+                    vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[i][eye]))
             }
         }
     }
@@ -553,15 +562,16 @@ private:
     void create_app_pass() {
         std::array<VkAttachmentDescription, 2> attchmentDescriptions{
             {{
-                 0,                                       // flags
-                 VK_FORMAT_B8G8R8A8_UNORM,                // format
-                 VK_SAMPLE_COUNT_1_BIT,                   // samples
-                 VK_ATTACHMENT_LOAD_OP_CLEAR,             // loadOp
-                 VK_ATTACHMENT_STORE_OP_STORE,            // storeOp
-                 VK_ATTACHMENT_LOAD_OP_DONT_CARE,         // stencilLoadOp
-                 VK_ATTACHMENT_STORE_OP_DONT_CARE,        // stencilStoreOp
-                 VK_IMAGE_LAYOUT_UNDEFINED,               // initialLayout
-                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL // finalLayout
+                 0,                                // flags
+                 VK_FORMAT_B8G8R8A8_UNORM,         // format
+                 VK_SAMPLE_COUNT_1_BIT,            // samples
+                 VK_ATTACHMENT_LOAD_OP_CLEAR,      // loadOp
+                 VK_ATTACHMENT_STORE_OP_STORE,     // storeOp
+                 VK_ATTACHMENT_LOAD_OP_DONT_CARE,  // stencilLoadOp
+                 VK_ATTACHMENT_STORE_OP_DONT_CARE, // stencilStoreOp
+                 VK_IMAGE_LAYOUT_UNDEFINED,        // initialLayout
+                 tw->is_external() ? VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+                                   : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL // finalLayout
              },
              {
                  0,                                               // flags
@@ -602,23 +612,23 @@ private:
         std::array<VkSubpassDependency, 2> dependencies{
             {{
                  // After timewarp samples from the offscreen image, it needs to be transitioned to a color attachment
-                 VK_SUBPASS_EXTERNAL,                           // srcSubpass
-                 0,                                             // dstSubpass
-                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // srcStageMask
-                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // dstStageMask
-                 VK_ACCESS_SHADER_READ_BIT,                     // srcAccessMask
-                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,          // dstAccessMask
-                 VK_DEPENDENCY_BY_REGION_BIT                    // dependencyFlags
+                 VK_SUBPASS_EXTERNAL,                                                                        // srcSubpass
+                 0,                                                                                          // dstSubpass
+                 tw->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // srcStageMask
+                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                                              // dstStageMask
+                 tw->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT,                // srcAccessMask
+                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                                       // dstAccessMask
+                 VK_DEPENDENCY_BY_REGION_BIT                                                                 // dependencyFlags
              },
              {
                  // After the app is done rendering to the offscreen image, it needs to be transitioned to a shader read
-                 0,                                             // srcSubpass
-                 VK_SUBPASS_EXTERNAL,                           // dstSubpass
-                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
-                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,         // dstStageMask
-                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,          // srcAccessMask
-                 VK_ACCESS_SHADER_READ_BIT,                     // dstAccessMask
-                 VK_DEPENDENCY_BY_REGION_BIT                    // dependencyFlags
+                 0,                                                                                          // srcSubpass
+                 VK_SUBPASS_EXTERNAL,                                                                        // dstSubpass
+                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                                              // srcStageMask
+                 tw->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // dstStageMask
+                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                                       // srcAccessMask
+                 tw->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT,                // dstAccessMask
+                 VK_DEPENDENCY_BY_REGION_BIT                                                                 // dependencyFlags
              }}};
 
         VkRenderPassCreateInfo render_pass_info{
@@ -695,9 +705,9 @@ private:
     VkCommandBuffer app_command_buffer{};
     VkCommandBuffer timewarp_command_buffer{};
 
-    std::vector<std::array<vulkan::vk_image, 2>>       depth_images{};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
 
-    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
+    std::vector<std::array<VkFramebuffer, 2>>    offscreen_framebuffers{};
     std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
 
     std::vector<VkFramebuffer> swapchain_framebuffers;
@@ -715,6 +725,6 @@ private:
     int                                                         fps{};
     time_point                                                  last_fps_update;
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
-    std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
+    std::shared_ptr<vulkan::buffer_pool<pose_type>>             buffer_pool;
 };
 PLUGIN_MAIN(native_renderer)
