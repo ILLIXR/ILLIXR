@@ -17,24 +17,12 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 class offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
-    , public vulkan::vk_extension_request
     , std::enable_shared_from_this<plugin> {
 public:
     offload_rendering_server(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , log{spdlogger(nullptr)}
         , dp{pb->lookup_impl<vulkan::display_provider>()} { }
-
-    std::vector<const char*> get_required_instance_extensions() override {
-        return {};
-    }
-
-    std::vector<const char*> get_required_devices_extensions() override {
-        std::vector<const char*> device_extensions;
-        device_extensions.push_back(VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
-        device_extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
-        return device_extensions;
-    }
 
     void start() override {
         ffmpeg_init_device();
@@ -49,6 +37,9 @@ public:
         ffmpeg_init_cuda_frame_ctx();
         ffmpeg_init_buffer_pool();
         ffmpeg_init_encoder();
+        for (auto eye = 0; eye < 2; eye++) {
+            encode_out_packets[eye] = av_packet_alloc();
+        }
     }
 
     bool is_external() override {
@@ -70,6 +61,39 @@ protected:
         return threadloop::_p_should_skip();
     }
 
+    void copy_image_to_cpu_and_save_file(AVFrame* frame) {
+        auto cpu_av_frame = av_frame_alloc();
+        cpu_av_frame->format = AV_PIX_FMT_RGBA;
+        auto ret = av_hwframe_transfer_data(cpu_av_frame, frame, 0);
+        AV_ASSERT_SUCCESS(ret);
+
+        // save cpu_av_frame as png
+        auto png_codec = avcodec_find_encoder(AV_CODEC_ID_PNG);
+        auto png_codec_ctx = avcodec_alloc_context3(png_codec);
+        png_codec_ctx->pix_fmt = AV_PIX_FMT_RGBA;
+        png_codec_ctx->width = cpu_av_frame->width;
+        png_codec_ctx->height = cpu_av_frame->height;
+        png_codec_ctx->time_base = {1, 60};
+        png_codec_ctx->framerate = {60, 1};
+
+        ret = avcodec_open2(png_codec_ctx, png_codec, nullptr);
+        AV_ASSERT_SUCCESS(ret);
+        AVPacket* png_packet = av_packet_alloc();
+        ret = avcodec_send_frame(png_codec_ctx, cpu_av_frame);
+        AV_ASSERT_SUCCESS(ret);
+        ret = avcodec_receive_packet(png_codec_ctx, png_packet);
+        AV_ASSERT_SUCCESS(ret);
+
+        std::string filename = "frame_" + std::to_string(frame_count) + ".png";
+        FILE* f = fopen(filename.c_str(), "wb");
+        fwrite(png_packet->data, 1, png_packet->size, f);
+        fclose(f);
+
+        av_packet_free(&png_packet);
+        av_frame_free(&cpu_av_frame);
+        avcodec_free_context(&png_codec_ctx);
+    }
+
     void _p_one_iteration() override {
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
             return;
@@ -78,9 +102,11 @@ protected:
         // get timestamp
         auto copy_start_time = std::chrono::high_resolution_clock::now();
         for (auto eye = 0; eye < 2; eye++) {
-            av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
-            // vulkan::vulkan_utils::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-            // avvkframes[ind][eye].vk_frame->sem_value[0]);
+            auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
+            AV_ASSERT_SUCCESS(ret);
+//            copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
+//            vulkan::vulkan_utils::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+//             avvkframes[ind][eye].vk_frame->sem_value[0]);
             encode_src_frames[eye]->pts = frame_count++;
         }
         auto copy_end_time = std::chrono::high_resolution_clock::now();
@@ -96,23 +122,19 @@ protected:
 
         // receive packets
         for (auto eye = 0; eye < 2; eye++) {
-            auto pkt = av_packet_alloc();
-            if (!pkt) {
-                throw std::runtime_error{"Failed to allocate FFmpeg packet"};
-            }
-            auto ret = avcodec_receive_packet(codec_ctx, pkt);
+            auto ret = avcodec_receive_packet(codec_ctx, encode_out_packets[eye]);
             if (ret == AVERROR(EAGAIN)) {
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN when receiving packets. This should never happen."};
             }
             AV_ASSERT_SUCCESS(ret);
-            enqueue_for_network_send(pkt);
+            enqueue_for_network_send(encode_out_packets[eye]);
         }
         auto encode_end_time = std::chrono::high_resolution_clock::now();
 
         auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         // print in nano seconds
-        std::cout << "copy time: " << copy_time << " encode time: " << encode_time << std::endl;
+        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size << std::endl;
 
         // log->info("Sending frame {}", frame_count);
     }
@@ -130,10 +152,11 @@ private:
     AVCodecContext* codec_ctx;
 
     std::array<AVFrame*, 2> encode_src_frames;
+    std::array<AVPacket*, 2> encode_out_packets;
     uint64_t                frame_count = 0;
 
     void enqueue_for_network_send(AVPacket* pkt) {
-        av_packet_free(&pkt);
+//        av_packet_free(&pkt);
     }
 
     void ffmpeg_init_device() {
@@ -209,7 +232,8 @@ private:
         if (!pix_format) {
             throw std::runtime_error{"Unsupported Vulkan image format when creating FFmpeg Vulkan hwframe context"};
         }
-        hwframe_ctx->sw_format         = *pix_format;
+        assert(pix_format == AV_PIX_FMT_BGRA);
+        hwframe_ctx->sw_format         = AV_PIX_FMT_BGRA;
         hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
         hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
         hwframe_ctx->initial_pool_size = 0;
@@ -227,7 +251,7 @@ private:
         cuda_hwframe_ctx->sw_format         = AV_PIX_FMT_BGR0;
         cuda_hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
         cuda_hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
-        cuda_hwframe_ctx->initial_pool_size = 0;
+//        cuda_hwframe_ctx->initial_pool_size = 0;
         auto ret                            = av_hwframe_ctx_init(cuda_frame_ref);
         AV_ASSERT_SUCCESS(ret);
         this->cuda_frame_ctx = cuda_frame_ref;
@@ -248,7 +272,8 @@ private:
                 vk_frame->mem[0]  = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
                 vk_frame->size[0] = buffer_pool->image_pool[i][eye].allocation_info.size;
 
-                vk_frame->sem[0]       = vulkan::vulkan_utils::create_timeline_semaphore(dp->vk_device);
+                VkExportSemaphoreCreateInfo export_semaphore_create_info {VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
+                vk_frame->sem[0]       = vulkan::vulkan_utils::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
                 vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -264,6 +289,7 @@ private:
                 av_frame->height         = buffer_pool->image_pool[i][eye].image_info.extent.height;
                 av_frame->hw_frames_ctx  = av_buffer_ref(frame_ctx);
                 av_frame->data[0]        = reinterpret_cast<uint8_t*>(vk_frame);
+                av_frame->buf[0] = av_buffer_alloc(1);
                 av_frame->pts            = 0;
                 avvkframes[i][eye].frame = av_frame;
             }
@@ -271,10 +297,15 @@ private:
 
         for (size_t eye = 0; eye < 2; eye++) {
             encode_src_frames[eye] = av_frame_alloc();
+            encode_src_frames[eye]->format = AV_PIX_FMT_CUDA;
             encode_src_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
-            encode_src_frames[eye]->format        = AV_PIX_FMT_BGR0;
             encode_src_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             encode_src_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+            encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
+            auto ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_frames[eye], 0);
+            AV_ASSERT_SUCCESS(ret);
+//            auto ret = av_frame_get_buffer(encode_src_frames[eye], 0);
+//            AV_ASSERT_SUCCESS(ret);
         }
     }
 
@@ -315,13 +346,26 @@ private:
     }
 };
 
-class offload_rendering_server_loader : public plugin {
+class offload_rendering_server_loader : public plugin, public vulkan::vk_extension_request {
 public:
     offload_rendering_server_loader(const std::string& name, phonebook* pb)
         : plugin(name, pb)
         , offload_rendering_server_plugin{std::make_shared<offload_rendering_server>(name, pb)} {
         pb->register_impl<vulkan::timewarp>(offload_rendering_server_plugin);
         std::cout << "Registered vulkan::timewarp" << std::endl;
+    }
+
+    std::vector<const char*> get_required_instance_extensions() override {
+        return {VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
+    }
+
+    std::vector<const char*> get_required_devices_extensions() override {
+        std::vector<const char*> device_extensions;
+        device_extensions.push_back(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
+        device_extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
+        device_extensions.push_back(VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
+        device_extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
+        return device_extensions;
     }
 
     void start() override {

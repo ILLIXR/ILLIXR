@@ -110,7 +110,8 @@ public:
 private:
 
     void create_vk_instance(std::set<const char*> instance_extensions) {
-        bool enable_validation_layers = true;
+        // Enable validation layers if ILLIXR_VULKAN_VALIDATION_LAYERS is set to 1
+        bool enable_validation_layers = std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr && std::stoi(std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS"));
 
         VkApplicationInfo app_info{VK_STRUCTURE_TYPE_APPLICATION_INFO};
         app_info.pApplicationName   = "ILLIXR Vulkan Display";

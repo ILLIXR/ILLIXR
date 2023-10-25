@@ -177,10 +177,10 @@ static VkShaderModule create_shader_module(VkDevice device, std::vector<char>&& 
     return shaderModule;
 }
 
-static VkSemaphore create_timeline_semaphore(VkDevice device, int initial_value = 0) {
+static VkSemaphore create_timeline_semaphore(VkDevice device, int initial_value = 0, VkExportSemaphoreCreateInfo* export_semaphore_create_info = nullptr) {
     VkSemaphoreTypeCreateInfo timeline_create_info{};
     timeline_create_info.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
-    timeline_create_info.pNext         = nullptr;
+    timeline_create_info.pNext         = export_semaphore_create_info;
     timeline_create_info.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE;
     timeline_create_info.initialValue  = initial_value;
 

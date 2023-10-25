@@ -14,6 +14,7 @@ extern "C" {
 #include <libavutil/hwcontext.h>
 #include <libavutil/hwcontext_vulkan.h>
 #include <libavutil/opt.h>
+#include <libavutil/pixdesc.h>
 }
 
 #define OFFLOAD_RENDERING_FFMPEG_ENCODER_NAME "h264_nvenc"
