@@ -301,9 +301,11 @@ private:
         VkPhysicalDeviceFeatures device_features{};
         device_features.samplerAnisotropy = VK_TRUE;
 
+        VkPhysicalDeviceSynchronization2Features synchronization_2_features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES, nullptr, true};
+
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
             VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
-            nullptr, // pNext
+            &synchronization_2_features, // pNext
             VK_TRUE  // timelineSemaphore
         };
 
@@ -418,7 +420,7 @@ private:
             swapchain_extent.height = std::clamp(fb_size.second, swapchain_details.capabilities.minImageExtent.height, swapchain_details.capabilities.maxImageExtent.height);
         }
 
-        uint32_t image_count = std::min(swapchain_details.capabilities.minImageCount, 2u); // double buffering
+        uint32_t image_count = std::max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
         if (swapchain_details.capabilities.maxImageCount > 0 && image_count > swapchain_details.capabilities.maxImageCount) {
             image_count = swapchain_details.capabilities.maxImageCount;
         }

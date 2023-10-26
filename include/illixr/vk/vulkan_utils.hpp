@@ -446,11 +446,11 @@ static queue_families find_queue_families(VkPhysicalDevice const& physical_devic
             indices.compute_family = i;
         }
 
-        if (queue_family.queueFlags & VK_QUEUE_TRANSFER_BIT) {
-            if (!(queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) && !(queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
-                indices.dedicated_transfer = i;
-            }
-        }
+//        if (queue_family.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+//            if (!(queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) && !(queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+//                indices.dedicated_transfer = i;
+//            }
+//        }
 
         VkBool32 present_support = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
