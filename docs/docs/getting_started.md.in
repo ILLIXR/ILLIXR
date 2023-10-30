@@ -104,7 +104,7 @@ The CMake process will also create a [_YAML_][2] file call `illixr.yaml` which c
 
 ## Running ILLIXR
 
-To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `&lt;&gt;` indicate
+To run the ILLIXR binary just call `main.<>.exe` with any of the following command line arguments. (the `<>` indicate
 an infix specifying the build type, for `Debug` use `dbg`, for `Release` use `opt`, for `RelWithDebInfo` use `optdbg`)
 
 - --duration=&lt;&gt;, the duration to run for in seconds (default is 60)
