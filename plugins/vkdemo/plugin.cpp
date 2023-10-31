@@ -107,12 +107,12 @@ public:
             this->vma_allocator = ds->vma_allocator;
         } else {
             this->vma_allocator =
-                vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
 
         command_pool =
-            vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].family);
-        command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+            vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
+        command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         load_model();
         bake_models();
         create_texture_sampler();
@@ -496,7 +496,7 @@ private:
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan::vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue,
+        vulkan::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].vk_queue,
                                                    command_pool, staging_buffer, textures[i].image, width, height);
 
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -526,7 +526,7 @@ private:
 
     void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
                                  VkImageLayout new_layout) {
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
 
         VkImageMemoryBarrier barrier{
             VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, // sType
@@ -576,8 +576,8 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan::vulkan_utils::end_one_time_command(
-            ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::end_one_time_command(
+            ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS].vk_queue, command_buffer_local);
     }
 
     void load_model() {
@@ -679,15 +679,15 @@ private:
         memcpy(mapped_data, vertices.data(), sizeof(vertices[0]) * vertices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region{
             0,                                    // srcOffset
             0,                                    // dstOffset
             sizeof(vertices[0]) * vertices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan::vulkan_utils::end_one_time_command(
-            ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::end_one_time_command(
+            ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -735,15 +735,15 @@ private:
         memcpy(mapped_data, indices.data(), sizeof(indices[0]) * indices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region{
             0,                                  // srcOffset
             0,                                  // dstOffset
             sizeof(indices[0]) * indices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan::vulkan_utils::end_one_time_command(
-            ds->vk_device, command_pool, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::end_one_time_command(
+            ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS].vk_queue, command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -754,10 +754,10 @@ private:
         }
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::vulkan_utils::create_shader_module(
-            ds->vk_device, vulkan::vulkan_utils::read_file(folder + "/demo.vert.spv"));
-        VkShaderModule frag = vulkan::vulkan_utils::create_shader_module(
-            ds->vk_device, vulkan::vulkan_utils::read_file(folder + "/demo.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(
+            ds->vk_device, vulkan::read_file(folder + "/demo.vert.spv"));
+        VkShaderModule frag = vulkan::create_shader_module(
+            ds->vk_device, vulkan::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info{
             VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType

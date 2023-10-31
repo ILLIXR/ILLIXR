@@ -28,7 +28,7 @@ public:
     VkInstance                                                               vk_instance        = VK_NULL_HANDLE;
     VkPhysicalDevice                                                         vk_physical_device = VK_NULL_HANDLE;
     VkDevice                                                                 vk_device          = VK_NULL_HANDLE;
-    std::unordered_map<vulkan_utils::queue::queue_type, vulkan_utils::queue> queues;
+    std::unordered_map<queue::queue_type, queue> queues;
 
     /**
      * @brief Polls window events using whatever the windowing backend is.

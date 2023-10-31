@@ -5,7 +5,7 @@
 
 namespace ILLIXR::vulkan {
 
-typedef int8_t image_index_t;
+typedef size_t image_index_t;
 
 struct vk_image {
     VkImageCreateInfo image_info;

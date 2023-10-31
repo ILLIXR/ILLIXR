@@ -61,9 +61,9 @@ public:
         this->buffer_pool = std::make_shared<vulkan::buffer_pool<pose_type>>(offscreen_images, depth_images);
 
         command_pool =
-            vulkan::vulkan_utils::create_command_pool(ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::GRAPHICS].family);
-        app_command_buffer      = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
-        timewarp_command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+            vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
+        app_command_buffer      = vulkan::create_command_buffer(ds->vk_device, command_pool);
+        timewarp_command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         create_sync_objects();
         create_app_pass();
         create_timewarp_pass();
@@ -147,7 +147,7 @@ public:
             }
 
             VK_ASSERT_SUCCESS(
-                vulkan::vulkan_utils::locked_queue_submit(ds->queues, vulkan::vulkan_utils::queue::queue_type::GRAPHICS, 1, &submit_info, nullptr))
+                vulkan::locked_queue_submit(ds->queues, vulkan::queue::queue_type::GRAPHICS, 1, &submit_info, nullptr))
 
             // Wait for the application to finish rendering
             VkSemaphoreWaitInfo wait_info{
@@ -193,7 +193,7 @@ public:
                 &timewarp_render_finished_semaphore // pSignalSemaphores
             };
 
-            VK_ASSERT_SUCCESS(vulkan::vulkan_utils::locked_queue_submit(ds->queues, vulkan::vulkan_utils::queue::queue_type::GRAPHICS, 1,
+            VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(ds->queues, vulkan::queue::queue_type::GRAPHICS, 1,
                                             &timewarp_submit_info, frame_fence))
 
             // Present the rendered image
@@ -209,7 +209,7 @@ public:
             };
 
             auto ret =
-                (vkQueuePresentKHR(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+                (vkQueuePresentKHR(ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
 
             // Wait for the previous frame to finish rendering
             VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
@@ -522,14 +522,14 @@ private:
                                    VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
 
         std::vector<uint32_t> queue_family_indices;
-        queue_family_indices.push_back(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
-        if (ds->queues.find(vulkan::vulkan_utils::queue::queue_type::COMPUTE) != ds->queues.end() &&
-            ds->queues.find(vulkan::vulkan_utils::queue::queue_type::COMPUTE)->second.family !=
-                ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family) {
-            queue_family_indices.push_back(ds->queues[vulkan::vulkan_utils::queue::queue_type::COMPUTE].family);
+        queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        if (ds->queues.find(vulkan::queue::queue_type::COMPUTE) != ds->queues.end() &&
+            ds->queues.find(vulkan::queue::queue_type::COMPUTE)->second.family !=
+                ds->queues[vulkan::queue::queue_type::GRAPHICS].family) {
+            queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::COMPUTE].family);
         }
-        if (ds->queues.find(vulkan::vulkan_utils::queue::queue_type::DEDICATED_TRANSFER) != ds->queues.end()) {
-            queue_family_indices.push_back(ds->queues[vulkan::vulkan_utils::queue::queue_type::DEDICATED_TRANSFER].family);
+        if (ds->queues.find(vulkan::queue::queue_type::DEDICATED_TRANSFER) != ds->queues.end()) {
+            queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::DEDICATED_TRANSFER].family);
         }
 
         image.image_info = {

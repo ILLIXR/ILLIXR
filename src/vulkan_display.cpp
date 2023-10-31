@@ -212,7 +212,7 @@ private:
 
         if (direct_mode == -1) {
             // check if the device supports the swapchain we need
-            auto swapchain_details = vulkan::vulkan_utils::query_swapchain_details(physical_device, vk_surface);
+            auto swapchain_details = vulkan::query_swapchain_details(physical_device, vk_surface);
             if (swapchain_details.formats.empty() || swapchain_details.present_modes.empty()) {
                 return false;
             }
@@ -273,7 +273,7 @@ private:
     }
 
     void create_logical_device(std::set<const char*> device_extensions) {
-        vulkan::vulkan_utils::queue_families indices = vulkan::vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
+        vulkan::queue_families indices = vulkan::find_queue_families(vk_physical_device, vk_surface);
 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
         std::set<uint32_t> unique_queue_families = {indices.graphics_family.value(),
@@ -328,57 +328,57 @@ private:
 
         VK_ASSERT_SUCCESS(vkCreateDevice(vk_physical_device, &create_info, nullptr, &vk_device));
 
-        vulkan::vulkan_utils::queue graphics_queue{};
+        vulkan::queue graphics_queue{};
         vkGetDeviceQueue(vk_device, indices.graphics_family.value(), 0, &graphics_queue.vk_queue);
         graphics_queue.family = indices.graphics_family.value();
-        graphics_queue.type   = vulkan::vulkan_utils::queue::GRAPHICS;
+        graphics_queue.type   = vulkan::queue::GRAPHICS;
         graphics_queue.mutex = std::make_shared<std::mutex>();
         queues[graphics_queue.type] = graphics_queue;
 
         if (indices.present_family.has_value()) {
-            vulkan::vulkan_utils::queue present_queue{};
+            vulkan::queue present_queue{};
             vkGetDeviceQueue(vk_device, indices.present_family.value(), 0, &present_queue.vk_queue);
             present_queue.family = indices.present_family.value();
-            present_queue.type   = vulkan::vulkan_utils::queue::PRESENT;
+            present_queue.type   = vulkan::queue::PRESENT;
             present_queue.mutex = std::make_shared<std::mutex>();
             queues[present_queue.type] = present_queue;
         }
 
         if (indices.has_compression()) {
-            vulkan::vulkan_utils::queue encode_queue{};
+            vulkan::queue encode_queue{};
             vkGetDeviceQueue(vk_device, indices.encode_family.value(), 0, &encode_queue.vk_queue);
             encode_queue.family = indices.encode_family.value();
-            encode_queue.type   = vulkan::vulkan_utils::queue::ENCODE;
+            encode_queue.type   = vulkan::queue::ENCODE;
             encode_queue.mutex = std::make_shared<std::mutex>();
             queues[encode_queue.type] = encode_queue;
 
-            vulkan::vulkan_utils::queue decode_queue{};
+            vulkan::queue decode_queue{};
             vkGetDeviceQueue(vk_device, indices.decode_family.value(), 0, &decode_queue.vk_queue);
             decode_queue.family = indices.decode_family.value();
-            decode_queue.type   = vulkan::vulkan_utils::queue::DECODE;
+            decode_queue.type   = vulkan::queue::DECODE;
             decode_queue.mutex = std::make_shared<std::mutex>();
             queues[decode_queue.type] = decode_queue;
         }
 
         if (indices.compute_family.has_value()) {
-            vulkan::vulkan_utils::queue compute_queue{};
+            vulkan::queue compute_queue{};
             vkGetDeviceQueue(vk_device, indices.compute_family.value(), 0, &compute_queue.vk_queue);
             compute_queue.family = indices.compute_family.value();
-            compute_queue.type   = vulkan::vulkan_utils::queue::COMPUTE;
+            compute_queue.type   = vulkan::queue::COMPUTE;
             compute_queue.mutex = std::make_shared<std::mutex>();
             queues[compute_queue.type] = compute_queue;
         }
 
         if (indices.dedicated_transfer.has_value()) {
-            vulkan::vulkan_utils::queue transfer_queue{};
+            vulkan::queue transfer_queue{};
             vkGetDeviceQueue(vk_device, indices.dedicated_transfer.value(), 0, &transfer_queue.vk_queue);
             transfer_queue.family = indices.dedicated_transfer.value();
-            transfer_queue.type   = vulkan::vulkan_utils::queue::DEDICATED_TRANSFER;
+            transfer_queue.type   = vulkan::queue::DEDICATED_TRANSFER;
             transfer_queue.mutex = std::make_shared<std::mutex>();
             queues[transfer_queue.type] = transfer_queue;
         }
 
-        vma_allocator = vulkan::vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
+        vma_allocator = vulkan::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 
     /**
@@ -391,7 +391,7 @@ private:
      */
     void create_swapchain() {
         // create surface
-        vulkan::vulkan_utils::swapchain_details swapchain_details = vulkan::vulkan_utils::query_swapchain_details(vk_physical_device, vk_surface);
+        vulkan::swapchain_details swapchain_details = vulkan::query_swapchain_details(vk_physical_device, vk_surface);
 
         // choose surface format
         for (const auto& available_format : swapchain_details.formats) {
@@ -434,7 +434,7 @@ private:
         create_info.imageArrayLayers = 1;
         create_info.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        vulkan::vulkan_utils::queue_families indices = vulkan::vulkan_utils::find_queue_families(vk_physical_device, vk_surface);
+        vulkan::queue_families indices = vulkan::find_queue_families(vk_physical_device, vk_surface);
         uint32_t queue_family_indices[] = {indices.graphics_family.value(), indices.present_family.value()};
 
         if (indices.graphics_family != indices.present_family) {
@@ -466,7 +466,7 @@ private:
 
         swapchain_image_views.resize(swapchain_images.size());
         for (size_t i = 0; i < swapchain_images.size(); i++) {
-            swapchain_image_views[i] = vulkan::vulkan_utils::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format, VK_IMAGE_ASPECT_COLOR_BIT);
+            swapchain_image_views[i] = vulkan::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format, VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
 

@@ -14,46 +14,6 @@
 using namespace ILLIXR;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
 
-class offload_rendering_server;
-
-static std::weak_ptr<vulkan::display_provider> display_provider_ffmpeg;
-
-void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
-    if (auto dp = display_provider_ffmpeg.lock()) {
-        std::optional<vulkan::vulkan_utils::queue> queue;
-        for (auto& q : dp->queues) {
-            if (q.second.family == queue_family) {
-                queue = q.second;
-                break;
-            }
-        }
-        if (!queue) {
-            throw std::runtime_error{"Failed to find queue with family " + std::to_string(queue_family)};
-        }
-        queue->mutex->lock();
-    } else {
-        throw std::runtime_error{"Weak pointer to display_provider is expired"};
-    }
-}
-
-void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
-    if (auto dp = display_provider_ffmpeg.lock()) {
-        std::optional<vulkan::vulkan_utils::queue> queue;
-        for (auto& q : dp->queues) {
-            if (q.second.family == queue_family) {
-                queue = q.second;
-                break;
-            }
-        }
-        if (!queue) {
-            throw std::runtime_error{"Failed to find queue with family " + std::to_string(queue_family)};
-        }
-        queue->mutex->unlock();
-    } else {
-        throw std::runtime_error{"Weak pointer to display_provider is expired"};
-    }
-}
-
 class offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
@@ -148,7 +108,7 @@ protected:
             auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
             AV_ASSERT_SUCCESS(ret);
             // copy_image_to_cpu_and_save_file(encode_src_frames[eye]);
-            vulkan::vulkan_utils::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
                                                           avvkframes[ind][eye].vk_frame->sem_value[0]);
             encode_src_frames[eye]->pts = frame_count++;
         }
@@ -177,9 +137,9 @@ protected:
         auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         // print in nano seconds
-        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
-                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
-                  << std::endl;
+//        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
+//                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
+//                  << std::endl;
 
         // log->info("Sending frame {}", frame_count);
     }
@@ -215,7 +175,7 @@ private:
         vulkan_hwdev_ctx->device_features = dp->features;
         for (auto& queue : dp->queues) {
             switch (queue.first) {
-            case vulkan::vulkan_utils::queue::GRAPHICS:
+            case vulkan::queue::GRAPHICS:
                 vulkan_hwdev_ctx->queue_family_index    = queue.second.family;
                 vulkan_hwdev_ctx->nb_graphics_queues    = 1;
                 vulkan_hwdev_ctx->queue_family_tx_index = queue.second.family;
@@ -223,7 +183,7 @@ private:
                 // TODO: data race here! need to supply the lock_queue and unlock_queue function.
                 // Not yet available in release version of ffmpeg
                 break;
-            case vulkan::vulkan_utils::queue::COMPUTE:
+            case vulkan::queue::COMPUTE:
                 vulkan_hwdev_ctx->queue_family_comp_index = queue.second.family;
                 vulkan_hwdev_ctx->nb_comp_queues          = 1;
             default:
@@ -231,8 +191,8 @@ private:
             }
         }
 
-        if (dp->queues.find(vulkan::vulkan_utils::queue::DEDICATED_TRANSFER) != dp->queues.end()) {
-            vulkan_hwdev_ctx->queue_family_tx_index = dp->queues[vulkan::vulkan_utils::queue::DEDICATED_TRANSFER].family;
+        if (dp->queues.find(vulkan::queue::DEDICATED_TRANSFER) != dp->queues.end()) {
+            vulkan_hwdev_ctx->queue_family_tx_index = dp->queues[vulkan::queue::DEDICATED_TRANSFER].family;
             vulkan_hwdev_ctx->nb_tx_queues          = 1;
         }
 
@@ -322,12 +282,12 @@ private:
                 vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
                 vk_frame->size[0]         = buffer_pool->image_pool[i][eye].allocation_info.size;
                 vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].allocation_info.offset;
-                vk_frame->queue_family[0] = dp->queues[vulkan::vulkan_utils::queue::GRAPHICS].family;
+                vk_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                 VkExportSemaphoreCreateInfo export_semaphore_create_info{
                     VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
                 vk_frame->sem[0] =
-                    vulkan::vulkan_utils::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                    vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
                 vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -385,7 +345,7 @@ private:
         codec_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_ctx->time_base     = {1, 60}; // 60 fps
         codec_ctx->framerate     = {60, 1};
-        codec_ctx->bit_rate      = 10000000; // 10 Mbps
+        codec_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
 
         // Set zero latency
         codec_ctx->max_b_frames = 0;

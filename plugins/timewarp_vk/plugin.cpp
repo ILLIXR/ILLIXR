@@ -89,16 +89,16 @@ public:
             this->vma_allocator = ds->vma_allocator;
         } else {
             this->vma_allocator =
-                vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
         generate_distortion_data();
-        command_pool = vulkan::vulkan_utils::create_command_pool(
-            ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
-        command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool = vulkan::create_command_pool(
+            ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
@@ -263,12 +263,12 @@ private:
         memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+        vulkan::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue,
                                                    command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
@@ -325,12 +325,12 @@ private:
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+        vulkan::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue,
                                                    command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
@@ -532,9 +532,9 @@ private:
 
         auto           folder = std::string(SHADER_FOLDER);
         VkShaderModule vert =
-            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.vert.spv"));
+            vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.vert.spv"));
         VkShaderModule frag =
-            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.frag.spv"));
+            vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

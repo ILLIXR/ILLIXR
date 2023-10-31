@@ -32,14 +32,14 @@
     {                                                                                                               \
         VkResult result = (x);                                                                                      \
         if (result != VK_SUCCESS) {                                                                                 \
-            spdlog::get("illixr")->debug("[Vulkan] error: {}", ILLIXR::vulkan::vulkan_utils::error_string(result)); \
-            throw std::runtime_error("Vulkan error: " + ILLIXR::vulkan::vulkan_utils::error_string(result));        \
+            spdlog::get("illixr")->debug("[Vulkan] error: {}", ILLIXR::vulkan::error_string(result)); \
+            throw std::runtime_error("Vulkan error: " + ILLIXR::vulkan::error_string(result));        \
         }                                                                                                           \
     }
 
 #define VK_GET_PROC_ADDR(instance, name) ((PFN_##name) vkGetInstanceProcAddr(instance, #name))
 
-namespace ILLIXR::vulkan::vulkan_utils {
+namespace ILLIXR::vulkan {
 struct queue_families {
     std::optional<uint32_t> graphics_family;
     std::optional<uint32_t> present_family;
@@ -336,8 +336,8 @@ static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool comm
     return command_buffer;
 }
 
-static VkResult locked_queue_submit(std::unordered_map<vulkan_utils::queue::queue_type, vulkan_utils::queue>& queues, vulkan_utils::queue::queue_type queue_type, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
-    std::optional<vulkan_utils::queue> queue;
+static VkResult locked_queue_submit(std::unordered_map<queue::queue_type, queue>& queues, queue::queue_type queue_type, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+    std::optional<queue> queue;
     for (auto& [type, q] : queues) {
         if (q.type == queue_type) {
             queue = q;
