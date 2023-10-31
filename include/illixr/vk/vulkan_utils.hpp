@@ -336,6 +336,21 @@ static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool comm
     return command_buffer;
 }
 
+static VkResult locked_queue_submit(std::unordered_map<vulkan_utils::queue::queue_type, vulkan_utils::queue>& queues, vulkan_utils::queue::queue_type queue_type, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+    std::optional<vulkan_utils::queue> queue;
+    for (auto& [type, q] : queues) {
+        if (q.type == queue_type) {
+            queue = q;
+            break;
+        }
+    }
+    if (!queue.has_value()) {
+        throw std::runtime_error("Queue not found");
+    }
+    std::lock_guard<std::mutex> lock(*queue->mutex);
+    return vkQueueSubmit(queue->vk_queue, submitCount, pSubmits, fence);
+}
+
 /**
  * @brief Reads a file into a vector of chars.
  *

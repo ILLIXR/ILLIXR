@@ -9,6 +9,7 @@ typedef int8_t image_index_t;
 
 struct vk_image {
     VkImageCreateInfo image_info;
+    VkExternalMemoryImageCreateInfo export_image_info;
     VkImage image;
     VkImageView image_view;
     VmaAllocation allocation;

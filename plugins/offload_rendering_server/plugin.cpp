@@ -14,6 +14,46 @@
 using namespace ILLIXR;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
 
+class offload_rendering_server;
+
+static std::weak_ptr<vulkan::display_provider> display_provider_ffmpeg;
+
+void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
+    if (auto dp = display_provider_ffmpeg.lock()) {
+        std::optional<vulkan::vulkan_utils::queue> queue;
+        for (auto& q : dp->queues) {
+            if (q.second.family == queue_family) {
+                queue = q.second;
+                break;
+            }
+        }
+        if (!queue) {
+            throw std::runtime_error{"Failed to find queue with family " + std::to_string(queue_family)};
+        }
+        queue->mutex->lock();
+    } else {
+        throw std::runtime_error{"Weak pointer to display_provider is expired"};
+    }
+}
+
+void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
+    if (auto dp = display_provider_ffmpeg.lock()) {
+        std::optional<vulkan::vulkan_utils::queue> queue;
+        for (auto& q : dp->queues) {
+            if (q.second.family == queue_family) {
+                queue = q.second;
+                break;
+            }
+        }
+        if (!queue) {
+            throw std::runtime_error{"Failed to find queue with family " + std::to_string(queue_family)};
+        }
+        queue->mutex->unlock();
+    } else {
+        throw std::runtime_error{"Weak pointer to display_provider is expired"};
+    }
+}
+
 class offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
@@ -22,7 +62,9 @@ public:
     offload_rendering_server(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , log{spdlogger(nullptr)}
-        , dp{pb->lookup_impl<vulkan::display_provider>()} { }
+        , dp{pb->lookup_impl<vulkan::display_provider>()} {
+        display_provider_ffmpeg = dp;
+    }
 
     void start() override {
         ffmpeg_init_device();
@@ -62,30 +104,30 @@ protected:
     }
 
     void copy_image_to_cpu_and_save_file(AVFrame* frame) {
-        auto cpu_av_frame = av_frame_alloc();
+        auto cpu_av_frame    = av_frame_alloc();
         cpu_av_frame->format = AV_PIX_FMT_RGBA;
-        auto ret = av_hwframe_transfer_data(cpu_av_frame, frame, 0);
+        auto ret             = av_hwframe_transfer_data(cpu_av_frame, frame, 0);
         AV_ASSERT_SUCCESS(ret);
 
         // save cpu_av_frame as png
-        auto png_codec = avcodec_find_encoder(AV_CODEC_ID_PNG);
-        auto png_codec_ctx = avcodec_alloc_context3(png_codec);
-        png_codec_ctx->pix_fmt = AV_PIX_FMT_RGBA;
-        png_codec_ctx->width = cpu_av_frame->width;
-        png_codec_ctx->height = cpu_av_frame->height;
+        auto png_codec           = avcodec_find_encoder(AV_CODEC_ID_PNG);
+        auto png_codec_ctx       = avcodec_alloc_context3(png_codec);
+        png_codec_ctx->pix_fmt   = AV_PIX_FMT_RGBA;
+        png_codec_ctx->width     = cpu_av_frame->width;
+        png_codec_ctx->height    = cpu_av_frame->height;
         png_codec_ctx->time_base = {1, 60};
         png_codec_ctx->framerate = {60, 1};
 
         ret = avcodec_open2(png_codec_ctx, png_codec, nullptr);
         AV_ASSERT_SUCCESS(ret);
         AVPacket* png_packet = av_packet_alloc();
-        ret = avcodec_send_frame(png_codec_ctx, cpu_av_frame);
+        ret                  = avcodec_send_frame(png_codec_ctx, cpu_av_frame);
         AV_ASSERT_SUCCESS(ret);
         ret = avcodec_receive_packet(png_codec_ctx, png_packet);
         AV_ASSERT_SUCCESS(ret);
 
         std::string filename = "frame_" + std::to_string(frame_count) + ".png";
-        FILE* f = fopen(filename.c_str(), "wb");
+        FILE*       f        = fopen(filename.c_str(), "wb");
         fwrite(png_packet->data, 1, png_packet->size, f);
         fclose(f);
 
@@ -101,12 +143,13 @@ protected:
         auto ind = buffer_pool->post_processing_acquire_image();
         // get timestamp
         auto copy_start_time = std::chrono::high_resolution_clock::now();
+
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
             AV_ASSERT_SUCCESS(ret);
-//            copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
-//            vulkan::vulkan_utils::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-//             avvkframes[ind][eye].vk_frame->sem_value[0]);
+            // copy_image_to_cpu_and_save_file(encode_src_frames[eye]);
+            vulkan::vulkan_utils::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+                                                          avvkframes[ind][eye].vk_frame->sem_value[0]);
             encode_src_frames[eye]->pts = frame_count++;
         }
         auto copy_end_time = std::chrono::high_resolution_clock::now();
@@ -134,7 +177,9 @@ protected:
         auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         // print in nano seconds
-        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size << std::endl;
+        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
+                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
+                  << std::endl;
 
         // log->info("Sending frame {}", frame_count);
     }
@@ -151,12 +196,12 @@ private:
     AVBufferRef*    cuda_frame_ctx;
     AVCodecContext* codec_ctx;
 
-    std::array<AVFrame*, 2> encode_src_frames;
+    std::array<AVFrame*, 2>  encode_src_frames;
     std::array<AVPacket*, 2> encode_out_packets;
-    uint64_t                frame_count = 0;
+    uint64_t                 frame_count = 0;
 
     void enqueue_for_network_send(AVPacket* pkt) {
-//        av_packet_free(&pkt);
+        // av_packet_free(&pkt);
     }
 
     void ffmpeg_init_device() {
@@ -205,6 +250,9 @@ private:
         vulkan_hwdev_ctx->enabled_dev_extensions     = dp->enabled_device_extensions.data();
         vulkan_hwdev_ctx->nb_enabled_dev_extensions  = dp->enabled_device_extensions.size();
 
+        vulkan_hwdev_ctx->lock_queue = &ffmpeg_lock_queue;
+        vulkan_hwdev_ctx->unlock_queue = &ffmpeg_unlock_queue;
+
         AV_ASSERT_SUCCESS(av_hwdevice_ctx_init(device_ctx));
         log->info("FFmpeg Vulkan hwdevice context initialized");
     }
@@ -242,22 +290,24 @@ private:
     }
 
     void ffmpeg_init_cuda_frame_ctx() {
+        assert(this->buffer_pool != nullptr);
         auto cuda_frame_ref = av_hwframe_ctx_alloc(cuda_device_ctx);
         if (!cuda_frame_ref) {
             throw std::runtime_error{"Failed to create FFmpeg CUDA hwframe context"};
         }
-        auto cuda_hwframe_ctx               = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
-        cuda_hwframe_ctx->format            = AV_PIX_FMT_CUDA;
-        cuda_hwframe_ctx->sw_format         = AV_PIX_FMT_BGR0;
-        cuda_hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
-        cuda_hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
-//        cuda_hwframe_ctx->initial_pool_size = 0;
-        auto ret                            = av_hwframe_ctx_init(cuda_frame_ref);
+        auto cuda_hwframe_ctx       = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
+        cuda_hwframe_ctx->format    = AV_PIX_FMT_CUDA;
+        cuda_hwframe_ctx->sw_format = AV_PIX_FMT_BGRA;
+        cuda_hwframe_ctx->width     = buffer_pool->image_pool[0][0].image_info.extent.width;
+        cuda_hwframe_ctx->height    = buffer_pool->image_pool[0][0].image_info.extent.height;
+        // cuda_hwframe_ctx->initial_pool_size = 0;
+        auto ret = av_hwframe_ctx_init(cuda_frame_ref);
         AV_ASSERT_SUCCESS(ret);
         this->cuda_frame_ctx = cuda_frame_ref;
     }
 
     void ffmpeg_init_buffer_pool() {
+        assert(this->buffer_pool != nullptr);
         avvkframes.resize(buffer_pool->image_pool.size());
         for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
             for (size_t eye = 0; eye < 2; eye++) {
@@ -267,13 +317,17 @@ private:
                     throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                 }
                 // The image index is just 0 here for AVVKFrame since we're not using multi-plane
-                vk_frame->img[0]  = buffer_pool->image_pool[i][eye].image;
-                vk_frame->tiling  = buffer_pool->image_pool[i][eye].image_info.tiling;
-                vk_frame->mem[0]  = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
-                vk_frame->size[0] = buffer_pool->image_pool[i][eye].allocation_info.size;
+                vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
+                vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
+                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
+                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].allocation_info.size;
+                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].allocation_info.offset;
+                vk_frame->queue_family[0] = dp->queues[vulkan::vulkan_utils::queue::GRAPHICS].family;
 
-                VkExportSemaphoreCreateInfo export_semaphore_create_info {VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
-                vk_frame->sem[0]       = vulkan::vulkan_utils::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                VkExportSemaphoreCreateInfo export_semaphore_create_info{
+                    VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
+                vk_frame->sem[0] =
+                    vulkan::vulkan_utils::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
                 vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -284,28 +338,30 @@ private:
                 if (!av_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg frame"};
                 }
-                av_frame->format         = AV_PIX_FMT_VULKAN;
-                av_frame->width          = buffer_pool->image_pool[i][eye].image_info.extent.width;
-                av_frame->height         = buffer_pool->image_pool[i][eye].image_info.extent.height;
-                av_frame->hw_frames_ctx  = av_buffer_ref(frame_ctx);
-                av_frame->data[0]        = reinterpret_cast<uint8_t*>(vk_frame);
-                av_frame->buf[0] = av_buffer_alloc(1);
+                av_frame->format        = AV_PIX_FMT_VULKAN;
+                av_frame->width         = buffer_pool->image_pool[i][eye].image_info.extent.width;
+                av_frame->height        = buffer_pool->image_pool[i][eye].image_info.extent.height;
+                av_frame->hw_frames_ctx = av_buffer_ref(frame_ctx);
+                av_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_frame);
+                av_frame->buf[0]        = av_buffer_create(
+                    av_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
                 av_frame->pts            = 0;
                 avvkframes[i][eye].frame = av_frame;
             }
         }
 
         for (size_t eye = 0; eye < 2; eye++) {
-            encode_src_frames[eye] = av_frame_alloc();
-            encode_src_frames[eye]->format = AV_PIX_FMT_CUDA;
+            encode_src_frames[eye]                = av_frame_alloc();
+            encode_src_frames[eye]->format        = AV_PIX_FMT_CUDA;
             encode_src_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             encode_src_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             encode_src_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-            encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
+            // encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
             auto ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
-//            auto ret = av_frame_get_buffer(encode_src_frames[eye], 0);
-//            AV_ASSERT_SUCCESS(ret);
+            // std::cout << encode_src_frames[eye]->data[0] << std::endl;
+            // auto ret = av_frame_get_buffer(encode_src_frames[eye], 0);
+            // AV_ASSERT_SUCCESS(ret);
         }
     }
 
@@ -322,12 +378,14 @@ private:
         codec_ctx->thread_count = 0; // auto
         codec_ctx->thread_type  = FF_THREAD_SLICE;
 
-        codec_ctx->pix_fmt   = AV_PIX_FMT_BGRA; // alpha channel will be useful later for compositing
-        codec_ctx->width     = buffer_pool->image_pool[0][0].image_info.extent.width;
-        codec_ctx->height    = buffer_pool->image_pool[0][0].image_info.extent.height;
-        codec_ctx->time_base = {1, 60}; // 60 fps
-        codec_ctx->framerate = {60, 1};
-        codec_ctx->bit_rate  = 10000000; // 10 Mbps
+        codec_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
+        codec_ctx->sw_pix_fmt    = AV_PIX_FMT_BGRA;
+        codec_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+        codec_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+        codec_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+        codec_ctx->time_base     = {1, 60}; // 60 fps
+        codec_ctx->framerate     = {60, 1};
+        codec_ctx->bit_rate      = 10000000; // 10 Mbps
 
         // Set zero latency
         codec_ctx->max_b_frames = 0;
@@ -346,7 +404,9 @@ private:
     }
 };
 
-class offload_rendering_server_loader : public plugin, public vulkan::vk_extension_request {
+class offload_rendering_server_loader
+    : public plugin
+    , public vulkan::vk_extension_request {
 public:
     offload_rendering_server_loader(const std::string& name, phonebook* pb)
         : plugin(name, pb)
@@ -356,7 +416,8 @@ public:
     }
 
     std::vector<const char*> get_required_instance_extensions() override {
-        return {VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
+        return {VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
+                VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
     }
 
     std::vector<const char*> get_required_devices_extensions() override {

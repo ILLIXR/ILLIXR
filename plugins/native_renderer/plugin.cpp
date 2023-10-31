@@ -51,6 +51,7 @@ public:
         depth_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
         offscreen_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
 
+        create_offscreen_pool();
         for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
             for (auto eye = 0; eye < 2; eye++) {
                 create_offscreen_target(offscreen_images[i][eye]);
@@ -146,7 +147,7 @@ public:
             }
 
             VK_ASSERT_SUCCESS(
-                vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1, &submit_info, nullptr))
+                vulkan::vulkan_utils::locked_queue_submit(ds->queues, vulkan::vulkan_utils::queue::queue_type::GRAPHICS, 1, &submit_info, nullptr))
 
             // Wait for the application to finish rendering
             VkSemaphoreWaitInfo wait_info{
@@ -192,7 +193,7 @@ public:
                 &timewarp_render_finished_semaphore // pSignalSemaphores
             };
 
-            VK_ASSERT_SUCCESS(vkQueueSubmit(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue, 1,
+            VK_ASSERT_SUCCESS(vulkan::vulkan_utils::locked_queue_submit(ds->queues, vulkan::vulkan_utils::queue::queue_type::GRAPHICS, 1,
                                             &timewarp_submit_info, frame_fence))
 
             // Present the rendered image
@@ -468,12 +469,8 @@ private:
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &depth_image.image_view))
     }
 
-    /**
-     * @brief Creates an offscreen target for the application to render to.
-     * @param image Pointer to the offscreen image handle.
-     */
-    void create_offscreen_target(vulkan::vk_image& image) {
-        image.image_info = {
+    void create_offscreen_pool() {
+        VkImageCreateInfo sample_create_info{
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
             nullptr,                             // pNext
             0,                                   // flags
@@ -497,10 +494,74 @@ private:
             {}                                                                                       // initialLayout
         };
 
+        uint32_t                mem_type_index;
         VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
+        vmaFindMemoryTypeIndexForImageInfo(ds->vma_allocator, &sample_create_info, &alloc_info, &mem_type_index);
+
+        offscreen_export_mem_alloc_info.sType       = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
+        offscreen_export_mem_alloc_info.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+
+        VmaPoolCreateInfo pool_create_info   = {};
+        pool_create_info.memoryTypeIndex     = mem_type_index;
+        pool_create_info.blockSize           = 0;
+        pool_create_info.maxBlockCount       = 0;
+        pool_create_info.pMemoryAllocateNext = &offscreen_export_mem_alloc_info;
+        this->offscreen_pool_create_info     = pool_create_info;
+
+        VK_ASSERT_SUCCESS(vmaCreatePool(ds->vma_allocator, &offscreen_pool_create_info, &offscreen_pool));
+    }
+
+    /**
+     * @brief Creates an offscreen target for the application to render to.
+     * @param image Pointer to the offscreen image handle.
+     */
+    void create_offscreen_target(vulkan::vk_image& image) {
+        assert(offscreen_pool != VK_NULL_HANDLE);
+
+        image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
+                                   VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
+
+        std::vector<uint32_t> queue_family_indices;
+        queue_family_indices.push_back(ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
+        if (ds->queues.find(vulkan::vulkan_utils::queue::queue_type::COMPUTE) != ds->queues.end() &&
+            ds->queues.find(vulkan::vulkan_utils::queue::queue_type::COMPUTE)->second.family !=
+                ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family) {
+            queue_family_indices.push_back(ds->queues[vulkan::vulkan_utils::queue::queue_type::COMPUTE].family);
+        }
+        if (ds->queues.find(vulkan::vulkan_utils::queue::queue_type::DEDICATED_TRANSFER) != ds->queues.end()) {
+            queue_family_indices.push_back(ds->queues[vulkan::vulkan_utils::queue::queue_type::DEDICATED_TRANSFER].family);
+        }
+
+        image.image_info = {
+            VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
+            &image.export_image_info,            // pNext
+            0,                                   // flags
+            VK_IMAGE_TYPE_2D,                    // imageType
+            VK_FORMAT_B8G8R8A8_UNORM,            // format
+            {
+                ds->swapchain_extent.width / 2, // width
+                ds->swapchain_extent.height,    // height
+                1                               // depth
+            },                                  // extent
+            1,                                  // mipLevels
+            1,                                  // arrayLayers
+            VK_SAMPLE_COUNT_1_BIT,              // samples
+            VK_IMAGE_TILING_OPTIMAL,            // tiling
+            static_cast<VkImageUsageFlags>(
+                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
+            VK_SHARING_MODE_CONCURRENT,                                                              // sharingMode
+            static_cast<uint32_t>(queue_family_indices.size()),                                      // queueFamilyIndexCount
+            queue_family_indices.data(),                                                             // pQueueFamilyIndices
+            VK_IMAGE_LAYOUT_UNDEFINED                                                                // initialLayout
+        };
+
+        VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY, .pool = offscreen_pool};
 
         VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image.image_info, &alloc_info, &image.image, &image.allocation,
                                          &image.allocation_info))
+
+        assert(image.allocation_info.deviceMemory);
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -707,21 +768,24 @@ private:
 
     std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
 
-    std::vector<std::array<VkFramebuffer, 2>>    offscreen_framebuffers{};
+    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info;
+    VmaPoolCreateInfo                         offscreen_pool_create_info;
+    VmaPool                                   offscreen_pool;
+    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
+
     std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
 
     std::vector<VkFramebuffer> swapchain_framebuffers;
+    VkRenderPass               app_pass{};
 
-    VkRenderPass app_pass{};
     VkRenderPass timewarp_pass{};
+    VkSemaphore  image_available_semaphore{};
+    VkSemaphore  app_render_finished_semaphore{};
+    VkSemaphore  timewarp_render_finished_semaphore{};
 
-    VkSemaphore image_available_semaphore{};
-    VkSemaphore app_render_finished_semaphore{};
-    VkSemaphore timewarp_render_finished_semaphore{};
-    VkFence     frame_fence{};
+    VkFence frame_fence{};
 
-    uint64_t timeline_semaphore_value = 1;
-
+    uint64_t                                                    timeline_semaphore_value = 1;
     int                                                         fps{};
     time_point                                                  last_fps_update;
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
