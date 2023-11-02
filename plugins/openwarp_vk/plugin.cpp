@@ -396,7 +396,7 @@ private:
         depthLayoutBinding.descriptorCount              = 1;
         depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 33> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
+        std::array<VkDescriptorSetLayoutBinding, 3> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
         layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
@@ -435,13 +435,11 @@ private:
     }
 
     void create_descriptor_pool() {
-        std::array<VkDescriptorPoolSize, 3> poolSizes = {};
+        std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         poolSizes[0].descriptorCount                  = 2;
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = 2;
-        poolSizes[2].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[2].descriptorCount                  = 2;
+        poolSizes[1].descriptorCount                  = 4;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -487,12 +485,16 @@ private:
                 imageInfo.imageView             = buffer_pool[eye][i];
                 imageInfo.sampler               = fb_sampler;
 
+                assert(buffer_pool[eye][i] != VK_NULL_HANDLE);
+
                 VkDescriptorImageInfo depthInfo = {};
                 imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView             = buffer_pool[eye][i + 1];
                 imageInfo.sampler               = fb_sampler;
 
-                std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+                assert(buffer_pool[eye][i + 1] != VK_NULL_HANDLE);
+
+                std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
                 descriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 descriptorWrites[0].dstSet          = descriptor_sets[eye][i];
@@ -510,13 +512,13 @@ private:
                 descriptorWrites[1].descriptorCount = 1;
                 descriptorWrites[1].pImageInfo      = &imageInfo;
 
-                descriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet          = descriptor_sets[eye][i];
-                descriptorWrites[1].dstBinding      = 2;
-                descriptorWrites[1].dstArrayElement = 0;
-                descriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                descriptorWrites[1].descriptorCount = 1;
-                descriptorWrites[1].pImageInfo      = &depthInfo;
+                descriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[2].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[2].dstBinding      = 2;
+                descriptorWrites[2].dstArrayElement = 0;
+                descriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrites[2].descriptorCount = 1;
+                descriptorWrites[2].pImageInfo      = &depthInfo;
 
                 vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(),
                                        0, nullptr);
