@@ -40,21 +40,6 @@ public:
      * @param message The message to send.
      */
     virtual void topic_send(std::string topic_name, std::vector<char> message) = 0;
-
-    /**
-     * Retrieve a message on a topic. This DOES NOT dequeue the message.
-     * If this is called multiple times, the SAME message will be returned.
-     * @param topic_name The name of the topic.
-     * @return The least recently received message on the topic. If no message is available, nullptr is returned.
-     */
-    virtual std::shared_ptr<std::vector<char>> topic_get(std::string topic_name) = 0;
-
-    /**
-     * Dequeue a message on a topic. This removes the message from the queue.
-     * @param topic_name The name of the topic.
-     * @return The least recently received message on the topic. If no message is available, nullptr is returned.
-     */
-    virtual std::shared_ptr<std::vector<char>> topic_dequeue(std::string topic_name) = 0;
 };
 }
 

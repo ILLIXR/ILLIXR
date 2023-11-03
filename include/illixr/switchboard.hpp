@@ -23,6 +23,7 @@ static std::chrono::nanoseconds thread_cpu_time() {
 
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
 
@@ -122,6 +123,9 @@ public:
      */
     class event {
     public:
+        template<typename Archive>
+        void serialize(Archive & ar, const unsigned int version) {}
+
         virtual ~event() = default;
     };
 
@@ -420,6 +424,15 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
+        void deserialize_and_put(std::vector<char>& buffer) {
+            boost::iostreams::basic_array_source<char> source{buffer.data(), buffer.size()};
+            boost::iostreams::stream<boost::iostreams::basic_array_source<char>> stream{source};
+            boost::archive::binary_iarchive ia{stream};
+            ptr<event> this_event;
+            ia >> this_event;
+            put(std::move(this_event));
+        }
+
         /**
          * @brief Schedules @p callback on the topic (@p plugin_id is for accounting)
          *
@@ -521,33 +534,6 @@ public:
     };
 
     template<typename specific_event>
-    class network_reader : public reader<specific_event> {
-    private:
-        ptr<network_backend> _m_backend;
-    public:
-        network_reader(topic& topic_, ptr<network_backend> backend_ = nullptr)
-            : reader<specific_event>{topic_}, _m_backend{backend_} { }
-
-        ptr<const specific_event> get_ro_nullable() const noexcept override {
-            if (_m_backend->is_topic_networked(this->_m_topic.name())) {
-                auto buffer = _m_backend->topic_get(this->_m_topic.name());
-                if (!buffer) {
-                    return nullptr;
-                }
-
-                boost::iostreams::basic_array_source<char> source{buffer->data(), buffer->size()};
-                boost::iostreams::stream<boost::iostreams::basic_array_source<char>> stream{source};
-                boost::archive::binary_iarchive ia{stream};
-                ptr<specific_event> this_specific_event = std::make_shared<specific_event>();
-                ia >> this_specific_event;
-                return this_specific_event;
-            } else {
-                return reader<specific_event>::get_ro_nullable();
-            }
-        }
-    };
-
-    template<typename specific_event>
     class buffered_reader {
     private:
         topic&        _m_topic;
@@ -570,33 +556,6 @@ public:
             ptr<const event>          this_event          = _m_tb.dequeue();
             ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
             return this_specific_event;
-        }
-    };
-
-    template<typename specific_event>
-    class network_buffered_reader : public buffered_reader<specific_event> {
-    private:
-        ptr<network_backend> _m_backend;
-    public:
-        network_buffered_reader(topic& topic_, ptr<network_backend> backend_ = nullptr)
-            : buffered_reader<specific_event>(topic_), _m_backend{backend_} { }
-
-        ptr<const specific_event> dequeue() override {
-            if (_m_backend->is_topic_networked(this->_m_topic.name())) {
-                auto buffer = _m_backend->topic_dequeue(this->_m_topic.name());
-                if (!buffer) {
-                    return nullptr;
-                }
-
-                boost::iostreams::basic_array_source<char> source{buffer->data(), buffer->size()};
-                boost::iostreams::stream<boost::iostreams::basic_array_source<char>> stream{source};
-                boost::archive::binary_iarchive ia{stream};
-                ptr<specific_event> this_specific_event;
-                ia >> this_specific_event;
-                return this_specific_event;
-            } else {
-                return buffered_reader<specific_event>::dequeue();
-            }
         }
     };
 
@@ -705,6 +664,22 @@ public:
     switchboard(const phonebook* pb)
         : _m_pb{pb}, _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
 
+    bool topic_exists(const std::string& topic_name) {
+        const std::shared_lock lock{_m_registry_lock};
+        auto                   found = _m_registry.find(topic_name);
+        return found != _m_registry.end();
+    }
+
+    topic& get_topic(const std::string& topic_name) {
+        const std::shared_lock lock{_m_registry_lock};
+        auto                   found = _m_registry.find(topic_name);
+        if (found != _m_registry.end()) {
+            return found->second;
+        } else {
+            throw std::runtime_error("Topic not found");
+        }
+    }
+
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
      *
@@ -761,26 +736,8 @@ public:
     }
 
     template<typename specific_event>
-    network_reader<specific_event> get_network_reader(const std::string& topic_name) {
-        auto backend = _m_pb->lookup_impl<network_backend>();
-        if (!backend) {
-            throw std::runtime_error("Network backend not found");
-        }
-        return network_reader<specific_event>{try_register_topic<specific_event>(topic_name), backend};
-    }
-
-    template<typename specific_event>
     buffered_reader<specific_event> get_buffered_reader(const std::string& topic_name) {
         return buffered_reader<specific_event>{try_register_topic<specific_event>(topic_name)};
-    }
-
-    template<typename specific_event>
-    network_buffered_reader<specific_event> get_network_buffered_reader(const std::string& topic_name) {
-        auto backend = _m_pb->lookup_impl<network_backend>();
-        if (!backend) {
-            throw std::runtime_error("Network backend not found");
-        }
-        return network_buffered_reader<specific_event>{try_register_topic<specific_event>(topic_name), backend};
     }
 
     /**
