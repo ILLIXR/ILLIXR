@@ -7,10 +7,10 @@
 
 using namespace ILLIXR;
 
-class tcp_network_backend : public network_backend {
+class tcp_network_backend : public plugin, public network_backend {
 public:
     explicit tcp_network_backend(std::string name_, phonebook* pb_)
-        : network_backend(name_, pb_), sb{pb->lookup_impl<switchboard>()} { }
+        : plugin(name_, pb_), sb{pb->lookup_impl<switchboard>()} { }
 
     void topic_create(std::string topic_name, topic_config config) override { }
 

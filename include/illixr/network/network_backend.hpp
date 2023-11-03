@@ -8,11 +8,8 @@
 #include <vector>
 
 namespace ILLIXR {
-class network_backend : public plugin {
+class network_backend {
 public:
-    network_backend(const std::string& name, phonebook* pb)
-        : plugin(name, pb) { }
-
     /**
      * Called when a topic is created.
      *
