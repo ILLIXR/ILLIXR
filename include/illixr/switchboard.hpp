@@ -15,9 +15,17 @@ static std::chrono::nanoseconds thread_cpu_time() {
 }
 #endif
 #include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "illixr/network/network_backend.hpp"
+#include "illixr/network/topic_config.hpp"
 #include "managed_thread.hpp"
 #include "phonebook.hpp"
 #include "record_logger.hpp"
+
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/stream.hpp>
 
 namespace ILLIXR {
 
@@ -115,6 +123,9 @@ public:
      */
     class event {
     public:
+        template<typename Archive>
+        void serialize(Archive & ar, const unsigned int version) {}
+
         virtual ~event() = default;
     };
 
@@ -413,6 +424,15 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
+        void deserialize_and_put(std::vector<char>& buffer) {
+            boost::iostreams::basic_array_source<char> source{buffer.data(), buffer.size()};
+            boost::iostreams::stream<boost::iostreams::basic_array_source<char>> stream{source};
+            boost::archive::binary_iarchive ia{stream};
+            ptr<event> this_event;
+            ia >> this_event;
+            put(std::move(this_event));
+        }
+
         /**
          * @brief Schedules @p callback on the topic (@p plugin_id is for accounting)
          *
@@ -450,7 +470,7 @@ public:
      */
     template<typename specific_event>
     class reader {
-    private:
+    protected:
         /// Reference to the underlying topic
         topic& _m_topic;
 
@@ -471,7 +491,7 @@ public:
          *
          * This will return null if no event is on the topic yet.
          */
-        ptr<const specific_event> get_ro_nullable() const noexcept {
+        virtual ptr<const specific_event> get_ro_nullable() const noexcept {
             ptr<const event>          this_event          = _m_topic.get();
             ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
@@ -488,7 +508,7 @@ public:
          *
          * @throws `runtime_error` If no event is on the topic yet.
          */
-        ptr<const specific_event> get_ro() const {
+        virtual ptr<const specific_event> get_ro() const {
             ptr<const specific_event> this_specific_event = get_ro_nullable();
             if (this_specific_event != nullptr) {
                 return this_specific_event;
@@ -503,7 +523,7 @@ public:
          *
          * @throws `runtime_error` If no event is on the topic yet.
          */
-        ptr<specific_event> get_rw() const {
+        virtual ptr<specific_event> get_rw() const {
             /*
               This method is currently not more efficient than calling get_ro() and making a copy,
               but in the future it could be.
@@ -529,7 +549,7 @@ public:
             return _m_tb.size();
         }
 
-        ptr<const specific_event> dequeue() {
+        virtual ptr<const specific_event> dequeue() {
             // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
             // serial_no));
             serial_no++;
@@ -544,7 +564,7 @@ public:
      */
     template<typename specific_event>
     class writer {
-    private:
+    protected:
         // Reference to the underlying topic
         topic& _m_topic;
 
@@ -571,7 +591,7 @@ public:
         /**
          * @brief Publish @p ev to this topic.
          */
-        void put(ptr<specific_event>&& this_specific_event) {
+        virtual void put(ptr<specific_event>&& this_specific_event) {
             assert(typeid(specific_event) == _m_topic.ty());
             assert(this_specific_event != nullptr);
             assert(this_specific_event.unique());
@@ -583,9 +603,32 @@ public:
         }
     };
 
+    template<typename serializable_event>
+    class network_writer : public writer<serializable_event> {
+    private:
+        ptr<network_backend> _m_backend;
+    public:
+        network_writer(topic& topic_, ptr<network_backend> backend_ = nullptr)
+            : writer<serializable_event>{topic_}, _m_backend{backend_} { }
+
+        void put(ptr<serializable_event>&& this_specific_event) override {
+            if (_m_backend->is_topic_networked(this->_m_topic.name())) {
+                std::vector<char> buffer;
+                boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
+                boost::iostreams::stream<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
+                boost::archive::binary_oarchive oa{stream};
+                oa << this_specific_event;
+                _m_backend->topic_send(this->_m_topic.name(), std::move(buffer));
+            } else {
+                writer<serializable_event>::put(std::move(this_specific_event));
+            }
+        }
+    };
+
 private:
     std::unordered_map<std::string, topic> _m_registry;
     std::shared_mutex                      _m_registry_lock;
+    const phonebook*                       _m_pb;
     std::shared_ptr<record_logger>         _m_record_logger;
 
     template<typename specific_event>
@@ -619,7 +662,23 @@ public:
      * If @p pb is null, then logging is disabled.
      */
     switchboard(const phonebook* pb)
-        : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
+        : _m_pb{pb}, _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
+
+    bool topic_exists(const std::string& topic_name) {
+        const std::shared_lock lock{_m_registry_lock};
+        auto                   found = _m_registry.find(topic_name);
+        return found != _m_registry.end();
+    }
+
+    topic& get_topic(const std::string& topic_name) {
+        const std::shared_lock lock{_m_registry_lock};
+        auto                   found = _m_registry.find(topic_name);
+        if (found != _m_registry.end()) {
+            return found->second;
+        } else {
+            throw std::runtime_error("Topic not found");
+        }
+    }
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
@@ -653,6 +712,15 @@ public:
     template<typename specific_event>
     writer<specific_event> get_writer(const std::string& topic_name) {
         return writer<specific_event>{try_register_topic<specific_event>(topic_name)};
+    }
+
+    template<typename specific_event>
+    writer<specific_event> get_network_writer(const std::string& topic_name, topic_config config) {
+        auto backend = _m_pb->lookup_impl<network_backend>();
+        if (_m_registry.find(topic_name) == _m_registry.end()) {
+            backend->topic_create(topic_name, config);
+        }
+        return writer<specific_event>{try_register_topic<specific_event>(topic_name), backend};
     }
 
     /**
