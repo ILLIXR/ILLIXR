@@ -124,7 +124,21 @@ public:
         if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
             throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
         }
+
+        // for (int eye = 0; eye < 2; eye++) {
+        //     for (int buffer = 0; buffer < buffer_pool_in[0].size(); buffer++) {
+        //         assert(buffer_pool_in[eye][buffer] != VK_NULL_HANDLE && "Eye buffer image view is a null handle!");
+        //     }
+        // }
+
         this->buffer_pool = buffer_pool_in;
+
+        // for (int eye = 0; eye < 2; eye++) {
+        //     for (int buffer = 0; buffer < buffer_pool[0].size(); buffer++) {
+        //         std::cout << "Eye: " << eye << ", i: " << buffer << std::endl;
+        //         assert(buffer_pool[eye][buffer] != VK_NULL_HANDLE && "Eye buffer image view is a null handle!");
+        //     }
+        // }
 
         create_descriptor_pool();
         create_descriptor_sets();
@@ -396,7 +410,8 @@ private:
         depthLayoutBinding.descriptorCount              = 1;
         depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 3> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
+        // std::array<VkDescriptorSetLayoutBinding, 3> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
+        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, imageLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
         layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
@@ -459,6 +474,8 @@ private:
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
+            std::cout << "Eye: " << eye << std::endl;
+
             std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
@@ -474,7 +491,8 @@ private:
             descriptor_sets[eye].resize(buffer_pool[0].size());
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
 
-            for (size_t i = 0; i < buffer_pool[0].size(); i += 2) {
+            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
+                std::cout << "i: " << i << std::endl;
                 VkDescriptorBufferInfo bufferInfo = {};
                 bufferInfo.buffer                 = uniform_buffer;
                 bufferInfo.offset                 = 0;
@@ -487,14 +505,14 @@ private:
 
                 assert(buffer_pool[eye][i] != VK_NULL_HANDLE);
 
-                VkDescriptorImageInfo depthInfo = {};
-                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView             = buffer_pool[eye][i + 1];
-                imageInfo.sampler               = fb_sampler;
+                // VkDescriptorImageInfo depthInfo = {};
+                // imageInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+                // imageInfo.imageView             = buffer_pool[eye][2 * i + 1];
+                // imageInfo.sampler               = fb_sampler;
 
-                assert(buffer_pool[eye][i + 1] != VK_NULL_HANDLE);
+                // assert(buffer_pool[eye][2 * i + 1] != VK_NULL_HANDLE);
 
-                std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
+                std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
                 descriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 descriptorWrites[0].dstSet          = descriptor_sets[eye][i];
@@ -512,13 +530,13 @@ private:
                 descriptorWrites[1].descriptorCount = 1;
                 descriptorWrites[1].pImageInfo      = &imageInfo;
 
-                descriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[2].dstSet          = descriptor_sets[eye][i];
-                descriptorWrites[2].dstBinding      = 2;
-                descriptorWrites[2].dstArrayElement = 0;
-                descriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                descriptorWrites[2].descriptorCount = 1;
-                descriptorWrites[2].pImageInfo      = &depthInfo;
+                // descriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                // descriptorWrites[2].dstSet          = descriptor_sets[eye][i];
+                // descriptorWrites[2].dstBinding      = 2;
+                // descriptorWrites[2].dstArrayElement = 0;
+                // descriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                // descriptorWrites[2].descriptorCount = 1;
+                // descriptorWrites[2].pImageInfo      = &depthInfo;
 
                 vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(),
                                        0, nullptr);
