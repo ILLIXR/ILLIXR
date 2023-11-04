@@ -51,7 +51,9 @@ public:
         depth_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
         offscreen_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
 
-        create_offscreen_pool();
+        if (tw->is_external() || src->is_external()) {
+            create_offscreen_pool();
+        }
         for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
             for (auto eye = 0; eye < 2; eye++) {
                 create_offscreen_target(offscreen_images[i][eye]);
@@ -516,10 +518,12 @@ private:
      * @param image Pointer to the offscreen image handle.
      */
     void create_offscreen_target(vulkan::vk_image& image) {
-        assert(offscreen_pool != VK_NULL_HANDLE);
+        if (tw->is_external() || src->is_external()) {
+            assert(offscreen_pool != VK_NULL_HANDLE);
+            image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
+                                       VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
+        }
 
-        image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
-                                   VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
 
         std::vector<uint32_t> queue_family_indices;
         queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
@@ -534,7 +538,7 @@ private:
 
         image.image_info = {
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
-            &image.export_image_info,            // pNext
+            (src->is_external() || tw->is_external()) ? &image.export_image_info : nullptr,            // pNext
             0,                                   // flags
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
@@ -556,7 +560,10 @@ private:
             VK_IMAGE_LAYOUT_UNDEFINED                                                                // initialLayout
         };
 
-        VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY, .pool = offscreen_pool};
+        VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
+        if (tw->is_external() || src->is_external()) {
+            alloc_info.pool = offscreen_pool;
+        }
 
         VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image.image_info, &alloc_info, &image.image, &image.allocation,
                                          &image.allocation_info))
@@ -766,16 +773,16 @@ private:
     VkCommandBuffer app_command_buffer{};
     VkCommandBuffer timewarp_command_buffer{};
 
-    std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_images {};
 
-    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info;
-    VmaPoolCreateInfo                         offscreen_pool_create_info;
-    VmaPool                                   offscreen_pool;
-    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
+    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info {};
+    VmaPoolCreateInfo                         offscreen_pool_create_info {};
+    VmaPool                                   offscreen_pool {};
+    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers {};
 
     std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
 
-    std::vector<VkFramebuffer> swapchain_framebuffers;
+    std::vector<VkFramebuffer> swapchain_framebuffers {};
     VkRenderPass               app_pass{};
 
     VkRenderPass timewarp_pass{};

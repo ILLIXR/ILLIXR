@@ -118,7 +118,7 @@ private:
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         app_info.pEngineName        = "ILLIXR";
         app_info.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
-        app_info.apiVersion         = VK_API_VERSION_1_2;
+        app_info.apiVersion         = VK_API_VERSION_1_3;
 
         auto backend_required_instance_extensions = backend->get_required_instance_extensions();
         std::vector<const char*> backend_required_instance_extensions_vec(backend_required_instance_extensions.begin(), backend_required_instance_extensions.end());
@@ -134,6 +134,12 @@ private:
         create_info.pApplicationInfo        = &app_info;
         create_info.enabledExtensionCount   = static_cast<uint32_t>(backend_required_instance_extensions_vec.size());
         create_info.ppEnabledExtensionNames = backend_required_instance_extensions_vec.data();
+
+        // print enabled instance extensions
+        std::cout << "Enabled instance extensions:" << std::endl;
+        for (const auto& extension : backend_required_instance_extensions_vec) {
+            std::cout << "\t" << extension << std::endl;
+        }
 
         // enable validation layers
         const std::vector<const char*> validation_layers = {
@@ -325,6 +331,12 @@ private:
         create_info.enabledExtensionCount   = static_cast<uint32_t>(required_device_extensions.size());
         create_info.ppEnabledExtensionNames = required_device_extensions.data();
         create_info.pNext                   = &features;
+
+        // print enabled device extensions
+        std::cout << "Enabled device extensions:" << std::endl;
+        for (const auto& extension : required_device_extensions) {
+            std::cout << "\t" << extension << std::endl;
+        }
 
         VK_ASSERT_SUCCESS(vkCreateDevice(vk_physical_device, &create_info, nullptr, &vk_device));
 

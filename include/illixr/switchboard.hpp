@@ -491,7 +491,7 @@ public:
          *
          * This will return null if no event is on the topic yet.
          */
-        virtual ptr<const specific_event> get_ro_nullable() const noexcept {
+        ptr<const specific_event> get_ro_nullable() const noexcept {
             ptr<const event>          this_event          = _m_topic.get();
             ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
 
@@ -508,7 +508,7 @@ public:
          *
          * @throws `runtime_error` If no event is on the topic yet.
          */
-        virtual ptr<const specific_event> get_ro() const {
+        ptr<const specific_event> get_ro() const {
             ptr<const specific_event> this_specific_event = get_ro_nullable();
             if (this_specific_event != nullptr) {
                 return this_specific_event;
@@ -523,7 +523,7 @@ public:
          *
          * @throws `runtime_error` If no event is on the topic yet.
          */
-        virtual ptr<specific_event> get_rw() const {
+        ptr<specific_event> get_rw() const {
             /*
               This method is currently not more efficient than calling get_ro() and making a copy,
               but in the future it could be.
