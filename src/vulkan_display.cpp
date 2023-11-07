@@ -178,7 +178,7 @@ private:
                 } else if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) {
                     type = "PERFORMANCE";
                 }
-                spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, pCallbackData->pMessage);
+                spdlog::get("illixr")->warn("[display_vk] [{}: {}] {}", severity, type, pCallbackData->pMessage);
                 return VK_FALSE;
             };
 

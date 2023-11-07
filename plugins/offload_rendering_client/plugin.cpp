@@ -1,5 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -11,6 +12,8 @@
 #include <cstdlib>
 #include <set>
 
+#define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "h264"
+
 using namespace ILLIXR;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
 
@@ -21,8 +24,10 @@ class offload_rendering_client
 public:
     offload_rendering_client(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
+        , sb{pb->lookup_impl<switchboard>()}
         , log{spdlogger(nullptr)}
-        , dp{pb->lookup_impl<vulkan::display_provider>()} {
+        , dp{pb->lookup_impl<vulkan::display_provider>()}
+        , frames_reader{sb->get_buffered_reader<compressed_frame>("compressed_frames")}{
         display_provider_ffmpeg = dp;
     }
 
@@ -38,9 +43,7 @@ public:
         ffmpeg_init_cuda_frame_ctx();
         ffmpeg_init_buffer_pool();
         ffmpeg_init_decoder();
-        for (auto eye = 0; eye < 2; eye++) {
-            decode_src_packets[eye] = av_packet_alloc();
-        }
+        ready = true;
     }
 
     bool is_external() override {
@@ -58,6 +61,11 @@ public:
     }
 
 protected:
+    void _p_thread_setup() override {
+        // rename thread
+        pthread_setname_np(pthread_self(), "offload_rendering_client");
+    }
+
     skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
     }
@@ -96,7 +104,7 @@ protected:
     }
 
     void _p_one_iteration() override {
-        if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
+        if (!ready) {
             return;
         }
         auto pose = network_receive();
@@ -108,16 +116,23 @@ protected:
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
             }
             AV_ASSERT_SUCCESS(ret);
+//            ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
+//            AV_ASSERT_SUCCESS(ret);
+//            copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
+//            decode_out_frames[eye]->pts = frame_count++;
         }
 
         auto ind = buffer_pool->src_acquire_image();
 
         for (auto eye = 0; eye < 2; eye++) {
-            auto ret = av_hwframe_transfer_data(avvkframes[ind][eye].frame, decode_out_frames[eye], 0);
+            auto ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
+            assert(decode_out_frames[eye]->format == AV_PIX_FMT_CUDA);
             AV_ASSERT_SUCCESS(ret);
-            // copy_image_to_cpu_and_save_file(encode_src_frames[eye]);
-            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-                                                          avvkframes[ind][eye].vk_frame->sem_value[0]);
+//            copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
+//            ret = av_hwframe_transfer_data(avvkframes[ind][eye].frame, decode_out_frames[eye], 0);
+//            AV_ASSERT_SUCCESS(ret);
+//            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+//                                                          avvkframes[ind][eye].vk_frame->sem_value[0]);
             decode_out_frames[eye]->pts = frame_count++;
         }
         buffer_pool->src_release_image(ind, std::move(pose));
@@ -125,24 +140,37 @@ protected:
     }
 
 private:
+    std::shared_ptr<switchboard> sb;
     std::shared_ptr<spdlog::logger>                 log;
     std::shared_ptr<vulkan::display_provider>       dp;
+    switchboard::buffered_reader<compressed_frame> frames_reader;
+    std::atomic<bool>                               ready = false;
+
     std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvkframes;
-
     AVBufferRef*    device_ctx;
     AVBufferRef*    cuda_device_ctx;
     AVBufferRef*    frame_ctx;
     AVBufferRef*    cuda_frame_ctx;
-    AVCodecContext* codec_ctx;
 
+    AVCodecContext* codec_ctx;
     std::array<AVPacket*, 2>  decode_src_packets;
     std::array<AVFrame*, 2>   decode_out_frames;
+
     uint64_t                 frame_count = 0;
 
     pose_type network_receive() {
-        // av_packet_free(&pkt);
-        return {};
+        if (decode_src_packets[0] != nullptr) {
+            av_packet_free_side_data(decode_src_packets[0]);
+            av_packet_free_side_data(decode_src_packets[1]);
+            av_packet_free(&decode_src_packets[0]);
+            av_packet_free(&decode_src_packets[1]);
+        }
+        auto frame = frames_reader.dequeue();
+        decode_src_packets[0] = frame->left;
+        decode_src_packets[1] = frame->right;
+        log->info("Received frame {}", frame_count);
+        return {frame->pose};
     }
 
     void ffmpeg_init_device() {
@@ -236,7 +264,7 @@ private:
         }
         auto cuda_hwframe_ctx       = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
         cuda_hwframe_ctx->format    = AV_PIX_FMT_CUDA;
-        cuda_hwframe_ctx->sw_format = AV_PIX_FMT_BGRA;
+        cuda_hwframe_ctx->sw_format = AV_PIX_FMT_NV12;
         cuda_hwframe_ctx->width     = buffer_pool->image_pool[0][0].image_info.extent.width;
         cuda_hwframe_ctx->height    = buffer_pool->image_pool[0][0].image_info.extent.height;
         // cuda_hwframe_ctx->initial_pool_size = 0;
@@ -318,16 +346,20 @@ private:
         codec_ctx->thread_type  = FF_THREAD_SLICE;
 
         codec_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
-        codec_ctx->sw_pix_fmt    = AV_PIX_FMT_BGRA;
+        codec_ctx->sw_pix_fmt    = AV_PIX_FMT_NV12;
+        codec_ctx->hw_device_ctx = av_buffer_ref(cuda_device_ctx);
         codec_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
         codec_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
         codec_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_ctx->framerate     = {0, 1};
-        codec_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
+        codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
+//        codec_ctx->flags2 |= AV_CODEC_FLAG2_CHUNKS;
 
         // Set zero latency
         av_opt_set_int(codec_ctx->priv_data, "zerolatency", 1, 0);
         av_opt_set_int(codec_ctx->priv_data, "delay", 0, 0);
+
+        av_opt_set(codec_ctx->priv_data, "hwaccel", "cuda", 0);
 
         // Set decoder profile
         // av_opt_set(codec_ctx->priv_data, "profile", "high", 0);
@@ -338,6 +370,7 @@ private:
         auto ret = avcodec_open2(codec_ctx, decoder, nullptr);
         AV_ASSERT_SUCCESS(ret);
     }
+
 };
 
 class offload_rendering_client_loader

@@ -1,5 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk/display_provider.hpp"
@@ -8,7 +9,6 @@
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
 
-#include <cstdlib>
 #include <set>
 
 using namespace ILLIXR;
@@ -22,7 +22,9 @@ public:
     offload_rendering_server(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , log{spdlogger(nullptr)}
-        , dp{pb->lookup_impl<vulkan::display_provider>()} {
+        , dp{pb->lookup_impl<vulkan::display_provider>()}
+        , sb{pb->lookup_impl<switchboard>()}
+        , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))} {
         display_provider_ffmpeg = dp;
     }
 
@@ -32,9 +34,9 @@ public:
         threadloop::start();
     }
 
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool,
-                       bool input_texture_vulkan_coordinates) override {
-        this->buffer_pool = buffer_pool;
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> _buffer_pool,
+               bool input_texture_vulkan_coordinates) override {
+        this->buffer_pool = _buffer_pool;
         ffmpeg_init_frame_ctx();
         ffmpeg_init_cuda_frame_ctx();
         ffmpeg_init_buffer_pool();
@@ -86,7 +88,7 @@ protected:
         ret = avcodec_receive_packet(png_codec_ctx, png_packet);
         AV_ASSERT_SUCCESS(ret);
 
-        std::string filename = "frame_" + std::to_string(frame_count) + ".png";
+        std::string filename = "frame_encode_" + std::to_string(frame_count) + ".png";
         FILE*       f        = fopen(filename.c_str(), "wb");
         fwrite(png_packet->data, 1, png_packet->size, f);
         fclose(f);
@@ -100,19 +102,21 @@ protected:
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
             return;
         }
-        auto ind = buffer_pool->post_processing_acquire_image();
+        std::pair<ILLIXR::vulkan::image_index_t, pose_type> res  = buffer_pool->post_processing_acquire_image();
+        auto                                                ind  = res.first;
+        auto                                                pose = res.second;
         // get timestamp
         auto copy_start_time = std::chrono::high_resolution_clock::now();
 
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
             AV_ASSERT_SUCCESS(ret);
-            // copy_image_to_cpu_and_save_file(encode_src_frames[eye]);
             vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-                                                          avvkframes[ind][eye].vk_frame->sem_value[0]);
+                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
             encode_src_frames[eye]->pts = frame_count++;
         }
         auto copy_end_time = std::chrono::high_resolution_clock::now();
+
         buffer_pool->post_processing_release_image(ind);
         auto encode_start_time = std::chrono::high_resolution_clock::now();
         for (auto eye = 0; eye < 2; eye++) {
@@ -130,37 +134,41 @@ protected:
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN when receiving packets. This should never happen."};
             }
             AV_ASSERT_SUCCESS(ret);
-            enqueue_for_network_send(encode_out_packets[eye]);
         }
         auto encode_end_time = std::chrono::high_resolution_clock::now();
 
         auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         // print in nano seconds
-//        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
-//                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
-//                  << std::endl;
+        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
+                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
+                  << std::endl;
 
-        // log->info("Sending frame {}", frame_count);
+        enqueue_for_network_send(pose);
     }
 
 private:
     std::shared_ptr<spdlog::logger>                 log;
     std::shared_ptr<vulkan::display_provider>       dp;
+    std::shared_ptr<switchboard>                    sb;
+    switchboard::network_writer<compressed_frame>   frames_topic;
     std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvkframes;
 
-    AVBufferRef*    device_ctx;
-    AVBufferRef*    cuda_device_ctx;
-    AVBufferRef*    frame_ctx;
-    AVBufferRef*    cuda_frame_ctx;
-    AVCodecContext* codec_ctx;
+    AVBufferRef* device_ctx;
+    AVBufferRef* cuda_device_ctx;
+    AVBufferRef* frame_ctx;
+    AVBufferRef* cuda_frame_ctx;
 
+    AVCodecContext*          codec_ctx;
     std::array<AVFrame*, 2>  encode_src_frames;
     std::array<AVPacket*, 2> encode_out_packets;
-    uint64_t                 frame_count = 0;
 
-    void enqueue_for_network_send(AVPacket* pkt) {
+    uint64_t frame_count = 0;
+
+    void enqueue_for_network_send(pose_type& pose) {
+        frames_topic.put(std::make_shared<compressed_frame>(encode_out_packets[0], encode_out_packets[1], pose));
+
         // av_packet_free(&pkt);
     }
 
@@ -210,7 +218,7 @@ private:
         vulkan_hwdev_ctx->enabled_dev_extensions     = dp->enabled_device_extensions.data();
         vulkan_hwdev_ctx->nb_enabled_dev_extensions  = dp->enabled_device_extensions.size();
 
-        vulkan_hwdev_ctx->lock_queue = &ffmpeg_lock_queue;
+        vulkan_hwdev_ctx->lock_queue   = &ffmpeg_lock_queue;
         vulkan_hwdev_ctx->unlock_queue = &ffmpeg_unlock_queue;
 
         AV_ASSERT_SUCCESS(av_hwdevice_ctx_init(device_ctx));
@@ -286,8 +294,7 @@ private:
 
                 VkExportSemaphoreCreateInfo export_semaphore_create_info{
                     VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
-                vk_frame->sem[0] =
-                    vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                vk_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
                 vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 

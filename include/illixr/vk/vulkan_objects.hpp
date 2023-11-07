@@ -5,7 +5,7 @@
 
 namespace ILLIXR::vulkan {
 
-typedef size_t image_index_t;
+typedef int8_t image_index_t;
 
 struct vk_image {
     VkImageCreateInfo image_info;
@@ -67,12 +67,15 @@ struct buffer_pool {
         latest_decoded_image = image_index;
     }
 
-    image_index_t post_processing_acquire_image() {
+    std::pair<image_index_t, T> post_processing_acquire_image() {
         std::lock_guard<std::mutex> lock(image_state_mutex);
+        if (latest_decoded_image == -1) {
+            return {-1, {}};
+        }
         assert(latest_decoded_image != -1);
         assert(image_states[latest_decoded_image] == AVAILABLE);
         image_states[latest_decoded_image] = POST_PROCESSING_IN_FLIGHT;
-        return latest_decoded_image;
+        return {latest_decoded_image, std::move(image_data[latest_decoded_image])};
     }
 
     void post_processing_release_image(image_index_t image_index) {

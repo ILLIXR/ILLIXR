@@ -1,4 +1,4 @@
-#include "illixr/global_module_defs.hpp"
+       #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
@@ -86,20 +86,21 @@ public:
      * @throws runtime_error If any Vulkan operation fails.
      */
     void _p_one_iteration() override {
-        uint32_t swapchain_image_index;
         if (!tw->is_external()) {
             ds->poll_window_events();
 
-            // Acquire the next image from the swapchain
-            auto ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
-                                              VK_NULL_HANDLE, &swapchain_image_index));
+            if (swapchain_image_index == UINT32_MAX) {
+                // Acquire the next image from the swapchain
+                auto ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
+                                                  VK_NULL_HANDLE, &swapchain_image_index));
 
-            // Check if the swapchain is out of date or suboptimal
-            if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
-                ds->recreate_swapchain();
-                return;
-            } else {
-                VK_ASSERT_SUCCESS(ret)
+                // Check if the swapchain is out of date or suboptimal
+                if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
+                    ds->recreate_swapchain();
+                    return;
+                } else {
+                    VK_ASSERT_SUCCESS(ret)
+                }
             }
             VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence))
         }
@@ -179,8 +180,15 @@ public:
 
         if (!tw->is_external()) {
             // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
-            tw->update_uniforms(fast_pose.pose);
-            auto buffer_index = buffer_pool->post_processing_acquire_image();
+            auto res = buffer_pool->post_processing_acquire_image();
+            auto buffer_index = res.first;
+            auto pose = res.second;
+            tw->update_uniforms(pose);
+
+            if (buffer_index == -1) {
+                return;
+            }
+
             record_post_processing_command_buffer(buffer_index, swapchain_image_index);
 
             VkSubmitInfo timewarp_submit_info{
@@ -215,6 +223,8 @@ public:
 
             // Wait for the previous frame to finish rendering
             VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
+
+            swapchain_image_index = UINT32_MAX;
 
             buffer_pool->post_processing_release_image(buffer_index);
 
@@ -488,7 +498,7 @@ private:
             VK_SAMPLE_COUNT_1_BIT,              // samples
             VK_IMAGE_TILING_OPTIMAL,            // tiling
             static_cast<VkImageUsageFlags>(
-                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
             {},                                                                                      // sharingMode
             0,                                                                                       // queueFamilyIndexCount
@@ -552,7 +562,7 @@ private:
             VK_SAMPLE_COUNT_1_BIT,              // samples
             VK_IMAGE_TILING_OPTIMAL,            // tiling
             static_cast<VkImageUsageFlags>(
-                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
             VK_SHARING_MODE_CONCURRENT,                                                              // sharingMode
             static_cast<uint32_t>(queue_family_indices.size()),                                      // queueFamilyIndexCount
@@ -792,6 +802,7 @@ private:
 
     VkFence frame_fence{};
 
+    uint32_t swapchain_image_index = UINT32_MAX; // set to UINT32_MAX after present
     uint64_t                                                    timeline_semaphore_value = 1;
     int                                                         fps{};
     time_point                                                  last_fps_update;

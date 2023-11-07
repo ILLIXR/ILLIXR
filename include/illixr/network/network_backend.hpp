@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace ILLIXR {
-class network_backend {
+class network_backend : public phonebook::service {
 public:
     /**
      * Called when a topic is created.

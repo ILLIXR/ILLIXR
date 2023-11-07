@@ -102,11 +102,14 @@ public:
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
-        create_vertex_buffer();
-        create_index_buffer();
-        create_descriptor_set_layout();
-        create_uniform_buffer();
-        create_texture_sampler();
+        {
+            std::lock_guard<std::mutex> lock{*ds->queues[ILLIXR::vulkan::queue::GRAPHICS].mutex};
+            create_vertex_buffer();
+            create_index_buffer();
+            create_descriptor_set_layout();
+            create_uniform_buffer();
+            create_texture_sampler();
+        }
     }
 
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool,

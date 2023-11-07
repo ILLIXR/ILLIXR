@@ -8,6 +8,7 @@
 #include "vulkan/vulkan.h"
 
 #include <optional>
+#include <utility>
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -18,8 +19,7 @@ extern "C" {
 }
 
 #define OFFLOAD_RENDERING_FFMPEG_ENCODER_NAME "h264_nvenc"
-#define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "nvdec"
-#define OFFLOAD_RENDERING_BITRATE 10000000
+#define OFFLOAD_RENDERING_BITRATE             10000000
 
 namespace ILLIXR::vulkan::ffmpeg_utils {
 
@@ -80,9 +80,9 @@ void AV_ASSERT_SUCCESS(int ret) {
 }
 
 struct ffmpeg_vk_frame {
-    AVFrame * frame;
-    AVVkFrame * vk_frame;
+    AVFrame*   frame;
+    AVVkFrame* vk_frame;
 };
-}
+} // namespace ILLIXR::vulkan::ffmpeg_utils
 
 #endif // ILLIXR_FFMPEG_UTILS_HPP

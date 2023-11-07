@@ -21,11 +21,14 @@ static std::chrono::nanoseconds thread_cpu_time() {
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
-#include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/shared_ptr.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/vector.hpp>
 
 namespace ILLIXR {
 
@@ -425,8 +428,7 @@ private:
         }
 
         void deserialize_and_put(std::vector<char>& buffer) {
-            boost::iostreams::basic_array_source<char> source{buffer.data(), buffer.size()};
-            boost::iostreams::stream<boost::iostreams::basic_array_source<char>> stream{source};
+            boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
             boost::archive::binary_iarchive ia{stream};
             ptr<event> this_event;
             ia >> this_event;
@@ -578,7 +580,7 @@ public:
          * There is an optimization available which has not yet been implemented: switchboard can reuse memory
          * from old events, like a [slab allocator][1]. Suppose module A publishes data for module
          * B. B's deallocation through the destructor, and A's allocation through this method completes
-         * the cycle in a [double-buffer (AKA swap-chain)][2].
+         * the cycle in a [double-buffer (AKA swap-chain)][ 2].
          *
          * [1]: https://en.wikipedia.org/wiki/Slab_allocation
          * [2]: https://en.wikipedia.org/wiki/Multiple_buffering
@@ -613,11 +615,17 @@ public:
 
         void put(ptr<serializable_event>&& this_specific_event) override {
             if (_m_backend->is_topic_networked(this->_m_topic.name())) {
+                auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
+                assert(base_event && "Event is not derived from switchboard::event");
+
                 std::vector<char> buffer;
                 boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
-                boost::iostreams::stream<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
+                boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{
+                    inserter};
                 boost::archive::binary_oarchive oa{stream};
-                oa << this_specific_event;
+                oa << base_event;
+                // flush
+                stream.pubsync();
                 _m_backend->topic_send(this->_m_topic.name(), std::move(buffer));
             } else {
                 writer<serializable_event>::put(std::move(this_specific_event));
@@ -715,12 +723,12 @@ public:
     }
 
     template<typename specific_event>
-    writer<specific_event> get_network_writer(const std::string& topic_name, topic_config config) {
+    network_writer<specific_event> get_network_writer(const std::string& topic_name, topic_config config) {
         auto backend = _m_pb->lookup_impl<network_backend>();
         if (_m_registry.find(topic_name) == _m_registry.end()) {
             backend->topic_create(topic_name, config);
         }
-        return writer<specific_event>{try_register_topic<specific_event>(topic_name), backend};
+        return network_writer<specific_event>{try_register_topic<specific_event>(topic_name), backend};
     }
 
     /**

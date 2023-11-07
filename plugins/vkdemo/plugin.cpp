@@ -113,15 +113,18 @@ public:
         command_pool =
             vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
         command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
-        load_model();
-        bake_models();
-        create_texture_sampler();
-        create_descriptor_set_layout();
-        create_uniform_buffers();
-        create_descriptor_pool();
-        create_descriptor_set();
-        create_vertex_buffer();
-        create_index_buffer();
+        {
+            std::lock_guard<std::mutex> lock{*ds->queues[ILLIXR::vulkan::queue::GRAPHICS].mutex};
+            load_model();
+            bake_models();
+            create_texture_sampler();
+            create_descriptor_set_layout();
+            create_uniform_buffers();
+            create_descriptor_pool();
+            create_descriptor_set();
+            create_vertex_buffer();
+            create_index_buffer();
+        }
         vertices.clear();
         indices.clear();
 
