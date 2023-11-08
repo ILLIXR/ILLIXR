@@ -499,7 +499,7 @@ private:
                 bufferInfo.range                  = sizeof(UniformBufferObject);
 
                 VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
                 imageInfo.imageView             = buffer_pool[eye][i];
                 imageInfo.sampler               = fb_sampler;
 
