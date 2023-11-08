@@ -9,6 +9,11 @@
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
 
+extern "C" {
+#include <libavfilter/buffersink.h>
+#include <libavfilter/buffersrc.h>
+}
+
 #include <cstdlib>
 #include <set>
 
@@ -42,6 +47,7 @@ public:
         ffmpeg_init_frame_ctx();
         ffmpeg_init_cuda_frame_ctx();
         ffmpeg_init_buffer_pool();
+        ffmpeg_init_filters();
         ffmpeg_init_decoder();
         ready = true;
     }
@@ -332,6 +338,56 @@ private:
         }
     }
 
+    void ffmpeg_init_filters() {
+        const AVFilter *buffersrc  = avfilter_get_by_name("buffer");
+        const AVFilter *buffersink = avfilter_get_by_name("buffersink");
+        AVFilterInOut *outputs     = avfilter_inout_alloc();
+        AVFilterInOut *inputs      = avfilter_inout_alloc();
+        filter_graph = avfilter_graph_alloc();
+        if (!outputs || !inputs || !filter_graph) {
+            throw std::runtime_error{"Failed to allocate AVFilterInOut or AVFilterGraph"};
+        }
+
+        char args[512];
+        snprintf(args, sizeof(args),
+                 "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d",
+                    buffer_pool->image_pool[0][0].image_info.extent.width, buffer_pool->image_pool[0][0].image_info.extent.height,
+                    AV_PIX_FMT_CUDA,
+                    1, 60);
+
+        auto ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, nullptr, filter_graph);
+        AV_ASSERT_SUCCESS(ret);
+        ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", nullptr, nullptr, filter_graph);
+        AV_ASSERT_SUCCESS(ret);
+
+        AVBufferSrcParameters *srcpar = av_buffersrc_parameters_alloc();
+        srcpar->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+        ret = av_buffersrc_parameters_set(buffersrc_ctx, srcpar);
+        AV_ASSERT_SUCCESS(ret);
+
+        // formats
+        enum AVPixelFormat pix_fmts[] = {AV_PIX_FMT_CUDA, AV_PIX_FMT_NONE};
+        ret = av_opt_set_int_list(buffersink_ctx, "pix_fmts", pix_fmts, AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN);
+
+
+        // link
+        outputs->name       = av_strdup("in");
+        outputs->filter_ctx = buffersrc_ctx;
+        outputs->pad_idx    = 0;
+        outputs->next       = nullptr;
+
+        inputs->name       = av_strdup("out");
+        inputs->filter_ctx = buffersink_ctx;
+        inputs->pad_idx    = 0;
+        inputs->next       = nullptr;
+
+        ret = avfilter_graph_parse_ptr(filter_graph, "scale_cuda=format=rgb32", &inputs, &outputs, nullptr);
+        AV_ASSERT_SUCCESS(ret);
+
+        ret = avfilter_graph_config(filter_graph, nullptr);
+        AV_ASSERT_SUCCESS(ret);
+    }
+
     void ffmpeg_init_decoder() {
         auto decoder = avcodec_find_decoder_by_name(OFFLOAD_RENDERING_FFMPEG_DECODER_NAME);
         if (!decoder) {
@@ -371,6 +427,9 @@ private:
         AV_ASSERT_SUCCESS(ret);
     }
 
+    AVFilterContext* buffersrc_ctx;
+    AVFilterContext* buffersink_ctx;
+    AVFilterGraph*   filter_graph;
 };
 
 class offload_rendering_client_loader

@@ -1,4 +1,4 @@
-       #include "illixr/global_module_defs.hpp"
+#include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
@@ -62,8 +62,7 @@ public:
         }
         this->buffer_pool = std::make_shared<vulkan::buffer_pool<pose_type>>(offscreen_images, depth_images);
 
-        command_pool =
-            vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
+        command_pool            = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
         app_command_buffer      = vulkan::create_command_buffer(ds->vk_device, command_pool);
         timewarp_command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         create_sync_objects();
@@ -131,13 +130,12 @@ public:
                 &fired_value                                      // pSignalSemaphoreValues
             };
 
-            VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-            VkSubmitInfo         submit_info{
+            VkSubmitInfo submit_info{
                 VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
                 &timeline_submit_info,         // pNext
-                1,                             // waitSemaphoreCount
-                &image_available_semaphore,    // pWaitSemaphores
-                wait_stages,                   // pWaitDstStageMask
+                0,                             // waitSemaphoreCount
+                nullptr,                       // pWaitSemaphores
+                nullptr,                       // pWaitDstStageMask
                 1,                             // commandBufferCount
                 &app_command_buffer,           // pCommandBuffers
                 1,                             // signalSemaphoreCount
@@ -180,9 +178,9 @@ public:
 
         if (!tw->is_external()) {
             // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
-            auto res = buffer_pool->post_processing_acquire_image();
+            auto res          = buffer_pool->post_processing_acquire_image();
             auto buffer_index = res.first;
-            auto pose = res.second;
+            auto pose         = res.second;
             tw->update_uniforms(pose);
 
             if (buffer_index == -1) {
@@ -191,12 +189,13 @@ public:
 
             record_post_processing_command_buffer(buffer_index, swapchain_image_index);
 
-            VkSubmitInfo timewarp_submit_info{
+            VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+            VkSubmitInfo         timewarp_submit_info{
                 VK_STRUCTURE_TYPE_SUBMIT_INFO,      // sType
                 nullptr,                            // pNext
-                0,                                  // waitSemaphoreCount
-                nullptr,                            // pWaitSemaphores
-                nullptr,                            // pWaitDstStageMask
+                1,                                  // waitSemaphoreCount
+                &image_available_semaphore,         // pWaitSemaphores
+                wait_stages,                        // pWaitDstStageMask
                 1,                                  // commandBufferCount
                 &timewarp_command_buffer,           // pCommandBuffers
                 1,                                  // signalSemaphoreCount
@@ -204,7 +203,7 @@ public:
             };
 
             VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(ds->queues, vulkan::queue::queue_type::GRAPHICS, 1,
-                                            &timewarp_submit_info, frame_fence))
+                                                          &timewarp_submit_info, frame_fence))
 
             // Present the rendered image
             VkPresentInfoKHR present_info{
@@ -218,8 +217,7 @@ public:
                 nullptr                              // pResults
             };
 
-            auto ret =
-                (vkQueuePresentKHR(ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+            auto ret = (vkQueuePresentKHR(ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
 
             // Wait for the previous frame to finish rendering
             VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
@@ -534,7 +532,6 @@ private:
                                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
         }
 
-
         std::vector<uint32_t> queue_family_indices;
         queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         if (ds->queues.find(vulkan::queue::queue_type::COMPUTE) != ds->queues.end() &&
@@ -547,11 +544,11 @@ private:
         }
 
         image.image_info = {
-            VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
-            (src->is_external() || tw->is_external()) ? &image.export_image_info : nullptr,            // pNext
-            0,                                   // flags
-            VK_IMAGE_TYPE_2D,                    // imageType
-            VK_FORMAT_B8G8R8A8_UNORM,            // format
+            VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,                                            // sType
+            (src->is_external() || tw->is_external()) ? &image.export_image_info : nullptr, // pNext
+            0,                                                                              // flags
+            VK_IMAGE_TYPE_2D,                                                               // imageType
+            VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
             {
                 ds->swapchain_extent.width / 2, // width
                 ds->swapchain_extent.height,    // height
@@ -757,6 +754,27 @@ private:
             nullptr                          // pPreserveAttachments
         };
 
+        std::array<VkSubpassDependency, 2> dependencies{
+            {{
+                 VK_SUBPASS_EXTERNAL, // srcSubpass
+                 0,                   // dstSubpass
+                 src->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT
+                                    : VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                       // srcStageMask
+                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,                                                    // dstStageMask
+                 src->is_external() ? VK_ACCESS_TRANSFER_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // srcAccessMask
+                 VK_ACCESS_SHADER_READ_BIT,                                                                // dstAccessMask
+                 VK_DEPENDENCY_BY_REGION_BIT                                                               // dependencyFlags
+             },
+             {
+                 0,                                                                                           // srcSubpass
+                 VK_SUBPASS_EXTERNAL,                                                                         // dstSubpass
+                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,                                                       // srcStageMask
+                 src->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // dstStageMask
+                 VK_ACCESS_SHADER_READ_BIT,                                                                   // srcAccessMask
+                 src->is_external() ? VK_ACCESS_TRANSFER_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,    // dstAccessMask
+                 VK_DEPENDENCY_BY_REGION_BIT                                                                  // dependencyFlags
+             }}};
+
         VkRenderPassCreateInfo render_pass_info{
             VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,           // sType
             nullptr,                                             // pNext
@@ -765,8 +783,8 @@ private:
             attchmentDescriptions.data(),                        // pAttachments
             1,                                                   // subpassCount
             &subpass,                                            // pSubpasses
-            0,                                                   // dependencyCount
-            nullptr                                              // pDependencies
+            dependencies.size(),                                 // dependencyCount
+            dependencies.data()                                  // pDependencies
         };
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
@@ -783,16 +801,16 @@ private:
     VkCommandBuffer app_command_buffer{};
     VkCommandBuffer timewarp_command_buffer{};
 
-    std::vector<std::array<vulkan::vk_image, 2>> depth_images {};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
 
-    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info {};
-    VmaPoolCreateInfo                         offscreen_pool_create_info {};
-    VmaPool                                   offscreen_pool {};
-    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers {};
+    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info{};
+    VmaPoolCreateInfo                         offscreen_pool_create_info{};
+    VmaPool                                   offscreen_pool{};
+    std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
 
     std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
 
-    std::vector<VkFramebuffer> swapchain_framebuffers {};
+    std::vector<VkFramebuffer> swapchain_framebuffers{};
     VkRenderPass               app_pass{};
 
     VkRenderPass timewarp_pass{};
@@ -802,10 +820,10 @@ private:
 
     VkFence frame_fence{};
 
-    uint32_t swapchain_image_index = UINT32_MAX; // set to UINT32_MAX after present
-    uint64_t                                                    timeline_semaphore_value = 1;
-    int                                                         fps{};
-    time_point                                                  last_fps_update;
+    uint32_t   swapchain_image_index    = UINT32_MAX; // set to UINT32_MAX after present
+    uint64_t   timeline_semaphore_value = 1;
+    int        fps{};
+    time_point last_fps_update;
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
     std::shared_ptr<vulkan::buffer_pool<pose_type>>             buffer_pool;
 };
