@@ -410,8 +410,8 @@ private:
         depthLayoutBinding.descriptorCount              = 1;
         depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        // std::array<VkDescriptorSetLayoutBinding, 3> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, imageLayoutBinding};
+        std::array<VkDescriptorSetLayoutBinding, 3> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
+        // std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, imageLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
         layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
@@ -476,7 +476,7 @@ private:
         for (int eye = 0; eye < 2; eye++) {
             std::cout << "Eye: " << eye << std::endl;
 
-            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
+            std::vector<VkDescriptorSetLayout> layouts   = {descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
@@ -485,13 +485,13 @@ private:
                 nullptr                                         // pSetLayouts
             };
             allocInfo.descriptorPool     = descriptor_pool;
-            allocInfo.descriptorSetCount = buffer_pool[0].size();
+            allocInfo.descriptorSetCount = 1; // to-do: find a better way to keep track of number of descriptor sets
             allocInfo.pSetLayouts        = layouts.data();
 
-            descriptor_sets[eye].resize(buffer_pool[0].size());
+            descriptor_sets[eye].resize(1);
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
 
-            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
+            for (size_t i = 0; i < buffer_pool[0].size(); i += 2) {
                 std::cout << "i: " << i << std::endl;
                 VkDescriptorBufferInfo bufferInfo = {};
                 bufferInfo.buffer                 = uniform_buffer;
@@ -499,18 +499,18 @@ private:
                 bufferInfo.range                  = sizeof(UniformBufferObject);
 
                 VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView             = buffer_pool[eye][i];
                 imageInfo.sampler               = fb_sampler;
 
                 assert(buffer_pool[eye][i] != VK_NULL_HANDLE);
 
-                // VkDescriptorImageInfo depthInfo = {};
-                // imageInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-                // imageInfo.imageView             = buffer_pool[eye][2 * i + 1];
-                // imageInfo.sampler               = fb_sampler;
+                VkDescriptorImageInfo depthInfo = {};
+                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+                imageInfo.imageView             = buffer_pool[eye][2 * i + 1];
+                imageInfo.sampler               = fb_sampler;
 
-                // assert(buffer_pool[eye][2 * i + 1] != VK_NULL_HANDLE);
+                assert(buffer_pool[eye][2 * i + 1] != VK_NULL_HANDLE);
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
@@ -530,14 +530,15 @@ private:
                 descriptorWrites[1].descriptorCount = 1;
                 descriptorWrites[1].pImageInfo      = &imageInfo;
 
-                // descriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                // descriptorWrites[2].dstSet          = descriptor_sets[eye][i];
-                // descriptorWrites[2].dstBinding      = 2;
-                // descriptorWrites[2].dstArrayElement = 0;
-                // descriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                // descriptorWrites[2].descriptorCount = 1;
-                // descriptorWrites[2].pImageInfo      = &depthInfo;
+                descriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[2].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[2].dstBinding      = 2;
+                descriptorWrites[2].dstArrayElement = 0;
+                descriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrites[2].descriptorCount = 1;
+                descriptorWrites[2].pImageInfo      = &depthInfo;
 
+                std::cout << "Updating descriptor set" << std::endl;
                 vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(),
                                        0, nullptr);
             }
@@ -548,6 +549,8 @@ private:
         if (pipeline != VK_NULL_HANDLE) {
             throw std::runtime_error("openwarp_vk::create_pipeline: pipeline already created");
         }
+
+        std::cout << "Creating pipeline" << std::endl;
 
         VkDevice device = ds->vk_device;
 
@@ -654,6 +657,7 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
 
+        std::cout << "Creating pipeline layout" << std::endl;
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -673,6 +677,7 @@ private:
         pipelineInfo.renderPass = render_pass;
         pipelineInfo.subpass    = 0;
 
+        std::cout << "Creating graphics pipeline" << std::endl;
         VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline))
 
         vkDestroyShaderModule(device, vert, nullptr);
