@@ -122,7 +122,7 @@ def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, s
                     current.append(cls_start.group(1))
                     # determine if this is an inner class
                     if '::'.join(current) in classes:
-                        raise Exception(f"Cannot handle this format{fl}  {i}  {line}")
+                        raise Exception(f"Cannot handle this format {fl}  {i}  {line}")
                     classes['::'.join(current)] = fl
                 inh_cls = inh_class_re.match(line)  # look for class inheritance
                 if inh_cls:
@@ -157,12 +157,10 @@ def get_classes(files: List[str]) -> Tuple[Dict[str, str], Dict[str, Dict[str, s
     return classes, inh_classes, lookups
 
 
-def gather(root: str, build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict[str, Set[str]], Dict[str, str]]:
+def gather(build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict[str, Set[str]], Dict[str, str]]:
     """
     Generate mappings of plugin class inheritance, plugin requirements, and plugin interdependencies
-    :param root: The root working directory
     :param build: The build directory
-    :type root: str
     :type build: str
     :return: A tuple of dictionaries:
              * Listing of class inheritances
@@ -179,11 +177,11 @@ def gather(root: str, build: str) -> Tuple[Dict[str, List[Dict[str, str]]], Dict
     :rtype: tuple[dict, dict, dict]
     """
     # get initial file listings
-    hdrs = get_headers(os.path.join(root, 'include/illixr'))
-    hdrs += get_headers(os.path.join(root, 'include/illixr/vk_util'))
-    plugins = glob.glob(os.path.join(root, 'plugins/**/plugin.cpp'), recursive=True)
-    hdrs += get_headers(os.path.join(root, 'src'))
-    src = get_src(os.path.join(root, 'src'))
+    hdrs = get_headers('include/illixr')
+    hdrs += get_headers('include/illixr/vk_util')
+    plugins = glob.glob('plugins/**/plugin.cpp', recursive=True)
+    hdrs += get_headers('src')
+    src = get_src('src')
     ext = get_src(os.path.join(build, '_deps/audio_pipeline/src/Audio_Pipeline'), recursive=True)
     ext += get_src(os.path.join(build, '_deps/OpenVINS/src/OpenVINS'), recursive=True)
 
@@ -308,7 +306,7 @@ def report_invoke(invoke: Dict[str, Set[str]]) -> None:
         print(line)
 
 
-def report_plugin_invoke(invoke: Dict, deps: Dict, root: str) -> None:
+def report_plugin_invoke(invoke: Dict, deps: Dict) -> None:
     """
     Print a table of plugins, what plugin type they depend on, and what plugins provide that type
     to stdout.
@@ -318,10 +316,8 @@ def report_plugin_invoke(invoke: Dict, deps: Dict, root: str) -> None:
     :param deps: Dictionary of parent classes and their children
                    * **key**: parent class name
                    * **value**: children class names
-    :param root: Base working directory
     :type invoke: dict[str, set[str]]
     :type deps: dict[str, list[str]]
-    :type root: str
     """
     print("\n\n\n")
     print(f"{'Plugin':25s}  {'Requires':20s}  {'Provided by':33s}")
@@ -349,15 +345,14 @@ def report_plugin_invoke(invoke: Dict, deps: Dict, root: str) -> None:
                 if i > 0:
                     print(f"{' ':25s}  {pl_uses[i]['needs']:20s} {', '.join(pl_uses[i]['provided_by'])}")
             yaml_mapper["dep_map"].append({'plugin': plugin, 'dependencies': pl_deps})
-    yaml.dump(yaml_mapper, open(os.path.join(root, 'plugins', 'plugin_deps.yaml'), 'w'))
+    yaml.dump(yaml_mapper, open(os.path.join('plugins', 'plugin_deps.yaml'), 'w'))
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         raise Exception("Incorrect number of arguments.")
-    _root = sys.argv[1]
-    _build = sys.argv[2]
-    dependencies, inv, clss = gather(_root, _build)
+    _build = sys.argv[1]
+    dependencies, inv, clss = gather(_build)
     comb = report_deps(dependencies)
     report_invoke(inv)
-    report_plugin_invoke(inv, comb, _root)
+    report_plugin_invoke(inv, comb)
