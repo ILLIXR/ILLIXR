@@ -105,7 +105,7 @@ public:
         oa << msg;
         stream.pubsync();
 
-        log->debug("Sending message on topic {} with size {} ({}) with chksm {}", topic_name, full_message.size(), message.size(), msg.checksum);
+//        log->debug("Sending message on topic {} with size {} ({}) with chksm {}", topic_name, full_message.size(), message.size(), msg.checksum);
 
         auto priority = networked_topics[topic_name];
         mq_tx->send(full_message.data(), full_message.size(), priority);
@@ -155,7 +155,7 @@ public:
         auto message    = msg.message;
         auto message_size = message.size();
 
-        log->debug("Received message on topic {} with size {} ({}) with chksm {}", topic_name, received_size, message_size, msg.checksum);
+//        log->debug("Received message on topic {} with size {} ({}) with chksm {}", topic_name, received_size, message_size, msg.checksum);
 
         topic_receive(topic_name, message);
     }

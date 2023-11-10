@@ -75,7 +75,7 @@ struct buffer_pool {
         assert(latest_decoded_image != -1);
         assert(image_states[latest_decoded_image] == AVAILABLE);
         image_states[latest_decoded_image] = POST_PROCESSING_IN_FLIGHT;
-        return {latest_decoded_image, std::move(image_data[latest_decoded_image])};
+        return {latest_decoded_image, image_data[latest_decoded_image]};
     }
 
     void post_processing_release_image(image_index_t image_index) {

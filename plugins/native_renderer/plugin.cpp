@@ -160,7 +160,8 @@ public:
                 &fired_value                           // pValues
             };
             VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
-            buffer_pool->src_release_image(buffer_index, pose_type{});
+            auto pt = fast_pose.pose;
+            buffer_pool->src_release_image(buffer_index, std::move(pt));
         }
 
         // TODO: for DRM, get vsync estimate
@@ -217,7 +218,11 @@ public:
                 nullptr                              // pResults
             };
 
-            auto ret = (vkQueuePresentKHR(ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+            VkResult ret = VK_SUCCESS;
+            {
+                std::lock_guard<std::mutex> lock{*ds->queues[vulkan::queue::queue_type::GRAPHICS].mutex};
+                ret = (vkQueuePresentKHR(ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue, &present_info));
+            }
 
             // Wait for the previous frame to finish rendering
             VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
@@ -568,6 +573,7 @@ private:
         };
 
         VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
+        alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
         if (tw->is_external() || src->is_external()) {
             alloc_info.pool = offscreen_pool;
         }

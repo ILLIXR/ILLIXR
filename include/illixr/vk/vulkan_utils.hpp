@@ -6,6 +6,7 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 #define GLM_FORCE_RADIANS
@@ -274,7 +275,7 @@ static VkCommandBuffer begin_one_time_command(VkDevice vk_device, VkCommandPool 
  * @param vk_queue The Vulkan queue to use.
  * @param vk_command_buffer The Vulkan command buffer to use.
  */
-static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, VkQueue vk_queue,
+static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_pool, queue q,
                                  VkCommandBuffer vk_command_buffer) {
     VK_ASSERT_SUCCESS(vkEndCommandBuffer(vk_command_buffer))
 
@@ -290,8 +291,10 @@ static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_po
         nullptr                        // pSignalSemaphores
     };
 
-    VK_ASSERT_SUCCESS(vkQueueSubmit(vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
-    VK_ASSERT_SUCCESS(vkQueueWaitIdle(vk_queue))
+    std::lock_guard<std::mutex> lock(*q.mutex);
+
+    VK_ASSERT_SUCCESS(vkQueueSubmit(q.vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
+    VK_ASSERT_SUCCESS(vkQueueWaitIdle(q.vk_queue))
 
     vkFreeCommandBuffers(vk_device, vk_command_pool, 1, &vk_command_buffer);
 }
@@ -385,7 +388,7 @@ static std::vector<char> read_file(const std::string& path) {
  * @param width The width of the image.
  * @param height The height of the image.
  */
-static void copy_buffer_to_image(VkDevice vk_device, VkQueue vk_queue, VkCommandPool vk_command_pool, VkBuffer buffer,
+static void copy_buffer_to_image(VkDevice vk_device, queue q, VkCommandPool vk_command_pool, VkBuffer buffer,
                                  VkImage image, uint32_t width, uint32_t height) {
     VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);
 
@@ -405,7 +408,7 @@ static void copy_buffer_to_image(VkDevice vk_device, VkQueue vk_queue, VkCommand
     };
     vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    end_one_time_command(vk_device, vk_command_pool, vk_queue, command_buffer);
+    end_one_time_command(vk_device, vk_command_pool, std::move(q), command_buffer);
 }
 
 static swapchain_details query_swapchain_details(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface) {

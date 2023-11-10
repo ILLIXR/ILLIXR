@@ -110,6 +110,15 @@ struct pose_type : public switchboard::event {
         : sensor_time{sensor_time_}
         , position{std::move(position_)}
         , orientation{std::move(orientation_)} { }
+
+    friend class boost::serialization::access;
+
+    // boost serialization
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version) {
+        ar & boost::serialization::make_array(position.derived().data(), position.size());;
+        ar & boost::serialization::make_array(orientation.coeffs().data(), orientation.coeffs().size());
+    }
 };
 
 typedef struct {

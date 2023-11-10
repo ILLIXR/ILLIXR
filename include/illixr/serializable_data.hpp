@@ -28,7 +28,6 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     static void save_packet(Archive& ar, AVPacket* pkt) {
         ar << pkt->size;
-        std::cout << "pkt->size: " << pkt->size << std::endl;
         ar << boost::serialization::make_array(pkt->data, pkt->size);
         ar << pkt->pts;
         ar << pkt->dts;
@@ -49,7 +48,6 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     static void load_packet(Archive& ar, AVPacket* pkt) {
         ar >> pkt->size;
-        std::cout << "pkt->size: " << pkt->size << std::endl;
         pkt->buf = av_buffer_alloc(pkt->size);
         pkt->data = pkt->buf->data;
         ar >> boost::serialization::make_array(pkt->data, pkt->size);

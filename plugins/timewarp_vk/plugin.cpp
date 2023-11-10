@@ -88,28 +88,24 @@ public:
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator =
-                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
         generate_distortion_data();
-        command_pool = vulkan::create_command_pool(
-            ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
-        {
-            std::lock_guard<std::mutex> lock{*ds->queues[ILLIXR::vulkan::queue::GRAPHICS].mutex};
-            create_vertex_buffer();
-            create_index_buffer();
-            create_descriptor_set_layout();
-            create_uniform_buffer();
-            create_texture_sampler();
-        }
+
+        create_vertex_buffer();
+        create_index_buffer();
+        create_descriptor_set_layout();
+        create_uniform_buffer();
+        create_texture_sampler();
     }
 
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool,
@@ -270,9 +266,8 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue,
-                                                   command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -332,9 +327,8 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS].vk_queue,
-                                                   command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -499,8 +493,9 @@ private:
 
                 VkDescriptorImageInfo imageInfo = {};
                 imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView             = eye == 0 ? buffer_pool->image_pool[i][0].image_view : buffer_pool->image_pool[i][1].image_view;
-                imageInfo.sampler               = fb_sampler;
+                imageInfo.imageView =
+                    eye == 0 ? buffer_pool->image_pool[i][0].image_view : buffer_pool->image_pool[i][1].image_view;
+                imageInfo.sampler = fb_sampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
@@ -534,10 +529,8 @@ private:
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert =
-            vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.vert.spv"));
-        VkShaderModule frag =
-            vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.vert.spv"));
+        VkShaderModule frag   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -782,7 +775,7 @@ private:
     VmaAllocator                      vma_allocator{};
 
     std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
-    VkSampler                                                  fb_sampler{};
+    VkSampler                                       fb_sampler{};
 
     VkDescriptorPool                            descriptor_pool{};
     VkDescriptorSetLayout                       descriptor_set_layout{};

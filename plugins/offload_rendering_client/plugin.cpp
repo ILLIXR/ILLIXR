@@ -12,7 +12,10 @@
 extern "C" {
 #include <libavfilter/buffersink.h>
 #include <libavfilter/buffersrc.h>
+#include <libswscale/swscale.h>
 }
+
+#include "nppi.h"
 
 #include <cstdlib>
 #include <set>
@@ -32,7 +35,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , log{spdlogger(nullptr)}
         , dp{pb->lookup_impl<vulkan::display_provider>()}
-        , frames_reader{sb->get_buffered_reader<compressed_frame>("compressed_frames")}{
+        , frames_reader{sb->get_buffered_reader<compressed_frame>("compressed_frames")} {
         display_provider_ffmpeg = dp;
     }
 
@@ -42,14 +45,21 @@ public:
         threadloop::start();
     }
 
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool) override {
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool) override {
         this->buffer_pool = buffer_pool;
+        command_pool      = vulkan::create_command_pool(dp->vk_device, dp->queues[vulkan::queue::GRAPHICS].family);
         ffmpeg_init_frame_ctx();
         ffmpeg_init_cuda_frame_ctx();
         ffmpeg_init_buffer_pool();
-        ffmpeg_init_filters();
         ffmpeg_init_decoder();
         ready = true;
+
+        for (auto& frame : avvkframes) {
+            for (auto& eye : frame) {
+                transition_layout(eye.frame, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            }
+        }
     }
 
     bool is_external() override {
@@ -109,12 +119,108 @@ protected:
         avcodec_free_context(&png_codec_ctx);
     }
 
+    void save_nv12_img_to_png(AVFrame* cuda_frame) {
+        auto cpu_av_frame    = av_frame_alloc();
+        cpu_av_frame->format = AV_PIX_FMT_NV12;
+        auto ret             = av_hwframe_transfer_data(cpu_av_frame, cuda_frame, 0);
+        AV_ASSERT_SUCCESS(ret);
+
+        AVFrame* frameGRB = av_frame_alloc();
+        frameGRB->width   = cpu_av_frame->width;
+        frameGRB->height  = cpu_av_frame->height;
+        frameGRB->format  = AV_PIX_FMT_RGBA;
+        av_frame_get_buffer(frameGRB, 0);
+
+        SwsContext* sws_context = sws_getContext(cpu_av_frame->width, cpu_av_frame->height, AV_PIX_FMT_NV12, frameGRB->width,
+                                                 frameGRB->height, AV_PIX_FMT_RGBA, SWS_BICUBIC, NULL, NULL, NULL);
+        if (sws_context != NULL) {
+            sws_scale(sws_context, cpu_av_frame->data, cpu_av_frame->linesize, 0, cpu_av_frame->height, frameGRB->data,
+                      frameGRB->linesize);
+        }
+
+        // save cpu_av_frame as png
+        auto png_codec           = avcodec_find_encoder(AV_CODEC_ID_PNG);
+        auto png_codec_ctx       = avcodec_alloc_context3(png_codec);
+        png_codec_ctx->pix_fmt   = AV_PIX_FMT_RGBA;
+        png_codec_ctx->width     = cpu_av_frame->width;
+        png_codec_ctx->height    = cpu_av_frame->height;
+        png_codec_ctx->time_base = {1, 60};
+        png_codec_ctx->framerate = {60, 1};
+
+        ret = avcodec_open2(png_codec_ctx, png_codec, nullptr);
+        AV_ASSERT_SUCCESS(ret);
+        AVPacket* png_packet = av_packet_alloc();
+        ret                  = avcodec_send_frame(png_codec_ctx, frameGRB);
+        AV_ASSERT_SUCCESS(ret);
+        ret = avcodec_receive_packet(png_codec_ctx, png_packet);
+        AV_ASSERT_SUCCESS(ret);
+
+        std::string filename = "frame_" + std::to_string(frame_count) + ".png";
+        FILE*       f        = fopen(filename.c_str(), "wb");
+        fwrite(png_packet->data, 1, png_packet->size, f);
+        fclose(f);
+
+        av_packet_free(&png_packet);
+        av_frame_free(&cpu_av_frame);
+        avcodec_free_context(&png_codec_ctx);
+    }
+
+    // Vulkan layout transition
+    // supports: shader read <-> transfer dst
+    void transition_layout(AVFrame* frame, VkImageLayout old_layout, VkImageLayout new_layout) {
+        auto vk_frame = reinterpret_cast<AVVkFrame*>(frame->data[0]);
+        auto image    = vk_frame->img[0];
+        auto cmd_buf  = vulkan::begin_one_time_command(dp->vk_device, command_pool);
+
+        VkImageMemoryBarrier barrier{};
+        barrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.oldLayout           = old_layout;
+        barrier.newLayout           = new_layout;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image               = image;
+        barrier.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+
+        VkPipelineStageFlags src_stage;
+        VkPipelineStageFlags dst_stage;
+
+        if (old_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            src_stage             = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+                   new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            src_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED && new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            src_stage             = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED &&
+                   new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            src_stage             = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else {
+            throw std::invalid_argument("unsupported layout transition");
+        }
+
+        vkCmdPipelineBarrier(cmd_buf, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        vulkan::end_one_time_command(dp->vk_device, command_pool, dp->queues[vulkan::queue::GRAPHICS], cmd_buf);
+    }
+
     void _p_one_iteration() override {
         if (!ready) {
             return;
         }
         auto pose = network_receive();
 
+        auto decode_start = std::chrono::high_resolution_clock::now();
         // receive packets
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = avcodec_send_packet(codec_ctx, decode_src_packets[eye]);
@@ -122,48 +228,78 @@ protected:
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
             }
             AV_ASSERT_SUCCESS(ret);
-//            ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
-//            AV_ASSERT_SUCCESS(ret);
-//            copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
-//            decode_out_frames[eye]->pts = frame_count++;
+            // ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
+            // AV_ASSERT_SUCCESS(ret);
+            // copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
+            // decode_out_frames[eye]->pts = frame_count++;
         }
-
-        auto ind = buffer_pool->src_acquire_image();
+        auto decode_end = std::chrono::high_resolution_clock::now();
 
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
             assert(decode_out_frames[eye]->format == AV_PIX_FMT_CUDA);
             AV_ASSERT_SUCCESS(ret);
-//            copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
-//            ret = av_hwframe_transfer_data(avvkframes[ind][eye].frame, decode_out_frames[eye], 0);
-//            AV_ASSERT_SUCCESS(ret);
-//            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-//                                                          avvkframes[ind][eye].vk_frame->sem_value[0]);
+
+            cudaDeviceSynchronize();
+            NppiSize roi = {static_cast<int>(decode_out_frames[eye]->width), static_cast<int>(decode_out_frames[eye]->height)};
+            Npp8u*   pSrc[2];
+            pSrc[0]  = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[0]);
+            pSrc[1]  = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[1]);
+            auto dst = reinterpret_cast<Npp8u*>(decode_converted_frames[eye]->data[0]);
+            ret      = nppiNV12ToBGR_8u_P2C3R(pSrc, decode_out_frames[eye]->linesize[0], dst,
+                                              decode_converted_frames[eye]->linesize[0], roi);
+            assert(ret == NPP_SUCCESS);
+            cudaDeviceSynchronize();
+        }
+        auto conversion_end = std::chrono::high_resolution_clock::now();
+
+        auto ind = buffer_pool->src_acquire_image();
+
+        for (auto eye = 0; eye < 2; eye++) {
+            // save_nv12_img_to_png(decode_out_frames[eye]);
+//            transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+//                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            auto ret = av_hwframe_transfer_data(avvkframes[ind][eye].frame, decode_converted_frames[eye], 0);
+            AV_ASSERT_SUCCESS(ret);
+            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
+            if (frame_count % 50 < 2) {
+//                copy_image_to_cpu_and_save_file(decode_converted_frames[eye]);
+//                copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
+            }
+//            transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+//                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             decode_out_frames[eye]->pts = frame_count++;
         }
         buffer_pool->src_release_image(ind, std::move(pose));
-        // log->info("Sending frame {}", frame_count);
+        auto transfer_end = std::chrono::high_resolution_clock::now();
+        log->info("decode (ms) {}, conversion (ms) {}, transfer (ms) {}",
+                  std::chrono::duration_cast<std::chrono::milliseconds>(decode_end - decode_start).count(),
+                  std::chrono::duration_cast<std::chrono::milliseconds>(conversion_end - decode_end).count(),
+                  std::chrono::duration_cast<std::chrono::milliseconds>(transfer_end - conversion_end).count());
     }
 
 private:
-    std::shared_ptr<switchboard> sb;
-    std::shared_ptr<spdlog::logger>                 log;
-    std::shared_ptr<vulkan::display_provider>       dp;
+    std::shared_ptr<switchboard>                   sb;
+    std::shared_ptr<spdlog::logger>                log;
+    std::shared_ptr<vulkan::display_provider>      dp;
     switchboard::buffered_reader<compressed_frame> frames_reader;
-    std::atomic<bool>                               ready = false;
+    std::atomic<bool>                              ready = false;
 
     std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvkframes;
-    AVBufferRef*    device_ctx;
-    AVBufferRef*    cuda_device_ctx;
-    AVBufferRef*    frame_ctx;
-    AVBufferRef*    cuda_frame_ctx;
+    AVBufferRef*                                    device_ctx          = nullptr;
+    AVBufferRef*                                    cuda_device_ctx     = nullptr;
+    AVBufferRef*                                    frame_ctx           = nullptr;
+    AVBufferRef*                                    cuda_nv12_frame_ctx = nullptr;
+    AVBufferRef*                                    cuda_bgra_frame_ctx = nullptr;
 
-    AVCodecContext* codec_ctx;
-    std::array<AVPacket*, 2>  decode_src_packets;
-    std::array<AVFrame*, 2>   decode_out_frames;
+    AVCodecContext*          codec_ctx               = nullptr;
+    std::array<AVPacket*, 2> decode_src_packets      = {nullptr, nullptr};
+    std::array<AVFrame*, 2>  decode_out_frames       = {nullptr, nullptr};
+    std::array<AVFrame*, 2>  decode_converted_frames = {nullptr, nullptr};
 
-    uint64_t                 frame_count = 0;
+    uint64_t frame_count = 0;
 
     pose_type network_receive() {
         if (decode_src_packets[0] != nullptr) {
@@ -172,10 +308,10 @@ private:
             av_packet_free(&decode_src_packets[0]);
             av_packet_free(&decode_src_packets[1]);
         }
-        auto frame = frames_reader.dequeue();
+        auto frame            = frames_reader.dequeue();
         decode_src_packets[0] = frame->left;
         decode_src_packets[1] = frame->right;
-        log->info("Received frame {}", frame_count);
+//        log->info("Received frame {}", frame_count);
         return {frame->pose};
     }
 
@@ -223,7 +359,7 @@ private:
         vulkan_hwdev_ctx->enabled_dev_extensions     = dp->enabled_device_extensions.data();
         vulkan_hwdev_ctx->nb_enabled_dev_extensions  = dp->enabled_device_extensions.size();
 
-        vulkan_hwdev_ctx->lock_queue = &ffmpeg_lock_queue;
+        vulkan_hwdev_ctx->lock_queue   = &ffmpeg_lock_queue;
         vulkan_hwdev_ctx->unlock_queue = &ffmpeg_unlock_queue;
 
         AV_ASSERT_SUCCESS(av_hwdevice_ctx_init(device_ctx));
@@ -262,21 +398,26 @@ private:
         AV_ASSERT_SUCCESS(ret);
     }
 
-    void ffmpeg_init_cuda_frame_ctx() {
-        assert(this->buffer_pool != nullptr);
+    AVBufferRef* create_cuda_frame_ctx(AVPixelFormat fmt) {
         auto cuda_frame_ref = av_hwframe_ctx_alloc(cuda_device_ctx);
         if (!cuda_frame_ref) {
             throw std::runtime_error{"Failed to create FFmpeg CUDA hwframe context"};
         }
-        auto cuda_hwframe_ctx       = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
-        cuda_hwframe_ctx->format    = AV_PIX_FMT_CUDA;
-        cuda_hwframe_ctx->sw_format = AV_PIX_FMT_NV12;
-        cuda_hwframe_ctx->width     = buffer_pool->image_pool[0][0].image_info.extent.width;
-        cuda_hwframe_ctx->height    = buffer_pool->image_pool[0][0].image_info.extent.height;
-        // cuda_hwframe_ctx->initial_pool_size = 0;
-        auto ret = av_hwframe_ctx_init(cuda_frame_ref);
+        auto cuda_hwframe_ctx               = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
+        cuda_hwframe_ctx->format            = AV_PIX_FMT_CUDA;
+        cuda_hwframe_ctx->sw_format         = fmt;
+        cuda_hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
+        cuda_hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
+        cuda_hwframe_ctx->initial_pool_size = 0;
+        auto ret                            = av_hwframe_ctx_init(cuda_frame_ref);
         AV_ASSERT_SUCCESS(ret);
-        this->cuda_frame_ctx = cuda_frame_ref;
+        return cuda_frame_ref;
+    }
+
+    void ffmpeg_init_cuda_frame_ctx() {
+        assert(this->buffer_pool != nullptr);
+        this->cuda_nv12_frame_ctx = create_cuda_frame_ctx(AV_PIX_FMT_NV12);
+        this->cuda_bgra_frame_ctx = create_cuda_frame_ctx(AV_PIX_FMT_BGRA);
     }
 
     void ffmpeg_init_buffer_pool() {
@@ -299,8 +440,7 @@ private:
 
                 VkExportSemaphoreCreateInfo export_semaphore_create_info{
                     VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
-                vk_frame->sem[0] =
-                    vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                vk_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
                 vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -326,66 +466,20 @@ private:
         for (size_t eye = 0; eye < 2; eye++) {
             decode_out_frames[eye]                = av_frame_alloc();
             decode_out_frames[eye]->format        = AV_PIX_FMT_CUDA;
-            decode_out_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+            decode_out_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
             decode_out_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             decode_out_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-            // encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
-            auto ret = av_hwframe_get_buffer(cuda_frame_ctx, decode_out_frames[eye], 0);
+            auto ret                              = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
-            // std::cout << encode_src_frames[eye]->data[0] << std::endl;
-            // auto ret = av_frame_get_buffer(encode_src_frames[eye], 0);
-            // AV_ASSERT_SUCCESS(ret);
+
+            decode_converted_frames[eye]                = av_frame_alloc();
+            decode_converted_frames[eye]->format        = AV_PIX_FMT_CUDA;
+            decode_converted_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_bgra_frame_ctx);
+            decode_converted_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+            decode_converted_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+            ret = av_hwframe_get_buffer(cuda_bgra_frame_ctx, decode_converted_frames[eye], 0);
+            AV_ASSERT_SUCCESS(ret);
         }
-    }
-
-    void ffmpeg_init_filters() {
-        const AVFilter *buffersrc  = avfilter_get_by_name("buffer");
-        const AVFilter *buffersink = avfilter_get_by_name("buffersink");
-        AVFilterInOut *outputs     = avfilter_inout_alloc();
-        AVFilterInOut *inputs      = avfilter_inout_alloc();
-        filter_graph = avfilter_graph_alloc();
-        if (!outputs || !inputs || !filter_graph) {
-            throw std::runtime_error{"Failed to allocate AVFilterInOut or AVFilterGraph"};
-        }
-
-        char args[512];
-        snprintf(args, sizeof(args),
-                 "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d",
-                    buffer_pool->image_pool[0][0].image_info.extent.width, buffer_pool->image_pool[0][0].image_info.extent.height,
-                    AV_PIX_FMT_CUDA,
-                    1, 60);
-
-        auto ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, nullptr, filter_graph);
-        AV_ASSERT_SUCCESS(ret);
-        ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", nullptr, nullptr, filter_graph);
-        AV_ASSERT_SUCCESS(ret);
-
-        AVBufferSrcParameters *srcpar = av_buffersrc_parameters_alloc();
-        srcpar->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
-        ret = av_buffersrc_parameters_set(buffersrc_ctx, srcpar);
-        AV_ASSERT_SUCCESS(ret);
-
-        // formats
-        enum AVPixelFormat pix_fmts[] = {AV_PIX_FMT_CUDA, AV_PIX_FMT_NONE};
-        ret = av_opt_set_int_list(buffersink_ctx, "pix_fmts", pix_fmts, AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN);
-
-
-        // link
-        outputs->name       = av_strdup("in");
-        outputs->filter_ctx = buffersrc_ctx;
-        outputs->pad_idx    = 0;
-        outputs->next       = nullptr;
-
-        inputs->name       = av_strdup("out");
-        inputs->filter_ctx = buffersink_ctx;
-        inputs->pad_idx    = 0;
-        inputs->next       = nullptr;
-
-        ret = avfilter_graph_parse_ptr(filter_graph, "scale_cuda=format=rgb32", &inputs, &outputs, nullptr);
-        AV_ASSERT_SUCCESS(ret);
-
-        ret = avfilter_graph_config(filter_graph, nullptr);
-        AV_ASSERT_SUCCESS(ret);
     }
 
     void ffmpeg_init_decoder() {
@@ -404,12 +498,12 @@ private:
         codec_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
         codec_ctx->sw_pix_fmt    = AV_PIX_FMT_NV12;
         codec_ctx->hw_device_ctx = av_buffer_ref(cuda_device_ctx);
-        codec_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+        codec_ctx->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
         codec_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
         codec_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_ctx->framerate     = {0, 1};
         codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
-//        codec_ctx->flags2 |= AV_CODEC_FLAG2_CHUNKS;
+        // codec_ctx->flags2 |= AV_CODEC_FLAG2_CHUNKS;
 
         // Set zero latency
         av_opt_set_int(codec_ctx->priv_data, "zerolatency", 1, 0);
@@ -430,6 +524,7 @@ private:
     AVFilterContext* buffersrc_ctx;
     AVFilterContext* buffersink_ctx;
     AVFilterGraph*   filter_graph;
+    VkCommandPool    command_pool{};
 };
 
 class offload_rendering_client_loader

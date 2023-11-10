@@ -106,25 +106,22 @@ public:
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator =
-                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
 
-        command_pool =
-            vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
+        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
         command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
-        {
-            std::lock_guard<std::mutex> lock{*ds->queues[ILLIXR::vulkan::queue::GRAPHICS].mutex};
-            load_model();
-            bake_models();
-            create_texture_sampler();
-            create_descriptor_set_layout();
-            create_uniform_buffers();
-            create_descriptor_pool();
-            create_descriptor_set();
-            create_vertex_buffer();
-            create_index_buffer();
-        }
+
+        load_model();
+        bake_models();
+        create_texture_sampler();
+        create_descriptor_set_layout();
+        create_uniform_buffers();
+        create_descriptor_pool();
+        create_descriptor_set();
+        create_vertex_buffer();
+        create_index_buffer();
+
         vertices.clear();
         indices.clear();
 
@@ -499,8 +496,8 @@ private:
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].vk_queue,
-                                                   command_pool, staging_buffer, textures[i].image, width, height);
+        vulkan::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS], command_pool, staging_buffer,
+                                     textures[i].image, width, height);
 
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -579,8 +576,7 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan::end_one_time_command(
-            ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS], command_buffer_local);
     }
 
     void load_model() {
@@ -689,8 +685,7 @@ private:
             sizeof(vertices[0]) * vertices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan::end_one_time_command(
-            ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS], command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -745,8 +740,7 @@ private:
             sizeof(indices[0]) * indices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan::end_one_time_command(
-            ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS].vk_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS], command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -757,10 +751,8 @@ private:
         }
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::create_shader_module(
-            ds->vk_device, vulkan::read_file(folder + "/demo.vert.spv"));
-        VkShaderModule frag = vulkan::create_shader_module(
-            ds->vk_device, vulkan::read_file(folder + "/demo.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(ds->vk_device, vulkan::read_file(folder + "/demo.vert.spv"));
+        VkShaderModule frag   = vulkan::create_shader_module(ds->vk_device, vulkan::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info{
             VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
@@ -942,10 +934,10 @@ private:
         vkDestroyShaderModule(ds->vk_device, frag, nullptr);
     }
 
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<vulkan::display_provider>        ds = nullptr;
-    const std::shared_ptr<const RelativeClock> _m_clock;
+    const std::shared_ptr<switchboard>              sb;
+    const std::shared_ptr<pose_prediction>          pp;
+    const std::shared_ptr<vulkan::display_provider> ds = nullptr;
+    const std::shared_ptr<const RelativeClock>      _m_clock;
 
     Eigen::Matrix4f       basic_projection;
     std::vector<Model>    models;

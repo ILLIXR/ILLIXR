@@ -15,7 +15,9 @@ endif()
 # ffmpeg
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
-        libavdevice libavformat libavcodec libavutil)
+        libavdevice libavformat libavcodec libavutil libswscale)
+
+find_package(CUDAToolkit REQUIRED)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/data_format.hpp
@@ -34,5 +36,8 @@ target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR
 
 target_link_libraries(${PLUGIN_NAME} PkgConfig::LIBAV)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${LIBAV_INCLUDE_DIRS})
+
+target_link_libraries(${PLUGIN_NAME} CUDA::nppicc CUDA::cudart)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDAToolkit_INCLUDE_DIRS})
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
