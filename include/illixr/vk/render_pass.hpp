@@ -57,7 +57,7 @@ public:
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<buffer_pool<pose_type>> buffer_pool,
+                       std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool,
                        bool input_texture_vulkan_coordinates) = 0;
 };
 
@@ -70,6 +70,6 @@ public:
      * @param render_pass The render pass to use.
      * @param subpass The subpass to use.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<pose_type>> buffer_pool) = 0;
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool) = 0;
 };
 } // namespace ILLIXR::vulkan

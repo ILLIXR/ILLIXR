@@ -4,7 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 #include <utility>
-//#undef Complex // For 'Complex' conflict
+// #undef Complex // For 'Complex' conflict
 
 #include "relative_clock.hpp"
 #include "switchboard.hpp"
@@ -110,22 +110,23 @@ struct pose_type : public switchboard::event {
         : sensor_time{sensor_time_}
         , position{std::move(position_)}
         , orientation{std::move(orientation_)} { }
-
-    friend class boost::serialization::access;
-
-    // boost serialization
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int version) {
-        ar & boost::serialization::make_array(position.derived().data(), position.size());;
-        ar & boost::serialization::make_array(orientation.coeffs().data(), orientation.coeffs().size());
-    }
 };
 
-typedef struct {
+struct fast_pose_type : public switchboard::event {
     pose_type  pose;
     time_point predict_computed_time; // Time at which the prediction was computed
     time_point predict_target_time;   // Time that prediction targeted.
-} fast_pose_type;
+
+    fast_pose_type()
+        : pose{}
+        , predict_computed_time{time_point{}}
+        , predict_target_time{time_point{}} { }
+
+    fast_pose_type(pose_type pose_, time_point predict_computed_time_, time_point predict_target_time_)
+        : pose{std::move(pose_)}
+        , predict_computed_time{predict_computed_time_}
+        , predict_target_time{predict_target_time_} { }
+};
 
 // Used to identify which graphics API is being used (for swapchain construction)
 enum class graphics_api { OPENGL, VULKAN, TBD };

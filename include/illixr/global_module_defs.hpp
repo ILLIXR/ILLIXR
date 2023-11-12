@@ -13,10 +13,10 @@ namespace ILLIXR {
 /// Display parameters
 struct display_params {
     // Display width in pixels
-    static constexpr unsigned width_pixels = 2560;
+    static constexpr unsigned width_pixels = 2880;
 
     // Display height in pixels
-    static constexpr unsigned height_pixels = 1440;
+    static constexpr unsigned height_pixels = 1600;
 
     // Display width in meters
     static constexpr float width_meters = 0.11047f;

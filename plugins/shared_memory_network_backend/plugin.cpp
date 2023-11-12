@@ -6,6 +6,7 @@
 
 #include <boost/functional/hash.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>
+#include <boost/serialization/binary_object.hpp>
 #include <functional>
 
 using namespace ILLIXR;
@@ -18,12 +19,14 @@ struct message_t {
     std::string       topic_name;
     std::vector<char> message;
     int checksum;
+    std::chrono::high_resolution_clock::time_point timestamp;
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
         ar & topic_name;
         ar & message;
         ar & checksum;
+        ar & boost::serialization::make_binary_object(&timestamp, sizeof(timestamp));
     }
 };
 
@@ -94,7 +97,7 @@ public:
         if (!is_topic_networked(topic_name)) {
             throw std::runtime_error("Topic " + topic_name + " is not networked");
         }
-        message_t msg{topic_name, message, calculate_checksum(message)};
+        message_t msg{topic_name, message, calculate_checksum(message), std::chrono::high_resolution_clock::now()};
 
         std::vector<char> full_message;
         // serialize using Boost
@@ -154,6 +157,10 @@ public:
         auto topic_name = msg.topic_name;
         auto message    = msg.message;
         auto message_size = message.size();
+        auto timestamp = msg.timestamp;
+
+        auto latency = std::chrono::high_resolution_clock::now() - timestamp;
+//        log->debug("Received message on topic {} with size {} ({}) with chksm {} with latency (ms) {}", topic_name, received_size, message_size, msg.checksum, std::chrono::duration_cast<std::chrono::milliseconds>(latency).count());
 
 //        log->debug("Received message on topic {} with size {} ({}) with chksm {}", topic_name, received_size, message_size, msg.checksum);
 

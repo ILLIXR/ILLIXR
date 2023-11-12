@@ -60,7 +60,7 @@ public:
                 create_depth_image(depth_images[i][eye]);
             }
         }
-        this->buffer_pool = std::make_shared<vulkan::buffer_pool<pose_type>>(offscreen_images, depth_images);
+        this->buffer_pool = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images, depth_images);
 
         command_pool            = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
         app_command_buffer      = vulkan::create_command_buffer(ds->vk_device, command_pool);
@@ -160,7 +160,7 @@ public:
                 &fired_value                           // pValues
             };
             VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
-            auto pt = fast_pose.pose;
+            auto pt = fast_pose;
             buffer_pool->src_release_image(buffer_index, std::move(pt));
         }
 
@@ -182,7 +182,7 @@ public:
             auto res          = buffer_pool->post_processing_acquire_image();
             auto buffer_index = res.first;
             auto pose         = res.second;
-            tw->update_uniforms(pose);
+            tw->update_uniforms(pose.pose);
 
             if (buffer_index == -1) {
                 return;
@@ -781,6 +781,8 @@ private:
                  VK_DEPENDENCY_BY_REGION_BIT                                                                  // dependencyFlags
              }}};
 
+//        assert(src->is_external());
+
         VkRenderPassCreateInfo render_pass_info{
             VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,           // sType
             nullptr,                                             // pNext
@@ -831,6 +833,6 @@ private:
     int        fps{};
     time_point last_fps_update;
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
-    std::shared_ptr<vulkan::buffer_pool<pose_type>>             buffer_pool;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>             buffer_pool;
 };
 PLUGIN_MAIN(native_renderer)

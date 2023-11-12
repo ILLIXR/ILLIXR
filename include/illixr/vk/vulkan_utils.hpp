@@ -210,6 +210,25 @@ static void wait_timeline_semaphore(VkDevice device, VkSemaphore semaphore, uint
     VK_ASSERT_SUCCESS(ret);
 }
 
+static void wait_timeline_semaphores(VkDevice device, std::map<VkSemaphore, uint64_t> semaphores) {
+    VkSemaphoreWaitInfo wait_info{};
+    wait_info.sType          = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
+    wait_info.pNext          = nullptr;
+    wait_info.flags          = 0;
+    wait_info.semaphoreCount = semaphores.size();
+    std::vector<VkSemaphore> semaphore_vec;
+    std::vector<uint64_t>    value_vec;
+    for (auto& [semaphore, value] : semaphores) {
+        semaphore_vec.push_back(semaphore);
+        value_vec.push_back(value);
+    }
+    wait_info.pSemaphores = semaphore_vec.data();
+    wait_info.pValues     = value_vec.data();
+
+    auto ret = vkWaitSemaphores(device, &wait_info, UINT64_MAX);
+    VK_ASSERT_SUCCESS(ret);
+}
+
 /**
  * @brief Creates a VMA allocator.
  *

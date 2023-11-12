@@ -15,6 +15,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
+#include "illixr/pose_prediction.hpp"
 #include "nppi.h"
 
 #include <cstdlib>
@@ -27,15 +28,17 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 
 class offload_rendering_client
     : public threadloop
-    , public vulkan::app
-    , std::enable_shared_from_this<plugin> {
+    , public vulkan::app {
 public:
     offload_rendering_client(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , sb{pb->lookup_impl<switchboard>()}
         , log{spdlogger(nullptr)}
         , dp{pb->lookup_impl<vulkan::display_provider>()}
-        , frames_reader{sb->get_buffered_reader<compressed_frame>("compressed_frames")} {
+        , frames_reader{sb->get_buffered_reader<compressed_frame>("compressed_frames")}
+        , pose_writer{sb->get_network_writer<fast_pose_type>("render_pose", {})}
+        , pp{pb->lookup_impl<pose_prediction>()}
+        , clock{pb->lookup_impl<RelativeClock>()} {
         display_provider_ffmpeg = dp;
     }
 
@@ -46,7 +49,7 @@ public:
     }
 
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool) override {
+                       std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override {
         this->buffer_pool = buffer_pool;
         command_pool      = vulkan::create_command_pool(dp->vk_device, dp->queues[vulkan::queue::GRAPHICS].family);
         ffmpeg_init_frame_ctx();
@@ -77,10 +80,7 @@ public:
     }
 
 protected:
-    void _p_thread_setup() override {
-        // rename thread
-        pthread_setname_np(pthread_self(), "offload_rendering_client");
-    }
+    void _p_thread_setup() override { }
 
     skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
@@ -200,8 +200,7 @@ protected:
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             src_stage             = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
             dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        } else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED &&
-                   new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        } else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED && new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
             barrier.srcAccessMask = 0;
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
             src_stage             = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
@@ -218,7 +217,15 @@ protected:
         if (!ready) {
             return;
         }
+        push_pose();
         auto pose = network_receive();
+
+        // system timestamp
+        auto timestamp = std::chrono::high_resolution_clock::now();
+        auto diff      = timestamp - pose.predict_target_time._m_time_since_epoch;
+        // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
+
+        // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
 
         auto decode_start = std::chrono::high_resolution_clock::now();
         // receive packets
@@ -240,43 +247,73 @@ protected:
             assert(decode_out_frames[eye]->format == AV_PIX_FMT_CUDA);
             AV_ASSERT_SUCCESS(ret);
 
-            cudaDeviceSynchronize();
             NppiSize roi = {static_cast<int>(decode_out_frames[eye]->width), static_cast<int>(decode_out_frames[eye]->height)};
             Npp8u*   pSrc[2];
-            pSrc[0]  = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[0]);
-            pSrc[1]  = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[1]);
+            pSrc[0] = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[0]);
+            pSrc[1] = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[1]);
+            Npp8u* pDst[3];
+            pDst[0] = yuv420_y_plane;
+            pDst[1] = yuv420_u_plane;
+            pDst[2] = yuv420_v_plane;
+            int dst_linesizes[3];
+            dst_linesizes[0] = y_step;
+            dst_linesizes[1] = u_step;
+            dst_linesizes[2] = v_step;
+            ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
+            assert(ret == NPP_SUCCESS);
             auto dst = reinterpret_cast<Npp8u*>(decode_converted_frames[eye]->data[0]);
-            ret      = nppiNV12ToBGR_8u_P2C3R(pSrc, decode_out_frames[eye]->linesize[0], dst,
-                                              decode_converted_frames[eye]->linesize[0], roi);
+            ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst, decode_converted_frames[eye]->linesize[0], roi);
             assert(ret == NPP_SUCCESS);
             cudaDeviceSynchronize();
         }
         auto conversion_end = std::chrono::high_resolution_clock::now();
 
-        auto ind = buffer_pool->src_acquire_image();
-
+        auto ind            = buffer_pool->src_acquire_image();
+        auto transfer_start = std::chrono::high_resolution_clock::now();
         for (auto eye = 0; eye < 2; eye++) {
             // save_nv12_img_to_png(decode_out_frames[eye]);
-//            transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-//                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            // transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            //                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
             auto ret = av_hwframe_transfer_data(avvkframes[ind][eye].frame, decode_converted_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
-            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
+//            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+//                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
             if (frame_count % 50 < 2) {
-//                copy_image_to_cpu_and_save_file(decode_converted_frames[eye]);
-//                copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
+                // copy_image_to_cpu_and_save_file(decode_converted_frames[eye]);
+                // copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
             }
-//            transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-//                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            // transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            //                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             decode_out_frames[eye]->pts = frame_count++;
         }
+//        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},
+//                                                         {avvkframes[ind][1].vk_frame->sem[0], avvkframes[ind][1].vk_frame->sem_value[0]}});
         buffer_pool->src_release_image(ind, std::move(pose));
         auto transfer_end = std::chrono::high_resolution_clock::now();
-        log->info("decode (ms) {}, conversion (ms) {}, transfer (ms) {}",
-                  std::chrono::duration_cast<std::chrono::milliseconds>(decode_end - decode_start).count(),
-                  std::chrono::duration_cast<std::chrono::milliseconds>(conversion_end - decode_end).count(),
-                  std::chrono::duration_cast<std::chrono::milliseconds>(transfer_end - conversion_end).count());
+//        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
+//                  std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
+//                  std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count(),
+//                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count());
+
+        metrics["decode"] += std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count();
+        metrics["conversion"] += std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count();
+        metrics["transfer"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count();
+
+        if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
+                .count() >= 1) {
+            log->info("Decoder FPS: {}", fps_counter);
+            fps_start_time = std::chrono::high_resolution_clock::now();
+
+            for (auto& metric : metrics) {
+                auto fps = std::max(fps_counter, (uint16_t) 0);
+                log->info("{}: {}", metric.first, metric.second / (double) (fps));
+                metric.second = 0;
+            }
+            fps_counter    = 0;
+        } else {
+            fps_counter++;
+        }
     }
 
 private:
@@ -284,24 +321,47 @@ private:
     std::shared_ptr<spdlog::logger>                log;
     std::shared_ptr<vulkan::display_provider>      dp;
     switchboard::buffered_reader<compressed_frame> frames_reader;
+    switchboard::network_writer<fast_pose_type>    pose_writer;
+    std::shared_ptr<pose_prediction>               pp;
     std::atomic<bool>                              ready = false;
 
-    std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
-    std::vector<std::array<ffmpeg_vk_frame, 2>>     avvkframes;
-    AVBufferRef*                                    device_ctx          = nullptr;
-    AVBufferRef*                                    cuda_device_ctx     = nullptr;
-    AVBufferRef*                                    frame_ctx           = nullptr;
-    AVBufferRef*                                    cuda_nv12_frame_ctx = nullptr;
-    AVBufferRef*                                    cuda_bgra_frame_ctx = nullptr;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
+    std::vector<std::array<ffmpeg_vk_frame, 2>>          avvkframes;
+    AVBufferRef*                                         device_ctx          = nullptr;
+    AVBufferRef*                                         cuda_device_ctx     = nullptr;
+    AVBufferRef*                                         frame_ctx           = nullptr;
+    AVBufferRef*                                         cuda_nv12_frame_ctx = nullptr;
+    AVBufferRef*                                         cuda_bgra_frame_ctx = nullptr;
 
     AVCodecContext*          codec_ctx               = nullptr;
     std::array<AVPacket*, 2> decode_src_packets      = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_out_frames       = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_converted_frames = {nullptr, nullptr};
 
+    VkCommandPool command_pool{};
+    Npp8u*        yuv420_y_plane;
+    Npp8u*        yuv420_u_plane;
+    Npp8u*        yuv420_v_plane;
+    int           y_step;
+    int           u_step;
+    int           v_step;
+
     uint64_t frame_count = 0;
 
-    pose_type network_receive() {
+    uint16_t                                       fps_counter    = 0;
+    std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
+    std::map<std::string, uint32_t> metrics;
+
+    void push_pose() {
+        auto current_pose = pp->get_fast_pose();
+        auto now =
+            time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        current_pose.predict_target_time   = now;
+        current_pose.predict_computed_time = now;
+        pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
+    }
+
+    fast_pose_type network_receive() {
         if (decode_src_packets[0] != nullptr) {
             av_packet_free_side_data(decode_src_packets[0]);
             av_packet_free_side_data(decode_src_packets[1]);
@@ -311,8 +371,8 @@ private:
         auto frame            = frames_reader.dequeue();
         decode_src_packets[0] = frame->left;
         decode_src_packets[1] = frame->right;
-//        log->info("Received frame {}", frame_count);
-        return {frame->pose};
+        // log->info("Received frame {}", frame_count);
+        return frame->pose;
     }
 
     void ffmpeg_init_device() {
@@ -480,6 +540,13 @@ private:
             ret = av_hwframe_get_buffer(cuda_bgra_frame_ctx, decode_converted_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
         }
+
+        yuv420_u_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width / 2,
+                                          buffer_pool->image_pool[0][0].image_info.extent.height / 2, &u_step);
+        yuv420_v_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width / 2,
+                                          buffer_pool->image_pool[0][0].image_info.extent.height / 2, &v_step);
+        yuv420_y_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width,
+                                          buffer_pool->image_pool[0][0].image_info.extent.height, &y_step);
     }
 
     void ffmpeg_init_decoder() {
@@ -521,10 +588,7 @@ private:
         AV_ASSERT_SUCCESS(ret);
     }
 
-    AVFilterContext* buffersrc_ctx;
-    AVFilterContext* buffersink_ctx;
-    AVFilterGraph*   filter_graph;
-    VkCommandPool    command_pool{};
+    std::shared_ptr<RelativeClock> clock;
 };
 
 class offload_rendering_client_loader

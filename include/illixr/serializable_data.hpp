@@ -8,6 +8,7 @@
 #include "data_format.hpp"
 #include "switchboard.hpp"
 
+#include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/export.hpp>
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -19,9 +20,9 @@ extern "C" {
 
 namespace ILLIXR {
 struct compressed_frame : public switchboard::event {
-    AVPacket *left;
-    AVPacket *right;
-    pose_type         pose;
+    AVPacket* left;
+    AVPacket* right;
+    fast_pose_type pose;
 
     friend class boost::serialization::access;
 
@@ -48,7 +49,7 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     static void load_packet(Archive& ar, AVPacket* pkt) {
         ar >> pkt->size;
-        pkt->buf = av_buffer_alloc(pkt->size);
+        pkt->buf  = av_buffer_alloc(pkt->size);
         pkt->data = pkt->buf->data;
         ar >> boost::serialization::make_array(pkt->data, pkt->size);
         ar >> pkt->pts;
@@ -70,7 +71,7 @@ struct compressed_frame : public switchboard::event {
     }
 
     template<class Archive>
-    void save(Archive &ar, const unsigned int version) const {
+    void save(Archive& ar, const unsigned int version) const {
         ar << boost::serialization::base_object<switchboard::event>(*this);
         save_packet(ar, left);
         save_packet(ar, right);
@@ -78,7 +79,7 @@ struct compressed_frame : public switchboard::event {
     }
 
     template<class Archive>
-    void load(Archive &ar, const unsigned int version) {
+    void load(Archive& ar, const unsigned int version) {
         ar >> boost::serialization::base_object<switchboard::event>(*this);
         left = av_packet_alloc();
         load_packet(ar, left);
@@ -91,13 +92,38 @@ struct compressed_frame : public switchboard::event {
 
     compressed_frame() = default;
 
-    compressed_frame(AVPacket* left, AVPacket* right, const pose_type& pose)
+    compressed_frame(AVPacket* left, AVPacket* right, const fast_pose_type& pose)
         : left(left)
         , right(right)
         , pose(pose) { }
 };
+} // namespace ILLIXR
 
+namespace boost::serialization {
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::time_point& tp, const unsigned int version) {
+    ar& boost::serialization::make_binary_object(&tp._m_time_since_epoch, sizeof(tp._m_time_since_epoch));
 }
+
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::pose_type& pose, const unsigned int version) {
+    ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
+    ar & pose.sensor_time;
+    ar& boost::serialization::make_array(pose.position.derived().data(), pose.position.size());
+    ar& boost::serialization::make_array(pose.orientation.coeffs().data(), pose.orientation.coeffs().size());
+}
+
+template<class Archive>
+void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int version) {
+    ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
+    ar & pose.pose;
+    ar & pose.predict_computed_time;
+    ar & pose.predict_target_time;
+}
+} // namespace boost::serialization
+
 BOOST_CLASS_EXPORT_KEY(ILLIXR::switchboard::event)
 BOOST_CLASS_EXPORT_KEY(ILLIXR::compressed_frame)
+BOOST_CLASS_EXPORT_KEY(ILLIXR::pose_type)
+BOOST_CLASS_EXPORT_KEY(ILLIXR::fast_pose_type)
 #endif // ILLIXR_SERIALIZABLE_DATA_HPP

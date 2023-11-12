@@ -37,7 +37,7 @@ target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR
 target_link_libraries(${PLUGIN_NAME} PkgConfig::LIBAV)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${LIBAV_INCLUDE_DIRS})
 
-target_link_libraries(${PLUGIN_NAME} CUDA::nppicc CUDA::cudart)
+target_link_libraries(${PLUGIN_NAME} CUDA::cudart CUDA::nppif CUDA::nppial CUDA::nppicc CUDA::nppidei CUDA::nppig CUDA::nppim CUDA::nppist CUDA::nppisu CUDA::nppitc CUDA::npps CUDA::nvToolsExt)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDAToolkit_INCLUDE_DIRS})
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

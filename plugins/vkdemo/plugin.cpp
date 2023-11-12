@@ -131,7 +131,7 @@ public:
                                   rendering_params::far_z);
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> _) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) override {
         create_pipeline(render_pass, subpass);
     }
 

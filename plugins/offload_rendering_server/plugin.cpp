@@ -1,5 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
 #include "illixr/serializable_data.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -17,6 +18,7 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 class offload_rendering_server
     : public threadloop
     , public vulkan::timewarp
+    , public pose_prediction
     , std::enable_shared_from_this<plugin> {
 public:
     offload_rendering_server(const std::string& name, phonebook* pb)
@@ -24,7 +26,8 @@ public:
         , log{spdlogger(nullptr)}
         , dp{pb->lookup_impl<vulkan::display_provider>()}
         , sb{pb->lookup_impl<switchboard>()}
-        , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))} {
+        , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))}
+        , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {
         display_provider_ffmpeg = dp;
     }
 
@@ -34,7 +37,7 @@ public:
         threadloop::start();
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> _buffer_pool,
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _buffer_pool,
                bool input_texture_vulkan_coordinates) override {
         this->buffer_pool = _buffer_pool;
         ffmpeg_init_frame_ctx();
@@ -58,6 +61,44 @@ public:
         }
         av_buffer_unref(&frame_ctx);
         av_buffer_unref(&device_ctx);
+    }
+
+    fast_pose_type get_fast_pose() const override {
+        auto pose = render_pose.get_ro_nullable();
+//        auto now = std::chrono::high_resolution_clock::now();
+//        auto diff = now - pose->predict_computed_time._m_time_since_epoch;
+//        log->info("diff (ms): {}", std::chrono::duration_cast<std::chrono::milliseconds>(diff.time_since_epoch()).count());
+        if (pose == nullptr) {
+            return {};
+        } else {
+            return *pose;
+        }
+    }
+
+    pose_type get_true_pose() const override {
+        return get_fast_pose().pose;
+    }
+
+    fast_pose_type get_fast_pose(time_point future_time) const override {
+        return get_fast_pose();
+    }
+
+    bool fast_pose_reliable() const override {
+        return render_pose.get_ro_nullable() != nullptr;
+    }
+
+    bool true_pose_reliable() const override {
+        return false;
+    }
+
+    void set_offset(const Eigen::Quaternionf& orientation) override { }
+
+    Eigen::Quaternionf get_offset() override {
+        return Eigen::Quaternionf();
+    }
+
+    pose_type correct_pose(const pose_type& pose) const override {
+        return pose_type();
     }
 
 protected:
@@ -102,7 +143,7 @@ protected:
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
             return;
         }
-        std::pair<ILLIXR::vulkan::image_index_t, pose_type> res  = buffer_pool->post_processing_acquire_image();
+        std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res  = buffer_pool->post_processing_acquire_image();
         auto                                                ind  = res.first;
         auto                                                pose = res.second;
         // get timestamp
@@ -111,10 +152,12 @@ protected:
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
             AV_ASSERT_SUCCESS(ret);
-            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
+//            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
+//                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
             encode_src_frames[eye]->pts = frame_count++;
         }
+//        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},
+//                                                         {avvkframes[ind][1].vk_frame->sem[0], avvkframes[ind][1].vk_frame->sem_value[0]}});
         auto copy_end_time = std::chrono::high_resolution_clock::now();
 
         buffer_pool->post_processing_release_image(ind);
@@ -140,11 +183,29 @@ protected:
         auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         // print in nano seconds
-        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
-                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
-                  << std::endl;
+//        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
+//                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
+//                  << std::endl;
 
-        enqueue_for_network_send(pose);
+        metrics["copy_time"]   += copy_time;
+        metrics["encode_time"] += encode_time;
+
+//        enqueue_for_network_send(pose);
+
+        if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time).count() >= 1) {
+            log->info("Encoder FPS: {}", fps_counter);
+            fps_start_time = std::chrono::high_resolution_clock::now();
+
+            for (auto& metric : metrics) {
+                auto fps = std::max(fps_counter, (uint16_t) 0);
+                log->info("{}: {}", metric.first, metric.second / (double) (fps));
+                metric.second = 0;
+            }
+
+            fps_counter = 0;
+        } else {
+            fps_counter++;
+        }
     }
 
 private:
@@ -152,7 +213,8 @@ private:
     std::shared_ptr<vulkan::display_provider>       dp;
     std::shared_ptr<switchboard>                    sb;
     switchboard::network_writer<compressed_frame>   frames_topic;
-    std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
+    switchboard::reader<fast_pose_type>                  render_pose;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvkframes;
 
     AVBufferRef* device_ctx;
@@ -166,7 +228,11 @@ private:
 
     uint64_t frame_count = 0;
 
-    void enqueue_for_network_send(pose_type& pose) {
+    uint16_t fps_counter = 0;
+    std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
+    std::map<std::string, uint32_t> metrics;
+
+    void enqueue_for_network_send(fast_pose_type& pose) {
         frames_topic.put(std::make_shared<compressed_frame>(encode_out_packets[0], encode_out_packets[1], pose));
 
         // av_packet_free(&pkt);
@@ -379,6 +445,7 @@ public:
         : plugin(name, pb)
         , offload_rendering_server_plugin{std::make_shared<offload_rendering_server>(name, pb)} {
         pb->register_impl<vulkan::timewarp>(offload_rendering_server_plugin);
+        pb->register_impl<pose_prediction>(offload_rendering_server_plugin);
         std::cout << "Registered vulkan::timewarp" << std::endl;
     }
 

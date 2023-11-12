@@ -150,7 +150,7 @@ public:
         auto looked_up_pose        = nearest_row->second;
         looked_up_pose.sensor_time = time_point{std::chrono::nanoseconds{nearest_row->first - dataset_first_time}};
         return fast_pose_type{
-            .pose = correct_pose(looked_up_pose), .predict_computed_time = _m_clock->now(), .predict_target_time = time};
+            correct_pose(looked_up_pose), _m_clock->now(), time};
     }
 
 private:

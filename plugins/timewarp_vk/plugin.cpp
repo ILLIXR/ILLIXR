@@ -108,7 +108,7 @@ public:
         create_texture_sampler();
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool,
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
                bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
@@ -774,7 +774,7 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
-    std::shared_ptr<vulkan::buffer_pool<pose_type>> buffer_pool;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     VkSampler                                       fb_sampler{};
 
     VkDescriptorPool                            descriptor_pool{};
