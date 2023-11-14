@@ -60,7 +60,27 @@ public:
 
         for (auto& frame : avvkframes) {
             for (auto& eye : frame) {
-                transition_layout(eye.frame, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                auto cmd_buf  = vulkan::begin_one_time_command(dp->vk_device, command_pool);
+                transition_layout(cmd_buf, eye.frame, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                vulkan::end_one_time_command(dp->vk_device, command_pool, dp->queues[vulkan::queue::GRAPHICS], cmd_buf);
+            }
+        }
+
+        for (size_t i = 0; i < avvkframes.size(); i++) {
+            for (auto eye = 0; eye < 2; eye++) {
+                layout_transition_start_cmd_bufs[i][eye] = vulkan::create_command_buffer(dp->vk_device, command_pool);
+                VkCommandBufferBeginInfo begin_info{};
+                begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                vkBeginCommandBuffer(layout_transition_start_cmd_bufs[i][eye], &begin_info);
+                transition_layout(layout_transition_start_cmd_bufs[i][eye], avvkframes[i][eye].frame,
+                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                vkEndCommandBuffer(layout_transition_start_cmd_bufs[i][eye]);
+
+                layout_transition_end_cmd_bufs[i][eye] = vulkan::create_command_buffer(dp->vk_device, command_pool);
+                vkBeginCommandBuffer(layout_transition_end_cmd_bufs[i][eye], &begin_info);
+                transition_layout(layout_transition_end_cmd_bufs[i][eye], avvkframes[i][eye].frame,
+                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                vkEndCommandBuffer(layout_transition_end_cmd_bufs[i][eye]);
             }
         }
     }
@@ -167,10 +187,9 @@ protected:
 
     // Vulkan layout transition
     // supports: shader read <-> transfer dst
-    void transition_layout(AVFrame* frame, VkImageLayout old_layout, VkImageLayout new_layout) {
+    void transition_layout(VkCommandBuffer cmd_buf, AVFrame* frame, VkImageLayout old_layout, VkImageLayout new_layout) {
         auto vk_frame = reinterpret_cast<AVVkFrame*>(frame->data[0]);
         auto image    = vk_frame->img[0];
-        auto cmd_buf  = vulkan::begin_one_time_command(dp->vk_device, command_pool);
 
         VkImageMemoryBarrier barrier{};
         barrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -210,7 +229,6 @@ protected:
         }
 
         vkCmdPipelineBarrier(cmd_buf, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-        vulkan::end_one_time_command(dp->vk_device, command_pool, dp->queues[vulkan::queue::GRAPHICS], cmd_buf);
     }
 
     void _p_one_iteration() override {
@@ -240,13 +258,14 @@ protected:
             // copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
             // decode_out_frames[eye]->pts = frame_count++;
         }
-        auto decode_end = std::chrono::high_resolution_clock::now();
-
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
             assert(decode_out_frames[eye]->format == AV_PIX_FMT_CUDA);
             AV_ASSERT_SUCCESS(ret);
+        }
+        auto decode_end = std::chrono::high_resolution_clock::now();
 
+        for (auto eye = 0; eye < 2; eye++) {
             NppiSize roi = {static_cast<int>(decode_out_frames[eye]->width), static_cast<int>(decode_out_frames[eye]->height)};
             Npp8u*   pSrc[2];
             pSrc[0] = reinterpret_cast<Npp8u*>(decode_out_frames[eye]->data[0]);
@@ -259,7 +278,7 @@ protected:
             dst_linesizes[0] = y_step;
             dst_linesizes[1] = u_step;
             dst_linesizes[2] = v_step;
-            ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
+            auto ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
             assert(ret == NPP_SUCCESS);
             auto dst = reinterpret_cast<Npp8u*>(decode_converted_frames[eye]->data[0]);
             ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst, decode_converted_frames[eye]->linesize[0], roi);
@@ -272,9 +291,7 @@ protected:
         auto transfer_start = std::chrono::high_resolution_clock::now();
         for (auto eye = 0; eye < 2; eye++) {
             // save_nv12_img_to_png(decode_out_frames[eye]);
-            // transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-            //                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
+            submit_command_buffer(layout_transition_start_cmd_bufs[ind][eye]);
             auto ret = av_hwframe_transfer_data(avvkframes[ind][eye].frame, decode_converted_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
 //            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
@@ -283,14 +300,13 @@ protected:
                 // copy_image_to_cpu_and_save_file(decode_converted_frames[eye]);
                 // copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
             }
-            // transition_layout(avvkframes[ind][eye].frame, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            //                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            submit_command_buffer(layout_transition_end_cmd_bufs[ind][eye]);
             decode_out_frames[eye]->pts = frame_count++;
         }
-//        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},
-//                                                         {avvkframes[ind][1].vk_frame->sem[0], avvkframes[ind][1].vk_frame->sem_value[0]}});
-        buffer_pool->src_release_image(ind, std::move(pose));
+        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},
+                                                         {avvkframes[ind][1].vk_frame->sem[0], avvkframes[ind][1].vk_frame->sem_value[0]}});
         auto transfer_end = std::chrono::high_resolution_clock::now();
+        buffer_pool->src_release_image(ind, std::move(pose));
 //        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
 //                  std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
 //                  std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count(),
@@ -327,6 +343,8 @@ private:
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvkframes;
+    std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
+    std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_end_cmd_bufs;
     AVBufferRef*                                         device_ctx          = nullptr;
     AVBufferRef*                                         cuda_device_ctx     = nullptr;
     AVBufferRef*                                         frame_ctx           = nullptr;
@@ -351,6 +369,21 @@ private:
     uint16_t                                       fps_counter    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t> metrics;
+
+    void submit_command_buffer(VkCommandBuffer vk_command_buffer) {
+        VkSubmitInfo submitInfo{
+            VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
+            nullptr,                       // pNext
+            0,                             // waitSemaphoreCount
+            nullptr,                       // pWaitSemaphores
+            nullptr,                       // pWaitDstStageMask
+            1,                             // commandBufferCount
+            &vk_command_buffer,            // pCommandBuffers
+            0,                             // signalSemaphoreCount
+            nullptr                        // pSignalSemaphores
+        };
+        vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, nullptr);
+    }
 
     void push_pose() {
         auto current_pose = pp->get_fast_pose();
@@ -483,6 +516,8 @@ private:
     void ffmpeg_init_buffer_pool() {
         assert(this->buffer_pool != nullptr);
         avvkframes.resize(buffer_pool->image_pool.size());
+        layout_transition_start_cmd_bufs.resize(buffer_pool->image_pool.size());
+        layout_transition_end_cmd_bufs.resize(buffer_pool->image_pool.size());
         for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
             for (size_t eye = 0; eye < 2; eye++) {
                 // Create AVVkFrame
@@ -502,7 +537,6 @@ private:
                     VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
                 vk_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
-                vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
                 avvkframes[i][eye].vk_frame = vk_frame;
 

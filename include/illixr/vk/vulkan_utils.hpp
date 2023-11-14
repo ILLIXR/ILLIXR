@@ -29,13 +29,13 @@
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
-#define VK_ASSERT_SUCCESS(x)                                                                                        \
-    {                                                                                                               \
-        VkResult result = (x);                                                                                      \
-        if (result != VK_SUCCESS) {                                                                                 \
+#define VK_ASSERT_SUCCESS(x)                                                                          \
+    {                                                                                                 \
+        VkResult result = (x);                                                                        \
+        if (result != VK_SUCCESS) {                                                                   \
             spdlog::get("illixr")->debug("[Vulkan] error: {}", ILLIXR::vulkan::error_string(result)); \
             throw std::runtime_error("Vulkan error: " + ILLIXR::vulkan::error_string(result));        \
-        }                                                                                                           \
+        }                                                                                             \
     }
 
 #define VK_GET_PROC_ADDR(instance, name) ((PFN_##name) vkGetInstanceProcAddr(instance, #name))
@@ -178,7 +178,8 @@ static VkShaderModule create_shader_module(VkDevice device, std::vector<char>&& 
     return shaderModule;
 }
 
-static VkSemaphore create_timeline_semaphore(VkDevice device, int initial_value = 0, VkExportSemaphoreCreateInfo* export_semaphore_create_info = nullptr) {
+static VkSemaphore create_timeline_semaphore(VkDevice device, int initial_value = 0,
+                                             VkExportSemaphoreCreateInfo* export_semaphore_create_info = nullptr) {
     VkSemaphoreTypeCreateInfo timeline_create_info{};
     timeline_create_info.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
     timeline_create_info.pNext         = export_semaphore_create_info;
@@ -311,7 +312,6 @@ static void end_one_time_command(VkDevice vk_device, VkCommandPool vk_command_po
     };
 
     std::lock_guard<std::mutex> lock(*q.mutex);
-
     VK_ASSERT_SUCCESS(vkQueueSubmit(q.vk_queue, 1, &submitInfo, VK_NULL_HANDLE))
     VK_ASSERT_SUCCESS(vkQueueWaitIdle(q.vk_queue))
 
@@ -358,19 +358,9 @@ static VkCommandBuffer create_command_buffer(VkDevice device, VkCommandPool comm
     return command_buffer;
 }
 
-static VkResult locked_queue_submit(std::unordered_map<queue::queue_type, queue>& queues, queue::queue_type queue_type, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
-    std::optional<queue> queue;
-    for (auto& [type, q] : queues) {
-        if (q.type == queue_type) {
-            queue = q;
-            break;
-        }
-    }
-    if (!queue.has_value()) {
-        throw std::runtime_error("Queue not found");
-    }
-    std::lock_guard<std::mutex> lock(*queue->mutex);
-    return vkQueueSubmit(queue->vk_queue, submitCount, pSubmits, fence);
+static VkResult locked_queue_submit(queue& q, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+    std::lock_guard<std::mutex> lock(*q.mutex);
+    return vkQueueSubmit(q.vk_queue, submitCount, pSubmits, fence);
 }
 
 /**
@@ -407,8 +397,8 @@ static std::vector<char> read_file(const std::string& path) {
  * @param width The width of the image.
  * @param height The height of the image.
  */
-static void copy_buffer_to_image(VkDevice vk_device, queue q, VkCommandPool vk_command_pool, VkBuffer buffer,
-                                 VkImage image, uint32_t width, uint32_t height) {
+static void copy_buffer_to_image(VkDevice vk_device, queue q, VkCommandPool vk_command_pool, VkBuffer buffer, VkImage image,
+                                 uint32_t width, uint32_t height) {
     VkCommandBuffer command_buffer = begin_one_time_command(vk_device, vk_command_pool);
 
     VkBufferImageCopy region{
@@ -483,11 +473,11 @@ static queue_families find_queue_families(VkPhysicalDevice const& physical_devic
             indices.compute_family = i;
         }
 
-//        if (queue_family.queueFlags & VK_QUEUE_TRANSFER_BIT) {
-//            if (!(queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) && !(queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
-//                indices.dedicated_transfer = i;
-//            }
-//        }
+        // if (queue_family.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+        //     if (!(queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) && !(queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+        //         indices.dedicated_transfer = i;
+        //     }
+        // }
 
         VkBool32 present_support = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
@@ -522,4 +512,4 @@ static VkImageView create_image_view(VkDevice device, VkImage image, VkFormat fo
     VK_ASSERT_SUCCESS(vkCreateImageView(device, &vk_image_view_create_info, nullptr, &vk_image_view))
     return vk_image_view;
 }
-} // namespace ILLIXR::vulkan::vulkan_utils
+} // namespace ILLIXR::vulkan

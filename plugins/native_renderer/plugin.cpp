@@ -148,7 +148,7 @@ public:
             }
 
             VK_ASSERT_SUCCESS(
-                vulkan::locked_queue_submit(ds->queues, vulkan::queue::queue_type::GRAPHICS, 1, &submit_info, nullptr))
+                vulkan::locked_queue_submit(ds->queues[vulkan::queue::queue_type::GRAPHICS], 1, &submit_info, nullptr))
 
             // Wait for the application to finish rendering
             VkSemaphoreWaitInfo wait_info{
@@ -203,7 +203,7 @@ public:
                 &timewarp_render_finished_semaphore // pSignalSemaphores
             };
 
-            VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(ds->queues, vulkan::queue::queue_type::GRAPHICS, 1,
+            VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(ds->queues[vulkan::queue::queue_type::GRAPHICS], 1,
                                                           &timewarp_submit_info, frame_fence))
 
             // Present the rendered image
@@ -690,7 +690,7 @@ private:
         };
 
         // Subpass dependencies for layout transitions
-        std::array<VkSubpassDependency, 2> dependencies{
+        std::array<VkSubpassDependency, 3> dependencies{
             {{
                  // After timewarp samples from the offscreen image, it needs to be transitioned to a color attachment
                  VK_SUBPASS_EXTERNAL,                                                                        // srcSubpass
@@ -710,7 +710,11 @@ private:
                  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,                                                       // srcAccessMask
                  tw->is_external() ? VK_ACCESS_TRANSFER_READ_BIT : VK_ACCESS_SHADER_READ_BIT,                // dstAccessMask
                  VK_DEPENDENCY_BY_REGION_BIT                                                                 // dependencyFlags
-             }}};
+             },
+             {// depth buffer write-after-write hazard
+              VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+              VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+              VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT, 0}}};
 
         VkRenderPassCreateInfo render_pass_info{
             VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,           // sType
@@ -760,28 +764,7 @@ private:
             nullptr                          // pPreserveAttachments
         };
 
-        std::array<VkSubpassDependency, 2> dependencies{
-            {{
-                 VK_SUBPASS_EXTERNAL, // srcSubpass
-                 0,                   // dstSubpass
-                 src->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT
-                                    : VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,                       // srcStageMask
-                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,                                                    // dstStageMask
-                 src->is_external() ? VK_ACCESS_TRANSFER_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // srcAccessMask
-                 VK_ACCESS_SHADER_READ_BIT,                                                                // dstAccessMask
-                 VK_DEPENDENCY_BY_REGION_BIT                                                               // dependencyFlags
-             },
-             {
-                 0,                                                                                           // srcSubpass
-                 VK_SUBPASS_EXTERNAL,                                                                         // dstSubpass
-                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,                                                       // srcStageMask
-                 src->is_external() ? VK_PIPELINE_STAGE_TRANSFER_BIT : VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, // dstStageMask
-                 VK_ACCESS_SHADER_READ_BIT,                                                                   // srcAccessMask
-                 src->is_external() ? VK_ACCESS_TRANSFER_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,    // dstAccessMask
-                 VK_DEPENDENCY_BY_REGION_BIT                                                                  // dependencyFlags
-             }}};
-
-//        assert(src->is_external());
+        // assert(src->is_external());
 
         VkRenderPassCreateInfo render_pass_info{
             VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,           // sType
@@ -791,8 +774,8 @@ private:
             attchmentDescriptions.data(),                        // pAttachments
             1,                                                   // subpassCount
             &subpass,                                            // pSubpasses
-            dependencies.size(),                                 // dependencyCount
-            dependencies.data()                                  // pDependencies
+            0,                                                   // dependencyCount
+            nullptr                                              // pDependencies
         };
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
@@ -833,6 +816,6 @@ private:
     int        fps{};
     time_point last_fps_update;
     switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
-    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>             buffer_pool;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>>        buffer_pool;
 };
 PLUGIN_MAIN(native_renderer)

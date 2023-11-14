@@ -190,7 +190,7 @@ protected:
         metrics["copy_time"]   += copy_time;
         metrics["encode_time"] += encode_time;
 
-//        enqueue_for_network_send(pose);
+        enqueue_for_network_send(pose);
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time).count() >= 1) {
             log->info("Encoder FPS: {}", fps_counter);
