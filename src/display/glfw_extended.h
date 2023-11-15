@@ -28,6 +28,7 @@ public:
     void                          cleanup() override;
     std::set<const char*>         get_required_instance_extensions() override;
     std::set<const char*>         get_required_device_extensions() override;
+    display_backend_type          get_type() override;
 
 private:
     VkSurfaceKHR create_surface() override;

@@ -28,6 +28,7 @@ public:
     VkDisplayModePropertiesKHR select_display_mode(std::vector<VkDisplayModePropertiesKHR> modes);
     void                       tick();
     bool                       register_display_timings_event(VkDevice vk_device);
+    display_backend_type       get_type() override;
 
     VkDisplayKHR               display;
     std::atomic<bool>          display_timings_event_registered = false;

@@ -66,8 +66,12 @@ public:
         app_command_buffer      = vulkan::create_command_buffer(ds->vk_device, command_pool);
         timewarp_command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         create_sync_objects();
-        create_app_pass();
-        create_timewarp_pass();
+        if (!src->is_external()) {
+            create_app_pass();
+        }
+        if (!tw->is_external()) {
+            create_timewarp_pass();
+        }
         create_sync_objects();
         create_offscreen_framebuffers();
         create_swapchain_framebuffers();
@@ -613,7 +617,6 @@ private:
             for (auto eye = 0; eye < 2; eye++) {
                 std::array<VkImageView, 2> attachments = {offscreen_images[i][eye].image_view, depth_images[i][eye].image_view};
 
-                assert(app_pass != VK_NULL_HANDLE);
                 VkFramebufferCreateInfo framebuffer_info{
                     VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
                     nullptr,                                   // pNext

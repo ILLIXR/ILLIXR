@@ -175,3 +175,7 @@ std::set<const char*> x11_direct::get_required_device_extensions() {
     extensions.insert(VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME);
     return extensions;
 }
+
+display_backend::display_backend_type x11_direct::get_type() {
+    return X11_DIRECT;
+}

@@ -445,7 +445,7 @@ static swapchain_details query_swapchain_details(VkPhysicalDevice const& physica
     return details;
 }
 
-static queue_families find_queue_families(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface) {
+static queue_families find_queue_families(VkPhysicalDevice const& physical_device, VkSurfaceKHR const& vk_surface, bool no_present = false) {
     queue_families indices;
 
     uint32_t queue_family_count = 0;
@@ -479,11 +479,13 @@ static queue_families find_queue_families(VkPhysicalDevice const& physical_devic
         //     }
         // }
 
-        VkBool32 present_support = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
+        if (!no_present) {
+            VkBool32 present_support = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
 
-        if (present_support) {
-            indices.present_family = i;
+            if (present_support) {
+                indices.present_family = i;
+            }
         }
 
         if (indices.has_compression()) {

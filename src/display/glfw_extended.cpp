@@ -68,3 +68,7 @@ glfw_extended::glfw_extended() {
 std::set<const char*> glfw_extended::get_required_device_extensions() {
     return std::set<const char*>();
 }
+
+display_backend::display_backend_type glfw_extended::get_type() {
+    return GLFW;
+}

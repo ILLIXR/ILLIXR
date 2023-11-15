@@ -10,6 +10,8 @@ if(ILLIXR_VULKAN)
             src/display/x11_direct.cpp
             src/display/glfw_extended.h
             src/display/glfw_extended.cpp
+            src/display/headless.hpp
+            src/display/headless.cpp
             ../include/illixr/vk/vk_extension_request.h
             ../include/illixr/vk/vulkan_objects.hpp
     )

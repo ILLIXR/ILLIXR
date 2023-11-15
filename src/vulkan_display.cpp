@@ -1,6 +1,7 @@
 #define VMA_IMPLEMENTATION
 
 #include "display/glfw_extended.h"
+#include "display/headless.hpp"
 #include "display/x11_direct.h"
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
@@ -14,9 +15,10 @@
 
 using namespace ILLIXR;
 
+
 class display_vk : public vulkan::display_provider {
     std::vector<const char*> required_device_extensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+
     };
 
 public:
@@ -37,15 +39,27 @@ public:
         auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
         selected_gpu = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
-        char* env_var = std::getenv("ILLIXR_DIRECT_MODE");
-        direct_mode = env_var ? std::stoi(env_var) : -1;
+        char* env_var = std::getenv("ILLIXR_DISPLAY_MODE");
+        if (!strcmp(env_var, "glfw")) {
+            std::cout << "Using GLFW" << std::endl;
+            backend_type = display_backend::GLFW;
+        } else if (!strcmp(env_var, "headless")) {
+            std::cout << "Using headless" << std::endl;
+            backend_type = display_backend::HEADLESS;
+        } else {
+            std::cout << "Using X11 direct mode" << std::endl;
+            backend_type = display_backend::X11_DIRECT;
+            direct_mode = std::stoi(env_var);
+        }
 
         setup(std::move(instance_extensions), std::move(device_extensions));
 
-        main_thread = std::thread(&display_vk::main_loop, this);
-        while (!ready) {
-            // yield
-            std::this_thread::yield();
+        if (backend_type == display_backend::GLFW) {
+            main_thread = std::thread(&display_vk::main_loop, this);
+            while (!ready) {
+                // yield
+                std::this_thread::yield();
+            }
         }
     }
 
@@ -53,16 +67,20 @@ public:
      * @brief This function sets up the GLFW and Vulkan environments. See display_provider::setup().
      */
     void setup(std::set<const char*> instance_extensions, std::set<const char*> device_extensions) {
-        if (direct_mode == -1) {
-            std::cout << "Using GLFW" << std::endl;
+        if (backend_type == display_backend::GLFW) {
             backend = std::make_shared<glfw_extended>();
-        } else {
-            std::cout << "Using direct mode" << std::endl;
+        } else if (backend_type == display_backend::X11_DIRECT) {
             backend = std::make_shared<x11_direct>(rc, sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate"));
+        } else {
+            backend = std::make_shared<headless>();
+        }
+
+        if (backend_type != display_backend::HEADLESS) {
+            required_device_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
         }
 
         create_vk_instance(std::move(instance_extensions));
-        if (direct_mode == -1) {
+        if (backend_type == display_backend::GLFW) {
             backend->setup_display(vk_instance, nullptr);
             vk_surface = backend->create_surface();
             select_physical_device();
@@ -76,13 +94,19 @@ public:
         device_extensions.insert(backend_device_extensions.begin(), backend_device_extensions.end());
         create_logical_device(std::move(device_extensions));
 
-        create_swapchain();
+        if (backend_type != display_backend::HEADLESS) {
+            create_swapchain();
+        }
     }
 
     /**
      * @brief This function recreates the Vulkan swapchain. See display_provider::recreate_swapchain().
      */
     void recreate_swapchain() override {
+        if (backend_type == display_backend::HEADLESS) {
+            throw std::runtime_error("Cannot recreate swapchain in headless mode!");
+        }
+
         uint32_t width, height;
         if (direct_mode == -1) {
             auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
@@ -216,7 +240,7 @@ private:
             return false;
         }
 
-        if (direct_mode == -1) {
+        if (backend_type == display_backend::GLFW) {
             // check if the device supports the swapchain we need
             auto swapchain_details = vulkan::query_swapchain_details(physical_device, vk_surface);
             if (swapchain_details.formats.empty() || swapchain_details.present_modes.empty()) {
@@ -279,11 +303,14 @@ private:
     }
 
     void create_logical_device(std::set<const char*> device_extensions) {
-        vulkan::queue_families indices = vulkan::find_queue_families(vk_physical_device, vk_surface);
+        vulkan::queue_families indices = vulkan::find_queue_families(vk_physical_device, vk_surface, backend_type == display_backend::HEADLESS);
 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-        std::set<uint32_t> unique_queue_families = {indices.graphics_family.value(),
-                                                       indices.present_family.value()};
+        std::set<uint32_t> unique_queue_families = {indices.graphics_family.value()};
+
+        if (indices.present_family.has_value()) {
+            unique_queue_families.insert(indices.present_family.value());
+        }
 
         if (indices.has_compression()) {
             unique_queue_families.insert(indices.encode_family.value());
@@ -292,6 +319,10 @@ private:
 
         if (indices.dedicated_transfer.has_value()) {
             unique_queue_families.insert(indices.dedicated_transfer.value());
+        }
+
+        if (indices.compute_family.has_value()) {
+            unique_queue_families.insert(indices.compute_family.value());
         }
 
         float queue_priority = 1.0f;
@@ -532,6 +563,7 @@ private:
     std::atomic<bool>           ready{false};
     std::atomic<bool>           running{true};
 
+    display_backend::display_backend_type backend_type;
     int direct_mode{-1};
     int selected_gpu{-1};
 
