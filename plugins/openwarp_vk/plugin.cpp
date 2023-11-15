@@ -1,5 +1,5 @@
 #if defined(ILLIXR_MONADO)
-#define VMA_IMPLEMENTATION
+    #define VMA_IMPLEMENTATION
 #endif
 
 #include "illixr/data_format.hpp"
@@ -22,7 +22,7 @@
 
 using namespace ILLIXR;
 
-struct Vertex {
+struct DistortionCorrectionVertex {
     glm::vec3 pos;
     glm::vec2 uv0;
     glm::vec2 uv1;
@@ -30,9 +30,9 @@ struct Vertex {
 
     static VkVertexInputBindingDescription get_binding_description() {
         VkVertexInputBindingDescription binding_description = {};
-        binding_description.binding                         = 0;              // index of the binding in the array of bindings
-        binding_description.stride                          = sizeof(Vertex); // number of bytes from one entry to the next
-        binding_description.inputRate                       = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
+        binding_description.binding                         = 0;            // index of the binding in the array of bindings
+        binding_description.stride    = sizeof(DistortionCorrectionVertex); // number of bytes from one entry to the next
+        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;        // no instancing
 
         return binding_description;
     }
@@ -45,29 +45,68 @@ struct Vertex {
         attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
         attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
         attribute_descriptions[0].offset =
-            offsetof(Vertex, pos); // number of bytes since the start of the per-vertex data to read from
+            offsetof(DistortionCorrectionVertex, pos); // number of bytes since the start of the per-vertex data to read from
 
         // uv0
         attribute_descriptions[1].binding  = 0;
         attribute_descriptions[1].location = 1;
         attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[1].offset   = offsetof(Vertex, uv0);
+        attribute_descriptions[1].offset   = offsetof(DistortionCorrectionVertex, uv0);
 
         // uv1
         attribute_descriptions[2].binding  = 0;
         attribute_descriptions[2].location = 2;
         attribute_descriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[2].offset   = offsetof(Vertex, uv1);
+        attribute_descriptions[2].offset   = offsetof(DistortionCorrectionVertex, uv1);
 
         // uv2
         attribute_descriptions[3].binding  = 0;
         attribute_descriptions[3].location = 3;
         attribute_descriptions[3].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[3].offset   = offsetof(Vertex, uv2);
+        attribute_descriptions[3].offset   = offsetof(DistortionCorrectionVertex, uv2);
 
         return attribute_descriptions;
     }
 };
+
+struct OpenWarpVertex {
+    glm::vec3 pos;
+    glm::vec2 uv;
+
+    static VkVertexInputBindingDescription get_binding_description() {
+        VkVertexInputBindingDescription binding_description = {};
+        binding_description.binding                         = 0;     // index of the binding in the array of bindings
+        binding_description.stride    = sizeof(OpenWarpVertex);      // number of bytes from one entry to the next
+        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
+
+        return binding_description;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 2> get_attribute_descriptions() {
+        std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions = {};
+
+        // position
+        attribute_descriptions[0].binding  = 0;                          // which binding the per-vertex data comes from
+        attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
+        attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
+        attribute_descriptions[0].offset =
+            offsetof(DistortionCorrectionVertex, pos); // number of bytes since the start of the per-vertex data to read from
+
+        // uv
+        attribute_descriptions[1].binding  = 0;
+        attribute_descriptions[1].location = 1;
+        attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[1].offset   = offsetof(DistortionCorrectionVertex, uv0);
+
+        return attribute_descriptions;
+    }
+};
+
+// struct UniformBufferObject {
+//     glm::mat4 render_inv_projection;
+//     glm::mat4 render_inv_view;
+//     glm::mat4 warp_view_projection;
+// };
 
 struct UniformBufferObject {
     glm::mat4 warp_start_transform;
@@ -95,16 +134,25 @@ public:
             });
         }
 
+        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width,
+                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height,
+                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+
+        generate_openwarp_mesh(512, 512);
         generate_distortion_data();
+
         command_pool = vulkan::vulkan_utils::create_command_pool(
             ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
-        create_vertex_buffer();
-        create_index_buffer();
-        create_descriptor_set_layout();
+
+        create_vertex_buffers();
+        create_index_buffers();
+
+        create_descriptor_set_layouts();
         create_uniform_buffer();
         create_texture_sampler();
     }
@@ -125,24 +173,12 @@ public:
             throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
         }
 
-        // for (int eye = 0; eye < 2; eye++) {
-        //     for (int buffer = 0; buffer < buffer_pool_in[0].size(); buffer++) {
-        //         assert(buffer_pool_in[eye][buffer] != VK_NULL_HANDLE && "Eye buffer image view is a null handle!");
-        //     }
-        // }
-
         this->buffer_pool = buffer_pool_in;
-
-        // for (int eye = 0; eye < 2; eye++) {
-        //     for (int buffer = 0; buffer < buffer_pool[0].size(); buffer++) {
-        //         std::cout << "Eye: " << eye << ", i: " << buffer << std::endl;
-        //         assert(buffer_pool[eye][buffer] != VK_NULL_HANDLE && "Eye buffer image view is a null handle!");
-        //     }
-        // }
 
         create_descriptor_pool();
         create_descriptor_sets();
-        create_pipeline(render_pass, subpass);
+        // create_openwarp_pipeline();
+        create_distortion_correction_pipeline(render_pass, subpass);
     }
 
     void partial_destroy() {
@@ -195,18 +231,18 @@ public:
     void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
+        // First perform openwarp on a mesh
+        // to-do: Monado will begin the render pass; how to workaround?
+
+        // to-do: need some synchronization here
+
+        // Then perform distortion correction
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
-        // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
-        //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
-        //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
-        //     eye, 0);
-        // }
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, offsets);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
                                 &descriptor_sets[!left][buffer_ind], 0, nullptr);
-        vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
     }
 
@@ -220,8 +256,9 @@ public:
     }
 
 private:
-    void create_vertex_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {
+    void create_vertex_buffers() {
+        // Distortion Correction Vertices
+        VkBufferCreateInfo dc_staging_buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
             nullptr,                              // pNext
             0,                                    // flags
@@ -231,68 +268,60 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        staging_buffer_info.size  = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        dc_staging_buffer_info.size  = sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES;
+        dc_staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
-        VmaAllocationCreateInfo staging_alloc_info = {};
-        staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
-        staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        VmaAllocationCreateInfo dc_staging_alloc_info = {};
+        dc_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+        dc_staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
-        VkBuffer      staging_buffer;
-        VmaAllocation staging_alloc;
+        VkBuffer      dc_staging_buffer;
+        VmaAllocation dc_staging_alloc;
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &dc_staging_buffer_info, &dc_staging_alloc_info, &dc_staging_buffer,
+                                          &dc_staging_alloc, nullptr))
+
+        VkBufferCreateInfo dc_buffer_info = {
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
+            nullptr,                              // pNext
+            0,                                    // flags
+            0,                                    // size
+            0,                                    // usage
+            {},                                   // sharingMode
+            0,                                    // queueFamilyIndexCount
+            nullptr                               // pQueueFamilyIndices
+        };
+        dc_buffer_info.size  = sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES;
+        dc_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+        VmaAllocationCreateInfo dc_alloc_info = {};
+        dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
+
+        VmaAllocation dc_vertex_alloc;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
-
-        VkBufferCreateInfo buffer_info = {
-            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
-            nullptr,                              // pNext
-            0,                                    // flags
-            0,                                    // size
-            0,                                    // usage
-            {},                                   // sharingMode
-            0,                                    // queueFamilyIndexCount
-            nullptr                               // pQueueFamilyIndices
-        };
-        buffer_info.size  = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-
-        VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
-
-        VmaAllocation vertex_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr))
-
-        std::vector<Vertex> vertices;
-        vertices.resize(num_distortion_vertices * HMD::NUM_EYES);
-        for (size_t i = 0; i < num_distortion_vertices * HMD::NUM_EYES; i++) {
-            vertices[i].pos = {distortion_positions[i].x, distortion_positions[i].y, distortion_positions[i].z};
-            vertices[i].uv0 = {distortion_uv0[i].u, distortion_uv0[i].v};
-            vertices[i].uv1 = {distortion_uv1[i].u, distortion_uv1[i].v};
-            vertices[i].uv2 = {distortion_uv2[i].u, distortion_uv2[i].v};
-        }
+            vmaCreateBuffer(vma_allocator, &dc_buffer_info, &dc_alloc_info, &dc_vertex_buffer, &dc_vertex_alloc, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data))
-        memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
-        vmaUnmapMemory(vma_allocator, staging_alloc);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, dc_staging_alloc, &mapped_data))
+        memcpy(mapped_data, distortion_vertices.data(), sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES);
+        vmaUnmapMemory(vma_allocator, dc_staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy    copy_region          = {};
-        copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
+        VkCommandBuffer dc_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkBufferCopy    dc_copy_region          = {};
+        dc_copy_region.size                     = sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES;
+        vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_vertex_buffer, 1, &dc_copy_region);
         vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
                                                    ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
-                                                   command_buffer_local);
+                                                   dc_command_buffer_local);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
+        vmaDestroyBuffer(vma_allocator, dc_staging_buffer, dc_staging_alloc);
 
         deletion_queue.emplace([=]() {
-            vmaDestroyBuffer(vma_allocator, vertex_buffer, vertex_alloc);
+            vmaDestroyBuffer(vma_allocator, dc_vertex_buffer, dc_vertex_alloc);
         });
     }
 
-    void create_index_buffer() {
-        VkBufferCreateInfo staging_buffer_info = {
+    void create_index_buffers() {
+        VkBufferCreateInfo dc_staging_buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
             nullptr,                              // pNext
             0,                                    // flags
@@ -302,19 +331,19 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        staging_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
-        staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+        dc_staging_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
+        dc_staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
-        VmaAllocationCreateInfo staging_alloc_info = {};
-        staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
-        staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        VmaAllocationCreateInfo dc_staging_alloc_info = {};
+        dc_staging_alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+        dc_staging_alloc_info.flags                   = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
-        VkBuffer      staging_buffer;
-        VmaAllocation staging_alloc;
+        VkBuffer      dc_staging_buffer;
+        VmaAllocation dc_staging_alloc;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
+            vmaCreateBuffer(vma_allocator, &dc_staging_buffer_info, &dc_staging_alloc_info, &dc_staging_buffer, &dc_staging_alloc, nullptr))
 
-        VkBufferCreateInfo buffer_info = {
+        VkBufferCreateInfo dc_buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
             nullptr,                              // pNext
             0,                                    // flags
@@ -324,50 +353,167 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
-        buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+        dc_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
+        dc_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
-        VmaAllocationCreateInfo alloc_info = {};
-        alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
+        VmaAllocationCreateInfo dc_alloc_info = {};
+        dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
-        VmaAllocation index_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr))
+        VmaAllocation dc_index_alloc;
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &dc_buffer_info, &dc_alloc_info, &dc_index_buffer, &dc_index_alloc, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data))
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, dc_staging_alloc, &mapped_data))
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
-        vmaUnmapMemory(vma_allocator, staging_alloc);
+        vmaUnmapMemory(vma_allocator, dc_staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
-        VkBufferCopy    copy_region          = {};
-        copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
+        VkCommandBuffer dc_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkBufferCopy    dc_copy_region          = {};
+        dc_copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
+        vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_index_buffer, 1, &dc_copy_region);
         vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
                                                    ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
-                                                   command_buffer_local);
+                                                   dc_command_buffer_local);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
+        vmaDestroyBuffer(vma_allocator, dc_staging_buffer, dc_staging_alloc);
 
         deletion_queue.emplace([=]() {
-            vmaDestroyBuffer(vma_allocator, index_buffer, index_alloc);
+            vmaDestroyBuffer(vma_allocator, dc_index_buffer, dc_index_alloc);
         });
     }
 
     void generate_distortion_data() {
-        // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width,
-                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height,
-                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
-                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+        // Calculate the number of vertices+indices in the distortion mesh.
+        num_distortion_vertices = (hmd_info.eyeTilesHigh + 1) * (hmd_info.eyeTilesWide + 1);
+        num_distortion_indices  = hmd_info.eyeTilesHigh * hmd_info.eyeTilesWide * 6;
 
-        // Construct timewarp meshes and other data
-        build_timewarp(hmd_info);
+        // Allocate memory for the elements/indices array.
+        distortion_indices.resize(num_distortion_indices);
+
+        // This is just a simple grid/plane index array, nothing fancy.
+        // Same for both eye distortions, too!
+        for (int y = 0; y < hmd_info.eyeTilesHigh; y++) {
+            for (int x = 0; x < hmd_info.eyeTilesWide; x++) {
+                const int offset = (y * hmd_info.eyeTilesWide + x) * 6;
+
+                distortion_indices[offset + 0] = ((y + 0) * (hmd_info.eyeTilesWide + 1) + (x + 0));
+                distortion_indices[offset + 1] = ((y + 1) * (hmd_info.eyeTilesWide + 1) + (x + 0));
+                distortion_indices[offset + 2] = ((y + 0) * (hmd_info.eyeTilesWide + 1) + (x + 1));
+
+                distortion_indices[offset + 3] = ((y + 0) * (hmd_info.eyeTilesWide + 1) + (x + 1));
+                distortion_indices[offset + 4] = ((y + 1) * (hmd_info.eyeTilesWide + 1) + (x + 0));
+                distortion_indices[offset + 5] = ((y + 1) * (hmd_info.eyeTilesWide + 1) + (x + 1));
+            }
+        }
+
+        // There are `num_distortion_vertices` distortion coordinates for each color channel (3) of each eye (2).
+        // These are NOT the coordinates of the distorted vertices. They are *coefficients* that will be used to
+        // offset the UV coordinates of the distortion mesh.
+        std::array<std::array<std::vector<HMD::mesh_coord2d_t>, HMD::NUM_COLOR_CHANNELS>, HMD::NUM_EYES> distort_coords;
+        for (auto& eye_coords : distort_coords) {
+            for (auto& channel_coords : eye_coords) {
+                channel_coords.resize(num_distortion_vertices);
+            }
+        }
+        HMD::BuildDistortionMeshes(distort_coords, hmd_info);
+
+        // Allocate memory for position and UV CPU buffers.
+        const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices;
+        distortion_vertices.resize(num_elems_pos_uv);
+
+        for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
+            for (int y = 0; y <= hmd_info.eyeTilesHigh; y++) {
+                for (int x = 0; x <= hmd_info.eyeTilesWide; x++) {
+                    const int index = y * (hmd_info.eyeTilesWide + 1) + x;
+
+                    // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
+                    // The distortion is handled by the UVs, not the actual mesh coordinates!
+                    // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
+                    // hmd_info.eyeTilesWide));
+                    distortion_vertices[eye * num_distortion_vertices + index].pos.x =
+                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide)));
+
+                    // flip the y coordinates for Vulkan texture
+                    distortion_vertices[eye * num_distortion_vertices + index].pos.y =
+                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
+                        (-1.0f +
+                         2.0f * (static_cast<float>(hmd_info.eyeTilesHigh - y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
+                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
+                              static_cast<float>(hmd_info.displayPixelsHigh)));
+                    distortion_vertices[eye * num_distortion_vertices + index].pos.z = 0.0f;
+
+                    // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = distort_coords[eye][0][index].x;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = distort_coords[eye][0][index].y;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = distort_coords[eye][1][index].x;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = distort_coords[eye][1][index].y;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = distort_coords[eye][2][index].x;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = distort_coords[eye][2][index].y;
+                }
+            }
+        }
+
+        // Construct perspective projection matrix
+        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+                                  rendering_params::far_z);
+    }
+
+    void generate_openwarp_mesh(size_t width, size_t height) {
+        std::cout << "Generating reprojection mesh, size (" << width << ", " << height << ")" << std::endl;
+
+        // width and height are not in # of verts, but in # of faces.
+        size_t num_indices  = 2 * 3 * width * height;
+        size_t num_vertices = (width + 1) * (height + 1);
+
+        // Size the vectors accordingly
+        openwarp_indices.resize(num_indices);
+        openwarp_vertices.resize(num_vertices);
+
+        // Build indices.
+        for (size_t y = 0; y < height; y++) {
+            for (size_t x = 0; x < width; x++) {
+                const int offset = (y * width + x) * 6;
+
+                openwarp_indices[offset + 0] = (GLuint) ((y + 0) * (width + 1) + (x + 0));
+                openwarp_indices[offset + 1] = (GLuint) ((y + 1) * (width + 1) + (x + 0));
+                openwarp_indices[offset + 2] = (GLuint) ((y + 0) * (width + 1) + (x + 1));
+
+                openwarp_indices[offset + 3] = (GLuint) ((y + 0) * (width + 1) + (x + 1));
+                openwarp_indices[offset + 4] = (GLuint) ((y + 1) * (width + 1) + (x + 0));
+                openwarp_indices[offset + 5] = (GLuint) ((y + 1) * (width + 1) + (x + 1));
+            }
+        }
+
+        // Build vertices
+        for (size_t y = 0; y < height + 1; y++) {
+            for (size_t x = 0; x < width + 1; x++) {
+                size_t index = y * (width + 1) + x;
+
+                openwarp_vertices[index].pos.x = ((float) x / width);
+                openwarp_vertices[index].pos.y = (((height - (float) y) / height));
+
+                if (x == 0) {
+                    openwarp_vertices[index].uv.x = -0.5f;
+                }
+                if (x == width) {
+                    openwarp_vertices[index].uv.x = 1.5f;
+                }
+
+                if (y == 0) {
+                    openwarp_vertices[index].uv.y = 1.5f;
+                }
+                if (y == height) {
+                    openwarp_vertices[index].uv.y = -0.5f;
+                }
+            }
+        }
     }
 
     void create_texture_sampler() {
         VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
-        samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.magFilter           = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
+        samplerInfo.minFilter           = VK_FILTER_LINEAR;
 
         samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
@@ -391,7 +537,8 @@ private:
         });
     }
 
-    void create_descriptor_set_layout() {
+    void create_descriptor_set_layouts() {
+        // OpenWarp descriptor set
         VkDescriptorSetLayoutBinding uboLayoutBinding = {};
         uboLayoutBinding.binding                      = 0; // binding number in the shader
         uboLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -411,7 +558,6 @@ private:
         depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
         std::array<VkDescriptorSetLayoutBinding, 3> bindings   = {uboLayoutBinding, imageLayoutBinding, depthLayoutBinding};
-        // std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, imageLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
         layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
@@ -545,20 +691,22 @@ private:
         }
     }
 
-    VkPipeline create_pipeline(VkRenderPass render_pass, [[maybe_unused]] uint32_t subpass) {
-        if (pipeline != VK_NULL_HANDLE) {
+    void create_openwarp_render_pass() { 
+        return;
+    }
+
+    void create_openwarp_pipeline() {
+        if (openwarp_pipeline != VK_NULL_HANDLE) {
             throw std::runtime_error("openwarp_vk::create_pipeline: pipeline already created");
         }
-
-        std::cout << "Creating pipeline" << std::endl;
 
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert =
-            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.vert.spv"));
-        VkShaderModule frag =
-            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/tw.frag.spv"));
+        VkShaderModule vert   = vulkan::vulkan_utils::create_shader_module(
+            device, vulkan::vulkan_utils::read_file(folder + "/openwarp_mesh.vert.spv"));
+        VkShaderModule frag = vulkan::vulkan_utils::create_shader_module(
+            device, vulkan::vulkan_utils::read_file(folder + "/openwarp_mesh.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -574,8 +722,60 @@ private:
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertStageInfo, fragStageInfo};
 
-        auto bindingDescription    = Vertex::get_binding_description();
-        auto attributeDescriptions = Vertex::get_attribute_descriptions();
+        auto bindingDescription    = DistortionCorrectionVertex::get_binding_description();
+        auto attributeDescriptions = DistortionCorrectionVertex::get_attribute_descriptions();
+
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+        vertexInputInfo.sType                                = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.vertexBindingDescriptionCount        = 1;
+        vertexInputInfo.pVertexBindingDescriptions           = &bindingDescription;
+        vertexInputInfo.vertexAttributeDescriptionCount      = static_cast<uint32_t>(attributeDescriptions.size());
+        vertexInputInfo.pVertexAttributeDescriptions         = attributeDescriptions.data();
+
+        VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+        inputAssembly.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssembly.topology                               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+        VkPipelineRasterizationStateCreateInfo rasterizer = {};
+        rasterizer.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizer.polygonMode                            = VK_POLYGON_MODE_FILL;
+        rasterizer.cullMode                               = VK_CULL_MODE_NONE;
+        rasterizer.frontFace                              = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        rasterizer.lineWidth                              = 1.0f;
+        rasterizer.depthClampEnable                       = VK_FALSE;
+        rasterizer.rasterizerDiscardEnable                = VK_FALSE;
+        rasterizer.depthBiasEnable                        = VK_FALSE;
+    }
+
+    VkPipeline create_distortion_correction_pipeline(VkRenderPass render_pass, [[maybe_unused]] uint32_t subpass) {
+        if (pipeline != VK_NULL_HANDLE) {
+            throw std::runtime_error("openwarp_vk::create_distortion_correction_pipeline: pipeline already created");
+        }
+
+        VkDevice device = ds->vk_device;
+
+        auto           folder = std::string(SHADER_FOLDER);
+        VkShaderModule vert =
+            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/distortion_correction.vert.spv"));
+        VkShaderModule frag =
+            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/distortion_correction.frag.spv"));
+
+        VkPipelineShaderStageCreateInfo vertStageInfo = {};
+        vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertStageInfo.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
+        vertStageInfo.module                          = vert;
+        vertStageInfo.pName                           = "main";
+
+        VkPipelineShaderStageCreateInfo fragStageInfo = {};
+        fragStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragStageInfo.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragStageInfo.module                          = frag;
+        fragStageInfo.pName                           = "main";
+
+        VkPipelineShaderStageCreateInfo shaderStages[] = {vertStageInfo, fragStageInfo};
+
+        auto bindingDescription    = DistortionCorrectionVertex::get_binding_description();
+        auto attributeDescriptions = DistortionCorrectionVertex::get_attribute_descriptions();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType                                = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -620,26 +820,7 @@ private:
         depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable                       = VK_FALSE;
 
-        // use dynamic state instead
-        // VkViewport viewport = {};
-        // viewport.x = 0.0f;
-        // viewport.y = 0.0f;
-        // viewport.width = ds->swapchain_extent.width;
-        // viewport.height = ds->swapchain_extent.height;
-        // viewport.minDepth = 0.0f;
-        // viewport.maxDepth = 1.0f;
-
-        // VkRect2D scissor = {};
-        // scissor.offset = {0, 0};
-        // scissor.extent = ds->swapchain_extent;
-
-        // VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
-        // viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        // viewportStateCreateInfo.viewportCount = 1;
-        // viewportStateCreateInfo.pViewports = &viewport;
-        // viewportStateCreateInfo.scissorCount = 1;
-        // viewportStateCreateInfo.pScissors = &scissor;
-
+        // use dynamic state instead of a fixed viewport
         std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
         VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
@@ -683,86 +864,6 @@ private:
         vkDestroyShaderModule(device, vert, nullptr);
         vkDestroyShaderModule(device, frag, nullptr);
         return pipeline;
-    }
-
-    void build_timewarp(HMD::hmd_info_t& hmdInfo) {
-        // Calculate the number of vertices+indices in the distortion mesh.
-        num_distortion_vertices = (hmdInfo.eyeTilesHigh + 1) * (hmdInfo.eyeTilesWide + 1);
-        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6;
-
-        // Allocate memory for the elements/indices array.
-        distortion_indices.resize(num_distortion_indices);
-
-        // This is just a simple grid/plane index array, nothing fancy.
-        // Same for both eye distortions, too!
-        for (int y = 0; y < hmdInfo.eyeTilesHigh; y++) {
-            for (int x = 0; x < hmdInfo.eyeTilesWide; x++) {
-                const int offset = (y * hmdInfo.eyeTilesWide + x) * 6;
-
-                distortion_indices[offset + 0] = ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 1] = ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 2] = ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
-
-                distortion_indices[offset + 3] = ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
-                distortion_indices[offset + 4] = ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 5] = ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
-            }
-        }
-
-        // There are `num_distortion_vertices` distortion coordinates for each color channel (3) of each eye (2).
-        // These are NOT the coordinates of the distorted vertices. They are *coefficients* that will be used to
-        // offset the UV coordinates of the distortion mesh.
-        std::array<std::array<std::vector<HMD::mesh_coord2d_t>, HMD::NUM_COLOR_CHANNELS>, HMD::NUM_EYES> distort_coords;
-        for (auto& eye_coords : distort_coords) {
-            for (auto& channel_coords : eye_coords) {
-                channel_coords.resize(num_distortion_vertices);
-            }
-        }
-        HMD::BuildDistortionMeshes(distort_coords, hmdInfo);
-
-        // Allocate memory for position and UV CPU buffers.
-        const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices;
-        distortion_positions.resize(num_elems_pos_uv);
-        distortion_uv0.resize(num_elems_pos_uv);
-        distortion_uv1.resize(num_elems_pos_uv);
-        distortion_uv2.resize(num_elems_pos_uv);
-
-        for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-            for (int y = 0; y <= hmdInfo.eyeTilesHigh; y++) {
-                for (int x = 0; x <= hmdInfo.eyeTilesWide; x++) {
-                    const int index = y * (hmdInfo.eyeTilesWide + 1) + x;
-
-                    // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
-                    // The distortion is handled by the UVs, not the actual mesh coordinates!
-                    // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
-                    // hmdInfo.eyeTilesWide));
-                    distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
-
-                    // flip the y coordinates for Vulkan texture
-                    distortion_positions[eye * num_distortion_vertices + index].y =
-                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
-                        (-1.0f +
-                         2.0f * (static_cast<float>(hmdInfo.eyeTilesHigh - y) / static_cast<float>(hmdInfo.eyeTilesHigh)) *
-                             (static_cast<float>(hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) /
-                              static_cast<float>(hmdInfo.displayPixelsHigh)));
-                    distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
-
-                    // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
-                    distortion_uv0[eye * num_distortion_vertices + index].u = distort_coords[eye][0][index].x;
-                    distortion_uv0[eye * num_distortion_vertices + index].v = distort_coords[eye][0][index].y;
-                    distortion_uv1[eye * num_distortion_vertices + index].u = distort_coords[eye][1][index].x;
-                    distortion_uv1[eye * num_distortion_vertices + index].v = distort_coords[eye][1][index].y;
-                    distortion_uv2[eye * num_distortion_vertices + index].u = distort_coords[eye][2][index].x;
-                    distortion_uv2[eye * num_distortion_vertices + index].v = distort_coords[eye][2][index].y;
-                }
-            }
-        }
-
-        // Construct perspective projection matrix
-        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -821,21 +922,29 @@ private:
     VkCommandPool   command_pool{};
     VkCommandBuffer command_buffer{};
 
-    VkBuffer vertex_buffer{};
-    VkBuffer index_buffer{};
+    // openwarp mesh
+    uint32_t                         num_openwarp_vertices;
+    uint32_t                         num_openwarp_indices;
+    std::vector<OpenWarpVertex> openwarp_vertices;
+    std::vector<uint32_t>            openwarp_indices;
+
+    VkBuffer ow_vertex_buffer{};
+    VkBuffer ow_index_buffer{};
+
+    VkRenderPass openwarp_render_pass;
+    VkPipeline   openwarp_pipeline;
 
     // distortion data
     HMD::hmd_info_t hmd_info{};
+    Eigen::Matrix4f basicProjection;
 
-    uint32_t                         num_distortion_vertices{};
-    uint32_t                         num_distortion_indices{};
-    Eigen::Matrix4f                  basicProjection;
-    std::vector<HMD::mesh_coord3d_t> distortion_positions;
-    std::vector<HMD::uv_coord_t>     distortion_uv0;
-    std::vector<HMD::uv_coord_t>     distortion_uv1;
-    std::vector<HMD::uv_coord_t>     distortion_uv2;
+    uint32_t                                num_distortion_vertices{};
+    uint32_t                                num_distortion_indices{};
+    std::vector<DistortionCorrectionVertex> distortion_vertices;
+    std::vector<uint32_t>                   distortion_indices;
 
-    std::vector<uint32_t> distortion_indices;
+    VkBuffer dc_vertex_buffer{};
+    VkBuffer dc_index_buffer{};
 
     // metrics
     std::atomic<uint32_t> num_record_calls{0};
