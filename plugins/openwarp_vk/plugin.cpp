@@ -185,8 +185,8 @@ public:
         vkDestroyPipeline(ds->vk_device, pipeline, nullptr);
         pipeline = VK_NULL_HANDLE;
 
-        vkDestroyPipelineLayout(ds->vk_device, pipeline_layout, nullptr);
-        pipeline_layout = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(ds->vk_device, dc_pipeline_layout, nullptr);
+        dc_pipeline_layout = VK_NULL_HANDLE;
 
         vkDestroyDescriptorPool(ds->vk_device, descriptor_pool, nullptr);
         descriptor_pool = VK_NULL_HANDLE;
@@ -223,7 +223,7 @@ public:
         calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
         calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
 
-        auto* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
+        auto* ubo = (UniformBufferObject*) dc_uniform_alloc_info.pMappedData;
         memcpy(&ubo->warp_start_transform, timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
         memcpy(&ubo->warp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
@@ -240,8 +240,8 @@ public:
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, offsets);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
-                                &descriptor_sets[!left][buffer_ind], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, dc_pipeline_layout, 0, 1,
+                                &dc_descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
     }
@@ -563,9 +563,9 @@ private:
         layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
         layoutInfo.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout))
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &dc_descriptor_set_layout))
         deletion_queue.emplace([=]() {
-            vkDestroyDescriptorSetLayout(ds->vk_device, descriptor_set_layout, nullptr);
+            vkDestroyDescriptorSetLayout(ds->vk_device, dc_descriptor_set_layout, nullptr);
         });
     }
 
@@ -589,9 +589,9 @@ private:
         createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info))
+            vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &dc_uniform_buffer, &dc_uniform_alloc, &dc_uniform_alloc_info))
         deletion_queue.emplace([=]() {
-            vmaDestroyBuffer(vma_allocator, uniform_buffer, uniform_alloc);
+            vmaDestroyBuffer(vma_allocator, dc_uniform_buffer, dc_uniform_alloc);
         });
     }
 
@@ -622,7 +622,7 @@ private:
         for (int eye = 0; eye < 2; eye++) {
             std::cout << "Eye: " << eye << std::endl;
 
-            std::vector<VkDescriptorSetLayout> layouts   = {descriptor_set_layout};
+            std::vector<VkDescriptorSetLayout> layouts   = {dc_descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
@@ -634,13 +634,13 @@ private:
             allocInfo.descriptorSetCount = 1; // to-do: find a better way to keep track of number of descriptor sets
             allocInfo.pSetLayouts        = layouts.data();
 
-            descriptor_sets[eye].resize(1);
-            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
+            dc_descriptor_sets[eye].resize(1);
+            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, dc_descriptor_sets[eye].data()))
 
             for (size_t i = 0; i < buffer_pool[0].size(); i += 2) {
                 std::cout << "i: " << i << std::endl;
                 VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer                 = uniform_buffer;
+                bufferInfo.buffer                 = dc_uniform_buffer;
                 bufferInfo.offset                 = 0;
                 bufferInfo.range                  = sizeof(UniformBufferObject);
 
@@ -661,7 +661,7 @@ private:
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
                 descriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[0].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[0].dstSet          = dc_descriptor_sets[eye][i];
                 descriptorWrites[0].dstBinding      = 0;
                 descriptorWrites[0].dstArrayElement = 0;
                 descriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -669,7 +669,7 @@ private:
                 descriptorWrites[0].pBufferInfo     = &bufferInfo;
 
                 descriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[1].dstSet          = dc_descriptor_sets[eye][i];
                 descriptorWrites[1].dstBinding      = 1;
                 descriptorWrites[1].dstArrayElement = 0;
                 descriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -677,7 +677,7 @@ private:
                 descriptorWrites[1].pImageInfo      = &imageInfo;
 
                 descriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[2].dstSet          = descriptor_sets[eye][i];
+                descriptorWrites[2].dstSet          = dc_descriptor_sets[eye][i];
                 descriptorWrites[2].dstBinding      = 2;
                 descriptorWrites[2].dstArrayElement = 0;
                 descriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -836,10 +836,10 @@ private:
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
         pipelineLayoutInfo.sType                      = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount             = 1;
-        pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
+        pipelineLayoutInfo.pSetLayouts                = &dc_descriptor_set_layout;
 
         std::cout << "Creating pipeline layout" << std::endl;
-        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &dc_pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
         pipelineInfo.sType                        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -854,7 +854,7 @@ private:
         pipelineInfo.pDepthStencilState           = nullptr;
         pipelineInfo.pDynamicState                = &dynamicStateCreateInfo;
 
-        pipelineInfo.layout     = pipeline_layout;
+        pipelineInfo.layout     = dc_pipeline_layout;
         pipelineInfo.renderPass = render_pass;
         pipelineInfo.subpass    = 0;
 
@@ -910,22 +910,22 @@ private:
     std::array<std::vector<VkImageView>, 2> buffer_pool;
     VkSampler                               fb_sampler{};
 
-    VkDescriptorPool                            descriptor_pool{};
-    VkDescriptorSetLayout                       descriptor_set_layout{};
-    std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
-
-    VkPipelineLayout  pipeline_layout{};
-    VkBuffer          uniform_buffer{};
-    VmaAllocation     uniform_alloc{};
-    VmaAllocationInfo uniform_alloc_info{};
-
-    VkCommandPool   command_pool{};
-    VkCommandBuffer command_buffer{};
+    VkDescriptorPool descriptor_pool{};
+    VkCommandPool    command_pool{};
+    VkCommandBuffer  command_buffer{};
 
     // openwarp mesh
+    VkPipelineLayout  ow_pipeline_layout{};
+    VkBuffer          ow_uniform_buffer{};
+    VmaAllocation     ow_uniform_alloc{};
+    VmaAllocationInfo ow_uniform_alloc_info{};
+    
+    VkDescriptorSetLayout                       ow_descriptor_set_layout{};
+    std::array<std::vector<VkDescriptorSet>, 2> ow_descriptor_sets;
+
     uint32_t                         num_openwarp_vertices;
     uint32_t                         num_openwarp_indices;
-    std::vector<OpenWarpVertex> openwarp_vertices;
+    std::vector<OpenWarpVertex>      openwarp_vertices;
     std::vector<uint32_t>            openwarp_indices;
 
     VkBuffer ow_vertex_buffer{};
@@ -937,6 +937,14 @@ private:
     // distortion data
     HMD::hmd_info_t hmd_info{};
     Eigen::Matrix4f basicProjection;
+
+    VkPipelineLayout  dc_pipeline_layout{};
+    VkBuffer          dc_uniform_buffer{};
+    VmaAllocation     dc_uniform_alloc{};
+    VmaAllocationInfo dc_uniform_alloc_info{};
+
+    VkDescriptorSetLayout                       dc_descriptor_set_layout{};
+    std::array<std::vector<VkDescriptorSet>, 2> dc_descriptor_sets;
 
     uint32_t                                num_distortion_vertices{};
     uint32_t                                num_distortion_indices{};
