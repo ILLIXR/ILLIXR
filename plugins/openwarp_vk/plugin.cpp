@@ -256,6 +256,44 @@ public:
     }
 
 private:
+    void create_offscreen_image(size_t width, size_t height) {
+        VkImageCreateInfo image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+        image_info.imageType = VK_IMAGE_TYPE_2D;
+        image_info.extent.width = width;
+        image_info.extent.height = height;
+        image_info.extent.depth = 1;
+        image_info.mipLevels = 1;
+        image_info.arrayLayers = 1;
+        image_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+        image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+        image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        image_info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+        
+        VmaAllocationCreateInfo create_info = {};
+        create_info.usage = VMA_MEMORY_USAGE_AUTO;
+        create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+        create_info.priority = 1.0f;
+        
+        VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image_info, &create_info, &offscreen_image, &offscreen_alloc, nullptr));
+
+        VkImageViewCreateInfo view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        view_info.image = offscreen_image;
+        view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+        view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+        view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        view_info.subresourceRange.baseMipLevel = 0;
+        view_info.subresourceRange.levelCount = 1;
+        view_info.subresourceRange.baseArrayLayer = 0;
+        view_info.subresourceRange.layerCount = 1;
+    
+        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &offscreen_image_view));
+    }
+
     void create_vertex_buffers() {
         // Distortion Correction Vertices
         VkBufferCreateInfo dc_staging_buffer_info = {
@@ -913,6 +951,11 @@ private:
     VkDescriptorPool descriptor_pool{};
     VkCommandPool    command_pool{};
     VkCommandBuffer  command_buffer{};
+
+    // offscreen image used as an intermediate render target
+    VkImage offscreen_image;
+    VkImageView offscreen_image_view;
+    VmaAllocation offscreen_alloc{};
 
     // openwarp mesh
     VkPipelineLayout  ow_pipeline_layout{};
