@@ -180,6 +180,8 @@ public:
     }
 
     void partial_destroy() {
+        // to-do: destroy necessary openwarp objects and wait for device idle
+        
         vkDestroyPipeline(ds->vk_device, pipeline, nullptr);
         pipeline = VK_NULL_HANDLE;
 
@@ -702,12 +704,14 @@ private:
         imageLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         imageLayoutBinding.descriptorCount              = 1;
         imageLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+        imageLayoutBinding.pImmutableSamplers           = nullptr;
 
         VkDescriptorSetLayoutBinding depthLayoutBinding = {};
         depthLayoutBinding.binding                      = 1;
         depthLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         depthLayoutBinding.descriptorCount              = 1;
         depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT;
+        depthLayoutBinding.pImmutableSamplers           = nullptr;
 
         VkDescriptorSetLayoutBinding matrixUboLayoutBinding = {};
         matrixUboLayoutBinding.binding                      = 2;
@@ -776,9 +780,9 @@ private:
     void create_descriptor_pool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount                  = 2;
+        poolSizes[0].descriptorCount                  = 100; // to-do: get proper amounts?
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = 4;
+        poolSizes[1].descriptorCount                  = 100;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -790,7 +794,7 @@ private:
         };
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes    = poolSizes.data();
-        poolInfo.maxSets       = buffer_pool[0].size() * 2;
+        poolInfo.maxSets       = 10; // same to-do as above
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool))
     }
@@ -825,9 +829,9 @@ private:
             assert(buffer_pool[eye][0] != VK_NULL_HANDLE);
 
             VkDescriptorImageInfo depthInfo = {};
-            imageInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-            imageInfo.imageView             = buffer_pool[eye][1];
-            imageInfo.sampler               = fb_sampler;
+            depthInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+            depthInfo.imageView             = buffer_pool[eye][1];
+            depthInfo.sampler               = fb_sampler;
 
             assert(buffer_pool[eye][1] != VK_NULL_HANDLE);
 
