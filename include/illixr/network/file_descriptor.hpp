@@ -168,6 +168,8 @@ public:
     const FileDescriptor& operator=(const FileDescriptor& other) = delete;
 };
 
+const size_t FileDescriptor::BUFFER_SIZE;
+
 } // namespace ILLIXR
 
 #endif /* FILE_DESCRIPTOR_HPP */

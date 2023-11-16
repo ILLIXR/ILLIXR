@@ -67,9 +67,12 @@ struct buffer_pool {
         latest_decoded_image = image_index;
     }
 
-    std::pair<image_index_t, T> post_processing_acquire_image() {
+    std::pair<image_index_t, T> post_processing_acquire_image(image_index_t last_image_index = -1) {
         std::lock_guard<std::mutex> lock(image_state_mutex);
         if (latest_decoded_image == -1) {
+            return {-1, {}};
+        }
+        if (latest_decoded_image == last_image_index) {
             return {-1, {}};
         }
         assert(latest_decoded_image != -1);

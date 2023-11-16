@@ -143,11 +143,16 @@ protected:
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
             return;
         }
-        std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res  = buffer_pool->post_processing_acquire_image();
+        std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res  = buffer_pool->post_processing_acquire_image(last_frame_ind);
         auto                                                ind  = res.first;
         auto                                                pose = res.second;
         // get timestamp
         auto copy_start_time = std::chrono::high_resolution_clock::now();
+
+        if (ind == -1) {
+            return;
+        }
+        last_frame_ind = ind;
 
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
@@ -232,8 +237,11 @@ private:
     std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t> metrics;
 
+    uint16_t last_frame_ind = -1;
+
     void enqueue_for_network_send(fast_pose_type& pose) {
-        frames_topic.put(std::make_shared<compressed_frame>(encode_out_packets[0], encode_out_packets[1], pose));
+        uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        frames_topic.put(std::make_shared<compressed_frame>(encode_out_packets[0], encode_out_packets[1], pose, timestamp));
 
         // av_packet_free(&pkt);
     }

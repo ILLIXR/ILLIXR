@@ -77,9 +77,9 @@ public:
 #endif
             // No imu_raw, return slow_pose
             return fast_pose_type{
-                .pose                  = correct_pose(*slow_pose),
-                .predict_computed_time = _m_clock->now(),
-                .predict_target_time   = future_timestamp,
+                correct_pose(*slow_pose),
+                _m_clock->now(),
+                future_timestamp,
             };
         }
 

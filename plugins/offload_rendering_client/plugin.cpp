@@ -71,6 +71,7 @@ public:
                 layout_transition_start_cmd_bufs[i][eye] = vulkan::create_command_buffer(dp->vk_device, command_pool);
                 VkCommandBufferBeginInfo begin_info{};
                 begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                begin_info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
                 vkBeginCommandBuffer(layout_transition_start_cmd_bufs[i][eye], &begin_info);
                 transition_layout(layout_transition_start_cmd_bufs[i][eye], avvkframes[i][eye].frame,
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -405,6 +406,9 @@ private:
         decode_src_packets[0] = frame->left;
         decode_src_packets[1] = frame->right;
         // log->info("Received frame {}", frame_count);
+        uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        auto diff_ns = timestamp - frame->sent_time;
+        log->info("diff (ms): {}", diff_ns / 1000000.0);
         return frame->pose;
     }
 

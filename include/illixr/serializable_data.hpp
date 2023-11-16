@@ -23,6 +23,7 @@ struct compressed_frame : public switchboard::event {
     AVPacket* left;
     AVPacket* right;
     fast_pose_type pose;
+    uint64_t sent_time;
 
     friend class boost::serialization::access;
 
@@ -76,6 +77,7 @@ struct compressed_frame : public switchboard::event {
         save_packet(ar, left);
         save_packet(ar, right);
         ar << pose;
+        ar << sent_time;
     }
 
     template<class Archive>
@@ -86,16 +88,18 @@ struct compressed_frame : public switchboard::event {
         right = av_packet_alloc();
         load_packet(ar, right);
         ar >> pose;
+        ar >> sent_time;
     }
 
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 
     compressed_frame() = default;
 
-    compressed_frame(AVPacket* left, AVPacket* right, const fast_pose_type& pose)
+    compressed_frame(AVPacket* left, AVPacket* right, const fast_pose_type& pose, uint64_t sent_time)
         : left(left)
         , right(right)
-        , pose(pose) { }
+        , pose(pose)
+        , sent_time(sent_time) { }
 };
 } // namespace ILLIXR
 
