@@ -171,9 +171,12 @@ public:
         this->buffer_pool = buffer_pool_in;
 
         create_descriptor_pool();
-        create_descriptor_sets();
         create_openwarp_pipeline();
         create_distortion_correction_pipeline(render_pass, subpass);
+
+        create_offscreen_image(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width, 
+                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height);
+        create_descriptor_sets();
     }
 
     void partial_destroy() {
@@ -247,8 +250,8 @@ private:
         create_info.usage = VMA_MEMORY_USAGE_AUTO;
         create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
         create_info.priority = 1.0f;
-        
-        VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image_info, &create_info, &offscreen_image, &offscreen_alloc, nullptr));
+
+        VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_image, &offscreen_alloc, nullptr));
 
         VkImageViewCreateInfo view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
         view_info.image = offscreen_image;
@@ -326,7 +329,7 @@ private:
 
         void* ow_mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, ow_staging_alloc, &ow_mapped_data))
-        memcpy(ow_mapped_data, distortion_vertices.data(), sizeof(OpenWarpVertex) * num_openwarp_vertices);
+        memcpy(ow_mapped_data, openwarp_vertices.data(), sizeof(OpenWarpVertex) * num_openwarp_vertices);
         vmaUnmapMemory(vma_allocator, ow_staging_alloc);
 
         VkCommandBuffer ow_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
@@ -418,7 +421,7 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        ow_staging_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
+        ow_staging_buffer_info.size  = sizeof(uint32_t) * num_openwarp_indices;
         ow_staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
         VmaAllocationCreateInfo ow_staging_alloc_info = {};
@@ -440,7 +443,7 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        ow_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
+        ow_buffer_info.size  = sizeof(uint32_t) * num_openwarp_indices;
         ow_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
         VmaAllocationCreateInfo ow_alloc_info = {};
@@ -684,6 +687,12 @@ private:
         deletion_queue.emplace([=]() {
             vkDestroySampler(ds->vk_device, fb_sampler, nullptr);
         });
+
+        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler))
+
+        deletion_queue.emplace([=]() {
+            vkDestroySampler(ds->vk_device, fb_sampler, nullptr);
+        });
     }
 
     void create_descriptor_set_layouts() {
@@ -789,6 +798,9 @@ private:
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
+            std::cout << "Eye: " << eye << std::endl;
+            std::cout << buffer_pool[eye].size() << std::endl;
+
             // OpenWarp descriptor sets
             std::vector<VkDescriptorSetLayout> ow_layout = {ow_descriptor_set_layout};
             VkDescriptorSetAllocateInfo ow_alloc_info {
@@ -820,7 +832,7 @@ private:
             assert(buffer_pool[eye][1] != VK_NULL_HANDLE);
 
             VkDescriptorBufferInfo bufferInfo = {};
-            bufferInfo.buffer                 = dc_uniform_buffer;
+            bufferInfo.buffer                 = ow_matrices_uniform_buffer;
             bufferInfo.offset                 = 0;
             bufferInfo.range                  = sizeof(WarpMatrices);
 
@@ -850,13 +862,11 @@ private:
             owDescriptorWrites[2].descriptorCount = 1;
             owDescriptorWrites[2].pBufferInfo     = &bufferInfo;
 
-
             vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(owDescriptorWrites.size()), owDescriptorWrites.data(),
                                     0, nullptr);
 
 
             // Distortion correction descriptor sets
-
             std::vector<VkDescriptorSetLayout> dc_layout   = {dc_descriptor_set_layout};
             VkDescriptorSetAllocateInfo        dc_alloc_info = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
@@ -1014,7 +1024,6 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &ow_descriptor_set_layout;
 
-        std::cout << "Creating pipeline layout" << std::endl;
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &ow_pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -1034,7 +1043,6 @@ private:
         pipelineInfo.renderPass = openwarp_render_pass;
         pipelineInfo.subpass    = 0;
 
-        std::cout << "Creating graphics pipeline" << std::endl;
         VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &openwarp_pipeline))
 
         vkDestroyShaderModule(device, vert, nullptr);
@@ -1132,7 +1140,6 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &dc_descriptor_set_layout;
 
-        std::cout << "Creating pipeline layout" << std::endl;
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &dc_pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -1152,7 +1159,6 @@ private:
         pipelineInfo.renderPass = render_pass;
         pipelineInfo.subpass    = 0;
 
-        std::cout << "Creating graphics pipeline" << std::endl;
         VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline))
 
         vkDestroyShaderModule(device, vert, nullptr);
@@ -1192,8 +1198,8 @@ private:
     VkCommandBuffer  command_buffer{};
 
     // offscreen image used as an intermediate render target
-    VkImage offscreen_image;
-    VkImageView offscreen_image_view;
+    VkImage offscreen_image{};
+    VkImageView offscreen_image_view{};
     VmaAllocation offscreen_alloc{};
 
     // openwarp mesh
@@ -1202,10 +1208,6 @@ private:
     VkBuffer          ow_matrices_uniform_buffer{};
     VmaAllocation     ow_matrices_uniform_alloc{};
     VmaAllocationInfo ow_matrices_uniform_alloc_info{};
-
-    VkBuffer          ow_params_uniform_buffer{};
-    VmaAllocation     ow_params_uniform_alloc{};
-    VmaAllocationInfo ow_params_uniform_alloc_info{};
     
     VkDescriptorSetLayout                       ow_descriptor_set_layout{};
     std::array<std::vector<VkDescriptorSet>, 2> ow_descriptor_sets;
@@ -1219,7 +1221,7 @@ private:
     VkBuffer ow_index_buffer{};
 
     VkRenderPass openwarp_render_pass;
-    VkPipeline   openwarp_pipeline;
+    VkPipeline   openwarp_pipeline = VK_NULL_HANDLE;
     VkFramebuffer openwarp_fb;
 
     // distortion data
