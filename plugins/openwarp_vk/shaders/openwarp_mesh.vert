@@ -40,10 +40,9 @@ layout (set = 0, binding = 2) uniform Matrices {
     mat4 u_warpVP;
 } warp_matrices;
 
-layout (set = 0, binding = 3) uniform Parameters {
-    float bleedRadius;
-    float edgeTolerance;
-} params;
+// Constant for now
+float bleedRadius = 0.005f;
+float bleedTolarance = 0.0001f;
 
 layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec2 in_uv;
@@ -57,22 +56,22 @@ void main( void )
 
 	float outlier = min(              											
 					  min(														
-							textureLod(depth_texture, in_uv - vec2(params.bleedRadius,0), 0).x, 
-							textureLod(depth_texture, in_uv + vec2(params.bleedRadius,0), 0).x  
+							textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
+							textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
 					  ),														
 					  min(
-							textureLod(depth_texture, in_uv - vec2(0,params.bleedRadius), 0).x, 
-							textureLod(depth_texture, in_uv + vec2(0,params.bleedRadius), 0).x  
+							textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
+							textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
 					  )
 					);
 
-	float diags = min(textureLod(depth_texture, in_uv + sqrt(2) * vec2(params.bleedRadius, params.bleedRadius), 0).x,
-				textureLod(depth_texture, in_uv - sqrt(2) * vec2(params.bleedRadius,params.bleedRadius), 0).x);
+	float diags = min(textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
+				textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
 
 	outlier = min(diags, outlier);
 
 	outlier = outlier * 2.0 - 1.0;
-	if(z - outlier > params.edgeTolerance){
+	if(z - outlier > edgeTolerance){
 		z = outlier;
 	}
 	z = min(0.99, z);
