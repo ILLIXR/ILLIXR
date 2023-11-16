@@ -265,6 +265,19 @@ private:
         view_info.subresourceRange.layerCount = 1;
     
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &offscreen_image_view));
+
+        // Need a framebuffer to render to
+        VkFramebufferCreateInfo framebuffer_info = {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = openwarp_render_pass,
+            .attachmentCount = 1,
+            .pAttachments = &offscreen_image_view,
+            .width = width,
+            .height = height,
+            .layers = 1,
+        };
+
+        VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &openwarp_fb));
     }
 
     void create_vertex_buffers() {
@@ -1207,6 +1220,7 @@ private:
 
     VkRenderPass openwarp_render_pass;
     VkPipeline   openwarp_pipeline;
+    VkFramebuffer openwarp_fb;
 
     // distortion data
     HMD::hmd_info_t hmd_info{};
