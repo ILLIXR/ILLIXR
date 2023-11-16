@@ -42,7 +42,7 @@ layout (set = 0, binding = 2) uniform Matrices {
 
 // Constant for now
 float bleedRadius = 0.005f;
-float bleedTolarance = 0.0001f;
+float edgeTolerance = 0.0001f;
 
 layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec2 in_uv;
