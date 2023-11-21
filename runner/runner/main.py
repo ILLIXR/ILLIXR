@@ -105,7 +105,7 @@ def build_runtime(
 
 def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    data_path = pathify(config["data"], root_dir, root_dir / "test1/", True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
@@ -213,7 +213,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    data_path = pathify(config["data"], root_dir, cache_path, True, True)
+    data_path = pathify(config["data"], root_dir, root_dir / "EuRoc/V2_01/mav0", True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
@@ -237,7 +237,7 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_DATA=str(data_path),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
-        XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado-dev.json")),
+        XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado_vk-dev.json")),
         XRT_TRACING="true",
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],

@@ -10,6 +10,7 @@
 #include "common/threadloop.hpp"
 #include "video_encoder.h"
 #include "vio_input.pb.h"
+#include "ssim_calculator.h"
 
 #include <boost/lockfree/spsc_queue.hpp>
 #include <cstdlib>
@@ -119,6 +120,7 @@ public:
             assert(!latest_imu_time);
             return;
         }
+        last_imu = datum->linear_a;
 
         // Ensure that IMU data is received in the time order
         assert(datum->time > latest_imu_time);
@@ -148,64 +150,112 @@ public:
         switchboard::ptr<const cam_type> cam;
 
         if (_m_cam.size() != 0 && !latest_cam_time) {
-            cam = _m_cam.dequeue();
+            absaggcnt++;
 
-            cv::Mat cam_img0 = (cam->img0).clone();
-            cv::Mat cam_img1 = (cam->img1).clone();
+            // for euroc data, x axis has gravity. for recorded zed camera data, z axis has gravity.   
+            // double abs_lina = std::abs(datum->linear_a.x()-9.8) + std::abs(datum->linear_a.y()) + std::abs(datum->linear_a.z() );
+            double abs_lina = std::abs(datum->linear_a.x()) + std::abs(datum->linear_a.y()) + std::abs(datum->linear_a.z() - 9.8);
+            double abs_lina_diff = std::abs(datum->linear_a.x() - last_imu.x()) + std::abs(datum->linear_a.y() - last_imu.y()) + std::abs(datum->linear_a.z() - - last_imu.z());
+            // double abs_angv = std::abs(datum->angular_v.x()) + std::abs(datum->angular_v.y()) + std::abs(datum->angular_v.z());
+            accl_history[accl_count++ % 6] = abs_lina;
+            std::cout << "abs_lina is " << abs_lina << std::endl;
+            double sum_accl = 0.0;
+            for (int i = 0; i < 6; i++) {
+                sum_accl += accl_history[i];
+                std::cout << "sum_accl is " << sum_accl << std::endl;
+            }
+            
+            // If reaching the threshold, the image has to be sent
+            // if (sum_accl > linacc_thresh) {
+            //     std::cout << " setting future sendnow because metric " << sum_accl << " crossed linacc threshold:  " << linacc_thresh << std::endl; 
+            //     sendnow = true;
+            // }
+            if (abs_lina > linacc_thresh) {
+                std::cout << " setting future sendnow because metric " << abs_lina << " crossed linacc threshold:  " << linacc_thresh << std::endl; 
+                sendnow = true;
+            }
+            if ()
+            // if (std::abs(datum->angular_v.x() + datum->angular_v.y() + datum->angular_v.z()) > ang_thresh) {
+            //     std::cout << " setting future sendnow because crossed ang_thresh threshold "<<std::endl;
+            //     sendnow = true;
+            // }
 
-            // size of img0 before compression
-            double cam_img0_size = cam_img0.total() * cam_img0.elemSize();
+            // double ssim = SSIMCalculator::calculateSSIM(last_cam, img2);
 
-            vio_input_proto::CamData* cam_data = new vio_input_proto::CamData();
-            cam_data->set_timestamp(cam->time.time_since_epoch().count());
-            cam_data->set_rows(cam_img0.rows);
-            cam_data->set_cols(cam_img0.cols);
-            frame_info_csv << frame_id << "," << "1" << "," << cam->time.time_since_epoch().count() << std::endl;
-
-#ifdef USE_COMPRESSION
-            /** WITH COMPRESSION **/
-            uint64_t curr =
-                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            queue.push(curr);
-            std::unique_lock<std::mutex> lock{mutex};
-            encoder->enqueue(cam_img0, cam_img1);
-            cv.wait(lock, [this]() {
-                return img_ready;
-            });
-            img_ready = false;
-
-            sizes.push_back(this->img0.size);
-
-            // calculate average sizes
-            if (sizes.size() > 100) {
-                int32_t sum = 0;
-                for (auto& s : sizes) {
-                    sum += s;
-                }
-                // For debugging, prints out average image size after compression and compression ratio
-                // std::cout << "compression ratio: " << img0_size / (sum / sizes.size()) << " average size after compression "
-                // << sum / sizes.size() << std::endl;
+            // If not reaching the threshold, but has skipped a great amount, also send the image
+            if (aggrcnt_toswtch > time_thresh) {
+                sendnow = true;
+                aggrcnt_toswtch = 0;
+                std::cout << " setting future sendnow because of long time no send" << std::endl;
             }
 
-            cam_data->set_img0_data((void*) this->img0.data, this->img0.size);
-            cam_data->set_img1_data((void*) this->img1.data, this->img1.size);
+            if (sendnow) {
+                cam = _m_cam.dequeue();
 
-            lock.unlock();
-            /** WITH COMPRESSION END **/
-#else
-            /** NO COMPRESSION **/
-            cam_data->set_img0_data((void*) cam_img0.data, cam_img0_size);
-            cam_data->set_img1_data((void*) cam_img1.data, cam_img0_size);
-            /** NO COMPRESSION END **/
-#endif
-            data_buffer->set_allocated_cam_data(cam_data);
-            latest_cam_time = cam->time;
-            if (latest_imu_time <= latest_cam_time) {
-                return;
+                cv::Mat cam_img0 = (cam->img0).clone();
+                cv::Mat cam_img1 = (cam->img1).clone();
+                // last_cam = (cam->img0).clone();
+
+                // size of img0 before compression
+                double cam_img0_size = cam_img0.total() * cam_img0.elemSize();
+
+                vio_input_proto::CamData* cam_data = new vio_input_proto::CamData();
+                cam_data->set_timestamp(cam->time.time_since_epoch().count());
+                cam_data->set_rows(cam_img0.rows);
+                cam_data->set_cols(cam_img0.cols);
+                frame_info_csv << frame_id << "," << "1" << "," << cam->time.time_since_epoch().count() << std::endl;
+
+        #ifdef USE_COMPRESSION
+                /** WITH COMPRESSION **/
+                uint64_t curr =
+                    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                queue.push(curr);
+                std::unique_lock<std::mutex> lock{mutex};
+                encoder->enqueue(cam_img0, cam_img1);
+                cv.wait(lock, [this]() {
+                    return img_ready;
+                });
+                img_ready = false;
+
+                sizes.push_back(this->img0.size);
+
+                // calculate average sizes
+                if (sizes.size() > 100) {
+                    int32_t sum = 0;
+                    for (auto& s : sizes) {
+                        sum += s;
+                    }
+                    // For debugging, prints out average image size after compression and compression ratio
+                    // std::cout << "compression ratio: " << img0_size / (sum / sizes.size()) << " average size after compression "
+                    // << sum / sizes.size() << std::endl;
+                }
+
+                cam_data->set_img0_data((void*) this->img0.data, this->img0.size);
+                cam_data->set_img1_data((void*) this->img1.data, this->img1.size);
+
+                lock.unlock();
+                /** WITH COMPRESSION END **/
+        #else
+                /** NO COMPRESSION **/
+                cam_data->set_img0_data((void*) cam_img0.data, cam_img0_size);
+                cam_data->set_img1_data((void*) cam_img1.data, cam_img0_size);
+                /** NO COMPRESSION END **/
+        #endif
+                data_buffer->set_allocated_cam_data(cam_data);
+                latest_cam_time = cam->time;
+                if (latest_imu_time <= latest_cam_time) {
+                    return;
+                } else {
+                    send_imu_cam_data(latest_cam_time);
+                }
             } else {
-                send_imu_cam_data(latest_cam_time);
+                aggrcnt_toswtch++;
+                dropped_count++;
+                cam = _m_cam.dequeue();
+                std::cout << "aggrcnt_toswtch is " << aggrcnt_toswtch << " and " << dropped_count << " frames dropped out of " << absaggcnt << "!\n";
             }
         }
+        sendnow = false;
     }
 
 private:
@@ -225,6 +275,20 @@ private:
     const string data_path = filesystem::current_path().string() + "/recorded_data";
     std::ofstream pub_to_send_csv;
     std::ofstream frame_info_csv;
+
+    // For frame dropping
+	bool sendnow = false;
+	int dropped_count = 0;
+	int aggrcnt_toswtch = 0;
+	int absaggcnt = 0;
+    double ang_thresh = 2; //1.5;
+    double linacc_thresh = 2;
+  	double time_thresh = 2;
+    // Keep a history of accelerations
+    int accl_count = 0;
+    double accl_history[6] = {0, 0, 0, 0, 0, 0};
+    // cv::Mat last_cam;
+    Eigen::Vector3d last_imu = {0.0, 0.0, 0.0};
 };
 
 PLUGIN_MAIN(offload_writer)

@@ -44,6 +44,8 @@ public:
         }
         raw_csv.open(data_path + "/imu_raw.csv");
         filtered_csv.open(data_path + "/imu_filtered.csv");
+        int_info_csv.open(data_path + "/int_info.csv");
+        int_info_csv << "IMU time," << "#IMU integrated" << std::endl;
 
         const double frequency = 200;
         const double mincutoff = 10;
@@ -73,6 +75,7 @@ private:
     const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
     std::ofstream     raw_csv;
     std::ofstream     filtered_csv;
+    std::ofstream     int_info_csv;
     std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters;
     bool                                                             has_prev = false;
     Eigen::Matrix<double, 3, 1>                                      prev_euler_angles;
@@ -210,6 +213,8 @@ private:
 
         assert(_pim_obj != nullptr && "_pim_obj should not be null");
 
+        // TODO last_imu_offset is 0, t_offset only take effects when it's negative.
+        // However, why would we want to integrate to a past time point rather than the current time point?
         time_point time_begin = input_values->last_cam_integration_time + last_imu_offset;
         time_point time_end   = real_time;
 
@@ -227,6 +232,7 @@ private:
 #ifndef NDEBUG
         std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
 #endif
+        int_info_csv << real_time.time_since_epoch().count() << "," << prop_data.size() << std::endl;
 
         for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
             _pim_obj->integrateMeasurement(prop_data[i], prop_data[i + 1]);

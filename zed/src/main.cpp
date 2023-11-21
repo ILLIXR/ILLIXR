@@ -48,7 +48,7 @@ std::shared_ptr<Camera> start_camera() {
     init_params.camera_resolution      = RESOLUTION::VGA;
     init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
     init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-    init_params.camera_fps             = 30;                                         // gives best user experience
+    init_params.camera_fps             = 15;                                         // gives best user experience
     init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization    = true;
     init_params.depth_minimum_distance = 0.3;
@@ -126,11 +126,12 @@ protected:
         // Retrieve images
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
-        zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
+        // zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
 
         _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()},
                                                   cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
+        std::cout << "Published one camera image\n";
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
