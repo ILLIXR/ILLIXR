@@ -47,7 +47,7 @@ void main()
 
     // Worldspace parameterization grid overlay.
     // For debug + visualization only
-    vec3 worldspace_adjusted = vec3(1,1,1) * 0.02 + worldspace.xyz;
-    vec3 debugGrid = mod(worldspace_adjusted + 0.005*vec3(1,1,1), 0.05) - mod(worldspace_adjusted, 0.05);
-    outColor.rgb -= debugGrid * 2.0 * u_debugOpacity;
+    // vec3 worldspace_adjusted = vec3(1,1,1) * 0.02 + worldspace.xyz;
+    // vec3 debugGrid = mod(worldspace_adjusted + 0.005*vec3(1,1,1), 0.05) - mod(worldspace_adjusted, 0.05);
+    // outColor.rgb -= debugGrid * 2.0 * u_debugOpacity;
 }

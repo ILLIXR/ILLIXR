@@ -14,6 +14,7 @@
 #include "illixr/vk/vulkan_utils.hpp"
 #include "utils/hmd.hpp"
 
+#include <algorithm>
 #include <future>
 #include <iostream>
 #include <mutex>
@@ -90,16 +91,20 @@ struct OpenWarpVertex {
         attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
         attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
         attribute_descriptions[0].offset =
-            offsetof(DistortionCorrectionVertex, pos); // number of bytes since the start of the per-vertex data to read from
+            offsetof(OpenWarpVertex, pos); // number of bytes since the start of the per-vertex data to read from
 
         // uv
         attribute_descriptions[1].binding  = 0;
         attribute_descriptions[1].location = 1;
         attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[1].offset   = offsetof(DistortionCorrectionVertex, uv0);
+        attribute_descriptions[1].offset   = offsetof(OpenWarpVertex, uv);
 
         return attribute_descriptions;
     }
+};
+
+struct DistortionMatrix {
+    glm::mat4 transform;
 };
 
 struct WarpMatrices {
@@ -148,7 +153,7 @@ public:
         create_index_buffers();
 
         create_descriptor_set_layouts();
-        create_uniform_buffer();
+        create_uniform_buffers();
         create_texture_sampler();
     }
 
@@ -172,6 +177,7 @@ public:
 
         create_descriptor_pool();
         create_openwarp_pipeline();
+        distortion_correction_render_pass = render_pass;
         create_distortion_correction_pipeline(render_pass, subpass);
 
         create_offscreen_image(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width, 
@@ -200,24 +206,77 @@ public:
         Eigen::Matrix4f invView = viewMatrix.inverse();
         Eigen::Matrix4f warpVP = basicProjection * invView;
 
-        auto* ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
-        memcpy(&ubo->render_inv_projection, invProjection.data(), sizeof(glm::mat4));
-        memcpy(&ubo->render_inv_view, invView.data(), sizeof(glm::mat4));
-        memcpy(&ubo->warp_view_projection, warpVP.data(), sizeof(glm::mat4));
+        auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
+        memcpy(&ow_ubo->render_inv_projection, invProjection.data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->render_inv_view, invView.data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(glm::mat4));
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
-        // First perform openwarp on a mesh
-        // to-do: Monado will begin the render pass; how to workaround?
+        // VkDeviceSize offsets = 0;
+        // VkClearValue clear_color;
+        // clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
 
-        // to-do: need some synchronization here
+        // // Temporarily running openwarp directly without distortion correction
+        // VkRenderPassBeginInfo ow_render_pass_info{};
+        // ow_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        // ow_render_pass_info.renderPass = distortion_correction_render_pass;
+        // // Offset the render area according to the left or right eye
+        // ow_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        // ow_render_pass_info.renderArea.offset.y = 0;
+        // ow_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        // ow_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
+        // ow_render_pass_info.framebuffer = framebuffer;
+        // ow_render_pass_info.clearValueCount = 1;
+        // ow_render_pass_info.pClearValues = &clear_color;
 
-        // Then perform distortion correction
+        // vkCmdBeginRenderPass(commandBuffer, &ow_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+
+        // // Also need to set the viewport and scissor properly
+        // VkViewport viewport{};
+        // viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+	    // viewport.y = 0;
+	    // viewport.width = static_cast<uint32_t>(swapchain_width / 2);
+	    // viewport.height = static_cast<uint32_t>(swapchain_height);
+	    // viewport.minDepth = 0.0f;
+	    // viewport.maxDepth = 1.0f;
+
+	    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+        // VkRect2D scissor{};
+        // scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        // scissor.offset.y = 0;
+        // scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        // scissor.extent.height = static_cast<uint32_t>(swapchain_height);
+	    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+        // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);
+        // vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ow_vertex_buffer, &offsets);
+        // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ow_pipeline_layout, 0, 1,
+        //                         &ow_descriptor_sets[!left][buffer_ind], 0, nullptr);
+        // vkCmdDrawIndexed(commandBuffer, num_openwarp_indices, 1, 0, 0, 0);
+        
+        // Then perform distortion correction to the framebuffer expected by Monado
+        // VkRenderPassBeginInfo dc_render_pass_info{};
+
+        // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        // vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, &offsets);
+        // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, dc_pipeline_layout, 0, 1,
+        //                         &dc_descriptor_sets[!left][buffer_ind], 0, nullptr);
+        // vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        // vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, offsets);
+        // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
+        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
+        //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
+        //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
+        //     eye, 0);
+        // }
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, dc_pipeline_layout, 0, 1,
                                 &dc_descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
@@ -574,6 +633,14 @@ private:
         const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices;
         distortion_vertices.resize(num_elems_pos_uv);
 
+        // Construct perspective projection matrix
+        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+                                  rendering_params::far_z);
+        invProjection = basicProjection.inverse();
+
+        Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basicProjection);
+
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             for (int y = 0; y <= hmd_info.eyeTilesHigh; y++) {
                 for (int x = 0; x <= hmd_info.eyeTilesWide; x++) {
@@ -596,21 +663,29 @@ private:
                     distortion_vertices[eye * num_distortion_vertices + index].pos.z = 0.0f;
 
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
-                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = distort_coords[eye][0][index].x;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = distort_coords[eye][0][index].y;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = distort_coords[eye][1][index].x;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = distort_coords[eye][1][index].y;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = distort_coords[eye][2][index].x;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = distort_coords[eye][2][index].y;
+                    Eigen::Vector4f vertex_uv0(distort_coords[eye][0][index].x, distort_coords[eye][0][index].y, -1, 1);
+                    Eigen::Vector4f vertex_uv1(distort_coords[eye][1][index].x, distort_coords[eye][1][index].y, -1, 1);
+                    Eigen::Vector4f vertex_uv2(distort_coords[eye][2][index].x, distort_coords[eye][2][index].y, -1, 1);    
+
+                    Eigen::Vector4f uv0 = distortion_matrix * vertex_uv0;
+                    Eigen::Vector4f uv1 = distortion_matrix * vertex_uv1;
+                    Eigen::Vector4f uv2 = distortion_matrix * vertex_uv2;
+
+                    float factor0 = 1.0f / std::max(uv0.z(), 0.00001f);
+                    float factor1 = 1.0f / std::max(uv1.z(), 0.00001f);
+                    float factor2 = 1.0f / std::max(uv2.z(), 0.00001f);
+
+                    std::cout << "Factors: " << factor0 << " " << factor1 << " " << factor2 << std::endl;
+
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = uv0.x() * factor0;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = uv0.y() * factor0;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = uv1.x() * factor1;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = uv1.y() * factor1;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = uv2.x() * factor2;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = uv2.y() * factor2;
                 }
             }
         }
-
-        // Construct perspective projection matrix
-        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
-        invProjection = basicProjection.inverse();
     }
 
     void generate_openwarp_mesh(size_t width, size_t height) {
@@ -737,7 +812,6 @@ private:
         offscreenImageLayoutBinding.descriptorCount              = 1;
         offscreenImageLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; // shader stages that can access the descriptor
 
-
         std::array<VkDescriptorSetLayoutBinding, 1> dc_bindings   = {offscreenImageLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             dc_layout_info = {};
         dc_layout_info.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -750,7 +824,7 @@ private:
         });
     }
 
-    void create_uniform_buffer() {
+    void create_uniform_buffers() {
         // Matrix data
         VkBufferCreateInfo matrixBufferInfo = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -899,7 +973,7 @@ private:
             dcDescriptorWrites[0].dstArrayElement = 0;
             dcDescriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             dcDescriptorWrites[0].descriptorCount = 1;
-            dcDescriptorWrites[0].pImageInfo     = &offscreenImageInfo;
+            dcDescriptorWrites[0].pImageInfo      = &imageInfo;
 
             vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(dcDescriptorWrites.size()), dcDescriptorWrites.data(),
                                     0, nullptr);
@@ -964,8 +1038,8 @@ private:
 
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertStageInfo, fragStageInfo};
 
-        auto bindingDescription    = DistortionCorrectionVertex::get_binding_description();
-        auto attributeDescriptions = DistortionCorrectionVertex::get_attribute_descriptions();
+        auto bindingDescription    = OpenWarpVertex::get_binding_description();
+        auto attributeDescriptions = OpenWarpVertex::get_attribute_descriptions();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
         vertexInputInfo.sType                                = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -1178,6 +1252,18 @@ private:
         return cameraMatrix;
     }
 
+    static Eigen::Matrix4f calculate_distortion_transform(const Eigen::Matrix4f& projection_matrix) {
+        // Eigen stores matrices internally in column-major order.
+        // However, the (i,j) accessors are row-major (i.e, the first argument
+        // is which row, and the second argument is which column.)
+        Eigen::Matrix4f texCoordProjection;
+        texCoordProjection << 0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
+            0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f;
+
+        return texCoordProjection;
+    }
+
     const phonebook* const                    pb;
     const std::shared_ptr<switchboard>        sb;
     const std::shared_ptr<pose_prediction>    pp;
@@ -1194,6 +1280,8 @@ private:
 
     // Note that each frame occupies 2 elements in the buffer pool:
     // i for the image itself, and i + 1 for the depth image.
+    size_t                                  swapchain_width;
+    size_t                                  swapchain_height;
     std::array<std::vector<VkImageView>, 2> buffer_pool;
     VkSampler                               fb_sampler{};
 
@@ -1246,6 +1334,7 @@ private:
     std::vector<DistortionCorrectionVertex> distortion_vertices;
     std::vector<uint32_t>                   distortion_indices;
 
+    VkRenderPass distortion_correction_render_pass;
     VkBuffer dc_vertex_buffer{};
     VkBuffer dc_index_buffer{};
 
