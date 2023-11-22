@@ -202,14 +202,15 @@ public:
     void update_uniforms(const pose_type& render_pose) override {
         num_update_uniforms_calls++;
 
+        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose);
+
         const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
-        Eigen::Matrix4f viewMatrix = create_camera_matrix(latest_pose);
-        Eigen::Matrix4f invView = viewMatrix.inverse();
-        Eigen::Matrix4f warpVP = basicProjection * invView;
+        Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose);
+        Eigen::Matrix4f warpVP = basicProjection * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
 
         auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
         memcpy(&ow_ubo->render_inv_projection, invProjection.data(), sizeof(glm::mat4));
-        memcpy(&ow_ubo->render_inv_view, invView.data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->render_inv_view, renderedCameraMatrix.data(), sizeof(glm::mat4));
         memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(glm::mat4));
     }
 

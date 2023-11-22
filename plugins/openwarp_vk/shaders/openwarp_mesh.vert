@@ -52,40 +52,38 @@ layout (location = 1) out vec2 warpUv;
 
 void main( void )
 {
-	// float z = textureLod(depth_texture, in_uv, 0.0).x * 2.0 - 1.0;
+	// to-do: some applications reverse the depth, and we should handle both cases.
+	float z = (1 - textureLod(depth_texture, in_uv, 0.0).x) * 2.0 - 1.0;
 
-	// float outlier = min(              											
-	// 				  min(														
-	// 						textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
-	// 						textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
-	// 				  ),														
-	// 				  min(
-	// 						textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
-	// 						textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
-	// 				  )
-	// 				);
+	float outlier = min(              											
+					  min(														
+							1 - textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
+							1 - textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
+					  ),														
+					  min(
+							1 - textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
+							1 - textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
+					  )
+					);
 
-	// float diags = min(textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
-	// 			textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
+	float diags = min(1 - textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
+				1 - textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
 
-	// outlier = min(diags, outlier);
+	outlier = min(diags, outlier);
 
-	// outlier = outlier * 2.0 - 1.0;
-	// if(z - outlier > edgeTolerance){
-	// 	z = outlier;
-	// }
-	// z = min(0.99, z);
+	outlier = outlier * 2.0 - 1.0;
+	if(z - outlier > edgeTolerance){
+		z = outlier;
+	}
+	z = min(0.99, z);
 
-	float z = 1.0;
 	vec4 clipSpacePosition = vec4(in_uv * 2.0 - 1.0, z, 1.0);
-	// vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
-	// vec4 frag_worldspace = (warp_matrices.u_renderInverseV * frag_viewspace);
-	// vec4 result = warp_matrices.u_warpVP * frag_worldspace;
+	vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
+	vec4 frag_worldspace = (warp_matrices.u_renderInverseV * frag_viewspace);
+	vec4 result = warp_matrices.u_warpVP * frag_worldspace;
 
-	// result /= abs(result.w);
-	// result.z = 0;
-	gl_Position = clipSpacePosition;
-	// worldspace = frag_worldspace;
-	worldspace = vec4(1.0f);
+	result /= abs(result.w);
+	gl_Position = result;
+	worldspace = frag_worldspace;
 	warpUv = in_uv;
 }
