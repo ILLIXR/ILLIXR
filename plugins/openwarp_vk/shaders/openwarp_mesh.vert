@@ -77,7 +77,7 @@ void main( void )
 	// z = min(0.99, z);
 
 	float z = 1.0;
-	vec4 clipSpacePosition = vec4(in_uv * 2.0, z, 1.0);
+	vec4 clipSpacePosition = vec4(in_uv * 2.0 - 1.0, z, 1.0);
 	// vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
 	// vec4 frag_worldspace = (warp_matrices.u_renderInverseV * frag_viewspace);
 	// vec4 result = warp_matrices.u_warpVP * frag_worldspace;
