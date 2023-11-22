@@ -43,7 +43,8 @@ layout (location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor.rgba = texture(image_texture, warpUv);
+    outColor = texture(image_texture, warpUv);
+    outColor = vec4(255.0f);
 
     // Worldspace parameterization grid overlay.
     // For debug + visualization only

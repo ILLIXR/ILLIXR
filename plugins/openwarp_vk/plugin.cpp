@@ -182,7 +182,7 @@ public:
         distortion_correction_render_pass = render_pass;
         create_distortion_correction_pipeline(render_pass, subpass);
 
-        create_offscreen_image(swapchain_width, swapchain_height);
+        create_offscreen_images();
         create_descriptor_sets();
     }
 
@@ -220,67 +220,81 @@ public:
         VkClearValue clear_color;
         clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
 
-        // // Temporarily running openwarp directly without distortion correction
+        // First render OpenWarp offscreen for a distortion correction pass later
         VkRenderPassBeginInfo ow_render_pass_info{};
         ow_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        ow_render_pass_info.renderPass = distortion_correction_render_pass;
-        // Offset the render area according to the left or right eye
-        ow_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        ow_render_pass_info.renderPass = openwarp_render_pass;
+        ow_render_pass_info.renderArea.offset.x = 0;
         ow_render_pass_info.renderArea.offset.y = 0;
         ow_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
         ow_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
-        ow_render_pass_info.framebuffer = framebuffer;
+        ow_render_pass_info.framebuffer = offscreen_framebuffers[left ? 0 : 1];
         ow_render_pass_info.clearValueCount = 1;
         ow_render_pass_info.pClearValues = &clear_color;
 
+        VkViewport ow_viewport{};
+        ow_viewport.x = 0;
+	    ow_viewport.y = 0;
+	    ow_viewport.width = static_cast<uint32_t>(swapchain_width / 2);
+	    ow_viewport.height = static_cast<uint32_t>(swapchain_height);
+	    ow_viewport.minDepth = 0.0f;
+	    ow_viewport.maxDepth = 1.0f;
+
+        VkRect2D ow_scissor{};
+        ow_scissor.offset.x = 0;
+        ow_scissor.offset.y = 0; 
+        ow_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        ow_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
+
         vkCmdBeginRenderPass(commandBuffer, &ow_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+	    vkCmdSetViewport(commandBuffer, 0, 1, &ow_viewport);
+	    vkCmdSetScissor(commandBuffer, 0, 1, &ow_scissor);
 
-        // Also need to set the viewport and scissor properly
-        VkViewport viewport{};
-        viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-	    viewport.y = 0;
-	    viewport.width = static_cast<uint32_t>(swapchain_width / 2);
-	    viewport.height = static_cast<uint32_t>(swapchain_height);
-	    viewport.minDepth = 0.0f;
-	    viewport.maxDepth = 1.0f;
-
-	    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-        VkRect2D scissor{};
-        scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        scissor.offset.y = 0; 
-        scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
-        scissor.extent.height = static_cast<uint32_t>(swapchain_height);
-	    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-        // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);
-        // vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ow_vertex_buffer, &offsets);
-        // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ow_pipeline_layout, 0, 1,
-        //                         &ow_descriptor_sets[!left][buffer_ind], 0, nullptr);
-        // vkCmdDrawIndexed(commandBuffer, num_openwarp_indices, 1, 0, 0, 0);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ow_vertex_buffer, &offsets);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ow_pipeline_layout, 0, 1,
+                                &ow_descriptor_sets[!left][buffer_ind], 0, nullptr);
+        vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(commandBuffer, num_openwarp_indices, 1, 0, 0, 0);
+        vkCmdEndRenderPass(commandBuffer);
         
         // Then perform distortion correction to the framebuffer expected by Monado
-        // VkRenderPassBeginInfo dc_render_pass_info{};
+        VkRenderPassBeginInfo dc_render_pass_info{};
+        dc_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        dc_render_pass_info.renderPass = distortion_correction_render_pass;
+        dc_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        dc_render_pass_info.renderArea.offset.y = 0;
+        dc_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        dc_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
+        dc_render_pass_info.framebuffer = framebuffer;
+        dc_render_pass_info.clearValueCount = 1;
+        dc_render_pass_info.pClearValues = &clear_color;
 
-        // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        // vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, &offsets);
-        // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, dc_pipeline_layout, 0, 1,
-        //                         &dc_descriptor_sets[!left][buffer_ind], 0, nullptr);
-        // vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        // vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+        VkViewport dc_viewport{};
+        dc_viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+	    dc_viewport.y = 0;
+	    dc_viewport.width = static_cast<uint32_t>(swapchain_width / 2);
+	    dc_viewport.height = static_cast<uint32_t>(swapchain_height);
+	    dc_viewport.minDepth = 0.0f;
+	    dc_viewport.maxDepth = 1.0f;
+
+        VkRect2D dc_scissor{};
+        dc_scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        dc_scissor.offset.y = 0; 
+        dc_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        dc_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
+
+        vkCmdBeginRenderPass(commandBuffer, &dc_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdSetViewport(commandBuffer, 0, 1, &dc_viewport);
+	    vkCmdSetScissor(commandBuffer, 0, 1, &dc_scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, &offsets);
-        // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
-        //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
-        //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
-        //     eye, 0);
-        // }
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, dc_pipeline_layout, 0, 1,
                                 &dc_descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+        vkCmdEndRenderPass(commandBuffer);
     }
 
     void destroy() override {
@@ -293,55 +307,57 @@ public:
     }
 
 private:
-    void create_offscreen_image(size_t width, size_t height) {
-        VkImageCreateInfo image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
-        image_info.imageType = VK_IMAGE_TYPE_2D;
-        image_info.extent.width = width;
-        image_info.extent.height = height;
-        image_info.extent.depth = 1;
-        image_info.mipLevels = 1;
-        image_info.arrayLayers = 1;
-        image_info.format = VK_FORMAT_R8G8B8A8_UNORM;
-        image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-        image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        image_info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-        image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+    void create_offscreen_images() {
+        for (int eye = 0; eye < 2; eye++) {
+            VkImageCreateInfo image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+            image_info.imageType = VK_IMAGE_TYPE_2D;
+            image_info.extent.width = swapchain_width / 2;
+            image_info.extent.height = swapchain_height;
+            image_info.extent.depth = 1;
+            image_info.mipLevels = 1;
+            image_info.arrayLayers = 1;
+            image_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+            image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+            image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            image_info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+            image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+            
+            VmaAllocationCreateInfo create_info = {};
+            create_info.usage = VMA_MEMORY_USAGE_AUTO;
+            create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+            create_info.priority = 1.0f;
+
+            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_images[eye], &offscreen_allocs[eye], nullptr));
+
+            VkImageViewCreateInfo view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+            view_info.image = offscreen_images[eye];
+            view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+            view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            view_info.subresourceRange.baseMipLevel = 0;
+            view_info.subresourceRange.levelCount = 1;
+            view_info.subresourceRange.baseArrayLayer = 0;
+            view_info.subresourceRange.layerCount = 1;
         
-        VmaAllocationCreateInfo create_info = {};
-        create_info.usage = VMA_MEMORY_USAGE_AUTO;
-        create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
-        create_info.priority = 1.0f;
+            VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &offscreen_image_views[eye]));
 
-        VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_image, &offscreen_alloc, nullptr));
+            // Need a framebuffer to render to
+            VkFramebufferCreateInfo framebuffer_info = {
+                .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                .renderPass = openwarp_render_pass,
+                .attachmentCount = 1,
+                .pAttachments = &offscreen_image_views[eye],
+                .width = swapchain_width / 2,
+                .height = swapchain_height,
+                .layers = 1,
+            };
 
-        VkImageViewCreateInfo view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-        view_info.image = offscreen_image;
-        view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
-        view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        view_info.subresourceRange.baseMipLevel = 0;
-        view_info.subresourceRange.levelCount = 1;
-        view_info.subresourceRange.baseArrayLayer = 0;
-        view_info.subresourceRange.layerCount = 1;
-    
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &offscreen_image_view));
-
-        // Need a framebuffer to render to
-        VkFramebufferCreateInfo framebuffer_info = {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = openwarp_render_pass,
-            .attachmentCount = 1,
-            .pAttachments = &offscreen_image_view,
-            .width = width,
-            .height = height,
-            .layers = 1,
-        };
-
-        VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &openwarp_fb));
+            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]));
+        }
     }
 
     void create_vertex_buffers() {
@@ -675,8 +691,6 @@ private:
                     float factor1 = 1.0f / std::max(uv1.z(), 0.00001f);
                     float factor2 = 1.0f / std::max(uv2.z(), 0.00001f);
 
-                    std::cout << "Factors: " << factor0 << " " << factor1 << " " << factor2 << std::endl;
-
                     distortion_vertices[eye * num_distortion_vertices + index].uv0.x = uv0.x() * factor0;
                     distortion_vertices[eye * num_distortion_vertices + index].uv0.y = uv0.y() * factor0;
                     distortion_vertices[eye * num_distortion_vertices + index].uv1.x = uv1.x() * factor1;
@@ -719,8 +733,8 @@ private:
             for (size_t x = 0; x < width + 1; x++) {
                 size_t index = y * (width + 1) + x;
 
-                openwarp_vertices[index].pos.x = ((float) x / width);
-                openwarp_vertices[index].pos.y = (((height - (float) y) / height));
+                openwarp_vertices[index].uv.x = ((float) x / width);
+                openwarp_vertices[index].uv.y = (((height - (float) y) / height));
 
                 if (x == 0) {
                     openwarp_vertices[index].uv.x = -0.5f;
@@ -962,7 +976,7 @@ private:
 
             VkDescriptorImageInfo offscreenImageInfo = {};
             offscreenImageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            offscreenImageInfo.imageView             = offscreen_image_view;
+            offscreenImageInfo.imageView             = offscreen_image_views[eye];
             offscreenImageInfo.sampler               = fb_sampler;
 
             std::array<VkWriteDescriptorSet, 1> dcDescriptorWrites = {};
@@ -973,7 +987,7 @@ private:
             dcDescriptorWrites[0].dstArrayElement = 0;
             dcDescriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             dcDescriptorWrites[0].descriptorCount = 1;
-            dcDescriptorWrites[0].pImageInfo      = &imageInfo;
+            dcDescriptorWrites[0].pImageInfo      = &offscreenImageInfo;
 
             vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(dcDescriptorWrites.size()), dcDescriptorWrites.data(),
                                     0, nullptr);
@@ -985,7 +999,7 @@ private:
         VkAttachmentDescription color_attachment{};
         color_attachment.format = VK_FORMAT_R8G8B8A8_UNORM; // this should match the offscreen image
         color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
         color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -1290,9 +1304,10 @@ private:
     VkCommandBuffer  command_buffer{};
 
     // offscreen image used as an intermediate render target
-    VkImage offscreen_image{};
-    VkImageView offscreen_image_view{};
-    VmaAllocation offscreen_alloc{};
+    std::array<VkImage, 2> offscreen_images{};
+    std::array<VkImageView, 2> offscreen_image_views{};
+    std::array<VmaAllocation, 2> offscreen_allocs{};
+    std::array<VkFramebuffer, 2> offscreen_framebuffers{};
 
     // openwarp mesh
     VkPipelineLayout  ow_pipeline_layout{};
@@ -1314,7 +1329,6 @@ private:
 
     VkRenderPass openwarp_render_pass;
     VkPipeline   openwarp_pipeline = VK_NULL_HANDLE;
-    VkFramebuffer openwarp_fb;
 
     // distortion data
     HMD::hmd_info_t hmd_info{};
