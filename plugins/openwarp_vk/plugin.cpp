@@ -212,45 +212,42 @@ public:
         memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(glm::mat4));
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkRect2D span) override {
         num_record_calls++;
 
-        // VkDeviceSize offsets = 0;
-        // VkClearValue clear_color;
-        // clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+        VkDeviceSize offsets = 0;
+        VkClearValue clear_color;
+        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        std::cout << span.offset.x << " " << span.offset.y << " " << span.extent.width << " " << span.extent.height << std::endl;
 
         // // Temporarily running openwarp directly without distortion correction
-        // VkRenderPassBeginInfo ow_render_pass_info{};
-        // ow_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        // ow_render_pass_info.renderPass = distortion_correction_render_pass;
-        // // Offset the render area according to the left or right eye
-        // ow_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        // ow_render_pass_info.renderArea.offset.y = 0;
-        // ow_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
-        // ow_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
-        // ow_render_pass_info.framebuffer = framebuffer;
-        // ow_render_pass_info.clearValueCount = 1;
-        // ow_render_pass_info.pClearValues = &clear_color;
+        VkRenderPassBeginInfo ow_render_pass_info{};
+        ow_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        ow_render_pass_info.renderPass = distortion_correction_render_pass;
+        // Offset the render area according to the left or right eye
+        ow_render_pass_info.renderArea.offset = span.offset;
+        ow_render_pass_info.renderArea.extent.width = span.extent.width;
+        ow_render_pass_info.renderArea.extent.height = span.extent.height;
+        ow_render_pass_info.framebuffer = framebuffer;
+        ow_render_pass_info.clearValueCount = 1;
+        ow_render_pass_info.pClearValues = &clear_color;
 
-        // vkCmdBeginRenderPass(commandBuffer, &ow_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(commandBuffer, &ow_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
-        // // Also need to set the viewport and scissor properly
-        // VkViewport viewport{};
-        // viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-	    // viewport.y = 0;
-	    // viewport.width = static_cast<uint32_t>(swapchain_width / 2);
-	    // viewport.height = static_cast<uint32_t>(swapchain_height);
-	    // viewport.minDepth = 0.0f;
-	    // viewport.maxDepth = 1.0f;
+        // Also need to set the viewport and scissor properly
+        VkViewport viewport{};
+        viewport.x = span.offset.x;
+	    viewport.y = span.offset.y;
+	    viewport.width = span.extent.width;
+	    viewport.height = span.extent.height;
+	    viewport.minDepth = 0.0f;
+	    viewport.maxDepth = 1.0f;
 
-	    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-        // VkRect2D scissor{};
-        // scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        // scissor.offset.y = 0;
-        // scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
-        // scissor.extent.height = static_cast<uint32_t>(swapchain_height);
-	    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+        VkRect2D scissor = span;
+	    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);
         // vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ow_vertex_buffer, &offsets);
@@ -269,8 +266,7 @@ public:
         // vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, &offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
         //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
         //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
@@ -651,7 +647,7 @@ private:
                     // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
                     // hmd_info.eyeTilesWide));
                     distortion_vertices[eye * num_distortion_vertices + index].pos.x =
-                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide)));
+                        (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide)));
 
                     // flip the y coordinates for Vulkan texture
                     distortion_vertices[eye * num_distortion_vertices + index].pos.y =
