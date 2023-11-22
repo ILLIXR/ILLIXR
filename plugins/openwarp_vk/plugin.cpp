@@ -182,8 +182,7 @@ public:
         distortion_correction_render_pass = render_pass;
         create_distortion_correction_pipeline(render_pass, subpass);
 
-        create_offscreen_image(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width, 
-                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height);
+        create_offscreen_image(swapchain_width, swapchain_height);
         create_descriptor_sets();
     }
 
