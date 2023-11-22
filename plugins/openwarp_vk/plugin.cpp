@@ -134,8 +134,10 @@ public:
             });
         }
 
-        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width,
-                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height,
+        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
+
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
                                display_params::width_meters, display_params::height_meters, display_params::lens_separation,
                                display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 
@@ -212,23 +214,22 @@ public:
         memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(glm::mat4));
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkRect2D span) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
         VkDeviceSize offsets = 0;
         VkClearValue clear_color;
         clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
 
-        std::cout << span.offset.x << " " << span.offset.y << " " << span.extent.width << " " << span.extent.height << std::endl;
-
         // // Temporarily running openwarp directly without distortion correction
         VkRenderPassBeginInfo ow_render_pass_info{};
         ow_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         ow_render_pass_info.renderPass = distortion_correction_render_pass;
         // Offset the render area according to the left or right eye
-        ow_render_pass_info.renderArea.offset = span.offset;
-        ow_render_pass_info.renderArea.extent.width = span.extent.width;
-        ow_render_pass_info.renderArea.extent.height = span.extent.height;
+        ow_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        ow_render_pass_info.renderArea.offset.y = 0;
+        ow_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        ow_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
         ow_render_pass_info.framebuffer = framebuffer;
         ow_render_pass_info.clearValueCount = 1;
         ow_render_pass_info.pClearValues = &clear_color;
@@ -237,16 +238,20 @@ public:
 
         // Also need to set the viewport and scissor properly
         VkViewport viewport{};
-        viewport.x = span.offset.x;
-	    viewport.y = span.offset.y;
-	    viewport.width = span.extent.width;
-	    viewport.height = span.extent.height;
+        viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+	    viewport.y = 0;
+	    viewport.width = static_cast<uint32_t>(swapchain_width / 2);
+	    viewport.height = static_cast<uint32_t>(swapchain_height);
 	    viewport.minDepth = 0.0f;
 	    viewport.maxDepth = 1.0f;
 
 	    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-        VkRect2D scissor = span;
+        VkRect2D scissor{};
+        scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        scissor.offset.y = 0; 
+        scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        scissor.extent.height = static_cast<uint32_t>(swapchain_height);
 	    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);

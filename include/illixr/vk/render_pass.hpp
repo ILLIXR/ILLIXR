@@ -49,7 +49,7 @@ public:
      * @param buffer_ind The index of the buffer to use.
      * @param left Whether to render the left eye or the right eye. True for left eye, false for right eye.
      */
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left, VkRect2D span) = 0;
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) = 0;
 }; // app defines the interface for an application render pass as a service.
 class app : public render_pass {
 public:
