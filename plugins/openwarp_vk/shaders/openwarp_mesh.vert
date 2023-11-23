@@ -52,22 +52,21 @@ layout (location = 1) out vec2 warpUv;
 
 void main( void )
 {
-	// to-do: some applications reverse the depth, and we should handle both cases.
-	float z = (1 - textureLod(depth_texture, in_uv, 0.0).x) * 2.0 - 1.0;
+	float z = textureLod(depth_texture, in_uv, 0.0).x * 2.0 - 1.0;
 
 	float outlier = min(              											
 					  min(														
-							1 - textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
-							1 - textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
+							textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
+							textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
 					  ),														
 					  min(
-							1 - textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
-							1 - textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
+							textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
+							textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
 					  )
 					);
 
-	float diags = min(1 - textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
-				1 - textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
+	float diags = min(textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
+					  textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
 
 	outlier = min(diags, outlier);
 
