@@ -11,6 +11,25 @@
 
 using namespace ILLIXR;
 
+#define ViconRoom1Easy      1403715273262142976
+#define ViconRoom1Medium    1403715523912143104
+#define ViconRoom1Difficult 1403715886544058112
+#define ViconRoom2Easy      1413393212225760512
+#define ViconRoom2Medium    1413393885975760384
+#define ViconRoom2Hard      1413394881555760384
+#define fast2               2111965
+
+#define dataset_walking     1700613045229490665
+#define dataset_static      1700611471945221229
+#define dataset_bs          1700612128609292316
+
+#define fast2               2111965
+#define slow1               2096955
+#define fast1               2100470
+
+#define still3              2221782
+
+
 class offline_cam : public threadloop {
 public:
     offline_cam(std::string name_, phonebook* pb_)
@@ -18,7 +37,9 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
         , _m_sensor_data{load_data()}
-        , dataset_first_time{_m_sensor_data.cbegin()->first}
+        , _m_sensor_data_it{_m_sensor_data.cbegin()}
+        // , dataset_first_time{_m_sensor_data.cbegin()->first}
+        , dataset_first_time{1700613045229490665}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} { }
@@ -32,52 +53,22 @@ public:
     }
 
     virtual void _p_one_iteration() override {
-        duration time_since_start = _m_rtc->now().time_since_epoch();
-        // duration begin            = time_since_start;
-        ullong lookup_time = std::chrono::nanoseconds{time_since_start}.count() + dataset_first_time;
-        std::map<ullong, sensor_types>::const_iterator nearest_row;
-
-        // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
-        auto after_nearest_row = _m_sensor_data.upper_bound(lookup_time);
-
-        if (after_nearest_row == _m_sensor_data.cend()) {
-#ifndef NDEBUG
-            std::cerr << "Running out of the dataset! "
-                      << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") after last datum " << _m_sensor_data.rbegin()->first << std::endl;
-#endif
-            // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
-            // to be nearest_row to avoiding sleeping at the end.
-            nearest_row       = std::prev(after_nearest_row, 1);
-            after_nearest_row = nearest_row;
-            // We are running out of the dataset and the loop will stop next time.
-            internal_stop();
-        } else if (after_nearest_row == _m_sensor_data.cbegin()) {
-            // Should not happen because lookup_time is bigger than dataset_first_time
-#ifndef NDEBUG
-            std::cerr << "Time " << lookup_time << " (" << _m_rtc->now().time_since_epoch().count() << " + "
-                      << dataset_first_time << ") before first datum " << _m_sensor_data.cbegin()->first << std::endl;
-#endif
-        } else {
-            // Most recent
-            nearest_row = std::prev(after_nearest_row, 1);
+        assert(_m_sensor_data_it != _m_sensor_data.end());
+        time_point real_now(std::chrono::duration<long, std::nano>{_m_sensor_data_it->first - dataset_first_time});
+        // What if real_now is negative? Drop the images
+        if (real_now.time_since_epoch().count() < 0) {
+            ++_m_sensor_data_it;
+            return;
         }
+        const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
-        if (last_ts != nearest_row->first) {
-            last_ts = nearest_row->first;
-
-            auto img0 = nearest_row->second.cam0.load();
-            auto img1 = nearest_row->second.cam1.load();
-
-            time_point expected_real_time_given_dataset_time(
-                std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time});
-            _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>(cam_type{
-                expected_real_time_given_dataset_time,
-                img0,
-                img1,
-            }));
-        }
-        std::this_thread::sleep_for(std::chrono::nanoseconds(after_nearest_row->first - dataset_first_time -
+        _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>(cam_type{
+            real_now,
+            sensor_datum.cam0.load(),
+            sensor_datum.cam1.load()
+        }));
+        ++_m_sensor_data_it;
+        std::this_thread::sleep_for(std::chrono::nanoseconds(_m_sensor_data_it->first - dataset_first_time -
                                                              _m_rtc->now().time_since_epoch().count() - 2));
     }
 
@@ -85,6 +76,7 @@ private:
     const std::shared_ptr<switchboard>             sb;
     switchboard::writer<cam_type>                  _m_cam_publisher;
     const std::map<ullong, sensor_types>           _m_sensor_data;
+    std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
     ullong                                         dataset_first_time;
     ullong                                         last_ts;
     std::shared_ptr<RelativeClock>                 _m_rtc;
