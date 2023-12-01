@@ -35,7 +35,8 @@
       "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
         "glfw3",
-        "OpenCV"
+        "OpenCV",
+        "opengl"
       ]
     },
     {
