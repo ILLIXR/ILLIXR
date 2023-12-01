@@ -50,7 +50,6 @@
       "cmake_flag": "USE_DISPLAY_VK=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -89,7 +88,6 @@
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -255,7 +253,6 @@
         "xcb-randr",
         "xkbcommon",
         "OpenXR",
-        "Vulkan",
         "libusb",
         "SDL2"
       ]
@@ -265,7 +262,6 @@
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -287,7 +283,6 @@
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -1203,43 +1198,6 @@
       }
     },
     {
-      "Vulkan": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "wayland-server": {
         "pkg": {
           "Ubuntu": {
@@ -1460,7 +1418,6 @@
           }
         }
       }
-
     }
   ],
   "profiles": [@PROFILES@]
