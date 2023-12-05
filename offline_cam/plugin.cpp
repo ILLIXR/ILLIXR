@@ -39,7 +39,7 @@ public:
         , _m_sensor_data{load_data()}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         // , dataset_first_time{_m_sensor_data.cbegin()->first}
-        , dataset_first_time{1700613045229490665}
+        , dataset_first_time{2096955}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} { }

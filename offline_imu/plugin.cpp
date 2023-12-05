@@ -7,6 +7,10 @@
 
 using namespace ILLIXR;
 
+#define dataset_walking     1700613045229490665
+#define dataset_static      1700611471945221229
+#define dataset_bs          1700612128609292316
+
 class offline_imu : public ILLIXR::threadloop {
 public:
     offline_imu(std::string name_, phonebook* pb_)
