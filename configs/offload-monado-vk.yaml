@@ -1,8 +1,8 @@
 plugin_groups:
   - plugin_group:
-      - path: offline_imu/
-      - path: offline_cam/
-      # - path: zed/
+      # - path: offline_imu/
+      # - path: offline_cam/
+      - path: zed/
       # - path: rk4_integrator/
       - path: gtsam_integrator/
       # - path: passthrough_integrator/
@@ -36,7 +36,7 @@ action:
   monado:
     path:
       git_repo : https://github.com/ILLIXR/monado_vulkan_integration
-      version  : main
+      version  : 9b828314
 
     config: # For CMake
       XRT_HAVE_LIBUDEV              : ON
