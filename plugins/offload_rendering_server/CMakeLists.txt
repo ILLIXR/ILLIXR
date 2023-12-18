@@ -27,6 +27,9 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
+if(Vulkan_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} Vulkan_ext)
+endif()
 
 target_link_libraries(${PLUGIN_NAME} spdlog::spdlog ${Vulkan_LIBRARIES})
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)

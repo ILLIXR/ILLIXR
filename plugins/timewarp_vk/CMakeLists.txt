@@ -51,6 +51,9 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         )
 
 add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)
+if(Vulkan_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} Vulkan_ext)
+endif()
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 

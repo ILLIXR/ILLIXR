@@ -44,6 +44,9 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/gl_util/lib/tiny_obj_loader.h
         ../../include/illixr/gl_util/lib/stb_image.h
         )
+if(Vulkan_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} Vulkan_ext)
+endif()
 
 add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
