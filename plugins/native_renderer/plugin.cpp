@@ -73,7 +73,9 @@ public:
             create_timewarp_pass();
         }
         create_sync_objects();
-        create_offscreen_framebuffers();
+        if (!src->is_external()) {
+            create_offscreen_framebuffers();
+        }
         create_swapchain_framebuffers();
         src->setup(app_pass, 0, buffer_pool);
         tw->setup(timewarp_pass, 0, buffer_pool, true);
@@ -514,7 +516,7 @@ private:
         };
 
         uint32_t                mem_type_index;
-        VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
+        VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_GPU_ONLY};
         vmaFindMemoryTypeIndexForImageInfo(ds->vma_allocator, &sample_create_info, &alloc_info, &mem_type_index);
 
         offscreen_export_mem_alloc_info.sType       = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
@@ -576,8 +578,8 @@ private:
             VK_IMAGE_LAYOUT_UNDEFINED                                                                // initialLayout
         };
 
-        VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
-        alloc_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+        VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+                                           .usage = VMA_MEMORY_USAGE_GPU_ONLY};
         if (tw->is_external() || src->is_external()) {
             alloc_info.pool = offscreen_pool;
         }

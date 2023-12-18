@@ -248,7 +248,7 @@ static VmaAllocator create_vma_allocator(VkInstance vk_instance, VkPhysicalDevic
     allocatorCreateInfo.device           = vk_device;
     allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorCreateInfo.instance         = vk_instance;
-    allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_0;
+    allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_3;
 
     VmaAllocator allocator;
     VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator))
