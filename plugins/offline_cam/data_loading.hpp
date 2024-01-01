@@ -20,7 +20,7 @@ typedef unsigned long long ullong;
  * Lazy loading has an artificial negative impact on performance which is absent from an online-sensor system.
  * Eager loading deteriorates the startup time and uses more memory.
  */
-//#define LAZY
+// #define LAZY
 
 class lazy_load_image {
 public:

@@ -700,8 +700,8 @@ Result<Instance> InstanceBuilder::build() const {
 #elif defined(__linux__)
         // make sure all three calls to check_add_window_ext, don't allow short circuiting
         bool added_window_exts = check_add_window_ext("VK_KHR_xcb_surface");
-        added_window_exts = check_add_window_ext("VK_KHR_xlib_surface") || added_window_exts;
-        added_window_exts = check_add_window_ext("VK_KHR_wayland_surface") || added_window_exts;
+        added_window_exts      = check_add_window_ext("VK_KHR_xlib_surface") || added_window_exts;
+        added_window_exts      = check_add_window_ext("VK_KHR_wayland_surface") || added_window_exts;
 #elif defined(__APPLE__)
         bool added_window_exts = check_add_window_ext("VK_EXT_metal_surface");
 #endif
