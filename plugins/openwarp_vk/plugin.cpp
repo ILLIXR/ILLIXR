@@ -653,7 +653,7 @@ private:
         // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
                                   display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
+                                  rendering_params::far_z, reverse_z);
         invProjection = basicProjection.inverse();
 
         Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basicProjection);
@@ -1097,7 +1097,10 @@ private:
         // disable depth testing
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
         depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencil.depthTestEnable                       = VK_FALSE;
+        depthStencil.depthTestEnable                       = VK_TRUE;
+        depthStencil.minDepthBounds                        = 0.0f;
+        depthStencil.maxDepthBounds                        = 1.0f;
+        depthStencil.depthCompareOp                        = reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
 
         // use dynamic state instead of a fixed viewport
         std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
@@ -1288,6 +1291,7 @@ private:
 
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
+    bool reverse_z                        = true;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
