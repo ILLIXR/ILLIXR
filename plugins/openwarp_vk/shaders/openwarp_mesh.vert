@@ -50,10 +50,34 @@ layout (location = 1) in vec2 in_uv;
 layout (location = 0) out vec4 worldspace;
 layout (location = 1) out vec2 warpUv;
 
+// Define this macro if the OpenXR application is using reverse depth
+#define REVERSE_Z
+
 void main( void )
 {
-	float z = (textureLod(depth_texture, in_uv, 0.0).x * 2.0 - 1.0);
+	float z = textureLod(depth_texture, in_uv, 0.0).x;
 
+#ifdef REVERSE_Z
+	float outlier = max(              											
+					  max(														
+							textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
+							textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
+					  ),														
+					  max(
+							textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
+							textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
+					  )
+					);
+
+	float diags = max(textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
+					  textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
+
+	outlier = max(diags, outlier);
+	if(outlier - z > edgeTolerance){
+		z = outlier;
+	}
+	z = max(0.01, z);
+#else
 	float outlier = min(              											
 					  min(														
 							textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
@@ -69,14 +93,11 @@ void main( void )
 					  textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
 
 	outlier = min(diags, outlier);
-
-	outlier = outlier * 2.0 - 1.0;
 	if(z - outlier > edgeTolerance){
 		z = outlier;
 	}
-	// to-do: need a parameter to control reverse depth here
-	// z = min(0.99, z);
-	z = max(0.01, z);
+	z = min(0.99, z);
+#endif
 
 	vec4 clipSpacePosition = vec4(in_uv * 2.0 - 1.0, z, 1.0);
 	vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
