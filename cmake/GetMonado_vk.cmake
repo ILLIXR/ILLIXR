@@ -22,6 +22,7 @@ get_external_for_plugin(OpenXR_APP)
 
 ExternalProject_Add(MonadoVK
         SOURCE_DIR ${CMAKE_SOURCE_DIR}/monado_vulkan_integration
+        BUILD_ALWAYS 1
         DOWNLOAD_COMMAND ""
         PREFIX ${CMAKE_BINARY_DIR}/_deps/monado_vk             # the build directory
         DEPENDS ${MONADO_VK_DEPS}                              # dependencies of this module

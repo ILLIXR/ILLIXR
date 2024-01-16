@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk,vkdemo,native_renderer,shared_memory_network_backend
+plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk,vkdemo,native_renderer,tcp_network_backend
 build_flags: -DILLIXR_VULKAN
 visualizers: ""
 vulkan: true

@@ -23,7 +23,7 @@
 
 using namespace ILLIXR;
 
-#define NATIVE_RENDERER_BUFFER_POOL_SIZE 4
+#define NATIVE_RENDERER_BUFFER_POOL_SIZE 3
 
 class native_renderer : public threadloop {
 public:
@@ -78,7 +78,7 @@ public:
         }
         create_swapchain_framebuffers();
         src->setup(app_pass, 0, buffer_pool);
-        tw->setup(timewarp_pass, 0, buffer_pool, true);
+        tw->setup(timewarp_pass, 0, buffer_pool, false);
     }
 
     /**

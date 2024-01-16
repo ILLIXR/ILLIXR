@@ -24,21 +24,40 @@ public:
     offload_rendering_server(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , log{spdlogger(nullptr)}
-        , dp{pb->lookup_impl<vulkan::display_provider>()}
         , sb{pb->lookup_impl<switchboard>()}
         , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))}
         , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {
-        display_provider_ffmpeg = dp;
+
     }
 
     void start() override {
-        ffmpeg_init_device();
-        ffmpeg_init_cuda_device();
         threadloop::start();
     }
 
+    void _p_thread_setup() override {
+        while (dp == nullptr) {
+            try {
+                dp = pb->lookup_impl<vulkan::display_provider>();
+                display_provider_ffmpeg = dp;
+            } catch (const std::exception& e) {
+                log->debug("Display provider not ready yet");
+                // sleep for 1 second
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        }
+        log->info("Obtained display provider");
+        ffmpeg_init_device();
+        ffmpeg_init_cuda_device();
+        ready = true;
+    };
+
+public:
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _buffer_pool,
                bool input_texture_vulkan_coordinates) override {
+        while (!ready) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
         this->buffer_pool = _buffer_pool;
         ffmpeg_init_frame_ctx();
         ffmpeg_init_cuda_frame_ctx();
@@ -238,6 +257,8 @@ private:
     std::map<std::string, uint32_t> metrics;
 
     uint16_t last_frame_ind = -1;
+
+    std::atomic<bool> ready{false};
 
     void enqueue_for_network_send(fast_pose_type& pose) {
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();

@@ -19,7 +19,7 @@ extern "C" {
 }
 
 #define OFFLOAD_RENDERING_FFMPEG_ENCODER_NAME "h264_nvenc"
-#define OFFLOAD_RENDERING_BITRATE             10000000
+#define OFFLOAD_RENDERING_BITRATE             100000000
 
 namespace ILLIXR::vulkan::ffmpeg_utils {
 

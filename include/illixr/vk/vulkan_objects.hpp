@@ -38,6 +38,7 @@ struct buffer_pool {
         for (image_index_t i = 0; i < image_states.size(); i++) {
             if (image_states[i] == FREE) {
                 image_states[i] = SRC_IN_FLIGHT;
+                // std::cout << "Src acquire image " << (int) i << std::endl;
                 return i;
             }
         }
@@ -65,6 +66,8 @@ struct buffer_pool {
         image_states[image_index] = AVAILABLE;
         this->image_data[image_index] = std::move(data);
         latest_decoded_image = image_index;
+
+        // std::cout << "Src release image " << (int) image_index << std::endl;
     }
 
     std::pair<image_index_t, T> post_processing_acquire_image(image_index_t last_image_index = -1) {
@@ -78,6 +81,8 @@ struct buffer_pool {
         assert(latest_decoded_image != -1);
         assert(image_states[latest_decoded_image] == AVAILABLE);
         image_states[latest_decoded_image] = POST_PROCESSING_IN_FLIGHT;
+
+        // std::cout << "Post processing acquire image " << (int) latest_decoded_image << std::endl;
         return {latest_decoded_image, image_data[latest_decoded_image]};
     }
 
@@ -89,6 +94,8 @@ struct buffer_pool {
         } else {
             image_states[image_index] = AVAILABLE;
         }
+
+        // std::cout << "Post processing release image " << (int) image_index << std::endl;
     }
 
     buffer_pool(const std::vector<std::array<vk_image, 2>>& image_pool,
