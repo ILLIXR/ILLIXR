@@ -103,10 +103,13 @@ void main( void )
 	vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
 	vec4 frag_worldspace = (warp_matrices.u_renderInverseV * frag_viewspace);
 	vec4 result = warp_matrices.u_warpVP * frag_worldspace;
-
 	result /= abs(result.w);
+
+	// Comment out the code block above and uncomment the line below to disable warping.
+	// vec4 result = vec4(in_uv * 2.0 - 1.0, 0.01, 1.0);
+
 	gl_Position = result;
-	// gl_Position = clipSpacePosition;
+
 	worldspace = frag_worldspace;
 	warpUv = in_uv;
 }
