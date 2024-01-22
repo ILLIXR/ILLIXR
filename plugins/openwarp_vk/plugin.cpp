@@ -121,9 +121,8 @@ public:
         , pp{pb->lookup_impl<pose_prediction>()}
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
+    // For objects that only need to be created a single time and do not need to change.
     void initialize() {
-        ds = pb->lookup_impl<vulkan::display_provider>();
-
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
@@ -134,25 +133,12 @@ public:
             });
         }
 
-        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
-        swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
-
-        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
-                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
-                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
-
-        generate_openwarp_mesh(512, 512);
-        generate_distortion_data();
-
         command_pool = vulkan::vulkan_utils::create_command_pool(
             ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
-
-        create_vertex_buffers();
-        create_index_buffers();
 
         create_descriptor_set_layouts();
         create_uniform_buffers();
@@ -163,6 +149,15 @@ public:
                bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
+        ds = pb->lookup_impl<vulkan::display_provider>();
+
+        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
+
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
+                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
         if (!initialized) {
             initialize();
@@ -170,6 +165,12 @@ public:
         } else {
             partial_destroy();
         }
+
+        generate_openwarp_mesh(512, 512);
+        generate_distortion_data();
+
+        create_vertex_buffers();
+        create_index_buffers();
 
         if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
             throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
@@ -187,7 +188,17 @@ public:
     }
 
     void partial_destroy() {
-        // to-do: destroy necessary openwarp objects and wait for device idle
+        for (int i = 0; i < offscreen_images.size(); i++) {
+            vkDestroyFramebuffer(ds->vk_device, offscreen_framebuffers[i], nullptr);
+            vkDestroyImageView(ds->vk_device, offscreen_image_views[i], nullptr);
+            vmaDestroyImage(vma_allocator, offscreen_images[i], offscreen_allocs[i]);
+        }
+
+        vkDestroyPipeline(ds->vk_device, openwarp_pipeline, nullptr);
+        openwarp_pipeline = VK_NULL_HANDLE;
+
+        vkDestroyPipelineLayout(ds->vk_device, ow_pipeline_layout, nullptr);
+        ow_pipeline_layout = VK_NULL_HANDLE;
         
         vkDestroyPipeline(ds->vk_device, pipeline, nullptr);
         pipeline = VK_NULL_HANDLE;
