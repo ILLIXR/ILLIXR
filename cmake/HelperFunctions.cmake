@@ -286,17 +286,19 @@ endfunction()
 
 # check for 3rd party dependencies that are not parts of OS repos
 macro(get_external proj)
-    if(NOT ${proj}_EXTERNAL)
+    list(FIND EXTERNAL_LIBRARIES "${proj}" EXTERNAL_INDEX)
+    if(NOT ${proj}_EXTERNAL AND EXTERNAL_INDEX EQUAL -1)
         list(APPEND EXTERNAL_LIBRARIES "${proj}")
         set(${proj}_EXTERNAL No)
         set(${proj}_DEP_STR "")
         include(${CMAKE_SOURCE_DIR}/cmake/Get${proj}.cmake)
-    endif()
+    endif ()
 endmacro()
 
 # check for 3rd party dependencies that are not parts of OS repos, but from included plugins
 macro(get_external_for_plugin proj)
-    if(NOT ${proj}_EXTERNAL)
+    list(FIND EXTERNAL_LIBRARIES "${proj}" EXTERNAL_INDEX)
+    if(NOT ${proj}_EXTERNAL AND EXTERNAL_INDEX EQUAL -1)
         list(APPEND EXTERNAL_LIBRARIES "${proj}")
         set(${proj}_EXTERNAL No PARENT_SCOPE)
         set(${proj}_DEP_STR "" PARENT_SCOPE)

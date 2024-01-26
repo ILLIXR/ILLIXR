@@ -10,9 +10,9 @@
 #include "illixr/vk/vulkan_utils.hpp"
 
 extern "C" {
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
-#include <libswscale/swscale.h>
+#include "libavfilter_illixr/buffersink.h"
+#include "libavfilter_illixr/buffersrc.h"
+#include "libswscale_illixr/swscale.h"
 }
 
 #include "illixr/pose_prediction.hpp"

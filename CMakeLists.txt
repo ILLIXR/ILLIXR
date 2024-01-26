@@ -88,6 +88,19 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(BUILD_PARALLEL_LEVEL "Number of parallel build jobs")
+if(NOT BUILD_PARALLEL_LEVEL)
+    include(ProcessorCount)
+    ProcessorCount(N)
+    if(N GREATER 8)
+        set(BUILD_PARALLEL_LEVEL 4)
+    elseif(N GREATER 4)
+        set(BUILD_PARALLEL_LEVEL 2)
+    else()
+        set(BUILD_PARALLEL_LEVEL 1)
+    endif()
+endif()
+
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")

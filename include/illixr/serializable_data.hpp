@@ -11,11 +11,11 @@
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/export.hpp>
 extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavutil/hwcontext.h>
-#include <libavutil/opt.h>
-#include <libavutil/pixdesc.h>
+#include "libavcodec_illixr/avcodec.h"
+#include "libavformat_illixr/avformat.h"
+#include "libavutil_illixr/hwcontext.h"
+#include "libavutil_illixr/opt.h"
+#include "libavutil_illixr/pixdesc.h"
 }
 
 namespace ILLIXR {
