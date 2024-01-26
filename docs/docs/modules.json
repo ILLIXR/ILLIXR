@@ -135,41 +135,30 @@
         "libfreetype",
         "libfribidi",
         "gnutls",
-        "gmp",
         "libjack",
         "libass",
         "libbluray",
         "libbs2b",
         "libdrm",
+        "libgsm",
         "libiec61883",
         "libmodplug",
+        "libmp3lame",
         "libopenjpeg",
         "libopenmpt",
+        "libopus",
         "libpulse",
         "librsvg",
+        "ladspa",
         "libssh",
         "libv4l2",
-        "libwebp",
-        "libxml2",
-        "libgsm",
-        "ladspa",
-        "libmp3lame",
-        "libxvid",
-        "opencl",
-        "libopencore_amrnb",
-        "libopencore_amrwb",
-        "opengl",
-        "libopus",
-        "libx264",
-        "libx265",
-        "libxcb",
-        "libzimg",
-        "libvidstab",
         "libvorbis",
         "libvpl",
         "libvpx",
-        "libx264",
-        "libx265",
+        "libwebp",
+        "libxml2",
+        "opencl",
+        "opengl",
         "libxcb",
         "libzimg"
       ]
@@ -185,43 +174,32 @@
         "libfreetype",
         "libfribidi",
         "gnutls",
-        "gmp",
         "libjack",
         "libass",
         "libbluray",
         "libbs2b",
         "libdrm",
+        "libgsm",
         "libiec61883",
         "libmodplug",
+        "libmp3lame",
         "libopenjpeg",
         "libopenmpt",
+        "libopus",
         "libpulse",
+        "ladspa",
         "librsvg",
         "libssh",
         "libv4l2",
-        "libwebp",
-        "libxml2",
-        "libgsm",
-        "ladspa",
-        "libmp3lame",
-        "libxvid",
-        "opencl",
-        "libopencore_amrnb",
-        "libopencore_amrwb",
-        "opengl",
-        "libopus",
-        "libx264",
-        "libx265",
-        "libxcb",
-        "libzimg",
-        "libvidstab",
         "libvorbis",
         "libvpl",
         "libvpx",
-        "libx264",
-        "libx265",
+        "libwebp",
         "libxcb",
-        "libzimg"
+        "libxml2",
+        "libzimg",
+        "opencl",
+        "opengl"
       ]
     },
     {
@@ -348,41 +326,30 @@
         "libfreetype",
         "libfribidi",
         "gnutls",
-        "gmp",
         "libjack",
         "libass",
         "libbluray",
         "libbs2b",
         "libdrm",
+        "libgsm",
         "libiec61883",
         "libmodplug",
         "libopenjpeg",
         "libopenmpt",
+        "libopus",
         "libpulse",
         "librsvg",
+        "ladspa",
         "libssh",
         "libv4l2",
-        "libwebp",
-        "libxml2",
-        "libgsm",
-        "ladspa",
-        "libmp3lame",
-        "libxvid",
-        "opencl",
-        "libopencore_amrnb",
-        "libopencore_amrwb",
-        "opengl",
-        "libopus",
-        "libx264",
-        "libx265",
-        "libxcb",
-        "libzimg",
-        "libvidstab",
         "libvorbis",
         "libvpl",
         "libvpx",
-        "libx264",
-        "libx265",
+        "libwebp",
+        "libxml2",
+        "libmp3lame",
+        "opencl",
+        "opengl",
         "libxcb",
         "libzimg"
       ]
@@ -902,43 +869,6 @@
           "CentOS": {
             "9": {
               "pkg": "glslang-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "gmp": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libgmp-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libgmp-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libgmp-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libgmp-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libgmp-dev",
               "postnotes": "",
               "notes": ""
             }
@@ -1576,80 +1506,6 @@
       }
     },
     {
-      "libopencore_amrnb": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libopencore_amrnb-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libopencore_amrnb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libopencore_amrnb-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libopencore_amrnb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libopencore_amrnb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "libopencore_amrwb": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libopencore_amrwb-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libopencore_amrwb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libopencore_amrwb-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libopencore_amrwb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libopencore_amrwb-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "libopenjpeg": {
         "pkg": {
           "Ubuntu": {
@@ -2168,43 +2024,6 @@
       }
     },
     {
-      "libvidstab": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libvidstab-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libvidstab-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libvidstab-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libvidstab-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libvidstab-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "libvorbis": {
         "pkg": {
           "Ubuntu": {
@@ -2390,80 +2209,6 @@
       }
     },
     {
-      "libx264": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libx264-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libx264-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libx264-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libx264-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libx264-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "libx265": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libx265-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libx265-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libx265-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libx265-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libx265-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "libxcb": {
         "pkg": {
           "Ubuntu": {
@@ -2493,43 +2238,6 @@
           "CentOS": {
             "9": {
               "pkg": "libxcb1-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "libxvid": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libxvidcore-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libxvidcore-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "libxvidcore-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "libxvidcore-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "libxvidcore-dev",
               "postnotes": "",
               "notes": ""
             }
