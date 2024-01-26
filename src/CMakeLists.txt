@@ -1,6 +1,6 @@
 if(ILLIXR_VULKAN)
     message("Vulkan enabled")
-    find_package(Vulkan REQUIRED)
+    get_external(Vulkan)
     find_package(glfw3 3.3 REQUIRED)
 
     add_compile_definitions(VK_USE_PLATFORM_XLIB_KHR)
@@ -45,6 +45,9 @@ get_external(Yamlcpp)
 target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VISUALIZERS='${VIS_NAMES}'")
 
 if (ILLIXR_VULKAN)
+    if(Vulkan_DEP_STR)
+        add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
+    endif()
     target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} glfw)
     target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_LIBRARIES})
     target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${LIBDRM_INCLUDE_DIRS})
