@@ -14,8 +14,12 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/phonebook.hpp
         ../../include/illixr/switchboard.hpp
         ../../include/illixr/threadloop.hpp
+        ../../include/illixr/serializable_data.hpp
         ../../include/illixr/serializable_data.cpp
 )
+if(ILLIXR_FFmpeg_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} ${ILLIXR_FFmpeg_DEP_STR})
+endif()
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
