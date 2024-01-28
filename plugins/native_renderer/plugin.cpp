@@ -334,7 +334,7 @@ private:
 
                 vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
                 // Call app service to record the command buffer
-                src->record_command_buffer(app_command_buffer, buffer_index, eye);
+                src->record_command_buffer(app_command_buffer, offscreen_framebuffers[buffer_index][eye], buffer_index, eye);
                 vkCmdEndRenderPass(app_command_buffer);
             }
             VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
@@ -350,44 +350,9 @@ private:
             nullptr                                      // pInheritanceInfo
         };
         VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info)) {
-            assert(timewarp_pass != VK_NULL_HANDLE);
-            VkClearValue          clear_value{.color = {{0.0f, 0.0f, 0.0f, 1.0f}}};
-            VkRenderPassBeginInfo render_pass_info{
-                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,      // sType
-                nullptr,                                       // pNext
-                timewarp_pass,                                 // renderPass
-                swapchain_framebuffers[swapchain_image_index], // framebuffer
-                {
-                    {0, 0},              // offset
-                    ds->swapchain_extent // extent
-                },                       // renderArea
-                1,                       // clearValueCount
-                &clear_value             // pClearValues
-            };
-
-            vkCmdBeginRenderPass(timewarp_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-
             for (auto eye = 0; eye < 2; eye++) {
-                VkViewport viewport{
-                    static_cast<float>(ds->swapchain_extent.width / 2. * eye), // x
-                    0.0f,                                                      // y
-                    static_cast<float>(ds->swapchain_extent.width),            // width
-                    static_cast<float>(ds->swapchain_extent.height),           // height
-                    0.0f,                                                      // minDepth
-                    1.0f                                                       // maxDepth
-                };
-                vkCmdSetViewport(timewarp_command_buffer, 0, 1, &viewport);
-
-                VkRect2D scissor{
-                    {0, 0},              // offset
-                    ds->swapchain_extent // extent
-                };
-                vkCmdSetScissor(timewarp_command_buffer, 0, 1, &scissor);
-
-                // Call timewarp service to record the command buffer
-                tw->record_command_buffer(timewarp_command_buffer, buffer_index, eye);
+                tw->record_command_buffer(timewarp_command_buffer, swapchain_framebuffers[swapchain_image_index], buffer_index, eye);
             }
-            vkCmdEndRenderPass(timewarp_command_buffer);
         }
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer))
     }

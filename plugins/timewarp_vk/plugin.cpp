@@ -83,26 +83,23 @@ public:
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
-        ds = pb->lookup_impl<vulkan::display_provider>();
-
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator =
+                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
-        generate_distortion_data();
-        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_pool = vulkan::create_command_pool(
+            ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
 
-        create_vertex_buffer();
-        create_index_buffer();
         create_descriptor_set_layout();
         create_uniform_buffer();
         create_texture_sampler();
@@ -112,6 +109,15 @@ public:
                bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
+        ds = pb->lookup_impl<vulkan::display_provider>();
+
+        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
+
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
+                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
         if (!initialized) {
             initialize();
@@ -120,11 +126,15 @@ public:
             partial_destroy();
         }
 
+        create_vertex_buffer();
+        create_index_buffer();
+
         this->buffer_pool = std::move(buffer_pool);
 
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
+        timewarp_render_pass = render_pass;
     }
 
     void partial_destroy() {
@@ -177,9 +187,43 @@ public:
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
+        VkDeviceSize offsets = 0;
+        VkClearValue clear_color;
+        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        // Timewarp handles distortion correction at the same time
+        VkRenderPassBeginInfo tw_render_pass_info{};
+        tw_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        tw_render_pass_info.renderPass = timewarp_render_pass;
+        tw_render_pass_info.renderArea.offset.x = 0;
+        tw_render_pass_info.renderArea.offset.y = 0;
+        tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
+        tw_render_pass_info.framebuffer = framebuffer;
+        tw_render_pass_info.clearValueCount = 1;
+        tw_render_pass_info.pClearValues = &clear_color;
+
+        VkViewport tw_viewport{};
+        tw_viewport.x = 0;
+	    tw_viewport.y = 0;
+	    tw_viewport.width = static_cast<uint32_t>(swapchain_width);
+	    tw_viewport.height = static_cast<uint32_t>(swapchain_height);
+	    tw_viewport.minDepth = 0.0f;
+	    tw_viewport.maxDepth = 1.0f;
+
+        VkRect2D tw_scissor{};
+        tw_scissor.offset.x = 0;
+        tw_scissor.offset.y = 0; 
+        tw_scissor.extent.width = static_cast<uint32_t>(swapchain_width);
+        tw_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
+
+        vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+	    vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
+	    vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
+
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, &offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
         //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
         //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
@@ -190,6 +234,7 @@ public:
                                 &descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+        vkCmdEndRenderPass(commandBuffer);
     }
 
     bool is_external() override {
@@ -774,12 +819,16 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
+    size_t                                  swapchain_width;
+    size_t                                  swapchain_height;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     VkSampler                                       fb_sampler{};
 
     VkDescriptorPool                            descriptor_pool{};
     VkDescriptorSetLayout                       descriptor_set_layout{};
     std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
+
+    VkRenderPass timewarp_render_pass;
 
     VkPipelineLayout  pipeline_layout{};
     VkBuffer          uniform_buffer{};

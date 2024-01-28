@@ -306,6 +306,10 @@ public:
         vkCmdEndRenderPass(commandBuffer);
     }
 
+    bool is_external() override {
+        return false;
+    }
+
     void destroy() override {
         partial_destroy();
         // drain deletion_queue
