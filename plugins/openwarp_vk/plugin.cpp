@@ -127,15 +127,15 @@ public:
             this->vma_allocator = ds->vma_allocator;
         } else {
             this->vma_allocator =
-                vulkan::vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
-        command_pool = vulkan::vulkan_utils::create_command_pool(
-            ds->vk_device, ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].family);
-        command_buffer = vulkan::vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool = vulkan::create_command_pool(
+            ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
@@ -145,8 +145,9 @@ public:
         create_texture_sampler();
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
-               bool input_texture_vulkan_coordinates_in) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
+                       bool input_texture_vulkan_coordinates) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
         ds = pb->lookup_impl<vulkan::display_provider>();
@@ -158,7 +159,7 @@ public:
                                display_params::width_meters, display_params::height_meters, display_params::lens_separation,
                                display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 
-        this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
+        this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates;
         if (!initialized) {
             initialize();
             initialized = true;
@@ -172,11 +173,7 @@ public:
         create_vertex_buffers();
         create_index_buffers();
 
-        if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
-            throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
-        }
-
-        this->buffer_pool = buffer_pool_in;
+        this->buffer_pool = std::move(buffer_pool);
 
         create_descriptor_pool();
         create_openwarp_pipeline();
@@ -421,12 +418,12 @@ private:
         memcpy(ow_mapped_data, openwarp_vertices.data(), sizeof(OpenWarpVertex) * num_openwarp_vertices);
         vmaUnmapMemory(vma_allocator, ow_staging_alloc);
 
-        VkCommandBuffer ow_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer ow_command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    ow_copy_region          = {};
         ow_copy_region.size                     = sizeof(OpenWarpVertex) * num_openwarp_vertices;
         vkCmdCopyBuffer(ow_command_buffer_local, ow_staging_buffer, ow_vertex_buffer, 1, &ow_copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+        vulkan::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
                                                    ow_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, ow_staging_buffer, ow_staging_alloc);
@@ -483,12 +480,12 @@ private:
         memcpy(dc_mapped_data, distortion_vertices.data(), sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, dc_staging_alloc);
 
-        VkCommandBuffer dc_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer dc_command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    dc_copy_region          = {};
         dc_copy_region.size                     = sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_vertex_buffer, 1, &dc_copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+        vulkan::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
                                                    dc_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, dc_staging_buffer, dc_staging_alloc);
@@ -546,12 +543,12 @@ private:
         memcpy(ow_mapped_data, openwarp_indices.data(), sizeof(uint32_t) * num_openwarp_indices);
         vmaUnmapMemory(vma_allocator, ow_staging_alloc);
 
-        VkCommandBuffer ow_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer ow_command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    ow_copy_region          = {};
         ow_copy_region.size                     = sizeof(uint32_t) * num_openwarp_indices;
         vkCmdCopyBuffer(ow_command_buffer_local, ow_staging_buffer, ow_index_buffer, 1, &ow_copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+        vulkan::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
                                                    ow_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, ow_staging_buffer, ow_staging_alloc);
@@ -607,12 +604,12 @@ private:
         memcpy(dc_mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, dc_staging_alloc);
 
-        VkCommandBuffer dc_command_buffer_local = vulkan::vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer dc_command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    dc_copy_region          = {};
         dc_copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_index_buffer, 1, &dc_copy_region);
-        vulkan::vulkan_utils::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::vulkan_utils::queue::queue_type::GRAPHICS].vk_queue,
+        vulkan::end_one_time_command(ds->vk_device, command_pool,
+                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
                                                    dc_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, dc_staging_buffer, dc_staging_alloc);
@@ -900,11 +897,7 @@ private:
     }
 
     void create_descriptor_sets() {
-        // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            std::cout << "Eye: " << eye << std::endl;
-            std::cout << buffer_pool[eye].size() << std::endl;
-
             // OpenWarp descriptor sets
             std::vector<VkDescriptorSetLayout> ow_layout = {ow_descriptor_set_layout};
             VkDescriptorSetAllocateInfo ow_alloc_info {
@@ -915,60 +908,61 @@ private:
                 nullptr                                         // pSetLayouts
             };
             ow_alloc_info.descriptorPool     = descriptor_pool;
-            ow_alloc_info.descriptorSetCount = 1;
+            ow_alloc_info.descriptorSetCount = buffer_pool->image_pool.size();
             ow_alloc_info.pSetLayouts        = ow_layout.data();
 
-            ow_descriptor_sets[eye].resize(1);
+            ow_descriptor_sets[eye].resize(buffer_pool->image_pool.size());
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &ow_alloc_info, ow_descriptor_sets[eye].data()))
 
-            VkDescriptorImageInfo imageInfo = {};
-            imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView             = buffer_pool[eye][0];
-            imageInfo.sampler               = fb_sampler;
+            for (int image_idx = 0; image_idx < buffer_pool->image_pool.size(); image_idx++) {
+                VkDescriptorImageInfo imageInfo = {};
+                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo.imageView             = buffer_pool->image_pool[image_idx][eye].image_view;
+                imageInfo.sampler               = fb_sampler;
 
-            assert(buffer_pool[eye][0] != VK_NULL_HANDLE);
+                // assert(buffer_pool[eye][0] != VK_NULL_HANDLE);
 
-            VkDescriptorImageInfo depthInfo = {};
-            depthInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-            depthInfo.imageView             = buffer_pool[eye][1];
-            depthInfo.sampler               = fb_sampler;
+                VkDescriptorImageInfo depthInfo = {};
+                depthInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+                depthInfo.imageView             = buffer_pool->depth_image_pool[image_idx][eye].image_view;
+                depthInfo.sampler               = fb_sampler;
 
-            assert(buffer_pool[eye][1] != VK_NULL_HANDLE);
+                // assert(buffer_pool[eye][1] != VK_NULL_HANDLE);
 
-            VkDescriptorBufferInfo bufferInfo = {};
-            bufferInfo.buffer                 = ow_matrices_uniform_buffer;
-            bufferInfo.offset                 = 0;
-            bufferInfo.range                  = sizeof(WarpMatrices);
+                VkDescriptorBufferInfo bufferInfo = {};
+                bufferInfo.buffer                 = ow_matrices_uniform_buffer;
+                bufferInfo.offset                 = 0;
+                bufferInfo.range                  = sizeof(WarpMatrices);
 
-            std::array<VkWriteDescriptorSet, 3> owDescriptorWrites = {};
+                std::array<VkWriteDescriptorSet, 3> owDescriptorWrites = {};
 
-            owDescriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            owDescriptorWrites[0].dstSet          = ow_descriptor_sets[eye][0];
-            owDescriptorWrites[0].dstBinding      = 0;
-            owDescriptorWrites[0].dstArrayElement = 0;
-            owDescriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            owDescriptorWrites[0].descriptorCount = 1;
-            owDescriptorWrites[0].pImageInfo      = &imageInfo;
+                owDescriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                owDescriptorWrites[0].dstSet          = ow_descriptor_sets[eye][image_idx];
+                owDescriptorWrites[0].dstBinding      = 0;
+                owDescriptorWrites[0].dstArrayElement = 0;
+                owDescriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                owDescriptorWrites[0].descriptorCount = 1;
+                owDescriptorWrites[0].pImageInfo      = &imageInfo;
 
-            owDescriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            owDescriptorWrites[1].dstSet          = ow_descriptor_sets[eye][0];
-            owDescriptorWrites[1].dstBinding      = 1;
-            owDescriptorWrites[1].dstArrayElement = 0;
-            owDescriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            owDescriptorWrites[1].descriptorCount = 1;
-            owDescriptorWrites[1].pImageInfo      = &depthInfo;
+                owDescriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                owDescriptorWrites[1].dstSet          = ow_descriptor_sets[eye][image_idx];
+                owDescriptorWrites[1].dstBinding      = 1;
+                owDescriptorWrites[1].dstArrayElement = 0;
+                owDescriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                owDescriptorWrites[1].descriptorCount = 1;
+                owDescriptorWrites[1].pImageInfo      = &depthInfo;
 
-            owDescriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            owDescriptorWrites[2].dstSet          = ow_descriptor_sets[eye][0];
-            owDescriptorWrites[2].dstBinding      = 2;
-            owDescriptorWrites[2].dstArrayElement = 0;
-            owDescriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            owDescriptorWrites[2].descriptorCount = 1;
-            owDescriptorWrites[2].pBufferInfo     = &bufferInfo;
+                owDescriptorWrites[2].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                owDescriptorWrites[2].dstSet          = ow_descriptor_sets[eye][image_idx];
+                owDescriptorWrites[2].dstBinding      = 2;
+                owDescriptorWrites[2].dstArrayElement = 0;
+                owDescriptorWrites[2].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                owDescriptorWrites[2].descriptorCount = 1;
+                owDescriptorWrites[2].pBufferInfo     = &bufferInfo;
 
-            vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(owDescriptorWrites.size()), owDescriptorWrites.data(),
-                                    0, nullptr);
-
+                vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(owDescriptorWrites.size()), owDescriptorWrites.data(),
+                                        0, nullptr);
+            }
 
             // Distortion correction descriptor sets
             std::vector<VkDescriptorSetLayout> dc_layout   = {dc_descriptor_set_layout};
@@ -1045,10 +1039,10 @@ private:
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::vulkan_utils::create_shader_module(
-            device, vulkan::vulkan_utils::read_file(folder + "/openwarp_mesh.vert.spv"));
-        VkShaderModule frag = vulkan::vulkan_utils::create_shader_module(
-            device, vulkan::vulkan_utils::read_file(folder + "/openwarp_mesh.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(
+            device, vulkan::read_file(folder + "/openwarp_mesh.vert.spv"));
+        VkShaderModule frag = vulkan::create_shader_module(
+            device, vulkan::read_file(folder + "/openwarp_mesh.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1165,9 +1159,9 @@ private:
 
         auto           folder = std::string(SHADER_FOLDER);
         VkShaderModule vert =
-            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/distortion_correction.vert.spv"));
+            vulkan::create_shader_module(device, vulkan::read_file(folder + "/distortion_correction.vert.spv"));
         VkShaderModule frag =
-            vulkan::vulkan_utils::create_shader_module(device, vulkan::vulkan_utils::read_file(folder + "/distortion_correction.frag.spv"));
+            vulkan::create_shader_module(device, vulkan::read_file(folder + "/distortion_correction.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1312,7 +1306,7 @@ private:
     // i for the image itself, and i + 1 for the depth image.
     size_t                                  swapchain_width;
     size_t                                  swapchain_height;
-    std::array<std::vector<VkImageView>, 2> buffer_pool;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     VkSampler                               fb_sampler{};
 
     VkDescriptorPool descriptor_pool{};
