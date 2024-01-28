@@ -23,7 +23,7 @@ public:
      * @param buffer_ind The index of the buffer to use.
      * @param left 0 for left eye, 1 for right eye.
      */
-    virtual void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) {};
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) = 0;
 
     /**
      * @brief Update the uniforms for the render pass.

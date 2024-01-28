@@ -1,4 +1,4 @@
-all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,zed,fauxpose,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth,offload_rendering_client,offload_rendering_server,shared_memory_network_backend,tcp_network_backend
+all_plugins: audio_pipeline,debugview,depthai,gldemo,ground_truth_slam,gtsam_integrator,offline_cam,offline_imu,offload_data,offload_vio.device_rx,offload_vio.device_tx,offload_vio.server_rx,offload_vio.server_tx,passthrough_integrator,pose_lookup,pose_prediction,realsense,record_imu_cam,rk4_integrator,timewarp_gl,openwarp_vk,zed,fauxpose,native_renderer,timewarp_vk,vkdemo,openni,record_rgb_depth,offload_rendering_client,offload_rendering_server,shared_memory_network_backend,tcp_network_backend
 all_visualizers: openvins
 
 profile:
@@ -44,6 +44,18 @@ profile:
   enable_pre_sleep: False
 
 profile:
+  name: monado_openwarp
+  plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,openwarp_vk,audio_pipeline
+  visualizers: openvins
+  use_monado: true
+  build_flags: -DILLIXR_MONADO -DILLIXR_VULKAN
+  build_type: Release
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
   name: native_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
   visualizers: openvins
@@ -55,6 +67,17 @@ profile:
 profile:
   name: native_vk
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
+  visualizers: openvins
+  build_flags: -DILLIXR_VULKAN
+  build_type: Release
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: openwarp_vk
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
   visualizers: openvins
   build_flags: -DILLIXR_VULKAN
   build_type: Release
