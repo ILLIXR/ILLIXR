@@ -59,6 +59,8 @@ struct rendering_params {
 
     // Far plane distance in meters
     static constexpr float far_z = 20.0f;
+
+    static constexpr bool reverse_z = true;
 };
 
 /**

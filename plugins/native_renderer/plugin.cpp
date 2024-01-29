@@ -334,7 +334,7 @@ private:
 
                 vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
                 // Call app service to record the command buffer
-                src->record_command_buffer(app_command_buffer, offscreen_framebuffers[buffer_index][eye], buffer_index, eye);
+                src->record_command_buffer(app_command_buffer, offscreen_framebuffers[buffer_index][eye], buffer_index, eye == 0);
                 vkCmdEndRenderPass(app_command_buffer);
             }
             VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
@@ -349,11 +349,12 @@ private:
             0,                                           // flags
             nullptr                                      // pInheritanceInfo
         };
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info)) {
-            for (auto eye = 0; eye < 2; eye++) {
-                tw->record_command_buffer(timewarp_command_buffer, swapchain_framebuffers[swapchain_image_index], buffer_index, eye);
-            }
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info)) 
+
+        for (auto eye = 0; eye < 2; eye++) {
+            tw->record_command_buffer(timewarp_command_buffer, swapchain_framebuffers[swapchain_image_index], buffer_index, eye == 0);
         }
+        
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer))
     }
 
@@ -708,7 +709,7 @@ private:
             0,                                 // flags
             ds->swapchain_image_format.format, // format
             VK_SAMPLE_COUNT_1_BIT,             // samples
-            VK_ATTACHMENT_LOAD_OP_CLEAR,       // loadOp
+            VK_ATTACHMENT_LOAD_OP_LOAD,       // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
             VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp

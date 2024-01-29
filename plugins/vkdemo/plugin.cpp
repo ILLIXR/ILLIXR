@@ -128,7 +128,7 @@ public:
         // Construct perspective projection matrix
         math_util::projection_fov(&basic_projection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
                                   display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
+                                  rendering_params::far_z, rendering_params::reverse_z);
     }
 
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) override {
@@ -140,13 +140,13 @@ public:
         update_uniform(fp, 1);
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, int eye) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer     vertexBuffers[] = {vertex_buffer};
         VkDeviceSize offsets[]       = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye], 0,
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[!left], 0,
                                 nullptr);
 
         for (auto& model : models) {
@@ -897,7 +897,7 @@ private:
             0,                                                          // flags
             VK_TRUE,                                                    // depthTestEnable
             VK_TRUE,                                                    // depthWriteEnable
-            VK_COMPARE_OP_LESS,                                         // depthCompareOp
+            rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL, // depthCompareOp
             VK_FALSE,                                                   // depthBoundsTestEnable
             VK_FALSE,                                                   // stencilTestEnable
             {},                                                         // front

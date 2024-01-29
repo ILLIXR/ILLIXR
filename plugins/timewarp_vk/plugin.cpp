@@ -126,6 +126,8 @@ public:
             partial_destroy();
         }
 
+        generate_distortion_data();
+        
         create_vertex_buffer();
         create_index_buffer();
 
@@ -188,8 +190,6 @@ public:
         num_record_calls++;
 
         VkDeviceSize offsets = 0;
-        VkClearValue clear_color;
-        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
 
         // Timewarp handles distortion correction at the same time
         VkRenderPassBeginInfo tw_render_pass_info{};
@@ -197,11 +197,11 @@ public:
         tw_render_pass_info.renderPass = timewarp_render_pass;
         tw_render_pass_info.renderArea.offset.x = 0;
         tw_render_pass_info.renderArea.offset.y = 0;
-        tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width);
         tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
         tw_render_pass_info.framebuffer = framebuffer;
-        tw_render_pass_info.clearValueCount = 1;
-        tw_render_pass_info.pClearValues = &clear_color;
+        tw_render_pass_info.clearValueCount = 0;
+        tw_render_pass_info.pClearValues = nullptr;
 
         VkViewport tw_viewport{};
         tw_viewport.x = 0;
@@ -222,7 +222,6 @@ public:
 	    vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, &offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
         //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
@@ -493,9 +492,9 @@ private:
     void create_descriptor_pool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount                  = 2;
+        poolSizes[0].descriptorCount                  = buffer_pool->image_pool.size() * 2;
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = 2;
+        poolSizes[1].descriptorCount                  = buffer_pool->image_pool.size() * 2;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -752,7 +751,7 @@ private:
                     // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
                     // hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
+                        (-1.0f + eye + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
 
                     // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
@@ -777,7 +776,7 @@ private:
         // Construct perspective projection matrix
         math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
                                   display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
+                                  rendering_params::far_z, rendering_params::reverse_z);
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
