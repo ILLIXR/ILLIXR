@@ -21,6 +21,7 @@ class_end_re = re.compile(r"^\s*};")                 # regex for class/struct en
 struct_re = re.compile(r"^\s*struct\s+")             # regex for struct
 struct2_re = re.compile(r"^\s*struct\s+.*};$")       # regex for one line struct
 line_end_re = re.compile(r".*\s*;\s*(?:[^/]|//.*)$")  # regex for the end of a code line
+version_re = re.compile(r"[><=]+")                   # regex for version numbers
 
 skip_list = ['src/cxxopts.hpp']  # files to skip when scanning for classes etc.
 sep = '-' * 77                   # nominal width of output tables
@@ -348,6 +349,152 @@ def report_plugin_invoke(invoke: Dict, deps: Dict) -> None:
     yaml.dump(yaml_mapper, open(os.path.join('plugins', 'plugin_deps.yaml'), 'w'))
 
 
+def scan_for_find_package(flname: str) -> Dict[str, str]:
+    """
+    Scan the CMakeLists.txt file for `find_package` or `pkg_search_module` calls
+
+    :param flname: The file to search.
+    :type flname: str
+    :return:
+    Dictionary of the dependencies found and minimum version, if found.
+    :rtype: dict[str, str]
+    """
+    packages = {}
+    with open(flname, 'r') as fh:
+        for ln in fh.readlines():
+            line = ln.strip()
+            if line.startswith('find_package'):
+                start = line.find('(')
+                end = line.find(')')
+                temp = line[start+1:end].split()
+                if len(temp) == 1:
+                    packages[temp[0]] = None
+                elif len(temp) == 2:
+                    if temp[1] in ['REQUIRED', 'QUIET']:
+                        packages[temp[0]] = None
+                    else:
+                        packages[temp[0]] = temp[1]
+                elif len(temp) >= 3:
+                    if temp[1].startswith('$'):
+                        packages[temp[0]] = '*'
+                    elif temp[1] in ['REQUIRED', 'QUIET', 'COMPONENTS']:
+                        packages[temp[0]] = None
+                    else:
+                        packages[temp[0]] = temp[1]
+                else:
+                    raise Exception(f"Unexpected format {flname}  {line}")
+            elif line.startswith('pkg_search_module') or line.startswith('pkg_check_modules'):
+                start = line.find('(')
+                end = line.find(')')
+                temp = line[start+1:end].split()[-1]
+                temp = version_re.sub(' ', temp)
+                temp = temp.split()
+                if len(temp) == 1:
+                    packages[temp[0]] = None
+                elif len(temp) == 2:
+                    packages[temp[0]] = temp[1]
+                else:
+                    raise Exception(f"Unexpected format {flname}  {line}")
+            elif line.startswith('get_external'):
+                start = line.find('(')
+                end = line.find(')')
+                temp = line[start+1:end]
+                packages[temp] = None
+    return packages
+
+
+def scan_for_cmake_files() -> Dict[str, List[str]]:
+    """
+    Scan the directories for cmake files and return a list of what is found.
+
+    :return: A list of the cmake files found, including the path.
+    :rtype: list[str]
+    """
+    path = os.path.dirname(os.path.abspath(__file__))
+    cm_files = glob.glob(os.path.join(path, 'cmake', 'Get*.cmake'), recursive=False)
+    files = glob.glob(os.path.join(path, 'plugins', '**', 'CMakeLists.txt'), recursive=True)
+    files.append(os.path.join(path, 'CMakeLists.txt'))
+    files.append(os.path.join(path, 'src', 'CMakeLists.txt'))
+    return {"cmake": cm_files, "CMakeLists.txt": files}
+
+
+def report_ext_deps(deps: Dict[str, Dict[str, str]]) -> None:
+    """
+    Print a table of external dependencies to docs.
+    :param deps: Dependency mapping
+    :type deps: dict[str, dict[str, str]]
+    """
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(path, 'docs', 'docs', 'external_dependencies.rst'), 'w') as fh:
+        fh.write("External Dependencies\n")
+        fh.write("=====================\n\n")
+        fh.write("| Plugin | Dependency | Version |\n")
+        fh.write("| ------ | ---------- | ------- |\n")
+        for pkg, data in deps.items():
+            keys = list(data.keys())
+            keys.sort()
+            vers_line = ""
+            depline = ""
+            for key in keys:
+                depline += f"{key}<br>"
+                if data[key] is None:
+                    vers_line += "<br>"
+                else:
+                    vers_line += f"{data[key]}<br>"
+            fh.write(f"| {pkg} | {depline} | {vers_line} |\n")
+
+
+def report_rev_deps(deps: Dict[str, List[str]]) -> None:
+    """
+    Print a table of reverse dependencies to docs.
+    :param deps: Dependency mapping
+    :type deps: dict[str, list[str]]
+    """
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(path, 'docs', 'docs', 'reverse_dependencies.rst'), 'w') as fh:
+        fh.write("Reverse Dependencies\n")
+        fh.write("====================\n\n")
+        fh.write("| Dependency | Plugins |\n")
+        fh.write("| ---------- | ------- |\n")
+        for pkg, data in deps.items():
+            data.sort()
+            fh.write(f"| {pkg} | {'<br> '.join(data)} |\n")
+
+
+def process_cmake() -> None:
+    """
+    Process the cmake files to generate a dependency map.
+    """
+    files = scan_for_cmake_files()
+    deps = {}
+    second_deps = {}
+    reverse_deps = {}
+    for fl in files['cmake']:
+        pkg = fl.split('/')[-1].replace('.cmake', '').replace('Get', '')
+        second_deps[pkg] = scan_for_find_package(fl)
+    for fl in files['CMakeLists.txt']:
+        temp = fl.split('/')
+        if temp[-3] == 'plugins':
+            pkg = temp[-2]
+        elif temp[-2] == 'src':
+            pkg = 'main'
+        else:
+            pkg = 'global'
+        deps[pkg] = scan_for_find_package(fl)
+        if len(deps[pkg]) == 0:
+            del deps[pkg]
+    for pkg, data in deps.items():
+        keys = list(data.keys())
+        for key in keys:
+            if key in second_deps:
+                data.update(second_deps[key])
+            if key not in reverse_deps:
+                reverse_deps[key] = []
+            reverse_deps[key].append(pkg)
+    report_ext_deps(deps)
+    report_rev_deps(reverse_deps)
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         raise Exception("Incorrect number of arguments.")
@@ -356,3 +503,4 @@ if __name__ == '__main__':
     comb = report_deps(dependencies)
     report_invoke(inv)
     report_plugin_invoke(inv, comb)
+    process_cmake()

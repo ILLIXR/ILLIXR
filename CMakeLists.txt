@@ -266,7 +266,7 @@ if(Python3_FOUND)
     add_custom_command(
             OUTPUT "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
             DEPENDS ${dependencies}
-            COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
     )
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
