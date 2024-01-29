@@ -317,7 +317,7 @@ private:
                 assert(app_pass != VK_NULL_HANDLE);
                 std::array<VkClearValue, 2> clear_values = {};
                 clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
-                clear_values[1].depthStencil             = {1.0f, 0};
+                clear_values[1].depthStencil             = {rendering_params::reverse_z ? 0.0f : 1.0f, 0};
 
                 VkRenderPassBeginInfo render_pass_info{
                     VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
@@ -713,8 +713,11 @@ private:
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
             VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp
-            VK_IMAGE_LAYOUT_UNDEFINED,         // initialLayout
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR    // finalLayout
+
+            // to-do: this should be addressed but it's not so simple
+            // because the same image may be re-used for two render passes.
+            VK_IMAGE_LAYOUT_GENERAL,         // initialLayout
+            VK_IMAGE_LAYOUT_GENERAL    // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{

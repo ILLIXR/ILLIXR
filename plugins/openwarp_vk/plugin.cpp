@@ -806,14 +806,12 @@ private:
         imageLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         imageLayoutBinding.descriptorCount              = 1;
         imageLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
-        imageLayoutBinding.pImmutableSamplers           = nullptr;
 
         VkDescriptorSetLayoutBinding depthLayoutBinding = {};
         depthLayoutBinding.binding                      = 1;
         depthLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         depthLayoutBinding.descriptorCount              = 1;
         depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT;
-        depthLayoutBinding.pImmutableSamplers           = nullptr;
 
         VkDescriptorSetLayoutBinding matrixUboLayoutBinding = {};
         matrixUboLayoutBinding.binding                      = 2;
@@ -880,10 +878,11 @@ private:
 
     void create_descriptor_pool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+        std::cout << buffer_pool->image_pool.size() << std::endl;
         poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount                  = 100; // to-do: get proper amounts?
+        poolSizes[0].descriptorCount                  = buffer_pool->image_pool.size() * 2;
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = 100;
+        poolSizes[1].descriptorCount                  = (2 * buffer_pool->image_pool.size() + 1) * 2;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -895,7 +894,7 @@ private:
         };
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes    = poolSizes.data();
-        poolInfo.maxSets       = 10; // same to-do as above
+        poolInfo.maxSets       = (buffer_pool->image_pool.size() + 1) * 2;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool))
     }
@@ -903,7 +902,8 @@ private:
     void create_descriptor_sets() {
         for (int eye = 0; eye < 2; eye++) {
             // OpenWarp descriptor sets
-            std::vector<VkDescriptorSetLayout> ow_layout = {ow_descriptor_set_layout};
+            std::cout << eye << std::endl;
+            std::vector<VkDescriptorSetLayout> ow_layout = {buffer_pool->image_pool.size(), ow_descriptor_set_layout};
             VkDescriptorSetAllocateInfo ow_alloc_info {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
@@ -978,7 +978,7 @@ private:
                 nullptr                                         // pSetLayouts
             };
             dc_alloc_info.descriptorPool     = descriptor_pool;
-            dc_alloc_info.descriptorSetCount = 1; // to-do: find a better way to keep track of number of descriptor sets
+            dc_alloc_info.descriptorSetCount = 1;
             dc_alloc_info.pSetLayouts        = dc_layout.data();
 
             dc_descriptor_sets[eye].resize(1);
