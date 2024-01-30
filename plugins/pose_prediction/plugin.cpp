@@ -114,7 +114,9 @@ public:
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
         //       - the prediction target (the time that was requested for this pose.)
         return fast_pose_type{
-            .pose = predicted_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = future_timestamp};
+            predicted_pose,
+            _m_clock->now(),
+            future_timestamp};
     }
 
     void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
@@ -394,4 +396,4 @@ public:
     }
 };
 
-PLUGIN_MAIN(pose_prediction_plugin);
+PLUGIN_MAIN(pose_prediction_plugin)
