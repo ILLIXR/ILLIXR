@@ -87,17 +87,6 @@ profile:
   enable_pre_sleep: false
 
 profile:
-  name: openwarp_vk
-  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
-  visualizers: openvins
-  build_flags: -DILLIXR_VULKAN
-  build_type: Release
-  enable_offload: false
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false
-
-profile:
   name: native_lookup
   plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
   visualizers: openvins
