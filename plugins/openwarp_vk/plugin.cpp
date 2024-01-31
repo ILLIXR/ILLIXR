@@ -1097,7 +1097,7 @@ private:
         subpass.pColorAttachments = color_refs;
         subpass.pDepthStencilAttachment = &depth_attachment_ref;
 
-        VkAttachmentReference all_attachments[3] = {color_attachment_ref, depth_image_attachment_ref, depth_attachment_ref};
+        VkAttachmentDescription all_attachments[3] = {color_attachment, depth_image_attachment, depth_attachment};
 
         VkRenderPassCreateInfo render_pass_info{};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
