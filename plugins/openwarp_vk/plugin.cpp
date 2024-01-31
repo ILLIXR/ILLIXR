@@ -927,7 +927,7 @@ private:
                 // assert(buffer_pool[eye][0] != VK_NULL_HANDLE);
 
                 VkDescriptorImageInfo depthInfo = {};
-                depthInfo.imageLayout           = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+                depthInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 depthInfo.imageView             = buffer_pool->depth_image_pool[image_idx][eye].image_view;
                 depthInfo.sampler               = fb_sampler;
 
