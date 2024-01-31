@@ -57,7 +57,8 @@ public:
         for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
             for (auto eye = 0; eye < 2; eye++) {
                 create_offscreen_target(offscreen_images[i][eye]);
-                create_depth_image(depth_images[i][eye]);
+                create_offscreen_target(depth_images[i][eye]);
+                create_depth_image(depth_attachment_images[i][eye]);
             }
         }
         this->buffer_pool = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images, depth_images);
@@ -583,7 +584,7 @@ private:
 
         for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
             for (auto eye = 0; eye < 2; eye++) {
-                std::array<VkImageView, 2> attachments = {offscreen_images[i][eye].image_view, depth_images[i][eye].image_view};
+                std::array<VkImageView, 3> attachments = {offscreen_images[i][eye].image_view, depth_images[i][eye].image_view, depth_attachment_images[i][eye].image_view};
 
                 VkFramebufferCreateInfo framebuffer_info{
                     VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
@@ -612,8 +613,20 @@ private:
      * @throws runtime_error If render pass creation fails.
      */
     void create_app_pass() {
-        std::array<VkAttachmentDescription, 2> attchmentDescriptions{
+        std::array<VkAttachmentDescription, 3> attchmentDescriptions{
             {{
+                 0,                                // flags
+                 VK_FORMAT_B8G8R8A8_UNORM,         // format
+                 VK_SAMPLE_COUNT_1_BIT,            // samples
+                 VK_ATTACHMENT_LOAD_OP_CLEAR,      // loadOp
+                 VK_ATTACHMENT_STORE_OP_STORE,     // storeOp
+                 VK_ATTACHMENT_LOAD_OP_DONT_CARE,  // stencilLoadOp
+                 VK_ATTACHMENT_STORE_OP_DONT_CARE, // stencilStoreOp
+                 VK_IMAGE_LAYOUT_UNDEFINED,        // initialLayout
+                 tw->is_external() ? VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+                                   : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL // finalLayout
+             },
+             {
                  0,                                // flags
                  VK_FORMAT_B8G8R8A8_UNORM,         // format
                  VK_SAMPLE_COUNT_1_BIT,            // samples
@@ -642,8 +655,15 @@ private:
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL // layout
         };
 
+        VkAttachmentReference depth_image_attachment_ref{
+            1,                                       // attachment
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL // layout
+        };
+
+        VkAttachmentReference color_refs[2] = {color_attachment_ref, depth_image_attachment_ref};
+
         VkAttachmentReference depth_attachment_ref{
-            1,                                               // attachment
+            2,                                               // attachment
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL // layout
         };
 
@@ -652,8 +672,8 @@ private:
             VK_PIPELINE_BIND_POINT_GRAPHICS, // pipelineBindPoint
             0,                               // inputAttachmentCount
             nullptr,                         // pInputAttachments
-            1,                               // colorAttachmentCount
-            &color_attachment_ref,           // pColorAttachments
+            2,                               // colorAttachmentCount
+            color_refs,                      // pColorAttachments
             nullptr,                         // pResolveAttachments
             &depth_attachment_ref,           // pDepthStencilAttachment
             0,                               // preserveAttachmentCount
@@ -767,6 +787,7 @@ private:
     VkCommandBuffer timewarp_command_buffer{};
 
     std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_attachment_images{};
 
     VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info{};
     VmaPoolCreateInfo                         offscreen_pool_create_info{};
