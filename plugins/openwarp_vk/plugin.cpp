@@ -1046,11 +1046,12 @@ private:
     }
 
     void create_openwarp_pipeline() {
+        std::cout << "Creating openwarp renderpass" << std::endl;
         // A renderpass also has to be created
         VkAttachmentDescription color_attachment{};
         color_attachment.format = VK_FORMAT_R8G8B8A8_UNORM; // this should match the offscreen image
         color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -1061,54 +1062,40 @@ private:
         color_attachment_ref.attachment = 0;
         color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-        VkAttachmentDescription depth_image_attachment{};
-        color_attachment.format = VK_FORMAT_R8G8B8A8_UNORM; // this should match the offscreen image
-        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-        VkAttachmentReference depth_image_attachment_ref{};
-        color_attachment_ref.attachment = 1;
-        color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference color_refs[2] = {color_attachment_ref, depth_image_attachment_ref};
-
         VkAttachmentDescription depth_attachment{};
-        color_attachment.format = VK_FORMAT_D16_UNORM; // this should match the offscreen image
-        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        color_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        depth_attachment.format = VK_FORMAT_D16_UNORM; // this should match the offscreen image
+        depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkAttachmentReference depth_attachment_ref{};
-        color_attachment_ref.attachment = 2;
-        color_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        depth_attachment_ref.attachment = 1;
+        depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 2;
-        subpass.pColorAttachments = color_refs;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &color_attachment_ref;
         subpass.pDepthStencilAttachment = &depth_attachment_ref;
 
-        VkAttachmentDescription all_attachments[3] = {color_attachment, depth_image_attachment, depth_attachment};
+        std::array<VkAttachmentDescription, 2> all_attachments = {color_attachment, depth_attachment};
 
         VkRenderPassCreateInfo render_pass_info{};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        render_pass_info.attachmentCount = 3;
-        render_pass_info.pAttachments = all_attachments;
+        render_pass_info.attachmentCount = static_cast<uint32_t>(all_attachments.size());
+        render_pass_info.pAttachments = all_attachments.data();
         render_pass_info.subpassCount = 1;
         render_pass_info.pSubpasses = &subpass;
         render_pass_info.dependencyCount = 0;
         render_pass_info.pDependencies = nullptr;
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &openwarp_render_pass));
+
+        std::cout << "Openwarp renderpass created" << std::endl;
 
         if (openwarp_pipeline != VK_NULL_HANDLE) {
             throw std::runtime_error("openwarp_vk::create_pipeline: pipeline already created");
@@ -1215,7 +1202,7 @@ private:
         pipelineInfo.pRasterizationState          = &rasterizer;
         pipelineInfo.pMultisampleState            = &multisampling;
         pipelineInfo.pColorBlendState             = &colorBlending;
-        pipelineInfo.pDepthStencilState           = nullptr;
+        pipelineInfo.pDepthStencilState           = &depthStencil;
         pipelineInfo.pDynamicState                = &dynamicStateCreateInfo;
 
         pipelineInfo.layout     = ow_pipeline_layout;

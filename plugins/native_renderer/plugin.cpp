@@ -50,6 +50,7 @@ public:
     void _p_thread_setup() override {
         depth_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
         offscreen_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
+        depth_attachment_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
 
         if (tw->is_external() || src->is_external()) {
             create_offscreen_pool();

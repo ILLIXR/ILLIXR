@@ -862,14 +862,29 @@ private:
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
                 VK_COLOR_COMPONENT_A_BIT // colorWriteMask
         };
+
+        VkPipelineColorBlendAttachmentState depth_blend_attachment{
+            VK_FALSE, // blendEnable
+            {},       // srcColorBlendFactor
+            {},       // dstColorBlendFactor
+            {},       // colorBlendOp
+            {},       // srcAlphaBlendFactor
+            {},       // dstAlphaBlendFactor
+            {},       // alphaBlendOp
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+                VK_COLOR_COMPONENT_A_BIT // colorWriteMask
+        };
+
+        VkPipelineColorBlendAttachmentState blend_attachments[2] = {color_blend_attachment, depth_blend_attachment};
+
         VkPipelineColorBlendStateCreateInfo color_blending{
             VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, // sType
             nullptr,                                                  // pNext
             0,                                                        // flags
             0,                                                        // logicOpEnable
             {},                                                       // logicOp
-            1,                                                        // attachmentCount
-            &color_blend_attachment,                                  // pAttachments
+            2,                                                        // attachmentCount
+            blend_attachments,                                  // pAttachments
             {0.f, 0.f, 0.f, 0.f}                                      // blendConstants
         };
 
