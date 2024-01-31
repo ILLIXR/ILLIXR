@@ -37,7 +37,7 @@ FILE(CHMOD ${CMAKE_BINARY_DIR}/finalize_install.sh PERMISSIONS OWNER_READ OWNER_
 
 if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
         libavformat_illixr_FOUND AND libavutil_illixr_FOUND AND libswscale_illixr_FOUND))
-    message("FFMPEG NOT FOUND")
+    message("FFMPEG NOT FOUND, will build from source")
     EXTERNALPROJECT_ADD(ILLIXR_FFmpeg_ext
                         GIT_REPOSITORY https://github.com/ILLIXR/FFmpeg.git
                         GIT_TAG 83c41e80b94ebdbae2ab1379c87b032f52d3370e

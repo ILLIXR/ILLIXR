@@ -40,7 +40,5 @@ target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} $
 
 target_link_libraries(${PLUGIN_NAME} ${libavdevice_illixr_LIBRARIES} ${libavformat_illixr_LIBRARIES} ${libavcodec_illixr_LIBRARIES} ${libavutil_illixr_LIBRARIES})
 target_include_directories(${PLUGIN_NAME} PUBLIC ${libavcodec_illixr_INCLUDE_DIRS})
-message("____________ ${libavcodec_illixr_INCLUDE_DIRS}")
 get_target_property(INC_DIRS ${PLUGIN_NAME} INCLUDE_DIRECTORIES)
-message("____________ ${INC_DIRS}")
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
