@@ -188,7 +188,10 @@ public:
         for (int i = 0; i < offscreen_images.size(); i++) {
             vkDestroyFramebuffer(ds->vk_device, offscreen_framebuffers[i], nullptr);
             vkDestroyImageView(ds->vk_device, offscreen_image_views[i], nullptr);
-            vmaDestroyImage(vma_allocator, offscreen_images[i], offscreen_allocs[i]);
+            vmaDestroyImage(vma_allocator, offscreen_images[i], offscreen_image_allocs[i]);
+
+            vkDestroyImageView(ds->vk_device, offscreen_depth_views[i], nullptr);
+            vmaDestroyImage(vma_allocator, offscreen_depths[i], offscreen_depth_allocs[i]);
         }
 
         vkDestroyPipeline(ds->vk_device, openwarp_pipeline, nullptr);
@@ -340,7 +343,7 @@ private:
             create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
             create_info.priority = 1.0f;
 
-            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_images[eye], &offscreen_allocs[eye], nullptr));
+            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_images[eye], &offscreen_image_allocs[eye], nullptr));
 
             VkImageViewCreateInfo view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
             view_info.image = offscreen_images[eye];
@@ -358,12 +361,50 @@ private:
         
             VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &offscreen_image_views[eye]));
 
+            VkImageCreateInfo depth_image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
+            depth_image_info.imageType = VK_IMAGE_TYPE_2D;
+            depth_image_info.extent.width = swapchain_width / 2;
+            depth_image_info.extent.height = swapchain_height;
+            depth_image_info.extent.depth = 1;
+            depth_image_info.mipLevels = 1;
+            depth_image_info.arrayLayers = 1;
+            depth_image_info.format = VK_FORMAT_D16_UNORM;
+            depth_image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
+            depth_image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            depth_image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+            depth_image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+            
+            VmaAllocationCreateInfo depth_create_info = {};
+            depth_create_info.usage = VMA_MEMORY_USAGE_AUTO;
+            depth_create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+            depth_create_info.priority = 1.0f;
+
+            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &depth_image_info, &depth_create_info, &offscreen_depths[eye], &offscreen_depth_allocs[eye], nullptr));
+
+            VkImageViewCreateInfo depth_view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+            depth_view_info.image = offscreen_depths[eye];
+            depth_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            depth_view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+            depth_view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            depth_view_info.subresourceRange.baseMipLevel = 0;
+            depth_view_info.subresourceRange.levelCount = 1;
+            depth_view_info.subresourceRange.baseArrayLayer = 0;
+            depth_view_info.subresourceRange.layerCount = 1;
+        
+            VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &depth_view_info, nullptr, &offscreen_depth_views[eye]));
+
+            VkImageView attachments[2] = {offscreen_image_views[eye], offscreen_depth_views[eye]};
+
             // Need a framebuffer to render to
             VkFramebufferCreateInfo framebuffer_info = {
                 .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                 .renderPass = openwarp_render_pass,
-                .attachmentCount = 1,
-                .pAttachments = &offscreen_image_views[eye],
+                .attachmentCount = 2,
+                .pAttachments = attachments,
                 .width = swapchain_width / 2,
                 .height = swapchain_height,
                 .layers = 1,
@@ -1020,15 +1061,48 @@ private:
         color_attachment_ref.attachment = 0;
         color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+        VkAttachmentDescription depth_image_attachment{};
+        color_attachment.format = VK_FORMAT_R8G8B8A8_UNORM; // this should match the offscreen image
+        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        VkAttachmentReference depth_image_attachment_ref{};
+        color_attachment_ref.attachment = 1;
+        color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference color_refs[2] = {color_attachment_ref, depth_image_attachment_ref};
+
+        VkAttachmentDescription depth_attachment{};
+        color_attachment.format = VK_FORMAT_D16_UNORM; // this should match the offscreen image
+        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        color_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference depth_attachment_ref{};
+        color_attachment_ref.attachment = 2;
+        color_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &color_attachment_ref;
+        subpass.colorAttachmentCount = 2;
+        subpass.pColorAttachments = color_refs;
+        subpass.pDepthStencilAttachment = &depth_attachment_ref;
+
+        VkAttachmentReference all_attachments[3] = {color_attachment_ref, depth_image_attachment_ref, depth_attachment_ref};
 
         VkRenderPassCreateInfo render_pass_info{};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        render_pass_info.attachmentCount = 1;
-        render_pass_info.pAttachments = &color_attachment;
+        render_pass_info.attachmentCount = 3;
+        render_pass_info.pAttachments = all_attachments;
         render_pass_info.subpassCount = 1;
         render_pass_info.pSubpasses = &subpass;
         render_pass_info.dependencyCount = 0;
@@ -1319,7 +1393,12 @@ private:
     // offscreen image used as an intermediate render target
     std::array<VkImage, 2> offscreen_images{};
     std::array<VkImageView, 2> offscreen_image_views{};
-    std::array<VmaAllocation, 2> offscreen_allocs{};
+    std::array<VmaAllocation, 2> offscreen_image_allocs{};
+
+    std::array<VkImage, 2> offscreen_depths{};
+    std::array<VkImageView, 2> offscreen_depth_views{};
+    std::array<VmaAllocation, 2> offscreen_depth_allocs{};
+
     std::array<VkFramebuffer, 2> offscreen_framebuffers{};
 
     // openwarp mesh
