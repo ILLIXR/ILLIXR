@@ -10,12 +10,12 @@
 #include <optional>
 #include <utility>
 extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavutil/hwcontext.h>
-#include <libavutil/hwcontext_vulkan.h>
-#include <libavutil/opt.h>
-#include <libavutil/pixdesc.h>
+#include "libavcodec_illixr/avcodec.h"
+#include "libavformat_illixr/avformat.h"
+#include "libavutil_illixr/hwcontext.h"
+#include "libavutil_illixr/hwcontext_vulkan.h"
+#include "libavutil_illixr/opt.h"
+#include "libavutil_illixr/pixdesc.h"
 }
 
 #define OFFLOAD_RENDERING_FFMPEG_ENCODER_NAME "h264_nvenc"

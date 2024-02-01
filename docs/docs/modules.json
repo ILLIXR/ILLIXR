@@ -35,7 +35,8 @@
       "cmake_flag": "USE_DEBUGVIEW=ON",
       "dependencies": [
         "glfw3",
-        "OpenCV"
+        "OpenCV",
+        "opengl"
       ]
     },
     {
@@ -50,7 +51,6 @@
       "cmake_flag": "USE_DISPLAY_VK=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -89,7 +89,6 @@
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -123,6 +122,84 @@
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [
         "boost"
+      ]
+    },
+    {
+      "name": "offload_rendering_client",
+      "cmake_flag": "USE_OFFLOAD_RENDERING_CLIENT=ON",
+      "dependencies": [
+        "libaom",
+        "cuda-llvm",
+        "libdav1d",
+        "fontconfig",
+        "libfreetype",
+        "libfribidi",
+        "gnutls",
+        "libjack",
+        "libass",
+        "libbluray",
+        "libbs2b",
+        "libdrm",
+        "libgsm",
+        "libiec61883",
+        "libmodplug",
+        "libmp3lame",
+        "libopenjpeg",
+        "libopenmpt",
+        "libopus",
+        "libpulse",
+        "librsvg",
+        "ladspa",
+        "libssh",
+        "libv4l2",
+        "libvorbis",
+        "libvpl",
+        "libvpx",
+        "libwebp",
+        "libxml2",
+        "opencl",
+        "opengl",
+        "libxcb",
+        "libzimg"
+      ]
+    },
+    {
+      "name": "offload_rendering_server",
+      "cmake_flag": "USE_OFFLOAD_RENDERING_SERVER=ON",
+      "dependencies": [
+        "libaom",
+        "cuda-llvm",
+        "libdav1d",
+        "fontconfig",
+        "libfreetype",
+        "libfribidi",
+        "gnutls",
+        "libjack",
+        "libass",
+        "libbluray",
+        "libbs2b",
+        "libdrm",
+        "libgsm",
+        "libiec61883",
+        "libmodplug",
+        "libmp3lame",
+        "libopenjpeg",
+        "libopenmpt",
+        "libopus",
+        "libpulse",
+        "ladspa",
+        "librsvg",
+        "libssh",
+        "libv4l2",
+        "libvorbis",
+        "libvpl",
+        "libvpx",
+        "libwebp",
+        "libxcb",
+        "libxml2",
+        "libzimg",
+        "opencl",
+        "opengl"
       ]
     },
     {
@@ -239,6 +316,50 @@
       "dependencies": []
     },
     {
+      "name": "shared_memory_network_backend",
+      "cmake_flag": "USE_SHARED_MEMORY_NETWORK_BACKEND=ON",
+      "dependencies": [
+        "libaom",
+        "cuda-llvm",
+        "libdav1d",
+        "fontconfig",
+        "libfreetype",
+        "libfribidi",
+        "gnutls",
+        "libjack",
+        "libass",
+        "libbluray",
+        "libbs2b",
+        "libdrm",
+        "libgsm",
+        "libiec61883",
+        "libmodplug",
+        "libopenjpeg",
+        "libopenmpt",
+        "libopus",
+        "libpulse",
+        "librsvg",
+        "ladspa",
+        "libssh",
+        "libv4l2",
+        "libvorbis",
+        "libvpl",
+        "libvpx",
+        "libwebp",
+        "libxml2",
+        "libmp3lame",
+        "opencl",
+        "opengl",
+        "libxcb",
+        "libzimg"
+      ]
+    },
+    {
+      "name": "tcp_network_backend",
+      "cmake_flag": "USE_TCP_NETWORK_BACKEND=ON",
+      "dependencies": []
+    },
+    {
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
@@ -255,7 +376,6 @@
         "xcb-randr",
         "xkbcommon",
         "OpenXR",
-        "Vulkan",
         "libusb",
         "SDL2"
       ]
@@ -265,7 +385,6 @@
       "cmake_flag": "USE_TIMEWARP_VK=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -287,7 +406,6 @@
       "cmake_flag": "USE_VKDEMO=ON",
       "dependencies": [
         "OpenCV",
-        "Vulkan",
         "glfw3",
         "glm",
         "OpenXR",
@@ -344,6 +462,43 @@
           "CentOS": {
             "9": {
               "pkg": "boost-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "cuda-llvm": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "cuda-nvcc",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "cuda-nvcc",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "cuda-nvcc",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "cuda-nvcc",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "cuda-nvcc",
               "postnotes": "",
               "notes": ""
             }
@@ -418,6 +573,43 @@
           "CentOS": {
             "9": {
               "pkg": "fmt-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "fontconfig": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "fontconfig",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "fontconfig",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "fontconfig",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "fontconfig",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "fontconfig",
               "postnotes": "",
               "notes": ""
             }
@@ -685,6 +877,43 @@
       }
     },
     {
+      "gnutls": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "gnutls",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "gnutls",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "gnutls",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "gnutls",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "gnutls",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "gstreamer": {
         "pkg": {
           "Ubuntu": {
@@ -759,6 +988,598 @@
       }
     },
     {
+      "ladspa": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "ladspa-sdk",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "ladspa-sdk",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "ladspa-sdk",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "ladspa-sdk",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "ladspa-sdk",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libaom": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libaom-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libaom-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libaom-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libaom-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libaom-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libass": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libass-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libass-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libass-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libass-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libass-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libbluray": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libbluray-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libbluray-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libbluray-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libbluray-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libbluray-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libbs2b": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libbs2b-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libbs2b-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libbs2b-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libbs2b-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libbs2b-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libdav1d": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libdav1d-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libdav1d-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libdav1d-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libdav1d-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libdav1d-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libdrm": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libdrm-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libdrm-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libdrm-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libdrm-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libdrm-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libfreetype": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libfreetype-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libfreetype-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libfreetype-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libfreetype-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libfreetype-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libfribidi": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libfribidi-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libfribidi-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libfribidi-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libfribidi-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libfribidi-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libgsm": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libgsm1-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libgsm1-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libgsm1-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libgsm1-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libgsm1-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libiec61883": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libiec61883-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libiec61883-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libiec61883-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libiec61883-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libiec61883-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libjack": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libjack-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libjack-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libjack-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libjack-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libjack-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libmodplug": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "ibmodplug-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "ibmodplug-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "ibmodplug-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "ibmodplug-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "ibmodplug-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libmp3lame": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libmp3lame-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libmp3lame-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libmp3lame-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libmp3lame-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libmp3lame-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libopenjpeg": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libopenjp2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libopenjp2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libopenjp2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libopenjp2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libopenjp2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libopenmpt": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libopenmpt-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libopenmpt-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libopenmpt-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libopenmpt-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libopenmpt-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "libopenni2": {
         "pkg": {
           "Ubuntu": {
@@ -796,6 +1617,339 @@
       }
     },
     {
+      "libopus": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libopus-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libopus-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libopus-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libopus-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libopus-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libpulse": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libpulse-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libpulse-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libpulse-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libpulse-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libpulse-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "librsvg": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "librsvg2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "librsvg2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "librsvg2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "librsvg2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "librsvg2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libsoxr": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libsoxr-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libsoxr-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libsoxr-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libsoxr-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libsoxr-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libspeex": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libspeex-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libspeex-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libspeex-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libspeex-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libspeex-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libsrt": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libsrt-openssl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libsrt-openssl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libsrt-openssl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libsrt-openssl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libsrt-openssl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libssh": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libssh-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libssh-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libssh-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libssh-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libssh-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libsvtav1": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libsvtav1enc-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libsvtav1enc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libsvtav1enc-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libsvtav1enc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libsvtav1enc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libtheora": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libtheora-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libtheora-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libtheora-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libtheora-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libtheora-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
       "libusb": {
         "pkg": {
           "Ubuntu": {
@@ -825,6 +1979,375 @@
           "CentOS": {
             "9": {
               "pkg": "libusb1-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libv4l2": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libv4l-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libv4l-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libv4l-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libv4l-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libv4l-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libvorbis": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libvorbis-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libvorbis-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libvorbis-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libvorbis-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libvorbis-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libvpl": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libvpl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libvpl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libvpl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libvpl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libvpl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libvpx": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libvpx-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libvpx-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libvpx-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libvpx-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libvpx-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libwebp": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libwebp-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libwebp-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libwebp-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libwebp-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libwebp-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libxml2": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libxml2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libxml2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libxml2-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libxml2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libxml2-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libxcb": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libxcb1-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libxcb1-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libxcb1-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libxcb1-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libxcb1-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libzimg": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libzimg-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libzimg-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libzimg-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libzimg-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libzimg-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },    {
+      "opencl": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "ocl-icd-opencl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "ocl-icd-opencl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "ocl-icd-opencl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "ocl-icd-opencl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "ocl-icd-opencl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "opengl": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libopengl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libopengl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "libopengl-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "libopengl-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "libopengl-dev",
               "postnotes": "",
               "notes": ""
             }
@@ -1203,43 +2726,6 @@
       }
     },
     {
-      "Vulkan": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libvulkan-dev vulkan-validationlayers",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "vulkan-loader-devel vulkan-validation-layers",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
       "wayland-server": {
         "pkg": {
           "Ubuntu": {
@@ -1460,7 +2946,6 @@
           }
         }
       }
-
     }
   ],
   "profiles": [@PROFILES@]
