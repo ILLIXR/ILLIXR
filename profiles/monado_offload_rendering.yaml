@@ -3,7 +3,7 @@ plugins: offload_rendering_server,offload_rendering_client,native_renderer,tcp_n
 use_monado: true
 build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
 build_type: Release
-visualizers: openvins
+visualizers: ""
 enable_offload: False
 enable_alignment: False
 enable_verbose_errors: False
