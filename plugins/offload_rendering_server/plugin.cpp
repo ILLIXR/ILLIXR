@@ -27,7 +27,13 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))}
         , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {
-
+        // Only encode and pass depth if requested - otherwise skip it.
+        pass_depth = std::getenv("ILLIXR_ENCODE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_ENCODE_DEPTH_IMAGES"));
+        if (pass_depth) {
+            log->debug("Encoding depth images for the client");
+        } else {
+            log->debug("Not encoding depth images for the client");
+        }
     }
 
     void start() override {
@@ -174,11 +180,17 @@ protected:
         last_frame_ind = ind;
 
         for (auto eye = 0; eye < 2; eye++) {
-            auto ret = av_hwframe_transfer_data(encode_src_frames[eye], avvkframes[ind][eye].frame, 0);
+            auto ret = av_hwframe_transfer_data(encode_src_color_frames[eye], avvk_color_frames[ind][eye].frame, 0);
             AV_ASSERT_SUCCESS(ret);
 //            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
 //                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
-            encode_src_frames[eye]->pts = frame_count++;
+            encode_src_color_frames[eye]->pts = frame_count++;
+
+            if (pass_depth) {
+                ret = av_hwframe_transfer_data(encode_src_depth_frames[eye], avvk_depth_frames[ind][eye].frame, 0);
+                AV_ASSERT_SUCCESS(ret);
+                encode_src_color_frames[eye]->pts = frame_count++;
+            }
         }
 //        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},
 //                                                         {avvkframes[ind][1].vk_frame->sem[0], avvkframes[ind][1].vk_frame->sem_value[0]}});
@@ -187,20 +199,36 @@ protected:
         buffer_pool->post_processing_release_image(ind);
         auto encode_start_time = std::chrono::high_resolution_clock::now();
         for (auto eye = 0; eye < 2; eye++) {
-            auto ret = avcodec_send_frame(codec_ctx, encode_src_frames[eye]);
+            auto ret = avcodec_send_frame(codec_color_ctx, encode_src_color_frames[eye]);
             if (ret == AVERROR(EAGAIN)) {
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
             }
             AV_ASSERT_SUCCESS(ret);
+
+            if (pass_depth) {
+                ret = avcodec_send_frame(codec_depth_ctx, encode_src_depth_frames[eye]);
+                if (ret == AVERROR(EAGAIN)) {
+                    throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
+                }
+                AV_ASSERT_SUCCESS(ret);
+            }
         }
 
         // receive packets
         for (auto eye = 0; eye < 2; eye++) {
-            auto ret = avcodec_receive_packet(codec_ctx, encode_out_packets[eye]);
+            auto ret = avcodec_receive_packet(codec_color_ctx, encode_out_color_packets[eye]);
             if (ret == AVERROR(EAGAIN)) {
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN when receiving packets. This should never happen."};
             }
             AV_ASSERT_SUCCESS(ret);
+
+            if (pass_depth) {
+                ret = avcodec_receive_packet(codec_depth_ctx, encode_out_depth_packets[eye]);
+                if (ret == AVERROR(EAGAIN)) {
+                    throw std::runtime_error{"FFmpeg encoder returned EAGAIN when receiving packets. This should never happen."};
+                }
+                AV_ASSERT_SUCCESS(ret);
+            }
         }
         auto encode_end_time = std::chrono::high_resolution_clock::now();
 
@@ -239,16 +267,23 @@ private:
     switchboard::network_writer<compressed_frame>   frames_topic;
     switchboard::reader<fast_pose_type>                  render_pose;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
-    std::vector<std::array<ffmpeg_vk_frame, 2>>     avvkframes;
+    std::vector<std::array<ffmpeg_vk_frame, 2>>     avvk_color_frames;
+    std::vector<std::array<ffmpeg_vk_frame, 2>>     avvk_depth_frames;
+
+    bool pass_depth = false;
 
     AVBufferRef* device_ctx;
     AVBufferRef* cuda_device_ctx;
     AVBufferRef* frame_ctx;
     AVBufferRef* cuda_frame_ctx;
 
-    AVCodecContext*          codec_ctx;
-    std::array<AVFrame*, 2>  encode_src_frames;
-    std::array<AVPacket*, 2> encode_out_packets;
+    AVCodecContext*          codec_color_ctx;
+    std::array<AVFrame*, 2>  encode_src_color_frames;
+    std::array<AVPacket*, 2> encode_out_color_packets;
+
+    AVCodecContext*          codec_depth_ctx;
+    std::array<AVFrame*, 2>  encode_src_depth_frames;
+    std::array<AVPacket*, 2> encode_out_depth_packets;
 
     uint64_t frame_count = 0;
 
@@ -262,7 +297,12 @@ private:
 
     void enqueue_for_network_send(fast_pose_type& pose) {
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-        frames_topic.put(std::make_shared<compressed_frame>(encode_out_packets[0], encode_out_packets[1], pose, timestamp));
+        if (pass_depth) {
+            frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], 
+                                                                encode_out_depth_packets[0], encode_out_depth_packets[1], pose, timestamp));
+        } else {
+            frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], pose, timestamp));
+        }
 
         // av_packet_free(&pkt);
     }
@@ -371,13 +411,14 @@ private:
 
     void ffmpeg_init_buffer_pool() {
         assert(this->buffer_pool != nullptr);
-        avvkframes.resize(buffer_pool->image_pool.size());
+        avvk_color_frames.resize(buffer_pool->image_pool.size());
+        avvk_depth_frames.resize(buffer_pool->depth_image_pool.size());
         for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
             for (size_t eye = 0; eye < 2; eye++) {
                 // Create AVVkFrame
                 auto vk_frame = av_vk_frame_alloc();
                 if (!vk_frame) {
-                    throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
+                    throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame for color image"};
                 }
                 // The image index is just 0 here for AVVKFrame since we're not using multi-plane
                 vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
@@ -393,12 +434,12 @@ private:
                 vk_frame->sem_value[0] = 0;
                 vk_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
 
-                avvkframes[i][eye].vk_frame = vk_frame;
+                avvk_color_frames[i][eye].vk_frame = vk_frame;
 
                 // Create AVFrame
                 auto av_frame = av_frame_alloc();
                 if (!av_frame) {
-                    throw std::runtime_error{"Failed to allocate FFmpeg frame"};
+                    throw std::runtime_error{"Failed to allocate FFmpeg frame for color image"};
                 }
                 av_frame->format        = AV_PIX_FMT_VULKAN;
                 av_frame->width         = buffer_pool->image_pool[i][eye].image_info.extent.width;
@@ -408,22 +449,70 @@ private:
                 av_frame->buf[0]        = av_buffer_create(
                     av_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
                 av_frame->pts            = 0;
-                avvkframes[i][eye].frame = av_frame;
+                avvk_color_frames[i][eye].frame = av_frame;
+
+                // Do the same for depth if needed
+                if (pass_depth) {
+                    auto vk_depth_frame = av_vk_frame_alloc();
+                    if (!vk_depth_frame) {
+                        throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame for depth image"};
+                    }
+
+                    vk_depth_frame->img[0]          = buffer_pool->depth_image_pool[i][eye].image;
+                    vk_depth_frame->tiling          = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
+                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
+                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].allocation_info.size;
+                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].allocation_info.offset;
+                    vk_depth_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
+
+                    // VkExportSemaphoreCreateInfo export_semaphore_create_info{
+                    // VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
+                    vk_depth_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                    vk_depth_frame->sem_value[0] = 0;
+                    vk_depth_frame->layout[0]    = VK_IMAGE_LAYOUT_UNDEFINED;
+
+                    avvk_depth_frames[i][eye].vk_frame = vk_depth_frame;
+
+                    // Create AVFrame
+                    auto av_depth_frame = av_frame_alloc();
+                    if (!av_depth_frame) {
+                        throw std::runtime_error{"Failed to allocate FFmpeg frame for depth image"};
+                    }
+                    av_depth_frame->format        = AV_PIX_FMT_VULKAN;
+                    av_depth_frame->width         = buffer_pool->depth_image_pool[i][eye].image_info.extent.width;
+                    av_depth_frame->height        = buffer_pool->depth_image_pool[i][eye].image_info.extent.height;
+                    av_depth_frame->hw_frames_ctx = av_buffer_ref(frame_ctx);
+                    av_depth_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_depth_frame);
+                    av_depth_frame->buf[0]        = av_buffer_create(
+                        av_depth_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
+                    av_depth_frame->pts            = 0;
+                    avvk_depth_frames[i][eye].frame = av_depth_frame;
+                }
             }
         }
 
         for (size_t eye = 0; eye < 2; eye++) {
-            encode_src_frames[eye]                = av_frame_alloc();
-            encode_src_frames[eye]->format        = AV_PIX_FMT_CUDA;
-            encode_src_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
-            encode_src_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
-            encode_src_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+            encode_src_color_frames[eye]                = av_frame_alloc();
+            encode_src_color_frames[eye]->format        = AV_PIX_FMT_CUDA;
+            encode_src_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+            encode_src_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+            encode_src_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
             // encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
-            auto ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_frames[eye], 0);
+            auto ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
             // std::cout << encode_src_frames[eye]->data[0] << std::endl;
             // auto ret = av_frame_get_buffer(encode_src_frames[eye], 0);
             // AV_ASSERT_SUCCESS(ret);
+
+            if (pass_depth) {
+                encode_src_depth_frames[eye]                = av_frame_alloc();
+                encode_src_depth_frames[eye]->format        = AV_PIX_FMT_CUDA;
+                encode_src_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+                encode_src_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
+                encode_src_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
+                ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_depth_frames[eye], 0);
+                AV_ASSERT_SUCCESS(ret);
+            }
         }
     }
 
@@ -432,28 +521,29 @@ private:
         if (!encoder) {
             throw std::runtime_error{"Failed to find FFmpeg encoder"};
         }
-        this->codec_ctx = avcodec_alloc_context3(encoder);
-        if (!codec_ctx) {
-            throw std::runtime_error{"Failed to allocate FFmpeg encoder context"};
+
+        this->codec_color_ctx = avcodec_alloc_context3(encoder);
+        if (!codec_color_ctx) {
+            throw std::runtime_error{"Failed to allocate FFmpeg encoder context for color images"};
         }
 
-        codec_ctx->thread_count = 0; // auto
-        codec_ctx->thread_type  = FF_THREAD_SLICE;
+        codec_color_ctx->thread_count = 0; // auto
+        codec_color_ctx->thread_type  = FF_THREAD_SLICE;
 
-        codec_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
-        codec_ctx->sw_pix_fmt    = AV_PIX_FMT_BGRA;
-        codec_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
-        codec_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
-        codec_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-        codec_ctx->time_base     = {1, 60}; // 60 fps
-        codec_ctx->framerate     = {60, 1};
-        codec_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
+        codec_color_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
+        codec_color_ctx->sw_pix_fmt    = AV_PIX_FMT_BGRA;
+        codec_color_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+        codec_color_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+        codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+        codec_color_ctx->time_base     = {1, 60}; // 60 fps
+        codec_color_ctx->framerate     = {60, 1};
+        codec_color_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
 
         // Set zero latency
-        codec_ctx->max_b_frames = 0;
-        codec_ctx->gop_size     = 0; // intra-only for now
-        av_opt_set_int(codec_ctx->priv_data, "zerolatency", 1, 0);
-        av_opt_set_int(codec_ctx->priv_data, "delay", 0, 0);
+        codec_color_ctx->max_b_frames = 0;
+        codec_color_ctx->gop_size     = 0; // intra-only for now
+        av_opt_set_int(codec_color_ctx->priv_data, "zerolatency", 1, 0);
+        av_opt_set_int(codec_color_ctx->priv_data, "delay", 0, 0);
 
         // Set encoder profile
         // av_opt_set(codec_ctx->priv_data, "profile", "high", 0);
@@ -461,8 +551,42 @@ private:
         // Set encoder preset
         // av_opt_set(codec_ctx->priv_data, "preset", "fast", 0);
 
-        auto ret = avcodec_open2(codec_ctx, encoder, nullptr);
+        auto ret = avcodec_open2(codec_color_ctx, encoder, nullptr);
         AV_ASSERT_SUCCESS(ret);
+
+        if (pass_depth) {
+            this->codec_depth_ctx = avcodec_alloc_context3(encoder);
+            if (!codec_depth_ctx) {
+                throw std::runtime_error{"Failed to allocate FFmpeg encoder context for color images"};
+            }
+
+            codec_depth_ctx->thread_count = 0; // auto
+            codec_depth_ctx->thread_type  = FF_THREAD_SLICE;
+
+            codec_depth_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
+            codec_depth_ctx->sw_pix_fmt    = AV_PIX_FMT_BGRA;
+            codec_depth_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
+            codec_depth_ctx->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
+            codec_depth_ctx->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
+            codec_depth_ctx->time_base     = {1, 60}; // 60 fps
+            codec_depth_ctx->framerate     = {60, 1};
+            codec_depth_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
+
+            // Set zero latency
+            codec_depth_ctx->max_b_frames = 0;
+            codec_depth_ctx->gop_size     = 0; // intra-only for now
+            av_opt_set_int(codec_depth_ctx->priv_data, "zerolatency", 1, 0);
+            av_opt_set_int(codec_depth_ctx->priv_data, "delay", 0, 0);
+
+            // Set encoder profile
+            // av_opt_set(codec_ctx->priv_data, "profile", "high", 0);
+
+            // Set encoder preset
+            // av_opt_set(codec_ctx->priv_data, "preset", "fast", 0);
+
+            ret = avcodec_open2(codec_depth_ctx, encoder, nullptr);
+            AV_ASSERT_SUCCESS(ret);
+        }
     }
 };
 

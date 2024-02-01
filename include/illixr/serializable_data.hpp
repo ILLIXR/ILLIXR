@@ -20,8 +20,13 @@ extern "C" {
 
 namespace ILLIXR {
 struct compressed_frame : public switchboard::event {
-    AVPacket* left;
-    AVPacket* right;
+    AVPacket* left_color;
+    AVPacket* right_color;
+
+    bool use_depth;
+    AVPacket* left_depth;
+    AVPacket* right_depth;
+    
     fast_pose_type pose;
     uint64_t sent_time;
 
@@ -74,8 +79,12 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     void save(Archive& ar, const unsigned int version) const {
         ar << boost::serialization::base_object<switchboard::event>(*this);
-        save_packet(ar, left);
-        save_packet(ar, right);
+        save_packet(ar, left_color);
+        save_packet(ar, right_color);
+        if (use_depth) {
+            save_packet(ar, left_depth);
+            save_packet(ar, right_depth);
+        }
         ar << pose;
         ar << sent_time;
     }
@@ -83,10 +92,16 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     void load(Archive& ar, const unsigned int version) {
         ar >> boost::serialization::base_object<switchboard::event>(*this);
-        left = av_packet_alloc();
-        load_packet(ar, left);
-        right = av_packet_alloc();
-        load_packet(ar, right);
+        left_color = av_packet_alloc();
+        load_packet(ar, left_color);
+        right_color = av_packet_alloc();
+        load_packet(ar, right_color);
+        if (use_depth) {
+            left_depth = av_packet_alloc();
+            load_packet(ar, left_depth);
+            right_depth = av_packet_alloc();
+            load_packet(ar, right_depth);
+        }
         ar >> pose;
         ar >> sent_time;
     }
@@ -95,9 +110,21 @@ struct compressed_frame : public switchboard::event {
 
     compressed_frame() = default;
 
-    compressed_frame(AVPacket* left, AVPacket* right, const fast_pose_type& pose, uint64_t sent_time)
-        : left(left)
-        , right(right)
+    compressed_frame(AVPacket* left_color, AVPacket* right_color, const fast_pose_type& pose, uint64_t sent_time)
+        : left_color(left_color)
+        , right_color(right_color)
+        , use_depth(false)
+        , left_depth(nullptr)
+        , right_depth(nullptr)
+        , pose(pose)
+        , sent_time(sent_time) { }
+
+    compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth, const fast_pose_type& pose, uint64_t sent_time)
+        : left_color(left_color)
+        , right_color(right_color)
+        , use_depth(true)
+        , left_depth(left_depth)
+        , right_depth(right_depth)
         , pose(pose)
         , sent_time(sent_time) { }
 };
