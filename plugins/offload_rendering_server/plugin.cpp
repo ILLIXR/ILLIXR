@@ -28,7 +28,7 @@ public:
         , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))}
         , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {
         // Only encode and pass depth if requested - otherwise skip it.
-        pass_depth = std::getenv("ILLIXR_ENCODE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_ENCODE_DEPTH_IMAGES"));
+        pass_depth = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
         if (pass_depth) {
             log->debug("Encoding depth images for the client");
         } else {
