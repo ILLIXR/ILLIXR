@@ -70,7 +70,9 @@ public:
         ffmpeg_init_buffer_pool();
         ffmpeg_init_encoder();
         for (auto eye = 0; eye < 2; eye++) {
-            encode_out_packets[eye] = av_packet_alloc();
+            encode_out_color_packets[eye] = av_packet_alloc();
+            if (pass_depth)
+                encode_out_depth_packets[eye] = av_packet_alloc();
         }
     }
 
@@ -79,9 +81,16 @@ public:
     }
 
     void destroy() override {
-        for (auto& frame : avvkframes) {
+        for (auto& frame : avvk_color_frames) {
             for (auto& eye : frame) {
                 av_frame_free(&eye.frame);
+            }
+        }
+        if (pass_depth) {
+            for (auto& frame : avvk_depth_frames) {
+                for (auto& eye : frame) {
+                    av_frame_free(&eye.frame);
+                }
             }
         }
         av_buffer_unref(&frame_ctx);
@@ -125,6 +134,9 @@ public:
     pose_type correct_pose(const pose_type& pose) const override {
         return pose_type();
     }
+
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {}
+    void update_uniforms(const pose_type& render_pose) override {}
 
 protected:
     skip_option _p_should_skip() override {
@@ -588,6 +600,8 @@ private:
             AV_ASSERT_SUCCESS(ret);
         }
     }
+
+
 };
 
 class offload_rendering_server_loader

@@ -67,7 +67,7 @@ public:
 
         for (auto& frame : avvk_color_frames) {
             for (auto& eye : frame) {
-                auto cmd_buf  = vulkan::begin_one_time_command(dp->vk_device, command_pool);
+                auto cmd_buf = vulkan::begin_one_time_command(dp->vk_device, command_pool);
                 transition_layout(cmd_buf, eye.frame, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 vulkan::end_one_time_command(dp->vk_device, command_pool, dp->queues[vulkan::queue::GRAPHICS], cmd_buf);
             }
@@ -76,7 +76,7 @@ public:
         if (use_depth) {
             for (auto& frame : avvk_depth_frames) {
                 for (auto& eye : frame) {
-                    auto cmd_buf  = vulkan::begin_one_time_command(dp->vk_device, command_pool);
+                    auto cmd_buf = vulkan::begin_one_time_command(dp->vk_device, command_pool);
                     transition_layout(cmd_buf, eye.frame, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                     vulkan::end_one_time_command(dp->vk_device, command_pool, dp->queues[vulkan::queue::GRAPHICS], cmd_buf);
                 }
@@ -91,25 +91,28 @@ public:
                 begin_info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
                 vkBeginCommandBuffer(layout_transition_start_cmd_bufs[i][eye], &begin_info);
                 transition_layout(layout_transition_start_cmd_bufs[i][eye], avvk_color_frames[i][eye].frame,
-                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
                 if (use_depth) {
                     transition_layout(layout_transition_start_cmd_bufs[i][eye], avvk_depth_frames[i][eye].frame,
-                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
                 }
                 vkEndCommandBuffer(layout_transition_start_cmd_bufs[i][eye]);
 
                 layout_transition_end_cmd_bufs[i][eye] = vulkan::create_command_buffer(dp->vk_device, command_pool);
                 vkBeginCommandBuffer(layout_transition_end_cmd_bufs[i][eye], &begin_info);
                 transition_layout(layout_transition_end_cmd_bufs[i][eye], avvk_color_frames[i][eye].frame,
-                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 if (use_depth) {
                     transition_layout(layout_transition_end_cmd_bufs[i][eye], avvk_depth_frames[i][eye].frame,
-                                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 }
                 vkEndCommandBuffer(layout_transition_end_cmd_bufs[i][eye]);
             }
         }
     }
+
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {}
+    void update_uniforms(const pose_type& render_pose) override {}
 
     bool is_external() override {
         return true;
