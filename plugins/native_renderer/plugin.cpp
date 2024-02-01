@@ -735,15 +735,12 @@ private:
             0,                                 // flags
             ds->swapchain_image_format.format, // format
             VK_SAMPLE_COUNT_1_BIT,             // samples
-            VK_ATTACHMENT_LOAD_OP_LOAD,        // loadOp
+            VK_ATTACHMENT_LOAD_OP_CLEAR,        // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
             VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp
-
-            // to-do: this should be addressed but it's not so simple
-            // because the same image may be re-used for two render passes.
-            VK_IMAGE_LAYOUT_GENERAL, // initialLayout
-            VK_IMAGE_LAYOUT_GENERAL  // finalLayout
+            VK_IMAGE_LAYOUT_UNDEFINED, // initialLayout
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR  // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{

@@ -229,8 +229,9 @@ public:
         num_record_calls++;
 
         VkDeviceSize offsets = 0;
-        VkClearValue clear_color;
-        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+        VkClearValue clear_colors[2];
+        clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+        clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
         // First render OpenWarp offscreen for a distortion correction pass later
         VkRenderPassBeginInfo ow_render_pass_info{};
@@ -241,8 +242,8 @@ public:
         ow_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
         ow_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
         ow_render_pass_info.framebuffer = offscreen_framebuffers[left ? 0 : 1];
-        ow_render_pass_info.clearValueCount = 1;
-        ow_render_pass_info.pClearValues = &clear_color;
+        ow_render_pass_info.clearValueCount = 2;
+        ow_render_pass_info.pClearValues = clear_colors;
 
         VkViewport ow_viewport{};
         ow_viewport.x = 0;
@@ -271,6 +272,9 @@ public:
         vkCmdEndRenderPass(commandBuffer);
         
         // Then perform distortion correction to the framebuffer expected by Monado
+        VkClearValue clear_color;
+        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+
         VkRenderPassBeginInfo dc_render_pass_info{};
         dc_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         dc_render_pass_info.renderPass = distortion_correction_render_pass;
@@ -384,7 +388,7 @@ private:
             VkImageViewCreateInfo depth_view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
             depth_view_info.image = offscreen_depths[eye];
             depth_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            depth_view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
+            depth_view_info.format = VK_FORMAT_D16_UNORM;
             depth_view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
             depth_view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
             depth_view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
