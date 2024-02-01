@@ -303,7 +303,7 @@ public:
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, &offsets);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, dc_pipeline_layout, 0, 1,
-                                &dc_descriptor_sets[!left][buffer_ind], 0, nullptr);
+                                &dc_descriptor_sets[!left][0], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, dc_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
         vkCmdEndRenderPass(commandBuffer);
@@ -852,7 +852,8 @@ private:
         depthLayoutBinding.binding                      = 1;
         depthLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         depthLayoutBinding.descriptorCount              = 1;
-        depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT;
+        depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        // depthLayoutBinding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT;
 
         VkDescriptorSetLayoutBinding matrixUboLayoutBinding = {};
         matrixUboLayoutBinding.binding                      = 2;

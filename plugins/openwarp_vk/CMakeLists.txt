@@ -7,7 +7,7 @@ set(PLUGIN_NAME plugin.openwarp_vk${ILLIXR_BUILD_SUFFIX})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(FullVulkan REQUIRED)
+get_external_for_plugin(Vulkan)
 if(USE_MONADO)
     get_external_for_plugin(Monado_vk)
 endif()

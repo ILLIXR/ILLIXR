@@ -317,9 +317,10 @@ private:
 
             for (auto eye = 0; eye < 2; eye++) {
                 assert(app_pass != VK_NULL_HANDLE);
-                std::array<VkClearValue, 2> clear_values = {};
+                std::array<VkClearValue, 3> clear_values = {};
                 clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
-                clear_values[1].depthStencil             = {rendering_params::reverse_z ? 0.0f : 1.0f, 0};
+                clear_values[1].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
+                clear_values[2].depthStencil             = {rendering_params::reverse_z ? 0.0f : 1.0f, 0};
 
                 VkRenderPassBeginInfo render_pass_info{
                     VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
@@ -336,7 +337,8 @@ private:
 
                 vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
                 // Call app service to record the command buffer
-                src->record_command_buffer(app_command_buffer, offscreen_framebuffers[buffer_index][eye], buffer_index, eye == 0);
+                src->record_command_buffer(app_command_buffer, offscreen_framebuffers[buffer_index][eye], buffer_index,
+                                           eye == 0);
                 vkCmdEndRenderPass(app_command_buffer);
             }
             VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
@@ -351,12 +353,13 @@ private:
             0,                                           // flags
             nullptr                                      // pInheritanceInfo
         };
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info)) 
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info))
 
         for (auto eye = 0; eye < 2; eye++) {
-            tw->record_command_buffer(timewarp_command_buffer, swapchain_framebuffers[swapchain_image_index], buffer_index, eye == 0);
+            tw->record_command_buffer(timewarp_command_buffer, swapchain_framebuffers[swapchain_image_index], buffer_index,
+                                      eye == 0);
         }
-        
+
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer))
     }
 
@@ -484,7 +487,8 @@ private:
         };
 
         uint32_t                mem_type_index;
-        VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT, .usage = VMA_MEMORY_USAGE_GPU_ONLY};
+        VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+                                           .usage = VMA_MEMORY_USAGE_GPU_ONLY};
         vmaFindMemoryTypeIndexForImageInfo(ds->vma_allocator, &sample_create_info, &alloc_info, &mem_type_index);
 
         offscreen_export_mem_alloc_info.sType       = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
@@ -585,7 +589,8 @@ private:
 
         for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
             for (auto eye = 0; eye < 2; eye++) {
-                std::array<VkImageView, 3> attachments = {offscreen_images[i][eye].image_view, depth_images[i][eye].image_view, depth_attachment_images[i][eye].image_view};
+                std::array<VkImageView, 3> attachments = {offscreen_images[i][eye].image_view, depth_images[i][eye].image_view,
+                                                          depth_attachment_images[i][eye].image_view};
 
                 VkFramebufferCreateInfo framebuffer_info{
                     VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
@@ -730,15 +735,15 @@ private:
             0,                                 // flags
             ds->swapchain_image_format.format, // format
             VK_SAMPLE_COUNT_1_BIT,             // samples
-            VK_ATTACHMENT_LOAD_OP_LOAD,       // loadOp
+            VK_ATTACHMENT_LOAD_OP_LOAD,        // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
             VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp
 
             // to-do: this should be addressed but it's not so simple
             // because the same image may be re-used for two render passes.
-            VK_IMAGE_LAYOUT_GENERAL,         // initialLayout
-            VK_IMAGE_LAYOUT_GENERAL    // finalLayout
+            VK_IMAGE_LAYOUT_GENERAL, // initialLayout
+            VK_IMAGE_LAYOUT_GENERAL  // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{

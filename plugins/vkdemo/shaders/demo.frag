@@ -12,5 +12,5 @@ layout(push_constant) uniform PER_OBJECT { int tex_ind; } pc;
 void main() {
     // Sample the texture at the interpolated coordinate
     outColor = texture(sampler2D(tex[pc.tex_ind], samp), uv);
-    outDepth = vec4(gl_FragDepth);
+    outDepth = vec4(vec3(gl_FragDepth), 1.0f);
 }
