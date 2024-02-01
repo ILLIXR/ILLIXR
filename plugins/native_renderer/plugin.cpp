@@ -319,8 +319,11 @@ private:
                 assert(app_pass != VK_NULL_HANDLE);
                 std::array<VkClearValue, 3> clear_values = {};
                 clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
-                clear_values[1].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
-                clear_values[2].depthStencil             = {rendering_params::reverse_z ? 0.0f : 1.0f, 0};
+
+                // Make sure the depth image is also cleared correctly
+                float clear_depth = rendering_params::reverse_z ? 0.0f : 1.0f;
+                clear_values[1].color                    = {{clear_depth, clear_depth, clear_depth, 1.0f}};
+                clear_values[2].depthStencil.depth       = clear_depth;
 
                 VkRenderPassBeginInfo render_pass_info{
                     VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
