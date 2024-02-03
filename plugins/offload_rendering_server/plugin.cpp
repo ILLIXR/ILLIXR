@@ -23,7 +23,7 @@ class offload_rendering_server
 public:
     offload_rendering_server(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
-        , log{spdlogger(nullptr)}
+        , log{spdlogger("debug")}
         , sb{pb->lookup_impl<switchboard>()}
         , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))}
         , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {

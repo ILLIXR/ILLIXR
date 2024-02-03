@@ -80,6 +80,7 @@ public:
         : pb{pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
+        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
@@ -153,7 +154,8 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        auto next_vsync = _m_vsync.get_ro_nullable();
+        const pose_type latest_pose       = disable_warp ? render_pose : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -763,6 +765,7 @@ private:
     const phonebook* const                    pb;
     const std::shared_ptr<switchboard>        sb;
     const std::shared_ptr<pose_prediction>    pp;
+    switchboard::reader<switchboard::event_wrapper<time_point>>                   _m_vsync;
     bool                                      disable_warp = false;
     std::shared_ptr<vulkan::display_provider> ds           = nullptr;
     std::mutex                                m_setup;
