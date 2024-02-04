@@ -345,7 +345,7 @@ protected:
                 // dst_linesizes[0] = y_step;
                 // dst_linesizes[1] = u_step;
                 // dst_linesizes[2] = v_step;
-                ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_depth_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
+                ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc_depth, decode_out_depth_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
                 assert(ret == NPP_SUCCESS);
                 auto dst_depth = reinterpret_cast<Npp8u*>(decode_converted_depth_frames[eye]->data[0]);
                 ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst_depth, decode_converted_depth_frames[eye]->linesize[0], roi);

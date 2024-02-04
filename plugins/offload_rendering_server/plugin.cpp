@@ -201,7 +201,7 @@ protected:
             if (pass_depth) {
                 ret = av_hwframe_transfer_data(encode_src_depth_frames[eye], avvk_depth_frames[ind][eye].frame, 0);
                 AV_ASSERT_SUCCESS(ret);
-                encode_src_color_frames[eye]->pts = frame_count++;
+                encode_src_depth_frames[eye]->pts = frame_count++;
             }
         }
 //        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},

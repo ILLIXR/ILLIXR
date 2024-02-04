@@ -81,6 +81,7 @@ struct compressed_frame : public switchboard::event {
         ar << boost::serialization::base_object<switchboard::event>(*this);
         save_packet(ar, left_color);
         save_packet(ar, right_color);
+        ar << use_depth;
         if (use_depth) {
             save_packet(ar, left_depth);
             save_packet(ar, right_depth);
@@ -96,6 +97,7 @@ struct compressed_frame : public switchboard::event {
         load_packet(ar, left_color);
         right_color = av_packet_alloc();
         load_packet(ar, right_color);
+        ar >> use_depth;
         if (use_depth) {
             left_depth = av_packet_alloc();
             load_packet(ar, left_depth);
