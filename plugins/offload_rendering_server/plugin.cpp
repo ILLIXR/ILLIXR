@@ -522,6 +522,7 @@ private:
                 encode_src_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
                 encode_src_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
                 encode_src_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
+                encode_src_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
                 ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
             }
