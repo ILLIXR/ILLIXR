@@ -375,12 +375,21 @@ protected:
             }
             submit_command_buffer(layout_transition_end_cmd_bufs[ind][eye]);
             decode_out_color_frames[eye]->pts = frame_count++;
-            decode_out_depth_frames[eye]->pts = frame_count++;
+
+            if (use_depth)
+                decode_out_depth_frames[eye]->pts = frame_count++;
         }
-        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
+
+        if (use_depth) {
+            vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
                                                          {avvk_color_frames[ind][1].vk_frame->sem[0], avvk_color_frames[ind][1].vk_frame->sem_value[0]},
                                                          {avvk_depth_frames[ind][0].vk_frame->sem[0], avvk_depth_frames[ind][0].vk_frame->sem_value[0]},
                                                          {avvk_depth_frames[ind][1].vk_frame->sem[0], avvk_depth_frames[ind][1].vk_frame->sem_value[0]}});
+        } else {
+            vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
+                                                         {avvk_color_frames[ind][1].vk_frame->sem[0], avvk_color_frames[ind][1].vk_frame->sem_value[0]}});
+        }
+
         auto transfer_end = std::chrono::high_resolution_clock::now();
         buffer_pool->src_release_image(ind, std::move(pose));
 //        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
