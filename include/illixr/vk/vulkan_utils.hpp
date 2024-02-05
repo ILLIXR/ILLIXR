@@ -45,15 +45,9 @@ public:
     struct queue_families {
         std::optional<uint32_t> graphics_family;
         std::optional<uint32_t> present_family;
-        std::optional<uint32_t> encode_family;
-        std::optional<uint32_t> decode_family;
 
         bool has_presentation() {
             return graphics_family.has_value() && present_family.has_value();
-        }
-
-        bool has_compression() {
-            return graphics_family && encode_family.has_value() && decode_family.has_value();
         }
     };
 
@@ -61,8 +55,6 @@ public:
         enum queue_type {
             GRAPHICS,
             PRESENT,
-            ENCODE,
-            DECODE
         };
 
         VkQueue vk_queue;
@@ -397,16 +389,6 @@ public:
             if (queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphics_family = i;
             }
-
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-            if (queue_family.queueFlags & VK_QUEUE_VIDEO_DECODE_BIT_KHR) {
-                indices.encode_family = i;
-            }
-
-            if (queue_family.queueFlags & VK_QUEUE_VIDEO_ENCODE_BIT_KHR) {
-                indices.decode_family = i;
-            }
-#endif
 
             VkBool32 present_support = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, i, vk_surface, &present_support);
