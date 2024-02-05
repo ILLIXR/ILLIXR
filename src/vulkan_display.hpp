@@ -276,11 +276,6 @@ private:
         std::set<uint32_t> unique_queue_families = {indices.graphics_family.value(),
                                                        indices.present_family.value()};
 
-        if (indices.has_compression()) {
-            unique_queue_families.insert(indices.encode_family.value());
-            unique_queue_families.insert(indices.decode_family.value());
-        }
-
         float queue_priority = 1.0f;
         for (uint32_t queue_family : unique_queue_families) {
             VkDeviceQueueCreateInfo queue_create_info{};
@@ -324,20 +319,6 @@ private:
             present_queue.family = indices.present_family.value();
             present_queue.type   = vulkan::vulkan_utils::queue::PRESENT;
             queues[present_queue.type] = present_queue;
-        }
-
-        if (indices.has_compression()) {
-            vulkan::vulkan_utils::queue encode_queue{};
-            vkGetDeviceQueue(vk_device, indices.encode_family.value(), 0, &encode_queue.vk_queue);
-            encode_queue.family = indices.encode_family.value();
-            encode_queue.type   = vulkan::vulkan_utils::queue::ENCODE;
-            queues[encode_queue.type] = encode_queue;
-
-            vulkan::vulkan_utils::queue decode_queue{};
-            vkGetDeviceQueue(vk_device, indices.decode_family.value(), 0, &decode_queue.vk_queue);
-            decode_queue.family = indices.decode_family.value();
-            decode_queue.type   = vulkan::vulkan_utils::queue::DECODE;
-            queues[decode_queue.type] = decode_queue;
         }
 
         vma_allocator = vulkan::vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
