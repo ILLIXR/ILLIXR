@@ -270,6 +270,10 @@ public:
         vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_openwarp_indices, 1, 0, 0, 0);
         vkCmdEndRenderPass(commandBuffer);
+
+        // Make sure to avoid read over writes
+        vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+                            0, nullptr, 0, nullptr, 1, &offscreen_barriers[!left]);
         
         // Then perform distortion correction to the framebuffer expected by Monado
         VkClearValue clear_color;
@@ -415,6 +419,17 @@ private:
             };
 
             VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]));
+
+            // Need a pipeline barrier between Openwarp and distortion correction to avoid memory read-write hazards
+            offscreen_barriers[eye] = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                .srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT,
+                .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+                .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                .image = offscreen_images[eye],
+                .subresourceRange = view_info.subresourceRange,
+            };
         }
     }
 
@@ -1392,6 +1407,7 @@ private:
     std::array<VmaAllocation, 2> offscreen_depth_allocs{};
 
     std::array<VkFramebuffer, 2> offscreen_framebuffers{};
+    std::array<VkImageMemoryBarrier, 2> offscreen_barriers{};
 
     // openwarp mesh
     VkPipelineLayout  ow_pipeline_layout{};
