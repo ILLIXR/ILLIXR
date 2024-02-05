@@ -397,10 +397,6 @@ public:
                 indices.present_family = i;
             }
 
-            if (indices.has_compression()) {
-                break;
-            }
-
             i++;
         }
 
