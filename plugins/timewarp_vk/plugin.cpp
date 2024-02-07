@@ -129,6 +129,7 @@ public:
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
+        timewarp_render_pass = render_pass;
     }
 
     void partial_destroy() {
@@ -178,8 +179,41 @@ public:
         memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
+
+        VkDeviceSize offsets = 0;
+        VkClearValue clear_color;
+        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        VkRenderPassBeginInfo render_pass_info{};
+        render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        render_pass_info.renderPass = render_pass;
+        render_pass_info.renderArea.offset.x = 0;
+        render_pass_info.renderArea.offset.y = 0;
+        render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width);
+        render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
+        render_pass_info.framebuffer = framebuffer
+        render_pass_info.clearValueCount = 1;
+        render_pass_info.pClearValues = &clear_color;
+
+        VkViewport viewport{};
+        viewport.x = 0;
+	    viewport.y = 0;
+	    viewport.width = static_cast<uint32_t>(swapchain_width);
+	    viewport.height = static_cast<uint32_t>(swapchain_height);
+	    viewport.minDepth = 0.0f;
+	    viewport.maxDepth = 1.0f;
+
+        VkRect2D scissor{};
+        scissor.offset.x = 0;
+        scissor.offset.y = 0; 
+        scissor.extent.width = static_cast<uint32_t>(swapchain_width);
+        scissor.extent.height = static_cast<uint32_t>(swapchain_height);
+
+        vkCmdBeginRenderPass(commandBuffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+	    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
@@ -784,6 +818,7 @@ private:
     VkDescriptorSetLayout                       descriptor_set_layout{};
     std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
 
+    VkRenderPass      timewarp_render_pass{};
     VkPipelineLayout  pipeline_layout{};
     VkBuffer          uniform_buffer{};
     VmaAllocation     uniform_alloc{};
