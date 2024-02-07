@@ -195,12 +195,12 @@ public:
 
         VkRenderPassBeginInfo render_pass_info{};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        render_pass_info.renderPass = render_pass;
+        render_pass_info.renderPass = timewarp_render_pass;
         render_pass_info.renderArea.offset.x = 0;
         render_pass_info.renderArea.offset.y = 0;
         render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width);
         render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
-        render_pass_info.framebuffer = framebuffer
+        render_pass_info.framebuffer = framebuffer;
         render_pass_info.clearValueCount = 1;
         render_pass_info.pClearValues = &clear_color;
 
@@ -223,8 +223,7 @@ public:
 	    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, &offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
         //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
         //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
