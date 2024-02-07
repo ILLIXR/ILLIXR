@@ -83,8 +83,6 @@ public:
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
-        ds = pb->lookup_impl<vulkan::display_provider>();
-
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
@@ -112,6 +110,15 @@ public:
     void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
                bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
+
+	ds = pb->lookup_impl<vulkan::display_provider>();
+
+        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
+
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
+                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
+                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
         if (!initialized) {
@@ -811,6 +818,8 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
+    size_t                                  swapchain_width;
+    size_t                                  swapchain_height;
     std::array<std::vector<VkImageView>, 2> buffer_pool;
     VkSampler                               fb_sampler{};
 
