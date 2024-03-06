@@ -789,7 +789,7 @@ private:
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f texCoordProjection;
         texCoordProjection << 0.5f * renderProjectionMatrix(0, 0), 0.0f, 0.5f * renderProjectionMatrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            0.5f * renderProjectionMatrix(1, 1), 0.5f * renderProjectionMatrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+            -0.5f * renderProjectionMatrix(1, 1), 0.5f * renderProjectionMatrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f;
 
         // Calculate the delta between the view matrix used for rendering and

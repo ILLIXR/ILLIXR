@@ -80,7 +80,7 @@ public:
         }
         create_swapchain_framebuffers();
         src->setup(app_pass, 0, buffer_pool);
-        tw->setup(timewarp_pass, 0, buffer_pool, false);
+        tw->setup(timewarp_pass, 0, buffer_pool, true);
     }
 
     /**

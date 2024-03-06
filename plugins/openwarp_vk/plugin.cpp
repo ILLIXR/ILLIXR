@@ -423,7 +423,7 @@ private:
             // Need a pipeline barrier between Openwarp and distortion correction to avoid memory read-write hazards
             offscreen_barriers[eye] = {
                 .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT,
+                .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                 .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
                 .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                 .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -1366,7 +1366,7 @@ private:
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f texCoordProjection;
         texCoordProjection << 0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+            -0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f;
 
         return texCoordProjection;
