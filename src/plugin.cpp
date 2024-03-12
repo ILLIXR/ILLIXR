@@ -2,83 +2,83 @@
 #include "illixr/error_util.hpp"
 
 #include <algorithm>
+#include <boost/algorithm/string/join.hpp>
 #include <cstdlib>
 #include <iostream>
+#include <pwd.h>
 #include <sstream>
 #include <stdexcept>
 #include <unistd.h>
-#include <pwd.h>
-
-#include <boost/algorithm/string/join.hpp>
 #include <yaml-cpp/yaml.h>
 
 namespace ILLIXR {
-    struct Dependency {
-        std::string name;
-        std::map<std::string, std::vector<std::string> > deps;
+struct Dependency {
+    std::string                                     name;
+    std::map<std::string, std::vector<std::string>> deps;
 
-        bool operator==(const Dependency& rhs) const {
-            return name == rhs.name;
-        }
-        bool operator==(const std::string& rhs) const {
-            return name == rhs;
-        }
-    };
-}
+    bool operator==(const Dependency& rhs) const {
+        return name == rhs.name;
+    }
+
+    bool operator==(const std::string& rhs) const {
+        return name == rhs;
+    }
+};
+} // namespace ILLIXR
 
 namespace YAML {
-    template<>
-    struct convert<ILLIXR::Dependency> {
-        static Node encode(const ILLIXR::Dependency& rhs) {
-            Node node;
-            node["plugin"] = rhs.name;
-            for(const auto& [key, value]: rhs.deps) {
-                Node dep_node;
-                dep_node["needs"] = key;
-                for(const auto& v : value) {
-                    dep_node["provided_by"].push_back(v);
-                }
-                node["dependencies"].push_back(dep_node);
+template<>
+struct convert<ILLIXR::Dependency> {
+    static Node encode(const ILLIXR::Dependency& rhs) {
+        Node node;
+        node["plugin"] = rhs.name;
+        for (const auto& [key, value] : rhs.deps) {
+            Node dep_node;
+            dep_node["needs"] = key;
+            for (const auto& v : value) {
+                dep_node["provided_by"].push_back(v);
             }
-            return node;
+            node["dependencies"].push_back(dep_node);
         }
+        return node;
+    }
 
-        static bool decode(const Node& node, ILLIXR::Dependency& rhs) {
-            if(node.size() != 2) {
+    static bool decode(const Node& node, ILLIXR::Dependency& rhs) {
+        if (node.size() != 2) {
+            return false;
+        }
+        rhs.name  = node["plugin"].as<std::string>();
+        Node deps = node["dependencies"];
+        if (!deps.IsSequence()) {
+            return false;
+        }
+        for (const auto& nd : deps) {
+            if (nd.size() != 2) {
                 return false;
             }
-            rhs.name = node["plugin"].as<std::string>();
-            Node deps = node["dependencies"];
-            if(!deps.IsSequence()) {
-                return false;
-            }
-            for(const auto& nd: deps) {
-                if(nd.size() != 2) {
-                    return false;
-                }
-                auto dep_name = nd["needs"].as<std::string>();
-                auto prov = nd["provided_by"].as<std::vector<std::string> >();
+            auto dep_name = nd["needs"].as<std::string>();
+            auto prov     = nd["provided_by"].as<std::vector<std::string>>();
 
-                rhs.deps[dep_name] = prov;
-            }
-            return true;
+            rhs.deps[dep_name] = prov;
         }
-    };
-}
+        return true;
+    }
+};
+} // namespace YAML
 
 ILLIXR::runtime* r = nullptr;
 
 using namespace ILLIXR;
 
 std::string get_exec_path() {
-    char result[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    std::string exe_dir(result, (count>0) ? count : 0);
+    char        result[PATH_MAX];
+    ssize_t     count = readlink("/proc/self/exe", result, PATH_MAX);
+    std::string exe_dir(result, (count > 0) ? count : 0);
     return exe_dir.substr(0, exe_dir.find_last_of("/\\"));
 }
 
 std::string get_home_dir() {
-    struct passwd *pw = getpwuid(getuid());
+    struct passwd* pw = getpwuid(getuid());
     return {pw->pw_dir};
 }
 
@@ -99,7 +99,7 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
         for (const auto& [item, needs] : find_it->deps) {
             bool dep_found = false;
             // first check plugins which are already in the list, if found, then we are good.
-            for (const auto &provided_by: needs) {
+            for (const auto& provided_by : needs) {
                 if (std::find(ordered_plugins.begin(), ordered_plugins.end(), provided_by) != ordered_plugins.end()) {
                     dep_found = true;
                     break;
@@ -108,11 +108,11 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
             // try finding it in the rest of the list
             if (!dep_found) {
                 bool rdep_found = false;
-                for (const auto &provided_by: needs) {
+                for (const auto& provided_by : needs) {
                     auto r_find_it = std::find(plugins.begin(), plugins.end(), provided_by);
                     if (r_find_it != plugins.end()) {
                         rdep_found = true;
-                        mod = true;
+                        mod        = true;
                         resolve(r_find_it, resolve);
                         if (std::find(ordered_plugins.begin(), ordered_plugins.end(), provided_by) == ordered_plugins.end())
                             ordered_plugins.push_back(provided_by);
@@ -120,10 +120,10 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
                     }
                 }
                 if (!rdep_found) {
-                    throw std::runtime_error("Missing plugin dependency. Plugin " + *it +
-                                             " requires a provider of " + item +
-                                             " to be included in the plugin list. This can be provided by one of the following plugins: " +
-                                             boost::algorithm::join(needs, ", "));
+                    throw std::runtime_error(
+                        "Missing plugin dependency. Plugin " + *it + " requires a provider of " + item +
+                        " to be included in the plugin list. This can be provided by one of the following plugins: " +
+                        boost::algorithm::join(needs, ", "));
                 }
             }
         }
@@ -138,7 +138,7 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
         if (std::find(ordered_plugins.begin(), ordered_plugins.end(), *iter) == ordered_plugins.end())
             ordered_plugins.push_back(*iter);
     }
-    if(modified)
+    if (modified)
         plugins = ordered_plugins;
 }
 
@@ -161,29 +161,26 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             spdlog::get("illixr")->info("[main] Resuming...");
         }
 #endif /// NDEBUG
-        // read in yaml config file
-        YAML::Node config;
+       // read in yaml config file
+        YAML::Node  config;
         std::string exec_path = get_exec_path();
-        std::string home_dir = get_home_dir();
+        std::string home_dir  = get_home_dir();
         if (options.count("yaml")) {
             std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
-            auto config_file_full = options["yaml"].as<std::string>();
-            std::string config_file = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
-            std::vector<std::string> config_list = {config_file,
-                                                    home_dir + "/.illixr/profiles/" + config_file_full,
-                                                    home_dir + "/.illixr/profiles/" + config_file,
-                                                    home_dir + "/" + config_file_full,
-                                                    home_dir + "/" + config_file,
-                                                    exec_path + "/../share/illixr/profiles/" + config_file_full,
-                                                    exec_path + "/../share/illixr/profiles/" + config_file
-            };
-            for (auto &filepath : config_list) {
+            auto                     config_file_full = options["yaml"].as<std::string>();
+            std::string              config_file      = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
+            std::vector<std::string> config_list      = {config_file,
+                                                         home_dir + "/.illixr/profiles/" + config_file_full,
+                                                         home_dir + "/.illixr/profiles/" + config_file,
+                                                         home_dir + "/" + config_file_full,
+                                                         home_dir + "/" + config_file,
+                                                         exec_path + "/../share/illixr/profiles/" + config_file_full,
+                                                         exec_path + "/../share/illixr/profiles/" + config_file};
+            for (auto& filepath : config_list) {
                 try {
                     config = YAML::LoadFile(filepath);
                     break;
-                } catch (YAML::BadFile&) {
-
-                }
+                } catch (YAML::BadFile&) { }
             }
             if (config.size() == 0)
                 throw std::runtime_error("Could not load given config file: " + config_file_full);
@@ -195,8 +192,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             run_duration = std::chrono::seconds{config["duration"].as<long>()};
         } else {
             run_duration = getenv("ILLIXR_RUN_DURATION")
-                           ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
-                           : ILLIXR_RUN_DURATION_DEFAULT;
+                ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
+                : ILLIXR_RUN_DURATION_DEFAULT;
         }
         GET_STRING(data, ILLIXR_DATA)
         GET_STRING(demo_data, ILLIXR_DEMO_DATA)
@@ -210,28 +207,28 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 
         std::vector<ILLIXR::Dependency> dep_map;
-        std::vector<std::string> dep_list = {"plugin_deps.yaml",
-                                             home_dir + "/.illixr/profiles/plugin_deps.yaml",
-                                             exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
+        std::vector<std::string>        dep_list = {"plugin_deps.yaml", home_dir + "/.illixr/profiles/plugin_deps.yaml",
+                                                    exec_path + "/../share/illixr/profiles/plugin_deps.yaml"
 
         };
-        for (auto &dep_file : dep_list) {
+        for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
                 dep_map.reserve(plugin_deps["dep_map"].size());
-                for (const auto &node: plugin_deps["dep_map"])
+                for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
             } catch (YAML::BadFile&) {
 #ifndef NDEBUG
-                spdlog::get("illixr")->info("Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
+                spdlog::get("illixr")->info(
+                    "Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
 #endif
             }
         }
         bool have_plugins = false;
         // run entry supersedes plugins entry
-        for (auto item: {"plugins", "run"}) {
+        for (auto item : {"plugins", "run"}) {
             if (options.count(item)) {
-                plugins = options[item].as<std::vector<std::string>>();
+                plugins      = options[item].as<std::vector<std::string>>();
                 have_plugins = true;
             } else if (config[item]) {
                 std::stringstream tss(config[item].as<std::string>());
@@ -273,7 +270,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         RAC_ERRNO_MSG("main after creating runtime");
 
         std::vector<std::string> lib_paths;
-        std::transform(plugins.begin(), plugins.end(), std::back_inserter(lib_paths), [](const std::string &arg) {
+        std::transform(plugins.begin(), plugins.end(), std::back_inserter(lib_paths), [](const std::string& arg) {
             return "libplugin." + arg + STRINGIZE(ILLIXR_BUILD_SUFFIX) + ".so";
         });
 
@@ -281,7 +278,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         r->load_so(lib_paths);
 
         cancellable_sleep cs;
-        std::thread th{[&] {
+        std::thread       th{[&] {
             cs.sleep(run_duration);
             r->stop();
         }};
@@ -292,7 +289,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         cs.cancel();
         th.join();
         delete r;
-    } catch(...) {
+    } catch (...) {
         delete r;
     }
     return 0;
