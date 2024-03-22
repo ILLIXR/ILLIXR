@@ -6,7 +6,7 @@ function(generate_yaml)
 
     file(TIMESTAMP "${PROJECT_SOURCE_DIR}/plugins/plugins.yaml" PROFILE_FILE_TIMESTAMP "%s" UTC)
 
-    if(DEFINED CACHE{LAST_YAML_BUILD} AND DEFINED CACHE{PLUGIN_LIST} AND DEFINED CACHE{VISUALIZER_LIST_LIST})
+    if(DEFINED CACHE{LAST_YAML_BUILD} AND DEFINED CACHE{PLUGIN_LIST} AND DEFINED CACHE{VISUALIZER_LIST})
         #message("Profile files are up to date")
     else()
         set(LAST_YAML_BUILD "0" CACHE INTERNAL "")
@@ -161,6 +161,7 @@ function(read_yaml FILENAME)
         FIND_FILE(FILEPATH ${FILENAME}
                 PATHS profiles ${CMAKE_SOURCE_DIR} $ENV{HOME} $ENV{HOME}/.illixr
                 PATH_SUFFIXES profiles
+                NO_CACHE
                 )
         if(${FILEPATH} STREQUAL "FILEPATH-NOTFOUND")
             message(FATAL_ERROR "Could not find ${FILENAME} in any of the following paths:\n    profiles\n    ${CMAKE_SOURCE_DIR}\n    ${CMAKE_SOURCE_DIR}/profiles\n    $ENV{HOME}\n    $ENV{HOME}/profiles\n    $ENV{HOME}/.illixr\n    $ENV{HOME}/.illixr/profiles")
