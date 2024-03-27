@@ -1,6 +1,7 @@
-#include "illixr.hpp"
 #include "frame_logger2.hpp"
+#include "illixr.hpp"
 #include "illixr/cpu_timer/cpu_timer.hpp"
+
 #include <csignal>
 #include <iostream>
 

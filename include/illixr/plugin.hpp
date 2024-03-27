@@ -3,10 +3,10 @@
 #include "phonebook.hpp"
 
 #include <memory>
-#include <spdlog/spdlog.h>
 #include <spdlog/common.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <typeinfo>
 #include <utility>
@@ -14,7 +14,6 @@
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
-
 
 /**
  * @brief A dynamically-loadable plugin for Spindle.
@@ -28,7 +27,7 @@ public:
      * methods (due to structure of C++). See `threadloop` for an example of
      * this use-case.
      */
-    virtual void start() {}
+    virtual void start() { }
 
     /**
      * @brief A method which Spindle calls when it stops the component.
@@ -75,10 +74,10 @@ public:
     }
 
 protected:
-    std::string                          name;
-    const phonebook*                     pb;
-    const std::shared_ptr<gen_guid>      gen_guid_;
-    const plugin_id_t                    id;
+    std::string                     name;
+    const phonebook*                pb;
+    const std::shared_ptr<gen_guid> gen_guid_;
+    const plugin_id_t               id;
 };
 
 #define PLUGIN_MAIN(plugin_class)                           \

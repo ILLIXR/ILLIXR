@@ -99,7 +99,6 @@ private:
                 ++skip_no;
                 break;
             case skip_option::run: {
-
                 RAC_ERRNO();
                 _p_one_iteration();
                 RAC_ERRNO();

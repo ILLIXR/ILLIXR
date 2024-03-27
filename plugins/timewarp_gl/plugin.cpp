@@ -703,8 +703,8 @@ public:
 
         glBindVertexArray(tw_vao);
 
-        GLuint   query               = 0;
-        GLuint64 elapsed_time        = 0;
+        GLuint   query        = 0;
+        GLuint64 elapsed_time = 0;
 
         glGenQueries(1, &query);
         glBeginQuery(GL_TIME_ELAPSED, query);

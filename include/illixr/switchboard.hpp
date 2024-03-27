@@ -304,7 +304,7 @@ private:
          */
         ptr<const event> get() const {
             size_t serial_no = _m_latest_index.load();
-            size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
+            size_t idx       = _m_latest_index.load() % _m_latest_buffer_size;
 
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
@@ -343,7 +343,6 @@ private:
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
             CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no));
-
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
@@ -569,7 +568,7 @@ public:
     /**
      * If @p pb is null, then logging is disabled.
      */
-    switchboard(const phonebook*) {}
+    switchboard(const phonebook*) { }
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
