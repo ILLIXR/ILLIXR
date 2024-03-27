@@ -1,12 +1,12 @@
 #pragma once
+#include "gen_guid.hpp"
 #include "phonebook.hpp"
-#include "record_logger.hpp"
-#include "spdlog/common.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
 
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <spdlog/common.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <string>
 #include <typeinfo>
 #include <utility>
@@ -15,16 +15,6 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
-/*
- * This gets included, but it is functionally 'private'. Hence the double-underscores.
- */
-const record_header __plugin_start_header{
-    "plugin_name",
-    {
-        {"plugin_id", typeid(plugin_id_t)},
-        {"plugin_name", typeid(std::string)},
-    },
-};
 
 /**
  * @brief A dynamically-loadable plugin for Spindle.
@@ -38,13 +28,7 @@ public:
      * methods (due to structure of C++). See `threadloop` for an example of
      * this use-case.
      */
-    virtual void start() {
-        record_logger_->log(record{__plugin_start_header,
-                                   {
-                                       {id},
-                                       {name},
-                                   }});
-    }
+    virtual void start() {}
 
     /**
      * @brief A method which Spindle calls when it stops the component.
@@ -63,7 +47,6 @@ public:
     plugin(std::string name_, phonebook* pb_)
         : name{std::move(name_)}
         , pb{pb_}
-        , record_logger_{pb->lookup_impl<record_logger>()}
         , gen_guid_{pb->lookup_impl<gen_guid>()}
         , id{gen_guid_->get()} { }
 
@@ -94,9 +77,8 @@ public:
 protected:
     std::string                          name;
     const phonebook*                     pb;
-    const std::shared_ptr<record_logger> record_logger_;
     const std::shared_ptr<gen_guid>      gen_guid_;
-    const std::size_t                    id;
+    const plugin_id_t                    id;
 };
 
 #define PLUGIN_MAIN(plugin_class)                           \

@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/filesystem.hpp>
+#include <optional>
 #include <ostream>
 #include <sqlite3.h>
 #include <sstream>

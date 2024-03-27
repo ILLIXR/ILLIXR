@@ -1,7 +1,7 @@
 #pragma once
-#include "common/frame_info.hpp"
-#include "common/sqlite_wrapper.hpp"
-#include "common/switchboard.hpp"
+#include "illixr/frame_info.hpp"
+#include "illixr/sqlite_wrapper.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <memory>
 #include <string>

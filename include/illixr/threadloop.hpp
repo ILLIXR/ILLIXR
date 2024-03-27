@@ -1,10 +1,9 @@
 #pragma once
 
-#include "cpu_timer.hpp"
+#include "cpu_timer/cpu_timer.hpp"
 #include "error_util.hpp"
 #include "phonebook.hpp"
 #include "plugin.hpp"
-#include "record_logger.hpp"
 #include "stoplight.hpp"
 
 #include <atomic>
@@ -16,18 +15,6 @@
 #include <thread>
 
 namespace ILLIXR {
-
-const record_header __threadloop_iteration_header{
-    "threadloop_iteration",
-    {
-        {"plugin_id", typeid(std::size_t)},
-        {"iteration_no", typeid(std::size_t)},
-        {"skips", typeid(std::size_t)},
-        {"cpu_time_start", typeid(std::chrono::nanoseconds)},
-        {"cpu_time_stop", typeid(std::chrono::nanoseconds)},
-        {"wall_time_start", typeid(std::chrono::high_resolution_clock::time_point)},
-        {"wall_time_stop", typeid(std::chrono::high_resolution_clock::time_point)},
-    }};
 
 /**
  * @brief A reusable threadloop for plugins.
@@ -93,8 +80,6 @@ protected:
 
 private:
     void thread_main() {
-        record_coalescer it_log{record_logger_};
-
         // TODO: In the future, synchronize the main loop instead of the setup.
         // This is currently not possible because RelativeClock is required in
         // some setup functions, and RelativeClock is only guaranteed to be
@@ -114,23 +99,11 @@ private:
                 ++skip_no;
                 break;
             case skip_option::run: {
-                auto iteration_start_cpu_time  = thread_cpu_time();
-                auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
 
                 RAC_ERRNO();
                 _p_one_iteration();
                 RAC_ERRNO();
 
-                it_log.log(record{__threadloop_iteration_header,
-                                  {
-                                      {id},
-                                      {iteration_no},
-                                      {skip_no},
-                                      {iteration_start_cpu_time},
-                                      {thread_cpu_time()},
-                                      {iteration_start_wall_time},
-                                      {std::chrono::high_resolution_clock::now()},
-                                  }});
                 ++iteration_no;
                 skip_no = 0;
                 break;

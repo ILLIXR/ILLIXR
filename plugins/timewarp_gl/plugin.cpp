@@ -18,6 +18,7 @@
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
+#include "illixr/frame_info.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/phonebook.hpp"
@@ -32,23 +33,6 @@
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
-
-const record_header timewarp_gpu_record{"timewarp_gpu",
-                                        {
-                                            {"iteration_no", typeid(std::size_t)},
-                                            {"wall_time_start", typeid(time_point)},
-                                            {"wall_time_stop", typeid(time_point)},
-                                            {"gpu_time_duration", typeid(std::chrono::nanoseconds)},
-                                        }};
-
-const record_header mtp_record{"mtp_record",
-                               {
-                                   {"iteration_no", typeid(std::size_t)},
-                                   {"vsync", typeid(time_point)},
-                                   {"imu_to_display", typeid(std::chrono::nanoseconds)},
-                                   {"predict_to_display", typeid(std::chrono::nanoseconds)},
-                                   {"render_to_display", typeid(std::chrono::nanoseconds)},
-                               }};
 
 #ifdef ILLIXR_MONADO
 typedef plugin timewarp_type;
@@ -71,7 +55,6 @@ public:
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
-        , mtp_logger{record_logger_}
         // TODO: Use #198 to configure this. Delete getenv_or.
         // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
         // Timewarp poses a "second channel" by which pose data can correct the video stream,
@@ -82,7 +65,6 @@ public:
 #else
         , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
 #endif
-        , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
         spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ILLIXR_MONADO
@@ -224,10 +206,7 @@ private:
     // Switchboard plug for publishing offloaded data
     switchboard::writer<texture_pose> _m_offload_data;
     // Timewarp only has vsync estimates with native-gl
-    record_coalescer mtp_logger;
 #endif
-
-    record_coalescer timewarp_gpu_logger;
 
     // Switchboard plug for sending hologram calls
     switchboard::writer<hologram_input> _m_hologram;
@@ -724,7 +703,6 @@ public:
 
         glBindVertexArray(tw_vao);
 
-        auto     gpu_start_wall_time = _m_clock->now();
         GLuint   query               = 0;
         GLuint64 elapsed_time        = 0;
 
@@ -817,20 +795,10 @@ public:
         // Now that we have the most recent swap time, we can publish the new estimate.
         _m_vsync_estimate.put(_m_vsync_estimate.allocate<switchboard::event_wrapper<time_point>>(GetNextSwapTimeEstimate()));
 
+    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
         std::chrono::nanoseconds imu_to_display     = time_last_swap - latest_pose.pose.sensor_time;
         std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
         std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
-
-        mtp_logger.log(record{mtp_record,
-                              {
-                                  {iteration_no},
-                                  {time_last_swap},
-                                  {imu_to_display},
-                                  {predict_to_display},
-                                  {render_to_display},
-                              }});
-
-    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
         if (log_count > LOG_PERIOD) {
             const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
@@ -873,15 +841,7 @@ public:
 
         // get the query result
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
-
-        timewarp_gpu_logger.log(record{timewarp_gpu_record,
-                                       {
-                                           {iteration_no},
-                                           {gpu_start_wall_time},
-                                           {_m_clock->now()},
-                                           {std::chrono::nanoseconds(elapsed_time)},
-                                       }});
-
+        CPU_TIMER_TIME_EVENT_INFO(false, false, "gpu_log", cpu_timer::make_type_eraser<FrameInfo>("", "gpu_log", elapsed_time))
 #ifdef ILLIXR_MONADO
         // Manually increment the iteration number if timewarp is running as a plugin
         ++iteration_no;

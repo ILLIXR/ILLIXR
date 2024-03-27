@@ -1,5 +1,6 @@
 #include "illixr.hpp"
-
+#include "frame_logger2.hpp"
+#include "illixr/cpu_timer/cpu_timer.hpp"
 #include <csignal>
 #include <iostream>
 
@@ -40,6 +41,12 @@ static void sigint_handler([[maybe_unused]] int sig) {
 }
 
 int main(int argc, const char* argv[]) {
+    {
+        static boost::filesystem::path metrics{"metrics"};
+        boost::filesystem::create_directory(metrics);
+    }
+    ILLIXR::setup_frame_logger();
+    CPU_TIMER_TIME_FUNCTION();
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
     // std::string illixr_data, illixr_demo_data, realsense_cam;

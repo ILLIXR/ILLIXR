@@ -1,4 +1,5 @@
 #include "data_loading.hpp"
+#include "illixr/cpu_timer/cpu_timer.hpp"
 #include "illixr/data_format.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"

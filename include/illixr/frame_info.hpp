@@ -1,5 +1,6 @@
 #pragma once
 #include "sqlite_wrapper.hpp"
+#include "cpu_timer/cpu_timer.hpp"
 
 #include <string>
 

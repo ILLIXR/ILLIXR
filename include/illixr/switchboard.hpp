@@ -1,5 +1,11 @@
 #pragma once
 
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "cpu_timer/cpu_timer.hpp"
+#include "frame_info.hpp"
+#include "managed_thread.hpp"
+#include "phonebook.hpp"
+
 #include <iostream>
 #include <list>
 #include <mutex>
@@ -7,21 +13,20 @@
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
 #endif
-#if __has_include("cpu_timer.hpp")
-    #include "cpu_timer.hpp"
-#else
-static std::chrono::nanoseconds thread_cpu_time() {
-    return {};
-}
-#endif
-#include "concurrentqueue/blockingconcurrentqueue.hpp"
-#include "managed_thread.hpp"
-#include "phonebook.hpp"
-#include "record_logger.hpp"
 
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
+
+class switchboard_data_marker {
+public:
+    size_t      serial_no;
+    std::string topic_name;
+
+    switchboard_data_marker(size_t serial_no_, std::string topic_name_)
+        : serial_no{serial_no_}
+        , topic_name{std::move(topic_name_)} { }
+};
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -164,10 +169,10 @@ private:
             std::int64_t     timeout_usecs = std::chrono::duration_cast<std::chrono::microseconds>(_m_queue_timeout).count();
             // Note the use of timed blocking wait
             if (_m_queue.wait_dequeue_timed(_m_ctok, this_event, timeout_usecs)) {
+                CPU_TIMER_TIME_BLOCK_INFO("callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic_name, 0));
                 // Process event
                 // Also, record and log the time
                 _m_dequeued++;
-                auto cb_start_wall_time = std::chrono::high_resolution_clock::now();
                 // std::cerr << "deq " << ptr_to_str(reinterpret_cast<const void*>(this_event.get_ro())) << " " <<
                 // this_event.use_count() << " v\n";
                 _m_callback(std::move(this_event), _m_dequeued);
@@ -190,14 +195,12 @@ private:
                     this_event.reset();
                 }
             }
-
         }
 
     public:
         topic_subscription(const std::string& topic_name, plugin_id_t plugin_id,
                            std::function<void(ptr<const event>&&, std::size_t)> callback)
             : _m_topic_name{topic_name}
-            , _m_plugin_id{plugin_id}
             , _m_callback{callback}
             , _m_thread{[this] {
                             this->thread_body();
@@ -209,6 +212,7 @@ private:
                             this->thread_on_stop();
                         }} {
             _m_thread.start();
+            _m_plugin_id = plugin_id;
         }
 
         /**
@@ -217,6 +221,7 @@ private:
          * Thread-safe
          */
         void enqueue(ptr<const event>&& this_event) {
+            CPU_TIMER_TIME_FUNCTION();
             if (_m_thread.get_state() == managed_thread::state::running) {
                 [[maybe_unused]] bool ret = _m_queue.enqueue(std::move(this_event));
                 assert(ret);
@@ -298,12 +303,15 @@ private:
          * @brief Gets a read-only copy of the most recent event on the topic.
          */
         ptr<const event> get() const {
-            size_t           idx        = _m_latest_index.load() % _m_latest_buffer_size;
+            size_t serial_no = _m_latest_index.load();
+            size_t idx = _m_latest_index.load() % _m_latest_buffer_size;
+
             ptr<const event> this_event = _m_latest_buffer[idx];
             // if (this_event) {
             // 	std::cerr << "get " << ptr_to_str(reinterpret_cast<const void*>(this_event.get())) << " " <<
             // this_event.use_count() << "v \n";
             // }
+            CPU_TIMER_TIME_EVENT_INFO(false, false, "get", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no - 1));
             return this_event;
         }
 
@@ -329,10 +337,13 @@ private:
             assert(this_event.unique() ||
                    this_event.use_count() <= 2); /// <-- TODO: Revisit for solution that guarantees uniqueness
 
+            size_t serial_no = _m_latest_index.load() + 1;
             /* The pointer that this gets exchanged with needs to get dropped. */
             size_t index            = (_m_latest_index.load() + 1) % _m_latest_buffer_size;
             _m_latest_buffer[index] = this_event;
             _m_latest_index++;
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "put", cpu_timer::make_type_eraser<FrameInfo>("", _m_name, serial_no));
+
 
             // Read/write on _m_subscriptions.
             // Must acquire shared state on _m_subscriptions_lock
@@ -471,8 +482,8 @@ public:
         }
 
         ptr<const specific_event> dequeue() {
-            // CPU_TIMER_TIME_EVENT_INFO(true, false, "callback", cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(),
-            // serial_no));
+            CPU_TIMER_TIME_EVENT_INFO(true, false, "callback",
+                                      cpu_timer::make_type_eraser<FrameInfo>("", _m_topic.name(), serial_no));
             serial_no++;
             ptr<const event>          this_event          = _m_tb.dequeue();
             ptr<const specific_event> this_specific_event = std::dynamic_pointer_cast<const specific_event>(this_event);
@@ -558,7 +569,7 @@ public:
     /**
      * If @p pb is null, then logging is disabled.
      */
-    switchboard(const phonebook* pb) {}
+    switchboard(const phonebook*) {}
 
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
