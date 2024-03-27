@@ -6,10 +6,8 @@
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
-#include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
-#include "sqlite_record_logger.hpp"
 
 #include <algorithm>
 #include <GL/glx.h>
@@ -42,7 +40,6 @@ class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
-        pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend

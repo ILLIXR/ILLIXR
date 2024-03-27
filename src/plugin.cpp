@@ -1,5 +1,6 @@
 #include "illixr.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/global_module_defs.hpp"
 
 #include <algorithm>
 #include <cstdlib>
