@@ -380,7 +380,7 @@ file(APPEND ${OUTFILE} "enable_alignment: ${ENABLE_ALIGNMENT}\n")
 file(APPEND ${OUTFILE} "enable_verbose_errors: ${ENABLE_VERBOSE_ERRORS}\n")
 file(APPEND ${OUTFILE} "enable_pre_sleep: ${ENABLE_PRE_SLEEP}\n")
 if (USE_ORB_SLAM)
-    file(APPEND ${OUTFILE} "orb_slam_source_dir: ${CMAKE_BINARY_DIR}/_deps/ORB_Slam/src/ORB_Slam\n")
+    file(APPEND ${OUTFILE} "orb_slam_source_dir: ${CMAKE_INSTALL_PREFIX}/share/ORB_SLAM3\n")
 endif()
 
 giveExecString()
