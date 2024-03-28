@@ -11,7 +11,7 @@ if(HAVE_CENTOS)
 endif()
 
 if(DBoW2_OS3_LIBRARIES)
-    set(DBoW2_OS3_VERSION "0.0")   # set current version (no known version in this case)
+    set(DBoW2_VERSION "OS3" PARENT_SCOPE)   # set current version (no known version in this case)
 else()
     EXTERNALPROJECT_ADD(DBoW2_OS3
             GIT_REPOSITORY https://github.com/ILLIXR/DBoW2_OS3.git # Git repo for source code

@@ -15,4 +15,6 @@ if (NOT Sophus_FOUND)
     # set variables for use by modules that depend on this one
     set(Sophus_DEP_STR "Sophus")   # Dependency string for other modules that depend on this one
     set(Sophus_EXTERNAL Yes)       # Mark that this module is being built
+else()
+    set(Sophus_VERSION ${Sophus_VERSION} PARENT_SCOPE)
 endif()

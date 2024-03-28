@@ -16,4 +16,6 @@ if(NOT Pangolin_FOUND)
     # set variables for use by modules that depend on this one
     set(Pangolin_DEP_STR "Pangolin")   # Dependency string for other modules that depend on this one
     set(Pangolin_EXTERNAL Yes)         # Mark that this module is being built
+else()
+    set(Pangolin_VERSION ${Pangolin_VERSION} PARENT_SCOPE)
 endif()

@@ -13,4 +13,6 @@ if (NOT g2o_FOUND)
     # set variables for use by modules that depend on this one
     set(g2o_DEP_STR "g2o")     # Dependency string for other modules that depend on this one
     set(g2o_EXTERNAL YES)      # Mark that this module is being built
+else()
+    set(g2o_VERSION ${g2o_VERSION} PARENT_SCOPE)
 endif()

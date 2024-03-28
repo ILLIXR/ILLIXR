@@ -1,6 +1,8 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
-visualizers: openvins,orb_slam
+build_flags: -DILLIXR_MONADO
+use_monado: true
+visualizers: openvins
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false
