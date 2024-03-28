@@ -44,6 +44,15 @@ profile:
   enable_pre_sleep: False
 
 profile:
+  name: native_gl_slam
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
+  visualizers: orb_slam
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
   name: native_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
   visualizers: openvins
