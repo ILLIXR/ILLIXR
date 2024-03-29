@@ -220,9 +220,9 @@ public:
         Eigen::Matrix4f warpVP = basicProjection * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
 
         auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
-        memcpy(&ow_ubo->render_inv_projection, invProjection.data(), sizeof(glm::mat4));
-        memcpy(&ow_ubo->render_inv_view, renderedCameraMatrix.data(), sizeof(glm::mat4));
-        memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->render_inv_projection, invProjection.transpose().data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->render_inv_view, renderedCameraMatrix.transpose().data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->warp_view_projection, warpVP.transpose().data(), sizeof(glm::mat4));
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
@@ -744,7 +744,7 @@ private:
 
                     // flip the y coordinates for Vulkan texture
                     distortion_vertices[eye * num_distortion_vertices + index].pos.y =
-                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
+                        // (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
                         (-1.0f +
                          2.0f * (static_cast<float>(hmd_info.eyeTilesHigh - y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
                              (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
@@ -754,7 +754,7 @@ private:
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
                     Eigen::Vector4f vertex_uv0(distort_coords[eye][0][index].x, distort_coords[eye][0][index].y, -1, 1);
                     Eigen::Vector4f vertex_uv1(distort_coords[eye][1][index].x, distort_coords[eye][1][index].y, -1, 1);
-                    Eigen::Vector4f vertex_uv2(distort_coords[eye][2][index].x, distort_coords[eye][2][index].y, -1, 1);    
+                    Eigen::Vector4f vertex_uv2(distort_coords[eye][2][index].x, distort_coords[eye][2][index].y, -1, 1);
 
                     Eigen::Vector4f uv0 = distortion_matrix * vertex_uv0;
                     Eigen::Vector4f uv1 = distortion_matrix * vertex_uv1;
@@ -764,12 +764,18 @@ private:
                     float factor1 = 1.0f / std::max(uv1.z(), 0.00001f);
                     float factor2 = 1.0f / std::max(uv2.z(), 0.00001f);
 
-                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = uv0.x() * factor0;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = uv0.y() * factor0;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = uv1.x() * factor1;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = uv1.y() * factor1;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = uv2.x() * factor2;
-                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = uv2.y() * factor2;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide));
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = (static_cast<float>(y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
+                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
+                              static_cast<float>(hmd_info.displayPixelsHigh));
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide));
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = (static_cast<float>(y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
+                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
+                              static_cast<float>(hmd_info.displayPixelsHigh));
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide));
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = (static_cast<float>(y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
+                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
+                              static_cast<float>(hmd_info.displayPixelsHigh));
                 }
             }
         }
@@ -1365,8 +1371,10 @@ private:
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f texCoordProjection;
-        texCoordProjection << 0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            -0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+        texCoordProjection <<
+            0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f,
+            0.0f, 0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f,
+            0.0f, 0.0f, -1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f;
 
         return texCoordProjection;

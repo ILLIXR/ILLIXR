@@ -99,17 +99,17 @@ void main( void )
 	z = min(0.99, z);
 #endif
 
-	vec4 clipSpacePosition = vec4(in_uv * 2.0 - 1.0, z, 1.0);
+	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, z, 1.0);
 	vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
 	vec4 frag_worldspace = (warp_matrices.u_renderInverseV * frag_viewspace);
-	vec4 result = warp_matrices.u_warpVP * frag_worldspace;
-	result /= abs(result.w);
+	 vec4 result = warp_matrices.u_warpVP * frag_worldspace;
+	 result /= abs(result.w);
 
 	// Comment out the code block above and uncomment the line below to disable warping.
-//	 vec4 result = vec4(in_uv * 2.0 - 1.0, 0.01, 1.0);
+//	vec4 result = vec4(in_uv * 2.0 - 1.0, 0.01, 1.0);
 
 	gl_Position = result;
 
-	worldspace = frag_worldspace;
+	worldspace = frag_viewspace;
 	warpUv = in_uv;
 }
