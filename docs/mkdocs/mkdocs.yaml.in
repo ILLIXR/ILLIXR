@@ -18,6 +18,7 @@ nav:
         - 'ILLIXR Debugging Tips': debugging_illixr.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
+        - 'Contributing to ILLIXR': contributing/contributing.md
         - 'Modifying a Plugin': modifying_a_plugin.md
         - 'Writing Your Plugin': writing_your_plugin.md
         - 'Plugin Details':
@@ -39,6 +40,5 @@ nav:
         - 'ILLIXR Glossary': glossary.md
         - 'ILLIXR API': api/html/annotated.html
         - 'ILLIXR License': LICENSE.md
-        - 'Contributing Guidelines': CONTRIBUTING.md
         - 'Updating Tags and Documentation': updating_tags_and_docs.md
         - 'Using Switchboard and Phonebook Externally': external_switchboard_and_phonebook.md
