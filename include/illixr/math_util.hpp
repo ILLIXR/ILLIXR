@@ -1,3 +1,5 @@
+
+
 #pragma once
 
 #include <eigen3/Eigen/Core>
@@ -39,20 +41,20 @@ namespace math_util {
         const float tan_height = tan_up - tan_down;
 
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
-        (*result)(0, 0) = 2 / tan_width;
+        (*result)(0, 0) = -2 / tan_width;
         (*result)(0, 1) = 0;
         (*result)(0, 2) = (tan_right + tan_left) / tan_width;
         (*result)(0, 3) = 0;
 
         (*result)(1, 0) = 0;
-        (*result)(1, 1) = 2 / tan_height;
+        (*result)(1, 1) = -2 / tan_height;
         (*result)(1, 2) = (tan_up + tan_down) / tan_height;
         (*result)(1, 3) = 0;
 
         (*result)(2, 0) = 0;
         (*result)(2, 1) = 0;
-        (*result)(2, 2) = -near_z / (far_z - near_z);
-        (*result)(2, 3) = (far_z * near_z) / (far_z - near_z);
+        (*result)(2, 2) = near_z / (near_z - far_z);
+        (*result)(2, 3) = -(far_z * near_z) / (near_z - far_z);
 
         (*result)(3, 0) = 0;
         (*result)(3, 1) = 0;
