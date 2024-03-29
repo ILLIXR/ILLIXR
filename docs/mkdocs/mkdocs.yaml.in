@@ -19,8 +19,18 @@ nav:
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
         - 'Contributing to ILLIXR': contributing/contributing.md
+            - 'Code of Conduct': contributing/code_of_conduct.md
+            - 'Asking Questions': contributing/asking_questions.md
+            - 'Reporting a Bug': contributing/opening_an_issue.md
+            - 'Suggesting a Feature/Improvement': contributing/feature_request.md
+            - 'Programming Style Guide': contributing/style_guide.md
+            - 'Using 3rd Party Code/Libraries': contributing/third_party.md
+            - 'Licenses': contributing/licenses.md
+            - 'Creating a Pull Request': contributing/pull_request.md
+            - 'Code Review Guidelines': contributing/code_review.md
         - 'Modifying a Plugin': modifying_a_plugin.md
         - 'Writing Your Plugin': writing_your_plugin.md
+            - 'Modules': modules.md
         - 'Plugin Details':
             - 'Debugview': plugin_README/README_debugview.md
             - 'Display_VK': plugin_README/README_display_vk.md
