@@ -220,9 +220,9 @@ public:
         Eigen::Matrix4f warpVP = basicProjection * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
 
         auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
-        memcpy(&ow_ubo->render_inv_projection, invProjection.transpose().data(), sizeof(glm::mat4));
-        memcpy(&ow_ubo->render_inv_view, renderedCameraMatrix.transpose().data(), sizeof(glm::mat4));
-        memcpy(&ow_ubo->warp_view_projection, warpVP.transpose().data(), sizeof(glm::mat4));
+        memcpy(&ow_ubo->render_inv_projection, invProjection.data(), sizeof(Eigen::Matrix4f));
+        memcpy(&ow_ubo->render_inv_view, renderedCameraMatrix.data(), sizeof(Eigen::Matrix4f));
+        memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(Eigen::Matrix4f));
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
@@ -764,18 +764,12 @@ private:
                     float factor1 = 1.0f / std::max(uv1.z(), 0.00001f);
                     float factor2 = 1.0f / std::max(uv2.z(), 0.00001f);
 
-                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide));
-                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = (static_cast<float>(y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
-                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
-                              static_cast<float>(hmd_info.displayPixelsHigh));
-                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide));
-                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = (static_cast<float>(y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
-                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
-                              static_cast<float>(hmd_info.displayPixelsHigh));
-                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide));
-                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = (static_cast<float>(y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
-                             (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
-                              static_cast<float>(hmd_info.displayPixelsHigh));
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.x = uv0.x() * factor0;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv0.y = uv0.y() * factor0;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.x = uv1.x() * factor1;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv1.y = uv1.y() * factor1;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.x = uv2.x() * factor2;
+                    distortion_vertices[eye * num_distortion_vertices + index].uv2.y = uv2.y() * factor2;
                 }
             }
         }
