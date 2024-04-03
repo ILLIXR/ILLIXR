@@ -7,7 +7,7 @@ function(generate_yaml)
     file(TIMESTAMP "${PROJECT_SOURCE_DIR}/plugins/plugins.yaml" PROFILE_FILE_TIMESTAMP "%s" UTC)
 
     if(DEFINED CACHE{LAST_YAML_BUILD} AND DEFINED CACHE{PLUGIN_LIST} AND DEFINED CACHE{VISUALIZER_LIST})
-        #message("Profile files are up to date")
+        message("Using cached profile yaml files")
     else()
         set(LAST_YAML_BUILD "0" CACHE INTERNAL "")
     endif()
