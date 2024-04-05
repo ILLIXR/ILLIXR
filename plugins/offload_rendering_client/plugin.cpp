@@ -138,6 +138,7 @@ protected:
     void _p_thread_setup() override { }
 
     skip_option _p_should_skip() override {
+//         std::this_thread::sleep_for(std::chrono::milliseconds(15));
         return threadloop::_p_should_skip();
     }
 
@@ -392,10 +393,10 @@ protected:
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
         buffer_pool->src_release_image(ind, std::move(pose));
-//        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
-//                  std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
-//                  std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count(),
-//                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count());
+        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
+                  std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
+                  std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count(),
+                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count());
 
         metrics["decode"] += std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count();
         metrics["conversion"] += std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count();

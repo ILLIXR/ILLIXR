@@ -25,7 +25,7 @@ struct display_params {
     static constexpr float height_meters = 0.06214f;
 
     // Separation between lens centers in meters
-    static constexpr float lens_separation = width_meters / 2.0f;
+    static constexpr float lens_separation = 0.05;
 
     // Vertical position of the lens in meters
     static constexpr float lens_vertical_position = height_meters / 2.0f;

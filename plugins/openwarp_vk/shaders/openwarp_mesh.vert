@@ -35,10 +35,14 @@ layout (set = 0, binding = 0) uniform sampler2D image_texture;
 layout (set = 0, binding = 1) uniform sampler2D depth_texture;
 
 layout (set = 0, binding = 2) uniform Matrices {
-    mat4 u_renderInverseP;
-    mat4 u_renderInverseV;
-    mat4 u_warpVP;
+    mat4 u_renderInverseP[2];
+    mat4 u_renderInverseV[2];
+    mat4 u_warpVP[2];
 } warp_matrices;
+
+layout (push_constant) uniform Eye {
+    uint index;
+} eye;
 
 // Constant for now
 float bleedRadius = 0.005f;
@@ -100,9 +104,9 @@ void main( void )
 #endif
 
 	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, z, 1.0);
-	vec4 frag_viewspace = warp_matrices.u_renderInverseP * clipSpacePosition;
-	vec4 frag_worldspace = (warp_matrices.u_renderInverseV * frag_viewspace);
-	 vec4 result = warp_matrices.u_warpVP * frag_worldspace;
+	vec4 frag_viewspace = warp_matrices.u_renderInverseP[eye.index] * clipSpacePosition;
+	vec4 frag_worldspace = (warp_matrices.u_renderInverseV[eye.index] * frag_viewspace);
+	 vec4 result = warp_matrices.u_warpVP[eye.index] * frag_worldspace;
 	 result /= abs(result.w);
 
 	// Comment out the code block above and uncomment the line below to disable warping.
@@ -110,6 +114,6 @@ void main( void )
 
 	gl_Position = result;
 
-	worldspace = frag_viewspace;
+	worldspace = frag_worldspace;
 	warpUv = in_uv;
 }

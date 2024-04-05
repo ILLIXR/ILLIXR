@@ -70,8 +70,8 @@ struct Vertex {
 };
 
 struct UniformBufferObject {
-    glm::mat4 timewarp_start_transform;
-    glm::mat4 timewarp_end_transform;
+    glm::mat4 timewarp_start_transform[2];
+    glm::mat4 timewarp_end_transform[2];
 };
 
 class timewarp_vk : public vulkan::timewarp {
@@ -174,18 +174,20 @@ public:
         // `display_period` later
         viewMatrixEnd = viewMatrixBegin;
 
-        // Calculate the timewarp transformation matrices. These are a product
-        // of the last-known-good view matrix and the predictive transforms.
-        Eigen::Matrix4f timeWarpStartTransform4x4;
-        Eigen::Matrix4f timeWarpEndTransform4x4;
-
-        // Calculate timewarp transforms using predictive view transforms
-        calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
-        calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
-
         auto* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
-        memcpy(&ubo->timewarp_start_transform, timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
-        memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
+        for (int eye = 0; eye < 2; eye++) {
+            // Calculate the timewarp transformation matrices. These are a product
+            // of the last-known-good view matrix and the predictive transforms.
+            Eigen::Matrix4f timeWarpStartTransform4x4;
+            Eigen::Matrix4f timeWarpEndTransform4x4;
+
+            // Calculate timewarp transforms using predictive view transforms
+            calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection[eye], viewMatrix, viewMatrixBegin);
+            calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection[eye], viewMatrix, viewMatrixEnd);
+
+            memcpy(&ubo->timewarp_start_transform[eye], timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
+            memcpy(&ubo->timewarp_end_transform[eye], timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
+        }
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
@@ -231,6 +233,9 @@ public:
         //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
         //     eye, 0);
         // }
+        uint32_t eye = static_cast<uint32_t>(left ? 0 : 1);
+        vkCmdPushConstants(commandBuffer, pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(uint32_t), &eye);
+
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
                                 &descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
@@ -675,6 +680,14 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
 
+        VkPushConstantRange push_constant = {};
+        push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        push_constant.offset = 0;
+        push_constant.size = sizeof(uint32_t);
+
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -776,9 +789,49 @@ private:
         }
 
         // Construct perspective projection matrix
-        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z, rendering_params::reverse_z);
+//        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+//                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+//                                  rendering_params::far_z, rendering_params::reverse_z);
+        // Hacked in projection matrix from Unreal and hardcoded values
+        basicProjection[0](0, 0) = 0.789564178;
+        basicProjection[0](0, 1) = 0.0;
+        basicProjection[0](0, 2) = 0.0101166583;
+        basicProjection[0](0, 3) = 0.0;
+
+        basicProjection[0](1, 0) = 0.0;
+        basicProjection[0](1, 1) = 0.709630710;
+        basicProjection[0](1, 2) = -0.0000169505149;
+        basicProjection[0](1, 3) = 0.0;
+
+        basicProjection[0](2, 0) = 0.0;
+        basicProjection[0](2, 1) = 0.0;
+        basicProjection[0](2, 2) = 0.0;
+        basicProjection[0](2, 3) = 10.0;
+
+        basicProjection[0](3, 0) = 0.0;
+        basicProjection[0](3, 1) = 0.0;
+        basicProjection[0](3, 2) = -1.0;
+        basicProjection[0](3, 3) = 0.0;
+
+        basicProjection[1](0, 0) = 0.78921623;
+        basicProjection[1](0, 1) = 0.0;
+        basicProjection[1](0, 2) = -0.0104189121;
+        basicProjection[1](0, 3) = 0.0;
+
+        basicProjection[1](1, 0) = 0.0;
+        basicProjection[1](1, 1) = 0.709762607;
+        basicProjection[1](1, 2) = -0.00157947776;
+        basicProjection[1](1, 3) = 0.0;
+
+        basicProjection[1](2, 0) = 0.0;
+        basicProjection[1](2, 1) = 0.0;
+        basicProjection[1](2, 2) = 0.0;
+        basicProjection[1](2, 3) = 10.0;
+
+        basicProjection[1](3, 0) = 0.0;
+        basicProjection[1](3, 1) = 0.0;
+        basicProjection[1](3, 2) = -1.0;
+        basicProjection[1](3, 3) = 0.0;
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -848,7 +901,7 @@ private:
 
     uint32_t                         num_distortion_vertices{};
     uint32_t                         num_distortion_indices{};
-    Eigen::Matrix4f                  basicProjection;
+    Eigen::Matrix4f                  basicProjection[2];
     std::vector<HMD::mesh_coord3d_t> distortion_positions;
     std::vector<HMD::uv_coord_t>     distortion_uv0;
     std::vector<HMD::uv_coord_t>     distortion_uv1;

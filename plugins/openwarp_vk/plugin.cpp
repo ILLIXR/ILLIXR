@@ -108,9 +108,9 @@ struct DistortionMatrix {
 };
 
 struct WarpMatrices {
-    glm::mat4 render_inv_projection;
-    glm::mat4 render_inv_view;
-    glm::mat4 warp_view_projection;
+    glm::mat4 render_inv_projection[2];
+    glm::mat4 render_inv_view[2];
+    glm::mat4 warp_view_projection[2];
 };
 
 class openwarp_vk : public vulkan::timewarp {
@@ -217,17 +217,20 @@ public:
 
         const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
         Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose);
-        Eigen::Matrix4f warpVP = basicProjection * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
 
-        auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
-        memcpy(&ow_ubo->render_inv_projection, invProjection.data(), sizeof(Eigen::Matrix4f));
-        memcpy(&ow_ubo->render_inv_view, renderedCameraMatrix.data(), sizeof(Eigen::Matrix4f));
-        memcpy(&ow_ubo->warp_view_projection, warpVP.data(), sizeof(Eigen::Matrix4f));
+        for (int eye = 0; eye < 2; eye++) {
+            Eigen::Matrix4f warpVP = basicProjection[eye] * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
+
+            auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
+            memcpy(&ow_ubo->render_inv_projection[eye], invProjection[eye].data(), sizeof(Eigen::Matrix4f));
+            memcpy(&ow_ubo->render_inv_view[eye], renderedCameraMatrix.data(), sizeof(Eigen::Matrix4f));
+            memcpy(&ow_ubo->warp_view_projection[eye], warpVP.data(), sizeof(Eigen::Matrix4f));
+        }
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
-
+        
         VkDeviceSize offsets = 0;
         VkClearValue clear_colors[2];
         clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -259,12 +262,15 @@ public:
         ow_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
         ow_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
 
+        uint32_t eye = static_cast<uint32_t>(left ? 0 : 1);
+
         vkCmdBeginRenderPass(commandBuffer, &ow_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 	    vkCmdSetViewport(commandBuffer, 0, 1, &ow_viewport);
 	    vkCmdSetScissor(commandBuffer, 0, 1, &ow_scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ow_vertex_buffer, &offsets);
+        vkCmdPushConstants(commandBuffer, ow_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(uint32_t), &eye);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ow_pipeline_layout, 0, 1,
                                 &ow_descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer, 0, VK_INDEX_TYPE_UINT32);
@@ -723,14 +729,61 @@ private:
         distortion_vertices.resize(num_elems_pos_uv);
 
         // Construct perspective projection matrix
-        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z, rendering_params::reverse_z);
-        invProjection = basicProjection.inverse();
+//        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+//                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+//                                  rendering_params::far_z, rendering_params::reverse_z);
+//        invProjection = basicProjection.inverse();
 
-        Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basicProjection);
+        float near_z = rendering_params::near_z;
+        float far_z = rendering_params::far_z;
+
+        // Hacked in projection matrix from Unreal and hardcoded values
+        basicProjection[0](0, 0) = 0.789564178;
+        basicProjection[0](0, 1) = 0.0;
+        basicProjection[0](0, 2) = 0.0101166583;
+        basicProjection[0](0, 3) = 0.0;
+
+        basicProjection[0](1, 0) = 0.0;
+        basicProjection[0](1, 1) = 0.709630710;
+        basicProjection[0](1, 2) = -0.0000169505149;
+        basicProjection[0](1, 3) = 0.0;
+
+        basicProjection[0](2, 0) = 0.0;
+        basicProjection[0](2, 1) = 0.0;
+        basicProjection[0](2, 2) = near_z / (far_z - near_z);
+        basicProjection[0](2, 3) = (far_z * near_z) / (far_z - near_z);
+
+        basicProjection[0](3, 0) = 0.0;
+        basicProjection[0](3, 1) = 0.0;
+        basicProjection[0](3, 2) = -1.0;
+        basicProjection[0](3, 3) = 0.0;
+
+        invProjection[0] = basicProjection[0].inverse();
+
+        basicProjection[1](0, 0) = 0.78921623;
+        basicProjection[1](0, 1) = 0.0;
+        basicProjection[1](0, 2) = -0.0104189121;
+        basicProjection[1](0, 3) = 0.0;
+
+        basicProjection[1](1, 0) = 0.0;
+        basicProjection[1](1, 1) = 0.709762607;
+        basicProjection[1](1, 2) = -0.00157947776;
+        basicProjection[1](1, 3) = 0.0;
+
+        basicProjection[1](2, 0) = 0.0;
+        basicProjection[1](2, 1) = 0.0;
+        basicProjection[1](2, 2) = near_z / (far_z - near_z);
+        basicProjection[1](2, 3) = (far_z * near_z) / (far_z - near_z);
+
+        basicProjection[1](3, 0) = 0.0;
+        basicProjection[1](3, 1) = 0.0;
+        basicProjection[1](3, 2) = -1.0;
+        basicProjection[1](3, 3) = 0.0;
+
+        invProjection[1] = basicProjection[1].inverse();
 
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
+            Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basicProjection[eye]);
             for (int y = 0; y <= hmd_info.eyeTilesHigh; y++) {
                 for (int x = 0; x <= hmd_info.eyeTilesWide; x++) {
                     const int index = y * (hmd_info.eyeTilesWide + 1) + x;
@@ -1210,6 +1263,14 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &ow_descriptor_set_layout;
 
+        VkPushConstantRange push_constant = {};
+        push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        push_constant.offset = 0;
+        push_constant.size = sizeof(uint32_t);
+
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &ow_pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -1434,8 +1495,8 @@ private:
 
     // distortion data
     HMD::hmd_info_t hmd_info{};
-    Eigen::Matrix4f basicProjection;
-    Eigen::Matrix4f invProjection;
+    Eigen::Matrix4f basicProjection[2];
+    Eigen::Matrix4f invProjection[2];
 
     VkPipelineLayout  dc_pipeline_layout{};
     VkBuffer          dc_uniform_buffer{};

@@ -178,9 +178,12 @@ protected:
 
     void _p_one_iteration() override {
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
+            log->info("no decoded image, returning");
             return;
         }
+        auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
         std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res  = buffer_pool->post_processing_acquire_image(last_frame_ind);
+        auto acquire_image_end_time = std::chrono::high_resolution_clock::now();
         auto                                                ind  = res.first;
         auto                                                pose = res.second;
         // get timestamp
@@ -246,6 +249,7 @@ protected:
 
         auto copy_time   = std::chrono::duration_cast<std::chrono::microseconds>(copy_end_time - copy_start_time).count();
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
+        auto acquire_image_time = std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
         // print in nano seconds
 //        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
 //                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
@@ -253,6 +257,7 @@ protected:
 
         metrics["copy_time"]   += copy_time;
         metrics["encode_time"] += encode_time;
+        metrics["acquire_image_time"] += acquire_image_time;
 
         enqueue_for_network_send(pose);
 
@@ -261,8 +266,8 @@ protected:
             fps_start_time = std::chrono::high_resolution_clock::now();
 
             for (auto& metric : metrics) {
-                auto fps = std::max(fps_counter, (uint16_t) 0);
-                log->info("{}: {}", metric.first, metric.second / (double) (fps));
+                double fps = std::max(fps_counter, (double) 0);
+                log->info("{}: {}", metric.first, metric.second / fps);
                 metric.second = 0;
             }
 
@@ -299,7 +304,7 @@ private:
 
     uint64_t frame_count = 0;
 
-    uint16_t fps_counter = 0;
+    double fps_counter = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t> metrics;
 
@@ -308,6 +313,7 @@ private:
     std::atomic<bool> ready{false};
 
     void enqueue_for_network_send(fast_pose_type& pose) {
+        auto topic_start_time = std::chrono::high_resolution_clock::now();
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         if (pass_depth) {
             frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], 
@@ -315,7 +321,10 @@ private:
         } else {
             frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], pose, timestamp));
         }
+        auto topic_end_time = std::chrono::high_resolution_clock::now();
 
+        auto topic_put_time = std::chrono::duration_cast<std::chrono::microseconds>(topic_end_time - topic_start_time).count();
+        log->info("topic put time: {}", topic_put_time);
         // av_packet_free(&pkt);
     }
 
