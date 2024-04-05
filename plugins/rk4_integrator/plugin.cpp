@@ -83,10 +83,8 @@ private:
             has_last_offset = true;
         }
 
-        ProperQuaterniond curr_quat = {input_values->quat.w(),
-                                       input_values->quat.x(),
-                                       input_values->quat.y(),
-                                       input_values->quat.z()};
+        ProperQuaterniond           curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
+                                                 input_values->quat.z()};
         Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
         Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
 
@@ -136,8 +134,7 @@ private:
             }
         }
 
-        _m_imu_raw.put(_m_imu_raw.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
-                                           curr_quat, real_time));
+        _m_imu_raw.put(_m_imu_raw.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate

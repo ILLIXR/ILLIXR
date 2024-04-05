@@ -86,21 +86,15 @@ public:
 
         // slow_pose and imu_raw, do pose prediction
 
-        double dt = duration2double(future_timestamp - imu_raw->imu_time);
-        StatePlus state_plus = predict_mean_rk4(dt,
-                                                {imu_raw->quat, imu_raw->vel, imu_raw->pos},
-                                                imu_raw->w_hat,
-                                                imu_raw->a_hat,
-                                                imu_raw->w_hat2,
-                                                imu_raw->a_hat2);
+        double    dt         = duration2double(future_timestamp - imu_raw->imu_time);
+        StatePlus state_plus = predict_mean_rk4(dt, {imu_raw->quat, imu_raw->vel, imu_raw->pos}, imu_raw->w_hat, imu_raw->a_hat,
+                                                imu_raw->w_hat2, imu_raw->a_hat2);
 
         // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
         auto predictor_imu_time = imu_raw->imu_time;
 
         pose_type predicted_pose =
-            correct_pose({predictor_imu_time,
-                          state_plus.position.cast<float>(),
-                          state_plus.orientation.cast<float>()});
+            correct_pose({predictor_imu_time, state_plus.position.cast<float>(), state_plus.orientation.cast<float>()});
 
         // Make the first valid fast pose be straight ahead.
         if (first_time) {
@@ -202,7 +196,7 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>>      _m_vsync_estimate;
     mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex;
-    
+
     /**
      * @brief Normalizes a quaternion to make sure it is unit norm
      * @param q_t Quaternion to normalized
@@ -214,7 +208,6 @@ private:
         }
         return q_t / q_t.norm();
     }
-
 };
 
 class pose_prediction_plugin : public plugin {
