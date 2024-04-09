@@ -1,7 +1,7 @@
- #pragma once
+#pragma once
+#include <iostream>
 #include <eigen3/Eigen/Dense>
-#include "switchboard.hpp"
-#include "data_format.hpp"
+#include "comp.hpp"
 
 namespace ILLIXR {
 
@@ -80,6 +80,21 @@ public:
 
 };
 
+/*template <typename T>
+Eigen::Quaternion<T> operator=(const ProperQuaternion<T>& pq) {
+    Eigen::Quaternion<T> out;
+    out.w() = pq.w();
+    out.x() = pq.x();
+    out.y() = pq.y();
+    out.z() = pq.z();
+    return out;
+}*/
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const ProperQuaternion<T>& pq) {
+    os << "X " << pq.x() << std::endl << "Y " << pq.y() << std::endl << "Z " << pq.z() << std::endl << "W " << pq.w();
+    return os;
+}
 
 typedef ProperQuaternion<double> ProperQuaterniond;
 typedef ProperQuaternion<float> ProperQuaternionf;
@@ -89,11 +104,12 @@ typedef ProperQuaternion<float> ProperQuaternionf;
  *
  * Based on equation 6 from http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf
  */
-inline Eigen::Matrix3d symmetric_skew(const Eigen::Vector3d& vec) {
+inline Eigen::Matrix3d symmetric_skew(const Eigen::Vector3d& vec, Compare& cc) {
     Eigen::Matrix3d skew_q;
     skew_q << 0, -vec[2], vec[1],
         vec[2], 0, -vec[0],
         -vec[1], vec[0], 0;
+    cc.skew.push_back(skew_q);
     return skew_q;
 }
 
@@ -102,15 +118,16 @@ inline Eigen::Matrix3d symmetric_skew(const Eigen::Vector3d& vec) {
  *
  * Based on equation 48 of http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf
  */
-inline Eigen::Matrix4d makeOmega(const Eigen::Vector3d& w) {
+inline Eigen::Matrix4d makeOmega(const Eigen::Vector3d& w, Compare& cc) {
     Eigen::Matrix4d omega = Eigen::Matrix4d::Zero();
-    omega.block<3, 3>(0, 0) = -symmetric_skew(w);
+    omega.block<3, 3>(0, 0) = -symmetric_skew(w, cc);
     omega.block<1, 3>(3, 0) = -w.transpose();
     omega.block<3, 1>(0, 3) = w;
+    cc.omega.push_back(omega);
     return omega;
 }
 
-const ProperQuaterniond dq_0(0., 0., 0., 1.);
+const ProperQuaterniond dq_0(1., 0., 0., 0.);
 const Eigen::Vector3d Gravity(0.0, 0.0, 9.81);
 /**
  * @brief Normalize the quaternion, but check w first
@@ -151,8 +168,8 @@ ProperQuaterniond delta_q(const ProperQuaterniond& k_n) {
 }
 
 inline
-ProperQuaterniond q_dot(const Eigen::Vector3d& av, const ProperQuaterniond& dq) {
-    return ProperQuaterniond(Eigen::Vector4d(0.5 * makeOmega(av) * dq.asVector()));
+ProperQuaterniond q_dot(const Eigen::Vector3d& av, const ProperQuaterniond& dq, Compare& cc) {
+    return ProperQuaterniond(Eigen::Vector4d(0.5 * makeOmega(av, cc) * dq.asVector()));
 }
 
 inline
@@ -169,8 +186,17 @@ Eigen::Vector3d delta_v(const Eigen::Vector3d& iv, const Eigen::Vector3d& k_n) {
  */
 inline
 Eigen::Vector3d v_dot(const ProperQuaterniond& dq, const ProperQuaterniond& q,
-          const Eigen::Vector3d& l_acc) {
-    Eigen::Matrix3d R_Gto0 = (dq * q).toRotationMatrix();
+          const Eigen::Vector3d& l_acc, Compare& cc) {
+    ProperQuaternion temp = dq * q;
+    std::cout << "S" << std::endl << std::endl;
+    std::cout << dq << std::endl << std::endl;
+    std::cout << q << std::endl << std::endl;
+    std::cout << temp.asVector() << std::endl;
+    std::cout << "E" << std::endl;
+    cc.mult.push_back(temp.asVector());
+    temp.normalize();
+    Eigen::Matrix3d R_Gto0 = temp.toRotationMatrix();
+    cc.rot.push_back(R_Gto0);
     return R_Gto0.transpose() * l_acc - Gravity;
 }
 
@@ -195,14 +221,27 @@ struct StatePlus {
     Eigen::Vector3d position;
 };
 
+std::ostream& operator<< (std::ostream& os, const StatePlus& sp) {
+    os << "Quat " << sp.orientation << std::endl;
+    os << "Vel  " << sp.velocity << std::endl;
+    os << "Pos  " << sp.position << std::endl;
+    return os;
+}
+
 StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
                            const Eigen::Vector3d& ang_vel,
                            const Eigen::Vector3d& linear_acc,
                            const Eigen::Vector3d& ang_vel2,
-                           const Eigen::Vector3d& linear_acc2) {
+                           const Eigen::Vector3d& linear_acc2,
+                           Compare& cc) {
 
+    Eigen::Vector3d av = ang_vel;
+    Eigen::Vector3d la = linear_acc;
     const Eigen::Vector3d delta_av = (ang_vel2 - ang_vel) / dt;
     const Eigen::Vector3d delta_la = (linear_acc2 - linear_acc) / dt;
+
+        cc.delta_w = delta_av;
+        cc.delta_a = delta_la;
 
     // y0 ================
     ProperQuaterniond  q_0 = sp.orientation;  // initial orientation quaternion
@@ -211,43 +250,52 @@ StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
 
     // solve orientation
     // k1
-    ProperQuaterniond q0_dot = q_dot(ang_vel, dq_0);
+    ProperQuaterniond q0_dot = q_dot(av, dq_0, cc);
     ProperQuaterniond k1_q = q0_dot * dt;
-    ang_vel += 0.5 * delta_av * dt;
+
+    cc.q0_dot = q0_dot;
+    av += 0.5 * delta_av * dt;
+
+    cc.w_hat1 = av;
 
     // k2
     ProperQuaterniond dq_1 = delta_q(k1_q);
-    ProperQuaterniond q1_dot = q_dot(ang_vel, dq_1);
+    ProperQuaterniond q1_dot = q_dot(av, dq_1, cc);
     ProperQuaterniond k2_q = q1_dot * dt;
 
     // k3
     ProperQuaterniond dq_2 = delta_q(k2_q);
-    ProperQuaterniond q2_dot = q_dot(ang_vel, dq_2);
+    ProperQuaterniond q2_dot = q_dot(av, dq_2, cc);
     ProperQuaterniond k3_q = q2_dot * dt;
 
     // k4
-    ang_vel += 0.5 * delta_av * dt;
+    av += 0.5 * delta_av * dt;
+    cc.w_hat2 = av;
     ProperQuaterniond dq_3 = delta_q(2. * k3_q);
-    ProperQuaterniond q3_dot = q_dot(ang_vel, dq_3);
+    ProperQuaterniond q3_dot = q_dot(av, dq_3, cc);
     ProperQuaterniond k4_q = q3_dot * dt;
 
     // solve velocity
     // k1
-    Eigen::Vector3d k1_v = v_dot(dq_0, q_0, linear_acc) * dt;
+    Eigen::Vector3d v0d = v_dot(dq_0, q_0, la, cc);
+    Eigen::Vector3d k1_v = v0d * dt;
+        cc.v0_dot = v0d;
 
     // k2
-    linear_acc += 0.5 * delta_la * dt;
+    la += 0.5 * delta_la * dt;
+    cc.a_hat1 = la;
     Eigen::Vector3d v_1  = delta_v(v_0, k1_v);
-    Eigen::Vector3d k2_v = v_dot(dq_1, q_0, linear_acc) * dt;
+    Eigen::Vector3d k2_v = v_dot(dq_1, q_0, la, cc) * dt;
 
     // k3
     Eigen::Vector3d v_2 = delta_v(v_0, k2_v);
-    Eigen::Vector3d k3_v = v_dot(dq_2, q_0, linear_acc) * dt;
+    Eigen::Vector3d k3_v = v_dot(dq_2, q_0, la, cc) * dt;
 
     // k4
-    linear_acc += 0.5 * delta_la * dt;
+    la += 0.5 * delta_la * dt;
+    cc.a_hat2 = la;
     Eigen::Vector3d v_3 = delta_v(v_0, 2. * k3_v);
-    Eigen::Vector3d k4_v = v_dot(dq_3, q_0, linear_acc) * dt;
+    Eigen::Vector3d k4_v = v_dot(dq_3, q_0, la, cc) * dt;
 
 
     // solve position
@@ -262,6 +310,23 @@ StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
 
     // k4
     Eigen::Vector3d k4_p = v_3 * dt;
+
+        cc.k1q = k1_q;
+        cc.k1p = k1_p;
+        cc.k1v = k1_v;
+
+        cc.k2q = k2_q;
+        cc.k2p = k2_p;
+        cc.k2v = k2_v;
+
+        cc.k3q = k3_q;
+        cc.k3p = k3_p;
+        cc.k3v = k3_v;
+
+        cc.k4q = k4_q;
+        cc.k4p = k4_p;
+        cc.k4v = k4_v;
+
 
     // y+dt ================
     StatePlus state_plus;
