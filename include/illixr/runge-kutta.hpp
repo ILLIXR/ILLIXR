@@ -16,9 +16,7 @@ const Eigen::Vector3d Gravity(0.0, 0.0, 9.81);  /** Gravitational acceleration, 
  */
 inline Eigen::Matrix3d symmetric_skew(const Eigen::Vector3d& vec) {
     Eigen::Matrix3d skew_q;
-    skew_q << 0, -vec[2], vec[1],
-        vec[2], 0, -vec[0],
-        -vec[1], vec[0], 0;
+    skew_q << 0, -vec[2], vec[1], vec[2], 0, -vec[0], -vec[1], vec[0], 0;
     return skew_q;
 }
 
@@ -28,7 +26,7 @@ inline Eigen::Matrix3d symmetric_skew(const Eigen::Vector3d& vec) {
  * Based on equation 48 of http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf
  */
 inline Eigen::Matrix4d makeOmega(const Eigen::Vector3d& w) {
-    Eigen::Matrix4d omega = Eigen::Matrix4d::Zero();
+    Eigen::Matrix4d omega   = Eigen::Matrix4d::Zero();
     omega.block<3, 3>(0, 0) = -symmetric_skew(w);
     omega.block<1, 3>(3, 0) = -w.transpose();
     omega.block<3, 1>(0, 3) = w;
@@ -106,8 +104,8 @@ inline T solve(const T& yn, const T& k1, const T& k2, const T& k3, const T& k4) 
  */
 struct StatePlus {
     ProperQuaterniond orientation;
-    Eigen::Vector3d velocity;
-    Eigen::Vector3d position;
+    Eigen::Vector3d   velocity;
+    Eigen::Vector3d   position;
 };
 
 std::ostream& operator<< (std::ostream& os, const StatePlus& sp) {
@@ -140,9 +138,9 @@ StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
     const Eigen::Vector3d delta_la = (linear_acc2 - linear_acc) / dt;
 
     // y0 ================
-    ProperQuaterniond  q_0 = sp.orientation;  // initial orientation quaternion
-    Eigen::Vector3d    p_0 = sp.position;   // initial position vector
-    Eigen::Vector3d    v_0 = sp.velocity;   // initial velocity vector
+    ProperQuaterniond q_0 = sp.orientation; // initial orientation quaternion
+    Eigen::Vector3d   p_0 = sp.position;    // initial position vector
+    Eigen::Vector3d   v_0 = sp.velocity;    // initial velocity vector
 
     // Calculate the RK4 coefficients
     // solve orientation
@@ -183,7 +181,7 @@ StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
     Eigen::Vector3d k4_p = p_dot(v_0, 2. * k3_v) * dt;
 
     // y+dt ================
-    StatePlus state_plus;
+    StatePlus         state_plus;
     ProperQuaterniond dq = solve(dq_0, k1_q, k2_q, k3_q, k4_q);
     dq.normalize();
     state_plus.orientation = q_0 * dq;
@@ -192,6 +190,5 @@ StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
     state_plus.velocity = solve(v_0, k1_v, k2_v, k3_v, k4_v);
     return state_plus;
 }
-
 
 } // namespace ILLIXR
