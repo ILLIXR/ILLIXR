@@ -1,8 +1,6 @@
 #pragma once
-#include <iostream>
-
 #include <eigen3/Eigen/Dense>
-
+#include <iostream>
 
 namespace ILLIXR {
 
@@ -21,6 +19,7 @@ public:
     typedef typename Eigen::Quaternion<Scalar_>::Base Base;
 
     using Base::operator=;
+
     /**
      * @brief Copy operator
      * @param other A ProperQuaternion instance
@@ -30,17 +29,19 @@ public:
         Base::operator=(other);
         return *this;
     }
+
     using Base::operator*=;
 
     // constructors
-    ProperQuaternion() = default;
+    ProperQuaternion()                              = default;
     ProperQuaternion(const ProperQuaternion& other) = default;
 
     /**
      * Copy constructor from the base class
      * @param other An Eigen::Quaternion instance
      */
-    [[maybe_unused]] explicit ProperQuaternion(const Eigen::Quaternion<Scalar_, Options_>& other) : Eigen::Quaternion<Scalar_, Options_>(other) {}
+    [[maybe_unused]] explicit ProperQuaternion(const Eigen::Quaternion<Scalar_, Options_>& other)
+        : Eigen::Quaternion<Scalar_, Options_>(other) { }
 
     /**
      * Constructor from individual components
@@ -49,7 +50,8 @@ public:
      * @param y The y component
      * @param z The z component
      */
-    [[maybe_unused]] ProperQuaternion(const Scalar_& w, const Scalar_& x, const Scalar_& y, const Scalar_& z) : Eigen::Quaternion<Scalar_, Options_>(w, x, y, z) {}
+    [[maybe_unused]] ProperQuaternion(const Scalar_& w, const Scalar_& x, const Scalar_& y, const Scalar_& z)
+        : Eigen::Quaternion<Scalar_, Options_>(w, x, y, z) { }
 
     /**
      * Constructor from a scalar and vector
@@ -57,30 +59,32 @@ public:
      * @param w The w component
      * @param vec The x, y, and z components
      */
-    template <typename Derived>
-    [[maybe_unused]] ProperQuaternion(const Scalar_& w, const Eigen::MatrixBase<Derived>& vec) :
-        Eigen::Quaternion<Scalar_, Options_>(w, vec) {}
+    template<typename Derived>
+    [[maybe_unused]] ProperQuaternion(const Scalar_& w, const Eigen::MatrixBase<Derived>& vec)
+        : Eigen::Quaternion<Scalar_, Options_>(w, vec) { }
 
     /**
      * Constructor from a pointer array (assumes 4 elements)
      * @param data Pointer to the first element
      */
-    [[maybe_unused]] explicit ProperQuaternion(const Scalar_* data) : Eigen::Quaternion<Scalar_, Options_>(data) {}
+    [[maybe_unused]] explicit ProperQuaternion(const Scalar_* data)
+        : Eigen::Quaternion<Scalar_, Options_>(data) { }
 
     /**
      * Constructor from a vector. Assumes the vector is x, y, z, w order.
      * @param vec The input vector
      */
-    [[maybe_unused]] explicit ProperQuaternion(const Eigen::Vector<Scalar_, 4>& vec) : Eigen::Quaternion<Scalar_, Options_>(vec[3], vec[0], vec[1], vec[2]) {}
+    [[maybe_unused]] explicit ProperQuaternion(const Eigen::Vector<Scalar_, 4>& vec)
+        : Eigen::Quaternion<Scalar_, Options_>(vec[3], vec[0], vec[1], vec[2]) { }
 
     /**
      * Constructor which casts the data type
      * @tparam Derived
      * @param other
      */
-    template <typename Derived>
-    [[maybe_unused]] explicit ProperQuaternion(const Eigen::QuaternionBase<Derived>& other) :
-        Eigen::Quaternion<Scalar_>(other) {}
+    template<typename Derived>
+    [[maybe_unused]] explicit ProperQuaternion(const Eigen::QuaternionBase<Derived>& other)
+        : Eigen::Quaternion<Scalar_>(other) { }
 
     /**
      * @brief Scalar multiplication and assignment operator
@@ -144,7 +148,7 @@ public:
      * @param other A ProperQuaternion to add to this one
      * @return Reference to the updated instance
      */
-    ProperQuaternion<Scalar_>& operator+=(const ProperQuaternion<Scalar_> &other) {
+    ProperQuaternion<Scalar_>& operator+=(const ProperQuaternion<Scalar_>& other) {
         this->w() += other.w();
         this->x() += other.x();
         this->y() += other.y();
@@ -168,16 +172,14 @@ public:
      * @tparam T
      * @return The new ProperQuaternion instance of the correct type
      */
-    template <typename T>
+    template<typename T>
     ProperQuaternion<T> cast() {
-        return ProperQuaternion<T>(static_cast<T>(this->w()),
-                                   static_cast<T>(this->x()),
-                                   static_cast<T>(this->y()),
+        return ProperQuaternion<T>(static_cast<T>(this->w()), static_cast<T>(this->x()), static_cast<T>(this->y()),
                                    static_cast<T>(this->z()));
     }
 
     /**
-      * @brief Normalize the quaternion, but check w first, as it needs to be positive for our conventions
+     * @brief Normalize the quaternion, but check w first, as it needs to be positive for our conventions
      */
     inline void normalize() {
         if (this->w() < 0.)
@@ -185,7 +187,6 @@ public:
 
         Eigen::Quaternion<Scalar_, Options_>::normalize();
     }
-
 };
 
 /**
@@ -195,14 +196,14 @@ public:
  * @param pq
  * @return
  */
-template <typename T>
+template<typename T>
 std::ostream& operator<<(std::ostream& os, const ProperQuaternion<T>& pq) {
     os << "X " << pq.x() << std::endl << "Y " << pq.y() << std::endl << "Z " << pq.z() << std::endl << "W " << pq.w();
     return os;
 }
 
 [[maybe_unused]] typedef ProperQuaternion<double> ProperQuaterniond;
-[[maybe_unused]] typedef ProperQuaternion<float> ProperQuaternionf;
+[[maybe_unused]] typedef ProperQuaternion<float>  ProperQuaternionf;
 
 /**
  * @brief Multiplication of scalar and ProperQuaternion
@@ -211,12 +212,9 @@ std::ostream& operator<<(std::ostream& os, const ProperQuaternion<T>& pq) {
  * @param pq The quaternion to multiply
  * @return The ProperQuaternion containing the result
  */
-template <typename Scalar_>
+template<typename Scalar_>
 inline ProperQuaternion<Scalar_> operator*(Scalar_ x, const ProperQuaternion<Scalar_>& pq) {
-    return ProperQuaternion<Scalar_>(x * pq.w(),
-                                     x * pq.x(),
-                                     x * pq.y(),
-                                     x * pq.z());
+    return ProperQuaternion<Scalar_>(x * pq.w(), x * pq.x(), x * pq.y(), x * pq.z());
 }
 
 /**
@@ -226,12 +224,9 @@ inline ProperQuaternion<Scalar_> operator*(Scalar_ x, const ProperQuaternion<Sca
  * @param x The value to divide the Quaternion by
  * @return The ProperQuaternion containing the result
  */
-template <typename Scalar_>
+template<typename Scalar_>
 inline ProperQuaternion<Scalar_> operator/(const ProperQuaternion<Scalar_>& pq, Scalar_ x) {
-    return ProperQuaternion<Scalar_>(pq.w() / x,
-                                     pq.x() / x,
-                                     pq.y() / x,
-                                     pq.z() / x);
+    return ProperQuaternion<Scalar_>(pq.w() / x, pq.x() / x, pq.y() / x, pq.z() / x);
 }
 
-}
+} // namespace ILLIXR

@@ -1,13 +1,13 @@
 #pragma once
-#include <iostream>
-#include <eigen3/Eigen/Dense>
-
 #include "ProperQuaternion.hpp"
+
+#include <eigen3/Eigen/Dense>
+#include <iostream>
 
 namespace ILLIXR {
 
-const ProperQuaterniond dq_0(1., 0., 0., 0.);   /** Initial quaternion*/
-const Eigen::Vector3d Gravity(0.0, 0.0, 9.81);  /** Gravitational acceleration, at sea level, on Earth*/
+const ProperQuaterniond dq_0(1., 0., 0., 0.);    /** Initial quaternion*/
+const Eigen::Vector3d   Gravity(0.0, 0.0, 9.81); /** Gravitational acceleration, at sea level, on Earth*/
 
 /**
  * @brief Generates a skew-symmetric matrix from the given 3-element vector
@@ -38,8 +38,7 @@ inline Eigen::Matrix4d makeOmega(const Eigen::Vector3d& w) {
  * @param k_n The input Quaternion
  * @return The change in orientation
  */
-inline
-ProperQuaterniond delta_q(const ProperQuaterniond& k_n) {
+inline ProperQuaterniond delta_q(const ProperQuaterniond& k_n) {
     ProperQuaterniond dq(dq_0 + 0.5 * k_n);
     dq.normalize();
     return dq;
@@ -51,8 +50,7 @@ ProperQuaterniond delta_q(const ProperQuaterniond& k_n) {
  * @param dq The current orientation represented by a quaternion
  * @return The updated quaternion as a new instance
  */
-inline
-ProperQuaterniond q_dot(const Eigen::Vector3d& av, const ProperQuaterniond& dq) {
+inline ProperQuaterniond q_dot(const Eigen::Vector3d& av, const ProperQuaterniond& dq) {
     return ProperQuaterniond(Eigen::Vector4d(0.5 * makeOmega(av) * dq.asVector()));
 }
 
@@ -63,8 +61,7 @@ ProperQuaterniond q_dot(const Eigen::Vector3d& av, const ProperQuaterniond& dq) 
  * @param k_n The change in velocity as a vector
  * @return The updated position
  */
-inline
-Eigen::Vector3d p_dot(const Eigen::Vector3d& iv, const Eigen::Vector3d& k_n) {
+inline Eigen::Vector3d p_dot(const Eigen::Vector3d& iv, const Eigen::Vector3d& k_n) {
     return Eigen::Vector3d(iv + 0.5 * k_n);
 }
 
@@ -76,9 +73,7 @@ Eigen::Vector3d p_dot(const Eigen::Vector3d& iv, const Eigen::Vector3d& k_n) {
  * @param l_acc The acceleration as a vector
  * @return The calculated velocity as a vector
  */
-inline
-Eigen::Vector3d v_dot(const ProperQuaterniond& dq, const ProperQuaterniond& q,
-          const Eigen::Vector3d& l_acc) {
+inline Eigen::Vector3d v_dot(const ProperQuaterniond& dq, const ProperQuaterniond& q, const Eigen::Vector3d& l_acc) {
     ProperQuaterniond temp = q * dq;
     temp.normalize();
     return temp.toRotationMatrix() * l_acc - Gravity;
@@ -108,7 +103,7 @@ struct StatePlus {
     Eigen::Vector3d   position;
 };
 
-std::ostream& operator<< (std::ostream& os, const StatePlus& sp) {
+std::ostream& operator<<(std::ostream& os, const StatePlus& sp) {
     os << "Quat " << sp.orientation << std::endl;
     os << "Vel  " << sp.velocity << std::endl;
     os << "Pos  " << sp.position << std::endl;
@@ -126,14 +121,10 @@ std::ostream& operator<< (std::ostream& os, const StatePlus& sp) {
  * @param linear_acc2 The final angular acceleration
  * @return The final state
  */
-StatePlus predict_mean_rk4(double dt, const StatePlus& sp,
-                           const Eigen::Vector3d& ang_vel,
-                           const Eigen::Vector3d& linear_acc,
-                           const Eigen::Vector3d& ang_vel2,
-                           const Eigen::Vector3d& linear_acc2) {
-
-    Eigen::Vector3d av = ang_vel;
-    Eigen::Vector3d la = linear_acc;
+StatePlus predict_mean_rk4(double dt, const StatePlus& sp, const Eigen::Vector3d& ang_vel, const Eigen::Vector3d& linear_acc,
+                           const Eigen::Vector3d& ang_vel2, const Eigen::Vector3d& linear_acc2) {
+    Eigen::Vector3d       av       = ang_vel;
+    Eigen::Vector3d       la       = linear_acc;
     const Eigen::Vector3d delta_av = (ang_vel2 - ang_vel) / dt;
     const Eigen::Vector3d delta_la = (linear_acc2 - linear_acc) / dt;
 
