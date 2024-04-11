@@ -1,13 +1,12 @@
-#include "illixr/plugin.hpp"
+#include <memory>
+#include <shared_mutex>
 
 #include "data_loading.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "utils.hpp"
-
-#include <memory>
-#include <shared_mutex>
 
 using namespace ILLIXR;
 

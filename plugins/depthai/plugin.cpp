@@ -1,3 +1,11 @@
+// ILLIXR includes
+#include "illixr/data_format.hpp"
+#include "illixr/opencv_data_types.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+
 #include <chrono>
 #include <depthai/depthai.hpp>
 #include <eigen3/Eigen/Core>
@@ -7,14 +15,6 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <utility>
-
-// ILLIXR includes
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/relative_clock.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
 
