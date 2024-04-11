@@ -29,7 +29,6 @@
 #include <vulkan/vulkan.h>
 // clang-format on
 
-
 using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
