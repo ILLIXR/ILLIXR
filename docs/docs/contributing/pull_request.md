@@ -190,5 +190,8 @@ If your PR has not seen activity from the ILLIXR team after a long period of tim
 feel free to contact the team directly on the GitHub Issue Conversation tab or at
 the Gitter forum linked below.
 
+[2]:    https://github.com/ILLIXR/ILLIXR/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [3]:    https://redfin.engineering/git-rebasing-public-branches-works-much-better-than-youd-think-ecc9a115aea9
 [4]:    https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases
+
+[12]:   pull_request.md#philosophy
