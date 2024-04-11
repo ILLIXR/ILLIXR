@@ -1,12 +1,19 @@
 #pragma once
 
+#include "concurrentqueue/blockingconcurrentqueue.hpp"
+#include "managed_thread.hpp"
+#include "phonebook.hpp"
+#include "record_logger.hpp"
+
 #include <iostream>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
+
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
 #endif
+
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
 #else
@@ -14,10 +21,6 @@ static std::chrono::nanoseconds thread_cpu_time() {
     return {};
 }
 #endif
-#include "concurrentqueue/blockingconcurrentqueue.hpp"
-#include "managed_thread.hpp"
-#include "phonebook.hpp"
-#include "record_logger.hpp"
 
 namespace ILLIXR {
 

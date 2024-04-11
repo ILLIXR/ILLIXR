@@ -1,13 +1,13 @@
 #pragma once
 
+#include "relative_clock.hpp"
+#include "switchboard.hpp"
+
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 #include <utility>
 //#undef Complex // For 'Complex' conflict
-
-#include "relative_clock.hpp"
-#include "switchboard.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT

@@ -1,13 +1,11 @@
 #include <chrono>
+#include <depthai/depthai.hpp>
 #include <eigen3/Eigen/Core>
 #include <functional>
 #include <iostream>
 #include <mutex>
 #include <opencv2/opencv.hpp>
 #include <string>
-
-// Inludes common necessary includes for development using depthai library
-#include <depthai/depthai.hpp>
 #include <utility>
 
 // ILLIXR includes

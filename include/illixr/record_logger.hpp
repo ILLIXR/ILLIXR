@@ -1,5 +1,7 @@
 #pragma once
 
+#include "phonebook.hpp"
+
 #include <any>
 #include <atomic>
 #include <cassert>
@@ -16,8 +18,6 @@
     #include <iostream>
     #include <sstream>
 #endif
-
-#include "phonebook.hpp"
 
 namespace ILLIXR {
 

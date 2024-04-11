@@ -1,14 +1,3 @@
-#include "illixr/runtime.hpp"
-
-#include "illixr/dynamic_lib.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/extended_window.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/plugin.hpp"
-#include "illixr/record_logger.hpp"
-#include "illixr/stoplight.hpp"
-#include "illixr/switchboard.hpp"
 #include "sqlite_record_logger.hpp"
 
 #include <algorithm>
@@ -19,6 +8,17 @@
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
+
+#include "illixr/runtime.hpp"
+#include "illixr/dynamic_lib.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/extended_window.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/record_logger.hpp"
+#include "illixr/stoplight.hpp"
+#include "illixr/switchboard.hpp"
 
 using namespace ILLIXR;
 

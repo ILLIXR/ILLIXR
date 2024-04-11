@@ -1,11 +1,11 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
-#include "illixr/record_logger.hpp"
-
 #include <chrono>
 #include <iostream>
 #include <sstream>
+
+#include "illixr/data_format.hpp"
+#include "illixr/record_logger.hpp"
 
 namespace ILLIXR {
 class stdout_record_logger : public record_logger {

@@ -77,13 +77,9 @@ ILLIXR has adopted the `#pragma once` include guard for all header files.
 
 Header files used via the `#include` pre-processor directive should be at the top of the code and header files, and ordered in the followimg fashion:
 
-  - header associated with this file (`cpp` files only, e.g. `xyz.cpp` might include `xyz.hpp`)
+  - header from the same directory as this file
   - _blank line_
-  - C system headers (those in angle brackets and ending in .h, e.g. `<stdlib.h>`)
-  - _blank line_
-  - C++ library headers (those in angle brackets, with no suffix, e.g. `<string>`)
-  - _blank line_
-  - third party includes (e.g. `vulkan/vulkan_core.h`)
+  - system headers (those in angle brackets, e.g. `<stdlib.h>` `<string>`)
   - _blank line_
   - any headers from inside the ILLIXR codebase
 
@@ -91,12 +87,11 @@ Not every file will have includes from every group, in fact most files will not.
 Header files in each group should be listed in alphabetical order. Some headers will only be included under certain conditions, by using `#ifdef` statements. These headers, and their conditionals, should be added below all other header files. This is an example:
 
 ```C++
-#include <stdlib.h>
-
 #include <iostream>
+#include <stdlib.h>
 #include <string>
-
 #include <vulkan/vulkan_core.h>
+
 
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"

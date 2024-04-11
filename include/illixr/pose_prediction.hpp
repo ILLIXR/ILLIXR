@@ -1,8 +1,8 @@
 #pragma once
 
 #include "data_format.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/relative_clock.hpp"
+#include "phonebook.hpp"
+#include "relative_clock.hpp"
 
 #include <eigen3/Eigen/Geometry>
 
