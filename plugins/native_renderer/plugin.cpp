@@ -1,12 +1,3 @@
-#include <array>
-#include <cassert>
-#include <chrono>
-#include <future>
-#include <iostream>
-#include <thread>
-#include <vector>
-#include <vulkan/vulkan_core.h>
-
 #define VMA_IMPLEMENTATION
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
@@ -15,6 +6,15 @@
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
+
+#include <array>
+#include <cassert>
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <vulkan/vulkan_core.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"

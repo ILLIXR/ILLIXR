@@ -1,10 +1,3 @@
-#include <array>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-
 #define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -16,6 +9,12 @@
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
 
+#include <array>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 #include <vulkan/vulkan_core.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION

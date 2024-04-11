@@ -1,3 +1,10 @@
+#include "illixr/data_format.hpp"
+#include "illixr/opencv_data_types.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+
 #include <eigen3/Eigen/Dense>
 #include <iostream>
 #include <librealsense2/rs.hpp> // Include RealSense Cross Platform API
@@ -8,14 +15,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-// ILLIXR includes
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/relative_clock.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
 

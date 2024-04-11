@@ -1,8 +1,3 @@
-#include <future>
-#include <iostream>
-#include <mutex>
-#include <stack>
-
 #define VMA_IMPLEMENTATION
 
 #include "illixr/data_format.hpp"
@@ -17,6 +12,10 @@
 #include "illixr/vk_util/vulkan_utils.hpp"
 #include "utils/hmd.hpp"
 
+#include <future>
+#include <iostream>
+#include <mutex>
+#include <stack>
 #include <vulkan/vulkan_core.h>
 
 using namespace ILLIXR;

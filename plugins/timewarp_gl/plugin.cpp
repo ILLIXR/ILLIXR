@@ -1,3 +1,17 @@
+#include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/extended_window.hpp"
+#include "illixr/global_module_defs.hpp"
+#include "illixr/math_util.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/shader_util.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "shaders/timewarp_shader.hpp"
+#include "utils/hmd.hpp"
+
 #include <atomic>
 #include <cassert>
 #include <chrono>
@@ -15,19 +29,6 @@
 #include <vulkan/vulkan.h>
 // clang-format on
 
-#include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/extended_window.hpp"
-#include "illixr/global_module_defs.hpp"
-#include "illixr/math_util.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
-#include "illixr/relative_clock.hpp"
-#include "illixr/shader_util.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-#include "shaders/timewarp_shader.hpp"
-#include "utils/hmd.hpp"
 
 using namespace ILLIXR;
 

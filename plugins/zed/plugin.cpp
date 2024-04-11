@@ -1,3 +1,11 @@
+#include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
+#include "illixr/opencv_data_types.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
+#include "zed_opencv.hpp"
+
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -5,17 +13,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-
-// ILLIXR includes
-#include "illixr/data_format.hpp"
-#include "illixr/error_util.hpp"
-#include "illixr/opencv_data_types.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-
-// ZED includes
-#include "zed_opencv.hpp"
 
 using namespace ILLIXR;
 
