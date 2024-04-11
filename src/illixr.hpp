@@ -1,14 +1,13 @@
 #pragma once
 
 #include "cxxopts.hpp"
+#include "illixr/runtime.hpp"
 
 #include <atomic>
 #include <chrono>
 #include <string>
 #include <thread>
 #include <vector>
-
-#include "illixr/runtime.hpp"
 
 #define GET_STRING(NAME, ENV)                                         \
     if (options.count(#NAME)) {                                       \

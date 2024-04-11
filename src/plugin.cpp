@@ -1,4 +1,5 @@
 #include "illixr.hpp"
+#include "illixr/error_util.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -6,8 +7,6 @@
 #include <sstream>
 #include <unistd.h>
 #include <yaml-cpp/yaml.h>
-
-#include "illixr/error_util.hpp"
 
 ILLIXR::runtime* r = nullptr;
 
