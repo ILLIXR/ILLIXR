@@ -18,4 +18,4 @@ If your code is being reviewed:
   - Every pull request must have reviews done by two people who are not the author of the pull request
   - Don't take criticisms personally
   - Please respond to any conversations, don't just close them
-  - Remember the review process is to imrove your code
+  - Remember the review process is to improve your code
