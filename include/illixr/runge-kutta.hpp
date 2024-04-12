@@ -101,6 +101,12 @@ struct StatePlus {
     ProperQuaterniond orientation;
     Eigen::Vector3d   velocity;
     Eigen::Vector3d   position;
+
+    [[maybe_unused]] StatePlus(const ProperQuaterniond& pq, const Eigen::Vector3d& vel, const Eigen::Vector3d& pos) :
+        orientation(pq), velocity(vel), position(pos){}
+    [[maybe_unused]] StatePlus(const Eigen::Quaterniond& pq, const Eigen::Vector3d& vel, const Eigen::Vector3d& pos) :
+        orientation(pq), velocity(vel), position(pos){}
+    StatePlus() = default;
 };
 
 std::ostream& operator<<(std::ostream& os, const StatePlus& sp) {
