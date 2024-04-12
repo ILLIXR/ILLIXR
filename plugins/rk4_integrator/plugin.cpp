@@ -126,7 +126,7 @@ private:
                 a_hat2 = prop_data[i + 1].linear_a - input_values->biasAcc;
 
                 // Compute the new state mean value
-                StatePlus sp = predict_mean_rk4(dt, {curr_quat, curr_vel, curr_pos}, w_hat, a_hat, w_hat2, a_hat2);
+                StatePlus sp = predict_mean_rk4(dt, StatePlus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
 
                 curr_quat = sp.orientation;
                 curr_pos  = sp.position;
