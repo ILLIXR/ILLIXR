@@ -87,8 +87,8 @@ public:
         // slow_pose and imu_raw, do pose prediction
 
         double    dt         = duration2double(future_timestamp - imu_raw->imu_time);
-        StatePlus state_plus = predict_mean_rk4(dt, StatePlus(imu_raw->quat, imu_raw->vel, imu_raw->pos), imu_raw->w_hat, imu_raw->a_hat,
-                                                imu_raw->w_hat2, imu_raw->a_hat2);
+        StatePlus state_plus = predict_mean_rk4(dt, StatePlus(imu_raw->quat, imu_raw->vel, imu_raw->pos), imu_raw->w_hat,
+                                                imu_raw->a_hat, imu_raw->w_hat2, imu_raw->a_hat2);
 
         // predictor_imu_time is the most recent IMU sample that was used to compute the prediction.
         auto predictor_imu_time = imu_raw->imu_time;
