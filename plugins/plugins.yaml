@@ -102,6 +102,11 @@ profile:
   enable_pre_sleep: False
 
 profile:
+  name: offload_build_all
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline,offload_vio.server_rx,offload_vio.server_tx
+  visualizers: openvins
+
+profile:
   name: fauxpose
   plugins: fauxpose,gldemo,debugview,audio_pipeline
   enable_offload: false
