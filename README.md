@@ -119,6 +119,7 @@ The ILLIXR project started in [Sarita Adve’s research group][9],
     co-led by PhD candidate Muhammad Huzaifa, at the University of Illinois at Urbana-Champaign.
 Other major contributors include
     Rishi Desai,
+    Doug Friedel,
     Samuel Grayson,
     Xutao Jiang,
     Ying Jing,
@@ -186,23 +187,44 @@ However, ILLIXR does contain software developed solely by us.
 The external libraries and software included in ILLIXR each have their own licenses and
     must be used according to those licenses:
 
--   [ElasticFusion][14] \ [ElasticFusion license][15]
+| Package                            | License                      |
+|:-----------------------------------|:-----------------------------|
+| [concurrentqueue][P1]              | [Simplified BSD][L1]         |
+| [cxxopts][P2]                      | [MIT][L2]                    |
+| [Depthai Core][P3]                 | [MIT][L3]                    |
+| [FFmpeg][P4]                       | [LGPL v2.1][L4]              |
+| [filter][P5]                       | [MIT][L5]                    |
+| [glslang][P6]                      | [BSD-3 clause][L6]           |
+| [Gtsam][P7]                        | [Simplified BSD][L7]         |
+| [imgui][P8]                        | [MIT][L8]                    |
+| [Monado integration][P9]           | [CC-BY-4.0][L9]              |
+| [Monado Vulkan Integration][P10]   | [Boost v1][L10]              |
+| [OpenCV][P11]                      | [BSD-3 clause][L11]          |
+| [OpenXR][P12]                      | [Boost v1][L12]              |
+| [PortAudio][P13]                   | [MIT][L13]                   |
+| [robin-hood-hashing][P14]          | [MIT][L14]                   |
+| [SpatialAudio][P15]                | [LGPL v2.1][L15]             |
+| [SPIRV Headers][P16]               | [MIT][L16]                   |
+| [SPIRV Tools][P17]                 | [Apache v2][L17]             |
+| [SqliteCPP][P18]                   | [MIT][L18]                   |
+| [stb][P19]                         | [MIT][L19]                   |
+| [tinyobjloader][P20]               | [MIT][L20]                   |
+| [Vulkan Headers][P21]              | [Apache v2][L21]             |
+| [Vulkan Loader][P22]               | [Apache v2][L22]             |
+| [Vulkan Utility Libraries][P23]    | [Apache v2][L23]             |
+| [Vulkan Validation Layers][P24]    | [Apache v2][L24]             |
+| [VulkanMemoryAllocator][P25]       | [MIT][L25]                   |
+| [yaml-cpp][P26]                    | [MIT][L26]                   |
+| zed_opencv (Sterolabs)             | [MIT][L27]                   |
+| [libspatialaudio][P28]             | [LGPL v2.1][L28]             |
+| [Monado][P29]                      | [MIT][L29]                   |
+| [moodycamel::ConcurrentQueue][P30] | [Simplified BSD][L30]        |
+| [ElasticFusion][P31]               | [ElasticFusion license][L31] |
+| [KinectFusion][P32]                | [MIT][L32]                   |
+| [HOTlab][P33]                      | [LGPL v3.0][L33]             |
+| [RITnet][P34]                      | [MIT License][L34]           |
 
--   [KinectFusion][40] \ [MIT License][46]
-
--   [GTSAM][27] \ [Simplified BSD License][28]
-
--   [HOTlab][20] \ [GNU Lesser General Public License v3.0][21]
-
--   [libspatialaudio][18] \ [GNU Lesser General Public License v2.1][19]
-
--   [Monado][22] \ [Boost Software License 1.0][23]
-
--   [moodycamel::ConcurrentQueue][31] \ [Simplified BSD License][32]
-
--   [Open-VINS][12] \ [GNU General Public License v3.0][13]
-
--   [RITnet][16] \ [MIT License][17]
+The optional [Open-VINS][P35] plugin (available from a secondary repository) is licensed under [GPL v3.0][L35].              |
 
 Note that ILLIXR's extensibility allows the source to be configured and compiled using only
     permissively licensed software.
@@ -234,25 +256,9 @@ You can join
 [9]:    http://rsim.cs.illinois.edu
 [10]:   https://monado.dev
 [11]:   https://research.fb.com/programs/openeds-challenge
-[12]:   https://github.com/rpng/open_vins
-[13]:   https://www.gnu.org/licenses/gpl-3.0.html
-[14]:   https://github.com/mp3guy/ElasticFusion
-[15]:   https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt
-[16]:   https://github.com/AayushKrChaudhary/RITnet
-[17]:   https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md
-[18]:   https://github.com/videolabs/libspatialaudio
-[19]:   https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-[20]:   https://github.com/MartinPersson/HOTlab
-[21]:   https://www.gnu.org/licenses/lgpl-3.0.html
-[22]:   https://gitlab.freedesktop.org/monado/monado
-[23]:   https://choosealicense.com/licenses/bsl-1.0
 [24]:   https://gitter.im/ILLIXR/community
 [25]:   https://github.com/ILLIXR/ILLIXR/releases
 [26]:   https://www.khronos.org/openxr
-[27]:   https://github.com/ILLIXR/gtsam
-[28]:   https://github.com/borglab/gtsam/blob/develop/LICENSE.BSD
-[31]:   https://github.com/cameron314/concurrentqueue
-[32]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
 [33]:   https://illixr.github.io/ILLIXR/getting_started/
 [34]:   https://illixr.github.io/ILLIXR/LICENSE/
 [35]:   https://illixr.github.io/ILLIXR/illixr_plugins/
@@ -266,8 +272,82 @@ You can join
 [43]:   https://youtu.be/ZY98lWksnpM
 [44]:   https://ws.engr.illinois.edu/sitemanager/getfile.asp?id=2971
 [45]:   https://youtu.be/GVcCW8WgEDY
-[46]:   https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt
 [47]:   https://discord.gg/upkvy7x3W4
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
 [50]:   https://illixr.org/open_meetings
+
+
+[//]: # (- Third Party Packages -)
+[P1]:   https://github.com/cameron314/concurrentqueue
+[P2]:   https://github.com/jarro2783/cxxopts
+[P3]:   https://github.com/luxonis/depthai-core
+[P4]:   https://github.com/ILLIXR/FFmpeg/
+[P5]:   https://github.com/casiez/OneEuroFilter
+[P6]:   https://github.com/KhronosGroup/glslang
+[P7]:   https://github.com/borglab/gtsam
+[P8]:   https://github.com/ocornut/imgui
+[P9]:   https://github.com/ILLIXR/monado_integration
+[P10]:   https://github.com/ILLIXR/monado_vulkan_integration
+[P11]:   https://github.com/ILLIXR/opencv
+[P12]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example
+[P13]:   https://github.com/PortAudio/portaudio
+[P14]:   https://github.com/martinus/robin-hood-hashing
+[P15]:   https://github.com/ILLIXR/libspatialaudio
+[P16]:   https://github.com/KhronosGroup/SPIRV-Headers
+[P17]:   https://github.com/KhronosGroup/SPIRV-Tools
+[P18]:   https://github.com/iwongu/sqlite3pp
+[P19]:   https://github.com/nothings/stb
+[P20]:   https://github.com/tinyobjloader/tinyobjloader
+[P21]:   https://github.com/KhronosGroup/Vulkan-Headers
+[P22]:   https://github.com/KhronosGroup/Vulkan-Loader
+[P23]:   https://github.com/KhronosGroup/Vulkan-Utility-Libraries
+[P24]:   https://github.com/KhronosGroup/Vulkan-ValidationLayers
+[P25]:   https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/include/vk_mem_alloc.h
+[P26]:   https://github.com/jbeder/yaml-cpp
+[P28]:   https://github.com/videolabs/libspatialaudio
+[P29]:   https://gitlab.freedesktop.org/monado/monado
+[P30]:   https://github.com/cameron314/concurrentqueue
+[P31]:   https://github.com/mp3guy/ElasticFusion
+[P32]:   https://github.com/ILLIXR/KinectFusionApp/tree/illixr-integration
+[P33]:   https://github.com/MartinPersson/HOTlab
+[P34]:   https://github.com/AayushKrChaudhary/RITnet
+[P35]:   https://github.com/rpng/open_vins
+
+
+[//]: # (- Licenses -)
+[L1]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
+[L2]:   https://github.com/jarro2783/cxxopts/blob/master/LICENSE
+[L3]:   https://github.com/luxonis/depthai-core/blob/main/LICENSE
+[L4]:   https://github.com/ILLIXR/FFmpeg/blob/master/LICENSE.md
+[L5]:   https://github.com/ILLIXR/ILLIXR/blob/master/plugins/gtsam_integrator/third_party/filter.h
+[L6]:   https://github.com/KhronosGroup/glslang/blob/main/LICENSE.txt
+[L7]:   https://github.com/borglab/gtsam/blob/develop/LICENSE
+[L8]:   https://github.com/ocornut/imgui/blob/master/LICENSE.txt
+[L9]:   https://github.com/ILLIXR/monado_integration/blob/master/LICENSE
+[L10]:   https://github.com/ILLIXR/monado_vulkan_integration/blob/main/LICENSE
+[L11]:   https://github.com/ILLIXR/opencv/blob/master/LICENSE
+[L12]:   https://github.com/ILLIXR/Monado_OpenXR_Simple_Example/blob/master/LICENSE
+[L13]:   https://github.com/PortAudio/portaudio/blob/master/LICENSE.txt
+[L14]:   https://github.com/martinus/robin-hood-hashing/blob/master/LICENSE
+[L15]:   https://github.com/ILLIXR/libspatialaudio/blob/master/LICENSE
+[L16]:   https://github.com/KhronosGroup/SPIRV-Headers/blob/main/LICENSE
+[L17]:   https://github.com/KhronosGroup/SPIRV-Tools/blob/main/LICENSE
+[L18]:   https://github.com/iwongu/sqlite3pp/blob/master/LICENSE
+[L19]:   https://github.com/nothings/stb/blob/master/LICENSE
+[L20]:   https://github.com/tinyobjloader/tinyobjloader/blob/release/LICENSE
+[L21]:   https://github.com/KhronosGroup/Vulkan-Headers/blob/main/LICENSE.md
+[L22]:   https://github.com/KhronosGroup/Vulkan-Loader/blob/main/LICENSE.txt
+[L23]:   https://github.com/KhronosGroup/Vulkan-Utility-Libraries/blob/main/LICENSE.md
+[L24]:   https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/main/LICENSE.txt
+[L25]:   https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/blob/master/LICENSE.txt
+[L26]:   https://github.com/jbeder/yaml-cpp/blob/master/LICENSE
+[L27]:   https://github.com/ILLIXR/ILLIXR/blob/master/plugins/zed/include/LICENSE
+[L28]:   https://github.com/videolabs/libspatialaudio/blob/master/LICENSE
+[L29]:   https://gitlab.freedesktop.org/monado/monado/-/blob/main/LICENSES/LicenseRef-Khronos-Free-Use-License-for-Software-and-Documentation.txt
+[L30]:   https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md
+[L31]:   https://github.com/mp3guy/ElasticFusion/blob/master/LICENSE.txt
+[L32]:   https://github.com/chrdiller/KinectFusionApp/blob/master/LICENSE.txt
+[L33]:   https://github.com/MartinPersson/HOTlab/blob/master/docs%20and%20license/COPYING.LESSER.txt
+[L34]:   https://github.com/AayushKrChaudhary/RITnet/blob/master/License.md
+[L35]:   https://www.gnu.org/licenses/gpl-3.0.html
