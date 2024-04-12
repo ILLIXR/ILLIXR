@@ -7,7 +7,6 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "video_encoder.h"
 #include "vio_input.pb.h"
 
 #include <boost/lockfree/spsc_queue.hpp>
@@ -15,6 +14,9 @@
 #include <opencv2/core/mat.hpp>
 #include <utility>
 
+#ifdef USE_COMPRESSION
+#include "video_encoder.h"
+#endif
 using namespace ILLIXR;
 
 // #define USE_COMPRESSION
@@ -25,9 +27,11 @@ private:
     std::vector<int32_t>                  sizes;
     std::mutex                            mutex;
     std::condition_variable               cv;
+#ifdef USE_COMPRESSION
     GstMapInfo                            img0;
     GstMapInfo                            img1;
     bool                                  img_ready = false;
+#endif
 
 public:
     offload_writer(const std::string& name_, phonebook* pb_)
@@ -48,7 +52,7 @@ public:
 
     void start() override {
         threadloop::start();
-
+#ifdef USE_COMPRESSION
         encoder = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr =
@@ -64,7 +68,7 @@ public:
             cv.notify_one();
         });
         encoder->init();
-
+#endif
 #ifndef NDEBUG
         spdlog::get(name)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
 #endif
@@ -199,7 +203,9 @@ public:
     }
 
 private:
+#ifdef USE_COMPRESSION
     std::unique_ptr<video_encoder>         encoder = nullptr;
+#endif
     std::optional<time_point>              latest_imu_time;
     std::optional<time_point>              latest_cam_time;
     int                                    frame_id    = 0;

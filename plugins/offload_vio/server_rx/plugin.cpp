@@ -6,25 +6,31 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "video_decoder.h"
 #include "vio_input.pb.h"
 
 #include <boost/lockfree/spsc_queue.hpp>
 
+#ifdef USE_COMPRESSION
+#include "video_decoder.h"
+#endif
 using namespace ILLIXR;
 
 // #define USE_COMPRESSION
 
 class server_reader : public threadloop {
 private:
+#ifdef USE_COMPRESSION
     std::unique_ptr<video_decoder> decoder;
+#endif
 
     boost::lockfree::spsc_queue<uint64_t> queue{1000};
     std::mutex                            mutex;
     std::condition_variable               cv;
     cv::Mat                               img0_dst;
     cv::Mat                               img1_dst;
+#ifdef USE_COMPRESSION
     bool                                  img_ready = false;
+#endif
 
 public:
     server_reader(std::string name_, phonebook* pb_)
@@ -90,7 +96,7 @@ public:
 
     void start() override {
         threadloop::start();
-
+#ifdef USE_COMPRESSION
         decoder = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
             queue.consume_one([&](uint64_t& timestamp) {
                 uint64_t curr =
@@ -107,6 +113,7 @@ public:
             cv.notify_one();
         });
         decoder->init();
+#endif
     }
 
 private:
