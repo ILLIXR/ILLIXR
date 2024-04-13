@@ -8,9 +8,8 @@
 
 #include "vio_input.pb.h"
 
-#include "common/network/socket.hpp"
+#include "common/network/tcpsocket.hpp"
 #include "common/network/net_config.hpp"
-#include "common/network/timestamp.hpp"
 
 using namespace ILLIXR;
 
@@ -21,7 +20,8 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_cam{sb->get_writer<imu_cam_type_prof>("imu_cam")}
 		, _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
-		, server_addr(SERVER_IP, SERVER_PORT_1)
+		, server_ip(SERVER_IP)
+		, server_port(SERVER_PORT_1)
 		, buffer_str("")
     { 
 		if (!filesystem::exists(data_path)) {
@@ -32,8 +32,8 @@ public:
 		
 		receive_time.open(data_path + "/receive_time.csv");
 		hashed_data.open(data_path + "/hash_server_rx.txt");
-		socket.set_reuseaddr();
-		socket.bind(server_addr);
+		socket.socket_set_reuseaddr();
+		socket.socket_bind(server_ip, server_port);
 	}
 
 	virtual skip_option _p_should_skip() override {
@@ -45,14 +45,13 @@ public:
 			_conn_signal.put(_conn_signal.allocate<connection_signal>(
 				connection_signal{true}
 			));
-			socket.listen();
+			socket.socket_listen();
 			cout << "server_rx: Waiting for connection!" << endl;
-			read_socket = new TCPSocket( FileDescriptor( SystemCall( "accept", ::accept( socket.fd_num(), nullptr, nullptr) ) ) ); /* Blocking operation, waiting for client to connect */
-			cout << "server_rx: Connection is established with " << read_socket->peer_address().str(":") << endl;
+			read_socket = new TCPSocket( socket.socket_accept() ); /* Blocking operation, waiting for client to connect */
+			cout << "server_rx: Connection is established with " << read_socket->peer_address() << endl;
 		} else {
-			auto now = timestamp();
 			string delimitter = "END!";
-			string recv_data = read_socket->read(); /* Blocking operation, wait for the data to come */
+			string recv_data = read_socket->read_data(); /* Blocking operation, wait for the data to come */
 			buffer_str = buffer_str + recv_data;
 			if (recv_data.size() > 0) {
 				string::size_type end_position = buffer_str.find(delimitter);
@@ -139,7 +138,8 @@ private:
 
 	TCPSocket socket;
 	TCPSocket * read_socket = NULL;
-	Address server_addr;
+	string server_ip;
+	int server_port;
 	string buffer_str;
 
 	const std::string data_path = filesystem::current_path().string() + "/recorded_data";

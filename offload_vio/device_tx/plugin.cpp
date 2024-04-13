@@ -8,8 +8,7 @@
 #include <fstream>
 
 #include "vio_input.pb.h"
-#include "common/network/socket.hpp"
-#include "common/network/timestamp.hpp"
+#include "common/network/tcpsocket.hpp"
 #include "common/network/net_config.hpp"
 
 using namespace ILLIXR;
@@ -19,11 +18,11 @@ public:
     offload_writer(std::string name_, phonebook* pb_)
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
-		, server_addr(SERVER_IP, SERVER_PORT_1)
+		, server_ip(SERVER_IP)
+		, server_port(SERVER_PORT_1)
     { 
-		socket.set_reuseaddr();
-		socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
-		initial_timestamp();
+		socket.socket_set_reuseaddr();
+		socket.socket_bind(CLIENT_IP, CLIENT_PORT_1);
 
 		if (!filesystem::exists(data_path)) {
 			if (!filesystem::create_directory(data_path)) {
@@ -41,9 +40,9 @@ public:
     virtual void start() override {
         plugin::start();
 
-		cout << "TEST: Connecting to " << server_addr.str(":") << endl;
-		socket.connect(server_addr);
-		cout << "Connected to " << server_addr.str(":") << endl;	
+		cout << "TEST: Connecting to " << server_ip << ":" << server_port << endl;
+		socket.socket_connect(server_ip, server_port);
+		cout << "Connected to " << server_ip << ":" << server_port << endl;	
 
         sb->schedule<imu_cam_type_prof>(id, "imu_cam", [this](switchboard::ptr<const imu_cam_type_prof> datum, std::size_t) {
 			this->send_imu_cam_data(datum);
@@ -103,10 +102,7 @@ public:
 				std::cout << "Created to Send > 100\n";
 				frame_info << frame_id << "," << created_to_sent << ",0,1" << endl;
 			} else {
-				auto start = timestamp();
-				socket.write(data_to_be_sent + delimitter);
-				auto send_duration = timestamp() - start;
-				frame_info << frame_id << "," << created_to_sent << "," << send_duration << ",0" << endl;
+				socket.write_data(data_to_be_sent + delimitter);
 
 				hash<std::string> hasher;
 				auto hash_result = hasher(data_to_be_sent);
@@ -138,7 +134,8 @@ private:
     const std::shared_ptr<switchboard> sb;
 
 	TCPSocket socket;
-	Address server_addr;
+	string server_ip;
+	int server_port;
 
 	const string data_path = filesystem::current_path().string() + "/recorded_data";
 	std::ofstream hashed_data;

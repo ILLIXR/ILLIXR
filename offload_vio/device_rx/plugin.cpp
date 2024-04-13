@@ -9,7 +9,7 @@
 #include <fstream>
 
 #include "vio_output.pb.h"
-#include "common/network/socket.hpp"
+#include "common/network/tcpsocket.hpp"
 #include "common/network/net_config.hpp"
 
 using namespace ILLIXR;
@@ -21,7 +21,8 @@ public:
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_pose{sb->get_writer<pose_type>("slow_pose")}
 		, _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
-		, server_addr(SERVER_IP, SERVER_PORT_2)
+		, server_ip(SERVER_IP)
+		, server_port(SERVER_PORT_2)
     { 
 		pose_type datum_pose_tmp{
             time_point{},
@@ -41,16 +42,16 @@ public:
 		roundtrip_csv.open(data_path + "/roundtrip_time.csv");
 		hashed.open(data_path + "/hash_device_rx.txt");
 
-		socket.set_reuseaddr();
-		socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
+		socket.socket_set_reuseaddr();
+		socket.socket_bind(server_ip, server_port);
 		is_socket_connected = false;
 	}
 
 	virtual skip_option _p_should_skip() override {
         if (!is_socket_connected) {
-			cout << "device_rx: Connecting to " << server_addr.str(":") << endl;
-			socket.connect(server_addr);
-			cout << "device_rx: Connected to " << server_addr.str(":") << endl;
+			cout << "device_rx: Connecting to " << server_ip << ":" << server_port << endl;
+			socket.socket_connect(server_ip, server_port);
+			cout << "device_rx: Connected to " << server_ip << ":" << server_port << endl;
 			is_socket_connected = true;
 		}
 		return skip_option::run;
@@ -58,9 +59,8 @@ public:
 
 	void _p_one_iteration() override {
 		if (is_socket_connected) {
-			auto now = timestamp();
 			string delimitter = "END!";
-			string recv_data = socket.read(); /* Blocking operation, wait for the data to come */
+			string recv_data = socket.read_data(); /* Blocking operation, wait for the data to come */
 			if (recv_data.size() > 0) {
 				buffer_str = buffer_str + recv_data;
 				string::size_type end_position = buffer_str.find(delimitter);
@@ -79,7 +79,6 @@ public:
 					}
 					end_position = buffer_str.find(delimitter);
 				}
-				cout << "Recv time = " << timestamp() - now << ", size = " << recv_data.size() << endl;
 			}
 		}
 	}
@@ -155,7 +154,8 @@ private:
 
 	TCPSocket socket;
 	bool is_socket_connected;
-	Address server_addr;
+	string server_ip;
+	int server_port;
 	string buffer_str;
 
 	const string data_path = filesystem::current_path().string() + "/recorded_data";

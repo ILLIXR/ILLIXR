@@ -7,8 +7,7 @@
 #include <fstream>
 
 #include "vio_output.pb.h"
-#include "common/network/socket.hpp"
-#include "common/network/timestamp.hpp"
+#include "common/network/tcpsocket.hpp"
 #include "common/network/net_config.hpp"
 
 using namespace ILLIXR;
@@ -19,10 +18,11 @@ public:
 		: plugin{name_, pb_}
 		, sb{pb->lookup_impl<switchboard>()}
 		, _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-		, client_addr(CLIENT_IP, CLIENT_PORT_2)
+		, client_ip(CLIENT_IP)
+		, client_port(CLIENT_PORT_2)
     { 
-		socket.set_reuseaddr();
-		socket.bind(Address(SERVER_IP, SERVER_PORT_2));
+		socket.socket_set_reuseaddr();
+		socket.socket_bind(SERVER_IP, SERVER_PORT_2);
 		is_client_connected = false;
 
 		if (!filesystem::exists(data_path)) {
@@ -33,8 +33,6 @@ public:
 
 		receiver_to_sender.open(data_path + "/receiver_to_sender_time.csv");
 		hashed.open(data_path + "/hash_server_tx.txt");
-
-		last_send_time = timestamp();
 	}
 
 
@@ -51,10 +49,10 @@ public:
 	}
 
 	void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
-		socket.listen();
+		socket.socket_listen();
 		cout << "server_tx: Waiting for connection!" << endl;
-		write_socket = new TCPSocket( FileDescriptor( SystemCall( "accept", ::accept( socket.fd_num(), nullptr, nullptr) ) ) ); /* Blocking operation, waiting for client to connect */
-		cout << "server_tx: Connection is established with " << write_socket->peer_address().str(":") << endl;
+		write_socket = new TCPSocket( socket.socket_accept() ); /* Blocking operation, waiting for client to connect */
+		cout << "server_tx: Connection is established with " << write_socket->peer_address() << endl;
 	}
 
 
@@ -151,10 +149,7 @@ public:
 			string data_to_be_sent = vio_output_params->SerializeAsString();
 			string delimitter = "END!";
 
-			long int now = timestamp();
-			write_socket->write(data_to_be_sent + delimitter);
-			long int send_duration = timestamp() - now;
-			last_send_time = now;
+			write_socket->write_data(data_to_be_sent + delimitter);
 
 			hash<std::string> hasher;
 			auto hash_result = hasher(data_to_be_sent);
@@ -173,10 +168,10 @@ private:
 	
 	TCPSocket socket;
 	TCPSocket * write_socket = NULL;
-	Address client_addr;
+	string client_ip;
+	int client_port;
 	bool is_client_connected;
-
-	long int last_send_time;
+	
 	const std::string data_path = filesystem::current_path().string() + "/recorded_data";
     std::ofstream receiver_to_sender;
 	std::ofstream hashed;
