@@ -6,6 +6,7 @@
 #include <sys/socket.h> 
 #include <unistd.h> 
 #include <arpa/inet.h>
+#include <netinet/tcp.h>
 
 using namespace std;
 
@@ -87,6 +88,12 @@ public:
         do {
             it = write_helper( it, buffer.end() );
         } while ( it != buffer.end() );
+    }
+
+    // Disable naggle algorithm. This allows socket to flush data immediately after calling write().
+    void enable_no_delay() {
+        const int enable = 1;
+        setsockopt(fd_, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(int));
     }
 
     /* accessors */
