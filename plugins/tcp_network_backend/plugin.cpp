@@ -7,6 +7,7 @@
 #include "illixr/threadloop.hpp"
 #include "illixr/network/file_descriptor.hpp"
 
+#include <iostream>
 #include <map>
 
 using namespace ILLIXR;
@@ -58,6 +59,7 @@ public:
                 socket->connect(other_addr);
                 success = true;
             } catch (unix_error& e) {
+            	print_exception(e);
                 std::cout << "Connection failed, retrying in 1 second" << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
@@ -77,7 +79,7 @@ public:
         }
     }
 
-    void topic_send(std::string topic_name, std::vector<char> message) override {
+    void topic_send(std::string topic_name, std::vector<char>& message) override {
         if (is_topic_networked(topic_name) == false) {
             std::cout << "Topic not networked" << std::endl;
             return;
@@ -90,11 +92,12 @@ public:
     }
 
     // Helper function to queue a received message into the corresponding topic
-    void topic_receive(std::string topic_name, std::vector<char> message) {
+    void topic_receive(std::string topic_name, std::vector<char>& message) {
         if (!sb->topic_exists(topic_name)) {
             return;
         }
 
+	std::cout << "received topic" << std::endl;
         sb->get_topic(topic_name).deserialize_and_put(message);
     }
 
@@ -145,7 +148,8 @@ private:
                         topic_name            = before.substr(13);
                         topic_map[topic_name] = topic_connection{topic_config{}, read_socket};
                     } else {
-                        topic_receive(topic_name, std::vector<char>{before.begin(), before.end()});
+                    	std::vector<char> message{before.begin(), before.end()};
+                        topic_receive(topic_name, message);
                     }
                     end_position = buffer_str.find(DELIMITER);
                 }

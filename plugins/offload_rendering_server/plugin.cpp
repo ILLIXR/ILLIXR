@@ -251,10 +251,14 @@ protected:
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         auto acquire_image_time = std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
         // print in nano seconds
-//        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
-//                  << " left size: " << encode_out_packets[0]->size << " right size: " << encode_out_packets[1]->size
-//                  << std::endl;
+        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
+                  << " left size: " << encode_out_color_packets[0]->size << " right size: " << encode_out_color_packets[1]->size
+                  << std::endl;
 
+	if (pass_depth) {
+		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
+	}	
+	
         metrics["copy_time"]   += copy_time;
         metrics["encode_time"] += encode_time;
         metrics["acquire_image_time"] += acquire_image_time;
@@ -324,7 +328,7 @@ private:
         auto topic_end_time = std::chrono::high_resolution_clock::now();
 
         auto topic_put_time = std::chrono::duration_cast<std::chrono::microseconds>(topic_end_time - topic_start_time).count();
-        log->info("topic put time: {}", topic_put_time);
+        log->info("topic put time (microseconds): {}", topic_put_time);
         // av_packet_free(&pkt);
     }
 
@@ -518,6 +522,7 @@ private:
             encode_src_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             encode_src_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             encode_src_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+            encode_src_color_frames[eye]->pict_type     = AV_PICTURE_TYPE_I;
             // encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
             auto ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
@@ -532,6 +537,7 @@ private:
                 encode_src_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
                 encode_src_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
                 encode_src_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
+                encode_src_depth_frames[eye]->pict_type     = AV_PICTURE_TYPE_I;
                 ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
             }

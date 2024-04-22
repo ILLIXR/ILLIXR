@@ -626,7 +626,7 @@ public:
                 oa << base_event;
                 // flush
                 stream.pubsync();
-                _m_backend->topic_send(this->_m_topic.name(), std::move(buffer));
+                _m_backend->topic_send(this->_m_topic.name(), buffer);
             } else {
                 writer<serializable_event>::put(std::move(this_specific_event));
             }
