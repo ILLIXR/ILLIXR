@@ -7,22 +7,16 @@
 #include "illixr/threadloop.hpp"
 #include "illixr/network/file_descriptor.hpp"
 
-#include <iostream>
 #include <map>
 
 using namespace ILLIXR;
-
-struct topic_connection {
-    topic_config config;
-    TCPSocket*   socket;
-};
-
-std::string DELIMITER = "END!END!END!";
 
 class tcp_network_backend
     : public plugin
     , public network_backend {
 public:
+    bool client;
+
     explicit tcp_network_backend(std::string name_, phonebook* pb_)
         : plugin(name_, pb_)
         , sb{pb->lookup_impl<switchboard>()} {
@@ -44,14 +38,32 @@ public:
             peer_port = std::stoi(std::getenv("ILLIXR_TCP_PEER_PORT"));
         }
 
-        std::thread(&tcp_network_backend::listen_for_connections, this).detach();
+        if (peer_port != 0) {
+            client = true;
+            std::thread([this]() { start_client(); }).detach();
+
+            // wait till we are connected
+            while (!ready) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+
+        if (self_port != 0) {
+            client = false;
+            std::thread([this]() { start_server(); }).detach();
+
+            while (!ready) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
     }
 
-    void topic_create(std::string topic_name, topic_config config) override {
+    void start_client() {
         Address    other_addr = Address(peer_ip, peer_port);
         TCPSocket* socket     = new TCPSocket();
         socket->set_reuseaddr();
         socket->enable_no_delay();
+        peer_socket = socket;
 
         bool success = false;
         while (!success) {
@@ -59,24 +71,64 @@ public:
                 socket->connect(other_addr);
                 success = true;
             } catch (unix_error& e) {
-            	print_exception(e);
                 std::cout << "Connection failed, retrying in 1 second" << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
 
-        std::string data_to_be_sent = "topic_create:" + topic_name;
+        std::cout << "Connected to peer: " << peer_ip << ":" << peer_port << std::endl;
 
-        socket->write(data_to_be_sent + DELIMITER);
-        topic_map[topic_name] = topic_connection{config, socket};
+        ready = true;
+        read_loop(socket);
+    }
+
+    void start_server() {
+        Address   self_addr = Address(self_ip, self_port);
+        TCPSocket server_socket;
+        server_socket.set_reuseaddr();
+        server_socket.bind(self_addr);
+        server_socket.enable_no_delay();
+        server_socket.listen();
+
+        TCPSocket client_socket = server_socket.accept();
+        std::cout << "Accepted connection from peer: " << client_socket.peer_address().str(":") << std::endl;
+        peer_socket = &client_socket;
+        ready       = true;
+        read_loop(&client_socket);
+    }
+
+    void read_loop(TCPSocket* socket) {
+        std::string buffer;
+        while (running) {
+            // read from socket
+            // packet are in the format
+            // total_length:4bytes|topic_name_length:4bytes|topic_name|message
+            std::string packet = socket->read();
+            buffer += packet;
+
+            // check if we have a complete packet
+            while (buffer.size() >= 8) {
+                uint32_t total_length = *reinterpret_cast<uint32_t*>(buffer.data());
+                if (buffer.size() >= total_length) {
+                    uint32_t topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
+                    std::string topic_name(buffer.data() + 8, topic_name_length);
+                    std::vector<char> message(buffer.begin() + 8 + topic_name_length, buffer.begin() + total_length);
+                    topic_receive(topic_name, message);
+                    buffer.erase(buffer.begin(), buffer.begin() + total_length);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    void topic_create(std::string topic_name, topic_config config) override {
+        networked_topics.push_back(topic_name);
+        send_to_peer("illixr_control", "create_topic " + topic_name);
     }
 
     bool is_topic_networked(std::string topic_name) override {
-        if (topic_map.find(topic_name) == topic_map.end()) {
-            return false;
-        } else {
-            return true;
-        }
+        return std::find(networked_topics.begin(), networked_topics.end(), topic_name) != networked_topics.end();
     }
 
     void topic_send(std::string topic_name, std::vector<char>& message) override {
@@ -85,19 +137,27 @@ public:
             return;
         }
 
-        std::string      data_to_be_sent = std::string(message.begin(), message.end());
-        topic_connection topic           = topic_map[topic_name];
-
-        topic.socket->write(data_to_be_sent + DELIMITER);
+        std::cout << "Sending to peer: " << topic_name << std::endl;
+        send_to_peer(topic_name, std::string(message.begin(), message.end()));
     }
 
     // Helper function to queue a received message into the corresponding topic
     void topic_receive(std::string topic_name, std::vector<char>& message) {
+        if (topic_name == "illixr_control") {
+            std::string message_str(message.begin(), message.end());
+            // check if message starts with "create_topic"
+            if (message_str.find("create_topic") == 0) {
+                std::string topic_name = message_str.substr(12);
+                networked_topics.push_back(topic_name);
+                std::cout << "Received create_topic for " << topic_name << std::endl;
+            }
+            return;
+        }
+
         if (!sb->topic_exists(topic_name)) {
             return;
         }
 
-	std::cout << "received topic" << std::endl;
         sb->get_topic(topic_name).deserialize_and_put(message);
     }
 
@@ -107,61 +167,29 @@ public:
 
 private:
     std::shared_ptr<switchboard>            sb;
-    std::map<std::string, topic_connection> topic_map;
-    bool                                    running = true;
+    std::atomic<bool> running = true;
+    std::atomic<bool> ready  = false;
+    TCPSocket* peer_socket;
 
-    void listen_for_connections() {
-        std::cout << "Listening for connections" << std::endl;
-        Address   my_addr = Address(self_ip, self_port);
-        TCPSocket socket;
-        socket.set_reuseaddr();
-        socket.bind(my_addr);
-        socket.enable_no_delay();
-        socket.listen();
-
-        while (running) {
-            TCPSocket* read_socket = new TCPSocket(FileDescriptor(system_call(
-                "accept",
-                ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-            std::cout << "Connection is established with " << read_socket->peer_address().str(":") << std::endl;
-
-            std::thread(&tcp_network_backend::handle_connections, this, read_socket).detach();
-        }
-    }
-
-    void handle_connections(TCPSocket* read_socket) {
-        std::string buffer_str = "";
-        std::string topic_name = "";
-
-        while (running) {
-            std::string recv_data = read_socket->read(); /* Blocking operation, wait for the data to come */
-
-            buffer_str = buffer_str + recv_data;
-            if (recv_data.size() > 0) {
-                std::string::size_type end_position = buffer_str.find(DELIMITER);
-                while (end_position != std::string::npos) {
-                    std::string before = buffer_str.substr(0, end_position);
-                    buffer_str         = buffer_str.substr(end_position + DELIMITER.size());
-
-                    // process the data
-                    if (before.substr(0, 13) == "topic_create:") {
-                        topic_name            = before.substr(13);
-                        topic_map[topic_name] = topic_connection{topic_config{}, read_socket};
-                    } else {
-                    	std::vector<char> message{before.begin(), before.end()};
-                        topic_receive(topic_name, message);
-                    }
-                    end_position = buffer_str.find(DELIMITER);
-                }
-            }
-        }
-    }
-
-private:
     std::string self_ip   = "0.0.0.0";
     int         self_port = 22222;
     std::string peer_ip;
     int         peer_port = 22222;
+
+    std::vector<std::string> networked_topics;
+
+    void send_to_peer(std::string topic_name, std::string message) {
+        // packet are in the format
+        // total_length:4bytes|topic_name_length:4bytes|topic_name|message
+        uint32_t total_length = 8 + topic_name.size() + message.size();
+        std::string packet;
+        packet.append(reinterpret_cast<char*>(&total_length), 4);
+        uint32_t topic_name_length = topic_name.size();
+        packet.append(reinterpret_cast<char*>(&topic_name_length), 4);
+        packet.append(topic_name);
+        packet.append(message.begin(), message.end());
+        peer_socket->write(packet);
+    }
 };
 
 extern "C" plugin* this_plugin_factory(phonebook* pb) {
