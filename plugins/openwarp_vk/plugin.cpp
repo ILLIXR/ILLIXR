@@ -276,10 +276,6 @@ public:
         vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_openwarp_indices, 1, 0, 0, 0);
         vkCmdEndRenderPass(commandBuffer);
-
-        // Make sure to avoid read over writes
-        vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
-                            0, nullptr, 0, nullptr, 1, &offscreen_barriers[!left]);
         
         // Then perform distortion correction to the framebuffer expected by Monado
         VkClearValue clear_color;
@@ -425,17 +421,6 @@ private:
             };
 
             VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]));
-
-            // Need a pipeline barrier between Openwarp and distortion correction to avoid memory read-write hazards
-            offscreen_barriers[eye] = {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-                .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                .newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                .image = offscreen_images[eye],
-                .subresourceRange = view_info.subresourceRange,
-            };
         }
     }
 
@@ -1183,14 +1168,22 @@ private:
 
         std::array<VkAttachmentDescription, 2> all_attachments = {color_attachment, depth_attachment};
 
+	VkSubpassDependency dependency{};
+        dependency.srcSubpass = 0;
+        dependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
         VkRenderPassCreateInfo render_pass_info{};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         render_pass_info.attachmentCount = static_cast<uint32_t>(all_attachments.size());
         render_pass_info.pAttachments = all_attachments.data();
         render_pass_info.subpassCount = 1;
         render_pass_info.pSubpasses = &subpass;
-        render_pass_info.dependencyCount = 0;
-        render_pass_info.pDependencies = nullptr;
+        render_pass_info.dependencyCount = 1;
+        render_pass_info.pDependencies = &dependency;
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &openwarp_render_pass));
 
@@ -1496,7 +1489,6 @@ private:
     std::array<VmaAllocation, 2> offscreen_depth_allocs{};
 
     std::array<VkFramebuffer, 2> offscreen_framebuffers{};
-    std::array<VkImageMemoryBarrier, 2> offscreen_barriers{};
 
     // openwarp mesh
     VkPipelineLayout  ow_pipeline_layout{};
