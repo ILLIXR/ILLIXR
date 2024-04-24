@@ -167,7 +167,7 @@ public:
             partial_destroy();
         }
 
-        generate_openwarp_mesh(512, 512);
+        generate_openwarp_mesh(1024, 1024);
         generate_distortion_data();
 
         create_vertex_buffers();
@@ -750,8 +750,8 @@ private:
 
         basicProjection[0](2, 0) = 0.0;
         basicProjection[0](2, 1) = 0.0;
-        basicProjection[0](2, 2) = near_z / (far_z - near_z);
-        basicProjection[0](2, 3) = (far_z * near_z) / (far_z - near_z);
+        basicProjection[0](2, 2) = 0.0;
+        basicProjection[0](2, 3) = 0.1;
 
         basicProjection[0](3, 0) = 0.0;
         basicProjection[0](3, 1) = 0.0;
@@ -772,8 +772,8 @@ private:
 
         basicProjection[1](2, 0) = 0.0;
         basicProjection[1](2, 1) = 0.0;
-        basicProjection[1](2, 2) = near_z / (far_z - near_z);
-        basicProjection[1](2, 3) = (far_z * near_z) / (far_z - near_z);
+        basicProjection[1](2, 2) = 0.0;
+        basicProjection[1](2, 3) = 0.1;
 
         basicProjection[1](3, 0) = 0.0;
         basicProjection[1](3, 1) = 0.0;
@@ -781,6 +781,32 @@ private:
         basicProjection[1](3, 3) = 0.0;
 
         invProjection[1] = basicProjection[1].inverse();
+
+        // Test: provide a larger FOV to Unreal, and then project it back into world space
+        // before rendering it with the expected FOV.
+//        Eigen::Matrix4f unreal_fov;
+//        unreal_fov(0, 0) = 0.38877957;
+//        unreal_fov(0, 1) = 0.0;
+//        unreal_fov(0, 2) = 0.0;
+//        unreal_fov(0, 3) = 0.0;
+//
+//        unreal_fov(1, 0) = 0.0;
+//        unreal_fov(1, 1) = 0.38877957;
+//        unreal_fov(1, 2) = 0.0;
+//        unreal_fov(1, 3) = 0.0;
+//
+//        unreal_fov(2, 0) = 0.0;
+//        unreal_fov(2, 1) = 0.0;
+//        unreal_fov(2, 2) = 0.0;
+//        unreal_fov(2, 3) = 0.55;
+//
+//        unreal_fov(3, 0) = 0.0;
+//        unreal_fov(3, 1) = 0.0;
+//        unreal_fov(3, 2) = -1.0;
+//        unreal_fov(3, 3) = 0.0;
+//
+//        invProjection[0] = unreal_fov.inverse();
+//        invProjection[1] = unreal_fov.inverse();
 
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basicProjection[eye]);
