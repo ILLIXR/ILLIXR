@@ -138,7 +138,6 @@ protected:
     void _p_thread_setup() override { }
 
     skip_option _p_should_skip() override {
-//         std::this_thread::sleep_for(std::chrono::milliseconds(15));
         return threadloop::_p_should_skip();
     }
 
@@ -272,11 +271,14 @@ protected:
             return;
         }
         push_pose();
-        auto pose = network_receive();
+        std::cout << "Pushing network pose" << std::endl;
+        if (!network_receive()) {
+            return;
+        }
 
         // system timestamp
         auto timestamp = std::chrono::high_resolution_clock::now();
-        auto diff      = timestamp - pose.predict_target_time._m_time_since_epoch;
+        auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
         // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
 
         // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
@@ -392,7 +394,7 @@ protected:
         }
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
-        buffer_pool->src_release_image(ind, std::move(pose));
+        buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
         log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
                   std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
                   std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count(),
@@ -449,6 +451,8 @@ private:
     std::array<AVFrame*, 2>  decode_out_depth_frames       = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_converted_depth_frames = {nullptr, nullptr};
 
+    fast_pose_type decoded_frame_pose;
+
     VkCommandPool command_pool{};
     Npp8u*        yuv420_y_plane;
     Npp8u*        yuv420_u_plane;
@@ -487,7 +491,7 @@ private:
         pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
     }
 
-    fast_pose_type network_receive() {
+    bool network_receive() {
         if (decode_src_color_packets[0] != nullptr) {
             av_packet_free_side_data(decode_src_color_packets[0]);
             av_packet_free_side_data(decode_src_color_packets[1]);
@@ -501,6 +505,9 @@ private:
             }
         }
         auto frame            = frames_reader.dequeue();
+        if (frame == nullptr) {
+            return false;
+        }
         decode_src_color_packets[0] = frame->left_color;
         decode_src_color_packets[1] = frame->right_color;
         if (use_depth) {
@@ -511,7 +518,8 @@ private:
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         auto diff_ns = timestamp - frame->sent_time;
         log->info("diff (ms): {}", diff_ns / 1000000.0);
-        return frame->pose;
+        decoded_frame_pose = frame->pose;
+        return true;
     }
 
     void ffmpeg_init_device() {
