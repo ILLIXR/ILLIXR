@@ -10,6 +10,11 @@
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
 
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
+#define VMA_IMPLEMENTATION
+#include "illixr/vk/third_party/vk_mem_alloc.h"
+
 #include <set>
 
 using namespace ILLIXR;
@@ -74,6 +79,58 @@ public:
             if (pass_depth)
                 encode_out_depth_packets[eye] = av_packet_alloc();
         }
+
+        VmaVulkanFunctions functions = {
+            .vkGetInstanceProcAddr = &vkGetInstanceProcAddr,
+            .vkGetDeviceProcAddr = &vkGetDeviceProcAddr,
+        };
+
+        VmaAllocatorCreateInfo allocator_info = {
+            .flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
+            .physicalDevice = dp->vk_physical_device,
+            .device = dp->vk_device,
+            .pVulkanFunctions = &functions,
+            .instance = dp->vk_instance,
+            .vulkanApiVersion = VK_API_VERSION_1_0,
+        };
+
+        vmaCreateAllocator(&allocator_info, &dp->vma_allocator);
+
+        VkBufferCreateInfo buffer_info = {
+            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+            .size = _buffer_pool->depth_image_pool[0][0].allocation_info.size,
+            .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        };
+
+        VmaAllocationCreateInfo allocation_info = {
+            .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+            .usage = VMA_MEMORY_USAGE_AUTO,
+        };
+
+        vmaCreateBuffer(dp->vma_allocator, &buffer_info, &allocation_info, &cpu_mapped_depth_buffer, &depth_alloc, &depth_alloc_info);
+
+        VkCommandPoolCreateInfo command_pool_info = {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+            .queueFamilyIndex = dp->queues[vulkan::queue::GRAPHICS].family,
+        };
+
+        vkCreateCommandPool(dp->vk_device, &command_pool_info, nullptr, &command_pool);
+
+        VkCommandBufferAllocateInfo command_buffer_info = {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            .commandPool = command_pool,
+            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            .commandBufferCount = 1,
+        };
+
+        vkAllocateCommandBuffers(dp->vk_device, &command_buffer_info, &single_use_command);
+
+        VkFenceCreateInfo fence_info = {
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        };
+
+        vkCreateFence(dp->vk_device, &fence_info, nullptr, &copy_fence);
     }
 
     bool is_external() override {
@@ -81,6 +138,9 @@ public:
     }
 
     void destroy() override {
+        vkDestroyCommandPool(dp->vk_device, command_pool, nullptr);
+        vmaDestroyBuffer(dp->vma_allocator, cpu_mapped_depth_buffer, depth_alloc);
+
         for (auto& frame : avvk_color_frames) {
             for (auto& eye : frame) {
                 av_frame_free(&eye.frame);
@@ -205,6 +265,12 @@ protected:
                 ret = av_hwframe_transfer_data(encode_src_depth_frames[eye], avvk_depth_frames[ind][eye].frame, 0);
                 AV_ASSERT_SUCCESS(ret);
                 encode_src_depth_frames[eye]->pts = frame_count++;
+
+//                copy_vulkan_image_to_cpu(buffer_pool->image_pool[ind][eye].image, buffer_pool->image_pool[ind][eye].image_info.extent);
+//                float* data = (float*) depth_alloc_info.pMappedData;
+//                for (int i = 0; i < 1000; i++) {
+//                    std::cout << data[i] << std::endl;
+//                }
             }
         }
 //        vulkan::wait_timeline_semaphores(dp->vk_device, {{avvkframes[ind][0].vk_frame->sem[0], avvkframes[ind][0].vk_frame->sem_value[0]},
@@ -255,9 +321,9 @@ protected:
                   << " left size: " << encode_out_color_packets[0]->size << " right size: " << encode_out_color_packets[1]->size
                   << std::endl;
 
-	if (pass_depth) {
-		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
-	}	
+//	if (pass_depth) {
+//		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
+//	}
 	
         metrics["copy_time"]   += copy_time;
         metrics["encode_time"] += encode_time;
@@ -292,6 +358,13 @@ private:
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvk_depth_frames;
 
     bool pass_depth = false;
+    VkBuffer cpu_mapped_depth_buffer;
+    VmaAllocation depth_alloc;
+    VmaAllocationInfo depth_alloc_info;
+
+    VkCommandPool command_pool;
+    VkCommandBuffer single_use_command;
+    VkFence copy_fence;
 
     AVBufferRef* device_ctx;
     AVBufferRef* cuda_device_ctx;
@@ -617,7 +690,49 @@ private:
         }
     }
 
+    void copy_vulkan_image_to_cpu(VkImage image, VkExtent3D image_extent) {
+        vkResetCommandBuffer(single_use_command, 0);
+        vkResetFences(dp->vk_device, 1, &copy_fence);
 
+        VkCommandBufferBeginInfo begin_info = {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+        };
+
+        vkBeginCommandBuffer(single_use_command, &begin_info);
+
+        VkBufferImageCopy copy_info = {
+            .bufferOffset = 0,
+            .bufferRowLength = 0,
+            .bufferImageHeight = 0,
+            .imageSubresource = {
+                .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                .mipLevel = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            },
+            .imageOffset = {
+                .x = 0,
+                .y = 0,
+                .z = 0,
+            },
+            .imageExtent = image_extent,
+        };
+
+        vkCmdCopyImageToBuffer(single_use_command, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, cpu_mapped_depth_buffer, 1, &copy_info);
+
+        vkEndCommandBuffer(single_use_command);
+
+        VkSubmitInfo submit_info = {
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .commandBufferCount = 1,
+            .pCommandBuffers = &single_use_command,
+        };
+
+        vkQueueSubmit(dp->queues[vulkan::queue::GRAPHICS].vk_queue, 1, &submit_info, copy_fence);
+
+        vkWaitForFences(dp->vk_device, 1, &copy_fence, VK_TRUE, 1000000000);
+    }
 };
 
 class offload_rendering_server_loader

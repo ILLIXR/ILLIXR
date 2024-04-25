@@ -25,6 +25,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/vk/ffmpeg_utils.hpp
         ../../include/illixr/serializable_data.hpp
         ../../include/illixr/serializable_data.cpp
+        ../../include/illixr/vk/third_party/vk_mem_alloc.h
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
