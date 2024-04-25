@@ -24,8 +24,9 @@ struct compressed_frame : public switchboard::event {
     AVPacket* right_color;
 
     bool use_depth;
-    AVPacket* left_depth;
-    AVPacket* right_depth;
+    uint64_t depth_elements;
+    float* left_depth;
+    float* right_depth;
     
     fast_pose_type pose;
     uint64_t sent_time;
@@ -83,8 +84,9 @@ struct compressed_frame : public switchboard::event {
         save_packet(ar, right_color);
         ar << use_depth;
         if (use_depth) {
-            save_packet(ar, left_depth);
-            save_packet(ar, right_depth);
+            ar << depth_elements;
+            ar << boost::serialization::make_array(left_depth, depth_elements);
+            ar << boost::serialization::make_array(right_depth, depth_elements);
         }
         ar << pose;
         ar << sent_time;
@@ -99,10 +101,11 @@ struct compressed_frame : public switchboard::event {
         load_packet(ar, right_color);
         ar >> use_depth;
         if (use_depth) {
-            left_depth = av_packet_alloc();
-            load_packet(ar, left_depth);
-            right_depth = av_packet_alloc();
-            load_packet(ar, right_depth);
+            ar >> depth_elements;
+            left_depth = new float[depth_elements];
+            right_depth = new float[depth_elements];
+            ar >> boost::serialization::make_array(left_depth, depth_elements);
+            ar >> boost::serialization::make_array(right_depth, depth_elements);
         }
         ar >> pose;
         ar >> sent_time;
@@ -119,16 +122,18 @@ struct compressed_frame : public switchboard::event {
         , left_depth(nullptr)
         , right_depth(nullptr)
         , pose(pose)
-        , sent_time(sent_time) { }
+        , sent_time(sent_time)
+        , depth_elements(0) { }
 
-    compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth, const fast_pose_type& pose, uint64_t sent_time)
+    compressed_frame(AVPacket* left_color, AVPacket* right_color, float* left_depth, float* right_depth, const fast_pose_type& pose, uint64_t sent_time, uint64_t depth_elements)
         : left_color(left_color)
         , right_color(right_color)
         , use_depth(true)
         , left_depth(left_depth)
         , right_depth(right_depth)
         , pose(pose)
-        , sent_time(sent_time) { }
+        , sent_time(sent_time)
+        , depth_elements(depth_elements) { }
 };
 } // namespace ILLIXR
 

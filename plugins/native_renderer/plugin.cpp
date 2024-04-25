@@ -62,7 +62,7 @@ public:
                 create_depth_image(depth_attachment_images[i][eye]);
             }
         }
-        this->buffer_pool = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images, depth_images);
+        this->buffer_pool = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images, depth_attachment_images);
 
         command_pool            = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
         app_command_buffer      = vulkan::create_command_buffer(ds->vk_device, command_pool);
@@ -211,6 +211,7 @@ public:
                 &timewarp_render_finished_semaphore // pSignalSemaphores
             };
 
+            std::cout << "Locked queue submit" << std::endl;
             VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(ds->queues[vulkan::queue::queue_type::GRAPHICS], 1,
                                                           &timewarp_submit_info, frame_fence))
 
@@ -226,6 +227,7 @@ public:
                 nullptr                              // pResults
             };
 
+            std::cout << "Presenting" << std::endl;
             VkResult ret = VK_SUCCESS;
             {
                 std::lock_guard<std::mutex> lock{*ds->queues[vulkan::queue::queue_type::GRAPHICS].mutex};
@@ -236,7 +238,7 @@ public:
             VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
 
             swapchain_image_index = UINT32_MAX;
-
+            std::cout << "Releasing image" << std::endl;
             buffer_pool->post_processing_release_image(buffer_index);
 
             if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
@@ -421,15 +423,15 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                ds->swapchain_extent.width / 2,                                       // width
-                ds->swapchain_extent.height,                                          // height
+                1433,                                       // width
+                1433,                                          // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
             1,                                                                        // arrayLayers
             VK_SAMPLE_COUNT_1_BIT,                                                    // samples
             VK_IMAGE_TILING_OPTIMAL,                                                  // tiling
-            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, // usage
+            VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, // usage
             {},                                                                       // sharingMode
             0,                                                                        // queueFamilyIndexCount
             nullptr,                                                                  // pQueueFamilyIndices
@@ -738,7 +740,7 @@ private:
             0,                                 // flags
             ds->swapchain_image_format.format, // format
             VK_SAMPLE_COUNT_1_BIT,             // samples
-            VK_ATTACHMENT_LOAD_OP_LOAD,        // loadOp
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,        // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
             VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp

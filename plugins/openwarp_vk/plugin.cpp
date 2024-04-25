@@ -167,7 +167,7 @@ public:
             partial_destroy();
         }
 
-        generate_openwarp_mesh(1024, 1024);
+        generate_openwarp_mesh(512, 512);
         generate_distortion_data();
 
         create_vertex_buffers();

@@ -30,6 +30,8 @@ public:
     VkDevice                                                                 vk_device          = VK_NULL_HANDLE;
     std::unordered_map<queue::queue_type, queue> queues;
 
+    pthread_mutex_t monado_mutex;
+
     /**
      * @brief Polls window events using whatever the windowing backend is.
      */

@@ -45,8 +45,8 @@ layout (push_constant) uniform Eye {
 } eye;
 
 // Constant for now
-float bleedRadius = 0.005f;
-float edgeTolerance = 0.0001f;
+float bleedRadius = 0.05f;
+float edgeTolerance = 0.001f;
 
 layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec2 in_uv;
@@ -73,8 +73,8 @@ void main( void )
 					  )
 					);
 
-	float diags = max(textureLod(depth_texture, in_uv + sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x,
-					  textureLod(depth_texture, in_uv - sqrt(2) * vec2(bleedRadius, bleedRadius), 0).x);
+	float diags = max(textureLod(depth_texture, in_uv + vec2(bleedRadius, bleedRadius) / sqrt(2), 0).x,
+					  textureLod(depth_texture, in_uv - vec2(bleedRadius, bleedRadius) / sqrt(2), 0).x);
 
 	outlier = max(diags, outlier);
 	if(outlier - z > edgeTolerance){
@@ -111,10 +111,10 @@ void main( void )
 	 result /= abs(result.w);
 
 	// Uncomment the line below to disable warping.
-    // result = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, 0.5, 1.0);
+//     result = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, 0.5, 1.0);
 
 	gl_Position = result;
 
-	worldspace = frag_worldspace;
+	worldspace = frag_viewspace;
 	warpUv = in_uv;
 }
