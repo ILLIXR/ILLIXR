@@ -421,8 +421,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                ds->swapchain_extent.width / 2,                                       // width
-                ds->swapchain_extent.height,                                          // height
+                1433,                                       // width
+                1433,                                          // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
@@ -536,8 +536,8 @@ private:
             VK_IMAGE_TYPE_2D,                                                               // imageType
             VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
             {
-                ds->swapchain_extent.width / 2, // width
-                ds->swapchain_extent.height,    // height
+                1433, // width
+                1433,    // height
                 1                               // depth
             },                                  // extent
             1,                                  // mipLevels
