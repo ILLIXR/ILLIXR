@@ -736,7 +736,7 @@ private:
         basicProjection[0](2, 0) = 0.0;
         basicProjection[0](2, 1) = 0.0;
         basicProjection[0](2, 2) = 0.0;
-        basicProjection[0](2, 3) = 0.1;
+        basicProjection[0](2, 3) = 0.4;
 
         basicProjection[0](3, 0) = 0.0;
         basicProjection[0](3, 1) = 0.0;
@@ -758,7 +758,7 @@ private:
         basicProjection[1](2, 0) = 0.0;
         basicProjection[1](2, 1) = 0.0;
         basicProjection[1](2, 2) = 0.0;
-        basicProjection[1](2, 3) = 0.1;
+        basicProjection[1](2, 3) = 0.4;
 
         basicProjection[1](3, 0) = 0.0;
         basicProjection[1](3, 1) = 0.0;
