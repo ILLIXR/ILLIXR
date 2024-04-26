@@ -255,9 +255,6 @@ protected:
                   << " left size: " << encode_out_color_packets[0]->size << " right size: " << encode_out_color_packets[1]->size
                   << std::endl;
 
-	if (pass_depth) {
-		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
-	}	
 	
         metrics["copy_time"]   += copy_time;
         metrics["encode_time"] += encode_time;
@@ -274,6 +271,10 @@ protected:
                 log->info("{}: {}", metric.first, metric.second / fps);
                 metric.second = 0;
             }
+            
+            if (pass_depth) {
+		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
+	}	
 
             fps_counter = 0;
         } else {
@@ -563,8 +564,8 @@ private:
         codec_color_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
         codec_color_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
         codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-        codec_color_ctx->time_base     = {1, 60}; // 60 fps
-        codec_color_ctx->framerate     = {60, 1};
+        codec_color_ctx->time_base     = {1, 144}; // 60 fps
+        codec_color_ctx->framerate     = {144, 1};
         codec_color_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
 
         // Set zero latency
@@ -596,8 +597,8 @@ private:
             codec_depth_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             codec_depth_ctx->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
             codec_depth_ctx->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
-            codec_depth_ctx->time_base     = {1, 60}; // 60 fps
-            codec_depth_ctx->framerate     = {60, 1};
+            codec_depth_ctx->time_base     = {1, 144}; // 60 fps
+            codec_depth_ctx->framerate     = {144, 1};
             codec_depth_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
 
             // Set zero latency
