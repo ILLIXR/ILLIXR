@@ -564,8 +564,8 @@ private:
         codec_color_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
         codec_color_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
         codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-        codec_color_ctx->time_base     = {1, 144}; // 60 fps
-        codec_color_ctx->framerate     = {144, 1};
+        codec_color_ctx->time_base     = {1, 90}; // 90 fps
+        codec_color_ctx->framerate     = {90, 1};
         codec_color_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
 
         // Set zero latency
@@ -597,8 +597,8 @@ private:
             codec_depth_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             codec_depth_ctx->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
             codec_depth_ctx->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
-            codec_depth_ctx->time_base     = {1, 144}; // 60 fps
-            codec_depth_ctx->framerate     = {144, 1};
+            codec_depth_ctx->time_base     = {1, 90}; // 90 fps
+            codec_depth_ctx->framerate     = {90, 1};
             codec_depth_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
 
             // Set zero latency
