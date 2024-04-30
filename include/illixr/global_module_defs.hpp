@@ -63,6 +63,21 @@ struct rendering_params {
     static constexpr bool reverse_z = true;
 };
 
+// Offloading parameters - this really should be extended to everything though
+struct server_params {
+    static constexpr float fov_left[2] = {-0.907341, -0.897566};
+    static constexpr float fov_right[2] = {0.897500, 0.907700};
+    static constexpr float fov_up[2] = {0.953644, 0.954293};
+    static constexpr float fov_down[2] = {-0.953628, -0.952802};
+};;
+
+struct index_params {
+    static constexpr float fov_left[2] = {-0.907341, -0.897566};
+    static constexpr float fov_right[2] = {0.897500, 0.907700};
+    static constexpr float fov_up[2] = {0.953644, 0.954293};
+    static constexpr float fov_down[2] = {-0.953628, -0.952802};
+};;
+
 /**
  * @brief Convert a string containing a (python) boolean to the bool type
  */

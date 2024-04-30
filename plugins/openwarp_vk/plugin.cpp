@@ -723,75 +723,15 @@ private:
         float far_z = rendering_params::far_z;
 
         // Hacked in projection matrix from Unreal and hardcoded values
-        basicProjection[0](0, 0) = 0.789564178;
-        basicProjection[0](0, 1) = 0.0;
-        basicProjection[0](0, 2) = 0.0101166583;
-        basicProjection[0](0, 3) = 0.0;
+        for (int eye = 0; eye < 2; eye++) {
+            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
 
-        basicProjection[0](1, 0) = 0.0;
-        basicProjection[0](1, 1) = 0.709630710;
-        basicProjection[0](1, 2) = -0.0000169505149;
-        basicProjection[0](1, 3) = 0.0;
-
-        basicProjection[0](2, 0) = 0.0;
-        basicProjection[0](2, 1) = 0.0;
-        basicProjection[0](2, 2) = 0.0;
-        basicProjection[0](2, 3) = 0.1;
-
-        basicProjection[0](3, 0) = 0.0;
-        basicProjection[0](3, 1) = 0.0;
-        basicProjection[0](3, 2) = -1.0;
-        basicProjection[0](3, 3) = 0.0;
-
-        invProjection[0] = basicProjection[0].inverse();
-
-        basicProjection[1](0, 0) = 0.78921623;
-        basicProjection[1](0, 1) = 0.0;
-        basicProjection[1](0, 2) = -0.0104189121;
-        basicProjection[1](0, 3) = 0.0;
-
-        basicProjection[1](1, 0) = 0.0;
-        basicProjection[1](1, 1) = 0.709762607;
-        basicProjection[1](1, 2) = -0.00157947776;
-        basicProjection[1](1, 3) = 0.0;
-
-        basicProjection[1](2, 0) = 0.0;
-        basicProjection[1](2, 1) = 0.0;
-        basicProjection[1](2, 2) = 0.0;
-        basicProjection[1](2, 3) = 0.1;
-
-        basicProjection[1](3, 0) = 0.0;
-        basicProjection[1](3, 1) = 0.0;
-        basicProjection[1](3, 2) = -1.0;
-        basicProjection[1](3, 3) = 0.0;
-
-        invProjection[1] = basicProjection[1].inverse();
-
-        // Test: provide a larger FOV to Unreal, and then project it back into world space
-        // before rendering it with the expected FOV.
-//        Eigen::Matrix4f unreal_fov;
-//        unreal_fov(0, 0) = 0.38877957;
-//        unreal_fov(0, 1) = 0.0;
-//        unreal_fov(0, 2) = 0.0;
-//        unreal_fov(0, 3) = 0.0;
-//
-//        unreal_fov(1, 0) = 0.0;
-//        unreal_fov(1, 1) = 0.38877957;
-//        unreal_fov(1, 2) = 0.0;
-//        unreal_fov(1, 3) = 0.0;
-//
-//        unreal_fov(2, 0) = 0.0;
-//        unreal_fov(2, 1) = 0.0;
-//        unreal_fov(2, 2) = 0.0;
-//        unreal_fov(2, 3) = 0.55;
-//
-//        unreal_fov(3, 0) = 0.0;
-//        unreal_fov(3, 1) = 0.0;
-//        unreal_fov(3, 2) = -1.0;
-//        unreal_fov(3, 3) = 0.0;
-//
-//        invProjection[0] = unreal_fov.inverse();
-//        invProjection[1] = unreal_fov.inverse();
+            // The server can render at a larger FoV, so the inverse should account for that.
+            // The FOVs provided here should match the ones provided to Monado.
+            Eigen::Matrix4f server_fov;
+            math_util::unreal_projection(&server_fov, server_params::fov_left[eye], server_params::fov_right[eye], server_params::fov_up[eye], server_params::fov_down[eye]);
+            invProjection[eye] = server_fov.inverse();
+        }
 
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
             Eigen::Matrix4f distortion_matrix = calculate_distortion_transform(basicProjection[eye]);

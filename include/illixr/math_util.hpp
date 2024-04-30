@@ -78,5 +78,42 @@ namespace math_util {
             projection(result, tan_left, tan_right, tan_up, tan_down, near_z, far_z);
         }
     }
+
+    // Expects FoVs in radians
+    void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right,
+                                                    const float fov_up, const float fov_down) {
+        // Unreal uses a far plane at infinity and a near plane of 10 centimeters (0.1 meters)
+        constexpr float near_z = 0.1;
+
+        const float angle_left = tanf(static_cast<float>(fov_left));
+        const float angle_right = tanf(static_cast<float>(fov_right));
+        const float angle_up = tanf(static_cast<float>(fov_up));
+        const float angle_down = tanf(static_cast<float>(fov_down));
+
+        const float sum_rl = angle_left + angle_right;
+        const float sum_tb = angle_up + angle_down;
+        const float inv_rl = 1.0f / (angle_right - angle_left);
+        const float inv_tb = 1.0f / (angle_up - angle_down);
+
+        (*result)(0, 0) = 2 * inv_rl;
+        (*result)(0, 1) = 0;
+        (*result)(0, 2) = sum_rl * (-inv_rl);
+        (*result)(0, 3) = 0;
+
+        (*result)(1, 0) = 0;
+        (*result)(1, 1) = 2 * inv_tb;
+        (*result)(1, 2) = sum_tb * (-inv_tb);
+        (*result)(1, 3) = 0;
+
+        (*result)(2, 0) = 0;
+        (*result)(2, 1) = 0;
+        (*result)(2, 2) = 0;
+        (*result)(2, 3) = near_z;
+
+        (*result)(3, 0) = 0;
+        (*result)(3, 1) = 0;
+        (*result)(3, 2) = -1;
+        (*result)(3, 3) = 0;
+    }
 } // namespace math_util
 } // namespace ILLIXR
