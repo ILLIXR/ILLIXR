@@ -44,9 +44,11 @@ layout (location = 0) out vec4 outColor;
 void main()
 {
     outColor = texture(image_texture, warpUv);
-    
-//     float depth = texture(depth_texture, warpUv).r;
-//     outColor = vec4(vec3(depth), 1.0f);
+
+//     float depth = pow(texture(depth_texture, warpUv).r, 2.4);
+     // depth = gl_FragCoord.z;
+//    outColor = vec4(vec3(depth), 1.0f);
+
 
     // Worldspace parameterization grid overlay.
     // For debug + visualization only
