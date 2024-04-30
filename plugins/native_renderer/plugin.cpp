@@ -472,8 +472,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                ds->swapchain_extent.width / 2, // width
-                ds->swapchain_extent.height,    // height
+                ILLIXR::server_params::width_pixels, // width
+                ILLIXR::server_params::height_pixels,    // height
                 1                               // depth
             },                                  // extent
             1,                                  // mipLevels

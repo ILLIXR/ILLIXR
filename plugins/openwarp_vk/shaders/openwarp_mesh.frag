@@ -45,7 +45,7 @@ void main()
 {
     outColor = texture(image_texture, warpUv);
 
-//     float depth = pow(texture(depth_texture, warpUv).r, 2.4);
+//     float depth = texture(depth_texture, warpUv).r;
      // depth = gl_FragCoord.z;
 //    outColor = vec4(vec3(depth), 1.0f);
 
