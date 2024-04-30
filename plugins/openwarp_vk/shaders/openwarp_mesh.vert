@@ -80,7 +80,7 @@ void main( void )
 	if(outlier - z > edgeTolerance){
 		z = outlier;
 	}
-	z = max(0.01, pow(z, 2.4));
+	z = max(0.01, Z);
 #else
 	float outlier = min(              											
 					  min(														
