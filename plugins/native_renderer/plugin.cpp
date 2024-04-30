@@ -421,8 +421,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                1024,                                       // width
-                1024,                                          // height
+                ILLIXR::server_params::width_pixels,                                       // width
+                ILLIXR::server_params::height_pixels,                                          // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
@@ -536,8 +536,8 @@ private:
             VK_IMAGE_TYPE_2D,                                                               // imageType
             VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
             {
-                1024, // width
-                1024,    // height
+                ILLIXR::server_params::width_pixels, // width
+                ILLIXR::server_params::height_pixels,    // height
                 1                               // depth
             },                                  // extent
             1,                                  // mipLevels
