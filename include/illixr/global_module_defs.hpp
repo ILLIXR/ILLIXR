@@ -69,6 +69,10 @@ struct server_params {
     static constexpr float fov_right[2] = {0.897500, 0.907700};
     static constexpr float fov_up[2] = {0.953644, 0.954293};
     static constexpr float fov_down[2] = {-0.953628, -0.952802};
+    
+    // The server can render at an arbitrary resolution
+    static constexpr unsigned server_width = 1600;
+    static constexpr unsigned server_height = 1440;
 };;
 
 struct index_params {
