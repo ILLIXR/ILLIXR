@@ -109,6 +109,12 @@ public:
                 vkEndCommandBuffer(layout_transition_end_cmd_bufs[i][eye]);
             }
         }
+
+        VkFenceCreateInfo fence_info = {
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        };
+
+        vkCreateFence(dp->vk_device, &fence_info, nullptr, &fence);
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {}
@@ -359,10 +365,59 @@ protected:
         auto conversion_end = std::chrono::high_resolution_clock::now();
 
         auto ind            = buffer_pool->src_acquire_image();
+        std::cout << "SRC Acquired image " << static_cast<int>(ind) << std::endl;
         auto transfer_start = std::chrono::high_resolution_clock::now();
+
+        auto* frames = reinterpret_cast<AVHWFramesContext*>(frame_ctx->data);
+        auto* vk = static_cast<AVVulkanFramesContext*>(frames->hwctx);
+
         for (auto eye = 0; eye < 2; eye++) {
             // save_nv12_img_to_png(decode_out_frames[eye]);
-            submit_command_buffer(layout_transition_start_cmd_bufs[ind][eye]);
+            vk->lock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
+            if (use_depth) {
+                vk->lock_frame(frames, avvk_depth_frames[ind][eye].vk_frame);
+            }
+
+            vkResetFences(dp->vk_device, 1, &fence);
+
+            std::vector<VkSemaphore> timelines = {avvk_color_frames[ind][eye].vk_frame->sem[0]};
+            std::vector<VkPipelineStageFlags> wait_stages = {VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT};
+            if (use_depth) {
+                timelines.push_back(avvk_depth_frames[ind][eye].vk_frame->sem[0]);
+                wait_stages.push_back(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
+            }
+
+            std::vector<uint64_t> start_wait_values = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
+            std::vector<uint64_t> start_signal_values = {++avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
+            if (use_depth) {
+                start_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
+                start_signal_values.push_back(++avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
+            }
+
+            VkTimelineSemaphoreSubmitInfo transition_start_timeline = {
+                .sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+                .pNext = nullptr,
+                .waitSemaphoreValueCount = static_cast<uint16_t>(start_wait_values.size()),
+                .pWaitSemaphoreValues = start_wait_values.data(),
+                .signalSemaphoreValueCount = static_cast<uint16_t>(start_signal_values.size()),
+                .pSignalSemaphoreValues = start_signal_values.data(),
+            };
+
+            VkSubmitInfo transition_start_submit = {
+                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                .pNext = &transition_start_timeline,
+                .waitSemaphoreCount = static_cast<uint16_t>(timelines.size()),
+                .pWaitSemaphores = timelines.data(),
+                .pWaitDstStageMask = wait_stages.data(),
+                .commandBufferCount = 1,
+                .pCommandBuffers = &layout_transition_start_cmd_bufs[ind][eye],
+                .signalSemaphoreCount = static_cast<uint16_t>(timelines.size()),
+                .pSignalSemaphores = timelines.data(),
+            };
+//            submit_command_buffer(layout_transition_start_cmd_bufs[ind][eye]);
+            std::cout << "Starting transition" << std::endl;
+            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_start_submit, nullptr);
+
             auto ret = av_hwframe_transfer_data(avvk_color_frames[ind][eye].frame, decode_converted_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
 
@@ -370,30 +425,69 @@ protected:
                 ret = av_hwframe_transfer_data(avvk_depth_frames[ind][eye].frame, decode_converted_depth_frames[eye], 0);
             }
             AV_ASSERT_SUCCESS(ret);
-//            vulkan::wait_timeline_semaphore(dp->vk_device, avvkframes[ind][eye].vk_frame->sem[0],
-//                                            avvkframes[ind][eye].vk_frame->sem_value[0]);
-            if (frame_count % 50 < 2) {
-                // copy_image_to_cpu_and_save_file(decode_converted_frames[eye]);
-                // copy_image_to_cpu_and_save_file(avvkframes[ind][eye].frame);
+
+            std::vector<uint64_t> end_wait_values = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
+            std::vector<uint64_t> end_signal_values = {++avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
+            if (use_depth) {
+                end_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
+                end_signal_values.push_back(++avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
             }
-            submit_command_buffer(layout_transition_end_cmd_bufs[ind][eye]);
-            decode_out_color_frames[eye]->pts = frame_count++;
 
-            if (use_depth)
+            VkTimelineSemaphoreSubmitInfo transition_end_timeline = {
+                .sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+                .pNext = nullptr,
+                .waitSemaphoreValueCount = static_cast<uint16_t>(end_wait_values.size()),
+                .pWaitSemaphoreValues = end_wait_values.data(),
+                .signalSemaphoreValueCount = static_cast<uint16_t>(end_signal_values.size()),
+                .pSignalSemaphoreValues = end_signal_values.data(),
+            };
+
+            VkSubmitInfo transition_end_submit = {
+                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                .pNext = &transition_end_timeline,
+                .waitSemaphoreCount = static_cast<uint16_t>(timelines.size()),
+                .pWaitSemaphores = timelines.data(),
+                .pWaitDstStageMask = wait_stages.data(),
+                .commandBufferCount = 1,
+                .pCommandBuffers = &layout_transition_end_cmd_bufs[ind][eye],
+                .signalSemaphoreCount = static_cast<uint16_t>(timelines.size()),
+                .pSignalSemaphores = timelines.data(),
+            };
+            //            submit_command_buffer(layout_transition_end_cmd_bufs[ind][eye]);
+            std::cout << "Ending transition" << std::endl;
+            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_end_submit, fence);
+            vkWaitForFences(dp->vk_device, 1, &fence, VK_TRUE, UINT64_MAX);
+
+            if (use_depth) {
+                decode_out_color_frames[eye]->pts = frame_count++;
                 decode_out_depth_frames[eye]->pts = frame_count++;
+
+                vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]},
+                                                                 {avvk_depth_frames[ind][eye].vk_frame->sem[0], avvk_depth_frames[ind][eye].vk_frame->sem_value[0]}});
+
+                vk->unlock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
+                vk->unlock_frame(frames, avvk_depth_frames[ind][eye].vk_frame);
+            } else {
+                decode_out_color_frames[eye]->pts = frame_count++;
+
+                vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]}});
+
+                vk->unlock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
+            }
         }
 
-        if (use_depth) {
-            vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
-                                                         {avvk_color_frames[ind][1].vk_frame->sem[0], avvk_color_frames[ind][1].vk_frame->sem_value[0]},
-                                                         {avvk_depth_frames[ind][0].vk_frame->sem[0], avvk_depth_frames[ind][0].vk_frame->sem_value[0]},
-                                                         {avvk_depth_frames[ind][1].vk_frame->sem[0], avvk_depth_frames[ind][1].vk_frame->sem_value[0]}});
-        } else {
-            vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
-                                                         {avvk_color_frames[ind][1].vk_frame->sem[0], avvk_color_frames[ind][1].vk_frame->sem_value[0]}});
-        }
+//        if (use_depth) {
+//            vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
+//                                                         {avvk_color_frames[ind][1].vk_frame->sem[0], avvk_color_frames[ind][1].vk_frame->sem_value[0]},
+//                                                         {avvk_depth_frames[ind][0].vk_frame->sem[0], avvk_depth_frames[ind][0].vk_frame->sem_value[0]},
+//                                                         {avvk_depth_frames[ind][1].vk_frame->sem[0], avvk_depth_frames[ind][1].vk_frame->sem_value[0]}});
+//        } else {
+//            vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][0].vk_frame->sem[0], avvk_color_frames[ind][0].vk_frame->sem_value[0]},
+//                                                         {avvk_color_frames[ind][1].vk_frame->sem[0], avvk_color_frames[ind][1].vk_frame->sem_value[0]}});
+//        }
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
+        std::cout << "SRC Releasing image " << static_cast<int>(ind) << std::endl;
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
         log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
                   std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
@@ -463,11 +557,14 @@ private:
 
     uint64_t frame_count = 0;
 
+    VkFence fence;
+
     uint16_t                                       fps_counter    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
     std::map<std::string, uint32_t> metrics;
 
     void submit_command_buffer(VkCommandBuffer vk_command_buffer) {
+
         VkSubmitInfo submitInfo{
             VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
             nullptr,                       // pNext

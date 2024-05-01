@@ -188,6 +188,7 @@ public:
         if (!tw->is_external()) {
             // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
             auto res          = buffer_pool->post_processing_acquire_image();
+            std::cout << "TW Acquired image " << static_cast<int>(res.first) << std::endl;
             auto buffer_index = res.first;
             auto pose         = res.second;
             tw->update_uniforms(pose.pose);
@@ -211,6 +212,7 @@ public:
                 &timewarp_render_finished_semaphore // pSignalSemaphores
             };
 
+            std::cout << "Timewarp submit" << std::endl;
             VK_ASSERT_SUCCESS(vulkan::locked_queue_submit(ds->queues[vulkan::queue::queue_type::GRAPHICS], 1,
                                                           &timewarp_submit_info, frame_fence))
 
@@ -237,6 +239,7 @@ public:
 
             swapchain_image_index = UINT32_MAX;
 
+            std::cout << "TW releasing image " << static_cast<int>(res.first) << std::endl;
             buffer_pool->post_processing_release_image(buffer_index);
 
             if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
@@ -751,6 +754,15 @@ private:
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL // layout
         };
 
+        VkSubpassDependency dependency = {
+            .srcSubpass = VK_SUBPASS_EXTERNAL,
+            .dstSubpass = 0,
+            .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        };
+
         VkSubpassDescription subpass = {
             0,                               // flags
             VK_PIPELINE_BIND_POINT_GRAPHICS, // pipelineBindPoint
@@ -774,8 +786,8 @@ private:
             attchmentDescriptions.data(),                        // pAttachments
             1,                                                   // subpassCount
             &subpass,                                            // pSubpasses
-            0,                                                   // dependencyCount
-            nullptr                                              // pDependencies
+            1,                                                   // dependencyCount
+            &dependency                                              // pDependencies
         };
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
