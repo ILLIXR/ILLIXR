@@ -786,52 +786,10 @@ private:
                     distortion_uv2[eye * num_distortion_vertices + index].v = distort_coords[eye][2][index].y;
                 }
             }
+
+            // Construct perspective projection matrix according to Unreal -- different FOVs not supported here.
+            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
         }
-
-        // Construct perspective projection matrix
-//        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-//                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-//                                  rendering_params::far_z, rendering_params::reverse_z);
-        // Hacked in projection matrix from Unreal and hardcoded values
-        basicProjection[0](0, 0) = 0.789564178;
-        basicProjection[0](0, 1) = 0.0;
-        basicProjection[0](0, 2) = 0.0101166583;
-        basicProjection[0](0, 3) = 0.0;
-
-        basicProjection[0](1, 0) = 0.0;
-        basicProjection[0](1, 1) = 0.709630710;
-        basicProjection[0](1, 2) = -0.0000169505149;
-        basicProjection[0](1, 3) = 0.0;
-
-        basicProjection[0](2, 0) = 0.0;
-        basicProjection[0](2, 1) = 0.0;
-        basicProjection[0](2, 2) = 0.0;
-        basicProjection[0](2, 3) = 10.0;
-
-        basicProjection[0](3, 0) = 0.0;
-        basicProjection[0](3, 1) = 0.0;
-        basicProjection[0](3, 2) = -1.0;
-        basicProjection[0](3, 3) = 0.0;
-
-        basicProjection[1](0, 0) = 0.78921623;
-        basicProjection[1](0, 1) = 0.0;
-        basicProjection[1](0, 2) = -0.0104189121;
-        basicProjection[1](0, 3) = 0.0;
-
-        basicProjection[1](1, 0) = 0.0;
-        basicProjection[1](1, 1) = 0.709762607;
-        basicProjection[1](1, 2) = -0.00157947776;
-        basicProjection[1](1, 3) = 0.0;
-
-        basicProjection[1](2, 0) = 0.0;
-        basicProjection[1](2, 1) = 0.0;
-        basicProjection[1](2, 2) = 0.0;
-        basicProjection[1](2, 3) = 10.0;
-
-        basicProjection[1](3, 0) = 0.0;
-        basicProjection[1](3, 1) = 0.0;
-        basicProjection[1](3, 2) = -1.0;
-        basicProjection[1](3, 3) = 0.0;
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
