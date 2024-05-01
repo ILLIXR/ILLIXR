@@ -277,7 +277,6 @@ protected:
             return;
         }
         push_pose();
-        std::cout << "Pushing network pose" << std::endl;
         if (!network_receive()) {
             return;
         }
@@ -365,7 +364,6 @@ protected:
         auto conversion_end = std::chrono::high_resolution_clock::now();
 
         auto ind            = buffer_pool->src_acquire_image();
-        std::cout << "SRC Acquired image " << static_cast<int>(ind) << std::endl;
         auto transfer_start = std::chrono::high_resolution_clock::now();
 
         auto* frames = reinterpret_cast<AVHWFramesContext*>(frame_ctx->data);
@@ -415,7 +413,6 @@ protected:
                 .pSignalSemaphores = timelines.data(),
             };
 //            submit_command_buffer(layout_transition_start_cmd_bufs[ind][eye]);
-            std::cout << "Starting transition" << std::endl;
             vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_start_submit, nullptr);
 
             auto ret = av_hwframe_transfer_data(avvk_color_frames[ind][eye].frame, decode_converted_color_frames[eye], 0);
@@ -454,7 +451,6 @@ protected:
                 .pSignalSemaphores = timelines.data(),
             };
             //            submit_command_buffer(layout_transition_end_cmd_bufs[ind][eye]);
-            std::cout << "Ending transition" << std::endl;
             vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_end_submit, fence);
             vkWaitForFences(dp->vk_device, 1, &fence, VK_TRUE, UINT64_MAX);
 
@@ -487,7 +483,6 @@ protected:
 //        }
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
-        std::cout << "SRC Releasing image " << static_cast<int>(ind) << std::endl;
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
         log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
                   std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
