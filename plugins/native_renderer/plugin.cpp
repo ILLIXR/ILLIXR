@@ -30,7 +30,7 @@ public:
     native_renderer(const std::string& name_, phonebook* pb)
         : threadloop{name_, pb}
         , sb{pb->lookup_impl<switchboard>()}
-        , log(std::getenv("NATIVE_RENDERER_LOG_LEVEL"))
+        , log(spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL")))
         , pp{pb->lookup_impl<pose_prediction>()}
         , ds{pb->lookup_impl<vulkan::display_provider>()}
         , tw{pb->lookup_impl<vulkan::timewarp>()}
