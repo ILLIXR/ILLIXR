@@ -65,14 +65,23 @@ struct rendering_params {
 
 // Offloading parameters - this really should be extended to everything though
 struct server_params {
+//    static constexpr float fov_left[2] = {-1.1, -1.1};
+//    static constexpr float fov_right[2] = {1.1, 1.1};
+//    static constexpr float fov_up[2] = {1.1, 1.1};
+//    static constexpr float fov_down[2] = {-1.1, -1.1};
+//
+//    // The server can render at an arbitrary resolution
+//    static constexpr unsigned width_pixels = 2160;
+//    static constexpr unsigned height_pixels = 2400;
+
     static constexpr float fov_left[2] = {-0.907341, -0.897566};
     static constexpr float fov_right[2] = {0.897500, 0.907700};
     static constexpr float fov_up[2] = {0.953644, 0.954293};
     static constexpr float fov_down[2] = {-0.953628, -0.952802};
-    
+
     // The server can render at an arbitrary resolution
-    static constexpr unsigned width_pixels = 1600;
-    static constexpr unsigned height_pixels = 1440;
+    static constexpr unsigned width_pixels = 1440;
+    static constexpr unsigned height_pixels = 1600;
 };;
 
 struct index_params {
