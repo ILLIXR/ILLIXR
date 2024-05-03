@@ -47,6 +47,13 @@ public:
         } else {
             log->debug("Not encoding depth images for the client");
         }
+
+        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+        if (compare_images) {
+            log->debug("Sending constant pose to compare images");
+        } else {
+            log->debug("Cliont sending normal poses (not comparing images)");
+        }
     }
 
     void start() override {
@@ -520,6 +527,7 @@ private:
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     bool use_depth = false;
+    bool compare_images = false;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_color_frames;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_depth_frames;
     std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
@@ -575,7 +583,8 @@ private:
     }
 
     void push_pose() {
-        auto current_pose = pp->get_fast_pose();
+        // Send an identity pose if comparing images
+        auto current_pose = compare_images ? fast_pose_type() : pp->get_fast_pose();
         auto now =
             time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
         current_pose.predict_target_time   = now;

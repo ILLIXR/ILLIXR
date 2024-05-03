@@ -30,6 +30,7 @@ public:
     native_renderer(const std::string& name_, phonebook* pb)
         : threadloop{name_, pb}
         , sb{pb->lookup_impl<switchboard>()}
+        , log(std::getenv("NATIVE_RENDERER_LOG_LEVEL"))
         , pp{pb->lookup_impl<pose_prediction>()}
         , ds{pb->lookup_impl<vulkan::display_provider>()}
         , tw{pb->lookup_impl<vulkan::timewarp>()}
@@ -37,7 +38,6 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
-        spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
     }
 
     /**
@@ -81,6 +81,14 @@ public:
         create_swapchain_framebuffers();
         src->setup(app_pass, 0, buffer_pool);
         tw->setup(timewarp_pass, 0, buffer_pool, true);
+
+        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+        if (compare_images) {
+            log->debug("Providing constant pose to warp to");
+            fixed_pose = pose_type();
+        } else {
+            log->debug("Warping normally to current pose");
+        }
     }
 
     /**
@@ -115,7 +123,7 @@ public:
         auto fast_pose = pp->get_fast_pose();
         if (!src->is_external()) {
             // Get the current fast pose and update the uniforms
-            src->update_uniforms(fast_pose.pose);
+            src->update_uniforms(compare_images ? fixed_pose: fast_pose.pose);
 
             VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
 
@@ -791,11 +799,15 @@ private:
     }
 
     const std::shared_ptr<switchboard>              sb;
+    const std::shared_ptr<spdlog::logger>           log;
     const std::shared_ptr<pose_prediction>          pp;
     const std::shared_ptr<vulkan::display_provider> ds;
     const std::shared_ptr<vulkan::timewarp>         tw;
     const std::shared_ptr<vulkan::app>              src;
     const std::shared_ptr<const RelativeClock>      _m_clock;
+
+    bool compare_images = false;
+    pose_type fixed_pose{};
 
     VkCommandPool   command_pool{};
     VkCommandBuffer app_command_buffer{};
