@@ -123,7 +123,7 @@ public:
         auto fast_pose = pp->get_fast_pose();
         if (!src->is_external()) {
             // Get the current fast pose and update the uniforms
-            src->update_uniforms(compare_images ? fixed_pose: fast_pose.pose);
+            src->update_uniforms(fast_pose.pose);
 
             VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
 
@@ -198,7 +198,7 @@ public:
             auto res          = buffer_pool->post_processing_acquire_image();
             auto buffer_index = res.first;
             auto pose         = res.second;
-            tw->update_uniforms(pose.pose);
+            tw->update_uniforms(compare_images ? fixed_pose : pose.pose);
 
             if (buffer_index == -1) {
                 return;
