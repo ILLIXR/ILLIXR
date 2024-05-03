@@ -138,6 +138,8 @@ public:
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
         timewarp_render_pass = render_pass;
+
+        clamp_edge = std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
     }
 
     void partial_destroy() {
@@ -423,9 +425,10 @@ private:
         samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
         samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        VkSamplerAddressMode sampler_addressing = clamp_edge ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeU = sampler_addressing;
+        samplerInfo.addressModeV = sampler_addressing;
+        samplerInfo.addressModeW = sampler_addressing;
         samplerInfo.borderColor  = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
 
         samplerInfo.anisotropyEnable        = VK_FALSE;
@@ -836,6 +839,7 @@ private:
     size_t                                  swapchain_height;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     VkSampler                                       fb_sampler{};
+    bool clamp_edge = false;
 
     VkDescriptorPool                            descriptor_pool{};
     VkDescriptorSetLayout                       descriptor_set_layout{};
