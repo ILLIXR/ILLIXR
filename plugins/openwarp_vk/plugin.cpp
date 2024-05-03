@@ -1108,7 +1108,7 @@ private:
 
         std::array<VkAttachmentDescription, 2> all_attachments = {color_attachment, depth_attachment};
 
-	VkSubpassDependency dependency{};
+	    VkSubpassDependency dependency{};
         dependency.srcSubpass = 0;
         dependency.dstSubpass = VK_SUBPASS_EXTERNAL;
         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
