@@ -54,7 +54,7 @@ public:
 
         setup(std::move(instance_extensions), std::move(device_extensions));
 
-        if (backend_type == display_backend::GLFW) {
+        if (backend_type == display_backend::GLFW /* || backend_type == display_backend::X11_DIRECT*/) {
             main_thread = std::thread(&display_vk::main_loop, this);
             while (!ready) {
                 // yield

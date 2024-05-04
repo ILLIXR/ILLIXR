@@ -181,17 +181,21 @@ public:
         }
 
         // TODO: for DRM, get vsync estimate
-        auto next_swap = _m_vsync.get_ro_nullable();
+        auto next_swap = nullptr; // _m_vsync.get_ro_nullable();
         if (next_swap == nullptr) {
-            std::this_thread::sleep_for(display_params::period / 6.0 * 5);
-        } else {
+            std::this_thread::sleep_for(display_params::period / 5.0 );
+            printf("WARNING!!! no vsync estimate\n");
+        } /*else {
             // convert next_swap_time to std::chrono::time_point
             auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
                 std::chrono::duration_cast<std::chrono::system_clock::duration>((**next_swap).time_since_epoch()));
+            auto current_time = _m_clock->now().time_since_epoch();
+            auto diff = next_swap_time_point - current_time;
+            printf("swap diff: %ld\n", diff.time_since_epoch());
             next_swap_time_point -= std::chrono::duration_cast<std::chrono::system_clock::duration>(
                 display_params::period / 6.0 * 5); // sleep till 1/6 of the period before vsync to begin timewarp
             std::this_thread::sleep_until(next_swap_time_point);
-        }
+        }*/
 
         if (!tw->is_external()) {
             // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
