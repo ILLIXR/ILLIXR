@@ -167,7 +167,7 @@ public:
             partial_destroy();
         }
 
-        generate_openwarp_mesh(1024, 1024);
+        generate_openwarp_mesh(openwarp_width, openwarp_height);
         generate_distortion_data();
 
         create_vertex_buffers();
@@ -182,6 +182,13 @@ public:
 
         create_offscreen_images();
         create_descriptor_sets();
+        
+        if (std::getenv("ILLIXR_OPENWARP_WIDTH") == nullptr || std::getenv("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
+        	throw std::runtime_error("Please define ILLIXR_OPENWARP_WIDTH and ILLIXR_OPENWARP_HEIGHT");
+        }
+        
+        openwarp_width = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
+        openwarp_height = std::stoi(std::getenv("ILLIXR_OPENWARP_HEIGHT"));
     }
 
     void partial_destroy() {
@@ -1444,6 +1451,8 @@ private:
     uint32_t                         num_openwarp_indices;
     std::vector<OpenWarpVertex>      openwarp_vertices;
     std::vector<uint32_t>            openwarp_indices;
+    size_t openwarp_width = 0;
+    size_t openwarp_height = 0;
 
     VkBuffer ow_vertex_buffer{};
     VkBuffer ow_index_buffer{};
