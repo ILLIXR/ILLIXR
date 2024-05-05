@@ -119,7 +119,14 @@ public:
         : pb{pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
+        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} {
+        if (std::getenv("ILLIXR_OPENWARP_WIDTH") == nullptr || std::getenv("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
+            throw std::runtime_error("Please define ILLIXR_OPENWARP_WIDTH and ILLIXR_OPENWARP_HEIGHT");
+        }
+
+        openwarp_width = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
+        openwarp_height = std::stoi(std::getenv("ILLIXR_OPENWARP_HEIGHT"));
+    }
 
     // For objects that only need to be created a single time and do not need to change.
     void initialize() {
@@ -182,13 +189,6 @@ public:
 
         create_offscreen_images();
         create_descriptor_sets();
-        
-        if (std::getenv("ILLIXR_OPENWARP_WIDTH") == nullptr || std::getenv("ILLIXR_OPENWARP_HEIGHT") == nullptr) {
-        	throw std::runtime_error("Please define ILLIXR_OPENWARP_WIDTH and ILLIXR_OPENWARP_HEIGHT");
-        }
-        
-        openwarp_width = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
-        openwarp_height = std::stoi(std::getenv("ILLIXR_OPENWARP_HEIGHT"));
     }
 
     void partial_destroy() {
