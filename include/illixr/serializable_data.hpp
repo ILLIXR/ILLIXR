@@ -5,12 +5,13 @@
 #ifndef ILLIXR_SERIALIZABLE_DATA_HPP
 #define ILLIXR_SERIALIZABLE_DATA_HPP
 
-#include "data_format.hpp"
-#include "switchboard.hpp"
-
 #include "cereal/types/polymorphic.hpp"
 #include "cereal/archives/binary.hpp"
 #include "cereal/access.hpp"
+
+#include "data_format.hpp"
+#include "switchboard.hpp"
+
 extern "C" {
 #include "libavcodec_illixr/avcodec.h"
 #include "libavformat_illixr/avformat.h"
