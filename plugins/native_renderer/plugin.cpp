@@ -38,6 +38,12 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
+        if (std::getenv("ILLIXR_SERVER_WIDTH") == nullptr || std::getenv("ILLIXR_SERVER_HEIGHT") == nullptr) {
+        	throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
+        }
+        
+        server_width = std::stoi(std::getenv("ILLIXR_SERVER_WIDTH"));
+        server_height = std::stoi(std::getenv("ILLIXR_SERVER_HEIGHT"));
     }
 
     /**
@@ -433,8 +439,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                ILLIXR::server_params::width_pixels,                                       // width
-                ILLIXR::server_params::height_pixels,                                          // height
+                server_width,                                       // width
+                server_height,                                          // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
@@ -484,8 +490,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                ILLIXR::server_params::width_pixels, // width
-                ILLIXR::server_params::height_pixels,    // height
+                server_width, // width
+                server_height,    // height
                 1                               // depth
             },                                  // extent
             1,                                  // mipLevels
@@ -548,8 +554,8 @@ private:
             VK_IMAGE_TYPE_2D,                                                               // imageType
             VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
             {
-                ILLIXR::server_params::width_pixels, // width
-                ILLIXR::server_params::height_pixels,    // height
+                server_width, // width
+                server_height,    // height
                 1                               // depth
             },                                  // extent
             1,                                  // mipLevels
@@ -812,6 +818,9 @@ private:
 
     bool compare_images = false;
     pose_type fixed_pose{};
+    
+    uint32_t server_width = 0;
+    uint32_t server_height = 0;
 
     VkCommandPool   command_pool{};
     VkCommandBuffer app_command_buffer{};
