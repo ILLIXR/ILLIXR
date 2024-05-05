@@ -151,5 +151,5 @@ void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int ver
     ar & pose.predict_computed_time;
     ar & pose.predict_target_time;
 }
-CEREAL_FORCE_DYNAMIC_INIT()
+CEREAL_FORCE_DYNAMIC_INIT(illixr_serializable_data)
 #endif // ILLIXR_SERIALIZABLE_DATA_HPP
