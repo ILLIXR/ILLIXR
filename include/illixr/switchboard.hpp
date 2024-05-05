@@ -21,14 +21,14 @@ static std::chrono::nanoseconds thread_cpu_time() {
 #include "phonebook.hpp"
 #include "record_logger.hpp"
 
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/memory.hpp>
 
 namespace ILLIXR {
 
@@ -429,7 +429,7 @@ private:
 
         void deserialize_and_put(std::vector<char>& buffer) {
             boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-            boost::archive::binary_iarchive ia{stream};
+            cereal::BinaryInputArchive ia{stream};
             ptr<event> this_event;
             ia >> this_event;
             put(std::move(this_event));
@@ -618,14 +618,11 @@ public:
                 auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
                 assert(base_event && "Event is not derived from switchboard::event");
 
-                std::vector<char> buffer;
-                boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
-                boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{
-                    inserter};
-                boost::archive::binary_oarchive oa{stream};
+                std::stringstream stream;
+                cereal::BinaryOutputArchive oa(stream);
                 oa << base_event;
-                // flush
-                stream.pubsync();
+                // convert to buffer
+                std::vector<char> buffer(stream.str().begin(), stream.str().end());
                 _m_backend->topic_send(this->_m_topic.name(), buffer);
             } else {
                 writer<serializable_event>::put(std::move(this_specific_event));
