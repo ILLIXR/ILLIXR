@@ -36,7 +36,7 @@ public:
      * @param topic_name The name of the topic.
      * @param message The message to send.
      */
-    virtual void topic_send(std::string topic_name, std::vector<char>& message) = 0;
+    virtual void topic_send(std::string topic_name, const std::string& message) = 0;
 };
 }
 

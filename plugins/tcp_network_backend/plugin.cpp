@@ -131,14 +131,14 @@ public:
         return std::find(networked_topics.begin(), networked_topics.end(), topic_name) != networked_topics.end();
     }
 
-    void topic_send(std::string topic_name, std::vector<char>& message) override {
+    void topic_send(std::string topic_name, const std::string& message) override {
         if (is_topic_networked(topic_name) == false) {
             std::cout << "Topic not networked" << std::endl;
             return;
         }
 
         std::cout << "Sending to peer: " << topic_name << std::endl;
-        send_to_peer(topic_name, std::string(message.begin(), message.end()));
+        send_to_peer(topic_name, message);
     }
 
     // Helper function to queue a received message into the corresponding topic
