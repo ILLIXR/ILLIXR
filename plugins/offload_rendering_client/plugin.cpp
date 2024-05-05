@@ -521,7 +521,7 @@ private:
     std::shared_ptr<spdlog::logger>                log;
     std::shared_ptr<vulkan::display_provider>      dp;
     switchboard::buffered_reader<compressed_frame> frames_reader;
-    switchboard::network_writer<fast_pose_type>    pose_writer;
+    switchboard::network_writer    pose_writer;
     std::shared_ptr<pose_prediction>               pp;
     std::atomic<bool>                              ready = false;
 

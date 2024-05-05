@@ -427,13 +427,7 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
-        void deserialize_and_put(std::vector<char>& buffer) {
-            boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-            cereal::BinaryInputArchive ia{stream};
-            ptr<event> this_event;
-            ia >> this_event;
-            put(std::move(this_event));
-        }
+        void deserialize_and_put(std::vector<char>& buffer);
 
         /**
          * @brief Schedules @p callback on the topic (@p plugin_id is for accounting)
@@ -605,28 +599,14 @@ public:
         }
     };
 
-    template<typename serializable_event>
-    class network_writer : public writer<serializable_event> {
+    class network_writer : public writer<event> {
     private:
         ptr<network_backend> _m_backend;
     public:
         network_writer(topic& topic_, ptr<network_backend> backend_ = nullptr)
-            : writer<serializable_event>{topic_}, _m_backend{backend_} { }
+            : writer<event>{topic_}, _m_backend{backend_} { }
 
-        void put(ptr<serializable_event>&& this_specific_event) override {
-            if (_m_backend->is_topic_networked(this->_m_topic.name())) {
-                auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
-                assert(base_event && "Event is not derived from switchboard::event");
-
-                std::stringstream stream;
-                cereal::BinaryOutputArchive oa(stream);
-                oa << base_event;
-                // convert to buffer
-                _m_backend->topic_send(this->_m_topic.name(), stream.str());
-            } else {
-                writer<serializable_event>::put(std::move(this_specific_event));
-            }
-        }
+        void put(ptr<event>&& this_specific_event) override;
     };
 
 private:
@@ -719,12 +699,12 @@ public:
     }
 
     template<typename specific_event>
-    network_writer<specific_event> get_network_writer(const std::string& topic_name, topic_config config) {
+    network_writer get_network_writer(const std::string& topic_name, topic_config config) {
         auto backend = _m_pb->lookup_impl<network_backend>();
         if (_m_registry.find(topic_name) == _m_registry.end()) {
             backend->topic_create(topic_name, config);
         }
-        return network_writer<specific_event>{try_register_topic<specific_event>(topic_name), backend};
+        return network_writer{try_register_topic<specific_event>(topic_name), backend};
     }
 
     /**

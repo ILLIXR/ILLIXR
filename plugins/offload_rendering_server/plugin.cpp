@@ -309,7 +309,7 @@ private:
     std::shared_ptr<spdlog::logger>                 log;
     std::shared_ptr<vulkan::display_provider>       dp;
     std::shared_ptr<switchboard>                    sb;
-    switchboard::network_writer<compressed_frame>   frames_topic;
+    switchboard::network_writer  frames_topic;
     switchboard::reader<fast_pose_type>                  render_pose;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvk_color_frames;

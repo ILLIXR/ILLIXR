@@ -152,5 +152,11 @@ void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int ver
     ar & pose.predict_computed_time;
     ar & pose.predict_target_time;
 }
-CEREAL_FORCE_DYNAMIC_INIT(illixr_serializable_data)
+
+CEREAL_REGISTER_TYPE(ILLIXR::compressed_frame)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(ILLIXR::switchboard::event, ILLIXR::compressed_frame)
+CEREAL_REGISTER_TYPE(ILLIXR::pose_type)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(ILLIXR::switchboard::event, ILLIXR::pose_type)
+CEREAL_REGISTER_TYPE(ILLIXR::fast_pose_type)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(ILLIXR::switchboard::event, ILLIXR::fast_pose_type)
 #endif // ILLIXR_SERIALIZABLE_DATA_HPP
