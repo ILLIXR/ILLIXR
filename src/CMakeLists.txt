@@ -23,6 +23,7 @@ add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
         src/main.cpp
         src/illixr.hpp
         src/cxxopts.hpp
+        ../include/illixr/serializable_data.cpp
         ../include/illixr/runtime.hpp
         ../include/illixr/phonebook.hpp
 )
@@ -31,6 +32,7 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
         src/runtime_impl.cpp
         src/illixr.hpp
         src/cxxopts.hpp
+        ../include/illixr/serializable_data.cpp
         ../include/illixr/runtime.hpp
         ../include/illixr/phonebook.hpp
         ${VULKAN_FILES}

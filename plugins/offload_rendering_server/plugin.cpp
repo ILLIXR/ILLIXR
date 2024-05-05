@@ -1,4 +1,3 @@
-#include "illixr/serializable_data.cpp"
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
@@ -15,6 +14,8 @@
 
 using namespace ILLIXR;
 using namespace ILLIXR::vulkan::ffmpeg_utils;
+
+CEREAL_REGISTER_DYNAMIC_INIT(illixr_serializable_data)
 
 class offload_rendering_server
     : public threadloop
