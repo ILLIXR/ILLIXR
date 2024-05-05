@@ -52,6 +52,27 @@ public:
             }
         }
         log->info("Obtained display provider");
+
+        auto bitrate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_BITRATE");
+        if (bitrate_env == nullptr) {
+            bitrate = OFFLOAD_RENDERING_BITRATE;
+        }
+        bitrate = std::stol(bitrate_env);
+        if (bitrate <= 0) {
+            throw std::runtime_error{"Invalid bitrate value"};
+        }
+        log->info("Using bitrate: {}", bitrate);
+
+        auto framerate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
+        if (framerate_env == nullptr) {
+            framerate = 144;
+        }
+        framerate = std::stoi(framerate_env);
+        if (framerate <= 0) {
+            throw std::runtime_error{"Invalid framerate value"};
+        }
+        log->info("Using framerate: {}", framerate);
+
         ffmpeg_init_device();
         ffmpeg_init_cuda_device();
         ready = true;
@@ -291,6 +312,9 @@ private:
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvk_color_frames;
     std::vector<std::array<ffmpeg_vk_frame, 2>>     avvk_depth_frames;
+
+    int framerate = 144;
+    long bitrate = OFFLOAD_RENDERING_BITRATE;
 
     bool pass_depth = false;
 
@@ -566,7 +590,7 @@ private:
         codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_color_ctx->time_base     = {1, 90}; // 90 fps
         codec_color_ctx->framerate     = {90, 1};
-        codec_color_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
+        codec_color_ctx->bit_rate      = bitrate;
 
         // Set zero latency
         codec_color_ctx->max_b_frames = 0;
@@ -599,7 +623,7 @@ private:
             codec_depth_ctx->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
             codec_depth_ctx->time_base     = {1, 90}; // 90 fps
             codec_depth_ctx->framerate     = {90, 1};
-            codec_depth_ctx->bit_rate      = OFFLOAD_RENDERING_BITRATE; // 10 Mbps
+            codec_depth_ctx->bit_rate      = bitrate; // 10 Mbps
 
             // Set zero latency
             codec_depth_ctx->max_b_frames = 0;
