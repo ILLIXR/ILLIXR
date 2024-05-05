@@ -30,8 +30,6 @@ static std::chrono::nanoseconds thread_cpu_time() {
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/memory.hpp>
 
-#include "serializable_data.hpp"
-
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;

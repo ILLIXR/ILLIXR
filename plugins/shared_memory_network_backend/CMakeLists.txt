@@ -15,6 +15,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/switchboard.hpp
         ../../include/illixr/threadloop.hpp
         ../../include/illixr/serializable_data.hpp
+        ../../include/illixr/serializable_data.cpp
 )
 if(ILLIXR_FFmpeg_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${ILLIXR_FFmpeg_DEP_STR})

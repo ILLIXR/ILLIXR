@@ -25,6 +25,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/vk/display_provider.hpp
         ../../include/illixr/vk/vulkan_utils.hpp
         ../../include/illixr/serializable_data.hpp
+        ../../include/illixr/serializable_data.cpp
 )
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
