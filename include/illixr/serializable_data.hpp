@@ -8,8 +8,9 @@
 #include "data_format.hpp"
 #include "switchboard.hpp"
 
-#include <boost/serialization/binary_object.hpp>
-#include <boost/serialization/export.hpp>
+#include "cereal/types/polymorphic.hpp"
+#include "cereal/archives/binary.hpp"
+#include "cereal/access.hpp"
 extern "C" {
 #include "libavcodec_illixr/avcodec.h"
 #include "libavformat_illixr/avformat.h"
@@ -30,12 +31,12 @@ struct compressed_frame : public switchboard::event {
     fast_pose_type pose;
     uint64_t sent_time;
 
-    friend class boost::serialization::access;
+    friend class cereal::access;
 
     template<class Archive>
     static void save_packet(Archive& ar, AVPacket* pkt) {
         ar << pkt->size;
-        ar << boost::serialization::make_array(pkt->data, pkt->size);
+        ar << cereal::binary_data(pkt->data, pkt->size);
         ar << pkt->pts;
         ar << pkt->dts;
         ar << pkt->stream_index;
@@ -108,8 +109,6 @@ struct compressed_frame : public switchboard::event {
         ar >> sent_time;
     }
 
-    BOOST_SERIALIZATION_SPLIT_MEMBER()
-
     compressed_frame() = default;
 
     compressed_frame(AVPacket* left_color, AVPacket* right_color, const fast_pose_type& pose, uint64_t sent_time)
@@ -132,10 +131,9 @@ struct compressed_frame : public switchboard::event {
 };
 } // namespace ILLIXR
 
-namespace boost::serialization {
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::time_point& tp, const unsigned int version) {
-    ar& boost::serialization::make_binary_object(&tp._m_time_since_epoch, sizeof(tp._m_time_since_epoch));
+    ar(tp._m_time_since_epoch);
 }
 
 template<class Archive>
@@ -153,10 +151,11 @@ void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int ver
     ar & pose.predict_computed_time;
     ar & pose.predict_target_time;
 }
-} // namespace boost::serialization
 
-BOOST_CLASS_EXPORT_KEY(ILLIXR::switchboard::event)
-BOOST_CLASS_EXPORT_KEY(ILLIXR::compressed_frame)
-BOOST_CLASS_EXPORT_KEY(ILLIXR::pose_type)
-BOOST_CLASS_EXPORT_KEY(ILLIXR::fast_pose_type)
+CEREAL_REGISTER_TYPE(ILLIXR::compressed_frame)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(ILLIXR::switchboard::event, ILLIXR::compressed_frame)
+CEREAL_REGISTER_TYPE(ILLIXR::pose_type)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(ILLIXR::switchboard::event, ILLIXR::pose_type)
+CEREAL_REGISTER_TYPE(ILLIXR::fast_pose_type)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(ILLIXR::switchboard::event, ILLIXR::fast_pose_type)
 #endif // ILLIXR_SERIALIZABLE_DATA_HPP

@@ -148,6 +148,7 @@ set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/include)
+include_directories(BEFORE ${CMAKE_SOURCE_DIR}/third_party)
 
 find_package(PkgConfig REQUIRED)
 
