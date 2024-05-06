@@ -51,6 +51,52 @@ public:
         compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
         if (compare_images) {
             log->debug("Sending constant pose to compare images");
+            // Constant pose as recorded from the GT. Note that the Quaternion constructor takes the w component first.
+
+            // 0 ms
+            // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
+//                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+
+            // -25 ms
+            // Timepoint: 25177 ms; Pose Position: -0.897286 0.732254 -0.533516; Pose Orientiation: 0.050736 -0.112192 0.0657815 0.990208
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.897286, 0.732254, -0.533516),
+//                                   Eigen::Quaternionf(0.990208, 0.050736, -0.112192, 0.0657815));
+
+            // -50 ms
+            // Timepoint: 25156 ms; Pose Position: -0.901611 0.732027 -0.531002; Pose Orientiation: 0.0499585 -0.110069 0.064728 0.990555
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.901611, 0.732027, -0.531002),
+//                                   Eigen::Quaternionf(0.990555, 0.0499585, -0.110069, 0.064728));
+
+            // -75 ms
+            // Timepoint: 25128 ms; Pose Position: -0.90597 0.731928 -0.527296; Pose Orientiation: 0.0492738 -0.105977 0.0637901 0.991096
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.90597, 0.731928, -0.527296),
+//                                   Eigen::Quaternionf(0.991096, 0.0492738, -0.105977, 0.0637901));
+
+            // -100 ms
+            // Timepoint: 25103 ms; Pose Position: -0.906131 0.732548 -0.526771; Pose Orientiation: 0.0486073 -0.10057 0.0633693 0.991719
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.906131, 0.732548, -0.526771),
+//                                   Eigen::Quaternionf(0.991719, 0.0486073, -0.10057, 0.0633693));
+
+            // -125 ms
+            // Timepoint: 25080 ms; Pose Position: -0.906863 0.732095 -0.527118; Pose Orientiation: 0.0478971 -0.0949276 0.0636839 0.99229
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.906863, 0.732095, -0.527118),
+//                                   Eigen::Quaternionf(0.99229, 0.0478971, -0.0949276, 0.0636839));
+
+            // -150 ms
+            // Timepoint: 25052 ms; Pose Position: -0.907584 0.731722 -0.527914; Pose Orientiation: 0.0473371 -0.0867409 0.0639834 0.993047
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.907584, 0.731722, -0.527914),
+//                                   Eigen::Quaternionf(0.993047, 0.0473371, -0.0867409, 0.0639834));
+
+            // -175 ms
+            // Timepoint: 25032 ms; Pose Position: -0.909664 0.73097 -0.527997; Pose Orientiation: 0.0470376 -0.0787137 0.0641232 0.99372
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.909664, 0.73097, -0.527997),
+//                                   Eigen::Quaternionf(0.99372, 0.0470376, -0.0787137, 0.0641232));
+
+            // -200 ms
+            // Timepoint: 25003 ms; Pose Position: -0.912881 0.729179 -0.527451; Pose Orientiation: 0.0463598 -0.0647321 0.0649133 0.994709
+            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
+                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
         } else {
             log->debug("Cliont sending normal poses (not comparing images)");
         }
@@ -528,6 +574,7 @@ private:
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     bool use_depth = false;
     bool compare_images = false;
+    pose_type fixed_pose;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_color_frames;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_depth_frames;
     std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
@@ -584,7 +631,11 @@ private:
 
     void push_pose() {
         // Send an identity pose if comparing images
-        auto current_pose = compare_images ? fast_pose_type() : pp->get_fast_pose();
+        auto current_pose = pp->get_fast_pose();
+        if (compare_images) {
+            current_pose.pose = fixed_pose;
+        }
+
         auto now =
             time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
         current_pose.predict_target_time   = now;

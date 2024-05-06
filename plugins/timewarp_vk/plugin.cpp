@@ -140,6 +140,16 @@ public:
         timewarp_render_pass = render_pass;
 
         clamp_edge = std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
+        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+        if (compare_images) {
+            // Constant pose as recorded from the GT. Note that the Quaternion constructor takes the w component first.
+            // Always try warping back to the 0ms psoe.
+
+            // 0 ms
+            // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
+            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
+                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+        }
     }
 
     void partial_destroy() {
@@ -169,7 +179,10 @@ public:
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
         auto next_vsync = _m_vsync.get_ro_nullable();
-        const pose_type latest_pose       = disable_warp ? render_pose : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
+        pose_type latest_pose       = disable_warp ? render_pose : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
+        if (compare_images) {
+            latest_pose = fixed_pose;
+        }
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -834,6 +847,9 @@ private:
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
+
+    bool compare_images = false;
+    pose_type fixed_pose;
 
     size_t                                  swapchain_width;
     size_t                                  swapchain_height;
