@@ -87,14 +87,6 @@ public:
         create_swapchain_framebuffers();
         src->setup(app_pass, 0, buffer_pool);
         tw->setup(timewarp_pass, 0, buffer_pool, true);
-
-        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
-        if (compare_images) {
-            log->debug("Providing constant pose to warp to");
-            fixed_pose = pose_type();
-        } else {
-            log->debug("Warping normally to current pose");
-        }
     }
 
     /**
@@ -208,7 +200,7 @@ public:
             auto res          = buffer_pool->post_processing_acquire_image();
             auto buffer_index = res.first;
             auto pose         = res.second;
-            tw->update_uniforms(compare_images ? fixed_pose : pose.pose);
+            tw->update_uniforms(pose.pose);
 
             if (buffer_index == -1) {
                 return;
@@ -815,9 +807,6 @@ private:
     const std::shared_ptr<vulkan::timewarp>         tw;
     const std::shared_ptr<vulkan::app>              src;
     const std::shared_ptr<const RelativeClock>      _m_clock;
-
-    bool compare_images = false;
-    pose_type fixed_pose{};
     
     uint32_t server_width = 0;
     uint32_t server_height = 0;

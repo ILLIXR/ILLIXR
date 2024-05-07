@@ -189,6 +189,20 @@ public:
 
         create_offscreen_images();
         create_descriptor_sets();
+
+        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+        if (compare_images) {
+            // Constant pose as recorded from the GT. Note that the Quaternion constructor takes the w component first.
+            // Always try warping back to the 0ms psoe.
+
+            // 0 ms
+            // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
+            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
+                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+
+//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
+//                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
+        }
     }
 
     void partial_destroy() {
@@ -222,7 +236,10 @@ public:
 
         Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose);
 
-        const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        if (compare_images) {
+            latest_pose = fixed_pose;
+        }
         Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose);
 
         for (int eye = 0; eye < 2; eye++) {
@@ -1179,7 +1196,7 @@ private:
         VkPipelineRasterizationStateCreateInfo rasterizer = {};
         rasterizer.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         rasterizer.polygonMode                            = VK_POLYGON_MODE_FILL;
-        rasterizer.cullMode                               = VK_CULL_MODE_NONE;
+        rasterizer.cullMode                               = VK_CULL_MODE_BACK_BIT;
         rasterizer.frontFace                              = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasterizer.lineWidth                              = 1.0f;
         rasterizer.depthClampEnable                       = VK_FALSE;
@@ -1207,6 +1224,7 @@ private:
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
         depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable                       = VK_TRUE;
+        depthStencil.depthWriteEnable                       = VK_TRUE;
         depthStencil.minDepthBounds                        = 0.0f;
         depthStencil.maxDepthBounds                        = 1.0f;
         depthStencil.depthCompareOp                        = rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
@@ -1410,6 +1428,9 @@ private:
 
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
+
+    bool compare_images = false;
+    pose_type fixed_pose;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;

@@ -440,8 +440,14 @@ private:
 
         // choose surface format
         for (const auto& available_format : swapchain_details.formats) {
-            if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM &&
+            if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
                 available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                std::cout << "Using VK_FORMAT_B8G8R8A8_SRGB" << std::endl;
+                swapchain_image_format = available_format;
+                break;
+            } else if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM &&
+                                                                            available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                std::cout << "Using VK_FORMAT_B8G8R8A8_UNORM (direct mode)" << std::endl;
                 swapchain_image_format = available_format;
                 break;
             }

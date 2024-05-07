@@ -45,7 +45,8 @@ layout (push_constant) uniform Eye {
 } eye;
 
 // Constant for now
-float bleedRadius = 0.05f;
+//float bleedRadius = 0.005f;
+float bleedRadius = 0.0f;
 float edgeTolerance = 0.001f;
 
 layout (location = 0) in vec3 in_position;
@@ -57,24 +58,39 @@ layout (location = 1) out vec2 warpUv;
 // Define this macro if the OpenXR application is using reverse depth
 #define REVERSE_Z
 
+float getDepth(vec2 uv){
+//	float p1 = textureLod(depth_texture, uv, 0.0).x;
+//	float p2 = textureLod(depth_texture, uv, 0.0).y;
+//	float p3 = textureLod(depth_texture, uv, 0.0).z;
+//
+//	uint u1 = floatBitsToUint(p1);
+//	uint u2 = floatBitsToUint(p2);
+//	uint u3 = floatBitsToUint(p3);
+//
+//	uint u = (u1 << 24) | (u2 << 16) | u3;
+//	return uintBitsToFloat(u);
+	return textureLod(depth_texture, uv, 0.0).x;
+}
+
 void main( void )
 {
-	float z = textureLod(depth_texture, in_uv, 0.0).x;
+
+	float z = getDepth(in_uv);
 
 #ifdef REVERSE_Z
 	float outlier = max(              											
-					  max(														
-							textureLod(depth_texture, in_uv - vec2(bleedRadius,0), 0).x, 
-							textureLod(depth_texture, in_uv + vec2(bleedRadius,0), 0).x  
+					  max(
+					  		getDepth(in_uv - vec2(bleedRadius,0)),
+							getDepth(in_uv + vec2(bleedRadius,0))
 					  ),														
 					  max(
-							textureLod(depth_texture, in_uv - vec2(0,bleedRadius), 0).x, 
-							textureLod(depth_texture, in_uv + vec2(0,bleedRadius), 0).x  
+							getDepth(in_uv - vec2(0,bleedRadius)),
+							getDepth(in_uv + vec2(0,bleedRadius))
 					  )
 					);
 
-	float diags = max(textureLod(depth_texture, in_uv + vec2(bleedRadius, bleedRadius) / sqrt(2), 0).x,
-					  textureLod(depth_texture, in_uv - vec2(bleedRadius, bleedRadius) / sqrt(2), 0).x);
+	float diags = max(getDepth(in_uv + vec2(bleedRadius, bleedRadius)),
+					  getDepth(in_uv - vec2(bleedRadius, bleedRadius)));
 
 	outlier = max(diags, outlier);
 	if(outlier - z > edgeTolerance){

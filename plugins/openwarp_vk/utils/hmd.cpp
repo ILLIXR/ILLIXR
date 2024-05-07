@@ -54,6 +54,8 @@ void HMD::BuildDistortionMeshes(
     const float horizontalShiftMeters = (hmdInfo.lensSeparationInMeters / 2) - (hmdInfo.visibleMetersWide / 4);
     const float horizontalShiftView   = horizontalShiftMeters / (hmdInfo.visibleMetersWide / 2);
 
+    bool compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+
     for (int eye = 0; eye < NUM_EYES; eye++) {
         for (int y = 0; y <= hmdInfo.eyeTilesHigh; y++) {
             const float yf = 1.0f - (float) y / (float) hmdInfo.eyeTilesHigh;
@@ -85,8 +87,13 @@ void HMD::BuildDistortionMeshes(
 
                 const int vertNum = y * (hmdInfo.eyeTilesWide + 1) + x;
                 for (int channel = 0; channel < NUM_COLOR_CHANNELS; channel++) {
-                    distort_coords[eye][channel][vertNum].x = chromaScale[channel] * theta[0];
-                    distort_coords[eye][channel][vertNum].y = chromaScale[channel] * theta[1];
+                    if (compare_images) {
+                        distort_coords[eye][channel][vertNum].x = theta[0];
+                        distort_coords[eye][channel][vertNum].y = theta[1];
+                    } else {
+                        distort_coords[eye][channel][vertNum].x = chromaScale[channel] * theta[0];
+                        distort_coords[eye][channel][vertNum].y = chromaScale[channel] * theta[1];
+                    }
                 }
             }
         }
