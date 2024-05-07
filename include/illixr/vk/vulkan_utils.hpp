@@ -16,7 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
 #include <set>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
@@ -248,7 +248,7 @@ static VmaAllocator create_vma_allocator(VkInstance vk_instance, VkPhysicalDevic
     allocatorCreateInfo.device           = vk_device;
     allocatorCreateInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorCreateInfo.instance         = vk_instance;
-    allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_3;
+    allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
 
     VmaAllocator allocator;
     VK_ASSERT_SUCCESS(vmaCreateAllocator(&allocatorCreateInfo, &allocator))
@@ -461,13 +461,6 @@ static queue_families find_queue_families(VkPhysicalDevice const& physical_devic
         }
 
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-        if (queue_family.queueFlags & VK_QUEUE_VIDEO_DECODE_BIT_KHR) {
-            indices.encode_family = i;
-        }
-
-        if (queue_family.queueFlags & VK_QUEUE_VIDEO_ENCODE_BIT_KHR) {
-            indices.decode_family = i;
-        }
 #endif
         if (queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT) {
             indices.compute_family = i;
