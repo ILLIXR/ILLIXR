@@ -13,14 +13,13 @@
 #include "utils/hmd.hpp"
 
 #include <future>
-#include <iostream>
 #include <mutex>
 #include <stack>
 #include <vulkan/vulkan_core.h>
 
 using namespace ILLIXR;
 
-struct Vertex {
+struct vertex {
     glm::vec3 pos;
     glm::vec2 uv0;
     glm::vec2 uv1;
@@ -29,7 +28,7 @@ struct Vertex {
     static VkVertexInputBindingDescription get_binding_description() {
         VkVertexInputBindingDescription binding_description = {};
         binding_description.binding                         = 0;              // index of the binding in the array of bindings
-        binding_description.stride                          = sizeof(Vertex); // number of bytes from one entry to the next
+        binding_description.stride                          = sizeof(vertex); // number of bytes from one entry to the next
         binding_description.inputRate                       = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
 
         return binding_description;
@@ -43,31 +42,31 @@ struct Vertex {
         attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
         attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
         attribute_descriptions[0].offset =
-            offsetof(Vertex, pos); // number of bytes since the start of the per-vertex data to read from
+            offsetof(vertex, pos); // number of bytes since the start of the per-vertex data to read from
 
         // uv0
         attribute_descriptions[1].binding  = 0;
         attribute_descriptions[1].location = 1;
         attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[1].offset   = offsetof(Vertex, uv0);
+        attribute_descriptions[1].offset   = offsetof(vertex, uv0);
 
         // uv1
         attribute_descriptions[2].binding  = 0;
         attribute_descriptions[2].location = 2;
         attribute_descriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[2].offset   = offsetof(Vertex, uv1);
+        attribute_descriptions[2].offset   = offsetof(vertex, uv1);
 
         // uv2
         attribute_descriptions[3].binding  = 0;
         attribute_descriptions[3].location = 3;
         attribute_descriptions[3].format   = VK_FORMAT_R32G32_SFLOAT;
-        attribute_descriptions[3].offset   = offsetof(Vertex, uv2);
+        attribute_descriptions[3].offset   = offsetof(vertex, uv2);
 
         return attribute_descriptions;
     }
 };
 
-struct UniformBufferObject {
+struct uniform_buffer_object {
     glm::mat4 timewarp_start_transform;
     glm::mat4 timewarp_end_transform;
 };
@@ -75,28 +74,28 @@ struct UniformBufferObject {
 class timewarp_vk : public timewarp {
 public:
     explicit timewarp_vk(const phonebook* const pb)
-        : pb{pb}
-        , sb{pb->lookup_impl<switchboard>()}
-        , pp{pb->lookup_impl<pose_prediction>()}
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
+        : phonebook_{pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
+        , disable_warp_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
-        ds = pb->lookup_impl<display_sink>();
+        display_sink_ = phonebook_->lookup_impl<display_sink>();
 
-        if (ds->vma_allocator) {
-            this->vma_allocator = ds->vma_allocator;
+        if (display_sink_->vma_allocator) {
+            this->vma_allocator_ = display_sink_->vma_allocator;
         } else {
-            this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
-            deletion_queue.emplace([=]() {
-                vmaDestroyAllocator(vma_allocator);
+            this->vma_allocator_ = vulkan_utils::create_vma_allocator(display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
+            deletion_queue_.emplace([=]() {
+                vmaDestroyAllocator(vma_allocator_);
             });
         }
 
         generate_distortion_data();
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
-        deletion_queue.emplace([=]() {
-            vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
+        command_pool_   = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
+        command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
+        deletion_queue_.emplace([=]() {
+            vkDestroyCommandPool(display_sink_->vk_device, command_pool_, nullptr);
         });
         create_vertex_buffer();
         create_index_buffer();
@@ -107,20 +106,20 @@ public:
 
     void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
                bool input_texture_vulkan_coordinates_in) override {
-        std::lock_guard<std::mutex> lock{m_setup};
+        std::lock_guard<std::mutex> lock{setup_mutex_};
 
-        this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
-        if (!initialized) {
+        this->input_texture_vulkan_coordinates_ = input_texture_vulkan_coordinates_in;
+        if (!initialized_) {
             initialize();
-            initialized = true;
+            initialized_ = true;
         } else {
             partial_destroy();
         }
 
         if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
-            throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
+            throw std::runtime_error("timewarp_vk: buffer_pool_[0].size() != buffer_pool_[1].size()");
         }
-        this->buffer_pool = buffer_pool_in;
+        this->buffer_pool_ = buffer_pool_in;
 
         create_descriptor_pool();
         create_descriptor_sets();
@@ -128,76 +127,76 @@ public:
     }
 
     void partial_destroy() {
-        vkDestroyPipeline(ds->vk_device, pipeline, nullptr);
+        vkDestroyPipeline(display_sink_->vk_device, pipeline, nullptr);
         pipeline = VK_NULL_HANDLE;
 
-        vkDestroyPipelineLayout(ds->vk_device, pipeline_layout, nullptr);
-        pipeline_layout = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(display_sink_->vk_device, pipeline_layout_, nullptr);
+        pipeline_layout_ = VK_NULL_HANDLE;
 
-        vkDestroyDescriptorPool(ds->vk_device, descriptor_pool, nullptr);
-        descriptor_pool = VK_NULL_HANDLE;
+        vkDestroyDescriptorPool(display_sink_->vk_device, descriptor_pool_, nullptr);
+        descriptor_pool_ = VK_NULL_HANDLE;
     }
 
     void update_uniforms(const pose_type& render_pose) override {
-        num_update_uniforms_calls++;
+        num_update_uniforms_calls_++;
 
         // Generate "starting" view matrix, from the pose sampled at the time of rendering the frame
-        Eigen::Matrix4f viewMatrix   = Eigen::Matrix4f::Identity();
-        viewMatrix.block(0, 0, 3, 3) = render_pose.orientation.toRotationMatrix();
+        Eigen::Matrix4f view_matrix   = Eigen::Matrix4f::Identity();
+        view_matrix.block(0, 0, 3, 3) = render_pose.orientation.toRotationMatrix();
 
         // We simulate two asynchronous view matrices, one at the beginning of
         // display refresh, and one at the end of display refresh. The
         // distortion shader will lerp between these two predictive view
         // transformations as it renders across the horizontal view,
         // compensating for display panel refresh delay (wow!)
-        Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
-        Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
+        Eigen::Matrix4f view_matrix_begin = Eigen::Matrix4f::Identity();
+        Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
-        const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
-        viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
+        const pose_type latest_pose       = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
+        view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
         // `display_period` later
-        viewMatrixEnd = viewMatrixBegin;
+        view_matrix_end = view_matrix_begin;
 
         // Calculate the timewarp transformation matrices. These are a product
         // of the last-known-good view matrix and the predictive transforms.
-        Eigen::Matrix4f timeWarpStartTransform4x4;
-        Eigen::Matrix4f timeWarpEndTransform4x4;
+        Eigen::Matrix4f time_warp_start_transform_4x4;
+        Eigen::Matrix4f time_warp_end_transform_4x4;
 
         // Calculate timewarp transforms using predictive view transforms
-        calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
-        calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
+        calculate_timewarp_transform(time_warp_start_transform_4x4, basic_projection_, view_matrix, view_matrix_begin);
+        calculate_timewarp_transform(time_warp_end_transform_4x4, basic_projection_, view_matrix, view_matrix_end);
 
-        auto* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
-        memcpy(&ubo->timewarp_start_transform, timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
-        memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
+        auto* ubo = (uniform_buffer_object*) uniform_alloc_info_.pMappedData;
+        memcpy(&ubo->timewarp_start_transform, time_warp_start_transform_4x4.data(), sizeof(glm::mat4));
+        memcpy(&ubo->timewarp_end_transform, time_warp_end_transform_4x4.data(), sizeof(glm::mat4));
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
-        num_record_calls++;
+    void record_command_buffer(VkCommandBuffer command_buffer, int buffer_ind, bool left) override {
+        num_record_calls_++;
 
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
+        vkCmdBindVertexBuffers(command_buffer, 0, 1, &vertex_buffer_, offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-        //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
-        //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
-        //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
+        //     vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1,
+        //     &descriptor_sets_[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(command_buffer, index_buffer_, 0,
+        //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(command_buffer, num_distortion_indices_, 1, 0, num_distortion_vertices_ *
         //     eye, 0);
         // }
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
-                                &descriptor_sets[!left][buffer_ind], 0, nullptr);
-        vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+        vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1,
+                                &descriptor_sets_[!left][buffer_ind], 0, nullptr);
+        vkCmdBindIndexBuffer(command_buffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(command_buffer, num_distortion_indices_, 1, 0, static_cast<int>(num_distortion_vertices_ * !left), 0);
     }
 
     void destroy() override {
         partial_destroy();
-        // drain deletion_queue
-        while (!deletion_queue.empty()) {
-            deletion_queue.top()();
-            deletion_queue.pop();
+        // drain deletion_queue_
+        while (!deletion_queue_.empty()) {
+            deletion_queue_.top()();
+            deletion_queue_.pop();
         }
     }
 
@@ -213,7 +212,7 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        staging_buffer_info.size  = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
+        staging_buffer_info.size  = sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES;
         staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
         VmaAllocationCreateInfo staging_alloc_info = {};
@@ -223,7 +222,7 @@ private:
         VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
+            vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
 
         VkBufferCreateInfo buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -235,39 +234,39 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        buffer_info.size  = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
+        buffer_info.size  = sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES;
         buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
         VmaAllocationCreateInfo alloc_info = {};
         alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation vertex_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &vertex_alloc, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &vertex_buffer_, &vertex_alloc, nullptr))
 
-        std::vector<Vertex> vertices;
-        vertices.resize(num_distortion_vertices * HMD::NUM_EYES);
-        for (size_t i = 0; i < num_distortion_vertices * HMD::NUM_EYES; i++) {
-            vertices[i].pos = {distortion_positions[i].x, distortion_positions[i].y, distortion_positions[i].z};
-            vertices[i].uv0 = {distortion_uv0[i].u, distortion_uv0[i].v};
-            vertices[i].uv1 = {distortion_uv1[i].u, distortion_uv1[i].v};
-            vertices[i].uv2 = {distortion_uv2[i].u, distortion_uv2[i].v};
+        std::vector<vertex> vertices;
+        vertices.resize(num_distortion_vertices_ * HMD::NUM_EYES);
+        for (size_t i = 0; i < num_distortion_vertices_ * HMD::NUM_EYES; i++) {
+            vertices[i].pos = {distortion_positions_[i].x, distortion_positions_[i].y, distortion_positions_[i].z};
+            vertices[i].uv0 = {distortion_uv0_[i].u, distortion_uv0_[i].v};
+            vertices[i].uv1 = {distortion_uv1_[i].u, distortion_uv1_[i].v};
+            vertices[i].uv2 = {distortion_uv2_[i].u, distortion_uv2_[i].v};
         }
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data))
-        memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
-        vmaUnmapMemory(vma_allocator, staging_alloc);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_alloc, &mapped_data))
+        memcpy(mapped_data, vertices.data(), sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES);
+        vmaUnmapMemory(vma_allocator_, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
         VkBufferCopy    copy_region          = {};
-        copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        copy_region.size                     = sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES;
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
+        vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
 
-        deletion_queue.emplace([=]() {
-            vmaDestroyBuffer(vma_allocator, vertex_buffer, vertex_alloc);
+        deletion_queue_.emplace([=]() {
+            vmaDestroyBuffer(vma_allocator_, vertex_buffer_, vertex_alloc);
         });
     }
 
@@ -282,7 +281,7 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        staging_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
+        staging_buffer_info.size  = sizeof(uint32_t) * num_distortion_indices_;
         staging_buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
         VmaAllocationCreateInfo staging_alloc_info = {};
@@ -292,7 +291,7 @@ private:
         VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
+            vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
 
         VkBufferCreateInfo buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -304,45 +303,45 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        buffer_info.size  = sizeof(uint32_t) * num_distortion_indices;
+        buffer_info.size  = sizeof(uint32_t) * num_distortion_indices_;
         buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 
         VmaAllocationCreateInfo alloc_info = {};
         alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation index_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &index_alloc, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &index_buffer_, &index_alloc, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_alloc, &mapped_data))
-        memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
-        vmaUnmapMemory(vma_allocator, staging_alloc);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_alloc, &mapped_data))
+        memcpy(mapped_data, distortion_indices_.data(), sizeof(uint32_t) * num_distortion_indices_);
+        vmaUnmapMemory(vma_allocator_, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
         VkBufferCopy    copy_region          = {};
-        copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        copy_region.size                     = sizeof(uint32_t) * num_distortion_indices_;
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
+        vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
 
-        deletion_queue.emplace([=]() {
-            vmaDestroyBuffer(vma_allocator, index_buffer, index_alloc);
+        deletion_queue_.emplace([=]() {
+            vmaDestroyBuffer(vma_allocator_, index_buffer_, index_alloc);
         });
     }
 
     void generate_distortion_data() {
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, display_params::width_meters,
-                               display_params::height_meters, display_params::lens_separation,
-                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+        HMD::get_default_hmd_info(display_params::width_pixels, display_params::height_pixels, display_params::width_meters,
+                                  display_params::height_meters, display_params::lens_separation,
+                                  display_params::meters_per_tan_angle, display_params::aberration, hmd_info_);
 
         // Construct timewarp meshes and other data
-        build_timewarp(hmd_info);
+        build_timewarp(hmd_info_);
     }
 
     void create_texture_sampler() {
-        VkSamplerCreateInfo samplerInfo = {
+        VkSamplerCreateInfo sampler_info = {
             VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, // sType
             nullptr,                               // pNext
             0,                                     // flags
@@ -362,58 +361,58 @@ private:
             {},                                    // borderColor
             0                                      // unnormalizedCoordinates
         };
-        samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        sampler_info.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
+        sampler_info.minFilter = VK_FILTER_LINEAR;
 
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.borderColor  = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
+        sampler_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        sampler_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        sampler_info.borderColor  = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
 
-        samplerInfo.anisotropyEnable        = VK_FALSE;
-        samplerInfo.unnormalizedCoordinates = VK_FALSE;
-        samplerInfo.compareEnable           = VK_FALSE;
-        samplerInfo.compareOp               = VK_COMPARE_OP_ALWAYS;
+        sampler_info.anisotropyEnable        = VK_FALSE;
+        sampler_info.unnormalizedCoordinates = VK_FALSE;
+        sampler_info.compareEnable           = VK_FALSE;
+        sampler_info.compareOp               = VK_COMPARE_OP_ALWAYS;
 
-        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-        samplerInfo.mipLodBias = 0.f;
-        samplerInfo.minLod     = 0.f;
-        samplerInfo.maxLod     = 0.f;
+        sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        sampler_info.mipLodBias = 0.f;
+        sampler_info.minLod     = 0.f;
+        sampler_info.maxLod     = 0.f;
 
-        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler))
+        VK_ASSERT_SUCCESS(vkCreateSampler(display_sink_->vk_device, &sampler_info, nullptr, &fb_sampler_))
 
-        deletion_queue.emplace([=]() {
-            vkDestroySampler(ds->vk_device, fb_sampler, nullptr);
+        deletion_queue_.emplace([=]() {
+            vkDestroySampler(display_sink_->vk_device, fb_sampler_, nullptr);
         });
     }
 
     void create_descriptor_set_layout() {
-        VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-        uboLayoutBinding.binding                      = 0; // binding number in the shader
-        uboLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount              = 1;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; // shader stages that can access the descriptor
+        VkDescriptorSetLayoutBinding ubo_layout_binding = {};
+        ubo_layout_binding.binding                      = 0; // binding number in the shader
+        ubo_layout_binding.descriptorType               = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        ubo_layout_binding.descriptorCount              = 1;
+        ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; // shader stages that can access the descriptor
 
-        VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding                      = 1;
-        samplerLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.descriptorCount              = 1;
-        samplerLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+        VkDescriptorSetLayoutBinding sampler_layout_binding = {};
+        sampler_layout_binding.binding                      = 1;
+        sampler_layout_binding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        sampler_layout_binding.descriptorCount              = 1;
+        sampler_layout_binding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, samplerLayoutBinding};
-        VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
-        layoutInfo.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount                                = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
+        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {ubo_layout_binding, sampler_layout_binding};
+        VkDescriptorSetLayoutCreateInfo             layout_info = {};
+        layout_info.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layout_info.bindingCount                                = static_cast<uint32_t>(bindings.size());
+        layout_info.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layoutInfo, nullptr, &descriptor_set_layout))
-        deletion_queue.emplace([=]() {
-            vkDestroyDescriptorSetLayout(ds->vk_device, descriptor_set_layout, nullptr);
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_sink_->vk_device, &layout_info, nullptr, &descriptor_set_layout_))
+        deletion_queue_.emplace([=]() {
+            vkDestroyDescriptorSetLayout(display_sink_->vk_device, descriptor_set_layout_, nullptr);
         });
     }
 
     void create_uniform_buffer() {
-        VkBufferCreateInfo bufferInfo = {
+        VkBufferCreateInfo buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
             nullptr,                              // pNext
             0,                                    // flags
@@ -423,29 +422,29 @@ private:
             0,                                    // queueFamilyIndexCount
             nullptr                               // pQueueFamilyIndices
         };
-        bufferInfo.size  = sizeof(UniformBufferObject);
-        bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+        buffer_info.size  = sizeof(uniform_buffer_object);
+        buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-        VmaAllocationCreateInfo createInfo = {};
-        createInfo.usage                   = VMA_MEMORY_USAGE_AUTO;
-        createInfo.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-        createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        VmaAllocationCreateInfo create_info = {};
+        create_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+        create_info.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        create_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &bufferInfo, &createInfo, &uniform_buffer, &uniform_alloc, &uniform_alloc_info))
-        deletion_queue.emplace([=]() {
-            vmaDestroyBuffer(vma_allocator, uniform_buffer, uniform_alloc);
+            vmaCreateBuffer(vma_allocator_, &buffer_info, &create_info, &uniform_buffer_, &uniform_alloc_, &uniform_alloc_info_))
+        deletion_queue_.emplace([=]() {
+            vmaDestroyBuffer(vma_allocator_, uniform_buffer_, uniform_alloc_);
         });
     }
 
     void create_descriptor_pool() {
-        std::array<VkDescriptorPoolSize, 2> poolSizes = {};
-        poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount                  = 2;
-        poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = 2;
+        std::array<VkDescriptorPoolSize, 2> pool_sizes = {};
+        pool_sizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        pool_sizes[0].descriptorCount                  = 2;
+        pool_sizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        pool_sizes[1].descriptorCount                  = 2;
 
-        VkDescriptorPoolCreateInfo poolInfo = {
+        VkDescriptorPoolCreateInfo pool_info = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
             nullptr,                                       // pNext
             0,                                             // flags
@@ -453,61 +452,61 @@ private:
             0,                                             // poolSizeCount
             nullptr                                        // pPoolSizes
         };
-        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-        poolInfo.pPoolSizes    = poolSizes.data();
-        poolInfo.maxSets       = buffer_pool[0].size() * 2;
+        pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
+        pool_info.pPoolSizes    = pool_sizes.data();
+        pool_info.maxSets       = buffer_pool_[0].size() * 2;
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool))
+        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_sink_->vk_device, &pool_info, nullptr, &descriptor_pool_))
     }
 
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
-            VkDescriptorSetAllocateInfo        allocInfo = {
+            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool_[0].size(), descriptor_set_layout_};
+            VkDescriptorSetAllocateInfo        alloc_info = {
                        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                        nullptr,                                        // pNext
                        {},                                             // descriptorPool
                        0,                                              // descriptorSetCount
                        nullptr                                         // pSetLayouts
             };
-            allocInfo.descriptorPool     = descriptor_pool;
-            allocInfo.descriptorSetCount = buffer_pool[0].size();
-            allocInfo.pSetLayouts        = layouts.data();
+            alloc_info.descriptorPool     = descriptor_pool_;
+            alloc_info.descriptorSetCount = buffer_pool_[0].size();
+            alloc_info.pSetLayouts        = layouts.data();
 
-            descriptor_sets[eye].resize(buffer_pool[0].size());
-            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
+            descriptor_sets_[eye].resize(buffer_pool_[0].size());
+            VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_sink_->vk_device, &alloc_info, descriptor_sets_[eye].data()))
 
-            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
-                VkDescriptorBufferInfo bufferInfo = {};
-                bufferInfo.buffer                 = uniform_buffer;
-                bufferInfo.offset                 = 0;
-                bufferInfo.range                  = sizeof(UniformBufferObject);
+            for (size_t i = 0; i < buffer_pool_[0].size(); i++) {
+                VkDescriptorBufferInfo buffer_info = {};
+                buffer_info.buffer                 = uniform_buffer_;
+                buffer_info.offset                 = 0;
+                buffer_info.range                  = sizeof(uniform_buffer_object);
 
-                VkDescriptorImageInfo imageInfo = {};
-                imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView             = buffer_pool[eye][i];
-                imageInfo.sampler               = fb_sampler;
+                VkDescriptorImageInfo image_info = {};
+                image_info.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                image_info.imageView             = buffer_pool_[eye][i];
+                image_info.sampler               = fb_sampler_;
 
-                std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+                std::array<VkWriteDescriptorSet, 2> descriptor_writes = {};
 
-                descriptorWrites[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[0].dstSet          = descriptor_sets[eye][i];
-                descriptorWrites[0].dstBinding      = 0;
-                descriptorWrites[0].dstArrayElement = 0;
-                descriptorWrites[0].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                descriptorWrites[0].descriptorCount = 1;
-                descriptorWrites[0].pBufferInfo     = &bufferInfo;
+                descriptor_writes[0].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptor_writes[0].dstSet          = descriptor_sets_[eye][i];
+                descriptor_writes[0].dstBinding      = 0;
+                descriptor_writes[0].dstArrayElement = 0;
+                descriptor_writes[0].descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptor_writes[0].descriptorCount = 1;
+                descriptor_writes[0].pBufferInfo     = &buffer_info;
 
-                descriptorWrites[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[1].dstSet          = descriptor_sets[eye][i];
-                descriptorWrites[1].dstBinding      = 1;
-                descriptorWrites[1].dstArrayElement = 0;
-                descriptorWrites[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                descriptorWrites[1].descriptorCount = 1;
-                descriptorWrites[1].pImageInfo      = &imageInfo;
+                descriptor_writes[1].sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptor_writes[1].dstSet          = descriptor_sets_[eye][i];
+                descriptor_writes[1].dstBinding      = 1;
+                descriptor_writes[1].dstArrayElement = 0;
+                descriptor_writes[1].descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptor_writes[1].descriptorCount = 1;
+                descriptor_writes[1].pImageInfo      = &image_info;
 
-                vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(),
+                vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(),
                                        0, nullptr);
             }
         }
@@ -518,39 +517,39 @@ private:
             throw std::runtime_error("timewarp_vk::create_pipeline: pipeline already created");
         }
 
-        VkDevice device = ds->vk_device;
+        VkDevice device = display_sink_->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
         VkShaderModule vert   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.vert.spv"));
         VkShaderModule frag   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.frag.spv"));
 
-        VkPipelineShaderStageCreateInfo vertStageInfo = {};
-        vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        vertStageInfo.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
-        vertStageInfo.module                          = vert;
-        vertStageInfo.pName                           = "main";
+        VkPipelineShaderStageCreateInfo vert_stage_info = {};
+        vert_stage_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vert_stage_info.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
+        vert_stage_info.module                          = vert;
+        vert_stage_info.pName                           = "main";
 
-        VkPipelineShaderStageCreateInfo fragStageInfo = {};
-        fragStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        fragStageInfo.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
-        fragStageInfo.module                          = frag;
-        fragStageInfo.pName                           = "main";
+        VkPipelineShaderStageCreateInfo frag_stage_info = {};
+        frag_stage_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        frag_stage_info.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
+        frag_stage_info.module                          = frag;
+        frag_stage_info.pName                           = "main";
 
-        VkPipelineShaderStageCreateInfo shaderStages[] = {vertStageInfo, fragStageInfo};
+        VkPipelineShaderStageCreateInfo shader_stages[] = {vert_stage_info, frag_stage_info};
 
-        auto bindingDescription    = Vertex::get_binding_description();
-        auto attributeDescriptions = Vertex::get_attribute_descriptions();
+        auto binding_description    = vertex::get_binding_description();
+        auto attribute_descriptions = vertex::get_attribute_descriptions();
 
-        VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
-        vertexInputInfo.sType                                = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount        = 1;
-        vertexInputInfo.pVertexBindingDescriptions           = &bindingDescription;
-        vertexInputInfo.vertexAttributeDescriptionCount      = static_cast<uint32_t>(attributeDescriptions.size());
-        vertexInputInfo.pVertexAttributeDescriptions         = attributeDescriptions.data();
+        VkPipelineVertexInputStateCreateInfo vertex_input_info = {};
+        vertex_input_info.sType                                = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertex_input_info.vertexBindingDescriptionCount        = 1;
+        vertex_input_info.pVertexBindingDescriptions           = &binding_description;
+        vertex_input_info.vertexAttributeDescriptionCount      = static_cast<uint32_t>(attribute_descriptions.size());
+        vertex_input_info.pVertexAttributeDescriptions         = attribute_descriptions.data();
 
-        VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-        inputAssembly.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology                               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        VkPipelineInputAssemblyStateCreateInfo input_assembly = {};
+        input_assembly.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        input_assembly.topology                               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
         VkPipelineRasterizationStateCreateInfo rasterizer = {};
         rasterizer.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -568,253 +567,253 @@ private:
         multisampling.rasterizationSamples                 = VK_SAMPLE_COUNT_1_BIT;
         multisampling.sampleShadingEnable                  = VK_FALSE;
 
-        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-        colorBlendAttachment.colorWriteMask =
+        VkPipelineColorBlendAttachmentState color_blend_attachment = {};
+        color_blend_attachment.colorWriteMask =
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_FALSE;
+        color_blend_attachment.blendEnable = VK_FALSE;
 
         // disable blending
-        VkPipelineColorBlendStateCreateInfo colorBlending = {};
-        colorBlending.sType                               = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlending.attachmentCount                     = 1;
-        colorBlending.pAttachments                        = &colorBlendAttachment;
+        VkPipelineColorBlendStateCreateInfo color_blending = {};
+        color_blending.sType                               = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        color_blending.attachmentCount                     = 1;
+        color_blending.pAttachments                        = &color_blend_attachment;
 
         // disable depth testing
-        VkPipelineDepthStencilStateCreateInfo depthStencil = {};
-        depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencil.depthTestEnable                       = VK_FALSE;
+        VkPipelineDepthStencilStateCreateInfo depth_stencil = {};
+        depth_stencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depth_stencil.depthTestEnable                       = VK_FALSE;
 
         // use dynamic state instead
         // VkViewport viewport = {};
         // viewport.x = 0.0f;
         // viewport.y = 0.0f;
-        // viewport.width = ds->swapchain_extent.width;
-        // viewport.height = ds->swapchain_extent.height;
+        // viewport.width = display_sink_->swapchain_extent.width;
+        // viewport.height = display_sink_->swapchain_extent.height;
         // viewport.minDepth = 0.0f;
         // viewport.maxDepth = 1.0f;
 
         // VkRect2D scissor = {};
         // scissor.offset = {0, 0};
-        // scissor.extent = ds->swapchain_extent;
+        // scissor.extent = display_sink_->swapchain_extent;
 
-        // VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
-        // viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        // viewportStateCreateInfo.viewportCount = 1;
-        // viewportStateCreateInfo.pViewports = &viewport;
-        // viewportStateCreateInfo.scissorCount = 1;
-        // viewportStateCreateInfo.pScissors = &scissor;
+        // VkPipelineViewportStateCreateInfo viewport_state_create_info = {};
+        // viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        // viewport_state_create_info.viewportCount = 1;
+        // viewport_state_create_info.pViewports = &viewport;
+        // viewport_state_create_info.scissorCount = 1;
+        // viewport_state_create_info.pScissors = &scissor;
 
-        std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+        std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
-        VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
-        dynamicStateCreateInfo.sType                            = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicStateCreateInfo.dynamicStateCount                = static_cast<uint32_t>(dynamicStates.size());
-        dynamicStateCreateInfo.pDynamicStates                   = dynamicStates.data();
+        VkPipelineDynamicStateCreateInfo dynamic_state_create_info = {};
+        dynamic_state_create_info.sType                            = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamic_state_create_info.dynamicStateCount                = static_cast<uint32_t>(dynamic_states.size());
+        dynamic_state_create_info.pDynamicStates                   = dynamic_states.data();
 
-        VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
-        viewportStateCreateInfo.sType                             = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportStateCreateInfo.viewportCount                     = 1;
-        viewportStateCreateInfo.scissorCount                      = 1;
+        VkPipelineViewportStateCreateInfo viewport_state_create_info = {};
+        viewport_state_create_info.sType                             = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewport_state_create_info.viewportCount                     = 1;
+        viewport_state_create_info.scissorCount                      = 1;
 
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-        pipelineLayoutInfo.sType                      = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount             = 1;
-        pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
+        VkPipelineLayoutCreateInfo pipeline_layout_info = {};
+        pipeline_layout_info.sType                      = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipeline_layout_info.setLayoutCount             = 1;
+        pipeline_layout_info.pSetLayouts                = &descriptor_set_layout_;
 
-        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipeline_layout_info, nullptr, &pipeline_layout_))
 
-        VkGraphicsPipelineCreateInfo pipelineInfo = {};
-        pipelineInfo.sType                        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount                   = 2;
-        pipelineInfo.pStages                      = shaderStages;
-        pipelineInfo.pVertexInputState            = &vertexInputInfo;
-        pipelineInfo.pInputAssemblyState          = &inputAssembly;
-        pipelineInfo.pViewportState               = &viewportStateCreateInfo;
-        pipelineInfo.pRasterizationState          = &rasterizer;
-        pipelineInfo.pMultisampleState            = &multisampling;
-        pipelineInfo.pColorBlendState             = &colorBlending;
-        pipelineInfo.pDepthStencilState           = nullptr;
-        pipelineInfo.pDynamicState                = &dynamicStateCreateInfo;
+        VkGraphicsPipelineCreateInfo pipeline_info = {};
+        pipeline_info.sType                        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipeline_info.stageCount                   = 2;
+        pipeline_info.pStages                      = shader_stages;
+        pipeline_info.pVertexInputState            = &vertex_input_info;
+        pipeline_info.pInputAssemblyState          = &input_assembly;
+        pipeline_info.pViewportState               = &viewport_state_create_info;
+        pipeline_info.pRasterizationState          = &rasterizer;
+        pipeline_info.pMultisampleState            = &multisampling;
+        pipeline_info.pColorBlendState             = &color_blending;
+        pipeline_info.pDepthStencilState           = nullptr;
+        pipeline_info.pDynamicState                = &dynamic_state_create_info;
 
-        pipelineInfo.layout     = pipeline_layout;
-        pipelineInfo.renderPass = render_pass;
-        pipelineInfo.subpass    = 0;
+        pipeline_info.layout     = pipeline_layout_;
+        pipeline_info.renderPass = render_pass;
+        pipeline_info.subpass    = 0;
 
-        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline))
+        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
 
         vkDestroyShaderModule(device, vert, nullptr);
         vkDestroyShaderModule(device, frag, nullptr);
         return pipeline;
     }
 
-    void build_timewarp(HMD::hmd_info_t& hmdInfo) {
+    void build_timewarp(HMD::hmd_info_t& hmd_info) {
         // Calculate the number of vertices+indices in the distortion mesh.
-        num_distortion_vertices = (hmdInfo.eyeTilesHigh + 1) * (hmdInfo.eyeTilesWide + 1);
-        num_distortion_indices  = hmdInfo.eyeTilesHigh * hmdInfo.eyeTilesWide * 6;
+        num_distortion_vertices_ = (hmd_info.eye_tiles_high + 1) * (hmd_info.eye_tiles_wide + 1);
+        num_distortion_indices_  = hmd_info.eye_tiles_high * hmd_info.eye_tiles_wide * 6;
 
         // Allocate memory for the elements/indices array.
-        distortion_indices.resize(num_distortion_indices);
+        distortion_indices_.resize(num_distortion_indices_);
 
         // This is just a simple grid/plane index array, nothing fancy.
         // Same for both eye distortions, too!
-        for (int y = 0; y < hmdInfo.eyeTilesHigh; y++) {
-            for (int x = 0; x < hmdInfo.eyeTilesWide; x++) {
-                const int offset = (y * hmdInfo.eyeTilesWide + x) * 6;
+        for (int y = 0; y < hmd_info.eye_tiles_high; y++) {
+            for (int x = 0; x < hmd_info.eye_tiles_wide; x++) {
+                const int offset = (y * hmd_info.eye_tiles_wide + x) * 6;
 
-                distortion_indices[offset + 0] = ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 1] = ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 2] = ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
+                distortion_indices_[offset + 0] = ((y + 0) * (hmd_info.eye_tiles_wide + 1) + (x + 0));
+                distortion_indices_[offset + 1] = ((y + 1) * (hmd_info.eye_tiles_wide + 1) + (x + 0));
+                distortion_indices_[offset + 2] = ((y + 0) * (hmd_info.eye_tiles_wide + 1) + (x + 1));
 
-                distortion_indices[offset + 3] = ((y + 0) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
-                distortion_indices[offset + 4] = ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 0));
-                distortion_indices[offset + 5] = ((y + 1) * (hmdInfo.eyeTilesWide + 1) + (x + 1));
+                distortion_indices_[offset + 3] = ((y + 0) * (hmd_info.eye_tiles_wide + 1) + (x + 1));
+                distortion_indices_[offset + 4] = ((y + 1) * (hmd_info.eye_tiles_wide + 1) + (x + 0));
+                distortion_indices_[offset + 5] = ((y + 1) * (hmd_info.eye_tiles_wide + 1) + (x + 1));
             }
         }
 
-        // There are `num_distortion_vertices` distortion coordinates for each color channel (3) of each eye (2).
+        // There are `num_distortion_vertices_` distortion coordinates for each color channel (3) of each eye (2).
         // These are NOT the coordinates of the distorted vertices. They are *coefficients* that will be used to
         // offset the UV coordinates of the distortion mesh.
         std::array<std::array<std::vector<HMD::mesh_coord2d_t>, HMD::NUM_COLOR_CHANNELS>, HMD::NUM_EYES> distort_coords;
         for (auto& eye_coords : distort_coords) {
             for (auto& channel_coords : eye_coords) {
-                channel_coords.resize(num_distortion_vertices);
+                channel_coords.resize(num_distortion_vertices_);
             }
         }
-        HMD::BuildDistortionMeshes(distort_coords, hmdInfo);
+        HMD::build_distortion_meshes(distort_coords, hmd_info);
 
         // Allocate memory for position and UV CPU buffers.
-        const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices;
-        distortion_positions.resize(num_elems_pos_uv);
-        distortion_uv0.resize(num_elems_pos_uv);
-        distortion_uv1.resize(num_elems_pos_uv);
-        distortion_uv2.resize(num_elems_pos_uv);
+        const std::size_t num_elems_pos_uv = HMD::NUM_EYES * num_distortion_vertices_;
+        distortion_positions_.resize(num_elems_pos_uv);
+        distortion_uv0_.resize(num_elems_pos_uv);
+        distortion_uv1_.resize(num_elems_pos_uv);
+        distortion_uv2_.resize(num_elems_pos_uv);
 
         for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
-            for (int y = 0; y <= hmdInfo.eyeTilesHigh; y++) {
-                for (int x = 0; x <= hmdInfo.eyeTilesWide; x++) {
-                    const int index = y * (hmdInfo.eyeTilesWide + 1) + x;
+            for (int y = 0; y <= hmd_info.eye_tiles_high; y++) {
+                for (int x = 0; x <= hmd_info.eye_tiles_wide; x++) {
+                    const int index = y * (hmd_info.eye_tiles_wide + 1) + x;
 
-                    // Set the physical distortion mesh coordinates. These are rectangular/gridlike, not distorted.
+                    // Set the physical distortion mesh coordinates. These are rectangular/grid-like, not distorted.
                     // The distortion is handled by the UVs, not the actual mesh coordinates!
-                    // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
-                    // hmdInfo.eyeTilesWide));
-                    distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
+                    // distortion_positions_[eye * num_distortion_vertices_ + index].x = (-1.0f + eye + ((float) x /
+                    // hmd_info.eyeTilesWide));
+                    distortion_positions_[eye * num_distortion_vertices_ + index].x =
+                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmd_info.eye_tiles_wide)));
 
                     // flip the y coordinates for Vulkan texture
-                    distortion_positions[eye * num_distortion_vertices + index].y =
-                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
+                    distortion_positions_[eye * num_distortion_vertices_ + index].y =
+                        (input_texture_vulkan_coordinates_ ? -1.0f : 1.0f) *
                         (-1.0f +
-                         2.0f * (static_cast<float>(hmdInfo.eyeTilesHigh - y) / static_cast<float>(hmdInfo.eyeTilesHigh)) *
-                             (static_cast<float>(hmdInfo.eyeTilesHigh * hmdInfo.tilePixelsHigh) /
-                              static_cast<float>(hmdInfo.displayPixelsHigh)));
-                    distortion_positions[eye * num_distortion_vertices + index].z = 0.0f;
+                         2.0f * (static_cast<float>(hmd_info.eye_tiles_high - y) / static_cast<float>(hmd_info.eye_tiles_high)) *
+                             (static_cast<float>(hmd_info.eye_tiles_high * hmd_info.tile_pixels_high) /
+                              static_cast<float>(hmd_info.display_pixels_high)));
+                    distortion_positions_[eye * num_distortion_vertices_ + index].z = 0.0f;
 
                     // Use the previously-calculated distort_coords to set the UVs on the distortion mesh
-                    distortion_uv0[eye * num_distortion_vertices + index].u = distort_coords[eye][0][index].x;
-                    distortion_uv0[eye * num_distortion_vertices + index].v = distort_coords[eye][0][index].y;
-                    distortion_uv1[eye * num_distortion_vertices + index].u = distort_coords[eye][1][index].x;
-                    distortion_uv1[eye * num_distortion_vertices + index].v = distort_coords[eye][1][index].y;
-                    distortion_uv2[eye * num_distortion_vertices + index].u = distort_coords[eye][2][index].x;
-                    distortion_uv2[eye * num_distortion_vertices + index].v = distort_coords[eye][2][index].y;
+                    distortion_uv0_[eye * num_distortion_vertices_ + index].u = distort_coords[eye][0][index].x;
+                    distortion_uv0_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][0][index].y;
+                    distortion_uv1_[eye * num_distortion_vertices_ + index].u = distort_coords[eye][1][index].x;
+                    distortion_uv1_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][1][index].y;
+                    distortion_uv2_[eye * num_distortion_vertices_ + index].u = distort_coords[eye][2][index].x;
+                    distortion_uv2_[eye * num_distortion_vertices_ + index].v = distort_coords[eye][2][index].y;
                 }
             }
         }
 
         // Construct perspective projection matrix
-        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+        math_util::projection_fov(&basic_projection_, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
                                   display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
                                   rendering_params::far_z);
     }
 
-    /* Calculate timewarm transform from projection matrix, view matrix, etc */
-    static void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& renderProjectionMatrix,
-                                             const Eigen::Matrix4f& renderViewMatrix, const Eigen::Matrix4f& newViewMatrix) {
+    /* Calculate timewarp transform from projection matrix, view matrix, etc */
+    static void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
+                                             const Eigen::Matrix4f& render_view_matrix, const Eigen::Matrix4f& new_view_matrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
-        Eigen::Matrix4f texCoordProjection;
-        texCoordProjection << 0.5f * renderProjectionMatrix(0, 0), 0.0f, 0.5f * renderProjectionMatrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            0.5f * renderProjectionMatrix(1, 1), 0.5f * renderProjectionMatrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+        Eigen::Matrix4f tex_coord_projection;
+        tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
+            0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f;
 
         // Calculate the delta between the view matrix used for rendering and
         // a more recent or predicted view matrix based on new sensor input.
-        Eigen::Matrix4f inverseRenderViewMatrix = renderViewMatrix.inverse();
+        Eigen::Matrix4f inverse_render_view_matrix = render_view_matrix.inverse();
 
-        Eigen::Matrix4f deltaViewMatrix = inverseRenderViewMatrix * newViewMatrix;
+        Eigen::Matrix4f delta_view_matrix = inverse_render_view_matrix * new_view_matrix;
 
-        deltaViewMatrix(0, 3) = 0.0f;
-        deltaViewMatrix(1, 3) = 0.0f;
-        deltaViewMatrix(2, 3) = 0.0f;
+        delta_view_matrix(0, 3) = 0.0f;
+        delta_view_matrix(1, 3) = 0.0f;
+        delta_view_matrix(2, 3) = 0.0f;
 
         // Accumulate the transforms.
-        transform = texCoordProjection * deltaViewMatrix;
+        transform = tex_coord_projection * delta_view_matrix;
     }
 
-    const phonebook* const                 pb;
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<pose_prediction> pp;
-    bool                                   disable_warp = false;
-    std::shared_ptr<display_sink>          ds           = nullptr;
-    std::mutex                             m_setup;
+    const phonebook* const                 phonebook_;
+    const std::shared_ptr<switchboard>     switchboard_;
+    const std::shared_ptr<pose_prediction> pose_prediction_;
+    bool                                   disable_warp_ = false;
+    std::shared_ptr<display_sink>          display_sink_ = nullptr;
+    std::mutex                             setup_mutex_;
 
-    bool initialized                      = false;
-    bool input_texture_vulkan_coordinates = true;
+    bool initialized_                      = false;
+    bool input_texture_vulkan_coordinates_ = true;
 
     // Vulkan resources
-    std::stack<std::function<void()>> deletion_queue;
-    VmaAllocator                      vma_allocator{};
+    std::stack<std::function<void()>> deletion_queue_;
+    VmaAllocator                      vma_allocator_{};
 
-    std::array<std::vector<VkImageView>, 2> buffer_pool;
-    VkSampler                               fb_sampler{};
+    std::array<std::vector<VkImageView>, 2> buffer_pool_;
+    VkSampler                               fb_sampler_{};
 
-    VkDescriptorPool                            descriptor_pool{};
-    VkDescriptorSetLayout                       descriptor_set_layout{};
-    std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
+    VkDescriptorPool                            descriptor_pool_{};
+    VkDescriptorSetLayout                       descriptor_set_layout_{};
+    std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets_;
 
-    VkPipelineLayout  pipeline_layout{};
-    VkBuffer          uniform_buffer{};
-    VmaAllocation     uniform_alloc{};
-    VmaAllocationInfo uniform_alloc_info{};
+    VkPipelineLayout  pipeline_layout_{};
+    VkBuffer          uniform_buffer_{};
+    VmaAllocation     uniform_alloc_{};
+    VmaAllocationInfo uniform_alloc_info_{};
 
-    VkCommandPool   command_pool{};
-    VkCommandBuffer command_buffer{};
+    VkCommandPool   command_pool_{};
+    [[maybe_unused]] VkCommandBuffer command_buffer_{};
 
-    VkBuffer vertex_buffer{};
-    VkBuffer index_buffer{};
+    VkBuffer vertex_buffer_{};
+    VkBuffer index_buffer_{};
 
     // distortion data
-    HMD::hmd_info_t hmd_info{};
+    HMD::hmd_info_t hmd_info_{};
 
-    uint32_t                         num_distortion_vertices{};
-    uint32_t                         num_distortion_indices{};
-    Eigen::Matrix4f                  basicProjection;
-    std::vector<HMD::mesh_coord3d_t> distortion_positions;
-    std::vector<HMD::uv_coord_t>     distortion_uv0;
-    std::vector<HMD::uv_coord_t>     distortion_uv1;
-    std::vector<HMD::uv_coord_t>     distortion_uv2;
+    uint32_t                         num_distortion_vertices_{};
+    uint32_t                         num_distortion_indices_{};
+    Eigen::Matrix4f                  basic_projection_;
+    std::vector<HMD::mesh_coord3d_t> distortion_positions_;
+    std::vector<HMD::uv_coord_t>     distortion_uv0_;
+    std::vector<HMD::uv_coord_t>     distortion_uv1_;
+    std::vector<HMD::uv_coord_t>     distortion_uv2_;
 
-    std::vector<uint32_t> distortion_indices;
+    std::vector<uint32_t> distortion_indices_;
 
     // metrics
-    std::atomic<uint32_t> num_record_calls{0};
-    std::atomic<uint32_t> num_update_uniforms_calls{0};
+    std::atomic<uint32_t> num_record_calls_{0};
+    std::atomic<uint32_t> num_update_uniforms_calls_{0};
 
     friend class timewarp_vk_plugin;
 };
 
 class timewarp_vk_plugin : public threadloop {
 public:
-    timewarp_vk_plugin(const std::string& name, phonebook* pb)
+    [[maybe_unused]] timewarp_vk_plugin(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
-        , tw{std::make_shared<timewarp_vk>(pb)} {
-        pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
+        , timewarp_{std::make_shared<timewarp_vk>(phonebook_)} {
+        pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(timewarp_));
     }
 
     void _p_one_iteration() override {
-        auto fps = tw->num_record_calls.exchange(0) / 2; // two eyes
-        auto ups = tw->num_update_uniforms_calls.exchange(0);
+        // auto fps = timewarp_->num_record_calls_.exchange(0) / 2; // two eyes
+        // auto ups = timewarp_->num_update_uniforms_calls_.exchange(0);
 
         // std::cout << "timewarp_vk: cb records: " << fps << ", uniform updates: " << ups << std::endl;
     }
@@ -825,19 +824,18 @@ public:
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
         // Only print every 1 second
-        if (now - last_print < 1000) {
+        if (now - last_print_ < 1000) {
             return skip_option::skip_and_yield;
         } else {
-            last_print = now;
+            last_print_ = now;
             return skip_option::run;
         }
     }
 
 private:
-    std::shared_ptr<timewarp_vk>  tw;
-    std::shared_ptr<display_sink> ds;
+    std::shared_ptr<timewarp_vk>  timewarp_;
 
-    int64_t last_print = 0;
+    int64_t last_print_ = 0;
 };
 
 PLUGIN_MAIN(timewarp_vk_plugin)

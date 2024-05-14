@@ -30,14 +30,14 @@
             setenv(#ENV, "False", false);        \
         }                                        \
     }
-#define _STR(y)      #y
-#define STRINGIZE(x) _STR(x)
-#define GET_LONG(NAME, ENV)                                                    \
-    if (options.count(#NAME)) {                                                \
-        setenv(#ENV, std::to_string(options[#NAME].as<long>()).c_str(), true); \
-    } else if (config[#NAME]) {                                                \
-        setenv(#ENV, std::to_string(config[#NAME].as<long>()).c_str(), true);  \
-    }
+#define STR(y)      #y
+#define STRINGIZE(x) STR(x)
+//#define GET_LONG(NAME, ENV)                                                    \
+//    if (options.count(#NAME)) {                                                \
+//        setenv(#ENV, std::to_string(options[#NAME].as<long>()).c_str(), true); \
+//    } else if (config[#NAME]) {                                                \
+//        setenv(#ENV, std::to_string(config[#NAME].as<long>()).c_str(), true);  \
+//    }
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION{10};
@@ -49,7 +49,7 @@ std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
     return c;
 }
 
-extern ILLIXR::runtime* r;
+extern ILLIXR::runtime* runtime_;
 
 namespace ILLIXR {
 int run(const cxxopts::ParseResult& options);
@@ -59,17 +59,17 @@ public:
     template<typename T, typename R>
     bool sleep(std::chrono::duration<T, R> duration) {
         auto wake_up_time = std::chrono::system_clock::now() + duration;
-        while (!_m_terminate.load() && std::chrono::system_clock::now() < wake_up_time) {
+        while (!terminate_.load() && std::chrono::system_clock::now() < wake_up_time) {
             std::this_thread::sleep_for(std::chrono::milliseconds{100});
         }
-        return _m_terminate.load();
+        return terminate_.load();
     }
 
     void cancel() {
-        _m_terminate.store(true);
+        terminate_.store(true);
     }
 
 private:
-    std::atomic<bool> _m_terminate{false};
+    std::atomic<bool> terminate_{false};
 };
 } // namespace ILLIXR

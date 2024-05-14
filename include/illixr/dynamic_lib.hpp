@@ -24,28 +24,23 @@ Usage:
  */
 
 class dynamic_lib {
-private:
-    explicit dynamic_lib(void_ptr&& handle, std::string lib_path = "")
-        : _m_handle{std::move(handle)}
-        , _m_lib_path{std::move(lib_path)} { }
-
 public:
     dynamic_lib(dynamic_lib&& other) noexcept
-        : _m_handle{std::move(other._m_handle)}
-        , _m_lib_path{std::move(other._m_lib_path)} { }
+        : handle_{std::move(other.handle_)}
+        , library_path_{std::move(other.library_path_)} { }
 
     dynamic_lib& operator=(dynamic_lib&& other) noexcept {
         if (this != &other) {
-            _m_handle   = std::move(other._m_handle);
-            _m_lib_path = std::move(other._m_lib_path);
+            handle_   = std::move(other.handle_);
+            library_path_ = std::move(other.library_path_);
         }
         return *this;
     }
 
     ~dynamic_lib() {
 #ifndef NDEBUG
-        if (!_m_lib_path.empty()) {
-            spdlog::get("illixr")->debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
+        if (!library_path_.empty()) {
+            spdlog::get("illixr")->debug("[dynamic_lib] Destructing library : {}", library_path_);
         }
 #endif /// NDEBUG
     }
@@ -88,7 +83,7 @@ public:
         RAC_ERRNO_MSG("dynamic_lib at start of operator[]");
 
         char* error;
-        void* symbol = dlsym(_m_handle.get(), symbol_name.c_str());
+        void* symbol = dlsym(handle_.get(), symbol_name.c_str());
         if ((error = dlerror())) {
             throw std::runtime_error{"dlsym(\"" + symbol_name + "\"): " + std::string{error}};
         }
@@ -96,15 +91,19 @@ public:
     }
 
     template<typename T>
-    const T get(const std::string& symbol_name) const {
+    T get(const std::string& symbol_name) const {
         const void* obj = (*this)[symbol_name];
         // return reinterpret_cast<const T>((*this)[symbol_name]);
         return (const T) obj;
     }
 
 private:
-    void_ptr    _m_handle;
-    std::string _m_lib_path;
+    explicit dynamic_lib(void_ptr&& handle, std::string lib_path = "")
+        : handle_{std::move(handle)}
+        , library_path_{std::move(lib_path)} { }
+    
+    void_ptr    handle_;
+    std::string library_path_;
 };
 
 } // namespace ILLIXR

@@ -13,34 +13,24 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <cassert>
 #include <opencv2/core/mat.hpp>
-#include <utility>
 
 using namespace ILLIXR;
 
 // #define USE_COMPRESSION
 
 class offload_writer : public threadloop {
-private:
-    boost::lockfree::spsc_queue<uint64_t> queue{1000};
-    std::vector<int32_t>                  sizes;
-    std::mutex                            mutex;
-    std::condition_variable               cv;
-    GstMapInfo                            img0;
-    GstMapInfo                            img1;
-    bool                                  img_ready = false;
-
 public:
-    offload_writer(const std::string& name_, phonebook* pb_)
-        : threadloop{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_stoplight{pb->lookup_impl<Stoplight>()}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
-        , server_addr(SERVER_IP, SERVER_PORT_1) {
+    offload_writer(const std::string& name, phonebook* pb)
+        : threadloop{name, pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , clock_{phonebook_->lookup_impl<relative_clock>()}
+        , stoplight_{phonebook_->lookup_impl<stoplight>()}
+        , cam_{switchboard_->get_buffered_reader<cam_type>("cam")}
+        , server_addr_(SERVER_IP, SERVER_PORT_1) {
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
-        socket.enable_no_delay();
+        socket_.set_reuseaddr();
+        socket_.bind(Address(CLIENT_IP, CLIENT_PORT_1));
+        socket_.enable_no_delay();
         initial_timestamp();
 
         std::srand(std::time(0));
@@ -49,74 +39,64 @@ public:
     void start() override {
         threadloop::start();
 
-        encoder = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
-            queue.consume_one([&](uint64_t& timestamp) {
+        encoder_ = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
+            queue_.consume_one([&](uint64_t& timestamp) {
+                (void)timestamp;
                 uint64_t curr =
                     std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
                         .count();
             });
             {
-                std::lock_guard<std::mutex> lock{mutex};
-                this->img0 = img0;
-                this->img1 = img1;
-                img_ready  = true;
+                std::lock_guard<std::mutex> lock{mutex_};
+                this->img0_ = img0;
+                this->img1_ = img1;
+                img_ready_  = true;
             }
-            cv.notify_one();
+            condition_var_.notify_one();
         });
-        encoder->init();
+        encoder_->init();
 
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
+        spdlog::get(name_)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr_.str(":"));
 #endif
-        socket.connect(server_addr);
+        socket_.connect(server_addr_);
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] Connected to {}", server_addr.str(":"));
+        spdlog::get(name_)->debug("[offload_vio.revice_tx] Connected to {}", server_addr_.str(":"));
 #endif
 
-        sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
+        switchboard_->schedule<imu_type>(id_, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
             this->prepare_imu_cam_data(datum);
         });
     }
 
-protected:
-    void _p_thread_setup() override { }
-
-    // TODO not the best way to use threadloop and stoplight
-    void _p_one_iteration() override {
-        while (!_m_stoplight->check_should_stop()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-    }
-
-public:
     void send_imu_cam_data(std::optional<time_point>& cam_time) {
-        data_buffer->set_real_timestamp(
+        data_buffer_->set_real_timestamp(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-        data_buffer->set_frame_id(frame_id);
+        data_buffer_->set_frame_id(frame_id_);
 
-        std::string data_to_be_sent = data_buffer->SerializeAsString();
+        std::string data_to_be_sent = data_buffer_->SerializeAsString();
         std::string delimitter      = "EEND!";
 
-        socket.write(data_to_be_sent + delimitter);
+        socket_.write(data_to_be_sent + delimitter);
 
-        frame_id++;
-        delete data_buffer;
-        data_buffer = new vio_input_proto::IMUCamVec();
+        frame_id_++;
+        delete data_buffer_;
+        data_buffer_ = new vio_input_proto::IMUCamVec();
         cam_time.reset();
     }
 
     void prepare_imu_cam_data(switchboard::ptr<const imu_type> datum) {
         // Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
-            assert(!latest_imu_time);
+            assert(!latest_imu_time_);
             return;
         }
 
         // Ensure that IMU data is received in the time order
-        assert(datum->time > latest_imu_time);
-        latest_imu_time = datum->time;
+        assert(datum->time > latest_imu_time_);
+        latest_imu_time_ = datum->time;
 
-        vio_input_proto::IMUData* imu_data = data_buffer->add_imu_data();
+        vio_input_proto::IMUData* imu_data = data_buffer_->add_imu_data();
         imu_data->set_timestamp(datum->time.time_since_epoch().count());
 
         auto* angular_vel = new vio_input_proto::Vec3();
@@ -131,19 +111,19 @@ public:
         linear_accel->set_z(datum->linear_a.z());
         imu_data->set_allocated_linear_accel(linear_accel);
 
-        if (latest_cam_time && latest_imu_time > latest_cam_time) {
-            send_imu_cam_data(latest_cam_time);
+        if (latest_cam_time_ && latest_imu_time_ > latest_cam_time_) {
+            send_imu_cam_data(latest_cam_time_);
         }
 
         switchboard::ptr<const cam_type> cam;
 
-        if (_m_cam.size() != 0 && !latest_cam_time) {
-            cam = _m_cam.dequeue();
+        if (cam_.size() != 0 && !latest_cam_time_) {
+            cam = cam_.dequeue();
 
             cv::Mat cam_img0 = (cam->img0).clone();
             cv::Mat cam_img1 = (cam->img1).clone();
 
-            // size of img0 before compression
+            // size of img0_ before compression
             double cam_img0_size = cam_img0.total() * cam_img0.elemSize();
 
             vio_input_proto::CamData* cam_data = new vio_input_proto::CamData();
@@ -156,29 +136,29 @@ public:
             uint64_t curr =
                 std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
                     .count();
-            queue.push(curr);
-            std::unique_lock<std::mutex> lock{mutex};
-            encoder->enqueue(cam_img0, cam_img1);
-            cv.wait(lock, [this]() {
-                return img_ready;
+            queue_.push(curr);
+            std::unique_lock<std::mutex> lock{mutex_};
+            encoder_->enqueue(cam_img0, cam_img1);
+            condition_var_.wait(lock, [this]() {
+                return img_ready_;
             });
-            img_ready = false;
+            img_ready_ = false;
 
-            sizes.push_back(this->img0.size);
+            sizes_.push_back(this->img0_.size);
 
             // calculate average sizes
-            if (sizes.size() > 100) {
+            if (sizes_.size() > 100) {
                 int32_t sum = 0;
-                for (auto& s : sizes) {
+                for (auto& s : sizes_) {
                     sum += s;
                 }
                 // For debugging, prints out average image size after compression and compression ratio
-                // std::cout << "compression ratio: " << img0_size / (sum / sizes.size()) << " average size after compression "
-                // << sum / sizes.size() << std::endl;
+                // std::cout << "compression ratio: " << img0_size / (sum / sizes_.size()) << " average size after compression "
+                // << sum / sizes_.size() << std::endl;
             }
 
-            cam_data->set_img0_data((void*) this->img0.data, this->img0.size);
-            cam_data->set_img1_data((void*) this->img1.data, this->img1.size);
+            cam_data->set_img0_data((void*) this->img0_.data, this->img0_.size);
+            cam_data->set_img1_data((void*) this->img1_.data, this->img1_.size);
 
             lock.unlock();
             /** WITH COMPRESSION END **/
@@ -188,29 +168,47 @@ public:
             cam_data->set_img1_data((void*) cam_img1.data, cam_img0_size);
             /** NO COMPRESSION END **/
 #endif
-            data_buffer->set_allocated_cam_data(cam_data);
-            latest_cam_time = cam->time;
-            if (latest_imu_time <= latest_cam_time) {
+            data_buffer_->set_allocated_cam_data(cam_data);
+            latest_cam_time_ = cam->time;
+            if (latest_imu_time_ <= latest_cam_time_) {
                 return;
             } else {
-                send_imu_cam_data(latest_cam_time);
+                send_imu_cam_data(latest_cam_time_);
             }
         }
     }
 
-private:
-    std::unique_ptr<video_encoder>         encoder = nullptr;
-    std::optional<time_point>              latest_imu_time;
-    std::optional<time_point>              latest_cam_time;
-    int                                    frame_id    = 0;
-    vio_input_proto::IMUCamVec*            data_buffer = new vio_input_proto::IMUCamVec();
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<RelativeClock>   _m_clock;
-    const std::shared_ptr<Stoplight>       _m_stoplight;
-    switchboard::buffered_reader<cam_type> _m_cam;
+protected:
+    void _p_thread_setup() override { }
+    
+    // TODO not the best way to use threadloop and stoplight
+    void _p_one_iteration() override {
+        while (!stoplight_->check_should_stop()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+    }
 
-    TCPSocket socket;
-    Address   server_addr;
+private:
+    boost::lockfree::spsc_queue<uint64_t> queue_{1000};
+    std::vector<int32_t>                  sizes_;
+    std::mutex                            mutex_;
+    std::condition_variable               condition_var_;
+    GstMapInfo                            img0_;
+    GstMapInfo                            img1_;
+    bool                                  img_ready_ = false;
+
+    std::unique_ptr<video_encoder>         encoder_ = nullptr;
+    std::optional<time_point>              latest_imu_time_;
+    std::optional<time_point>              latest_cam_time_;
+    int                                    frame_id_    = 0;
+    vio_input_proto::IMUCamVec*            data_buffer_ = new vio_input_proto::IMUCamVec();
+    const std::shared_ptr<switchboard>     switchboard_;
+    const std::shared_ptr<relative_clock>  clock_;
+    const std::shared_ptr<stoplight>       stoplight_;
+    switchboard::buffered_reader<cam_type> cam_;
+
+    TCPSocket socket_;
+    Address   server_addr_;
 };
 
 PLUGIN_MAIN(offload_writer)

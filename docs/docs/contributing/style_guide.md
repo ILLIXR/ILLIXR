@@ -1,6 +1,6 @@
 ## Programming Style Guide
 
-Consistency is the most important. Following the existing style, formatting, and naming conventions of the file you are modifying and of the overall ILLIXR project. Failure to do so will result in a prolonged review process that has to focus on updating the superficial aspects of your code, rather than improving its functionality and performance. Below are some general guidelines to follow. We also use a pre-commit bot that runs after pushes to github. It enforces some general formatting rules, so don't be surprised if you see minor updates to your code.
+Consistency is the most important. Following the existing style, formatting, and naming conventions of the file you are modifying and of the overall ILLIXR project. Failure to do so will result in a prolonged review process that has to focus on updating the superficial aspects of your code, rather than improving its functionality and performance. Below are some general guidelines to follow. We also use a pre-commit bot that runs after pushes to github. It enforces some general formatting rules, so don't be surprised if you see minor updates to your code. In general ILLIXR uses the [Google C++ Style Guide][3] with a few minor changes.
 
 ### Directory Structure
 
@@ -58,6 +58,18 @@ Here is the basic directory structure used by ILLIXR (some files/directories hav
 
 ```
 
+In addition to the above, if any individual plugin relies on third party code, this code should be placed in a directory named `third_party` inside the plugin directory. Files inside the `third_party` directory can be organized in any fashion. For example:
+
+```bash
+plugins
+└── myplugin
+    ├── third_party
+    │   ├── vk_mapper.c        # third party code
+    │   └── vk_mapper.h
+    ├── plugin.cpp             # plugin code
+    └── CMakeLists.txt         # plugin CMake file
+```
+
 ### File Naming
 
 Illixr has adopted the following file naming conventions:
@@ -104,3 +116,79 @@ Comments may be added between the groups as long as there is a blank line after 
 ### Namespace
 
 All ILLIXR code is inside of the ILLIXR namespace.
+
+### Classes
+
+We have adopted the [Google style][1] for `class` declaration order:
+
+```C++
+class XYZ {
+public:
+    # types and aliases (including enums)
+    # static constants
+    # factory functions (not widely used in ILLIXR)
+    # constructor(s) and assignment operators (if any)
+    # destructor
+    # all other functions
+    # all other data members
+protected:
+    # types and aliases
+    # static constants
+    # factory functions (not widely used in ILLIXR)
+    # all other functions
+    # all other data members
+private:
+    # types and aliases
+    # static constants
+    # factory functions (not widely used in ILLIXR)
+    # all other functions
+    # all other data members
+};
+```
+
+For `struct`s, the order should be:
+
+```C++
+struct XYZ {
+    # all data members
+    # constructor(s)
+    # all other functions
+};
+```
+
+If a class constructor and/or destuctor has no functionality it should be defined with `= default` rather than `{}`. For example
+
+```C++
+class XYZ {
+public:
+    XYZ() {}
+    ~XYZ() {}
+};
+```
+
+should be
+
+```C++
+class XYZ{
+public:
+    XYZ() = default;
+    ~XYZ() = default;
+};
+```
+
+Single argument constructors should be marked `explicit` in order to avoid unintentional implicit conversions.
+
+### Naming
+
+Names (file, variable, class, arguments, etc.) should be readable and clear, even to those unfamiliar to the project. Names should be descriptive of the purpose of the item. Shorter names (e.g. `n`, `i`) are acceptable for iterators, indexes, etc. Common abbreviations are also acceptable (e.g. `no` or `num` for number; `attr` or `attrib` for attribute; `l` or `L` for left, etc.).
+ILLIXR has adopted the [snake case][2] naming convention. Names (variables, class names, files, etc.) start with a lower
+case letter and use the underscore `_` in place of spaces. Additionally, there should be no prefixes like `_`, `m_`, or `_M_` on any class member variable names. All class data members should be suffixed with a single underscore `_`. 
+
+#### Templates
+
+In order to make reading the code clearer, template parameters should either be a single capital letter (`T`, `H`, etc.) or be a descriptive name that starts with a capital letter.
+
+
+[1]:  https://google.github.io/styleguide/cppguide.html#Declaration_Order
+[2]:  https://www.freecodecamp.org/news/programming-naming-conventions-explained/
+[3]: https://google.github.io/styleguide/cppguide.html

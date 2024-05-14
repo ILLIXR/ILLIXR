@@ -16,29 +16,19 @@ using namespace ILLIXR;
 // #define USE_COMPRESSION
 
 class server_reader : public threadloop {
-private:
-    std::unique_ptr<video_decoder> decoder;
-
-    boost::lockfree::spsc_queue<uint64_t> queue{1000};
-    std::mutex                            mutex;
-    std::condition_variable               cv;
-    cv::Mat                               img0_dst;
-    cv::Mat                               img1_dst;
-    bool                                  img_ready = false;
-
 public:
-    server_reader(std::string name_, phonebook* pb_)
-        : threadloop{std::move(name_), pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam{sb->get_writer<cam_type>("cam")}
-        , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
-        , server_addr(SERVER_IP, SERVER_PORT_1)
-        , buffer_str("") {
+    server_reader(const std::string& name, phonebook* pb)
+        : threadloop{name, pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , imu_{switchboard_->get_writer<imu_type>("imu")}
+        , cam_{switchboard_->get_writer<cam_type>("cam")}
+        , conn_signal_{switchboard_->get_writer<connection_signal>("connection_signal")}
+        , server_addr_(SERVER_IP, SERVER_PORT_1)
+        , buffer_str_("") {
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(server_addr);
-        socket.enable_no_delay();
+        socket_.set_reuseaddr();
+        socket_.bind(server_addr_);
+        socket_.enable_no_delay();
     }
 
     virtual skip_option _p_should_skip() override {
@@ -46,71 +36,72 @@ public:
     }
 
     void _p_one_iteration() override {
-        if (read_socket == NULL) {
-            _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
-            socket.listen();
+        if (read_socket_ == NULL) {
+            conn_signal_.put(conn_signal_.allocate<connection_signal>(connection_signal{true}));
+            socket_.listen();
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
+            spdlog::get(name_)->debug("[offload_vio.server_rx]: Waiting for connection!");
 #endif
-            read_socket = new TCPSocket(FileDescriptor(system_call(
+            read_socket_ = new TCPSocket(FileDescriptor(system_call(
                 "accept",
-                ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+                ::accept(socket_.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}",
-                                     read_socket->peer_address().str(":"));
+            spdlog::get(name_)->debug("[offload_vio.server_rx]: Connection is established with {}",
+                                     read_socket_->peer_address().str(":"));
 #endif
         } else {
             auto        now        = timestamp();
             std::string delimitter = "EEND!";
-            std::string recv_data  = read_socket->read(); /* Blocking operation, wait for the data to come */
-            buffer_str             = buffer_str + recv_data;
+            std::string recv_data  = read_socket_->read(); /* Blocking operation, wait for the data to come */
+            buffer_str_            = buffer_str_ + recv_data;
             if (recv_data.size() > 0) {
-                std::string::size_type end_position = buffer_str.find(delimitter);
+                std::string::size_type end_position = buffer_str_.find(delimitter);
                 while (end_position != std::string::npos) {
-                    std::string before = buffer_str.substr(0, end_position);
-                    buffer_str         = buffer_str.substr(end_position + delimitter.size());
+                    std::string before = buffer_str_.substr(0, end_position);
+                    buffer_str_        = buffer_str_.substr(end_position + delimitter.size());
                     // process the data
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
-                        spdlog::get(name)->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
+                        spdlog::get(name_)->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
                                                  before.size());
                     } else {
-                        ReceiveVioInput(vio_input);
+                        receive_vio_input(vio_input);
                     }
-                    end_position = buffer_str.find(delimitter);
+                    end_position = buffer_str_.find(delimitter);
                 }
             }
         }
     }
 
     ~server_reader() {
-        delete read_socket;
+        delete read_socket_;
     }
 
     void start() override {
         threadloop::start();
 
-        decoder = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
-            queue.consume_one([&](uint64_t& timestamp) {
+        decoder_ = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
+            queue_.consume_one([&](uint64_t& timestamp) {
+                (void)timestamp;
                 uint64_t curr =
                     std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
                         .count();
                 // std::cout << "=== latency: " << (curr - timestamp) / 1000000.0 << std::endl;
             });
             {
-                std::lock_guard<std::mutex> lock{mutex};
-                this->img0_dst = std::forward<cv::Mat>(img0);
-                this->img1_dst = std::forward<cv::Mat>(img1);
-                img_ready      = true;
+                std::lock_guard<std::mutex> lock{mutex_};
+                this->img0_dst_ = std::forward<cv::Mat>(img0);
+                this->img1_dst_ = std::forward<cv::Mat>(img1);
+                img_ready_      = true;
             }
-            cv.notify_one();
+            condition_variable_.notify_one();
         });
-        decoder->init();
+        decoder_->init();
     }
 
 private:
-    void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
+    void receive_vio_input(const vio_input_proto::IMUCamVec& vio_input) {
         // Logging the transmitting time
         unsigned long long curr_time =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -119,7 +110,7 @@ private:
         // Loop through and publish all IMU values first
         for (int i = 0; i < vio_input.imu_data_size() - 1; i++) {
             vio_input_proto::IMUData curr_data = vio_input.imu_data(i);
-            _m_imu.put(_m_imu.allocate<imu_type>(imu_type{
+            imu_.put(imu_.allocate<imu_type>(imu_type{
                 time_point{std::chrono::nanoseconds{curr_data.timestamp()}},
                 Eigen::Vector3d{curr_data.angular_vel().x(), curr_data.angular_vel().y(), curr_data.angular_vel().z()},
                 Eigen::Vector3d{curr_data.linear_accel().x(), curr_data.linear_accel().y(), curr_data.linear_accel().z()}}));
@@ -135,16 +126,16 @@ private:
         // With compression
         uint64_t curr =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        queue.push(curr);
-        std::unique_lock<std::mutex> lock{mutex};
-        decoder->enqueue(img0_copy, img1_copy);
-        cv.wait(lock, [this]() {
-            return img_ready;
+        queue_.push(curr);
+        std::unique_lock<std::mutex> lock{mutex_};
+        decoder_->enqueue(img0_copy, img1_copy);
+        condition_variable_.wait(lock, [this]() {
+            return img_ready_;
         });
-        img_ready = false;
+        img_ready_ = false;
 
-        cv::Mat img0(img0_dst.clone());
-        cv::Mat img1(img1_dst.clone());
+        cv::Mat img0(img0_dst_.clone());
+        cv::Mat img1(img1_dst_.clone());
 
         lock.unlock();
         // With compression end
@@ -154,7 +145,7 @@ private:
         cv::Mat img1(cam_data.rows(), cam_data.cols(), CV_8UC1, img1_copy.data());
         // Without compression end
 #endif
-        _m_cam.put(_m_cam.allocate<cam_type>(cam_type{
+        cam_.put(cam_.allocate<cam_type>(cam_type{
             time_point{std::chrono::nanoseconds{cam_data.timestamp()}},
             img0.clone(),
             img1.clone(),
@@ -164,22 +155,30 @@ private:
         // arrives) to be consumed. Therefore, we publish one (or more) IMU samples after the camera data to make sure that the
         // camera data will be captured.
         vio_input_proto::IMUData last_imu = vio_input.imu_data(vio_input.imu_data_size() - 1);
-        _m_imu.put(_m_imu.allocate<imu_type>(
+        imu_.put(imu_.allocate<imu_type>(
             imu_type{time_point{std::chrono::nanoseconds{last_imu.timestamp()}},
                      Eigen::Vector3d{last_imu.angular_vel().x(), last_imu.angular_vel().y(), last_imu.angular_vel().z()},
                      Eigen::Vector3d{last_imu.linear_accel().x(), last_imu.linear_accel().y(), last_imu.linear_accel().z()}}));
     }
 
-private:
-    const std::shared_ptr<switchboard>     sb;
-    switchboard::writer<imu_type>          _m_imu;
-    switchboard::writer<cam_type>          _m_cam;
-    switchboard::writer<connection_signal> _conn_signal;
+    std::unique_ptr<video_decoder> decoder_;
+    
+    boost::lockfree::spsc_queue<uint64_t> queue_{1000};
+    std::mutex                            mutex_;
+    std::condition_variable               condition_variable_;
+    cv::Mat                               img0_dst_;
+    cv::Mat                               img1_dst_;
+    bool                                  img_ready_ = false;
 
-    TCPSocket   socket;
-    TCPSocket*  read_socket = NULL;
-    Address     server_addr;
-    std::string buffer_str;
+    const std::shared_ptr<switchboard>     switchboard_;
+    switchboard::writer<imu_type>          imu_;
+    switchboard::writer<cam_type>          cam_;
+    switchboard::writer<connection_signal> conn_signal_;
+
+    TCPSocket   socket_;
+    TCPSocket*  read_socket_ = NULL;
+    Address     server_addr_;
+    std::string buffer_str_;
 };
 
 PLUGIN_MAIN(server_reader)

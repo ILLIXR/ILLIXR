@@ -9,7 +9,6 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 #include <numeric>
-#include <utility>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #pragma GCC diagnostic ignored "-Wsign-compare"
@@ -20,23 +19,23 @@ using namespace ILLIXR;
 
 class offload_data : public plugin {
 public:
-    offload_data(std::string name_, phonebook* pb_)
-        : plugin{std::move(name_), pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , percent{0}
-        , img_idx{0}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
-        , is_success{true} /// TODO: Set with #198
-        , obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
+    [[maybe_unused]] offload_data(const std::string& name, phonebook* pb)
+        : plugin{name, pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , percent_{0}
+        , img_idx_{0}
+        , enable_offload_{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+        , is_success_{true} /// TODO: Set with #198
+        , obj_dir_{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
         spdlogger(std::getenv("OFFLOAD_DATA_LOG_LEVEL"));
-        sb->schedule<texture_pose>(id, "texture_pose", [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
+        switchboard_->schedule<texture_pose>(id_, "texture_pose", [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
             callback(datum);
         });
     }
 
     void callback(const switchboard::ptr<const texture_pose>& datum) {
 #ifndef NDEBUG
-        spdlog::get(name)->debug("Image index: {}", img_idx++);
+        spdlog::get(name_)->debug("Image index: {}", img_idx_++);
 #endif
         /// A texture pose is present. Store it back to our container.
         _offload_data_container.push_back(datum);
@@ -44,27 +43,27 @@ public:
 
     ~offload_data() override {
         // Write offloaded data from memory to disk
-        if (enable_offload) {
-            boost::filesystem::path p(obj_dir);
+        if (enable_offload_) {
+            boost::filesystem::path p(obj_dir_);
             boost::filesystem::remove_all(p);
             boost::filesystem::create_directories(p);
 
-            writeDataToDisk();
+            write_data_to_disk();
         }
     }
 
 private:
-    const std::shared_ptr<switchboard>                sb;
+    const std::shared_ptr<switchboard>                switchboard_;
     std::vector<long>                                 _time_seq;
     std::vector<switchboard::ptr<const texture_pose>> _offload_data_container;
 
-    int         percent;
-    int         img_idx;
-    bool        enable_offload;
-    bool        is_success;
-    std::string obj_dir;
+    int         percent_;
+    int         img_idx_;
+    bool        enable_offload_;
+    bool        is_success_;
+    std::string obj_dir_;
 
-    void writeMetadata() {
+    void write_metadata() {
         double mean  = std::accumulate(_time_seq.begin(), _time_seq.end(), 0.0) / static_cast<double>(_time_seq.size());
         double accum = 0.0;
         std::for_each(std::begin(_time_seq), std::end(_time_seq), [&](const double d) {
@@ -75,7 +74,7 @@ private:
         auto max = std::max_element(_time_seq.begin(), _time_seq.end());
         auto min = std::min_element(_time_seq.begin(), _time_seq.end());
 
-        std::ofstream meta_file(obj_dir + "metadata.out");
+        std::ofstream meta_file(obj_dir_ + "metadata.out");
         if (meta_file.is_open()) {
             meta_file << "mean: " << mean << std::endl;
             meta_file << "max: " << *max << std::endl;
@@ -98,23 +97,23 @@ private:
         meta_file.close();
     }
 
-    void writeDataToDisk() {
+    void write_data_to_disk() {
         stbi_flip_vertically_on_write(true);
 
-        spdlog::get(name)->info("Writing offloaded images to disk...");
-        img_idx = 0;
+        spdlog::get(name_)->info("Writing offloaded images to disk...");
+        img_idx_ = 0;
         for (auto& container_it : _offload_data_container) {
             // Get collecting time for each frame
             _time_seq.push_back(
                 std::chrono::duration_cast<std::chrono::duration<long, std::milli>>(container_it->offload_duration).count());
 
-            std::string image_name = obj_dir + std::to_string(img_idx) + ".png";
-            std::string pose_name  = obj_dir + std::to_string(img_idx) + ".txt";
+            std::string image_name = obj_dir_ + std::to_string(img_idx_) + ".png";
+            std::string pose_name  = obj_dir_ + std::to_string(img_idx_) + ".txt";
 
             // Write image
-            is_success = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3,
+            is_success_ = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3,
                                         container_it->image, 0);
-            if (!is_success) {
+            if (!is_success_) {
                 ILLIXR::abort("Image create failed !!! ");
             }
 
@@ -150,15 +149,15 @@ private:
             pose_file.close();
 
             // Print progress
-            percent = static_cast<int>(100 * (img_idx + 1) / _offload_data_container.size());
+            percent_ = static_cast<int>(100 * (img_idx_ + 1) / _offload_data_container.size());
             std::cout << "\r"
-                      << "[" << std::string(percent / 2, (char) 61u) << std::string(100 / 2 - percent / 2, ' ') << "] ";
-            std::cout << percent << "%"
-                      << " [Image " << img_idx++ << " of " << _offload_data_container.size() << "]";
+                      << "[" << std::string(percent_ / 2, (char) 61u) << std::string(100 / 2 - percent_ / 2, ' ') << "] ";
+            std::cout << percent_ << "%"
+                      << " [Image " << img_idx_++ << " of " << _offload_data_container.size() << "]";
             std::cout.flush();
         }
         std::cout << std::endl;
-        writeMetadata();
+        write_metadata();
     }
 };
 

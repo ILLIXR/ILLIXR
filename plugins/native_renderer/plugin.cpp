@@ -23,15 +23,15 @@ using namespace ILLIXR;
 
 class native_renderer : public threadloop {
 public:
-    native_renderer(const std::string& name_, phonebook* pb)
-        : threadloop{name_, pb}
-        , sb{pb->lookup_impl<switchboard>()}
-        , pp{pb->lookup_impl<pose_prediction>()}
-        , ds{pb->lookup_impl<display_sink>()}
-        , tw{pb->lookup_impl<timewarp>()}
-        , src{pb->lookup_impl<app>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
+    [[maybe_unused]] native_renderer(const std::string& name, phonebook* pb)
+        : threadloop{name, pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
+        , display_sink_{phonebook_->lookup_impl<display_sink>()}
+        , timewarp_{phonebook_->lookup_impl<timewarp>()}
+        , app_{phonebook_->lookup_impl<app>()}
+        , clock_{phonebook_->lookup_impl<relative_clock>()}
+        , last_fps_update_{std::chrono::duration<long, std::nano>{0}} {
         spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
     }
 
@@ -44,23 +44,23 @@ public:
      */
     void _p_thread_setup() override {
         for (auto i = 0; i < 2; i++) {
-            create_depth_image(&depth_images[i], &depth_image_allocations[i], &depth_image_views[i]);
+            create_depth_image(&depth_images_[i], &depth_image_allocations_[i], &depth_image_views_[i]);
         }
         for (auto i = 0; i < 2; i++) {
-            create_offscreen_target(&offscreen_images[i], &offscreen_image_allocations[i], &offscreen_image_views[i],
-                                    &offscreen_framebuffers[i]);
+            create_offscreen_target(&offscreen_images_[i], &offscreen_image_allocations_[i], &offscreen_image_views_[i],
+                                    &offscreen_framebuffers_[i]);
         }
-        command_pool            = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
-        app_command_buffer      = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
-        timewarp_command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool_            = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
+        app_command_buffer_      = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
+        timewarp_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
         create_sync_objects();
         create_app_pass();
         create_timewarp_pass();
         create_sync_objects();
         create_offscreen_framebuffers();
         create_swapchain_framebuffers();
-        src->setup(app_pass, 0);
-        tw->setup(timewarp_pass, 0, {std::vector{offscreen_image_views[0]}, std::vector{offscreen_image_views[1]}}, true);
+        app_->setup(app_pass_, 0);
+        timewarp_->setup(timewarp_pass_, 0, {std::vector{offscreen_image_views_[0]}, std::vector{offscreen_image_views_[1]}}, true);
     }
 
     /**
@@ -73,38 +73,38 @@ public:
      * @throws runtime_error If any Vulkan operation fails.
      */
     void _p_one_iteration() override {
-        ds->poll_window_events();
+        display_sink_->poll_window_events();
 
         // Wait for the previous frame to finish rendering
-        VK_ASSERT_SUCCESS(vkWaitForFences(ds->vk_device, 1, &frame_fence, VK_TRUE, UINT64_MAX))
+        VK_ASSERT_SUCCESS(vkWaitForFences(display_sink_->vk_device, 1, &frame_fence_, VK_TRUE, UINT64_MAX))
 
         // Acquire the next image from the swapchain
         uint32_t swapchain_image_index;
-        auto     ret = (vkAcquireNextImageKHR(ds->vk_device, ds->vk_swapchain, UINT64_MAX, image_available_semaphore,
+        auto     ret = (vkAcquireNextImageKHR(display_sink_->vk_device, display_sink_->vk_swapchain, UINT64_MAX, image_available_semaphore_,
                                               VK_NULL_HANDLE, &swapchain_image_index));
 
         // Check if the swapchain is out of date or suboptimal
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
-            ds->recreate_swapchain();
+            display_sink_->recreate_swapchain();
             return;
         } else {
             VK_ASSERT_SUCCESS(ret)
         }
-        VK_ASSERT_SUCCESS(vkResetFences(ds->vk_device, 1, &frame_fence))
+        VK_ASSERT_SUCCESS(vkResetFences(display_sink_->vk_device, 1, &frame_fence_))
 
         // Get the current fast pose and update the uniforms
-        auto fast_pose = pp->get_fast_pose();
-        src->update_uniforms(fast_pose.pose);
+        auto fast_pose = pose_prediction_->get_fast_pose();
+        app_->update_uniforms(fast_pose.pose);
 
         // Record the command buffer
-        VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
+        VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer_, 0))
         record_command_buffer(swapchain_image_index);
 
         // Submit the command buffer to the graphics queue
         const uint64_t ignored     = 0;
-        const uint64_t fired_value = timeline_semaphore_value + 1;
+        const uint64_t fired_value = timeline_semaphore_value_ + 1;
 
-        timeline_semaphore_value += 1;
+        timeline_semaphore_value_ += 1;
         VkTimelineSemaphoreSubmitInfo timeline_submit_info{
             VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO, // sType
             nullptr,                                          // pNext
@@ -116,18 +116,18 @@ public:
 
         VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         VkSubmitInfo         submit_info{
-            VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
-            &timeline_submit_info,         // pNext
-            1,                             // waitSemaphoreCount
-            &image_available_semaphore,    // pWaitSemaphores
-            wait_stages,                   // pWaitDstStageMask
-            1,                             // commandBufferCount
-            &app_command_buffer,           // pCommandBuffers
-            1,                             // signalSemaphoreCount
-            &app_render_finished_semaphore // pSignalSemaphores
+            VK_STRUCTURE_TYPE_SUBMIT_INFO,  // sType
+            &timeline_submit_info,          // pNext
+            1,                              // waitSemaphoreCount
+            &image_available_semaphore_,    // pWaitSemaphores
+            wait_stages,                    // pWaitDstStageMask
+            1,                              // commandBufferCount
+            &app_command_buffer_,           // pCommandBuffers
+            1,                              // signalSemaphoreCount
+            &app_render_finished_semaphore_ // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &submit_info, nullptr))
+        VK_ASSERT_SUCCESS(vkQueueSubmit(display_sink_->graphics_queue, 1, &submit_info, nullptr))
 
         // Wait for the application to finish rendering
         VkSemaphoreWaitInfo wait_info{
@@ -135,57 +135,57 @@ public:
             nullptr,                               // pNext
             0,                                     // flags
             1,                                     // semaphoreCount
-            &app_render_finished_semaphore,        // pSemaphores
+            &app_render_finished_semaphore_,       // pSemaphores
             &fired_value                           // pValues
         };
-        VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
+        VK_ASSERT_SUCCESS(vkWaitSemaphores(display_sink_->vk_device, &wait_info, UINT64_MAX))
 
         // TODO: for DRM, get vsync estimate
         std::this_thread::sleep_for(display_params::period / 6.0 * 5);
 
         // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
-        tw->update_uniforms(fast_pose.pose);
+        timewarp_->update_uniforms(fast_pose.pose);
         VkSubmitInfo timewarp_submit_info{
-            VK_STRUCTURE_TYPE_SUBMIT_INFO,      // sType
-            nullptr,                            // pNext
-            0,                                  // waitSemaphoreCount
-            nullptr,                            // pWaitSemaphores
-            nullptr,                            // pWaitDstStageMask
-            1,                                  // commandBufferCount
-            &timewarp_command_buffer,           // pCommandBuffers
-            1,                                  // signalSemaphoreCount
-            &timewarp_render_finished_semaphore // pSignalSemaphores
+            VK_STRUCTURE_TYPE_SUBMIT_INFO,       // sType
+            nullptr,                             // pNext
+            0,                                   // waitSemaphoreCount
+            nullptr,                             // pWaitSemaphores
+            nullptr,                             // pWaitDstStageMask
+            1,                                   // commandBufferCount
+            &timewarp_command_buffer_,           // pCommandBuffers
+            1,                                   // signalSemaphoreCount
+            &timewarp_render_finished_semaphore_ // pSignalSemaphores
         };
 
-        VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence))
+        VK_ASSERT_SUCCESS(vkQueueSubmit(display_sink_->graphics_queue, 1, &timewarp_submit_info, frame_fence_))
 
         // Present the rendered image
         VkPresentInfoKHR present_info{
-            VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,  // sType
-            nullptr,                             // pNext
-            1,                                   // waitSemaphoreCount
-            &timewarp_render_finished_semaphore, // pWaitSemaphores
-            1,                                   // swapchainCount
-            &ds->vk_swapchain,                   // pSwapchains
-            &swapchain_image_index,              // pImageIndices
-            nullptr                              // pResults
+            VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,   // sType
+            nullptr,                              // pNext
+            1,                                    // waitSemaphoreCount
+            &timewarp_render_finished_semaphore_, // pWaitSemaphores
+            1,                                    // swapchainCount
+            &display_sink_->vk_swapchain,         // pSwapchains
+            &swapchain_image_index,               // pImageIndices
+            nullptr                               // pResults
         };
 
-        ret = (vkQueuePresentKHR(ds->graphics_queue, &present_info));
+        ret = (vkQueuePresentKHR(display_sink_->graphics_queue, &present_info));
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
-            ds->recreate_swapchain();
+            display_sink_->recreate_swapchain();
         } else {
             VK_ASSERT_SUCCESS(ret)
         }
 
         // #ifndef NDEBUG
         // Print the FPS
-        if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
-            // std::cout << "FPS: " << fps << std::endl;
-            fps             = 0;
-            last_fps_update = _m_clock->now();
+        if (clock_->now() - last_fps_update_ > std::chrono::milliseconds(1000)) {
+            // std::cout << "FPS: " << fps_ << std::endl;
+            fps_             = 0;
+            last_fps_update_ = clock_->now();
         } else {
-            fps++;
+            fps_++;
         }
         // #endif
     }
@@ -200,11 +200,11 @@ private:
      * @throws runtime_error If any Vulkan operation fails.
      */
     [[maybe_unused]] void recreate_swapchain() {
-        vkDeviceWaitIdle(ds->vk_device);
-        for (auto& framebuffer : swapchain_framebuffers) {
-            vkDestroyFramebuffer(ds->vk_device, framebuffer, nullptr);
+        vkDeviceWaitIdle(display_sink_->vk_device);
+        for (auto& framebuffer : swapchain_framebuffers_) {
+            vkDestroyFramebuffer(display_sink_->vk_device, framebuffer, nullptr);
         }
-        ds->recreate_swapchain();
+        display_sink_->recreate_swapchain();
         create_swapchain_framebuffers();
     }
 
@@ -214,25 +214,25 @@ private:
      * @throws runtime_error If framebuffer creation fails.
      */
     void create_swapchain_framebuffers() {
-        swapchain_framebuffers.resize(ds->swapchain_image_views.size());
+        swapchain_framebuffers_.resize(display_sink_->swapchain_image_views.size());
 
-        for (ulong i = 0; i < ds->swapchain_image_views.size(); i++) {
-            std::array<VkImageView, 1> attachments = {ds->swapchain_image_views[i]};
+        for (ulong i = 0; i < display_sink_->swapchain_image_views.size(); i++) {
+            std::array<VkImageView, 1> attachments = {display_sink_->swapchain_image_views[i]};
 
-            assert(timewarp_pass != VK_NULL_HANDLE);
+            assert(timewarp_pass_ != VK_NULL_HANDLE);
             VkFramebufferCreateInfo framebuffer_info{
                 VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
                 nullptr,                                   // pNext
                 0,                                         // flags
-                timewarp_pass,                             // renderPass
+                timewarp_pass_,                            // renderPass
                 attachments.size(),                        // attachmentCount
                 attachments.data(),                        // pAttachments
-                ds->swapchain_extent.width,                // width
-                ds->swapchain_extent.height,               // height
+                display_sink_->swapchain_extent.width,     // width
+                display_sink_->swapchain_extent.height,    // height
                 1                                          // layers
             };
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers[i]))
+            VK_ASSERT_SUCCESS(vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers_[i]))
         }
     }
 
@@ -248,33 +248,33 @@ private:
             0,                                           // flags
             nullptr                                      // pInheritanceInfo
         };
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer, &begin_info))
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(app_command_buffer_, &begin_info))
 
         for (auto eye = 0; eye < 2; eye++) {
-            assert(app_pass != VK_NULL_HANDLE);
+            assert(app_pass_ != VK_NULL_HANDLE);
             std::array<VkClearValue, 2> clear_values = {};
             clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
             clear_values[1].depthStencil             = {1.0f, 0};
 
             VkRenderPassBeginInfo render_pass_info{
-                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
-                nullptr,                                  // pNext
-                app_pass,                                 // renderPass
-                offscreen_framebuffers[eye],              // framebuffer
+                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
+                nullptr,                                   // pNext
+                app_pass_,                                 // renderPass
+                offscreen_framebuffers_[eye],              // framebuffer
                 {
-                    {0, 0},              // offset
-                    ds->swapchain_extent // extent
-                },                       // renderArea
-                clear_values.size(),     // clearValueCount
-                clear_values.data()      // pClearValues
+                    {0, 0},                         // offset
+                    display_sink_->swapchain_extent // extent
+                },                                  // renderArea
+                clear_values.size(),                // clearValueCount
+                clear_values.data()                 // pClearValues
             };
 
-            vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+            vkCmdBeginRenderPass(app_command_buffer_, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
             // Call app service to record the command buffer
-            src->record_command_buffer(app_command_buffer, eye);
-            vkCmdEndRenderPass(app_command_buffer);
+            app_->record_command_buffer(app_command_buffer_, eye);
+            vkCmdEndRenderPass(app_command_buffer_);
         }
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer_))
 
         // Begin recording timewarp command buffer
         VkCommandBufferBeginInfo timewarp_begin_info = {
@@ -283,47 +283,47 @@ private:
             0,                                           // flags
             nullptr                                      // pInheritanceInfo
         };
-        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer, &timewarp_begin_info)) {
-            assert(timewarp_pass != VK_NULL_HANDLE);
+        VK_ASSERT_SUCCESS(vkBeginCommandBuffer(timewarp_command_buffer_, &timewarp_begin_info)) {
+            assert(timewarp_pass_ != VK_NULL_HANDLE);
             VkClearValue          clear_value{.color = {{0.0f, 0.0f, 0.0f, 1.0f}}};
             VkRenderPassBeginInfo render_pass_info{
-                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,      // sType
-                nullptr,                                       // pNext
-                timewarp_pass,                                 // renderPass
-                swapchain_framebuffers[swapchain_image_index], // framebuffer
+                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,       // sType
+                nullptr,                                        // pNext
+                timewarp_pass_,                                 // renderPass
+                swapchain_framebuffers_[swapchain_image_index], // framebuffer
                 {
-                    {0, 0},              // offset
-                    ds->swapchain_extent // extent
-                },                       // renderArea
-                1,                       // clearValueCount
-                &clear_value             // pClearValues
+                    {0, 0},                         // offset
+                    display_sink_->swapchain_extent // extent
+                },                                  // renderArea
+                1,                                  // clearValueCount
+                &clear_value                        // pClearValues
             };
 
-            vkCmdBeginRenderPass(timewarp_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+            vkCmdBeginRenderPass(timewarp_command_buffer_, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
             for (auto eye = 0; eye < 2; eye++) {
                 VkViewport viewport{
-                    static_cast<float>(ds->swapchain_extent.width / 2. * eye), // x
-                    0.0f,                                                      // y
-                    static_cast<float>(ds->swapchain_extent.width),            // width
-                    static_cast<float>(ds->swapchain_extent.height),           // height
-                    0.0f,                                                      // minDepth
-                    1.0f                                                       // maxDepth
+                    static_cast<float>(display_sink_->swapchain_extent.width / 2. * eye), // x
+                    0.0f,                                                                 // y
+                    static_cast<float>(display_sink_->swapchain_extent.width),            // width
+                    static_cast<float>(display_sink_->swapchain_extent.height),           // height
+                    0.0f,                                                                 // minDepth
+                    1.0f                                                                  // maxDepth
                 };
-                vkCmdSetViewport(timewarp_command_buffer, 0, 1, &viewport);
+                vkCmdSetViewport(timewarp_command_buffer_, 0, 1, &viewport);
 
                 VkRect2D scissor{
                     {0, 0},              // offset
-                    ds->swapchain_extent // extent
+                    display_sink_->swapchain_extent // extent
                 };
-                vkCmdSetScissor(timewarp_command_buffer, 0, 1, &scissor);
+                vkCmdSetScissor(timewarp_command_buffer_, 0, 1, &scissor);
 
                 // Call timewarp service to record the command buffer
-                tw->record_command_buffer(timewarp_command_buffer, 0, eye == 0);
+                timewarp_->record_command_buffer(timewarp_command_buffer_, 0, eye == 0);
             }
-            vkCmdEndRenderPass(timewarp_command_buffer);
+            vkCmdEndRenderPass(timewarp_command_buffer_);
         }
-        VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer))
+        VK_ASSERT_SUCCESS(vkEndCommandBuffer(timewarp_command_buffer_))
     }
 
     /**
@@ -349,7 +349,7 @@ private:
             0                                        // flags
         };
 
-        vkCreateSemaphore(ds->vk_device, &create_info, nullptr, &app_render_finished_semaphore);
+        vkCreateSemaphore(display_sink_->vk_device, &create_info, nullptr, &app_render_finished_semaphore_);
 
         VkSemaphoreCreateInfo semaphore_info{
             VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, // sType
@@ -362,9 +362,9 @@ private:
             VK_FENCE_CREATE_SIGNALED_BIT         // flags
         };
 
-        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &image_available_semaphore))
-        VK_ASSERT_SUCCESS(vkCreateSemaphore(ds->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore))
-        VK_ASSERT_SUCCESS(vkCreateFence(ds->vk_device, &fence_info, nullptr, &frame_fence))
+        VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &image_available_semaphore_))
+        VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore_))
+        VK_ASSERT_SUCCESS(vkCreateFence(display_sink_->vk_device, &fence_info, nullptr, &frame_fence_))
     }
 
     /**
@@ -400,7 +400,7 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr))
+            vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -419,7 +419,7 @@ private:
             }                              // subresourceRange
         };
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, depth_image_view))
+        VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, depth_image_view))
     }
 
     /**
@@ -456,7 +456,7 @@ private:
         VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
 
         VK_ASSERT_SUCCESS(
-            vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, offscreen_image, offscreen_image_allocation, nullptr))
+            vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, offscreen_image, offscreen_image_allocation, nullptr))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -475,7 +475,7 @@ private:
             }                              // subresourceRange
         };
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, offscreen_image_view))
+        VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, offscreen_image_view))
     }
 
     /**
@@ -483,14 +483,14 @@ private:
      */
     void create_offscreen_framebuffers() {
         for (auto eye = 0; eye < 2; eye++) {
-            std::array<VkImageView, 2> attachments = {offscreen_image_views[eye], depth_image_views[eye]};
+            std::array<VkImageView, 2> attachments = {offscreen_image_views_[eye], depth_image_views_[eye]};
 
-            assert(app_pass != VK_NULL_HANDLE);
+            assert(app_pass_ != VK_NULL_HANDLE);
             VkFramebufferCreateInfo framebuffer_info{
                 VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
                 nullptr,                                   // pNext
                 0,                                         // flags
-                app_pass,                                  // renderPass
+                app_pass_,                                  // renderPass
                 static_cast<uint32_t>(attachments.size()), // attachmentCount
                 attachments.data(),                        // pAttachments
                 display_params::width_pixels,              // width
@@ -498,7 +498,7 @@ private:
                 1                                          // layers
             };
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]))
+            VK_ASSERT_SUCCESS(vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers_[eye]))
         }
     }
 
@@ -511,7 +511,7 @@ private:
      * @throws runtime_error If render pass creation fails.
      */
     void create_app_pass() {
-        std::array<VkAttachmentDescription, 2> attchmentDescriptions{
+        std::array<VkAttachmentDescription, 2> attachment_descriptions{
             {{
                  0,                                       // flags
                  VK_FORMAT_B8G8R8A8_UNORM,                // format
@@ -582,33 +582,33 @@ private:
              }}};
 
         VkRenderPassCreateInfo render_pass_info{
-            VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,           // sType
-            nullptr,                                             // pNext
-            0,                                                   // flags
-            static_cast<uint32_t>(attchmentDescriptions.size()), // attachmentCount
-            attchmentDescriptions.data(),                        // pAttachments
-            1,                                                   // subpassCount
-            &subpass,                                            // pSubpasses
-            static_cast<uint32_t>(dependencies.size()),          // dependencyCount
-            dependencies.data()                                  // pDependencies
+            VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,            // sType
+            nullptr,                                              // pNext
+            0,                                                    // flags
+            static_cast<uint32_t>(attachment_descriptions.size()), // attachmentCount
+            attachment_descriptions.data(),                        // pAttachments
+            1,                                                    // subpassCount
+            &subpass,                                             // pSubpasses
+            static_cast<uint32_t>(dependencies.size()),           // dependencyCount
+            dependencies.data()                                   // pDependencies
         };
-        VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &app_pass))
+        VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device, &render_pass_info, nullptr, &app_pass_))
     }
 
     /**
      * @brief Creates a render pass for timewarp.
      */
     void create_timewarp_pass() {
-        std::array<VkAttachmentDescription, 1> attchmentDescriptions{{{
-            0,                                // flags
-            ds->swapchain_image_format,       // format
-            VK_SAMPLE_COUNT_1_BIT,            // samples
-            VK_ATTACHMENT_LOAD_OP_CLEAR,      // loadOp
-            VK_ATTACHMENT_STORE_OP_STORE,     // storeOp
-            VK_ATTACHMENT_LOAD_OP_DONT_CARE,  // stencilLoadOp
-            VK_ATTACHMENT_STORE_OP_DONT_CARE, // stencilStoreOp
-            VK_IMAGE_LAYOUT_UNDEFINED,        // initialLayout
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR   // finalLayout
+        std::array<VkAttachmentDescription, 1> attchment_descriptions{{{
+            0,                                           // flags
+            display_sink_->swapchain_image_format,       // format
+            VK_SAMPLE_COUNT_1_BIT,                       // samples
+            VK_ATTACHMENT_LOAD_OP_CLEAR,                 // loadOp
+            VK_ATTACHMENT_STORE_OP_STORE,                // storeOp
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,             // stencilLoadOp
+            VK_ATTACHMENT_STORE_OP_DONT_CARE,            // stencilStoreOp
+            VK_IMAGE_LAYOUT_UNDEFINED,                   // initialLayout
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR              // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{
@@ -630,53 +630,53 @@ private:
         };
 
         VkRenderPassCreateInfo render_pass_info{
-            VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,           // sType
-            nullptr,                                             // pNext
-            0,                                                   // flags
-            static_cast<uint32_t>(attchmentDescriptions.size()), // attachmentCount
-            attchmentDescriptions.data(),                        // pAttachments
-            1,                                                   // subpassCount
-            &subpass,                                            // pSubpasses
-            0,                                                   // dependencyCount
-            nullptr                                              // pDependencies
+            VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,            // sType
+            nullptr,                                              // pNext
+            0,                                                    // flags
+            static_cast<uint32_t>(attchment_descriptions.size()), // attachmentCount
+            attchment_descriptions.data(),                        // pAttachments
+            1,                                                    // subpassCount
+            &subpass,                                             // pSubpasses
+            0,                                                    // dependencyCount
+            nullptr                                               // pDependencies
         };
 
-        VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
+        VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device, &render_pass_info, nullptr, &timewarp_pass_))
     }
 
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<display_sink>        ds;
-    const std::shared_ptr<timewarp>            tw;
-    const std::shared_ptr<app>                 src;
-    const std::shared_ptr<const RelativeClock> _m_clock;
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<pose_prediction>      pose_prediction_;
+    const std::shared_ptr<display_sink>         display_sink_;
+    const std::shared_ptr<timewarp>             timewarp_;
+    const std::shared_ptr<app>                  app_;
+    const std::shared_ptr<const relative_clock> clock_;
 
-    VkCommandPool   command_pool{};
-    VkCommandBuffer app_command_buffer{};
-    VkCommandBuffer timewarp_command_buffer{};
+    VkCommandPool   command_pool_{};
+    VkCommandBuffer app_command_buffer_{};
+    VkCommandBuffer timewarp_command_buffer_{};
 
-    std::array<VkImage, 2>       depth_images{};
-    std::array<VmaAllocation, 2> depth_image_allocations{};
-    std::array<VkImageView, 2>   depth_image_views{};
+    std::array<VkImage, 2>       depth_images_{};
+    std::array<VmaAllocation, 2> depth_image_allocations_{};
+    std::array<VkImageView, 2>   depth_image_views_{};
 
-    std::array<VkImage, 2>       offscreen_images{};
-    std::array<VmaAllocation, 2> offscreen_image_allocations{};
-    std::array<VkImageView, 2>   offscreen_image_views{};
-    std::array<VkFramebuffer, 2> offscreen_framebuffers{};
+    std::array<VkImage, 2>       offscreen_images_{};
+    std::array<VmaAllocation, 2> offscreen_image_allocations_{};
+    std::array<VkImageView, 2>   offscreen_image_views_{};
+    std::array<VkFramebuffer, 2> offscreen_framebuffers_{};
 
-    std::vector<VkFramebuffer> swapchain_framebuffers;
+    std::vector<VkFramebuffer> swapchain_framebuffers_;
 
-    VkRenderPass app_pass{};
-    VkRenderPass timewarp_pass{};
+    VkRenderPass app_pass_{};
+    VkRenderPass timewarp_pass_{};
 
-    VkSemaphore image_available_semaphore{};
-    VkSemaphore app_render_finished_semaphore{};
-    VkSemaphore timewarp_render_finished_semaphore{};
-    VkFence     frame_fence{};
+    VkSemaphore image_available_semaphore_{};
+    VkSemaphore app_render_finished_semaphore_{};
+    VkSemaphore timewarp_render_finished_semaphore_{};
+    VkFence     frame_fence_{};
 
-    uint64_t timeline_semaphore_value = 1;
+    uint64_t timeline_semaphore_value_ = 1;
 
-    int        fps{};
-    time_point last_fps_update;
+    int        fps_{};
+    time_point last_fps_update_;
 };
 PLUGIN_MAIN(native_renderer)

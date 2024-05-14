@@ -2,8 +2,8 @@
 
 #include <eigen3/Eigen/Core>
 
-namespace ILLIXR {
-namespace math_util {
+
+namespace ILLIXR::math_util {
     /// Calculates a projection matrix with the given tangent angles and clip planes
     void projection(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up,
                     float const tan_down, const float near_z, const float far_z) {
@@ -43,5 +43,5 @@ namespace math_util {
 
         projection(result, tan_left, tan_right, tan_up, tan_down, near_z, far_z);
     }
-} // namespace math_util
-} // namespace ILLIXR
+} // namespace ILLIXR::math_util
+

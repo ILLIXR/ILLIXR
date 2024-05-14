@@ -19,8 +19,8 @@ struct cam_type : switchboard::event {
 
 struct rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
-    cv::Mat                     rgb;
-    cv::Mat                     depth;
+    cv::Mat rgb;
+    cv::Mat depth;
 
     rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
         : time{_time}

@@ -19,11 +19,11 @@ using namespace ILLIXR;
 // Set exposure to 8% of camera frame time. This is an empirically determined number
 static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
 
-const record_header __imu_cam_record{"imu_cam",
-                                     {
-                                         {"iteration_no", typeid(std::size_t)},
-                                         {"has_camera", typeid(bool)},
-                                     }};
+//const record_header __imu_cam_record{"imu_cam",
+//                                     {
+//                                         {"iteration_no", typeid(std::size_t)},
+//                                         {"has_camera", typeid(bool)},
+//                                     }};
 
 struct cam_type_zed : public switchboard::event {
     cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
@@ -69,50 +69,29 @@ std::shared_ptr<Camera> start_camera() {
 
 class zed_camera_thread : public threadloop {
 public:
-    zed_camera_thread(const std::string& name_, phonebook* pb_, std::shared_ptr<Camera> zedm_)
-        : threadloop{name_, pb_}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_cam{sb->get_writer<cam_type_zed>("cam_zed")}
-        , zedm{std::move(zedm_)}
-        , image_size{zedm->getCameraInformation().camera_configuration.resolution} {
-        // runtime_parameters.sensing_mode = SENSING_MODE::STANDARD;
+    zed_camera_thread(const std::string& name, phonebook* pb, std::shared_ptr<Camera> zedm_)
+        : threadloop{name, pb}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , clock_{phonebook_->lookup_impl<relative_clock>()}
+        , cam_{switchboard_->get_writer<cam_type_zed>("cam_zed")}
+        , zed_cam_{std::move(zedm_)}
+        , image_size_{zed_cam_->getCameraInformation().camera_configuration.resolution} {
+        // runtime_parameters_.sensing_mode = SENSING_MODE::STANDARD;
         // Image setup
-        imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
-        imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
-        rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
-        depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1, MEM::CPU);
+        imageL_zed_.alloc(image_size_.width, image_size_.height, MAT_TYPE::U8_C1, MEM::CPU);
+        imageR_zed_.alloc(image_size_.width, image_size_.height, MAT_TYPE::U8_C1, MEM::CPU);
+        rgb_zed_.alloc(image_size_.width, image_size_.height, MAT_TYPE::U8_C4, MEM::CPU);
+        depth_zed_.alloc(image_size_.width, image_size_.height, MAT_TYPE::F32_C1, MEM::CPU);
 
-        imageL_ocv = slMat2cvMat(imageL_zed);
-        imageR_ocv = slMat2cvMat(imageR_zed);
-        rgb_ocv    = slMat2cvMat(rgb_zed);
-        depth_ocv  = slMat2cvMat(depth_zed);
+        imageL_ocv_ = slMat_to_cvMat(imageL_zed_);
+        imageR_ocv_ = slMat_to_cvMat(imageR_zed_);
+        rgb_ocv_    = slMat_to_cvMat(rgb_zed_);
+        depth_ocv_  = slMat_to_cvMat(depth_zed_);
     }
-
-private:
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<cam_type_zed>          _m_cam;
-    std::shared_ptr<Camera>                    zedm;
-    Resolution                                 image_size;
-    RuntimeParameters                          runtime_parameters;
-    std::size_t                                serial_no{0};
-
-    Mat imageL_zed;
-    Mat imageR_zed;
-    Mat depth_zed;
-    Mat rgb_zed;
-
-    cv::Mat imageL_ocv;
-    cv::Mat imageR_ocv;
-    cv::Mat depth_ocv;
-    cv::Mat rgb_ocv;
-
-    std::optional<ullong> _m_first_imu_time;
 
 protected:
     skip_option _p_should_skip() override {
-        if (zedm->grab(runtime_parameters) == ERROR_CODE::SUCCESS) {
+        if (zed_cam_->grab(runtime_parameters_) == ERROR_CODE::SUCCESS) {
             return skip_option::run;
         } else {
             return skip_option::skip_and_spin;
@@ -123,19 +102,40 @@ protected:
         RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
         // Time as ullong (nanoseconds)
-        // ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
+        // ullong cam_time = static_cast<ullong>(zed_cam_->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
 
         // Retrieve images
-        zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
-        zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
-        zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
-        zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
+        zed_cam_->retrieveImage(imageL_zed_, VIEW::LEFT_GRAY, MEM::CPU, image_size_);
+        zed_cam_->retrieveImage(imageR_zed_, VIEW::RIGHT_GRAY, MEM::CPU, image_size_);
+        zed_cam_->retrieveMeasure(depth_zed_, MEASURE::DEPTH, MEM::CPU, image_size_);
+        zed_cam_->retrieveImage(rgb_zed_, VIEW::LEFT, MEM::CPU, image_size_);
 
-        _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()},
-                                                  cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
+        cam_.put(cam_.allocate<cam_type_zed>({cv::Mat{imageL_ocv_.clone()}, cv::Mat{imageR_ocv_.clone()},
+                                                  cv::Mat{rgb_ocv_.clone()}, cv::Mat{depth_ocv_.clone()}, ++serial_no_}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
+    
+private:
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<const relative_clock> clock_;
+    switchboard::writer<cam_type_zed>           cam_;
+    std::shared_ptr<Camera>                     zed_cam_;
+    Resolution                                  image_size_;
+    RuntimeParameters                           runtime_parameters_;
+    std::size_t                                 serial_no_{0};
+    
+    Mat imageL_zed_;
+    Mat imageR_zed_;
+    Mat depth_zed_;
+    Mat rgb_zed_;
+
+    cv::Mat imageL_ocv_;
+    cv::Mat imageR_ocv_;
+    cv::Mat depth_ocv_;
+    cv::Mat rgb_ocv_;
+
+    std::optional<ullong> first_imu_time_;
 };
 
 class zed_imu_thread : public threadloop {
@@ -145,29 +145,29 @@ public:
         threadloop::stop();
     }
 
-    zed_imu_thread(const std::string& name_, phonebook* pb_)
-        : threadloop{name_, pb_}
-        , zedm{start_camera()}
-        , camera_thread_{"zed_camera_thread", pb_, zedm}
-        , sb{pb->lookup_impl<switchboard>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam_reader{sb->get_reader<cam_type_zed>("cam_zed")}
-        , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
-        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , it_log{record_logger_} {
+    [[maybe_unused]] zed_imu_thread(const std::string& name, phonebook* pb)
+        : threadloop{name, pb}
+        , zed_cam_{start_camera()}
+        , camera_thread_{"zed_camera_thread", pb, zed_cam_}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , clock_{phonebook_->lookup_impl<relative_clock>()}
+        , imu_{switchboard_->get_writer<imu_type>("imu")}
+        , cam_reader_{switchboard_->get_reader<cam_type_zed>("cam_zed")}
+        , cam_publisher_{switchboard_->get_writer<cam_type>("cam")}
+        , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")}
+        , it_log_{record_logger_} {
         camera_thread_.start();
     }
 
     // destructor
     ~zed_imu_thread() override {
-        zedm->close();
+        zed_cam_->close();
     }
 
 protected:
     skip_option _p_should_skip() override {
-        zedm->getSensorsData(sensors_data, TIME_REFERENCE::CURRENT);
-        if (sensors_data.imu.timestamp > last_imu_ts) {
+        zed_cam_->getSensorsData(sensors_data_, TIME_REFERENCE::CURRENT);
+        if (sensors_data_.imu.timestamp > last_imu_ts_) {
             std::this_thread::sleep_for(std::chrono::milliseconds{2});
             return skip_option::run;
         } else {
@@ -178,63 +178,63 @@ protected:
     void _p_one_iteration() override {
         RAC_ERRNO_MSG("zed at start of _p_one_iteration");
 
-        // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
+        // std::cout << "IMU Rate: " << sensors_data_.imu.effective_rate << "\n" << std::endl;
 
         // Time as ullong (nanoseconds)
-        auto imu_time = static_cast<ullong>(sensors_data.imu.timestamp.getNanoseconds());
+        auto imu_time = static_cast<ullong>(sensors_data_.imu.timestamp.getNanoseconds());
 
         // Time as time_point
-        if (!_m_first_imu_time) {
-            _m_first_imu_time  = imu_time;
-            _m_first_real_time = _m_clock->now();
+        if (!first_imu_time_) {
+            first_imu_time_  = imu_time;
+            first_real_time_ = clock_->now();
         }
-        // _m_first_real_time is the time point when the system receives the first IMU sample
-        // Timestamp for later IMU samples is its dataset time difference from the first sample added to _m_first_real_time
-        time_point imu_time_point{*_m_first_real_time + std::chrono::nanoseconds(imu_time - *_m_first_imu_time)};
+        // first_real_time_ is the time point when the system receives the first IMU sample
+        // Timestamp for later IMU samples is its dataset time difference from the first sample added to first_real_time_
+        time_point imu_time_point{*first_real_time_ + std::chrono::nanoseconds(imu_time - *first_imu_time_)};
 
         // Linear Acceleration and Angular Velocity (av converted from deg/s to rad/s)
-        Eigen::Vector3f la = {sensors_data.imu.linear_acceleration_uncalibrated.x,
-                              sensors_data.imu.linear_acceleration_uncalibrated.y,
-                              sensors_data.imu.linear_acceleration_uncalibrated.z};
-        Eigen::Vector3f av = {static_cast<float>(sensors_data.imu.angular_velocity_uncalibrated.x * (M_PI / 180)),
-                              static_cast<float>(sensors_data.imu.angular_velocity_uncalibrated.y * (M_PI / 180)),
-                              static_cast<float>(sensors_data.imu.angular_velocity_uncalibrated.z * (M_PI / 180))};
+        Eigen::Vector3f la = {sensors_data_.imu.linear_acceleration_uncalibrated.x,
+                              sensors_data_.imu.linear_acceleration_uncalibrated.y,
+                              sensors_data_.imu.linear_acceleration_uncalibrated.z};
+        Eigen::Vector3f av = {static_cast<float>(sensors_data_.imu.angular_velocity_uncalibrated.x * (M_PI / 180)),
+                              static_cast<float>(sensors_data_.imu.angular_velocity_uncalibrated.y * (M_PI / 180)),
+                              static_cast<float>(sensors_data_.imu.angular_velocity_uncalibrated.z * (M_PI / 180))};
 
-        _m_imu.put(_m_imu.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
+        imu_.put(imu_.allocate<imu_type>({imu_time_point, av.cast<double>(), la.cast<double>()}));
 
-        switchboard::ptr<const cam_type_zed> c = _m_cam_reader.get_ro_nullable();
-        if (c && c->serial_no != last_serial_no) {
-            _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>({imu_time_point, cv::Mat{c->img0}, cv::Mat{c->img1}}));
-            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb}, cv::Mat{c->depth}}));
-            last_serial_no = c->serial_no;
+        switchboard::ptr<const cam_type_zed> cam_type_z = cam_reader_.get_ro_nullable();
+        if (cam_type_z && cam_type_z->serial_no != last_serial_no_) {
+            cam_publisher_.put(cam_publisher_.allocate<cam_type>({imu_time_point, cv::Mat{cam_type_z->img0}, cv::Mat{cam_type_z->img1}}));
+            rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({imu_time_point, cv::Mat{cam_type_z->rgb}, cv::Mat{cam_type_z->depth}}));
+            last_serial_no_ = cam_type_z->serial_no;
         }
 
-        last_imu_ts = sensors_data.imu.timestamp;
+        last_imu_ts_ = sensors_data_.imu.timestamp;
 
         RAC_ERRNO_MSG("zed_imu at end of _p_one_iteration");
     }
 
 private:
-    std::shared_ptr<Camera> zedm;
+    std::shared_ptr<Camera> zed_cam_;
     zed_camera_thread       camera_thread_;
 
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<const RelativeClock> _m_clock;
-    switchboard::writer<imu_type>              _m_imu;
-    switchboard::reader<cam_type_zed>          _m_cam_reader;
-    switchboard::writer<cam_type>              _m_cam_publisher;
-    switchboard::writer<rgb_depth_type>        _m_rgb_depth;
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<const relative_clock> clock_;
+    switchboard::writer<imu_type>               imu_;
+    switchboard::reader<cam_type_zed>           cam_reader_;
+    switchboard::writer<cam_type>               cam_publisher_;
+    switchboard::writer<rgb_depth_type>         rgb_depth_;
 
     // IMU
-    SensorsData sensors_data;
-    Timestamp   last_imu_ts    = 0;
-    std::size_t last_serial_no = 0;
+    SensorsData sensors_data_;
+    Timestamp   last_imu_ts_    = 0;
+    std::size_t last_serial_no_ = 0;
 
     // Logger
-    record_coalescer it_log;
+    record_coalescer it_log_;
 
-    std::optional<ullong>     _m_first_imu_time;
-    std::optional<time_point> _m_first_real_time;
+    std::optional<ullong>     first_imu_time_;
+    std::optional<time_point> first_real_time_;
 };
 
 // This line makes the plugin importable by Spindle

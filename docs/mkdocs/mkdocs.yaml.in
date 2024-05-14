@@ -2,9 +2,13 @@ site_name: ILLIXR Docs
 theme: readthedocs
 site_dir: @MKDOCS_BUILD_DIR@
 site_url: https://illixr.github.io/ILLIXR/docs
+markdown_extensions:
+    - codehilite
+    - fenced_code
 extra_css:
     - css/code-box-copy.css
     - css/prism.min.css
+    - css/styles.css
 extra_javascript:
     - js/clipboard.min.js
     - js/code-box-copy.js
@@ -18,7 +22,7 @@ nav:
         - 'ILLIXR Debugging Tips': debugging_illixr.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
-        - 'Contributing to ILLIXR': contributing/contributing.md
+        - 'Contributing to ILLIXR':
             - 'Code of Conduct': contributing/code_of_conduct.md
             - 'Asking Questions': contributing/asking_questions.md
             - 'Reporting a Bug': contributing/opening_an_issue.md
@@ -29,7 +33,8 @@ nav:
             - 'Creating a Pull Request': contributing/pull_request.md
             - 'Code Review Guidelines': contributing/code_review.md
         - 'Modifying a Plugin': modifying_a_plugin.md
-        - 'Writing Your Plugin': writing_your_plugin.md
+        - 'Writing Your Plugin':
+            - 'How to Write a Plugin': writing_your_plugin.md
             - 'Modules': modules.md
         - 'Plugin Details':
             - 'Debugview': plugin_README/README_debugview.md

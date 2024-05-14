@@ -18,7 +18,7 @@ set(protobuf_files
         ${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_output.proto
 )
 
-target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
+target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/plugins/offload_vio/device_rx/protobuf)
 
 PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../proto ${protobuf_files})
 target_link_libraries(${PLUGIN_NAME}

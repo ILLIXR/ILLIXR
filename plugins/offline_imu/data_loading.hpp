@@ -36,7 +36,7 @@ static std::map<ullong, sensor_types> load_data() {
         spdlog::get("illixr")->error("[offline_imu] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", imu0_subpath, illixr_data);
         ILLIXR::abort();
     }
-    for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {
+    for (csv_iterator row{imu0_file, 1}; row != csv_iterator{}; ++row) {
         ullong          t = std::stoull(row[0]);
         Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
         Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};

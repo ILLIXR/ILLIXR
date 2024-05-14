@@ -27,14 +27,14 @@
 
 using namespace ILLIXR;
 
-struct Vertex {
+struct vertex {
     glm::vec3 pos;
     glm::vec2 uv;
 
     static VkVertexInputBindingDescription get_binding_description() {
         VkVertexInputBindingDescription binding_description{
             0,                          // binding
-            sizeof(Vertex),             // stride
+            sizeof(vertex),             // stride
             VK_VERTEX_INPUT_RATE_VERTEX // inputRate
         };
         return binding_description;
@@ -45,50 +45,50 @@ struct Vertex {
                                                                                      0,                          // location
                                                                                      0,                          // binding
                                                                                      VK_FORMAT_R32G32B32_SFLOAT, // format
-                                                                                     offsetof(Vertex, pos)       // offset
+                                                                                     offsetof(vertex, pos)       // offset
                                                                                  },
                                                                                  {
                                                                                      1,                       // location
                                                                                      0,                       // binding
                                                                                      VK_FORMAT_R32G32_SFLOAT, // format
-                                                                                     offsetof(Vertex, uv)     // offset
+                                                                                     offsetof(vertex, uv)     // offset
                                                                                  }}};
 
         return attribute_descriptions;
     }
 
-    bool operator==(const Vertex& other) const {
+    bool operator==(const vertex& other) const {
         return pos == other.pos && uv == other.uv;
     }
 };
 
-struct Texture {
+struct texture {
     VkImage       image;
     VmaAllocation image_memory;
     VkImageView   image_view;
 };
 
-struct Model {
+struct model {
     int      texture_index;
-    uint32_t vertex_offset;
+    [[maybe_unused]] uint32_t vertex_offset;
     uint32_t index_offset;
     uint32_t index_count;
 };
 
-struct ModelPushConstant {
-    int texture_index;
+struct model_push_constant {
+    [[maybe_unused]] int texture_index;
 };
 
 namespace std {
 template<>
-struct hash<Vertex> {
-    size_t operator()(Vertex const& vertex) const {
+struct hash<vertex> {
+    size_t operator()(vertex const& vertex) const {
         return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec2>()(vertex.uv) << 1)) >> 1);
     }
 };
 } // namespace std
 
-struct UniformBufferObject {
+struct uniform_buffer_object {
     glm::mat4 model_view;
     glm::mat4 proj;
 };
@@ -96,33 +96,33 @@ struct UniformBufferObject {
 class vkdemo : public app {
 public:
     explicit vkdemo(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()}
-        , ds{pb->lookup_impl<display_sink>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()} { }
+        : switchboard_{pb->lookup_impl<switchboard>()}
+        , display_sink_{pb->lookup_impl<display_sink>()}
+        , clock_{pb->lookup_impl<relative_clock>()} { }
 
     void initialize() {
-        if (ds->vma_allocator) {
-            this->vma_allocator = ds->vma_allocator;
+        if (display_sink_->vma_allocator) {
+            this->vma_allocator_ = display_sink_->vma_allocator;
         } else {
-            this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator_ = vulkan_utils::create_vma_allocator(display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
         }
 
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool_   = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
+        command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
         load_model();
         bake_models();
-        create_texture_sampler();
+        create_texture_sampler_();
         create_descriptor_set_layout();
         create_uniform_buffers();
         create_descriptor_pool();
         create_descriptor_set();
         create_vertex_buffer();
         create_index_buffer();
-        vertices.clear();
-        indices.clear();
+        vertices_.clear();
+        indices_.clear();
 
         // Construct perspective projection matrix
-        math_util::projection_fov(&basic_projection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+        math_util::projection_fov(&basic_projection_, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
                                   display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
                                   rendering_params::far_z);
     }
@@ -136,31 +136,29 @@ public:
         update_uniform(fp, 1);
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VkBuffer     vertexBuffers[] = {vertex_buffer};
+    void record_command_buffer(VkCommandBuffer command_buffer, int eye) override {
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        VkBuffer     vertex_buffers[] = {vertex_buffer_};
         VkDeviceSize offsets[]       = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye], 0,
+        vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
+        vkCmdBindIndexBuffer(command_buffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1, &descriptor_sets_[eye], 0,
                                 nullptr);
 
-        for (auto& model : models) {
-            ModelPushConstant push_constant{};
-            push_constant.texture_index = static_cast<int>(texture_map[model.texture_index]);
-            vkCmdPushConstants(commandBuffer, pipeline_layout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(ModelPushConstant),
+        for (auto& model : models_) {
+            model_push_constant push_constant{};
+            push_constant.texture_index = static_cast<int>(texture_map_[model.texture_index]);
+            vkCmdPushConstants(command_buffer, pipeline_layout_, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(model_push_constant),
                                &push_constant);
-            vkCmdDrawIndexed(commandBuffer, model.index_count, 1, model.index_offset, 0, 0);
+            vkCmdDrawIndexed(command_buffer, model.index_count, 1, model.index_offset, 0, 0);
         }
     }
 
     void destroy() override { }
 
 private:
-    void update_uniform(const pose_type& fp, int eye) {
-        Eigen::Matrix4f modelMatrix = Eigen::Matrix4f::Identity();
-
-        auto pose = fp;
+    void update_uniform(const pose_type& pose, int eye) {
+        Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
 
         Eigen::Matrix3f head_rotation_matrix = pose.orientation.toRotationMatrix();
 
@@ -183,25 +181,25 @@ private:
         // Objects' "view matrix" is inverse of eye matrix.
         auto view_matrix = eye_matrix.inverse();
 
-        Eigen::Matrix4f model_view = view_matrix * modelMatrix;
+        Eigen::Matrix4f model_view = view_matrix * model_matrix;
 
-        auto* ubo = (UniformBufferObject*) uniform_buffer_allocation_infos[eye].pMappedData;
+        auto* ubo = (uniform_buffer_object*) uniform_buffer_allocation_infos_[eye].pMappedData;
         memcpy(&ubo->model_view, &model_view, sizeof(model_view));
-        memcpy(&ubo->proj, &basic_projection, sizeof(basic_projection));
+        memcpy(&ubo->proj, &basic_projection_, sizeof(basic_projection_));
     }
 
     void bake_models() {
-        for (std::size_t i = 0; i < textures.size(); i++) {
-            if (textures[i].image_view == VK_NULL_HANDLE) {
+        for (std::size_t i = 0; i < textures_.size(); i++) {
+            if (textures_[i].image_view == VK_NULL_HANDLE) {
                 continue;
             }
             VkDescriptorImageInfo image_info{
                 nullptr,                                  // sampler
-                textures[i].image_view,                   // imageView
+                textures_[i].image_view,                   // imageView
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, // imageLayout
             };
-            texture_map.insert(std::make_pair(i, image_infos.size()));
-            image_infos.push_back(image_info);
+            texture_map_.insert(std::make_pair(i, image_infos_.size()));
+            image_infos_.push_back(image_info);
         }
     }
 
@@ -225,7 +223,7 @@ private:
         VkDescriptorSetLayoutBinding sampled_image_layout_binding{
             2,                                     // binding
             VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,      // descriptorType
-            static_cast<uint>(texture_map.size()), // descriptorCount
+            static_cast<uint>(texture_map_.size()), // descriptorCount
             VK_SHADER_STAGE_FRAGMENT_BIT,          // stageFlags
             nullptr                                // pImmutableSamplers
         };
@@ -240,7 +238,7 @@ private:
         VkDescriptorSetLayoutBinding bindings[]{ubo_layout_binding, sampler_layout_binding, sampled_image_layout_binding};
         layout_info.pBindings = bindings;
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(ds->vk_device, &layout_info, nullptr, &descriptor_set_layout))
+        VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_sink_->vk_device, &layout_info, nullptr, &descriptor_set_layout_))
     }
 
     void create_uniform_buffers() {
@@ -249,7 +247,7 @@ private:
                 VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
                 nullptr,                              // pNext
                 0,                                    // flags
-                sizeof(UniformBufferObject),          // size
+                sizeof(uniform_buffer_object),          // size
                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,   // usage
                 {},                                   // sharingMode
                 0,                                    // queueFamilyIndexCount
@@ -260,8 +258,8 @@ private:
             alloc_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
             alloc_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-            VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &uniform_buffers[i],
-                                              &uniform_buffer_allocations[i], &uniform_buffer_allocation_infos[i]))
+            VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &uniform_buffers_[i],
+                                              &uniform_buffer_allocations_[i], &uniform_buffer_allocation_infos_[i]))
         }
     }
 
@@ -276,7 +274,7 @@ private:
                                                         },
                                                         {
                                                             VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,             // type
-                                                            static_cast<uint32_t>(2 * texture_map.size()) // descriptorCount
+                                                            static_cast<uint32_t>(2 * texture_map_.size()) // descriptorCount
                                                         }}};
         VkDescriptorPoolCreateInfo          pool_info{
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -287,10 +285,10 @@ private:
             pool_sizes.data()                              // pPoolSizes
         };
 
-        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &pool_info, nullptr, &descriptor_pool))
+        VK_ASSERT_SUCCESS(vkCreateDescriptorPool(display_sink_->vk_device, &pool_info, nullptr, &descriptor_pool_))
     }
 
-    void create_texture_sampler() {
+    void create_texture_sampler_() {
         VkSamplerCreateInfo sampler_info{
             VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, // sType
             nullptr,                               // pNext
@@ -313,36 +311,36 @@ private:
             VK_FALSE                          // unnormalizedCoordinates
         };
 
-        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &sampler_info, nullptr, &texture_sampler))
+        VK_ASSERT_SUCCESS(vkCreateSampler(display_sink_->vk_device, &sampler_info, nullptr, &texture_sampler_))
     }
 
     void create_descriptor_set() {
-        VkDescriptorSetLayout       layouts[] = {descriptor_set_layout, descriptor_set_layout};
+        VkDescriptorSetLayout       layouts[] = {descriptor_set_layout_, descriptor_set_layout_};
         VkDescriptorSetAllocateInfo alloc_info{
             VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
             nullptr,                                        // pNext
-            descriptor_pool,                                // descriptorPool
+            descriptor_pool_,                                // descriptorPool
             2,                                              // descriptorSetCount
             layouts                                         // pSetLayouts
         };
 
-        VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &alloc_info, descriptor_sets.data()))
+        VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_sink_->vk_device, &alloc_info, descriptor_sets_.data()))
 
         std::array<VkDescriptorBufferInfo, 2> buffer_infos = {{{
-                                                                   uniform_buffers[0],         // buffer
+                                                                   uniform_buffers_[0],         // buffer
                                                                    0,                          // offset
-                                                                   sizeof(UniformBufferObject) // range
+                                                                   sizeof(uniform_buffer_object) // range
                                                                },
                                                                {
-                                                                   uniform_buffers[1],         // buffer
+                                                                   uniform_buffers_[1],         // buffer
                                                                    0,                          // offset
-                                                                   sizeof(UniformBufferObject) // range
+                                                                   sizeof(uniform_buffer_object) // range
                                                                }}};
 
         std::array<VkWriteDescriptorSet, 2> descriptor_writes = {{{
                                                                       VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
                                                                       nullptr,                                // pNext
-                                                                      descriptor_sets[0],                     // dstSet
+                                                                      descriptor_sets_[0],                     // dstSet
                                                                       0,                                      // dstBinding
                                                                       0,                                      // dstArrayElement
                                                                       1,                                      // descriptorCount
@@ -354,7 +352,7 @@ private:
                                                                   {
                                                                       VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
                                                                       nullptr,                                // pNext
-                                                                      descriptor_sets[1],                     // dstSet
+                                                                      descriptor_sets_[1],                     // dstSet
                                                                       0,                                      // dstBinding
                                                                       0,                                      // dstArrayElement
                                                                       1,                                      // descriptorCount
@@ -364,16 +362,16 @@ private:
                                                                       nullptr // pTexelBufferView
                                                                   }}};
 
-        vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0,
+        vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0,
                                nullptr);
 
         std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
         for (auto i = 0; i < 2; i++) {
-            VkDescriptorImageInfo image_info = {texture_sampler, nullptr, {}};
+            VkDescriptorImageInfo image_info = {texture_sampler_, nullptr, {}};
             image_descriptor_writes.push_back({
                 VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
                 nullptr,                                // pNext
-                descriptor_sets[i],                     // dstSet
+                descriptor_sets_[i],                     // dstSet
                 1,                                      // dstBinding
                 0,                                      // dstArrayElement
                 1,                                      // descriptorCount
@@ -383,22 +381,22 @@ private:
                 nullptr                                 // pTexelBufferView
             });
 
-            assert(!image_infos.empty());
+            assert(!image_infos_.empty());
             image_descriptor_writes.push_back({
                 VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
                 nullptr,                                   // pNext
-                descriptor_sets[i],                        // dstSet
+                descriptor_sets_[i],                        // dstSet
                 2,                                         // dstBinding
                 0,                                         // dstArrayElement
-                static_cast<uint32_t>(image_infos.size()), // descriptorCount
+                static_cast<uint32_t>(image_infos_.size()), // descriptorCount
                 VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,          // descriptorType
-                image_infos.data(),                        // pImageInfo
+                image_infos_.data(),                        // pImageInfo
                 nullptr,                                   // pBufferInfo
                 nullptr                                    // pTexelBufferView
             });
         }
 
-        vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(image_descriptor_writes.size()),
+        vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(image_descriptor_writes.size()),
                                image_descriptor_writes.data(), 0, nullptr);
     }
 
@@ -450,7 +448,7 @@ private:
         alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
         alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
 
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
                                           &staging_buffer_allocation_info))
 
         memcpy(staging_buffer_allocation_info.pMappedData, data, static_cast<size_t>(image_size));
@@ -482,25 +480,25 @@ private:
         VmaAllocationCreateInfo image_alloc_info{};
         image_alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-        VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &image_alloc_info, &textures[i].image,
-                                         &textures[i].image_memory, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator_, &image_info, &image_alloc_info, &textures_[i].image,
+                                         &textures_[i].image_memory, nullptr))
 
-        image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
+        image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->graphics_queue, command_pool, staging_buffer, textures[i].image,
+        vulkan_utils::copy_buffer_to_image(display_sink_->vk_device, display_sink_->graphics_queue, command_pool_, staging_buffer, textures_[i].image,
                                            width, height);
 
-        image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
+        vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
             nullptr,                                  // pNext
             0,                                        // flags
-            textures[i].image,                        // image
+            textures_[i].image,                        // image
             VK_IMAGE_VIEW_TYPE_2D,                    // viewType
             VK_FORMAT_R8G8B8A8_SRGB,                  // format
             {},                                       // components
@@ -513,12 +511,12 @@ private:
             }                              // subresourceRange
         };
 
-        VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view))
+        VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, &textures_[i].image_view))
     }
 
     void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
                                  VkImageLayout new_layout) {
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
 
         VkImageMemoryBarrier barrier{
             VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, // sType
@@ -568,7 +566,7 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
     }
 
     void load_model() {
@@ -582,26 +580,26 @@ private:
             throw std::runtime_error(warn + err);
         }
 
-        textures.resize(materials.size());
+        textures_.resize(materials.size());
 
         for (auto i = 0; i < static_cast<int>(materials.size()); i++) {
             auto material = materials[i];
-            if (material.diffuse_texname.length() > 0) {
+            if (!material.diffuse_texname.empty()) {
                 path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + material.diffuse_texname;
                 load_texture(path, i);
             }
         }
 
 #ifndef NDEBUG
-        spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures", textures.size());
+        spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures_", textures_.size());
 #endif
 
-        std::unordered_map<Vertex, uint32_t> unique_vertices{};
+        std::unordered_map<vertex, uint32_t> unique_vertices{};
         for (const auto& shape : shapes) {
-            Model model{};
-            model.index_offset = static_cast<uint32_t>(indices.size());
+            model model{};
+            model.index_offset = static_cast<uint32_t>(indices_.size());
             for (const auto& index : shape.mesh.indices) {
-                Vertex vertex{};
+                vertex vertex{};
 
                 vertex.pos = {attrib.vertices[3 * index.vertex_index + 0] * 2, attrib.vertices[3 * index.vertex_index + 1] * 2,
                               attrib.vertices[3 * index.vertex_index + 2] * 2};
@@ -610,11 +608,11 @@ private:
                              1.0f - attrib.texcoords[2 * index.texcoord_index + 1]};
 
                 if (unique_vertices.count(vertex) == 0) {
-                    unique_vertices[vertex] = static_cast<uint32_t>(vertices.size());
-                    vertices.push_back(vertex);
+                    unique_vertices[vertex] = static_cast<uint32_t>(vertices_.size());
+                    vertices_.push_back(vertex);
                 }
 
-                indices.push_back(unique_vertices[vertex]);
+                indices_.push_back(unique_vertices[vertex]);
             }
             if (!shape.mesh.material_ids.empty()) {
                 model.texture_index = shape.mesh.material_ids[0];
@@ -622,7 +620,7 @@ private:
                 model.texture_index = -1;
             }
             model.index_count = static_cast<uint32_t>(shape.mesh.indices.size());
-            models.push_back(model);
+            models_.push_back(model);
         }
     }
 
@@ -631,7 +629,7 @@ private:
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
             nullptr,                               // pNext
             0,                                     // flags
-            sizeof(vertices[0]) * vertices.size(), // size
+            sizeof(vertices_[0]) * vertices_.size(), // size
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,      // usage
             {},                                    // sharingMode
             0,                                     // queueFamilyIndexCount
@@ -644,14 +642,14 @@ private:
 
         VkBuffer      staging_buffer;
         VmaAllocation staging_buffer_allocation;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
                                           &staging_buffer_allocation, nullptr))
 
         VkBufferCreateInfo buffer_info{
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,                                 // sType
             nullptr,                                                              // pNext
             0,                                                                    // flags
-            sizeof(vertices[0]) * vertices.size(),                                // size
+            sizeof(vertices_[0]) * vertices_.size(),                                // size
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, // usage
             {},                                                                   // sharingMode
             0,                                                                    // queueFamilyIndexCount
@@ -663,23 +661,23 @@ private:
 
         VmaAllocation buffer_allocation;
         VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &vertex_buffer, &buffer_allocation, nullptr))
+            vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &vertex_buffer_, &buffer_allocation, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data))
-        memcpy(mapped_data, vertices.data(), sizeof(vertices[0]) * vertices.size());
-        vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_buffer_allocation, &mapped_data))
+        memcpy(mapped_data, vertices_.data(), sizeof(vertices_[0]) * vertices_.size());
+        vmaUnmapMemory(vma_allocator_, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
         VkBufferCopy    copy_region{
             0,                                    // srcOffset
             0,                                    // dstOffset
-            sizeof(vertices[0]) * vertices.size() // size
+            sizeof(vertices_[0]) * vertices_.size() // size
         };
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
+        vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
     }
 
     void create_index_buffer() {
@@ -687,7 +685,7 @@ private:
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
             nullptr,                              // pNext
             0,                                    // flags
-            sizeof(indices[0]) * indices.size(),  // size
+            sizeof(indices_[0]) * indices_.size(),  // size
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
             {},                                   // sharingMode
             0,                                    // queueFamilyIndexCount
@@ -700,14 +698,14 @@ private:
 
         VkBuffer      staging_buffer;
         VmaAllocation staging_buffer_allocation;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
                                           &staging_buffer_allocation, nullptr))
 
         VkBufferCreateInfo buffer_info{
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,                                // sType
             nullptr,                                                             // pNext
             0,                                                                   // flags
-            sizeof(indices[0]) * indices.size(),                                 // size
+            sizeof(indices_[0]) * indices_.size(),                                 // size
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, // usage
             {},                                                                  // sharingMode
             0,                                                                   // queueFamilyIndexCount
@@ -718,23 +716,23 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &buffer_info, &alloc_info, &index_buffer, &buffer_allocation, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &index_buffer_, &buffer_allocation, nullptr))
 
         void* mapped_data;
-        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, staging_buffer_allocation, &mapped_data))
-        memcpy(mapped_data, indices.data(), sizeof(indices[0]) * indices.size());
-        vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
+        VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_buffer_allocation, &mapped_data))
+        memcpy(mapped_data, indices_.data(), sizeof(indices_[0]) * indices_.size());
+        vmaUnmapMemory(vma_allocator_, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
         VkBufferCopy    copy_region{
             0,                                  // srcOffset
             0,                                  // dstOffset
-            sizeof(indices[0]) * indices.size() // size
+            sizeof(indices_[0]) * indices_.size() // size
         };
-        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
 
-        vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
+        vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
     }
 
     void create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
@@ -744,9 +742,9 @@ private:
 
         auto           folder = std::string(SHADER_FOLDER);
         VkShaderModule vert =
-            vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.vert.spv"));
+            vulkan_utils::create_shader_module(display_sink_->vk_device, vulkan_utils::read_file(folder + "/demo.vert.spv"));
         VkShaderModule frag =
-            vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
+            vulkan_utils::create_shader_module(display_sink_->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info{
             VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
@@ -770,8 +768,8 @@ private:
 
         VkPipelineShaderStageCreateInfo shader_stages[] = {vert_shader_stage_info, frag_shader_stage_info};
 
-        auto binding_description    = Vertex::get_binding_description();
-        auto attribute_descriptions = Vertex::get_attribute_descriptions();
+        auto binding_description    = vertex::get_binding_description();
+        auto attribute_descriptions = vertex::get_attribute_descriptions();
 
         VkPipelineVertexInputStateCreateInfo vertex_input_info{
             VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO, // sType
@@ -794,15 +792,15 @@ private:
         VkViewport viewport{
             0.0f,                                            // x
             0.0f,                                            // y
-            static_cast<float>(ds->swapchain_extent.width),  // width
-            static_cast<float>(ds->swapchain_extent.height), // height
+            static_cast<float>(display_sink_->swapchain_extent.width),  // width
+            static_cast<float>(display_sink_->swapchain_extent.height), // height
             0.0f,                                            // minDepth
             1.0f                                             // maxDepth
         };
 
         VkRect2D scissor{
             {0, 0},              // offset
-            ds->swapchain_extent // extent
+            display_sink_->swapchain_extent // extent
         };
 
         VkPipelineViewportStateCreateInfo viewport_state{
@@ -868,7 +866,7 @@ private:
         VkPushConstantRange push_constant_range{
             VK_SHADER_STAGE_FRAGMENT_BIT, // stageFlags
             0,                            // offset
-            sizeof(ModelPushConstant)     // size
+            sizeof(model_push_constant)     // size
         };
 
         VkPipelineLayoutCreateInfo pipeline_layout_info{
@@ -876,12 +874,12 @@ private:
             nullptr,                                       // pNext
             0,                                             // flags
             1,                                             // setLayoutCount
-            &descriptor_set_layout,                        // pSetLayouts
+            &descriptor_set_layout_,                        // pSetLayouts
             1,                                             // pushConstantRangeCount
             &push_constant_range                           // pPushConstantRanges
         };
 
-        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout))
+        VK_ASSERT_SUCCESS(vkCreatePipelineLayout(display_sink_->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout_))
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil{
             VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, // sType
@@ -913,68 +911,68 @@ private:
             &depth_stencil,                                  // pDepthStencilState
             &color_blending,                                 // pColorBlendState
             nullptr,                                         // pDynamicState
-            pipeline_layout,                                 // layout
+            pipeline_layout_,                                 // layout
             render_pass,                                     // renderPass
             subpass,                                         // subpass
             {},                                              // basePipelineHandle
             0                                                // basePipelineIndex
         };
 
-        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
+        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(display_sink_->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
 
-        vkDestroyShaderModule(ds->vk_device, vert, nullptr);
-        vkDestroyShaderModule(ds->vk_device, frag, nullptr);
+        vkDestroyShaderModule(display_sink_->vk_device, vert, nullptr);
+        vkDestroyShaderModule(display_sink_->vk_device, frag, nullptr);
     }
 
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<display_sink>        ds = nullptr;
-    const std::shared_ptr<const RelativeClock> _m_clock;
+    const std::shared_ptr<switchboard>         switchboard_;
+    const std::shared_ptr<pose_prediction>     pose_prediction_;
+    const std::shared_ptr<display_sink>        display_sink_ = nullptr;
+    const std::shared_ptr<const relative_clock> clock_;
 
-    Eigen::Matrix4f       basic_projection;
-    std::vector<Model>    models;
-    std::vector<Vertex>   vertices;
-    std::vector<uint32_t> indices;
+    Eigen::Matrix4f       basic_projection_;
+    std::vector<model>    models_;
+    std::vector<vertex>   vertices_;
+    std::vector<uint32_t> indices_;
 
-    std::array<std::vector<VkImageView>, 2> buffer_pool;
+    std::array<std::vector<VkImageView>, 2> buffer_pool_;
 
-    VmaAllocator    vma_allocator{};
-    VkCommandPool   command_pool{};
-    VkCommandBuffer command_buffer{};
+    VmaAllocator    vma_allocator_{};
+    VkCommandPool   command_pool_{};
+    [[maybe_unused]] VkCommandBuffer command_buffer_{};
 
-    VkDescriptorSetLayout          descriptor_set_layout{};
-    VkDescriptorPool               descriptor_pool{};
-    std::array<VkDescriptorSet, 2> descriptor_sets{};
+    VkDescriptorSetLayout          descriptor_set_layout_{};
+    VkDescriptorPool               descriptor_pool_{};
+    std::array<VkDescriptorSet, 2> descriptor_sets_{};
 
-    std::array<VkBuffer, 2>          uniform_buffers{};
-    std::array<VmaAllocation, 2>     uniform_buffer_allocations{};
-    std::array<VmaAllocationInfo, 2> uniform_buffer_allocation_infos{};
+    std::array<VkBuffer, 2>          uniform_buffers_{};
+    std::array<VmaAllocation, 2>     uniform_buffer_allocations_{};
+    std::array<VmaAllocationInfo, 2> uniform_buffer_allocation_infos_{};
 
-    VkBuffer vertex_buffer{};
-    VkBuffer index_buffer{};
+    VkBuffer vertex_buffer_{};
+    VkBuffer index_buffer_{};
 
-    VkPipelineLayout pipeline_layout{};
+    VkPipelineLayout pipeline_layout_{};
 
-    std::vector<VkDescriptorImageInfo> image_infos;
-    std::vector<Texture>               textures;
-    VkSampler                          texture_sampler{};
-    std::map<uint32_t, uint32_t>       texture_map;
+    std::vector<VkDescriptorImageInfo> image_infos_;
+    std::vector<texture>               textures_;
+    VkSampler                          texture_sampler_{};
+    std::map<uint32_t, uint32_t>       texture_map_;
 };
 
 class vkdemo_plugin : public plugin {
 public:
-    vkdemo_plugin(const std::string& name, phonebook* pb)
+    [[maybe_unused]] vkdemo_plugin(const std::string& name, phonebook* pb)
         : plugin{name, pb}
-        , vkd{std::make_shared<vkdemo>(pb)} {
-        pb->register_impl<app>(std::static_pointer_cast<vkdemo>(vkd));
+        , vkd_{std::make_shared<vkdemo>(pb)} {
+        pb->register_impl<app>(std::static_pointer_cast<vkdemo>(vkd_));
     }
 
     void start() override {
-        vkd->initialize();
+        vkd_->initialize();
     }
 
 private:
-    std::shared_ptr<vkdemo> vkd;
+    std::shared_ptr<vkdemo> vkd_;
 };
 
 PLUGIN_MAIN(vkdemo_plugin)

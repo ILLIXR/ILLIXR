@@ -8,7 +8,7 @@
 /*     from a mathematical operation just to quickly produce some known    */
 /*     tracking path for the purpose of debugging other portions of ILLIXR.*/
 /*                                                                           */
-/* USSAGE:                                                                   */
+/* USAGE:                                                                   */
 /*   * Add "- path: fauxpose/" as a plugin (and not other trackers)          */
 /*   * Use "FAUXPOSE_PERIOD" environment variable to control orbit period    */
 /*   * Use "FAUXPOSE_AMPLITUDE" environment variable to control orbit size   */
@@ -25,7 +25,7 @@
 /*   * get_fast_pose() method returns a "fast_pose_type"                     */
 /*   * "fast_pose_type" is a "pose_type" plus computed & target timestamps   */
 /*   * correct_pose() method returns a "pose_type"                           */
-/*   * (This version uploaded to ILLIXR github)                              */
+/*   * (This version uploaded to ILLIXR GitHub)                              */
 /*                                                                           */
 
 #include "illixr/plugin.hpp"
@@ -37,7 +37,6 @@
 #include <cstdlib>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
-#include <iostream>
 #include <memory>
 #include <mutex>
 
@@ -49,17 +48,17 @@ public:
     // ********************************************************************
     /* Constructor: Provide handles to faux_pose */
     explicit faux_pose_impl(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()}
-        , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
+        : switchboard_{pb->lookup_impl<switchboard>()}
+        , clock_{pb->lookup_impl<relative_clock>()}
+        , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
         char* env_input; /* pointer to environment variable input */
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Starting Service");
 #endif
 
         // Store the initial time
-        if (_m_clock->is_started()) {
-            sim_start_time = _m_clock->now();
+        if (clock_->is_started()) {
+            sim_start_time_ = clock_->now();
 #ifndef NDEBUG
             spdlog::get("illixr")->debug("[fauxpose] Starting Service");
 #endif
@@ -70,27 +69,27 @@ public:
         }
 
         // Set default faux-pose parameters
-        center_location = Eigen::Vector3f{0.0, 1.5, 0.0};
-        period          = 0.5;
-        amplitude       = 2.0;
+        center_location_ = Eigen::Vector3f{0.0, 1.5, 0.0};
+        period_          = 0.5;
+        amplitude_       = 2.0;
 
         // Adjust parameters based on environment variables
         if ((env_input = getenv("FAUXPOSE_PERIOD"))) {
-            period = std::strtof(env_input, nullptr);
+            period_ = std::strtof(env_input, nullptr);
         }
         if ((env_input = getenv("FAUXPOSE_AMPLITUDE"))) {
-            amplitude = std::strtof(env_input, nullptr);
+            amplitude_ = std::strtof(env_input, nullptr);
         }
         if ((env_input = getenv("FAUXPOSE_CENTER"))) {
-            center_location[0] = std::strtof(env_input, nullptr);
-            center_location[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
-            center_location[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);
+            center_location_[0] = std::strtof(env_input, nullptr);
+            center_location_[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
+            center_location_[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);
         }
 #ifndef NDEBUG
-        spdlog::get("illixr")->debug("[fauxpose] Period is {}", period);
-        spdlog::get("illixr")->debug("[fauxpose] Amplitude is {}", amplitude);
-        spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location[0], center_location[1],
-                                     center_location[2]);
+        spdlog::get("illixr")->debug("[fauxpose] Period is {}", period_);
+        spdlog::get("illixr")->debug("[fauxpose] Amplitude is {}", amplitude_);
+        spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location_[0], center_location_[1],
+                                     center_location_[2]);
 #endif
     }
 
@@ -126,23 +125,23 @@ public:
 
     // ********************************************************************
     Eigen::Quaternionf get_offset() override {
-        return offset;
+        return offset_;
     }
 
     // ********************************************************************
     void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
-        std::unique_lock   lock{offset_mutex};
-        Eigen::Quaternionf raw_o = raw_o_times_offset * offset.inverse();
-        offset                   = raw_o.inverse();
+        std::unique_lock   lock{offset_mutex_};
+        Eigen::Quaternionf raw_o = raw_o_times_offset * offset_.inverse();
+        offset_                   = raw_o.inverse();
     }
 
     // ********************************************************************
     fast_pose_type get_fast_pose() const override {
         // In actual pose prediction, the semantics are that we return
         //   the pose for next vsync, not now.
-        switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = _m_vsync_estimate.get_ro_nullable();
+        switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
         if (vsync_estimate == nullptr) {
-            return get_fast_pose(_m_clock->now());
+            return get_fast_pose(clock_->now());
         } else {
             return get_fast_pose(*vsync_estimate);
         }
@@ -162,39 +161,39 @@ public:
 
         // Calculate simulation time from start of execution
         std::chrono::nanoseconds elapsed_time;
-        elapsed_time = time - sim_start_time;
+        elapsed_time = time - sim_start_time_;
         sim_time     = static_cast<double>(elapsed_time.count()) * 0.000000001;
 
         // Calculate new pose values
         //   Pose values are calculated from the passage of time to maintain consistency */
-        simulated_pose.position[0] = static_cast<float>(center_location[0] + amplitude * sin(sim_time * period)); // X
-        simulated_pose.position[1] = static_cast<float>(center_location[1]);                                      // Y
-        simulated_pose.position[2] = static_cast<float>(center_location[2] + amplitude * cos(sim_time * period)); // Z
+        simulated_pose.position[0] = static_cast<float>(center_location_[0] + amplitude_ * sin(sim_time * period_)); // X
+        simulated_pose.position[1] = static_cast<float>(center_location_[1]);                                      // Y
+        simulated_pose.position[2] = static_cast<float>(center_location_[2] + amplitude_ * cos(sim_time * period_)); // Z
         simulated_pose.orientation = Eigen::Quaternionf(0.707, 0.0, 0.707, 0.0); // (W,X,Y,Z) Facing forward (90deg about Y)
 
         // Return the new pose
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Returning pose");
 #endif
-        return fast_pose_type{.pose = simulated_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = time};
+        return fast_pose_type{.pose = simulated_pose, .predict_computed_time = clock_->now(), .predict_target_time = time};
     }
 
     // ---------------------------------------------------------------------
     // ---------------------------------------------------------------------
     // ---------------------------------------------------------------------
 private:
-    const std::shared_ptr<switchboard>                          sb;
-    const std::shared_ptr<const RelativeClock>                  _m_clock;
-    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync_estimate;
-    mutable Eigen::Quaternionf                                  offset{Eigen::Quaternionf::Identity()};
-    mutable std::shared_mutex                                   offset_mutex;
+    const std::shared_ptr<switchboard>                          switchboard_;
+    const std::shared_ptr<const relative_clock>                  clock_;
+    switchboard::reader<switchboard::event_wrapper<time_point>> vsync_estimate_;
+    mutable Eigen::Quaternionf                                  offset_{Eigen::Quaternionf::Identity()};
+    mutable std::shared_mutex                                   offset_mutex_;
 
-    time_point sim_start_time{}; /* Store the initial time to calculate a known runtime */
+    time_point sim_start_time_{}; /* Store the initial time to calculate a known runtime */
 
     // Parameters
-    double          period;          /* The period of the circular movment (in seconds) */
-    double          amplitude;       /* The amplitude of the circular movment (in meters) */
-    Eigen::Vector3f center_location; /* The location around which the tracking should orbit */
+    double          period_;          /* The period of the circular movement (in seconds) */
+    double          amplitude_;       /* The amplitude of the circular movement (in meters) */
+    Eigen::Vector3f center_location_; /* The location around which the tracking should orbit */
 };
 
 // ********************************************************************
@@ -203,7 +202,7 @@ class faux_pose : public plugin {
 public:
     // ********************************************************************
     /* Constructor: Provide handles to faux_pose */
-    faux_pose(const std::string& name, phonebook* pb)
+    [[maybe_unused]] faux_pose(const std::string& name, phonebook* pb)
         : plugin{name, pb} {
         // "pose_prediction" is a class inheriting from "phonebook::service"
         //   It is described in "pose_prediction.hpp"
@@ -222,4 +221,4 @@ public:
 };
 
 // This line makes the plugin importable by Spindle
-PLUGIN_MAIN(faux_pose);
+PLUGIN_MAIN(faux_pose)

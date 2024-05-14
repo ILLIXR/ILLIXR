@@ -1,22 +1,23 @@
 #pragma once
 
 #include "error_util.hpp"
+#include <GL/glew.h>
+#include <GL/gl.h>
 
 #include <cassert>
 #include <cstring>
-#include <GL/gl.h>
-#include <GL/glew.h>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
+
 
 using namespace ILLIXR;
 
 static constexpr std::size_t GL_MAX_LOG_LENGTH = 4096U;
 
-static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
+static void GLAPIENTRY message_callback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
                                        [[maybe_unused]] GLenum severity, [[maybe_unused]] GLsizei length,
-                                       [[maybe_unused]] const GLchar* message, [[maybe_unused]] const void* userParam) {
+                                       [[maybe_unused]] const GLchar* message, [[maybe_unused]] const void* user_param) {
 #ifndef NDEBUG
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
         /// Don't show message if severity level is notification. Non-fatal.
@@ -38,8 +39,8 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
     GLint result, vertex_shader_handle, fragment_shader_handle, shader_program;
 
     vertex_shader_handle = glCreateShader(GL_VERTEX_SHADER);
-    auto vshader_len     = static_cast<GLint>(strlen(vertex_shader));
-    glShaderSource(vertex_shader_handle, 1, &vertex_shader, &vshader_len);
+    auto vert_shader_len     = static_cast<GLint>(strlen(vertex_shader));
+    glShaderSource(vertex_shader_handle, 1, &vertex_shader, &vert_shader_len);
     glCompileShader(vertex_shader_handle);
     glGetShaderiv(vertex_shader_handle, GL_COMPILE_STATUS, &result);
     if (result == GL_FALSE) {
@@ -53,13 +54,13 @@ static GLuint init_and_link(const char* vertex_shader, const char* fragment_shad
         ILLIXR::abort("[shader_util] Failed to get vertex_shader_handle: " + msg);
     }
 
-    GLint fragResult       = GL_FALSE;
+    GLint frag_result       = GL_FALSE;
     fragment_shader_handle = glCreateShader(GL_FRAGMENT_SHADER);
-    auto fshader_len       = static_cast<GLint>(strlen(fragment_shader));
-    glShaderSource(fragment_shader_handle, 1, &fragment_shader, &fshader_len);
+    auto frag_shader_len       = static_cast<GLint>(strlen(fragment_shader));
+    glShaderSource(fragment_shader_handle, 1, &fragment_shader, &frag_shader_len);
     glCompileShader(fragment_shader_handle);
-    glGetShaderiv(fragment_shader_handle, GL_COMPILE_STATUS, &fragResult);
-    if (fragResult == GL_FALSE) {
+    glGetShaderiv(fragment_shader_handle, GL_COMPILE_STATUS, &frag_result);
+    if (frag_result == GL_FALSE) {
         GLsizei             length = 0;
         std::vector<GLchar> gl_buf_log;
         gl_buf_log.resize(GL_MAX_LOG_LENGTH);

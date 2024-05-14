@@ -39,7 +39,7 @@ static std::map<ullong, sensor_types> load_data() {
         ILLIXR::abort();
     }
 
-    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+    for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
         ullong             t = std::stoull(row[0]);
         Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
         Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};

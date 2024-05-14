@@ -12,26 +12,26 @@ using namespace ILLIXR;
 
 class offline_imu : public ILLIXR::threadloop {
 public:
-    offline_imu(const std::string& name_, phonebook* pb_)
-        : threadloop{name_, pb_}
-        , _m_sensor_data{load_data()}
-        , _m_sensor_data_it{_m_sensor_data.cbegin()}
-        , _m_sb{pb->lookup_impl<switchboard>()}
-        , _m_imu{_m_sb->get_writer<imu_type>("imu")}
-        , dataset_first_time{_m_sensor_data_it->first}
-        , dataset_now{0}
-        , imu_cam_log{record_logger_}
-        , _m_rtc{pb->lookup_impl<RelativeClock>()} { }
+    [[maybe_unused]] offline_imu(const std::string& name, phonebook* pb)
+        : threadloop{name, pb}
+        , sensor_data_{load_data()}
+        , sensor_data_it_{sensor_data_.cbegin()}
+        , switchboard_{phonebook_->lookup_impl<switchboard>()}
+        , imu_{switchboard_->get_writer<imu_type>("imu")}
+        , dataset_first_time_{sensor_data_it_->first}
+        , dataset_now_{0}
+        , imu_cam_log_{record_logger_}
+        , clock_{phonebook_->lookup_impl<relative_clock>()} { }
 
 protected:
     skip_option _p_should_skip() override {
-        if (_m_sensor_data_it != _m_sensor_data.end()) {
-            assert(dataset_now < _m_sensor_data_it->first);
-            dataset_now = _m_sensor_data_it->first;
+        if (sensor_data_it_ != sensor_data_.end()) {
+            assert(dataset_now_ < sensor_data_it_->first);
+            dataset_now_ = sensor_data_it_->first;
             // Sleep for the difference between the current IMU vs 1st IMU and current UNIX time vs UNIX time the component was
             // init
-            std::this_thread::sleep_for(std::chrono::nanoseconds{dataset_now - dataset_first_time} -
-                                        _m_rtc->now().time_since_epoch());
+            std::this_thread::sleep_for(std::chrono::nanoseconds{dataset_now_ - dataset_first_time_} -
+                                        clock_->now().time_since_epoch());
 
             return skip_option::run;
 
@@ -41,28 +41,28 @@ protected:
     }
 
     void _p_one_iteration() override {
-        assert(_m_sensor_data_it != _m_sensor_data.end());
-        time_point          real_now(std::chrono::duration<long, std::nano>{dataset_now - dataset_first_time});
-        const sensor_types& sensor_datum = _m_sensor_data_it->second;
+        assert(sensor_data_it_ != sensor_data_.end());
+        time_point real_now(std::chrono::duration<long, std::nano>{dataset_now_ - dataset_first_time_});
+        const sensor_types& sensor_datum = sensor_data_it_->second;
 
-        _m_imu.put(_m_imu.allocate<imu_type>(imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));
-        ++_m_sensor_data_it;
+        imu_.put(imu_.allocate<imu_type>(imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));
+        ++sensor_data_it_;
     }
 
 private:
-    const std::map<ullong, sensor_types>           _m_sensor_data;
-    std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
-    const std::shared_ptr<switchboard>             _m_sb;
-    switchboard::writer<imu_type>                  _m_imu;
+    const std::map<ullong, sensor_types>           sensor_data_;
+    std::map<ullong, sensor_types>::const_iterator sensor_data_it_;
+    const std::shared_ptr<switchboard>             switchboard_;
+    switchboard::writer<imu_type>                  imu_;
 
     // Timestamp of the first IMU value from the dataset
-    ullong dataset_first_time;
+    ullong dataset_first_time_;
     // Current IMU timestamp
-    ullong dataset_now;
+    ullong dataset_now_;
 
-    record_coalescer imu_cam_log;
+    record_coalescer imu_cam_log_;
 
-    std::shared_ptr<RelativeClock> _m_rtc;
+    std::shared_ptr<relative_clock> clock_;
 };
 
 PLUGIN_MAIN(offline_imu)

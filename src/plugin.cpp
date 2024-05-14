@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <yaml-cpp/yaml.h>
 
-ILLIXR::runtime* r = nullptr;
+ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
 
@@ -16,7 +16,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
 
-    r = ILLIXR::runtime_factory();
+    runtime_ = ILLIXR::runtime_factory();
 
 #ifndef NDEBUG
     /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
@@ -106,20 +106,20 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     });
 
     RAC_ERRNO_MSG("main before loading dynamic libraries");
-    r->load_so(lib_paths);
+    runtime_->load_so(lib_paths);
 
     cancellable_sleep cs;
     std::thread       th{[&] {
         cs.sleep(run_duration);
-        r->stop();
+        runtime_->stop();
     }};
 
-    r->wait(); // blocks until shutdown is r->stop()
+    runtime_->wait(); // blocks until shutdown is runtime_->stop()
 
     // cancel our sleep, so we can join the other thread
     cs.cancel();
     th.join();
 
-    delete r;
+    delete runtime_;
     return 0;
 }

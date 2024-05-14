@@ -31,30 +31,30 @@ public:
     };
 
     struct hmd_info_t {
-        int   displayPixelsWide;
-        int   displayPixelsHigh;
-        int   tilePixelsWide;
-        int   tilePixelsHigh;
-        int   eyeTilesWide;
-        int   eyeTilesHigh;
-        int   visiblePixelsWide;
-        int   visiblePixelsHigh;
-        float visibleMetersWide;
-        float visibleMetersHigh;
-        float lensSeparationInMeters;
-        float metersPerTanAngleAtCenter;
-        int   numKnots;
+        [[maybe_unused]] int   display_pixels_wide;
+        int   display_pixels_high;
+        int   tile_pixels_wide;
+        int   tile_pixels_high;
+        int   eye_tiles_wide;
+        int   eye_tiles_high;
+        int   visible_pixels_wide;
+        int   visible_pixels_high;
+        float visible_meters_wide;
+        float visible_meters_high;
+        float lens_separation_in_meters;
+        float meters_per_tan_angle_at_center;
+        int   num_knots;
         float K[11];
-        float chromaticAberration[4];
+        float chromatic_aberration[4];
     };
 
-    static float MaxFloat(float x, float y);
-    static float MinFloat(float x, float y);
-    static float EvaluateCatmullRomSpline(float value, const float* K, int numKnots);
-    static void  GetDefaultHmdInfo(int displayPixelsWide, int displayPixelsHigh, float displayMetersWide,
-                                   float displayMetersHigh, float lensSeparation, float metersPerTanAngle,
-                                   const float aberration[4], hmd_info_t& hmd_info);
+    static float max_float(float x, float y);
+    static float min_float(float x, float y);
+    static float evaluate_catmull_rom_spline(float value, const float* K, int num_knots);
+    static void  get_default_hmd_info(int display_pixels_wide, int display_pixels_high, float display_meters_wide,
+                                      float display_meters_high, float lens_separation, float meters_per_tan_angle,
+                                      const float aberration[4], hmd_info_t& hmd_info);
     static void
-    BuildDistortionMeshes(std::array<std::array<std::vector<mesh_coord2d_t>, NUM_COLOR_CHANNELS>, NUM_EYES>& distort_coords,
-                          hmd_info_t&                                                                        hmdInfo);
+    build_distortion_meshes(std::array<std::array<std::vector<mesh_coord2d_t>, NUM_COLOR_CHANNELS>, NUM_EYES>& distort_coords,
+                            hmd_info_t& hmd_info);
 };
