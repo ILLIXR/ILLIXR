@@ -10,7 +10,6 @@ set(PLUGIN_NAME plugin.timewarp_gl${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        shaders/basic_shader.hpp
         shaders/timewarp_shader.hpp
         utils/hmd.cpp
         utils/hmd.hpp

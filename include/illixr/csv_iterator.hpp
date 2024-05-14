@@ -5,63 +5,63 @@
 #include <string>
 #include <vector>
 
-class CSVRow {
+class csv_row {
 public:
     std::string const& operator[](std::size_t index) const {
-        return m_data[index];
+        return data_[index];
     }
 
     [[nodiscard]] std::size_t size() const {
-        return m_data.size();
+        return data_.size();
     }
 
-    void readNextRow(std::istream& str) {
+    void read_next_row(std::istream& str) {
         std::string line;
         std::getline(str, line);
 
         line = line.substr(0, line.find_last_not_of("\r\n\t \v") + 1);
 
-        std::stringstream lineStream(line);
+        std::stringstream line_stream(line);
         std::string       cell;
 
-        m_data.clear();
-        while (std::getline(lineStream, cell, ',')) {
-            m_data.push_back(cell);
+        data_.clear();
+        while (std::getline(line_stream, cell, ',')) {
+            data_.push_back(cell);
         }
         // This checks for a trailing comma with no data after it.
-        if (!lineStream && cell.empty()) {
+        if (!line_stream && cell.empty()) {
             // If there was a trailing comma then add an empty element.
-            m_data.emplace_back("");
+            data_.emplace_back("");
         }
     }
 
 private:
-    std::vector<std::string> m_data;
+    std::vector<std::string> data_;
 };
 
-std::istream& operator>>(std::istream& str, CSVRow& data) {
-    data.readNextRow(str);
+std::istream& operator>>(std::istream& str, csv_row& data) {
+    data.read_next_row(str);
     return str;
 }
 
-class CSVIterator {
+class csv_iterator {
 public:
     typedef std::input_iterator_tag iterator_category;
-    typedef CSVRow                  value_type;
+    typedef csv_row                 value_type;
     typedef std::size_t             difference_type;
-    typedef CSVRow*                 pointer;
-    typedef CSVRow&                 reference;
+    typedef csv_row*                pointer;
+    typedef csv_row&                reference;
 
-    explicit CSVIterator(std::istream& str, std::size_t skip = 0)
-        : m_str(str.good() ? &str : nullptr) {
+    explicit csv_iterator(std::istream& str, std::size_t skip = 0)
+        : stream_(str.good() ? &str : nullptr) {
         ++(*this);
         (*this) += skip;
     }
 
-    CSVIterator()
-        : m_str(nullptr) { }
+    csv_iterator()
+        : stream_(nullptr) { }
 
-    CSVIterator& operator+=(std::size_t skip) {
+    csv_iterator& operator+=(std::size_t skip) {
         for (size_t i = 0; i < skip; ++i) {
             ++(*this);
         }
@@ -69,43 +69,43 @@ public:
     }
 
     // Pre Increment
-    CSVIterator& operator++() {
-        if (m_str) {
-            if (!((*m_str) >> m_row)) {
-                m_str = nullptr;
+    csv_iterator& operator++() {
+        if (stream_) {
+            if (!((*stream_) >> row_)) {
+                stream_ = nullptr;
             }
         }
         return *this;
     }
 
     // Post increment
-    CSVIterator operator++(int) {
-        CSVIterator tmp(*this);
+    csv_iterator operator++(int) {
+        csv_iterator tmp(*this);
         ++(*this);
         return tmp;
     }
 
-    CSVRow const& operator*() const {
-        return m_row;
+    csv_row const& operator*() const {
+        return row_;
     }
 
-    CSVRow const* operator->() const {
-        return &m_row;
+    csv_row const* operator->() const {
+        return &row_;
     }
 
-    bool operator==(CSVIterator const& rhs) {
-        return ((this == &rhs) || ((this->m_str == nullptr) && (rhs.m_str == nullptr)));
+    bool operator==(csv_iterator const& rhs) {
+        return ((this == &rhs) || ((this->stream_ == nullptr) && (rhs.stream_ == nullptr)));
     }
 
-    bool operator!=(CSVIterator const& rhs) {
+    bool operator!=(csv_iterator const& rhs) {
         return !((*this) == rhs);
     }
 
     const std::string& operator[](std::size_t idx) {
-        return m_row[idx];
+        return row_[idx];
     }
 
 private:
-    std::istream* m_str;
-    CSVRow        m_row;
+    std::istream* stream_;
+    csv_row       row_;
 };

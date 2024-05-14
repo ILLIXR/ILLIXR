@@ -7,7 +7,7 @@ using namespace sl;
 /**
  * Conversion function between sl::Mat and cv::Mat
  **/
-cv::Mat slMat2cvMat(Mat& input) {
+cv::Mat slMat_to_cvMat(Mat& input) {
     // Mapping between MAT_TYPE and CV_TYPE
     int cv_type = -1;
     switch (input.getDataType()) {
