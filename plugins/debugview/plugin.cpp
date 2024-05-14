@@ -38,8 +38,8 @@ Eigen::Matrix4f look_at(const Eigen::Vector3f& eye, const Eigen::Vector3f& targe
     up_dir            = side_dir.cross(look_dir);
 
     Matrix4f result;
-    result << side_dir.x(), side_dir.y(), side_dir.z(), -side_dir.dot(eye), up_dir.x(), up_dir.y(), up_dir.z(), -up_dir.dot(eye),
-        -look_dir.x(), -look_dir.y(), -look_dir.z(), look_dir.dot(eye), 0, 0, 0, 1;
+    result << side_dir.x(), side_dir.y(), side_dir.z(), -side_dir.dot(eye), up_dir.x(), up_dir.y(), up_dir.z(),
+        -up_dir.dot(eye), -look_dir.x(), -look_dir.y(), -look_dir.z(), look_dir.dot(eye), 0, 0, 0, 1;
 
     return result;
 }
@@ -63,7 +63,8 @@ public:
         , switchboard_{phonebook_->lookup_impl<switchboard>()}
         , pose_prediction_{phonebook_->lookup_impl<pose_prediction>()}
         , slow_pose_reader_{switchboard_->get_reader<pose_type>("slow_pose")}
-        , fast_pose_reader_{switchboard_->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
+        , fast_pose_reader_{switchboard_->get_reader<imu_raw_type>("imu_raw")}
+        //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , rgb_depth_reader_(switchboard_->get_reader<rgb_depth_type>("rgb_depth"))
         , cam_reader_{switchboard_->get_buffered_reader<cam_type>("cam")} {
         spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
@@ -221,9 +222,11 @@ public:
             ImGui::Begin("Onboard RGBD views");
             auto window_size     = ImGui::GetWindowSize();
             auto vertical_offset = ImGui::GetCursorPos().y;
-            ImGui::Image((void*) (intptr_t) rgb_depth_texture_[0], ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
+            ImGui::Image((void*) (intptr_t) rgb_depth_texture_[0],
+                         ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
             ImGui::SameLine();
-            ImGui::Image((void*) (intptr_t) rgb_depth_texture_[1], ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
+            ImGui::Image((void*) (intptr_t) rgb_depth_texture_[1],
+                         ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
             ImGui::End();
         }
 
@@ -247,14 +250,14 @@ public:
         cv::Mat img0{cam_->img0.clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
         camera_texture_size_[0] = Eigen::Vector2i(img0.cols, img0.rows);
-        GLint swizzle_mask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
+        GLint swizzle_mask[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 
         glBindTexture(GL_TEXTURE_2D, camera_texture_[1]);
         cv::Mat img1{cam_->img1.clone()}; /// <- Adding this here to simulate the copy
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
         camera_texture_size_[1] = Eigen::Vector2i(img1.cols, img1.rows);
-        GLint swizzle_mask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
+        GLint swizzle_mask1[]   = {GL_RED, GL_RED, GL_RED, GL_RED};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask1);
 
         RAC_ERRNO_MSG("debugview at end of load_camera_images");
@@ -282,7 +285,7 @@ public:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
                      depth.ptr());
         rgbd_texture_size_[1] = Eigen::Vector2i(depth.cols, depth.rows);
-        GLint swizzle_mask[]   = {GL_RED, GL_RED, GL_RED, 1};
+        GLint swizzle_mask[]  = {GL_RED, GL_RED, GL_RED, 1};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
 
         RAC_ERRNO_MSG("debugview at end of load_rgb_depth");
@@ -290,14 +293,14 @@ public:
     }
 
     static Eigen::Matrix4f generate_headset_transform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
-                                                    const Eigen::Vector3f& position_offset) {
+                                                      const Eigen::Vector3f& position_offset) {
         Eigen::Matrix4f headset_position;
         headset_position << 1, 0, 0, position.x() + position_offset.x(), 0, 1, 0, position.y() + position_offset.y(), 0, 0, 1,
             position.z() + position_offset.z(), 0, 0, 0, 1;
 
         // We need to convert the headset rotation quaternion to a 4x4 homogenous matrix.
         // First of all, we convert to 3x3 matrix, then extend to 4x4 by augmenting.
-        Eigen::Matrix3f rotation_matrix              = rotation.toRotationMatrix();
+        Eigen::Matrix3f rotation_matrix               = rotation.toRotationMatrix();
         Eigen::Matrix4f rotation_matrix_homogeneous   = Eigen::Matrix4f::Identity();
         rotation_matrix_homogeneous.block(0, 0, 3, 3) = rotation_matrix;
         // Then we apply the headset rotation.
@@ -326,9 +329,9 @@ public:
             Eigen::Vector2d new_pos = Eigen::Vector2d{xpos, ypos};
             if (!being_dragged_) {
                 last_mouse_position_ = new_pos;
-                being_dragged_   = true;
+                being_dragged_       = true;
             }
-            mouse_velocity_ = new_pos - last_mouse_position_;
+            mouse_velocity_      = new_pos - last_mouse_position_;
             last_mouse_position_ = new_pos;
         } else {
             being_dragged_ = false;
@@ -348,9 +351,9 @@ public:
 
         const fast_pose_type predicted_pose = pose_prediction_->get_fast_pose();
         if (pose_prediction_->fast_pose_reliable()) {
-            const pose_type    pose         = predicted_pose.pose;
+            const pose_type    pose          = predicted_pose.pose;
             Eigen::Quaternionf combined_quat = pose.orientation;
-            headset_pose                     = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
+            headset_pose = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
         }
 
         Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
@@ -360,11 +363,11 @@ public:
             ? (predicted_pose.pose.position + tracking_position_offset_)
             : Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-        Eigen::Matrix4f user_view =
-            look_at(Eigen::Vector3f{(float) (view_distance_ * cos(view_euler_.y())), (float) (view_distance_ * sin(view_euler_.x())),
-                                   (float) (view_distance_ * sin(view_euler_.y()))} +
-                       optional_offset,
-                   optional_offset, Eigen::Vector3f::UnitY());
+        Eigen::Matrix4f user_view = look_at(Eigen::Vector3f{(float) (view_distance_ * cos(view_euler_.y())),
+                                                            (float) (view_distance_ * sin(view_euler_.x())),
+                                                            (float) (view_distance_ * sin(view_euler_.y()))} +
+                                                optional_offset,
+                                            optional_offset, Eigen::Vector3f::UnitY());
 
         Eigen::Matrix4f model_view = user_view * model_matrix;
 
@@ -488,11 +491,11 @@ public:
         spdlog::get(name_)->debug("Demo app shader program is program {}", demo_shader_program_);
 #endif
 
-        vertex_pos_attr    = glGetAttribLocation(demo_shader_program_, "vertexPosition");
+        vertex_pos_attr     = glGetAttribLocation(demo_shader_program_, "vertexPosition");
         vertex_normal_attr_ = glGetAttribLocation(demo_shader_program_, "vertexNormal");
         model_view_attr_    = glGetUniformLocation(demo_shader_program_, "u_modelview");
-        projection_attr_   = glGetUniformLocation(demo_shader_program_, "u_projection");
-        color_uniform_     = glGetUniformLocation(demo_shader_program_, "u_color");
+        projection_attr_    = glGetUniformLocation(demo_shader_program_, "u_projection");
+        color_uniform_      = glGetUniformLocation(demo_shader_program_, "u_color");
         RAC_ERRNO_MSG("debugview after glGetUniformLocation");
 
         // Load/initialize the demo scene.
@@ -502,7 +505,7 @@ public:
         }
 
         demo_scene_ = ObjScene(std::string(obj_dir), "scene.obj");
-        headset_   = ObjScene(std::string(obj_dir), "headset.obj");
+        headset_    = ObjScene(std::string(obj_dir), "headset.obj");
 
         // Generate fun test pattern for missing camera images.
         for (unsigned x = 0; x < TEST_PATTERN_WIDTH; x++) {
@@ -563,10 +566,10 @@ private:
 
     [[maybe_unused]] uint8_t test_pattern_[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT]{};
 
-    Eigen::Vector3d view_euler_     = Eigen::Vector3d::Zero();
+    Eigen::Vector3d view_euler_          = Eigen::Vector3d::Zero();
     Eigen::Vector2d last_mouse_position_ = Eigen::Vector2d::Zero();
-    Eigen::Vector2d mouse_velocity_ = Eigen::Vector2d::Zero();
-    bool            being_dragged_   = false;
+    Eigen::Vector2d mouse_velocity_      = Eigen::Vector2d::Zero();
+    bool            being_dragged_       = false;
 
     float view_distance_ = 2.0;
 
@@ -576,12 +579,12 @@ private:
 
     switchboard::ptr<const cam_type>       cam_;
     switchboard::ptr<const rgb_depth_type> rgb_depth_;
-    bool                                   use_cam_  = false;
+    bool                                   use_cam_       = false;
     bool                                   use_rgb_depth_ = false;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
-    GLuint          camera_texture_[2]{};
-    Eigen::Vector2i camera_texture_size_[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
-    GLuint          rgb_depth_texture_[2]{};
+    GLuint                           camera_texture_[2]{};
+    Eigen::Vector2i                  camera_texture_size_[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
+    GLuint                           rgb_depth_texture_[2]{};
     [[maybe_unused]] Eigen::Vector2i rgbd_texture_size_[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
 
     GLuint demo_vao_{};
@@ -589,8 +592,8 @@ private:
 
     [[maybe_unused]] GLuint vertex_pos_attr{};
     [[maybe_unused]] GLuint vertex_normal_attr_{};
-    GLuint model_view_attr_{};
-    GLuint projection_attr_{};
+    GLuint                  model_view_attr_{};
+    GLuint                  projection_attr_{};
 
     [[maybe_unused]] GLuint color_uniform_{};
 

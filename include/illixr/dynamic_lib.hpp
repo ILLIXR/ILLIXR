@@ -31,7 +31,7 @@ public:
 
     dynamic_lib& operator=(dynamic_lib&& other) noexcept {
         if (this != &other) {
-            handle_   = std::move(other.handle_);
+            handle_       = std::move(other.handle_);
             library_path_ = std::move(other.library_path_);
         }
         return *this;
@@ -101,7 +101,7 @@ private:
     explicit dynamic_lib(void_ptr&& handle, std::string lib_path = "")
         : handle_{std::move(handle)}
         , library_path_{std::move(lib_path)} { }
-    
+
     void_ptr    handle_;
     std::string library_path_;
 };

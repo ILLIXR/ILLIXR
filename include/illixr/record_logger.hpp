@@ -158,7 +158,8 @@ public:
                 spdlog::get("illixr")->error("[record_logger] Caller got wrong type for column {} of {}.", column,
                                              record_header_->get().get_name());
                 spdlog::get("illixr")->error("[record_logger] Caller passed: {}; record_header specifies: {}",
-                                             values_[column].type().name(), record_header_->get().get_column_type(column).name());
+                                             values_[column].type().name(),
+                                             record_header_->get().get_column_type(column).name());
                 abort();
             }
         }
@@ -364,6 +365,5 @@ private:
     std::shared_ptr<record_logger>                              logger_;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_log_;
     std::vector<record>                                         buffer_;
-
 };
 } // namespace ILLIXR

@@ -47,7 +47,7 @@ public:
                 ::accept(socket_.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
             spdlog::get(name_)->debug("[offload_vio.server_rx]: Connection is established with {}",
-                                     read_socket_->peer_address().str(":"));
+                                      read_socket_->peer_address().str(":"));
 #endif
         } else {
             auto        now        = timestamp();
@@ -64,7 +64,7 @@ public:
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
                         spdlog::get(name_)->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
-                                                 before.size());
+                                                  before.size());
                     } else {
                         receive_vio_input(vio_input);
                     }
@@ -83,7 +83,7 @@ public:
 
         decoder_ = std::make_unique<video_decoder>([this](cv::Mat&& img0, cv::Mat&& img1) {
             queue_.consume_one([&](uint64_t& timestamp) {
-                (void)timestamp;
+                (void) timestamp;
                 uint64_t curr =
                     std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
                         .count();
@@ -162,7 +162,7 @@ private:
     }
 
     std::unique_ptr<video_decoder> decoder_;
-    
+
     boost::lockfree::spsc_queue<uint64_t> queue_{1000};
     std::mutex                            mutex_;
     std::condition_variable               condition_variable_;

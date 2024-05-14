@@ -25,14 +25,14 @@ public:
      */
     void recreate_swapchain() override {
         vkb::SwapchainBuilder swapchain_builder{vkb_device_};
-        auto swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
-                                              .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-                                              .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
-                                              .build();
+        auto                  swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
+                                 .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+                                 .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
+                                 .build();
         if (!swapchain_ret) {
             ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
         }
-        vkb_swapchain_          = swapchain_ret.value();
+        vkb_swapchain_         = swapchain_ret.value();
         vk_swapchain           = vkb_swapchain_.swapchain;
         swapchain_images       = vkb_swapchain_.get_images().value();
         swapchain_image_views  = vkb_swapchain_.get_image_views().value();
@@ -83,21 +83,21 @@ private:
                 .require_api_version(1, 2)
                 .request_validation_layers()
                 .enable_validation_layers()
-                .set_debug_callback([](VkDebugUtilsMessageSeverityFlagBitsEXT      message_severity,
-                                       VkDebugUtilsMessageTypeFlagsEXT             message_type,
-                                       const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data, void* p_user_data) -> VkBool32 {
-                    (void)p_user_data;
-                    auto severity = vkb::to_string_message_severity(message_severity);
-                    auto type     = vkb::to_string_message_type(message_type);
-                    spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, p_callback_data->pMessage);
-                    return VK_FALSE;
-                })
+                .set_debug_callback(
+                    [](VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type,
+                       const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data, void* p_user_data) -> VkBool32 {
+                        (void) p_user_data;
+                        auto severity = vkb::to_string_message_severity(message_severity);
+                        auto type     = vkb::to_string_message_type(message_type);
+                        spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, p_callback_data->pMessage);
+                        return VK_FALSE;
+                    })
                 .build();
         if (!instance_ret) {
             ILLIXR::abort("Failed to create Vulkan instance. Error: " + instance_ret.error().message());
         }
         vkb_instance_ = instance_ret.value();
-        vk_instance  = vkb_instance_.instance;
+        vk_instance   = vkb_instance_.instance;
 
         vkb::PhysicalDeviceSelector selector{vkb_instance_};
         if (glfwCreateWindowSurface(vkb_instance_.instance, (GLFWwindow*) window, nullptr, &vk_surface) != VK_SUCCESS) {
@@ -113,7 +113,7 @@ private:
         if (!physical_device_ret) {
             ILLIXR::abort("Failed to select Vulkan Physical Device. Error: " + physical_device_ret.error().message());
         }
-        physical_device_    = physical_device_ret.value();
+        physical_device_   = physical_device_ret.value();
         vk_physical_device = physical_device_.physical_device;
 
         vkb::DeviceBuilder device_builder{physical_device_};
@@ -131,7 +131,7 @@ private:
             ILLIXR::abort("Failed to create Vulkan device. Error: " + device_ret.error().message());
         }
         vkb_device_ = device_ret.value();
-        vk_device  = vkb_device_.device;
+        vk_device   = vkb_device_.device;
 
         auto graphics_queue_ret = vkb_device_.get_queue(vkb::QueueType::graphics);
         if (!graphics_queue_ret) {
@@ -156,7 +156,7 @@ private:
             ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
         }
         vkb_swapchain_ = swapchain_ret.value();
-        vk_swapchain  = vkb_swapchain_.swapchain;
+        vk_swapchain   = vkb_swapchain_.swapchain;
 
         swapchain_images       = vkb_swapchain_.get_images().value();
         swapchain_image_views  = vkb_swapchain_.get_image_views().value();

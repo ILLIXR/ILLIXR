@@ -19,11 +19,11 @@ using namespace ILLIXR;
 // Set exposure to 8% of camera frame time. This is an empirically determined number
 static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
 
-//const record_header __imu_cam_record{"imu_cam",
-//                                     {
-//                                         {"iteration_no", typeid(std::size_t)},
-//                                         {"has_camera", typeid(bool)},
-//                                     }};
+// const record_header __imu_cam_record{"imu_cam",
+//                                      {
+//                                          {"iteration_no", typeid(std::size_t)},
+//                                          {"has_camera", typeid(bool)},
+//                                      }};
 
 struct cam_type_zed : public switchboard::event {
     cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
@@ -111,11 +111,11 @@ protected:
         zed_cam_->retrieveImage(rgb_zed_, VIEW::LEFT, MEM::CPU, image_size_);
 
         cam_.put(cam_.allocate<cam_type_zed>({cv::Mat{imageL_ocv_.clone()}, cv::Mat{imageR_ocv_.clone()},
-                                                  cv::Mat{rgb_ocv_.clone()}, cv::Mat{depth_ocv_.clone()}, ++serial_no_}));
+                                              cv::Mat{rgb_ocv_.clone()}, cv::Mat{depth_ocv_.clone()}, ++serial_no_}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
-    
+
 private:
     const std::shared_ptr<switchboard>          switchboard_;
     const std::shared_ptr<const relative_clock> clock_;
@@ -124,7 +124,7 @@ private:
     Resolution                                  image_size_;
     RuntimeParameters                           runtime_parameters_;
     std::size_t                                 serial_no_{0};
-    
+
     Mat imageL_zed_;
     Mat imageR_zed_;
     Mat depth_zed_;
@@ -204,8 +204,10 @@ protected:
 
         switchboard::ptr<const cam_type_zed> cam_type_z = cam_reader_.get_ro_nullable();
         if (cam_type_z && cam_type_z->serial_no != last_serial_no_) {
-            cam_publisher_.put(cam_publisher_.allocate<cam_type>({imu_time_point, cv::Mat{cam_type_z->img0}, cv::Mat{cam_type_z->img1}}));
-            rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({imu_time_point, cv::Mat{cam_type_z->rgb}, cv::Mat{cam_type_z->depth}}));
+            cam_publisher_.put(
+                cam_publisher_.allocate<cam_type>({imu_time_point, cv::Mat{cam_type_z->img0}, cv::Mat{cam_type_z->img1}}));
+            rgb_depth_.put(
+                rgb_depth_.allocate<rgb_depth_type>({imu_time_point, cv::Mat{cam_type_z->rgb}, cv::Mat{cam_type_z->depth}}));
             last_serial_no_ = cam_type_z->serial_no;
         }
 

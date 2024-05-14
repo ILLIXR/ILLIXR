@@ -104,7 +104,8 @@ public:
         last_time_ = clock_->now();
 
         // Note: glXMakeContextCurrent must be called from the thread which will be using it.
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+        [[maybe_unused]] const bool gl_result =
+            static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
         assert(gl_result && "glXMakeCurrent should not fail");
     }
 
@@ -179,7 +180,7 @@ public:
 
         if (log_count_ > LOG_PERIOD) {
             spdlog::get(name_)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer_, frame_duration_s,
-                                     fps);
+                                      fps);
         }
 #endif
         last_time_ = clock_->now();
@@ -206,9 +207,10 @@ public:
 public:
     // We override start() to control our own lifecycle
     void start() override {
-        [[maybe_unused]] const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
+        [[maybe_unused]] const bool gl_result_0 =
+            static_cast<bool>(glXMakeCurrent(ext_window_->display_, ext_window_->window_, ext_window_->context_));
         assert(gl_result_0 && "glXMakeCurrent should not fail");
-        
+
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
@@ -267,7 +269,7 @@ public:
     }
 
 #ifndef NDEBUG
-    size_t log_count_  = 0;
+    size_t       log_count_ = 0;
     const size_t LOG_PERIOD = 20;
 #endif
 
@@ -276,7 +278,7 @@ private:
         // Create the shared eye texture handle
         glGenTextures(1, texture_handle);
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
-        
+
         // Set the texture parameters for the texture that the FBO will be mapped into
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -321,7 +323,7 @@ private:
     const std::unique_ptr<const xlib_gl_extended_window>              ext_window_;
     const std::shared_ptr<switchboard>                                switchboard_;
     const std::shared_ptr<pose_prediction>                            pose_prediction_;
-    const std::shared_ptr<const relative_clock>                        clock_;
+    const std::shared_ptr<const relative_clock>                       clock_;
     const switchboard::reader<switchboard::event_wrapper<time_point>> vsync_;
 
     // Switchboard plug for application eye buffer.
@@ -342,8 +344,8 @@ private:
 
     [[maybe_unused]] GLuint vertex_position_{};
     [[maybe_unused]] GLuint vertex_normal_{};
-    GLuint model_view_{};
-    GLuint projection_{};
+    GLuint                  model_view_{};
+    GLuint                  projection_{};
 
     [[maybe_unused]] GLuint color_uniform_{};
 

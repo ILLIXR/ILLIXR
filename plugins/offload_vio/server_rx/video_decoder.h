@@ -42,7 +42,6 @@ private:
     GstMapInfo              img1_map_{};
     bool                    img0_ready_ = false;
     bool                    img1_ready_ = false;
-
 };
 
 } // namespace ILLIXR

@@ -129,8 +129,8 @@ public:
         attributes.background_pixel = 0;
         attributes.border_pixel     = 0;
         attributes.event_mask       = ExposureMask | KeyPressMask;
-        window_                     = XCreateWindow(display_, root, 0, 0, width_, height_, 0, vis_info->depth, InputOutput, vis_info->visual,
-                                                    CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
+        window_ = XCreateWindow(display_, root, 0, 0, width_, height_, 0, vis_info->depth, InputOutput, vis_info->visual,
+                                CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
         if (!window_) {
             ILLIXR::abort("Failed to create window");
         }
@@ -202,7 +202,6 @@ public:
     Display*   display_;
     Window     window_;
     GLXContext context_;
-
 
 private:
     Colormap color_map_;

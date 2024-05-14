@@ -28,9 +28,10 @@ public:
         , is_success_{true} /// TODO: Set with #198
         , obj_dir_{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
         spdlogger(std::getenv("OFFLOAD_DATA_LOG_LEVEL"));
-        switchboard_->schedule<texture_pose>(id_, "texture_pose", [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
-            callback(datum);
-        });
+        switchboard_->schedule<texture_pose>(id_, "texture_pose",
+                                             [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
+                                                 callback(datum);
+                                             });
     }
 
     void callback(const switchboard::ptr<const texture_pose>& datum) {
@@ -112,7 +113,7 @@ private:
 
             // Write image
             is_success_ = stbi_write_png(image_name.c_str(), display_params::width_pixels, display_params::height_pixels, 3,
-                                        container_it->image, 0);
+                                         container_it->image, 0);
             if (!is_success_) {
                 ILLIXR::abort("Image create failed !!! ");
             }

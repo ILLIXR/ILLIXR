@@ -46,13 +46,13 @@ const record_header _switchboard_callback_header{
  * @Should be private to Switchboard.
  */
 const record_header _switchboard_topic_stop_header{"switchboard_topic_stop",
-                                                    {
-                                                        {"plugin_id", typeid(plugin_id_t)},
-                                                        {"topic_name", typeid(std::string)},
-                                                        {"enqueued", typeid(std::size_t)},
-                                                        {"dequeued", typeid(std::size_t)},
-                                                        {"idle_cycles", typeid(std::size_t)},
-                                                    }};
+                                                   {
+                                                       {"plugin_id", typeid(plugin_id_t)},
+                                                       {"topic_name", typeid(std::string)},
+                                                       {"enqueued", typeid(std::size_t)},
+                                                       {"dequeued", typeid(std::size_t)},
+                                                       {"idle_cycles", typeid(std::size_t)},
+                                                   }};
 
 /**
  * @brief A manager for typesafe, threadsafe, named event-streams (called
@@ -151,6 +151,7 @@ public:
         const Underlying_type& operator*() const {
             return underlying_data_;
         }
+
     private:
         Underlying_type underlying_data_;
     };
@@ -168,7 +169,7 @@ private:
     public:
         topic_subscription(const std::string& topic_name, plugin_id_t plugin_id,
                            std::function<void(ptr<const event>&&, std::size_t)> callback,
-                           const std::shared_ptr<record_logger>& record_logger_)
+                           const std::shared_ptr<record_logger>&                record_logger_)
             : topic_name_{topic_name}
             , plugin_id_{plugin_id}
             , callback_{std::move(callback)}
@@ -198,6 +199,7 @@ private:
                 enqueued_++;
             }
         }
+
     private:
         static void thread_on_start() {
 #ifndef NDEBUG
@@ -223,15 +225,15 @@ private:
                 callback_(std::move(this_event), dequeued_);
                 if (cb_log_) {
                     cb_log_.log(record{_switchboard_callback_header,
-                                         {
-                                             {plugin_id_},
-                                             {topic_name_},
-                                             {dequeued_},
-                                             {cb_start_cpu_time},
-                                             {thread_cpu_time()},
-                                             {cb_start_wall_time},
-                                             {std::chrono::high_resolution_clock::now()},
-                                         }});
+                                       {
+                                           {plugin_id_},
+                                           {topic_name_},
+                                           {dequeued_},
+                                           {cb_start_cpu_time},
+                                           {thread_cpu_time()},
+                                           {cb_start_wall_time},
+                                           {std::chrono::high_resolution_clock::now()},
+                                       }});
                 }
             } else {
                 // Nothing to do.
@@ -256,13 +258,13 @@ private:
             // Log stats
             if (record_logger_) {
                 record_logger_->log(record{_switchboard_topic_stop_header,
-                                             {
-                                                 {plugin_id_},
-                                                 {topic_name_},
-                                                 {dequeued_},
-                                                 {unprocessed},
-                                                 {idle_cycles_},
-                                             }});
+                                           {
+                                               {plugin_id_},
+                                               {topic_name_},
+                                               {dequeued_},
+                                               {unprocessed},
+                                               {idle_cycles_},
+                                           }});
             }
         }
 
@@ -307,6 +309,7 @@ private:
             queue_.wait_dequeue(token_, obj);
             return obj;
         }
+
     private:
         moodycamel::BlockingConcurrentQueue<ptr<const event>> queue_{8 /*max size estimate*/};
         moodycamel::ConsumerToken                             token_{queue_};
@@ -432,8 +435,9 @@ private:
             const std::unique_lock lock{subscriptions_lock_};
             subscriptions_.clear();
         }
+
     private:
-        static constexpr std::size_t                      latest_buffer_size_ = 256;
+        static constexpr std::size_t latest_buffer_size_ = 256;
 
         const std::string                                 name_;
         const std::type_info&                             type_info_;
@@ -508,6 +512,7 @@ public:
             ptr<const Specific_event> this_specific_event = get_ro();
             return std::make_shared<Specific_event>(*this_specific_event);
         }
+
     private:
         /// Reference to the underlying topic
         topic& topic_;
@@ -532,11 +537,11 @@ public:
             ptr<const Specific_event> this_specific_event = std::dynamic_pointer_cast<const Specific_event>(this_event);
             return this_specific_event;
         }
+
     private:
         topic&        topic_;
         size_t        serial_no_ = 0;
         topic_buffer& topic_buffer_;
-
     };
 
     /**

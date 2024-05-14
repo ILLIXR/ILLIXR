@@ -83,9 +83,9 @@ public:
         spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> x_win = phonebook_->lookup_impl<xlib_gl_extended_window>();
-        display_                                            = x_win->display_;
-        root_window_                                        = x_win->window_;
-        context_                                            = x_win->context_;
+        display_                                             = x_win->display_;
+        root_window_                                         = x_win->window_;
+        context_                                             = x_win->context_;
 #else
         // If we use Monado, timewarp_gl must create its own GL context because the extended window isn't used
         std::cout << "Timewarp creating GL Context" << std::endl;
@@ -116,69 +116,71 @@ public:
         rendering_ready_     = false;
         image_handles_ready_ = false;
 
-        switchboard_->schedule<image_handle>(id_, "image_handle", [this](const switchboard::ptr<const image_handle>& handle, std::size_t) {
+        switchboard_->schedule<image_handle>(id_, "image_handle",
+                                             [this](const switchboard::ptr<const image_handle>& handle, std::size_t) {
         // only 2 swapchains (for the left and right eye) are supported for now.
 #ifdef ILLIXR_MONADO
-            static bool left_output_ready = false, right_output_ready = false;
+                                                 static bool left_output_ready = false, right_output_ready = false;
 #else
             static bool left_output_ready = true, right_output_ready = true;
 #endif
 
-            switch (handle->usage) {
-            case swapchain_usage::LEFT_SWAPCHAIN: {
-                this->eye_image_handles_[0].push_back(*handle);
-                this->eye_swapchains_size_[0] = handle->num_images;
-                break;
-            }
-            case swapchain_usage::RIGHT_SWAPCHAIN: {
-                this->eye_image_handles_[1].push_back(*handle);
-                this->eye_swapchains_size_[1] = handle->num_images;
-                break;
-            }
+                                                 switch (handle->usage) {
+                                                 case swapchain_usage::LEFT_SWAPCHAIN: {
+                                                     this->eye_image_handles_[0].push_back(*handle);
+                                                     this->eye_swapchains_size_[0] = handle->num_images;
+                                                     break;
+                                                 }
+                                                 case swapchain_usage::RIGHT_SWAPCHAIN: {
+                                                     this->eye_image_handles_[1].push_back(*handle);
+                                                     this->eye_swapchains_size_[1] = handle->num_images;
+                                                     break;
+                                                 }
 #ifdef ILLIXR_MONADO
-            case swapchain_usage::LEFT_RENDER: {
-                this->eye_output_handles_[0] = *handle;
-                left_output_ready              = true;
-                break;
-            }
-            case swapchain_usage::RIGHT_RENDER: {
-                this->eye_output_handles_[1] = *handle;
-                right_output_ready             = true;
-                break;
-            }
+                                                 case swapchain_usage::LEFT_RENDER: {
+                                                     this->eye_output_handles_[0] = *handle;
+                                                     left_output_ready            = true;
+                                                     break;
+                                                 }
+                                                 case swapchain_usage::RIGHT_RENDER: {
+                                                     this->eye_output_handles_[1] = *handle;
+                                                     right_output_ready           = true;
+                                                     break;
+                                                 }
 #endif
-            default: {
-                spdlog::get(name_)->warn("Invalid swapchain usage provided");
-                break;
-            }
-            }
+                                                 default: {
+                                                     spdlog::get(name_)->warn("Invalid swapchain usage provided");
+                                                     break;
+                                                 }
+                                                 }
 
-            if (client_backend_ == graphics_api::TBD) {
-                client_backend_ = handle->type;
-            } else {
-                assert(client_backend_ == handle->type);
-            }
+                                                 if (client_backend_ == graphics_api::TBD) {
+                                                     client_backend_ = handle->type;
+                                                 } else {
+                                                     assert(client_backend_ == handle->type);
+                                                 }
 
-            if (this->eye_image_handles_[0].size() == this->eye_swapchains_size_[0] &&
-                this->eye_image_handles_[1].size() == this->eye_swapchains_size_[1] && left_output_ready &&
-                right_output_ready) {
-                image_handles_ready_ = true;
-            }
-        });
+                                                 if (this->eye_image_handles_[0].size() == this->eye_swapchains_size_[0] &&
+                                                     this->eye_image_handles_[1].size() == this->eye_swapchains_size_[1] &&
+                                                     left_output_ready && right_output_ready) {
+                                                     image_handles_ready_ = true;
+                                                 }
+                                             });
 
         this->_setup();
 
 #ifdef ILLIXR_MONADO
-        switchboard_->schedule<rendered_frame>(id_, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
-            this->warp(datum);
-        });
+        switchboard_->schedule<rendered_frame>(id_, "eyebuffer",
+                                               [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
+                                                   this->warp(datum);
+                                               });
 #endif
     }
 
 private:
     GLubyte* read_texture_image() {
         const unsigned mem_size = display_params::width_pixels * display_params::height_pixels * 3;
-        auto*          pixels  = new GLubyte[mem_size];
+        auto*          pixels   = new GLubyte[mem_size];
 
         // Start timer
         time_point start_get_tex_time = clock_->now();
@@ -232,7 +234,8 @@ private:
         GLuint image_handle;
         glGenTextures(1, &image_handle);
         glBindTexture(GL_TEXTURE_2D, image_handle);
-        glTextureStorageMem2DEXT(image_handle, 1, format, static_cast<GLsizei>(vk_handle.width), static_cast<GLsizei>(vk_handle.height), memory_handle, 0);
+        glTextureStorageMem2DEXT(image_handle, 1, format, static_cast<GLsizei>(vk_handle.width),
+                                 static_cast<GLsizei>(vk_handle.height), memory_handle, 0);
 
         float color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
@@ -258,7 +261,7 @@ private:
         }
         default: {
             assert(false && "Invalid swapchain usage");
-            //break;
+            // break;
         }
         }
     }
@@ -343,14 +346,15 @@ private:
 
     /* Calculate timewarp transform from projection matrix, view matrix, etc */
     static void calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
-                                    const Eigen::Matrix4f& render_view_matrix, const Eigen::Matrix4f& new_view_matrix) {
+                                              const Eigen::Matrix4f& render_view_matrix,
+                                              const Eigen::Matrix4f& new_view_matrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f tex_coord_projection;
-        tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f;
+        tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f,
+            0.0f, 0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 1.0f;
 
         // Calculate the delta between the view matrix used for rendering and
         // a more recent or predicted view matrix based on new sensor input.
@@ -396,7 +400,8 @@ public:
 
         // set swap interval for 1
         // TODO do we still need this if timewarp is not doing the presenting?
-        auto glx_swap_interval_ext = (glx_swap_interval_ext_proc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
+        auto glx_swap_interval_ext =
+            (glx_swap_interval_ext_proc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
         glx_swap_interval_ext(display_, root_window_, 1);
 
         // Init and verify GLEW
@@ -419,7 +424,8 @@ public:
         timewarp_shader_program_ =
             init_and_link(time_warp_chromatic_vertex_program_GLSL, time_warp_chromatic_fragment_program_GLSL_alternative);
 #else
-        timewarp_shader_program_ = init_and_link(time_warp_chromatic_vertex_program_GLSL, time_warp_chromatic_fragment_program_GLSL);
+        timewarp_shader_program_ =
+            init_and_link(time_warp_chromatic_vertex_program_GLSL, time_warp_chromatic_fragment_program_GLSL);
 #endif
         // Acquire attribute and uniform locations from the compiled and linked shader program
         distortion_pos_attr_ = glGetAttribLocation(timewarp_shader_program_, "vertexPosition");
@@ -579,7 +585,7 @@ public:
         Eigen::Matrix4f view_matrix_begin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
-        const fast_pose_type latest_pose  = disable_warp_ ? most_recent_frame->render_pose : pose_prediction_->get_fast_pose();
+        const fast_pose_type latest_pose = disable_warp_ ? most_recent_frame->render_pose : pose_prediction_->get_fast_pose();
         view_matrix_begin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -597,7 +603,8 @@ public:
 
         glUniformMatrix4fv(static_cast<GLint>(tw_start_transform_uniform_), 1, GL_FALSE,
                            (GLfloat*) (time_warp_start_transform4x4.data()));
-        glUniformMatrix4fv(static_cast<GLint>(tw_end_transform_uniform_), 1, GL_FALSE, (GLfloat*) (time_warp_end_transform4x4.data()));
+        glUniformMatrix4fv(static_cast<GLint>(tw_end_transform_uniform_), 1, GL_FALSE,
+                           (GLfloat*) (time_warp_end_transform4x4.data()));
 
         // Flip the Y axis if the client is using a Vulkan backend
         glUniform1i(static_cast<GLint>(flip_y_uniform_), false);
@@ -695,24 +702,25 @@ public:
         glXSwapBuffers(display_, root_window_);
 
         // The swap time needs to be obtained and published as soon as possible
-        time_last_swap_                              = clock_->now();
+        time_last_swap_                             = clock_->now();
         [[maybe_unused]] time_point time_after_swap = time_last_swap_;
 
         // Now that we have the most recent swap time, we can publish the new estimate.
-        vsync_estimate_.put(vsync_estimate_.allocate<switchboard::event_wrapper<time_point>>(switchboard::event_wrapper<time_point>(get_next_swap_time_estimate())));
+        vsync_estimate_.put(vsync_estimate_.allocate<switchboard::event_wrapper<time_point>>(
+            switchboard::event_wrapper<time_point>(get_next_swap_time_estimate())));
 
         std::chrono::nanoseconds imu_to_display     = time_last_swap_ - latest_pose.pose.sensor_time;
         std::chrono::nanoseconds predict_to_display = time_last_swap_ - latest_pose.predict_computed_time;
         std::chrono::nanoseconds render_to_display  = time_last_swap_ - most_recent_frame->render_time;
 
         mtp_logger_.log(record{mtp_record,
-                              {
-                                  {iteration_no},
-                                  {time_last_swap_},
-                                  {imu_to_display},
-                                  {predict_to_display},
-                                  {render_to_display},
-                              }});
+                               {
+                                   {iteration_no},
+                                   {time_last_swap_},
+                                   {imu_to_display},
+                                   {predict_to_display},
+                                   {render_to_display},
+                               }});
 
     #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
@@ -759,12 +767,12 @@ public:
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 
         timewarp_gpu_logger_.log(record{timewarp_gpu_record,
-                                       {
-                                           {iteration_no},
-                                           {gpu_start_wall_time},
-                                           {clock_->now()},
-                                           {std::chrono::nanoseconds(elapsed_time)},
-                                       }});
+                                        {
+                                            {iteration_no},
+                                            {gpu_start_wall_time},
+                                            {clock_->now()},
+                                            {std::chrono::nanoseconds(elapsed_time)},
+                                        }});
 
 #ifdef ILLIXR_MONADO
         // Manually increment the iteration number if timewarp is running as a plugin
@@ -810,10 +818,10 @@ public:
     }
 #endif
 
-    const std::shared_ptr<switchboard>         switchboard_;
-    const std::shared_ptr<pose_prediction>     pose_prediction_;
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<pose_prediction>      pose_prediction_;
     const std::shared_ptr<const relative_clock> clock_;
-    
+
     // OpenGL objects
     Display*   display_;
     Window     root_window_;
@@ -869,7 +877,7 @@ public:
     HMD::hmd_info_t hmd_info_{};
 
     // Eye sampler array
-    GLuint eye_sampler_0_{};
+    GLuint                  eye_sampler_0_{};
     [[maybe_unused]] GLuint eye_sampler_1_{};
 
     // Eye index uniform

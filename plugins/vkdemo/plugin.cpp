@@ -69,10 +69,10 @@ struct texture {
 };
 
 struct model {
-    int      texture_index;
+    int                       texture_index;
     [[maybe_unused]] uint32_t vertex_offset;
-    uint32_t index_offset;
-    uint32_t index_count;
+    uint32_t                  index_offset;
+    uint32_t                  index_count;
 };
 
 struct model_push_constant {
@@ -104,7 +104,8 @@ public:
         if (display_sink_->vma_allocator) {
             this->vma_allocator_ = display_sink_->vma_allocator;
         } else {
-            this->vma_allocator_ = vulkan_utils::create_vma_allocator(display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
+            this->vma_allocator_ = vulkan_utils::create_vma_allocator(
+                display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
         }
 
         command_pool_   = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
@@ -139,11 +140,11 @@ public:
     void record_command_buffer(VkCommandBuffer command_buffer, int eye) override {
         vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer     vertex_buffers[] = {vertex_buffer_};
-        VkDeviceSize offsets[]       = {0};
+        VkDeviceSize offsets[]        = {0};
         vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
         vkCmdBindIndexBuffer(command_buffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1, &descriptor_sets_[eye], 0,
-                                nullptr);
+        vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1, &descriptor_sets_[eye],
+                                0, nullptr);
 
         for (auto& model : models_) {
             model_push_constant push_constant{};
@@ -195,7 +196,7 @@ private:
             }
             VkDescriptorImageInfo image_info{
                 nullptr,                                  // sampler
-                textures_[i].image_view,                   // imageView
+                textures_[i].image_view,                  // imageView
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, // imageLayout
             };
             texture_map_.insert(std::make_pair(i, image_infos_.size()));
@@ -221,11 +222,11 @@ private:
         };
 
         VkDescriptorSetLayoutBinding sampled_image_layout_binding{
-            2,                                     // binding
-            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,      // descriptorType
+            2,                                      // binding
+            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,       // descriptorType
             static_cast<uint>(texture_map_.size()), // descriptorCount
-            VK_SHADER_STAGE_FRAGMENT_BIT,          // stageFlags
-            nullptr                                // pImmutableSamplers
+            VK_SHADER_STAGE_FRAGMENT_BIT,           // stageFlags
+            nullptr                                 // pImmutableSamplers
         };
 
         VkDescriptorSetLayoutCreateInfo layout_info{
@@ -247,7 +248,7 @@ private:
                 VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
                 nullptr,                              // pNext
                 0,                                    // flags
-                sizeof(uniform_buffer_object),          // size
+                sizeof(uniform_buffer_object),        // size
                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,   // usage
                 {},                                   // sharingMode
                 0,                                    // queueFamilyIndexCount
@@ -273,7 +274,7 @@ private:
                                                             2                           // descriptorCount
                                                         },
                                                         {
-                                                            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,             // type
+                                                            VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,              // type
                                                             static_cast<uint32_t>(2 * texture_map_.size()) // descriptorCount
                                                         }}};
         VkDescriptorPoolCreateInfo          pool_info{
@@ -319,7 +320,7 @@ private:
         VkDescriptorSetAllocateInfo alloc_info{
             VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
             nullptr,                                        // pNext
-            descriptor_pool_,                                // descriptorPool
+            descriptor_pool_,                               // descriptorPool
             2,                                              // descriptorSetCount
             layouts                                         // pSetLayouts
         };
@@ -327,20 +328,20 @@ private:
         VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(display_sink_->vk_device, &alloc_info, descriptor_sets_.data()))
 
         std::array<VkDescriptorBufferInfo, 2> buffer_infos = {{{
-                                                                   uniform_buffers_[0],         // buffer
-                                                                   0,                          // offset
+                                                                   uniform_buffers_[0],          // buffer
+                                                                   0,                            // offset
                                                                    sizeof(uniform_buffer_object) // range
                                                                },
                                                                {
-                                                                   uniform_buffers_[1],         // buffer
-                                                                   0,                          // offset
+                                                                   uniform_buffers_[1],          // buffer
+                                                                   0,                            // offset
                                                                    sizeof(uniform_buffer_object) // range
                                                                }}};
 
         std::array<VkWriteDescriptorSet, 2> descriptor_writes = {{{
                                                                       VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
                                                                       nullptr,                                // pNext
-                                                                      descriptor_sets_[0],                     // dstSet
+                                                                      descriptor_sets_[0],                    // dstSet
                                                                       0,                                      // dstBinding
                                                                       0,                                      // dstArrayElement
                                                                       1,                                      // descriptorCount
@@ -352,7 +353,7 @@ private:
                                                                   {
                                                                       VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
                                                                       nullptr,                                // pNext
-                                                                      descriptor_sets_[1],                     // dstSet
+                                                                      descriptor_sets_[1],                    // dstSet
                                                                       0,                                      // dstBinding
                                                                       0,                                      // dstArrayElement
                                                                       1,                                      // descriptorCount
@@ -362,8 +363,8 @@ private:
                                                                       nullptr // pTexelBufferView
                                                                   }}};
 
-        vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0,
-                               nullptr);
+        vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()),
+                               descriptor_writes.data(), 0, nullptr);
 
         std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
         for (auto i = 0; i < 2; i++) {
@@ -371,7 +372,7 @@ private:
             image_descriptor_writes.push_back({
                 VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
                 nullptr,                                // pNext
-                descriptor_sets_[i],                     // dstSet
+                descriptor_sets_[i],                    // dstSet
                 1,                                      // dstBinding
                 0,                                      // dstArrayElement
                 1,                                      // descriptorCount
@@ -383,16 +384,16 @@ private:
 
             assert(!image_infos_.empty());
             image_descriptor_writes.push_back({
-                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,    // sType
-                nullptr,                                   // pNext
+                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,     // sType
+                nullptr,                                    // pNext
                 descriptor_sets_[i],                        // dstSet
-                2,                                         // dstBinding
-                0,                                         // dstArrayElement
+                2,                                          // dstBinding
+                0,                                          // dstArrayElement
                 static_cast<uint32_t>(image_infos_.size()), // descriptorCount
-                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,          // descriptorType
+                VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,           // descriptorType
                 image_infos_.data(),                        // pImageInfo
-                nullptr,                                   // pBufferInfo
-                nullptr                                    // pTexelBufferView
+                nullptr,                                    // pBufferInfo
+                nullptr                                     // pTexelBufferView
             });
         }
 
@@ -448,8 +449,8 @@ private:
         alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
         alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
 
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
-                                          &staging_buffer_allocation_info))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &staging_buffer,
+                                          &staging_buffer_allocation, &staging_buffer_allocation_info))
 
         memcpy(staging_buffer_allocation_info.pMappedData, data, static_cast<size_t>(image_size));
 
@@ -486,8 +487,8 @@ private:
         image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan_utils::copy_buffer_to_image(display_sink_->vk_device, display_sink_->graphics_queue, command_pool_, staging_buffer, textures_[i].image,
-                                           width, height);
+        vulkan_utils::copy_buffer_to_image(display_sink_->vk_device, display_sink_->graphics_queue, command_pool_,
+                                           staging_buffer, textures_[i].image, width, height);
 
         image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -498,7 +499,7 @@ private:
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
             nullptr,                                  // pNext
             0,                                        // flags
-            textures_[i].image,                        // image
+            textures_[i].image,                       // image
             VK_IMAGE_VIEW_TYPE_2D,                    // viewType
             VK_FORMAT_R8G8B8A8_SRGB,                  // format
             {},                                       // components
@@ -566,7 +567,8 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue,
+                                           command_buffer_local);
     }
 
     void load_model() {
@@ -626,14 +628,14 @@ private:
 
     void create_vertex_buffer() {
         VkBufferCreateInfo staging_buffer_info{
-            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
-            nullptr,                               // pNext
-            0,                                     // flags
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,    // sType
+            nullptr,                                 // pNext
+            0,                                       // flags
             sizeof(vertices_[0]) * vertices_.size(), // size
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,      // usage
-            {},                                    // sharingMode
-            0,                                     // queueFamilyIndexCount
-            nullptr                                // pQueueFamilyIndices
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,        // usage
+            {},                                      // sharingMode
+            0,                                       // queueFamilyIndexCount
+            nullptr                                  // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo staging_alloc_info{};
@@ -649,7 +651,7 @@ private:
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,                                 // sType
             nullptr,                                                              // pNext
             0,                                                                    // flags
-            sizeof(vertices_[0]) * vertices_.size(),                                // size
+            sizeof(vertices_[0]) * vertices_.size(),                              // size
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, // usage
             {},                                                                   // sharingMode
             0,                                                                    // queueFamilyIndexCount
@@ -670,26 +672,27 @@ private:
 
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
         VkBufferCopy    copy_region{
-            0,                                    // srcOffset
-            0,                                    // dstOffset
+            0,                                      // srcOffset
+            0,                                      // dstOffset
             sizeof(vertices_[0]) * vertices_.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
-        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue,
+                                           command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
     }
 
     void create_index_buffer() {
         VkBufferCreateInfo staging_buffer_info{
-            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
-            nullptr,                              // pNext
-            0,                                    // flags
-            sizeof(indices_[0]) * indices_.size(),  // size
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,     // usage
-            {},                                   // sharingMode
-            0,                                    // queueFamilyIndexCount
-            nullptr                               // pQueueFamilyIndices
+            VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,  // sType
+            nullptr,                               // pNext
+            0,                                     // flags
+            sizeof(indices_[0]) * indices_.size(), // size
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,      // usage
+            {},                                    // sharingMode
+            0,                                     // queueFamilyIndexCount
+            nullptr                                // pQueueFamilyIndices
         };
 
         VmaAllocationCreateInfo staging_alloc_info{};
@@ -705,7 +708,7 @@ private:
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,                                // sType
             nullptr,                                                             // pNext
             0,                                                                   // flags
-            sizeof(indices_[0]) * indices_.size(),                                 // size
+            sizeof(indices_[0]) * indices_.size(),                               // size
             VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, // usage
             {},                                                                  // sharingMode
             0,                                                                   // queueFamilyIndexCount
@@ -716,7 +719,8 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation buffer_allocation;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &index_buffer_, &buffer_allocation, nullptr))
+        VK_ASSERT_SUCCESS(
+            vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &index_buffer_, &buffer_allocation, nullptr))
 
         void* mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_buffer_allocation, &mapped_data))
@@ -725,12 +729,13 @@ private:
 
         VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
         VkBufferCopy    copy_region{
-            0,                                  // srcOffset
-            0,                                  // dstOffset
+            0,                                    // srcOffset
+            0,                                    // dstOffset
             sizeof(indices_[0]) * indices_.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
-        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue,
+                                           command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_buffer_allocation);
     }
@@ -790,16 +795,16 @@ private:
         };
 
         VkViewport viewport{
-            0.0f,                                            // x
-            0.0f,                                            // y
+            0.0f,                                                       // x
+            0.0f,                                                       // y
             static_cast<float>(display_sink_->swapchain_extent.width),  // width
             static_cast<float>(display_sink_->swapchain_extent.height), // height
-            0.0f,                                            // minDepth
-            1.0f                                             // maxDepth
+            0.0f,                                                       // minDepth
+            1.0f                                                        // maxDepth
         };
 
         VkRect2D scissor{
-            {0, 0},              // offset
+            {0, 0},                         // offset
             display_sink_->swapchain_extent // extent
         };
 
@@ -866,7 +871,7 @@ private:
         VkPushConstantRange push_constant_range{
             VK_SHADER_STAGE_FRAGMENT_BIT, // stageFlags
             0,                            // offset
-            sizeof(model_push_constant)     // size
+            sizeof(model_push_constant)   // size
         };
 
         VkPipelineLayoutCreateInfo pipeline_layout_info{
@@ -874,7 +879,7 @@ private:
             nullptr,                                       // pNext
             0,                                             // flags
             1,                                             // setLayoutCount
-            &descriptor_set_layout_,                        // pSetLayouts
+            &descriptor_set_layout_,                       // pSetLayouts
             1,                                             // pushConstantRangeCount
             &push_constant_range                           // pPushConstantRanges
         };
@@ -911,22 +916,23 @@ private:
             &depth_stencil,                                  // pDepthStencilState
             &color_blending,                                 // pColorBlendState
             nullptr,                                         // pDynamicState
-            pipeline_layout_,                                 // layout
+            pipeline_layout_,                                // layout
             render_pass,                                     // renderPass
             subpass,                                         // subpass
             {},                                              // basePipelineHandle
             0                                                // basePipelineIndex
         };
 
-        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(display_sink_->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
+        VK_ASSERT_SUCCESS(
+            vkCreateGraphicsPipelines(display_sink_->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline))
 
         vkDestroyShaderModule(display_sink_->vk_device, vert, nullptr);
         vkDestroyShaderModule(display_sink_->vk_device, frag, nullptr);
     }
 
-    const std::shared_ptr<switchboard>         switchboard_;
-    const std::shared_ptr<pose_prediction>     pose_prediction_;
-    const std::shared_ptr<display_sink>        display_sink_ = nullptr;
+    const std::shared_ptr<switchboard>          switchboard_;
+    const std::shared_ptr<pose_prediction>      pose_prediction_;
+    const std::shared_ptr<display_sink>         display_sink_ = nullptr;
     const std::shared_ptr<const relative_clock> clock_;
 
     Eigen::Matrix4f       basic_projection_;
@@ -936,8 +942,8 @@ private:
 
     std::array<std::vector<VkImageView>, 2> buffer_pool_;
 
-    VmaAllocator    vma_allocator_{};
-    VkCommandPool   command_pool_{};
+    VmaAllocator                     vma_allocator_{};
+    VkCommandPool                    command_pool_{};
     [[maybe_unused]] VkCommandBuffer command_buffer_{};
 
     VkDescriptorSetLayout          descriptor_set_layout_{};

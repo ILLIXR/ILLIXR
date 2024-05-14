@@ -46,15 +46,15 @@ public:
 
     void _p_one_iteration() override {
         if (is_socket_connected_) {
-            //auto        now        = timestamp();
+            // auto        now        = timestamp();
             std::string delimiter = "END!";
-            std::string recv_data  = socket_.read(); /* Blocking operation, wait for the data to come */
+            std::string recv_data = socket_.read(); /* Blocking operation, wait for the data to come */
             if (!recv_data.empty()) {
-                buffer_str_                          = buffer_str_ + recv_data;
+                buffer_str_                         = buffer_str_ + recv_data;
                 std::string::size_type end_position = buffer_str_.find(delimiter);
                 while (end_position != std::string::npos) {
                     std::string before = buffer_str_.substr(0, end_position);
-                    buffer_str_         = buffer_str_.substr(end_position + delimiter.size());
+                    buffer_str_        = buffer_str_.substr(end_position + delimiter.size());
 
                     // process the data
                     vio_output_proto::VIOOutput vio_output;
@@ -72,7 +72,7 @@ public:
 
 private:
     void receive_vio_output(const vio_output_proto::VIOOutput& vio_output, const std::string& str_data) {
-        (void)str_data;
+        (void) str_data;
         const vio_output_proto::SlowPose& slow_pose = vio_output.slow_pose();
 
         pose_type datum_pose_tmp{

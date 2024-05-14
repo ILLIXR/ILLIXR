@@ -32,17 +32,18 @@ public:
     void start() override {
         plugin::start();
 
-        switchboard_->schedule<pose_type>(id_, "slow_pose", [this](const switchboard::ptr<const pose_type>& datum, std::size_t) {
-            this->send_vio_output(datum);
-        });
+        switchboard_->schedule<pose_type>(id_, "slow_pose",
+                                          [this](const switchboard::ptr<const pose_type>& datum, std::size_t) {
+                                              this->send_vio_output(datum);
+                                          });
         switchboard_->schedule<connection_signal>(id_, "connection_signal",
-                                        [this](const switchboard::ptr<const connection_signal>& datum, std::size_t) {
-                                            this->start_accepting_connection(datum);
-                                        });
+                                                  [this](const switchboard::ptr<const connection_signal>& datum, std::size_t) {
+                                                      this->start_accepting_connection(datum);
+                                                  });
     }
 
     void start_accepting_connection(const switchboard::ptr<const connection_signal>& datum) {
-        (void)datum;
+        (void) datum;
         socket_.listen();
 #ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.server_tx]: Waiting for connection!");
@@ -51,7 +52,7 @@ public:
             "accept", ::accept(socket_.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.server_tx]: Connection is established with {}",
-                                 write_socket->peer_address().str(":"));
+                                  write_socket->peer_address().str(":"));
 #endif
     }
 
@@ -153,10 +154,10 @@ private:
     const std::shared_ptr<switchboard>        switchboard_;
     switchboard::reader<imu_integrator_input> imu_int_input_;
 
-    TCPSocket  socket_;
-    TCPSocket* write_socket = NULL;
-    [[maybe_unused]] Address    client_addr_;
-    [[maybe_unused]] bool       is_client_connected_;
+    TCPSocket                socket_;
+    TCPSocket*               write_socket = NULL;
+    [[maybe_unused]] Address client_addr_;
+    [[maybe_unused]] bool    is_client_connected_;
 };
 
 PLUGIN_MAIN(server_writer)

@@ -68,9 +68,9 @@ public:
                 }
 
                 last_iteration_accel_ = accel_data_.iteration;
-                rs2_vector accel     = accel_data_.data;
-                double     ts        = mf.get_timestamp();
-                rs2_vector gyro_data = mf.get_motion_data();
+                rs2_vector accel      = accel_data_.data;
+                double     ts         = mf.get_timestamp();
+                rs2_vector gyro_data  = mf.get_motion_data();
 
                 // IMU data
                 Eigen::Vector3f la = {accel.x, accel.y, accel.z};
@@ -234,9 +234,9 @@ private:
             });
         } else if (cam_select_ == D4XXI) {
             config_.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F,
-                              ACCEL_RATE_D4XX); // adjustable to 0, 63 (default), 250 hz
+                                  ACCEL_RATE_D4XX); // adjustable to 0, 63 (default), 250 hz
             config_.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F,
-                              GYRO_RATE_D4XX); // adjustable set to 0, 200 (default), 400 hz
+                                  GYRO_RATE_D4XX); // adjustable set to 0, 200 (default), 400 hz
             config_.enable_stream(RS2_STREAM_INFRARED, 1, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
             config_.enable_stream(RS2_STREAM_INFRARED, 2, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_Y8, FPS_D4XX);
             config_.enable_stream(RS2_STREAM_COLOR, IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX, RS2_FORMAT_BGR8, FPS_D4XX);
@@ -274,7 +274,6 @@ private:
 
     std::optional<ullong>     first_cam_time_;
     std::optional<time_point> first_real_time_cam_;
-
 };
 
 PLUGIN_MAIN(realsense)

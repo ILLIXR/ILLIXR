@@ -32,9 +32,10 @@ public:
         depth_wt_file_.open(cam1_file, std::ofstream::out);
         depth_wt_file_ << "#timestamp [ns],filename" << std::endl;
 
-        switchboard_->schedule<rgb_depth_type>(id_, "rgb_depth", [&](const switchboard::ptr<const rgb_depth_type>& datum, std::size_t) {
-            this->dump_data(datum);
-        });
+        switchboard_->schedule<rgb_depth_type>(id_, "rgb_depth",
+                                               [&](const switchboard::ptr<const rgb_depth_type>& datum, std::size_t) {
+                                                   this->dump_data(datum);
+                                               });
     }
 
     void dump_data(const switchboard::ptr<const rgb_depth_type>& datum) {

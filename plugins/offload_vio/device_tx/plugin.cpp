@@ -41,7 +41,7 @@ public:
 
         encoder_ = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
             queue_.consume_one([&](uint64_t& timestamp) {
-                (void)timestamp;
+                (void) timestamp;
                 uint64_t curr =
                     std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
                         .count();
@@ -180,7 +180,7 @@ public:
 
 protected:
     void _p_thread_setup() override { }
-    
+
     // TODO not the best way to use threadloop and stoplight
     void _p_one_iteration() override {
         while (!stoplight_->check_should_stop()) {

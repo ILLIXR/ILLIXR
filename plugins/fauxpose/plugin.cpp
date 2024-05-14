@@ -132,7 +132,7 @@ public:
     void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
         std::unique_lock   lock{offset_mutex_};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset_.inverse();
-        offset_                   = raw_o.inverse();
+        offset_                  = raw_o.inverse();
     }
 
     // ********************************************************************
@@ -167,7 +167,7 @@ public:
         // Calculate new pose values
         //   Pose values are calculated from the passage of time to maintain consistency */
         simulated_pose.position[0] = static_cast<float>(center_location_[0] + amplitude_ * sin(sim_time * period_)); // X
-        simulated_pose.position[1] = static_cast<float>(center_location_[1]);                                      // Y
+        simulated_pose.position[1] = static_cast<float>(center_location_[1]);                                        // Y
         simulated_pose.position[2] = static_cast<float>(center_location_[2] + amplitude_ * cos(sim_time * period_)); // Z
         simulated_pose.orientation = Eigen::Quaternionf(0.707, 0.0, 0.707, 0.0); // (W,X,Y,Z) Facing forward (90deg about Y)
 
@@ -183,7 +183,7 @@ public:
     // ---------------------------------------------------------------------
 private:
     const std::shared_ptr<switchboard>                          switchboard_;
-    const std::shared_ptr<const relative_clock>                  clock_;
+    const std::shared_ptr<const relative_clock>                 clock_;
     switchboard::reader<switchboard::event_wrapper<time_point>> vsync_estimate_;
     mutable Eigen::Quaternionf                                  offset_{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                   offset_mutex_;

@@ -13,9 +13,9 @@ typedef plugin* (*plugin_factory)(phonebook*);
 
 class runtime {
 public:
-    virtual void load_so(const std::vector<std::string>& so) = 0;
-    [[maybe_unused]] virtual void load_so(const std::string_view& so) = 0;
-    virtual void load_plugin_factory(plugin_factory plugin)  = 0;
+    virtual void                  load_so(const std::vector<std::string>& so) = 0;
+    [[maybe_unused]] virtual void load_so(const std::string_view& so)         = 0;
+    virtual void                  load_plugin_factory(plugin_factory plugin)  = 0;
 
     /**
      * Returns when the runtime is completely stopped.
@@ -27,6 +27,7 @@ public:
      * Clients must call this before deleting the runtime.
      */
     virtual void _stop() = 0;
+
     void stop() {
         _stop();
     }

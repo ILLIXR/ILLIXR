@@ -40,11 +40,11 @@ public:
 
         for (int i = 0; i < 8; ++i) {
             filters_.emplace_back(frequency, Eigen::Array<double, 3, 1>{min_cutoff, min_cutoff, min_cutoff},
-                                 Eigen::Array<double, 3, 1>{beta, beta, beta},
-                                 Eigen::Array<double, 3, 1>{d_cutoff, d_cutoff, d_cutoff}, Eigen::Array<double, 3, 1>::Zero(),
-                                 Eigen::Array<double, 3, 1>::Ones(), [](auto& in) {
-                                     return in.abs();
-                                 });
+                                  Eigen::Array<double, 3, 1>{beta, beta, beta},
+                                  Eigen::Array<double, 3, 1>{d_cutoff, d_cutoff, d_cutoff}, Eigen::Array<double, 3, 1>::Zero(),
+                                  Eigen::Array<double, 3, 1>::Ones(), [](auto& in) {
+                                      return in.abs();
+                                  });
         }
     }
 
@@ -77,7 +77,7 @@ private:
             params.setGyroscopeCovariance(std::pow(imu_int_input.params.gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
             params.setAccelerometerCovariance(std::pow(imu_int_input.params.acc_noise, 2.0) * Eigen::Matrix3d::Identity());
             params.setIntegrationCovariance(std::pow(imu_int_input.params.imu_integration_sigma, 2.0) *
-                                             Eigen::Matrix3d::Identity());
+                                            Eigen::Matrix3d::Identity());
             params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
             params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
@@ -204,7 +204,7 @@ private:
 
 #ifndef NDEBUG
         spdlog::get(name_)->debug("Base Position (x, y, z) = {}, {}, {}", input_values->position(0), input_values->position(1),
-                                 input_values->position(2));
+                                  input_values->position(2));
         spdlog::get(name_)->debug("New Position (x, y, z) = {}, {}, {}", out_pose.x(), out_pose.y(), out_pose.z());
 #endif
 
@@ -242,9 +242,9 @@ private:
 
         imu_raw_.put(imu_raw_.allocate<imu_raw_type>(
             imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),
-                         filtered_pos,                                                   /// Position
+                         filtered_pos,                                                    /// Position
                          filters_[5](navstate_k.velocity().array(), seconds_since_epoch), /// Velocity
-                         new_quaternion,                                                 /// Eigen Quat
+                         new_quaternion,                                                  /// Eigen Quat
                          real_time}));
     }
 
@@ -302,7 +302,7 @@ private:
     bool                                                             has_prev_ = false;
     Eigen::Matrix<double, 3, 1>                                      prev_euler_angles_;
 
-    const std::shared_ptr<switchboard>   switchboard_;
+    const std::shared_ptr<switchboard>    switchboard_;
     const std::shared_ptr<relative_clock> clock_;
 
     // IMU Data, Sequence Flag, and State Vars Needed
@@ -319,7 +319,6 @@ private:
     duration                    last_imu_offset_{};
 
     std::unique_ptr<pim_object> pim_obj_;
-
 };
 
 PLUGIN_MAIN(gtsam_integrator)

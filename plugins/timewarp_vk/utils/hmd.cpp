@@ -61,11 +61,12 @@ void HMD::build_distortion_meshes(
             for (int x = 0; x <= hmd_info.eye_tiles_wide; x++) {
                 const float xf = (float) x / (float) hmd_info.eye_tiles_wide;
 
-                const float in[2]             = {(eye ? -horizontal_shift_view : horizontal_shift_view) + xf, yf};
+                const float in[2]               = {(eye ? -horizontal_shift_view : horizontal_shift_view) + xf, yf};
                 const float ndc_to_pixels[2]    = {static_cast<float>(hmd_info.visible_pixels_wide) * 0.25f,
-                                                 static_cast<float>(hmd_info.visible_pixels_high) * 0.5f};
-                const float pixels_to_meters[2] = {hmd_info.visible_meters_wide / static_cast<float>(hmd_info.visible_pixels_wide),
-                                                 hmd_info.visible_meters_high / static_cast<float>(hmd_info.visible_pixels_high)};
+                                                   static_cast<float>(hmd_info.visible_pixels_high) * 0.5f};
+                const float pixels_to_meters[2] = {
+                    hmd_info.visible_meters_wide / static_cast<float>(hmd_info.visible_pixels_wide),
+                    hmd_info.visible_meters_high / static_cast<float>(hmd_info.visible_pixels_high)};
 
                 float theta[2];
                 for (int i = 0; i < 2; i++) {
@@ -94,8 +95,8 @@ void HMD::build_distortion_meshes(
 }
 
 void HMD::get_default_hmd_info(int display_pixels_wide, int display_pixels_high, float display_meters_wide,
-                            float display_meters_high, float lens_separation, float meters_per_tan_angle,
-                            const float aberration[4], hmd_info_t& hmd_info) {
+                               float display_meters_high, float lens_separation, float meters_per_tan_angle,
+                               const float aberration[4], hmd_info_t& hmd_info) {
     hmd_info.display_pixels_wide = display_pixels_wide;
     hmd_info.display_pixels_high = display_pixels_high;
     hmd_info.tile_pixels_wide    = 32;
@@ -105,25 +106,26 @@ void HMD::get_default_hmd_info(int display_pixels_wide, int display_pixels_high,
     hmd_info.visible_pixels_wide = hmd_info.eye_tiles_wide * hmd_info.tile_pixels_wide * NUM_EYES;
     hmd_info.visible_pixels_high = hmd_info.eye_tiles_high * hmd_info.tile_pixels_high;
     hmd_info.visible_meters_wide = display_meters_wide *
-        static_cast<float>(hmd_info.eye_tiles_wide * hmd_info.tile_pixels_wide * NUM_EYES) / static_cast<float>(display_pixels_wide);
-    hmd_info.visible_meters_high = display_meters_high * static_cast<float>(hmd_info.eye_tiles_high * hmd_info.tile_pixels_high) /
-        static_cast<float>(display_pixels_high);
-    hmd_info.lens_separation_in_meters = lens_separation;
+        static_cast<float>(hmd_info.eye_tiles_wide * hmd_info.tile_pixels_wide * NUM_EYES) /
+        static_cast<float>(display_pixels_wide);
+    hmd_info.visible_meters_high = display_meters_high *
+        static_cast<float>(hmd_info.eye_tiles_high * hmd_info.tile_pixels_high) / static_cast<float>(display_pixels_high);
+    hmd_info.lens_separation_in_meters      = lens_separation;
     hmd_info.meters_per_tan_angle_at_center = meters_per_tan_angle;
-    hmd_info.num_knots                 = 11;
-    hmd_info.K[0]                      = 1.0f;
-    hmd_info.K[1]                      = 1.021f;
-    hmd_info.K[2]                      = 1.051f;
-    hmd_info.K[3]                      = 1.086f;
-    hmd_info.K[4]                      = 1.128f;
-    hmd_info.K[5]                      = 1.177f;
-    hmd_info.K[6]                      = 1.232f;
-    hmd_info.K[7]                      = 1.295f;
-    hmd_info.K[8]                      = 1.368f;
-    hmd_info.K[9]                      = 1.452f;
-    hmd_info.K[10]                     = 1.560f;
-    hmd_info.chromatic_aberration[0]   = aberration[0];
-    hmd_info.chromatic_aberration[1]   = aberration[1];
-    hmd_info.chromatic_aberration[2]   = aberration[2];
-    hmd_info.chromatic_aberration[3]   = aberration[3];
+    hmd_info.num_knots                      = 11;
+    hmd_info.K[0]                           = 1.0f;
+    hmd_info.K[1]                           = 1.021f;
+    hmd_info.K[2]                           = 1.051f;
+    hmd_info.K[3]                           = 1.086f;
+    hmd_info.K[4]                           = 1.128f;
+    hmd_info.K[5]                           = 1.177f;
+    hmd_info.K[6]                           = 1.232f;
+    hmd_info.K[7]                           = 1.295f;
+    hmd_info.K[8]                           = 1.368f;
+    hmd_info.K[9]                           = 1.452f;
+    hmd_info.K[10]                          = 1.560f;
+    hmd_info.chromatic_aberration[0]        = aberration[0];
+    hmd_info.chromatic_aberration[1]        = aberration[1];
+    hmd_info.chromatic_aberration[2]        = aberration[2];
+    hmd_info.chromatic_aberration[3]        = aberration[3];
 }

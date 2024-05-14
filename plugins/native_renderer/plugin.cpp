@@ -50,8 +50,8 @@ public:
             create_offscreen_target(&offscreen_images_[i], &offscreen_image_allocations_[i], &offscreen_image_views_[i],
                                     &offscreen_framebuffers_[i]);
         }
-        command_pool_            = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
-        app_command_buffer_      = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
+        command_pool_       = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
+        app_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
         timewarp_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
         create_sync_objects();
         create_app_pass();
@@ -60,7 +60,8 @@ public:
         create_offscreen_framebuffers();
         create_swapchain_framebuffers();
         app_->setup(app_pass_, 0);
-        timewarp_->setup(timewarp_pass_, 0, {std::vector{offscreen_image_views_[0]}, std::vector{offscreen_image_views_[1]}}, true);
+        timewarp_->setup(timewarp_pass_, 0, {std::vector{offscreen_image_views_[0]}, std::vector{offscreen_image_views_[1]}},
+                         true);
     }
 
     /**
@@ -80,8 +81,8 @@ public:
 
         // Acquire the next image from the swapchain
         uint32_t swapchain_image_index;
-        auto     ret = (vkAcquireNextImageKHR(display_sink_->vk_device, display_sink_->vk_swapchain, UINT64_MAX, image_available_semaphore_,
-                                              VK_NULL_HANDLE, &swapchain_image_index));
+        auto     ret = (vkAcquireNextImageKHR(display_sink_->vk_device, display_sink_->vk_swapchain, UINT64_MAX,
+                                              image_available_semaphore_, VK_NULL_HANDLE, &swapchain_image_index));
 
         // Check if the swapchain is out of date or suboptimal
         if (ret == VK_ERROR_OUT_OF_DATE_KHR || ret == VK_SUBOPTIMAL_KHR) {
@@ -232,7 +233,8 @@ private:
                 1                                          // layers
             };
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers_[i]))
+            VK_ASSERT_SUCCESS(
+                vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &swapchain_framebuffers_[i]))
         }
     }
 
@@ -257,10 +259,10 @@ private:
             clear_values[1].depthStencil             = {1.0f, 0};
 
             VkRenderPassBeginInfo render_pass_info{
-                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
-                nullptr,                                   // pNext
-                app_pass_,                                 // renderPass
-                offscreen_framebuffers_[eye],              // framebuffer
+                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
+                nullptr,                                  // pNext
+                app_pass_,                                // renderPass
+                offscreen_framebuffers_[eye],             // framebuffer
                 {
                     {0, 0},                         // offset
                     display_sink_->swapchain_extent // extent
@@ -313,7 +315,7 @@ private:
                 vkCmdSetViewport(timewarp_command_buffer_, 0, 1, &viewport);
 
                 VkRect2D scissor{
-                    {0, 0},              // offset
+                    {0, 0},                         // offset
                     display_sink_->swapchain_extent // extent
                 };
                 vkCmdSetScissor(timewarp_command_buffer_, 0, 1, &scissor);
@@ -363,7 +365,8 @@ private:
         };
 
         VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &image_available_semaphore_))
-        VK_ASSERT_SUCCESS(vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore_))
+        VK_ASSERT_SUCCESS(
+            vkCreateSemaphore(display_sink_->vk_device, &semaphore_info, nullptr, &timewarp_render_finished_semaphore_))
         VK_ASSERT_SUCCESS(vkCreateFence(display_sink_->vk_device, &fence_info, nullptr, &frame_fence_))
     }
 
@@ -399,8 +402,8 @@ private:
         VmaAllocationCreateInfo alloc_info{};
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-        VK_ASSERT_SUCCESS(
-            vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, depth_image,
+                                         depth_image_allocation, nullptr))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -455,8 +458,8 @@ private:
 
         VmaAllocationCreateInfo alloc_info{.usage = VMA_MEMORY_USAGE_GPU_ONLY};
 
-        VK_ASSERT_SUCCESS(
-            vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, offscreen_image, offscreen_image_allocation, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, offscreen_image,
+                                         offscreen_image_allocation, nullptr))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -490,7 +493,7 @@ private:
                 VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO, // sType
                 nullptr,                                   // pNext
                 0,                                         // flags
-                app_pass_,                                  // renderPass
+                app_pass_,                                 // renderPass
                 static_cast<uint32_t>(attachments.size()), // attachmentCount
                 attachments.data(),                        // pAttachments
                 display_params::width_pixels,              // width
@@ -498,7 +501,8 @@ private:
                 1                                          // layers
             };
 
-            VK_ASSERT_SUCCESS(vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers_[eye]))
+            VK_ASSERT_SUCCESS(
+                vkCreateFramebuffer(display_sink_->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers_[eye]))
         }
     }
 
@@ -582,15 +586,15 @@ private:
              }}};
 
         VkRenderPassCreateInfo render_pass_info{
-            VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,            // sType
-            nullptr,                                              // pNext
-            0,                                                    // flags
+            VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,             // sType
+            nullptr,                                               // pNext
+            0,                                                     // flags
             static_cast<uint32_t>(attachment_descriptions.size()), // attachmentCount
             attachment_descriptions.data(),                        // pAttachments
-            1,                                                    // subpassCount
-            &subpass,                                             // pSubpasses
-            static_cast<uint32_t>(dependencies.size()),           // dependencyCount
-            dependencies.data()                                   // pDependencies
+            1,                                                     // subpassCount
+            &subpass,                                              // pSubpasses
+            static_cast<uint32_t>(dependencies.size()),            // dependencyCount
+            dependencies.data()                                    // pDependencies
         };
         VK_ASSERT_SUCCESS(vkCreateRenderPass(display_sink_->vk_device, &render_pass_info, nullptr, &app_pass_))
     }
@@ -600,15 +604,15 @@ private:
      */
     void create_timewarp_pass() {
         std::array<VkAttachmentDescription, 1> attchment_descriptions{{{
-            0,                                           // flags
-            display_sink_->swapchain_image_format,       // format
-            VK_SAMPLE_COUNT_1_BIT,                       // samples
-            VK_ATTACHMENT_LOAD_OP_CLEAR,                 // loadOp
-            VK_ATTACHMENT_STORE_OP_STORE,                // storeOp
-            VK_ATTACHMENT_LOAD_OP_DONT_CARE,             // stencilLoadOp
-            VK_ATTACHMENT_STORE_OP_DONT_CARE,            // stencilStoreOp
-            VK_IMAGE_LAYOUT_UNDEFINED,                   // initialLayout
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR              // finalLayout
+            0,                                     // flags
+            display_sink_->swapchain_image_format, // format
+            VK_SAMPLE_COUNT_1_BIT,                 // samples
+            VK_ATTACHMENT_LOAD_OP_CLEAR,           // loadOp
+            VK_ATTACHMENT_STORE_OP_STORE,          // storeOp
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,       // stencilLoadOp
+            VK_ATTACHMENT_STORE_OP_DONT_CARE,      // stencilStoreOp
+            VK_IMAGE_LAYOUT_UNDEFINED,             // initialLayout
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR        // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{

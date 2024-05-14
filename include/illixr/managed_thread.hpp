@@ -86,14 +86,14 @@ public:
         thread_.join();
         assert(get_state() == state::stopped);
     }
-    
+
 private:
     std::atomic<bool>     stop_{false};
     std::thread           thread_;
     std::function<void()> body_;
     std::function<void()> on_start_;
     std::function<void()> on_stop_;
-    
+
     void thread_main() {
         assert(body_);
         if (on_start_) {
@@ -106,8 +106,6 @@ private:
             on_stop_();
         }
     }
-
-
 };
 
 } // namespace ILLIXR

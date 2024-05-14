@@ -54,16 +54,16 @@ public:
 
 #ifndef NDEBUG
         spdlog::get(name_)->debug("Ground truth pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
-                                 rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
-                                 true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(),
-                                 true_pose->orientation.z());
+                                  rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
+                                  true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(),
+                                  true_pose->orientation.z());
 #endif
 
         /// Ground truth position offset is the first ground truth position
         if (first_time_) {
             first_time_ = false;
-            ground_truth_offset_.put(
-                ground_truth_offset_.allocate<switchboard::event_wrapper<Eigen::Vector3f>>(switchboard::event_wrapper<Eigen::Vector3f>(true_pose->position)));
+            ground_truth_offset_.put(ground_truth_offset_.allocate<switchboard::event_wrapper<Eigen::Vector3f>>(
+                switchboard::event_wrapper<Eigen::Vector3f>(true_pose->position)));
         }
 
         true_pose_.put(std::move(true_pose));

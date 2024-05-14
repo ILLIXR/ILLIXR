@@ -33,7 +33,7 @@ public:
         std::string imu_file = imu_dir.string() + "/data.csv";
         imu_wt_file_.open(imu_file, std::ofstream::out);
         imu_wt_file_ << "#timestamp [ns],w_x [rad s^-1],w_y [rad s^-1],w_z [rad s^-1],a_x [m s^-2],a_y [m s^-2],a_z [m s^-2]"
-                    << std::endl;
+                     << std::endl;
 
         // create cam0 directory
         boost::filesystem::create_directories(cam0_data_dir_);
@@ -59,7 +59,7 @@ public:
 
         // write imu0
         imu_wt_file_ << timestamp << "," << std::setprecision(17) << angular_v[0] << "," << angular_v[1] << "," << angular_v[2]
-                    << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
+                     << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
         // write cam0 and cam1
         switchboard::ptr<const cam_type> cam;

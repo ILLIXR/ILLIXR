@@ -31,21 +31,21 @@ public:
     };
 
     struct hmd_info_t {
-        [[maybe_unused]] int   display_pixels_wide;
-        int   display_pixels_high;
-        int   tile_pixels_wide;
-        int   tile_pixels_high;
-        int   eye_tiles_wide;
-        int   eye_tiles_high;
-        int   visible_pixels_wide;
-        int   visible_pixels_high;
-        float visible_meters_wide;
-        float visible_meters_high;
-        float lens_separation_in_meters;
-        float meters_per_tan_angle_at_center;
-        int   num_knots;
-        float K[11];
-        float chromatic_aberration[4];
+        [[maybe_unused]] int display_pixels_wide;
+        int                  display_pixels_high;
+        int                  tile_pixels_wide;
+        int                  tile_pixels_high;
+        int                  eye_tiles_wide;
+        int                  eye_tiles_high;
+        int                  visible_pixels_wide;
+        int                  visible_pixels_high;
+        float                visible_meters_wide;
+        float                visible_meters_high;
+        float                lens_separation_in_meters;
+        float                meters_per_tan_angle_at_center;
+        int                  num_knots;
+        float                K[11];
+        float                chromatic_aberration[4];
     };
 
     static float max_float(float x, float y);
@@ -56,5 +56,5 @@ public:
                                       const float aberration[4], hmd_info_t& hmd_info);
     static void
     build_distortion_meshes(std::array<std::array<std::vector<mesh_coord2d_t>, NUM_COLOR_CHANNELS>, NUM_EYES>& distort_coords,
-                            hmd_info_t& hmd_info);
+                            hmd_info_t&                                                                        hmd_info);
 };

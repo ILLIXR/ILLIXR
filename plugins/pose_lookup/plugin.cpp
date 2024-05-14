@@ -19,7 +19,8 @@ public:
         , sensor_data_{load_data()}
         , sensor_data_it_{sensor_data_.cbegin()}
         , dataset_first_time_{sensor_data_it_->first}
-        , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} /// TODO: Set with #198
+        , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
+        /// TODO: Set with #198
         , enable_alignment_{ILLIXR::str_to_bool(getenv_or("ILLIXR_ALIGNMENT_ENABLE", "False"))}
         , init_pos_offset_{Eigen::Vector3f::Zero()}
         , align_rot_{Eigen::Matrix3f::Zero()}

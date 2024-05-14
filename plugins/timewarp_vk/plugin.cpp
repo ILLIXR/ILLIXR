@@ -85,7 +85,8 @@ public:
         if (display_sink_->vma_allocator) {
             this->vma_allocator_ = display_sink_->vma_allocator;
         } else {
-            this->vma_allocator_ = vulkan_utils::create_vma_allocator(display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
+            this->vma_allocator_ = vulkan_utils::create_vma_allocator(
+                display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
             deletion_queue_.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator_);
             });
@@ -152,7 +153,7 @@ public:
         Eigen::Matrix4f view_matrix_begin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
-        const pose_type latest_pose       = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
+        const pose_type latest_pose         = disable_warp_ ? render_pose : pose_prediction_->get_fast_pose().pose;
         view_matrix_begin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -221,8 +222,8 @@ private:
 
         VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
+                                          &staging_alloc, nullptr))
 
         VkBufferCreateInfo buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -261,7 +262,8 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(vertex) * num_distortion_vertices_ * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer_, 1, &copy_region);
-        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue,
+                                           command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
 
@@ -290,8 +292,8 @@ private:
 
         VkBuffer      staging_buffer;
         VmaAllocation staging_alloc;
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
+                                          &staging_alloc, nullptr))
 
         VkBufferCreateInfo buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -321,7 +323,8 @@ private:
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices_;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer_, 1, &copy_region);
-        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue, command_buffer_local);
+        vulkan_utils::end_one_time_command(display_sink_->vk_device, command_pool_, display_sink_->graphics_queue,
+                                           command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator_, staging_buffer, staging_alloc);
 
@@ -399,7 +402,7 @@ private:
         sampler_layout_binding.descriptorCount              = 1;
         sampler_layout_binding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {ubo_layout_binding, sampler_layout_binding};
+        std::array<VkDescriptorSetLayoutBinding, 2> bindings    = {ubo_layout_binding, sampler_layout_binding};
         VkDescriptorSetLayoutCreateInfo             layout_info = {};
         layout_info.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layout_info.bindingCount                                = static_cast<uint32_t>(bindings.size());
@@ -430,8 +433,8 @@ private:
         create_info.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
         create_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator_, &buffer_info, &create_info, &uniform_buffer_, &uniform_alloc_, &uniform_alloc_info_))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &create_info, &uniform_buffer_, &uniform_alloc_,
+                                          &uniform_alloc_info_))
         deletion_queue_.emplace([=]() {
             vmaDestroyBuffer(vma_allocator_, uniform_buffer_, uniform_alloc_);
         });
@@ -462,7 +465,7 @@ private:
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool_[0].size(), descriptor_set_layout_};
+            std::vector<VkDescriptorSetLayout> layouts    = {buffer_pool_[0].size(), descriptor_set_layout_};
             VkDescriptorSetAllocateInfo        alloc_info = {
                        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                        nullptr,                                        // pNext
@@ -506,8 +509,8 @@ private:
                 descriptor_writes[1].descriptorCount = 1;
                 descriptor_writes[1].pImageInfo      = &image_info;
 
-                vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(),
-                                       0, nullptr);
+                vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()),
+                                       descriptor_writes.data(), 0, nullptr);
             }
         }
     }
@@ -704,7 +707,8 @@ private:
                     distortion_positions_[eye * num_distortion_vertices_ + index].y =
                         (input_texture_vulkan_coordinates_ ? -1.0f : 1.0f) *
                         (-1.0f +
-                         2.0f * (static_cast<float>(hmd_info.eye_tiles_high - y) / static_cast<float>(hmd_info.eye_tiles_high)) *
+                         2.0f *
+                             (static_cast<float>(hmd_info.eye_tiles_high - y) / static_cast<float>(hmd_info.eye_tiles_high)) *
                              (static_cast<float>(hmd_info.eye_tiles_high * hmd_info.tile_pixels_high) /
                               static_cast<float>(hmd_info.display_pixels_high)));
                     distortion_positions_[eye * num_distortion_vertices_ + index].z = 0.0f;
@@ -728,14 +732,15 @@ private:
 
     /* Calculate timewarp transform from projection matrix, view matrix, etc */
     static void calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
-                                             const Eigen::Matrix4f& render_view_matrix, const Eigen::Matrix4f& new_view_matrix) {
+                                             const Eigen::Matrix4f& render_view_matrix,
+                                             const Eigen::Matrix4f& new_view_matrix) {
         // Eigen stores matrices internally in column-major order.
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f tex_coord_projection;
-        tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f;
+        tex_coord_projection << 0.5f * render_projection_matrix(0, 0), 0.0f, 0.5f * render_projection_matrix(0, 2) - 0.5f, 0.0f,
+            0.0f, 0.5f * render_projection_matrix(1, 1), 0.5f * render_projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 1.0f;
 
         // Calculate the delta between the view matrix used for rendering and
         // a more recent or predicted view matrix based on new sensor input.
@@ -777,7 +782,7 @@ private:
     VmaAllocation     uniform_alloc_{};
     VmaAllocationInfo uniform_alloc_info_{};
 
-    VkCommandPool   command_pool_{};
+    VkCommandPool                    command_pool_{};
     [[maybe_unused]] VkCommandBuffer command_buffer_{};
 
     VkBuffer vertex_buffer_{};
@@ -833,7 +838,7 @@ public:
     }
 
 private:
-    std::shared_ptr<timewarp_vk>  timewarp_;
+    std::shared_ptr<timewarp_vk> timewarp_;
 
     int64_t last_print_ = 0;
 };

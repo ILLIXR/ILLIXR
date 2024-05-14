@@ -86,7 +86,9 @@ public:
         , database_{prep_db()}
         , insert_str_{prep_insert_str()}
         , insert_cmd_{database_, insert_str_.c_str()}
-        , thread_{[this] { pull_queue(); }} { }
+        , thread_{[this] {
+            pull_queue();
+        }} { }
 
     void pull_queue() {
         const std::size_t   max_record_batch_size = 1024 * 256;
@@ -134,7 +136,7 @@ public:
                   The types there should be the same as those in record.get_values().
                 */
                 const std::type_info& rh_type = record_header_.get_column_type(j);
-                if ( rh_type == typeid(std::size_t)) {
+                if (rh_type == typeid(std::size_t)) {
                     cmd.bind(j + 1, static_cast<long long>(r.get_value<std::size_t>(j)));
                 } else if (rh_type == typeid(bool)) {
                     cmd.bind(j + 1, static_cast<long long>(r.get_value<bool>(j)));
@@ -220,10 +222,9 @@ private:
             }
         }
         const std::unique_lock<std::shared_mutex> lock{registry_lock_};
-        auto                                      pair = registered_tables_.try_emplace(record_header_.get_id(), record_header_);
+        auto pair = registered_tables_.try_emplace(record_header_.get_id(), record_header_);
         return pair.first->second;
     }
-    
 
     std::unordered_map<std::size_t, sqlite_thread> registered_tables_;
     std::shared_mutex                              registry_lock_;

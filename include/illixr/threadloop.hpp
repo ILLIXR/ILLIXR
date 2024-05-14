@@ -57,7 +57,9 @@ public:
      */
     void start() override {
         plugin::start();
-        thread_ = std::thread([this] { thread_main(); });
+        thread_ = std::thread([this] {
+            thread_main();
+        });
         assert(!stoplight_->check_should_stop());
         assert(thread_.joinable());
     }
@@ -187,7 +189,6 @@ private:
     break_loop:
         [[maybe_unused]] int cpp_requires_a_statement_after_a_label_plz_optimize_me_away;
     }
-
 
     std::atomic<bool>                internal_stop_{false};
     std::thread                      thread_;

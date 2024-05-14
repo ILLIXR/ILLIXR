@@ -30,11 +30,11 @@ public:
 #ifndef NDEBUG
         spdlog::get(name)->debug("pipeline started");
 #endif
-        color_queue_                             = device_.getOutputQueue("preview", 1, false);
-        depth_queue_                             = device_.getOutputQueue("depth", 1, false);
-        rectif_left_queue_                       = device_.getOutputQueue("rectified_left", 1, false);
-        rectif_right_queue_                      = device_.getOutputQueue("rectified_right", 1, false);
-        imu_queue_                               = device_.getOutputQueue("imu", 1, false);
+        color_queue_                           = device_.getOutputQueue("preview", 1, false);
+        depth_queue_                           = device_.getOutputQueue("depth", 1, false);
+        rectif_left_queue_                     = device_.getOutputQueue("rectified_left", 1, false);
+        rectif_right_queue_                    = device_.getOutputQueue("rectified_right", 1, false);
+        imu_queue_                             = device_.getOutputQueue("imu", 1, false);
         std::function<void(void)> imu_callback = [&]() {
             callback();
         };
@@ -45,10 +45,10 @@ public:
     void callback() {
         std::lock_guard<std::mutex> lock(mutex_);
         // Check for available data
-        bool color_go     = color_queue_->has<dai::ImgFrame>();
-        bool depth_go     = depth_queue_->has<dai::ImgFrame>();
-        bool rectifL_go   = rectif_left_queue_->has<dai::ImgFrame>();
-        bool rectifR_go   = rectif_right_queue_->has<dai::ImgFrame>();
+        bool color_go      = color_queue_->has<dai::ImgFrame>();
+        bool depth_go      = depth_queue_->has<dai::ImgFrame>();
+        bool rectifL_go    = rectif_left_queue_->has<dai::ImgFrame>();
+        bool rectifR_go    = rectif_right_queue_->has<dai::ImgFrame>();
         bool imu_packet_go = imu_queue_->has<dai::IMUData>();
 
 #ifndef NDEBUG
@@ -87,12 +87,12 @@ public:
             cv::Mat color = cv::Mat(static_cast<int>(color_frame->getHeight()), static_cast<int>(color_frame->getWidth()),
                                     CV_8UC3, color_frame->getData().data());
             cv::Mat rgb_out{color.clone()};
-            cv::Mat rectified_left_frame = cv::Mat(static_cast<int>(rectifL->getHeight()), static_cast<int>(rectifL->getWidth()),
-                                                 CV_8UC1, rectifL->getData().data());
+            cv::Mat rectified_left_frame = cv::Mat(static_cast<int>(rectifL->getHeight()),
+                                                   static_cast<int>(rectifL->getWidth()), CV_8UC1, rectifL->getData().data());
             cv::Mat left_out{rectified_left_frame.clone()};
             cv::flip(left_out, left_out, 1);
-            cv::Mat rectified_right_frame = cv::Mat(static_cast<int>(rectifR->getHeight()), static_cast<int>(rectifR->getWidth()),
-                                                  CV_8UC1, rectifR->getData().data());
+            cv::Mat rectified_right_frame = cv::Mat(static_cast<int>(rectifR->getHeight()),
+                                                    static_cast<int>(rectifR->getWidth()), CV_8UC1, rectifR->getData().data());
             cv::Mat right_out{rectified_right_frame.clone()};
             cv::flip(right_out, right_out, 1);
 
@@ -102,8 +102,7 @@ public:
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 
             cam_writer_.put(cam_writer_.allocate<cam_type>({cam_time_point, cv::Mat{left_out}, cv::Mat{right_out}}));
-            rgb_depth_.put(
-                rgb_depth_.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_out}, cv::Mat{converted_depth}}));
+            rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_out}, cv::Mat{converted_depth}}));
         }
 
         std::chrono::time_point<std::chrono::steady_clock, std::chrono::steady_clock::duration> gyro_ts;
@@ -126,14 +125,14 @@ public:
                     return;
                 }
                 test_time_point_ = gyro_ts;
-                la              = {imu_datum.acceleroMeter.x, imu_datum.acceleroMeter.y, imu_datum.acceleroMeter.z};
-                av              = {imu_datum.gyroscope.x, imu_datum.gyroscope.y, imu_datum.gyroscope.z};
+                la               = {imu_datum.acceleroMeter.x, imu_datum.acceleroMeter.y, imu_datum.acceleroMeter.z};
+                av               = {imu_datum.gyroscope.x, imu_datum.gyroscope.y, imu_datum.gyroscope.z};
             }
 
             // Time as ullong (nanoseconds)
             ullong imu_time = static_cast<ullong>(gyro_ts.time_since_epoch().count());
             if (!first_imu_time_) {
-                first_imu_time_  = imu_time;
+                first_imu_time_      = imu_time;
                 first_real_imu_time_ = clock_->now();
             }
 
@@ -153,12 +152,13 @@ public:
 
     ~depthai() override {
 #ifndef NDEBUG
-        spdlog::get(name_)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet_, imu_pub_, rgbd_pub_);
+        spdlog::get(name_)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet_, imu_pub_,
+                                  rgbd_pub_);
         auto dur = std::chrono::steady_clock::now() - first_packet_time_;
         spdlog::get(name_)->debug("Time since first packet: {} ms",
-                                 std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
+                                  std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
         spdlog::get(name_)->debug("RGB: {} Left: {} Right: {} Depth: {} All: {}", rgb_count_, left_count_, right_count_,
-                                 depth_count_, all_count_);
+                                  depth_count_, all_count_);
 #endif
     }
 
@@ -170,7 +170,7 @@ private:
         dai::Pipeline p;
 
         // IMU
-        auto imu     = p.create<dai::node::IMU>();
+        auto imu      = p.create<dai::node::IMU>();
         auto xout_imu = p.create<dai::node::XLinkOut>();
         xout_imu->setStreamName("imu");
 
@@ -230,7 +230,7 @@ private:
             max_disp *= 32; // 5 bits fractional disparity
         */
         // StereoDepth
-        auto stereo      = p.create<dai::node::StereoDepth>();
+        auto stereo       = p.create<dai::node::StereoDepth>();
         auto xout_rectifL = p.create<dai::node::XLinkOut>();
         auto xout_rectifR = p.create<dai::node::XLinkOut>();
         auto xout_depth   = p.create<dai::node::XLinkOut>();
@@ -254,13 +254,13 @@ private:
 
         return p;
     }
-    
-    const std::shared_ptr<switchboard>         switchboard_;
+
+    const std::shared_ptr<switchboard>          switchboard_;
     const std::shared_ptr<const relative_clock> clock_;
-    switchboard::writer<imu_type>              imu_writer_;
-    switchboard::writer<cam_type>              cam_writer_;
-    switchboard::writer<rgb_depth_type>        rgb_depth_;
-    std::mutex                                 mutex_;
+    switchboard::writer<imu_type>               imu_writer_;
+    switchboard::writer<cam_type>               cam_writer_;
+    switchboard::writer<rgb_depth_type>         rgb_depth_;
+    std::mutex                                  mutex_;
 
 #ifndef NDEBUG
     int imu_packet_{0};

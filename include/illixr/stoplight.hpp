@@ -82,7 +82,6 @@ private:
     mutable std::mutex              mutex_;
     mutable std::condition_variable cv_;
     std::atomic<bool>               value_ = false;
-
 };
 
 /**

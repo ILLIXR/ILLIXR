@@ -5,10 +5,8 @@
 
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
-
-#include <GL/glew.h>
 #include <GL/gl.h>
-
+#include <GL/glew.h>
 #include <utility>
 //#undef Complex // For 'Complex' conflict
 

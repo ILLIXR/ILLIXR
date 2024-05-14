@@ -44,8 +44,8 @@ public:
         if (after_nearest_row == sensor_data_.cend()) {
 #ifndef NDEBUG
             spdlog::get(name_)->warn("Running out of the dataset! Time {} ({} + {}) after last datum {}", lookup_time,
-                                    clock_->now().time_since_epoch().count(), dataset_first_time_,
-                                    sensor_data_.rbegin()->first);
+                                     clock_->now().time_since_epoch().count(), dataset_first_time_,
+                                     sensor_data_.rbegin()->first);
 #endif
             // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
             // to be nearest_row to avoiding sleeping at the end.
@@ -57,8 +57,8 @@ public:
             // Should not happen because lookup_time is bigger than dataset_first_time_
 #ifndef NDEBUG
             spdlog::get(name_)->warn("Time {} ({} + {}) before first datum {}", lookup_time,
-                                    clock_->now().time_since_epoch().count(), dataset_first_time_,
-                                    sensor_data_.cbegin()->first);
+                                     clock_->now().time_since_epoch().count(), dataset_first_time_,
+                                     sensor_data_.cbegin()->first);
 #endif
         } else {
             // Most recent
@@ -89,7 +89,7 @@ private:
     const std::map<ullong, sensor_types>           sensor_data_;
     ullong                                         dataset_first_time_;
     ullong                                         last_timestamp_;
-    std::shared_ptr<relative_clock>                 clock_;
+    std::shared_ptr<relative_clock>                clock_;
     std::map<ullong, sensor_types>::const_iterator next_row_;
 };
 

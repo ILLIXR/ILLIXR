@@ -76,7 +76,8 @@ private:
         // 	cam_count_++;
         // 	last_cam_time_ = input_values->last_cam_integration_time;
         // 	std::cout << "Num IMUs received since last cam: " << counter_ << " Diff between new cam and latest IMU: "
-        // 			  << timestamp - last_cam_time_ << " Expected IMUs received VS Actual: " << cam_count_*10 << ", " << total_imu_
+        // 			  << timestamp - last_cam_time_ << " Expected IMUs received VS Actual: " << cam_count_*10 << ", " <<
+        // total_imu_
         // << std::endl; 	counter_ = 0;
         // }
         // counter_++;
@@ -119,8 +120,7 @@ private:
         }
 
         imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
-                                           Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
-                                           real_time));
+                                       Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)}, real_time));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
@@ -346,9 +346,9 @@ private:
         // normalize and return
         return q_t / q_t.norm();
     }
-    
+
     const std::shared_ptr<switchboard> switchboard_;
-    
+
     // IMU Data, Sequence Flag, and State Vars Needed
     switchboard::reader<imu_integrator_input> imu_integrator_input_;
 
@@ -362,7 +362,6 @@ private:
     [[maybe_unused]] int    cam_count_     = 0;
     [[maybe_unused]] int    total_imu_     = 0;
     [[maybe_unused]] double last_cam_time_ = 0;
-
 };
 
 PLUGIN_MAIN(rk4_integrator)

@@ -90,9 +90,9 @@ public:
     }
 
 private:
-    const Now_func& now_;
-    [[maybe_unused]] Duration&    duration_;
-    Time_point    start_;
+    const Now_func&            now_;
+    [[maybe_unused]] Duration& duration_;
+    Time_point                 start_;
 };
 
 template<typename Duration, typename Out = decltype(std::declval<Duration>().count())>
@@ -101,7 +101,8 @@ template<typename Duration, typename Out = decltype(std::declval<Duration>().cou
 }
 
 template<typename Duration>
-[[maybe_unused]] [[maybe_unused]] typename std::enable_if<std::is_integral<Duration>::value, Duration>::type count_duration(Duration t) {
+[[maybe_unused]] [[maybe_unused]] typename std::enable_if<std::is_integral<Duration>::value, Duration>::type
+count_duration(Duration t) {
     return t;
 }
 
@@ -137,8 +138,8 @@ private:
         }
 
     private:
-        const std::string account_name_;
-        [[maybe_unused]] const Duration&   duration_;
+        const std::string                account_name_;
+        [[maybe_unused]] const Duration& duration_;
     };
 
     // NOTE that the destructors get called in reverse order!
@@ -148,7 +149,6 @@ private:
     Duration                                    duration_;
     const print_in_destructor                   print_in_destructor_;
     const timer<Now_func, Time_point, Duration> timer_;
-
 };
 
 static std::size_t gen_serial_no() {
@@ -179,9 +179,9 @@ public:
         : name_{std::move(name)}
         , serial_no_{should_profile() ? gen_serial_no() : std::size_t{0}}
         , wall_time_start_{should_profile() ? std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                                 std::chrono::high_resolution_clock::now().time_since_epoch())
-                                                 .count()
-                                           : std::size_t{0}}
+                                                  std::chrono::high_resolution_clock::now().time_since_epoch())
+                                                  .count()
+                                            : std::size_t{0}}
         , cpu_time_start_{should_profile() ? thread_cpu_time().count() : std::size_t{0}} { }
 
     ~print_timer2() {

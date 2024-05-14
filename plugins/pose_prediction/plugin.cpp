@@ -35,9 +35,8 @@ public:
     }
 
     pose_type get_true_pose() const override {
-        switchboard::ptr<const pose_type>                                   pose_ptr = true_pose_.get_ro_nullable();
-        switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr =
-            ground_truth_offset_.get_ro_nullable();
+        switchboard::ptr<const pose_type>                                   pose_ptr   = true_pose_.get_ro_nullable();
+        switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr = ground_truth_offset_.get_ro_nullable();
 
         pose_type offset_pose;
 
@@ -120,7 +119,7 @@ public:
     void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
         std::unique_lock   lock{offset_mutex_};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset_.inverse();
-        offset_                   = raw_o.inverse();
+        offset_                  = raw_o.inverse();
         /*
           Now, `raw_o` is maps to the identity quaternion.
           Proof:
@@ -375,7 +374,7 @@ private:
 
     mutable std::atomic<bool>                                        first_time_{true};
     const std::shared_ptr<switchboard>                               switchboard_;
-    const std::shared_ptr<const relative_clock>                       clock_;
+    const std::shared_ptr<const relative_clock>                      clock_;
     switchboard::reader<pose_type>                                   slow_pose_;
     switchboard::reader<imu_raw_type>                                imu_raw_;
     switchboard::reader<pose_type>                                   true_pose_;
@@ -383,7 +382,6 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>>      vsync_estimate_;
     mutable Eigen::Quaternionf                                       offset_{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex_;
-
 };
 
 class pose_prediction_plugin : public plugin {
