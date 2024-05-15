@@ -56,8 +56,10 @@ public:
         auto bitrate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_BITRATE");
         if (bitrate_env == nullptr) {
             bitrate = OFFLOAD_RENDERING_BITRATE;
+        } else {
+            bitrate = std::stol(bitrate_env);
         }
-        bitrate = std::stol(bitrate_env);
+
         if (bitrate <= 0) {
             throw std::runtime_error{"Invalid bitrate value"};
         }
@@ -66,8 +68,9 @@ public:
         auto framerate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
         if (framerate_env == nullptr) {
             framerate = 144;
+        } else {
+            framerate = std::stoi(framerate_env);
         }
-        framerate = std::stoi(framerate_env);
         if (framerate <= 0) {
             throw std::runtime_error{"Invalid framerate value"};
         }
