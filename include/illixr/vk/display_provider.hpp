@@ -53,7 +53,6 @@ public:
     VmaAllocator vma_allocator;
 
     // for ffmpeg
-    VkPhysicalDeviceVulkan13Features vk13_features;
     VkPhysicalDeviceFeatures2 features;
     std::vector<const char*>  enabled_instance_extensions;
     std::vector<const char*>  enabled_device_extensions;

@@ -1,3 +1,5 @@
+#include <vulkan/vulkan.h>
+
 #define VMA_IMPLEMENTATION
 
 #include "display/glfw_extended.h"
@@ -18,7 +20,7 @@ using namespace ILLIXR;
 
 class display_vk : public vulkan::display_provider {
     std::vector<const char*> required_device_extensions = {
-
+        VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME
     };
 
 public:
@@ -142,7 +144,7 @@ private:
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         app_info.pEngineName        = "ILLIXR";
         app_info.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
-        app_info.apiVersion         = VK_API_VERSION_1_3;
+        app_info.apiVersion         = VK_API_VERSION_1_2;
 
         auto backend_required_instance_extensions = backend->get_required_instance_extensions();
         std::vector<const char*> backend_required_instance_extensions_vec(backend_required_instance_extensions.begin(), backend_required_instance_extensions.end());
@@ -338,7 +340,7 @@ private:
         VkPhysicalDeviceFeatures device_features{};
         device_features.samplerAnisotropy = VK_TRUE;
 
-        VkPhysicalDeviceSynchronization2Features synchronization_2_features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES, nullptr, true};
+        VkPhysicalDeviceSynchronization2FeaturesKHR synchronization_2_features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES, nullptr, true};
 
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
             VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,

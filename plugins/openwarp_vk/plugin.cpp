@@ -19,7 +19,7 @@
 #include <iostream>
 #include <mutex>
 #include <stack>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
 

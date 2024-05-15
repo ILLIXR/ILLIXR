@@ -19,7 +19,7 @@ get_external_for_plugin(OpenXR_APP)
 
 ExternalProject_Add(MonadoVK
         GIT_REPOSITORY https://github.com/ILLIXR/monado_vulkan_integration.git   # Git repo for source code
-        GIT_TAG 154fb6b08b517021fc5d25305bb833b2c24cd7df       # sha5 hash for specific commit to pull (if there is no specific tag to use)
+        GIT_TAG a9e6713b473c67b28f7162809feefbcc4775d15f       # sha5 hash for specific commit to pull (if there is no specific tag to use)
 
         PREFIX ${CMAKE_BINARY_DIR}/_deps/monado_vk             # the build directory
         DEPENDS ${MONADO_VK_DEPS} ${Vulkan_DEP_STR}                             # dependencies of this module

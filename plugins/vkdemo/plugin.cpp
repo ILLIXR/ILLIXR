@@ -14,7 +14,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
