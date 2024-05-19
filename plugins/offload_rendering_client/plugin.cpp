@@ -95,8 +95,9 @@ public:
 
             // -200 ms
             // Timepoint: 25003 ms; Pose Position: -0.912881 0.729179 -0.527451; Pose Orientiation: 0.0463598 -0.0647321 0.0649133 0.994709
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
-                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
+            // fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
+            //                        Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
+            fixed_pose = pose_type();
         } else {
             log->debug("Cliont sending normal poses (not comparing images)");
         }
@@ -349,10 +350,6 @@ protected:
                 throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
             }
             AV_ASSERT_SUCCESS(ret);
-            // ret = avcodec_receive_frame(codec_ctx, decode_out_frames[eye]);
-            // AV_ASSERT_SUCCESS(ret);
-            // copy_image_to_cpu_and_save_file(decode_out_frames[eye]);
-            // decode_out_frames[eye]->pts = frame_count++;
 
             if (use_depth) {
                 ret = avcodec_send_packet(codec_depth_ctx, decode_src_depth_packets[eye]);
@@ -374,47 +371,6 @@ protected:
             }
         }
         auto decode_end = std::chrono::high_resolution_clock::now();
-
-        for (auto eye = 0; eye < 2; eye++) {
-            NppiSize roi = {static_cast<int>(decode_out_color_frames[eye]->width), static_cast<int>(decode_out_color_frames[eye]->height)};
-            Npp8u*   pSrc[2];
-            pSrc[0] = reinterpret_cast<Npp8u*>(decode_out_color_frames[eye]->data[0]);
-            pSrc[1] = reinterpret_cast<Npp8u*>(decode_out_color_frames[eye]->data[1]);
-            Npp8u* pDst[3];
-            pDst[0] = yuv420_y_plane;
-            pDst[1] = yuv420_u_plane;
-            pDst[2] = yuv420_v_plane;
-            int dst_linesizes[3];
-            dst_linesizes[0] = y_step;
-            dst_linesizes[1] = u_step;
-            dst_linesizes[2] = v_step;
-            auto ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_color_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
-            assert(ret == NPP_SUCCESS);
-            auto dst = reinterpret_cast<Npp8u*>(decode_converted_color_frames[eye]->data[0]);
-            ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst, decode_converted_color_frames[eye]->linesize[0], roi);
-            assert(ret == NPP_SUCCESS);
-            if (use_depth) {
-                NppiSize roi_depth = {static_cast<int>(decode_out_depth_frames[eye]->width), static_cast<int>(decode_out_depth_frames[eye]->height)};
-                Npp8u*   pSrc_depth[2];
-                pSrc_depth[0] = reinterpret_cast<Npp8u*>(decode_out_depth_frames[eye]->data[0]);
-                pSrc_depth[1] = reinterpret_cast<Npp8u*>(decode_out_depth_frames[eye]->data[1]);
-                // Npp8u* pDst_depth[3];
-                // pDst_depth[0] = yuv420_y_plane;
-                // pDst_depth[1] = yuv420_u_plane;
-                // pDst_depth[2] = yuv420_v_plane;
-                // int dst_linesizes_depth[3];
-                // dst_linesizes[0] = y_step;
-                // dst_linesizes[1] = u_step;
-                // dst_linesizes[2] = v_step;
-                ret              = nppiNV12ToYUV420_8u_P2P3R(pSrc_depth, decode_out_depth_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
-                assert(ret == NPP_SUCCESS);
-                auto dst_depth = reinterpret_cast<Npp8u*>(decode_converted_depth_frames[eye]->data[0]);
-                ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst_depth, decode_converted_depth_frames[eye]->linesize[0], roi);
-                assert(ret == NPP_SUCCESS);
-            }
-            cudaDeviceSynchronize();
-        }
-        auto conversion_end = std::chrono::high_resolution_clock::now();
 
         auto ind            = buffer_pool->src_acquire_image();
         auto transfer_start = std::chrono::high_resolution_clock::now();
@@ -468,11 +424,11 @@ protected:
 //            submit_command_buffer(layout_transition_start_cmd_bufs[ind][eye]);
             vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_start_submit, nullptr);
 
-            auto ret = av_hwframe_transfer_data(avvk_color_frames[ind][eye].frame, decode_converted_color_frames[eye], 0);
+            auto ret = av_hwframe_transfer_data(avvk_color_frames[ind][eye].frame, decode_out_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
 
             if (use_depth) {
-                ret = av_hwframe_transfer_data(avvk_depth_frames[ind][eye].frame, decode_converted_depth_frames[eye], 0);
+                ret = av_hwframe_transfer_data(avvk_depth_frames[ind][eye].frame, decode_out_depth_frames[eye], 0);
             }
             AV_ASSERT_SUCCESS(ret);
 
@@ -537,13 +493,11 @@ protected:
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
-        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
+        log->info("decode (microseconds): {}\n transfer (microseconds): {}",
                   std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
-                  std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count(),
                   std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count());
 
         metrics["decode"] += std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count();
-        metrics["conversion"] += std::chrono::duration_cast<std::chrono::microseconds>(conversion_end - decode_end).count();
         metrics["transfer"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
@@ -582,28 +536,19 @@ private:
     AVBufferRef*                                         device_ctx          = nullptr;
     AVBufferRef*                                         cuda_device_ctx     = nullptr;
     AVBufferRef*                                         frame_ctx           = nullptr;
-    AVBufferRef*                                         cuda_nv12_frame_ctx = nullptr;
-    AVBufferRef*                                         cuda_bgra_frame_ctx = nullptr;
+    AVBufferRef*                                         cuda_frame_ctx = nullptr;
 
     AVCodecContext*          codec_color_ctx               = nullptr;
     std::array<AVPacket*, 2> decode_src_color_packets      = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_out_color_frames       = {nullptr, nullptr};
-    std::array<AVFrame*, 2>  decode_converted_color_frames = {nullptr, nullptr};
 
     AVCodecContext*          codec_depth_ctx               = nullptr;
     std::array<AVPacket*, 2> decode_src_depth_packets      = {nullptr, nullptr};
     std::array<AVFrame*, 2>  decode_out_depth_frames       = {nullptr, nullptr};
-    std::array<AVFrame*, 2>  decode_converted_depth_frames = {nullptr, nullptr};
 
     fast_pose_type decoded_frame_pose;
 
     VkCommandPool command_pool{};
-    Npp8u*        yuv420_y_plane;
-    Npp8u*        yuv420_u_plane;
-    Npp8u*        yuv420_v_plane;
-    int           y_step;
-    int           u_step;
-    int           v_step;
 
     uint64_t frame_count = 0;
 
@@ -744,12 +689,7 @@ private:
 
         auto hwframe_ctx    = reinterpret_cast<AVHWFramesContext*>(frame_ctx->data);
         hwframe_ctx->format = AV_PIX_FMT_VULKAN;
-        auto pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool->image_pool[0][0].image_info.format);
-        if (!pix_format) {
-            throw std::runtime_error{"Unsupported Vulkan image format when creating FFmpeg Vulkan hwframe context"};
-        }
-        assert(pix_format == AV_PIX_FMT_BGRA);
-        hwframe_ctx->sw_format         = AV_PIX_FMT_BGRA;
+        hwframe_ctx->sw_format         = AV_PIX_FMT_NV12;
         hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
         hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
         hwframe_ctx->initial_pool_size = 0;
@@ -775,8 +715,7 @@ private:
 
     void ffmpeg_init_cuda_frame_ctx() {
         assert(this->buffer_pool != nullptr);
-        this->cuda_nv12_frame_ctx = create_cuda_frame_ctx(AV_PIX_FMT_NV12);
-        this->cuda_bgra_frame_ctx = create_cuda_frame_ctx(AV_PIX_FMT_BGRA);
+        this->cuda_frame_ctx = create_cuda_frame_ctx(AV_PIX_FMT_NV12);
     }
 
     void ffmpeg_init_buffer_pool() {
@@ -792,7 +731,7 @@ private:
                 if (!vk_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                 }
-                // The image index is just 0 here for AVVKFrame since we're not using multi-plane
+                
                 vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
                 vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
                 vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
@@ -827,7 +766,7 @@ private:
                     if (!vk_depth_frame) {
                         throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                     }
-                    // The image index is just 0 here for AVVKFrame since we're not using multi-plane
+
                     vk_depth_frame->img[0]          = buffer_pool->depth_image_pool[i][eye].image;
                     vk_depth_frame->tiling          = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
                     vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
@@ -863,46 +802,23 @@ private:
         for (size_t eye = 0; eye < 2; eye++) {
             decode_out_color_frames[eye]                = av_frame_alloc();
             decode_out_color_frames[eye]->format        = AV_PIX_FMT_CUDA;
-            decode_out_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
+            decode_out_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             decode_out_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             decode_out_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-            auto ret                              = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_color_frames[eye], 0);
-            AV_ASSERT_SUCCESS(ret);
-
-            decode_converted_color_frames[eye]                = av_frame_alloc();
-            decode_converted_color_frames[eye]->format        = AV_PIX_FMT_CUDA;
-            decode_converted_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_bgra_frame_ctx);
-            decode_converted_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
-            decode_converted_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-            ret = av_hwframe_get_buffer(cuda_bgra_frame_ctx, decode_converted_color_frames[eye], 0);
+            auto ret                              = av_hwframe_get_buffer(cuda_frame_ctx, decode_out_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
 
             if (use_depth) {
                 decode_out_depth_frames[eye]                = av_frame_alloc();
                 decode_out_depth_frames[eye]->format        = AV_PIX_FMT_CUDA;
-                decode_out_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
+                decode_out_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
                 decode_out_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
                 decode_out_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
                 decode_out_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
-                ret                              = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_depth_frames[eye], 0);
-                AV_ASSERT_SUCCESS(ret);
-
-                decode_converted_depth_frames[eye]                = av_frame_alloc();
-                decode_converted_depth_frames[eye]->format        = AV_PIX_FMT_CUDA;
-                decode_converted_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_bgra_frame_ctx);
-                decode_converted_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
-                decode_converted_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
-                ret = av_hwframe_get_buffer(cuda_bgra_frame_ctx, decode_converted_depth_frames[eye], 0);
+                ret                              = av_hwframe_get_buffer(cuda_frame_ctx, decode_out_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
             }
         }
-
-        yuv420_u_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width / 2,
-                                          buffer_pool->image_pool[0][0].image_info.extent.height / 2, &u_step);
-        yuv420_v_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width / 2,
-                                          buffer_pool->image_pool[0][0].image_info.extent.height / 2, &v_step);
-        yuv420_y_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width,
-                                          buffer_pool->image_pool[0][0].image_info.extent.height, &y_step);
     }
 
     void ffmpeg_init_decoder() {
@@ -922,7 +838,7 @@ private:
         codec_color_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
         codec_color_ctx->sw_pix_fmt    = AV_PIX_FMT_NV12;
         codec_color_ctx->hw_device_ctx = av_buffer_ref(cuda_device_ctx);
-        codec_color_ctx->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
+        codec_color_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
         codec_color_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
         codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_color_ctx->framerate     = {0, 1};
@@ -956,7 +872,7 @@ private:
             codec_depth_ctx->pix_fmt       = AV_PIX_FMT_CUDA; // alpha channel will be useful later for compositing
             codec_depth_ctx->sw_pix_fmt    = AV_PIX_FMT_NV12;
             codec_depth_ctx->hw_device_ctx = av_buffer_ref(cuda_device_ctx);
-            codec_depth_ctx->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
+            codec_depth_ctx->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             codec_depth_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             codec_depth_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
             codec_depth_ctx->framerate     = {0, 1};

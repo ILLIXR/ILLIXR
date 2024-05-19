@@ -20,7 +20,7 @@ using namespace ILLIXR;
 
 class display_vk : public vulkan::display_provider {
     std::vector<const char*> required_device_extensions = {
-        VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME
+        // VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME
     };
 
 public:
@@ -169,7 +169,8 @@ private:
 
         // enable validation layers
         const std::vector<const char*> validation_layers = {
-            "VK_LAYER_KHRONOS_validation"
+            "VK_LAYER_KHRONOS_validation",
+            "VK_LAYER_LUNARG_screenshot"
         };
 
         if (enable_validation_layers) {
@@ -337,22 +338,29 @@ private:
             queue_create_infos.push_back(queue_create_info);
         }
 
-        VkPhysicalDeviceFeatures device_features{};
-        device_features.samplerAnisotropy = VK_TRUE;
-
-        VkPhysicalDeviceSynchronization2FeaturesKHR synchronization_2_features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES, nullptr, true};
-
-        VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
-            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
-            &synchronization_2_features, // pNext
-            VK_TRUE  // timelineSemaphore
+        VkPhysicalDeviceVulkan13Features vk13_device_features{
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+            .pNext = nullptr,
+        };
+        VkPhysicalDeviceVulkan12Features vk12_device_features{
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+            .pNext = &vk13_device_features,
+        };
+        VkPhysicalDeviceVulkan11Features vk11_device_features{
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
+            .pNext = &vk12_device_features,
+        };
+        VkPhysicalDeviceFeatures2 vk_device_features{
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+            .pNext = &vk11_device_features,
         };
 
-        features = VkPhysicalDeviceFeatures2 {
-            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-            &timeline_semaphore_features,
-            device_features
-        };
+        vkGetPhysicalDeviceFeatures2(vk_physical_device, &vk_device_features);
+
+        assert(vk_device_features.features.samplerAnisotropy == VK_TRUE);
+        assert(vk11_device_features.samplerYcbcrConversion == VK_TRUE);
+        assert(vk12_device_features.timelineSemaphore == VK_TRUE);
+        assert(vk13_device_features.synchronization2 == VK_TRUE);
 
         required_device_extensions.insert(required_device_extensions.end(), device_extensions.begin(), device_extensions.end());
 
@@ -363,7 +371,9 @@ private:
         create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
         create_info.enabledExtensionCount   = static_cast<uint32_t>(required_device_extensions.size());
         create_info.ppEnabledExtensionNames = required_device_extensions.data();
-        create_info.pNext                   = &features;
+        create_info.pNext                   = &vk_device_features;
+
+        features = vk_device_features;
 
         // print enabled device extensions
         std::cout << "Enabled device extensions:" << std::endl;

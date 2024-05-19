@@ -58,6 +58,8 @@ public:
         offscreen_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
         depth_attachment_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
 
+        create_multi_plane_conversion();
+
         if (tw->is_external() || src->is_external()) {
             create_offscreen_pool();
         }
@@ -69,6 +71,7 @@ public:
             }
         }
         this->buffer_pool = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images, depth_images);
+        buffer_pool->ycbcr_conversion = ycbcr_conversion;
 
         command_pool            = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
         app_command_buffer      = vulkan::create_command_buffer(ds->vk_device, command_pool);
@@ -182,7 +185,7 @@ public:
         auto next_swap = nullptr; // _m_vsync.get_ro_nullable();
         if (next_swap == nullptr) {
             std::this_thread::sleep_for(display_params::period / 5.0 );
-            printf("WARNING!!! no vsync estimate\n");
+            // printf("WARNING!!! no vsync estimate\n");
         } /*else {
             // convert next_swap_time to std::chrono::time_point
             auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
@@ -417,6 +420,24 @@ private:
         VK_ASSERT_SUCCESS(vkCreateFence(ds->vk_device, &fence_info, nullptr, &frame_fence))
     }
 
+    void create_multi_plane_conversion() {
+        VkSamplerYcbcrConversionCreateInfo conversion_create_info = {
+            VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO, // sType
+            nullptr,                                                 // pNext
+            VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,         // format
+            VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020,          // ycbcrModel
+            VK_SAMPLER_YCBCR_RANGE_ITU_FULL,                        // ycbcrRange
+            {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+             VK_COMPONENT_SWIZZLE_IDENTITY}, // components
+            VK_CHROMA_LOCATION_COSITED_EVEN,  // xChromaOffset
+            VK_CHROMA_LOCATION_COSITED_EVEN,  // yChromaOffset
+            VK_FILTER_NEAREST,                 // chromaFilter
+            VK_FALSE,                          // forceExplicitReconstruction
+        };
+
+        VK_ASSERT_SUCCESS(vkCreateSamplerYcbcrConversion(ds->vk_device, &conversion_create_info, nullptr, &ycbcr_conversion))
+    }
+
     /**
      * @brief Creates a depth image for the application.
      * @param depth_image Pointer to the depth image handle.
@@ -480,7 +501,7 @@ private:
             nullptr,                             // pNext
             0,                                   // flags
             VK_IMAGE_TYPE_2D,                    // imageType
-            VK_FORMAT_B8G8R8A8_UNORM,            // format
+            VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,            // format
             {
                 server_width, // width
                 server_height,    // height
@@ -491,7 +512,7 @@ private:
             VK_SAMPLE_COUNT_1_BIT,              // samples
             VK_IMAGE_TILING_OPTIMAL,            // tiling
             static_cast<VkImageUsageFlags>(
-                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
+                (src->is_external() ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
             {},                                                                                      // sharingMode
             0,                                                                                       // queueFamilyIndexCount
@@ -542,9 +563,9 @@ private:
         image.image_info = {
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,                                            // sType
             (src->is_external() || tw->is_external()) ? &image.export_image_info : nullptr, // pNext
-            0,                                                                              // flags
+            VK_IMAGE_CREATE_DISJOINT_BIT,                                                   // flags
             VK_IMAGE_TYPE_2D,                                                               // imageType
-            VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
+            VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,                                                       // format
             {
                 server_width, // width
                 server_height,    // height
@@ -555,7 +576,7 @@ private:
             VK_SAMPLE_COUNT_1_BIT,              // samples
             VK_IMAGE_TILING_OPTIMAL,            // tiling
             static_cast<VkImageUsageFlags>(
-                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
+                (src->is_external() ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
             VK_SHARING_MODE_CONCURRENT,                                                              // sharingMode
             static_cast<uint32_t>(queue_family_indices.size()),                                      // queueFamilyIndexCount
@@ -572,15 +593,21 @@ private:
         VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image.image_info, &alloc_info, &image.image, &image.allocation,
                                          &image.allocation_info))
 
-        assert(image.allocation_info.deviceMemory);
+        assert(image.allocation_info.deviceMemory != VK_NULL_HANDLE);
+
+        VkSamplerYcbcrConversionInfo conversion_info = {
+            .sType = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO, // sType
+            .pNext = nullptr,                                         // pNext
+            .conversion = ycbcr_conversion                    // conversion
+        };
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
-            nullptr,                                  // pNext
+            &conversion_info,                                  // pNext
             0,                                        // flags
             image.image,                              // image
             VK_IMAGE_VIEW_TYPE_2D,                    // viewType
-            VK_FORMAT_B8G8R8A8_UNORM,                 // format
+            VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,                 // format
             {},                                       // components
             {
                 VK_IMAGE_ASPECT_COLOR_BIT, // aspectMask
@@ -824,6 +851,7 @@ private:
     std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
 
     std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
+    VkSamplerYcbcrConversion ycbcr_conversion;
 
     std::vector<VkFramebuffer> swapchain_framebuffers{};
     VkRenderPass               app_pass{};

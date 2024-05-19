@@ -31,6 +31,8 @@ struct buffer_pool {
     std::vector<T> image_data;
     std::mutex image_state_mutex;
 
+    VkSamplerYcbcrConversion ycbcr_conversion = VK_NULL_HANDLE;
+
     image_index_t latest_decoded_image = -1;
 
     image_index_t src_acquire_image() {

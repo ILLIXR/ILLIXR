@@ -101,9 +101,9 @@ public:
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
 
+        create_multi_plane_sampler();
         create_descriptor_set_layout();
         create_uniform_buffer();
-        create_texture_sampler();
     }
 
     void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
@@ -111,6 +111,7 @@ public:
         std::lock_guard<std::mutex> lock{m_setup};
 
         ds = pb->lookup_impl<vulkan::display_provider>();
+        this->buffer_pool = std::move(buffer_pool);
 
         swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
         swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
@@ -132,8 +133,6 @@ public:
         create_vertex_buffer();
         create_index_buffer();
 
-        this->buffer_pool = std::move(buffer_pool);
-
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
@@ -147,8 +146,9 @@ public:
 
             // 0 ms
             // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
-                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+            // fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
+            //                        Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+            fixed_pose = pose_type();
         }
     }
 
@@ -414,6 +414,40 @@ private:
         build_timewarp(hmd_info);
     }
 
+    void create_multi_plane_sampler() {
+        VkSamplerYcbcrConversionInfo conversion_info = {
+            VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO, // sType
+            nullptr,                                         // pNext
+            buffer_pool->ycbcr_conversion                               // conversion
+        };
+
+        VkSamplerCreateInfo samplerInfo = {VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
+        samplerInfo.pNext               = &conversion_info;
+        samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.borderColor  = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
+
+        samplerInfo.anisotropyEnable        = VK_FALSE;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable           = VK_FALSE;
+        samplerInfo.compareOp               = VK_COMPARE_OP_ALWAYS;
+
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.mipLodBias = 0.f;
+        samplerInfo.minLod     = 0.f;
+        samplerInfo.maxLod     = 0.f;
+
+        VK_ASSERT_SUCCESS(vkCreateSampler(ds->vk_device, &samplerInfo, nullptr, &fb_sampler))
+
+        deletion_queue.emplace([=]() {
+            vkDestroySampler(ds->vk_device, fb_sampler, nullptr);
+        });
+    }
+
     void create_texture_sampler() {
         VkSamplerCreateInfo samplerInfo = {
             VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, // sType
@@ -473,6 +507,7 @@ private:
         samplerLayoutBinding.descriptorType               = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         samplerLayoutBinding.descriptorCount              = 1;
         samplerLayoutBinding.stageFlags                   = VK_SHADER_STAGE_FRAGMENT_BIT;
+        samplerLayoutBinding.pImmutableSamplers           = &fb_sampler;
 
         std::array<VkDescriptorSetLayoutBinding, 2> bindings   = {uboLayoutBinding, samplerLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             layoutInfo = {};
