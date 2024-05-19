@@ -476,9 +476,9 @@ private:
                 // The image index is just 0 here for AVVKFrame since we're not using multi-plane
                 vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
                 vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
-                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
-                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].allocation_info.size;
-                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].allocation_info.offset;
+                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].alloc_info[0].memory;
+                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].alloc_info[0].size;
+                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].alloc_info[0].offset;
                 vk_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                 VkExportSemaphoreCreateInfo export_semaphore_create_info{
@@ -513,9 +513,9 @@ private:
 
                     vk_depth_frame->img[0]          = buffer_pool->depth_image_pool[i][eye].image;
                     vk_depth_frame->tiling          = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
-                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
-                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].allocation_info.size;
-                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].allocation_info.offset;
+                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].alloc_info[0].memory;
+                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].alloc_info[0].size;
+                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].alloc_info[0].offset;
                     vk_depth_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                     // VkExportSemaphoreCreateInfo export_semaphore_create_info{

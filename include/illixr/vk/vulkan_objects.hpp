@@ -7,13 +7,19 @@ namespace ILLIXR::vulkan {
 
 typedef int8_t image_index_t;
 
+struct image_allocation {
+    uint32_t memory_type;
+    VkDeviceSize size;
+    VkDeviceSize offset;
+    VkDeviceMemory memory;
+};
+
 struct vk_image {
     VkImageCreateInfo image_info;
     VkExternalMemoryImageCreateInfo export_image_info;
     VkImage image;
     VkImageView image_view;
-    VmaAllocation allocation;
-    VmaAllocationInfo allocation_info;
+    image_allocation alloc_info[2]; // NV12 planes allocated disjointly
 };
 
 template <typename T>

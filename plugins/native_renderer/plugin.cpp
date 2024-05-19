@@ -57,17 +57,16 @@ public:
         depth_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
         offscreen_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
         depth_attachment_images.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
+        depth_attachment_alloc.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
+        depth_attachment_alloc_info.resize(NATIVE_RENDERER_BUFFER_POOL_SIZE);
 
         create_multi_plane_conversion();
 
-        if (tw->is_external() || src->is_external()) {
-            create_offscreen_pool();
-        }
         for (auto i = 0; i < NATIVE_RENDERER_BUFFER_POOL_SIZE; i++) {
             for (auto eye = 0; eye < 2; eye++) {
                 create_offscreen_target(offscreen_images[i][eye]);
                 create_offscreen_target(depth_images[i][eye]);
-                create_depth_image(depth_attachment_images[i][eye]);
+                create_depth_image(depth_attachment_images[i][eye], depth_attachment_alloc[i][eye], depth_attachment_alloc_info[i][eye]);
             }
         }
         this->buffer_pool = std::make_shared<vulkan::buffer_pool<fast_pose_type>>(offscreen_images, depth_images);
@@ -438,13 +437,26 @@ private:
         VK_ASSERT_SUCCESS(vkCreateSamplerYcbcrConversion(ds->vk_device, &conversion_create_info, nullptr, &ycbcr_conversion))
     }
 
+    uint32_t find_memory_type(uint32_t memory_type_bits, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memory_properties;
+        vkGetPhysicalDeviceMemoryProperties(ds->vk_physical_device, &memory_properties);
+
+        for (uint32_t i = 0; i < memory_properties.memoryTypeCount; i++) {
+            if ((memory_type_bits & (1 << i)) && (memory_properties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        throw std::runtime_error("failed to find suitable memory type!");
+    }
+
     /**
      * @brief Creates a depth image for the application.
      * @param depth_image Pointer to the depth image handle.
      * @param depth_image_allocation Pointer to the depth image memory allocation handle.
      * @param depth_image_view Pointer to the depth image view handle.
      */
-    void create_depth_image(vulkan::vk_image& depth_image) {
+    void create_depth_image(vulkan::vk_image& depth_image, VmaAllocation& depth_image_alloc, VmaAllocationInfo& depth_image_alloc_info) {
         VkImageCreateInfo image_info{
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
             nullptr,                             // pNext
@@ -473,7 +485,7 @@ private:
         alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image_info, &alloc_info, &depth_image.image,
-                                         &depth_image.allocation, &depth_image.allocation_info))
+                                         &depth_image_alloc, &depth_image_alloc_info))
 
         VkImageViewCreateInfo view_info{
             VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -495,56 +507,12 @@ private:
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &depth_image.image_view))
     }
 
-    void create_offscreen_pool() {
-        VkImageCreateInfo sample_create_info{
-            VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
-            nullptr,                             // pNext
-            0,                                   // flags
-            VK_IMAGE_TYPE_2D,                    // imageType
-            VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,            // format
-            {
-                server_width, // width
-                server_height,    // height
-                1                               // depth
-            },                                  // extent
-            1,                                  // mipLevels
-            1,                                  // arrayLayers
-            VK_SAMPLE_COUNT_1_BIT,              // samples
-            VK_IMAGE_TILING_OPTIMAL,            // tiling
-            static_cast<VkImageUsageFlags>(
-                (src->is_external() ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
-                (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
-            {},                                                                                      // sharingMode
-            0,                                                                                       // queueFamilyIndexCount
-            nullptr,                                                                                 // pQueueFamilyIndices
-            {}                                                                                       // initialLayout
-        };
-
-        uint32_t                mem_type_index;
-        VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-                                           .usage = VMA_MEMORY_USAGE_GPU_ONLY};
-        vmaFindMemoryTypeIndexForImageInfo(ds->vma_allocator, &sample_create_info, &alloc_info, &mem_type_index);
-
-        offscreen_export_mem_alloc_info.sType       = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
-        offscreen_export_mem_alloc_info.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
-
-        VmaPoolCreateInfo pool_create_info   = {};
-        pool_create_info.memoryTypeIndex     = mem_type_index;
-        pool_create_info.blockSize           = 0;
-        pool_create_info.maxBlockCount       = 0;
-        pool_create_info.pMemoryAllocateNext = &offscreen_export_mem_alloc_info;
-        this->offscreen_pool_create_info     = pool_create_info;
-
-        VK_ASSERT_SUCCESS(vmaCreatePool(ds->vma_allocator, &offscreen_pool_create_info, &offscreen_pool));
-    }
-
     /**
      * @brief Creates an offscreen target for the application to render to.
      * @param image Pointer to the offscreen image handle.
      */
     void create_offscreen_target(vulkan::vk_image& image) {
         if (tw->is_external() || src->is_external()) {
-            assert(offscreen_pool != VK_NULL_HANDLE);
             image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
                                        VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
         }
@@ -584,16 +552,57 @@ private:
             VK_IMAGE_LAYOUT_UNDEFINED                                                                // initialLayout
         };
 
-        VmaAllocationCreateInfo alloc_info{.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-                                           .usage = VMA_MEMORY_USAGE_GPU_ONLY};
-        if (tw->is_external() || src->is_external()) {
-            alloc_info.pool = offscreen_pool;
+        VK_ASSERT_SUCCESS(vkCreateImage(ds->vk_device, &image.image_info, nullptr, &image.image))
+
+        std::array<VkImageAspectFlagBits, 2> planes = {VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT};
+        std::array<VkBindImagePlaneMemoryInfo, 2> plane_bind_info{};
+        std::array<VkBindImageMemoryInfo, 2> image_bind_info{};
+        for (int plane = 0; plane < 2; plane++) {
+            VkImagePlaneMemoryRequirementsInfo image_plane_info = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO,
+                .pNext = nullptr,
+                .planeAspect = planes[plane],
+            };
+
+            VkImageMemoryRequirementsInfo2 image_info = {
+                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2,
+                .pNext = &image_plane_info,
+                .image = image.image,
+            };
+
+            VkMemoryRequirements2 memory_requirements = {
+                .sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2,
+                .pNext = nullptr,
+            };
+
+            vkGetImageMemoryRequirements2(ds->vk_device, &image_info, &memory_requirements);
+            image.alloc_info[plane].size = memory_requirements.memoryRequirements.size;
+            image.alloc_info[plane].memory_type = memory_requirements.memoryRequirements.memoryTypeBits;
+            image.alloc_info[plane].offset = 0;
+
+            // Allocate and bind memory for each plane separately
+            VkMemoryAllocateInfo allocate_info = {};
+            allocate_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+            allocate_info.allocationSize = image.alloc_info[plane].size;
+            allocate_info.memoryTypeIndex = find_memory_type(image.alloc_info[plane].memory_type, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+            VK_ASSERT_SUCCESS(vkAllocateMemory(ds->vk_device, &allocate_info, NULL, &image.alloc_info[plane].memory))
+
+            plane_bind_info[plane] = {
+                .sType = VK_STRUCTURE_TYPE_BIND_IMAGE_PLANE_MEMORY_INFO,
+                .pNext = nullptr,
+                .planeAspect = planes[plane],
+            };
+
+            image_bind_info[plane] = {
+                .sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO,
+                .pNext = &plane_bind_info[plane],
+                .image = image.image,
+                .memory = image.alloc_info[plane].memory,
+                .memoryOffset = 0,
+            };
         }
 
-        VK_ASSERT_SUCCESS(vmaCreateImage(ds->vma_allocator, &image.image_info, &alloc_info, &image.image, &image.allocation,
-                                         &image.allocation_info))
-
-        assert(image.allocation_info.deviceMemory != VK_NULL_HANDLE);
+        VK_ASSERT_SUCCESS(vkBindImageMemory2(ds->vk_device, 2, image_bind_info.data()));
 
         VkSamplerYcbcrConversionInfo conversion_info = {
             .sType = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO, // sType
@@ -842,15 +851,15 @@ private:
     VkCommandBuffer app_command_buffer{};
     VkCommandBuffer timewarp_command_buffer{};
 
-    std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
-    std::vector<std::array<vulkan::vk_image, 2>> depth_attachment_images{};
-
-    VkExportMemoryAllocateInfo                offscreen_export_mem_alloc_info{};
-    VmaPoolCreateInfo                         offscreen_pool_create_info{};
-    VmaPool                                   offscreen_pool{};
     std::vector<std::array<VkFramebuffer, 2>> offscreen_framebuffers{};
-
     std::vector<std::array<vulkan::vk_image, 2>> offscreen_images{};
+    std::vector<std::array<vulkan::vk_image, 2>> depth_images{};
+
+    // Actual depth
+    std::vector<std::array<vulkan::vk_image, 2>> depth_attachment_images{};
+    std::vector<std::array<VmaAllocation, 2>> depth_attachment_alloc{};
+    std::vector<std::array<VmaAllocationInfo, 2>> depth_attachment_alloc_info{};
+    
     VkSamplerYcbcrConversion ycbcr_conversion;
 
     std::vector<VkFramebuffer> swapchain_framebuffers{};

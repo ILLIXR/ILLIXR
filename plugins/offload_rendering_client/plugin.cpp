@@ -467,15 +467,19 @@ protected:
                 decode_out_color_frames[eye]->pts = frame_count++;
                 decode_out_depth_frames[eye]->pts = frame_count++;
 
-                vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]},
-                                                                 {avvk_depth_frames[ind][eye].vk_frame->sem[0], avvk_depth_frames[ind][eye].vk_frame->sem_value[0]}});
+                for (int plane = 0; plane < 2; plane++) {
+                    vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][eye].vk_frame->sem[plane], avvk_color_frames[ind][eye].vk_frame->sem_value[plane]},
+                                                                 {avvk_depth_frames[ind][eye].vk_frame->sem[plane], avvk_depth_frames[ind][eye].vk_frame->sem_value[plane]}});
+                }
 
                 vk->unlock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
                 vk->unlock_frame(frames, avvk_depth_frames[ind][eye].vk_frame);
             } else {
                 decode_out_color_frames[eye]->pts = frame_count++;
 
-                vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]}});
+                for (int plane = 0; plane < 2; plane++) {
+                    vulkan::wait_timeline_semaphores(dp->vk_device, {{avvk_color_frames[ind][eye].vk_frame->sem[plane], avvk_color_frames[ind][eye].vk_frame->sem_value[plane]}});
+                }
 
                 vk->unlock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
             }
@@ -724,6 +728,10 @@ private:
         avvk_depth_frames.resize(buffer_pool->image_pool.size());
         layout_transition_start_cmd_bufs.resize(buffer_pool->image_pool.size());
         layout_transition_end_cmd_bufs.resize(buffer_pool->image_pool.size());
+
+        VkExportSemaphoreCreateInfo export_semaphore_create_info{
+                    VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
+
         for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
             for (size_t eye = 0; eye < 2; eye++) {
                 // Create AVVkFrame
@@ -731,18 +739,18 @@ private:
                 if (!vk_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                 }
-                
-                vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
-                vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
-                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
-                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].allocation_info.size;
-                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].allocation_info.offset;
-                vk_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
-                VkExportSemaphoreCreateInfo export_semaphore_create_info{
-                    VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
-                vk_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
-                vk_frame->sem_value[0] = 0;
+                vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
+                for (int plane = 0; plane < 2; plane++) {
+                    vk_frame->img[plane]          = buffer_pool->image_pool[i][eye].image;
+                    vk_frame->mem[plane]          = buffer_pool->image_pool[i][eye].alloc_info[plane].memory;
+                    vk_frame->size[plane]         = buffer_pool->image_pool[i][eye].alloc_info[plane].size;
+                    vk_frame->offset[plane]       = buffer_pool->image_pool[i][eye].alloc_info[plane].offset;
+                    vk_frame->queue_family[plane] = dp->queues[vulkan::queue::GRAPHICS].family;
+
+                    vk_frame->sem[plane]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                    vk_frame->sem_value[plane] = 0;
+                }
 
                 avvk_color_frames[i][eye].vk_frame = vk_frame;
 
@@ -767,17 +775,16 @@ private:
                         throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                     }
 
-                    vk_depth_frame->img[0]          = buffer_pool->depth_image_pool[i][eye].image;
-                    vk_depth_frame->tiling          = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
-                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
-                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].allocation_info.size;
-                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].allocation_info.offset;
-                    vk_depth_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
+                    for (int plane = 0; plane < 2; plane++) {
+                        vk_depth_frame->img[plane]          = buffer_pool->depth_image_pool[i][eye].image;
+                        vk_depth_frame->mem[plane]          = buffer_pool->depth_image_pool[i][eye].alloc_info[plane].memory;
+                        vk_depth_frame->size[plane]         = buffer_pool->depth_image_pool[i][eye].alloc_info[plane].size;
+                        vk_depth_frame->offset[plane]       = buffer_pool->depth_image_pool[i][eye].alloc_info[plane].offset;
+                        vk_depth_frame->queue_family[plane] = dp->queues[vulkan::queue::GRAPHICS].family;
 
-                    // VkExportSemaphoreCreateInfo export_semaphore_create_info{
-                    //     VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
-                    vk_depth_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
-                    vk_depth_frame->sem_value[0] = 0;
+                        vk_depth_frame->sem[plane]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                        vk_depth_frame->sem_value[plane] = 0;
+                    }
 
                     avvk_depth_frames[i][eye].vk_frame = vk_depth_frame;
 
