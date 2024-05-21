@@ -16,7 +16,6 @@ struct image_allocation {
 
 struct vk_image {
     VkImageCreateInfo image_info;
-    VkExternalMemoryImageCreateInfo export_image_info;
     VkImage image;
     VkImageView image_view;
     image_allocation alloc_info[2]; // NV12 planes allocated disjointly

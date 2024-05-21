@@ -359,6 +359,7 @@ protected:
                 AV_ASSERT_SUCCESS(ret);
             }
         }
+
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = avcodec_receive_frame(codec_color_ctx, decode_out_color_frames[eye]);
             assert(decode_out_color_frames[eye]->format == AV_PIX_FMT_CUDA);
@@ -387,18 +388,22 @@ protected:
 
             vkResetFences(dp->vk_device, 1, &fence);
 
-            std::vector<VkSemaphore> timelines = {avvk_color_frames[ind][eye].vk_frame->sem[0]};
-            std::vector<VkPipelineStageFlags> wait_stages = {VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT};
-            if (use_depth) {
-                timelines.push_back(avvk_depth_frames[ind][eye].vk_frame->sem[0]);
+            std::vector<VkSemaphore> timelines;
+            std::vector<VkPipelineStageFlags> wait_stages;
+            std::vector<uint64_t> start_wait_values;
+            std::vector<uint64_t> start_signal_values;
+            for (int plane = 0; plane < 2; plane++) {
+                timelines.push_back(avvk_color_frames[ind][eye].vk_frame->sem[plane]);
                 wait_stages.push_back(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
-            }
+                start_wait_values.push_back(avvk_color_frames[ind][eye].vk_frame->sem_value[plane]);
+                start_signal_values.push_back(++avvk_color_frames[ind][eye].vk_frame->sem_value[plane]);
 
-            std::vector<uint64_t> start_wait_values = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
-            std::vector<uint64_t> start_signal_values = {++avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
-            if (use_depth) {
-                start_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
-                start_signal_values.push_back(++avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
+                if (use_depth) {
+                    timelines.push_back(avvk_depth_frames[ind][eye].vk_frame->sem[plane]);
+                    wait_stages.push_back(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
+                    start_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[plane]);
+                    start_signal_values.push_back(++avvk_depth_frames[ind][eye].vk_frame->sem_value[plane]);
+                }
             }
 
             VkTimelineSemaphoreSubmitInfo transition_start_timeline = {
@@ -432,11 +437,17 @@ protected:
             }
             AV_ASSERT_SUCCESS(ret);
 
-            std::vector<uint64_t> end_wait_values = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
-            std::vector<uint64_t> end_signal_values = {++avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
-            if (use_depth) {
-                end_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
-                end_signal_values.push_back(++avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
+            std::vector<uint64_t> end_wait_values;
+            std::vector<uint64_t> end_signal_values;
+
+            for (int plane = 0; plane < 2; plane++) {
+                end_wait_values.push_back(avvk_color_frames[ind][eye].vk_frame->sem_value[plane]);
+                end_signal_values.push_back(++avvk_color_frames[ind][eye].vk_frame->sem_value[plane]);
+
+                if (use_depth) {
+                    end_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[plane]);
+                    end_signal_values.push_back(++avvk_depth_frames[ind][eye].vk_frame->sem_value[plane]);
+                }
             }
 
             VkTimelineSemaphoreSubmitInfo transition_end_timeline = {
@@ -613,7 +624,7 @@ private:
         decode_src_color_packets[1] = frame->right_color;
         if (use_depth) {
             decode_src_depth_packets[0] = frame->left_depth;
-        decode_src_depth_packets[1] = frame->right_depth;
+            decode_src_depth_packets[1] = frame->right_depth;
         }
         // log->info("Received frame {}", frame_count);
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();

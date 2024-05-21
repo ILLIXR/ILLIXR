@@ -163,8 +163,17 @@ public:
     void update_uniforms(const pose_type& render_pose) override {}
 
 protected:
+    // skip_option _p_should_skip() override {
+    //     return threadloop::_p_should_skip();
+    // }
     skip_option _p_should_skip() override {
-        return threadloop::_p_should_skip();
+        if (encoded_num > 100) {
+             using namespace std::chrono_literals;
+            std::this_thread::sleep_for(100ms);
+            return skip_option::skip_and_yield;
+        }
+
+        return skip_option::run;
     }
 
     void copy_image_to_cpu_and_save_file(AVFrame* frame) {
@@ -297,13 +306,15 @@ protected:
             }
             
             if (pass_depth) {
-		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
-	}	
+                std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[1]->size << std::endl;
+            }	
 
             fps_counter = 0;
         } else {
             fps_counter++;
         }
+
+        encoded_num++;
     }
 
 private:
@@ -320,6 +331,8 @@ private:
     long bitrate = OFFLOAD_RENDERING_BITRATE;
 
     bool pass_depth = false;
+
+    int encoded_num = 0;
 
     AVBufferRef* device_ctx;
     AVBufferRef* cuda_device_ctx;

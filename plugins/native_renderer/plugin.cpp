@@ -428,8 +428,8 @@ private:
             VK_SAMPLER_YCBCR_RANGE_ITU_FULL,                        // ycbcrRange
             {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
              VK_COMPONENT_SWIZZLE_IDENTITY}, // components
-            VK_CHROMA_LOCATION_COSITED_EVEN,  // xChromaOffset
-            VK_CHROMA_LOCATION_COSITED_EVEN,  // yChromaOffset
+            VK_CHROMA_LOCATION_MIDPOINT,  // xChromaOffset
+            VK_CHROMA_LOCATION_MIDPOINT,  // yChromaOffset
             VK_FILTER_NEAREST,                 // chromaFilter
             VK_FALSE,                          // forceExplicitReconstruction
         };
@@ -512,11 +512,6 @@ private:
      * @param image Pointer to the offscreen image handle.
      */
     void create_offscreen_target(vulkan::vk_image& image) {
-        if (tw->is_external() || src->is_external()) {
-            image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
-                                       VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
-        }
-
         std::vector<uint32_t> queue_family_indices;
         queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         if (ds->queues.find(vulkan::queue::queue_type::COMPUTE) != ds->queues.end() &&
@@ -528,9 +523,14 @@ private:
             queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::DEDICATED_TRANSFER].family);
         }
 
+        VkExternalMemoryImageCreateInfo external_image = {
+            .sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
+            .handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT,
+        };
+
         image.image_info = {
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,                                            // sType
-            (src->is_external() || tw->is_external()) ? &image.export_image_info : nullptr, // pNext
+            (src->is_external() || tw->is_external()) ? &external_image : nullptr, // pNext
             VK_IMAGE_CREATE_DISJOINT_BIT,                                                   // flags
             VK_IMAGE_TYPE_2D,                                                               // imageType
             VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,                                                       // format
@@ -542,7 +542,7 @@ private:
             1,                                  // mipLevels
             1,                                  // arrayLayers
             VK_SAMPLE_COUNT_1_BIT,              // samples
-            VK_IMAGE_TILING_OPTIMAL,            // tiling
+            VK_IMAGE_TILING_LINEAR,            // tiling
             static_cast<VkImageUsageFlags>(
                 (src->is_external() ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
@@ -580,9 +580,15 @@ private:
             image.alloc_info[plane].memory_type = memory_requirements.memoryRequirements.memoryTypeBits;
             image.alloc_info[plane].offset = 0;
 
+            VkExportMemoryAllocateInfo export_memory = {
+                .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+                .handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT,
+            };
+
             // Allocate and bind memory for each plane separately
             VkMemoryAllocateInfo allocate_info = {};
             allocate_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+            allocate_info.pNext = (src->is_external() || tw->is_external()) ? &export_memory : nullptr;
             allocate_info.allocationSize = image.alloc_info[plane].size;
             allocate_info.memoryTypeIndex = find_memory_type(image.alloc_info[plane].memory_type, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
             VK_ASSERT_SUCCESS(vkAllocateMemory(ds->vk_device, &allocate_info, NULL, &image.alloc_info[plane].memory))
