@@ -158,7 +158,7 @@ struct compressed_frame : public switchboard::event {
                 load_packet(ar, right_depth);
             }
 #else
-//            assert(false && "Not compiled with libav");
+            assert(false && "Not compiled with libav");
 #endif
         }
 
@@ -179,7 +179,8 @@ struct compressed_frame : public switchboard::event {
         , left_depth(nullptr)
         , right_depth(nullptr)
         , pose(pose)
-        , sent_time(sent_time) { }
+        , sent_time(sent_time)
+        , nalu_only(nalu_only){ }
 
     compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth,
                      const fast_pose_type& pose, uint64_t sent_time, bool nalu_only = false)
@@ -189,7 +190,8 @@ struct compressed_frame : public switchboard::event {
         , left_depth(left_depth)
         , right_depth(right_depth)
         , pose(pose)
-        , sent_time(sent_time) { }
+        , sent_time(sent_time)
+        , nalu_only(nalu_only){ }
 #endif
 };
 } // namespace ILLIXR
