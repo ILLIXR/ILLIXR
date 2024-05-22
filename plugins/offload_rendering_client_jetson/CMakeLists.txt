@@ -23,26 +23,7 @@ list(REMOVE_ITEM JETSON_MULTIMEDIA_API_CLASSES /usr/src/jetson_multimedia_api/sa
 
 link_directories(/usr/lib/aarch64-linux-gnu/tegra)
 
-add_executable(decode_cli decoding/video_decode.cpp decoding/video_decode_csvparser.cpp ${JETSON_MULTIMEDIA_API_CLASSES}
-        decoding/NvVulkanRenderer.cpp)
-
 find_package (Threads)
-target_link_libraries(decode_cli ${CMAKE_THREAD_LIBS_INIT})
-
-# drm
-target_link_libraries(decode_cli drm)
-target_link_libraries(decode_cli nvjpeg)
-target_link_libraries(decode_cli nvv4l2)
-target_link_libraries(decode_cli EGL)
-target_link_libraries(decode_cli GLESv2)
-target_link_libraries(decode_cli X11)
-target_link_libraries(decode_cli nvbufsurface)
-target_link_libraries(decode_cli nvbufsurftransform)
-target_link_libraries(decode_cli nvosd)
-
-# link libdrm
-target_link_libraries(decode_cli ${Vulkan_LIBRARIES})
-target_include_directories(decode_cli BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} /usr/include/libdrm)
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/data_format.hpp
@@ -56,7 +37,21 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ${JETSON_MULTIMEDIA_API_CLASSES}
         decoding/video_decode.h
         decoding/video_decode.cpp
+        decoding/NvVulkanRenderer.cpp
 )
+
+target_link_libraries(${PLUGIN_NAME} drm)
+target_link_libraries(${PLUGIN_NAME} nvjpeg)
+target_link_libraries(${PLUGIN_NAME} nvv4l2)
+target_link_libraries(${PLUGIN_NAME} EGL)
+target_link_libraries(${PLUGIN_NAME} GLESv2)
+target_link_libraries(${PLUGIN_NAME} X11)
+target_link_libraries(${PLUGIN_NAME} nvbufsurface)
+target_link_libraries(${PLUGIN_NAME} nvbufsurftransform)
+target_link_libraries(${PLUGIN_NAME} nvosd)
+target_link_libraries(${PLUGIN_NAME} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} /usr/include/libdrm)
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 if(Vulkan_EXTERNAL)
