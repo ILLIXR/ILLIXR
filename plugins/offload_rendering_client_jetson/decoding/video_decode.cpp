@@ -898,6 +898,7 @@ bool mmapi_decoder::queue_output_plane_buffer(char* nalu_buffer, size_t nalu_siz
                 break;
             }
         } else {
+            v4l2_buf.index = i_output_plane_buf_filled;
             buffer = ctx.dec->output_plane.getNthBuffer(i_output_plane_buf_filled++);
         }
 
@@ -1000,7 +1001,7 @@ int mmapi_decoder::decoder_init() {
     set_defaults(&ctx);
 
     /* Set thread name for decoder Output Plane thread. */
-    pthread_setname_np(pthread_self(), "DecOutPlane");
+//    pthread_setname_np(pthread_self(), "DecOutPlane");
 
     if (ctx.enable_sld && (ctx.decoder_pixfmt != V4L2_PIX_FMT_H265)) {
         fprintf(stdout, "Slice level decoding is only applicable for H265 so disabling it\n");
@@ -1104,7 +1105,7 @@ int mmapi_decoder::decoder_init() {
     if (ctx.output_plane_mem_type == V4L2_MEMORY_MMAP) {
         /* configure decoder output plane for MMAP io-mode.
            Refer ioctl VIDIOC_REQBUFS, VIDIOC_QUERYBUF and VIDIOC_EXPBUF */
-        ret = ctx.dec->output_plane.setupPlane(V4L2_MEMORY_MMAP, 2, true, false);
+        ret = ctx.dec->output_plane.setupPlane(V4L2_MEMORY_MMAP, 1, true, false);
     } else if (ctx.output_plane_mem_type == V4L2_MEMORY_USERPTR) {
         /* configure decoder output plane for USERPTR io-mode.
            Refer ioctl VIDIOC_REQBUFS */

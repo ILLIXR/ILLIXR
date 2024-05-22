@@ -35,6 +35,10 @@ public:
         } else {
             log->debug("Not encoding depth images for the client");
         }
+
+        if (nalu_only) {
+            log->info("Only sending NALUs to the client");
+        }
     }
 
     void start() override {
