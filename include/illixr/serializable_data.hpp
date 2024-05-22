@@ -90,15 +90,15 @@ struct compressed_frame : public switchboard::event {
     void save(Archive& ar, const unsigned int version) const {
         ar << boost::serialization::base_object<switchboard::event>(*this);
         if (nalu_only) {
-            ar >> left_color->size;
-            ar >> right_color->size;
-            ar >> boost::serialization::make_array(left_color->data, left_color->size);
-            ar >> boost::serialization::make_array(right_color->data, right_color->size);
+            ar << left_color->size;
+            ar << right_color->size;
+            ar << boost::serialization::make_array(left_color->data, left_color->size);
+            ar << boost::serialization::make_array(right_color->data, right_color->size);
             if (use_depth) {
-                ar >> left_depth->size;
-                ar >> right_depth->size;
-                ar >> boost::serialization::make_array(left_depth->data, left_depth->size);
-                ar >> boost::serialization::make_array(right_depth->data, right_depth->size);
+                ar << left_depth->size;
+                ar << right_depth->size;
+                ar << boost::serialization::make_array(left_depth->data, left_depth->size);
+                ar << boost::serialization::make_array(right_depth->data, right_depth->size);
             }
         } else {
             save_packet(ar, left_color);
