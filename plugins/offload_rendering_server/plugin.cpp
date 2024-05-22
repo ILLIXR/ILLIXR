@@ -204,7 +204,7 @@ protected:
 
     void _p_one_iteration() override {
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
-            log->info("no decoded image, returning");
+//            log->info("no decoded image, returning");
             return;
         }
         auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
