@@ -107,9 +107,11 @@ public:
 
     void mmapi_init_decoders() {
         for (auto eye = 0; eye < 2; eye++) {
-            color_decoders[eye].decoder_init();
+            auto ret = color_decoders[eye].decoder_init();
+            assert(ret == 0);
             if (use_depth) {
                 depth_decoders[eye].decoder_init();
+                assert(ret == 0);
             }
         }
     }
@@ -405,7 +407,7 @@ protected:
                 blitTo(ind, eye, fd, false);
             };
 
-            auto ret = color_decoders[0].dec_capture(blit_f);
+            auto ret = color_decoders[eye].dec_capture(blit_f);
             assert(ret == 0);
 
             if (use_depth) {
@@ -414,7 +416,7 @@ protected:
                     blitTo(ind, eye, fd, true);
                 };
 
-                auto ret = depth_decoders[0].dec_capture(blit_f);
+                auto ret = depth_decoders[eye].dec_capture(blit_f);
                 assert(ret == 0);
             }
         }
@@ -465,7 +467,7 @@ private:
     std::array<mmapi_decoder, 2> color_decoders;
     std::array<mmapi_decoder, 2> depth_decoders;
 
-    std::shared_ptr<compressed_frame> received_frame;
+    std::shared_ptr<const compressed_frame> received_frame;
     fast_pose_type                    decoded_frame_pose;
 
     VkCommandPool command_pool{};
@@ -529,7 +531,7 @@ private:
     }
 
     bool network_receive() {
-        auto received_frame = frames_reader.dequeue();
+        received_frame = frames_reader.dequeue();
         if (received_frame == nullptr) {
             return false;
         }
