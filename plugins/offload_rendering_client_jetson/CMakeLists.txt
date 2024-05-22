@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(offload_rendering_client)
+project(offload_rendering_client_jetson)
 
-set(PLUGIN_NAME plugin.offload_rendering_client${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.offload_rendering_client_jetson${ILLIXR_BUILD_SUFFIX})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
