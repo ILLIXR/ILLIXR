@@ -29,6 +29,7 @@ public:
         , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {
         // Only encode and pass depth if requested - otherwise skip it.
         pass_depth = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
+        nalu_only = std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr && std::stoi(std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
         if (pass_depth) {
             log->debug("Encoding depth images for the client");
         } else {
@@ -317,6 +318,7 @@ private:
     long bitrate = OFFLOAD_RENDERING_BITRATE;
 
     bool pass_depth = false;
+    bool nalu_only = false;
 
     AVBufferRef* device_ctx;
     AVBufferRef* cuda_device_ctx;
@@ -346,9 +348,9 @@ private:
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         if (pass_depth) {
             frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], 
-                                                                encode_out_depth_packets[0], encode_out_depth_packets[1], pose, timestamp));
+                                                                encode_out_depth_packets[0], encode_out_depth_packets[1], pose, timestamp, nalu_only));
         } else {
-            frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], pose, timestamp));
+            frames_topic.put(std::make_shared<compressed_frame>(encode_out_color_packets[0], encode_out_color_packets[1], pose, timestamp, nalu_only));
         }
         auto topic_end_time = std::chrono::high_resolution_clock::now();
 
@@ -641,7 +643,6 @@ private:
             AV_ASSERT_SUCCESS(ret);
         }
     }
-
 
 };
 

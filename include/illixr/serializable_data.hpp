@@ -20,6 +20,16 @@ extern "C" {
 
 namespace ILLIXR {
 struct compressed_frame : public switchboard::event {
+    bool nalu_only;
+    char* left_color_nalu;
+    char* right_color_nalu;
+    char* left_depth_nalu;
+    char* right_depth_nalu;
+    int left_color_nalu_size;
+    int right_color_nalu_size;
+    int left_depth_nalu_size;
+    int right_depth_nalu_size;
+
     AVPacket* left_color;
     AVPacket* right_color;
 
@@ -79,13 +89,27 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     void save(Archive& ar, const unsigned int version) const {
         ar << boost::serialization::base_object<switchboard::event>(*this);
-        save_packet(ar, left_color);
-        save_packet(ar, right_color);
-        ar << use_depth;
-        if (use_depth) {
-            save_packet(ar, left_depth);
-            save_packet(ar, right_depth);
+        if (nalu_only) {
+            ar >> left_color->size;
+            ar >> right_color->size;
+            ar >> boost::serialization::make_array(left_color->data, left_color->size);
+            ar >> boost::serialization::make_array(right_color->data, right_color->size);
+            if (use_depth) {
+                ar >> left_depth->size;
+                ar >> right_depth->size;
+                ar >> boost::serialization::make_array(left_depth->data, left_depth->size);
+                ar >> boost::serialization::make_array(right_depth->data, right_depth->size);
+            }
+        } else {
+            save_packet(ar, left_color);
+            save_packet(ar, right_color);
+            ar << use_depth;
+            if (use_depth) {
+                save_packet(ar, left_depth);
+                save_packet(ar, right_depth);
+            }
         }
+
         ar << pose;
         ar << sent_time;
     }
@@ -93,17 +117,33 @@ struct compressed_frame : public switchboard::event {
     template<class Archive>
     void load(Archive& ar, const unsigned int version) {
         ar >> boost::serialization::base_object<switchboard::event>(*this);
-        left_color = av_packet_alloc();
-        load_packet(ar, left_color);
-        right_color = av_packet_alloc();
-        load_packet(ar, right_color);
-        ar >> use_depth;
-        if (use_depth) {
-            left_depth = av_packet_alloc();
-            load_packet(ar, left_depth);
-            right_depth = av_packet_alloc();
-            load_packet(ar, right_depth);
+        if (nalu_only) {
+            ar >> left_color_nalu_size;
+            ar >> right_color_nalu_size;
+            left_color_nalu = (char*) malloc(left_color_nalu_size);
+            right_color_nalu = (char*) malloc(right_color_nalu_size);
+            ar >> boost::serialization::make_array(left_color_nalu, left_color_nalu_size);
+            ar >> boost::serialization::make_array(right_color_nalu, right_color_nalu_size);
+            if (use_depth) {
+                ar >> left_depth_nalu_size;
+                ar >> right_depth_nalu_size;
+                ar >> boost::serialization::make_array(left_depth_nalu, left_depth_nalu_size);
+                ar >> boost::serialization::make_array(right_depth_nalu, right_depth_nalu_size);
+            }
+        } else {
+            left_color = av_packet_alloc();
+            load_packet(ar, left_color);
+            right_color = av_packet_alloc();
+            load_packet(ar, right_color);
+            ar >> use_depth;
+            if (use_depth) {
+                left_depth = av_packet_alloc();
+                load_packet(ar, left_depth);
+                right_depth = av_packet_alloc();
+                load_packet(ar, right_depth);
+            }
         }
+
         ar >> pose;
         ar >> sent_time;
     }
@@ -112,7 +152,7 @@ struct compressed_frame : public switchboard::event {
 
     compressed_frame() = default;
 
-    compressed_frame(AVPacket* left_color, AVPacket* right_color, const fast_pose_type& pose, uint64_t sent_time)
+    compressed_frame(AVPacket* left_color, AVPacket* right_color, const fast_pose_type& pose, uint64_t sent_time, bool nalu_only = false)
         : left_color(left_color)
         , right_color(right_color)
         , use_depth(false)
@@ -121,7 +161,7 @@ struct compressed_frame : public switchboard::event {
         , pose(pose)
         , sent_time(sent_time) { }
 
-    compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth, const fast_pose_type& pose, uint64_t sent_time)
+    compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth, const fast_pose_type& pose, uint64_t sent_time, bool nalu_only = false)
         : left_color(left_color)
         , right_color(right_color)
         , use_depth(true)
