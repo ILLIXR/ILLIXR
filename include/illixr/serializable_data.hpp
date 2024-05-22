@@ -11,7 +11,7 @@
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/export.hpp>
 
-#ifdef AVUTIL_AVCONFIG_H
+#ifdef ILLIXR_LIBAV
 extern "C" {
     #include "libavcodec_illixr/avcodec.h"
     #include "libavformat_illixr/avformat.h"
@@ -34,7 +34,7 @@ struct compressed_frame : public switchboard::event {
     int   right_depth_nalu_size;
 
     bool use_depth;
-#ifdef AVUTIL_AVCONFIG_H
+#ifdef ILLIXR_LIBAV
     AVPacket* left_color;
     AVPacket* right_color;
 
@@ -47,7 +47,7 @@ struct compressed_frame : public switchboard::event {
 
     friend class boost::serialization::access;
 
-#ifdef AVUTIL_AVCONFIG_H
+#ifdef ILLIXR_LIBAV
     template<class Archive>
     static void save_packet(Archive& ar, AVPacket* pkt) {
         ar << pkt->size;
@@ -98,7 +98,7 @@ struct compressed_frame : public switchboard::event {
         ar << boost::serialization::base_object<switchboard::event>(*this);
         ar << nalu_only;
         ar << use_depth;
-#ifdef AVUTIL_AVCONFIG_H
+#ifdef ILLIXR_LIBAV
         if (nalu_only) {
             ar << left_color->size;
             ar << right_color->size;
@@ -145,7 +145,7 @@ struct compressed_frame : public switchboard::event {
                 ar >> boost::serialization::make_array(right_depth_nalu, right_depth_nalu_size);
             }
         } else {
-#ifdef AVUTIL_AVCONFIG_H
+#ifdef ILLIXR_LIBAV
 
             left_color = av_packet_alloc();
             load_packet(ar, left_color);
@@ -170,7 +170,7 @@ struct compressed_frame : public switchboard::event {
 
     compressed_frame() = default;
 
-#ifdef AVUTIL_AVCONFIG_H
+#ifdef ILLIXR_LIBAV
     compressed_frame(AVPacket* left_color, AVPacket* right_color, const fast_pose_type& pose, uint64_t sent_time,
                      bool nalu_only = false)
         : left_color(left_color)
