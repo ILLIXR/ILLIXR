@@ -44,6 +44,7 @@ struct compressed_frame : public switchboard::event {
 
     fast_pose_type pose;
     uint64_t       sent_time;
+    long magic = 0;
 
     friend class boost::serialization::access;
 
@@ -124,6 +125,7 @@ struct compressed_frame : public switchboard::event {
 
         ar << pose;
         ar << sent_time;
+        ar << magic;
     }
 
     template<class Archive>
@@ -164,6 +166,10 @@ struct compressed_frame : public switchboard::event {
 
         ar >> pose;
         ar >> sent_time;
+        ar >> magic;
+        if (magic != 0xdeadbeef) {
+            throw std::runtime_error("Magic number mismatch");
+        }
     }
 
     BOOST_SERIALIZATION_SPLIT_MEMBER()
@@ -180,7 +186,9 @@ struct compressed_frame : public switchboard::event {
         , right_depth(nullptr)
         , pose(pose)
         , sent_time(sent_time)
-        , nalu_only(nalu_only){ }
+        , nalu_only(nalu_only)
+        , magic(0xdeadbeef)
+        { }
 
     compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth,
                      const fast_pose_type& pose, uint64_t sent_time, bool nalu_only = false)
@@ -191,7 +199,9 @@ struct compressed_frame : public switchboard::event {
         , right_depth(right_depth)
         , pose(pose)
         , sent_time(sent_time)
-        , nalu_only(nalu_only){ }
+        , nalu_only(nalu_only)
+        , magic(0xdeadbeef)
+        { }
 #endif
 };
 } // namespace ILLIXR
