@@ -19,7 +19,8 @@ using namespace ILLIXR;
 
 class offload_rendering_client
     : public threadloop
-    , public vulkan::app {
+    , public vulkan::app
+    , public std::enable_shared_from_this<offload_rendering_client> {
 public:
     offload_rendering_client(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
@@ -101,12 +102,11 @@ public:
     }
 
     void start() override {
-        mmapi_init_decoders();
         threadloop::start();
     }
 
     void mmapi_init_decoders() {
-        for (auto eye = 0; eye < 2; eye++) {
+        for (auto eye = 0; eye < 1; eye++) {
             auto ret = color_decoders[eye].decoder_init();
             assert(ret == 0);
             if (use_depth) {
@@ -207,8 +207,39 @@ public:
         }
     }
 
-protected:
-    void _p_thread_setup() override { }
+    std::shared_ptr<std::thread> decode_q_thread;
+
+    void _p_thread_setup() override {
+        mmapi_init_decoders();
+        decode_q_thread = std::make_shared<std::thread>([this]() {
+            while (running) {
+                push_pose();
+                if (!network_receive()) {
+                    return;
+                }
+
+                // system timestamp
+                auto timestamp = std::chrono::high_resolution_clock::now();
+                auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
+                // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
+
+                // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
+
+                auto decode_start = std::chrono::high_resolution_clock::now();
+                // receive packets
+                color_decoders[0].queue_output_plane_buffer(received_frame->left_color_nalu,
+                                                            received_frame->left_color_nalu_size);
+//                color_decoders[1].queue_output_plane_buffer(received_frame->right_color_nalu,
+//                                                            received_frame->right_color_nalu_size);
+                if (use_depth) {
+                    depth_decoders[0].queue_output_plane_buffer(received_frame->left_depth_nalu,
+                                                                received_frame->left_depth_nalu_size);
+                    depth_decoders[1].queue_output_plane_buffer(received_frame->right_depth_nalu,
+                                                                received_frame->right_depth_nalu_size);
+                }
+            }
+        });
+    }
 
     skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
@@ -354,7 +385,8 @@ protected:
             region.extent.width              = width;
             region.extent.height             = height;
             region.extent.depth              = 1;
-            vkCmdCopyImage(blitCB, vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, depth ? buffer_pool->depth_image_pool[ind][eye].image : buffer_pool->image_pool[ind][eye].image,
+            vkCmdCopyImage(blitCB, vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                           depth ? buffer_pool->depth_image_pool[ind][eye].image : buffer_pool->image_pool[ind][eye].image,
                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
             vkEndCommandBuffer(blitCB);
@@ -375,33 +407,11 @@ protected:
         if (!ready) {
             return;
         }
-        push_pose();
-        if (!network_receive()) {
-            return;
-        }
-
-        // system timestamp
-        auto timestamp = std::chrono::high_resolution_clock::now();
-        auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
-        // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
-
-        // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
-
-        auto decode_start = std::chrono::high_resolution_clock::now();
-        // receive packets
-        color_decoders[0].queue_output_plane_buffer(received_frame->left_color_nalu, received_frame->left_color_nalu_size);
-        color_decoders[1].queue_output_plane_buffer(received_frame->right_color_nalu, received_frame->right_color_nalu_size);
-        if (use_depth) {
-            depth_decoders[0].queue_output_plane_buffer(received_frame->left_depth_nalu, received_frame->left_depth_nalu_size);
-            depth_decoders[1].queue_output_plane_buffer(received_frame->right_depth_nalu,
-                                                        received_frame->right_depth_nalu_size);
-        }
-
-        auto decode_end = std::chrono::high_resolution_clock::now();
 
         auto ind = buffer_pool->src_acquire_image();
 
-        for (auto eye = 0; eye < 2; eye++) {
+        auto decode_end = std::chrono::high_resolution_clock::now();
+        for (auto eye = 0; eye < 1; eye++) {
             std::function<void(int)> blit_f = [=](int fd) {
                 vkResetFences(dp->vk_device, 1, &blitFence);
                 blitTo(ind, eye, fd, false);
@@ -423,12 +433,10 @@ protected:
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
-        log->info("decode (microseconds): {}\n conversion (microseconds): {}\n transfer (microseconds): {}",
-                  std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count(),
+        log->info("capture (microseconds): {}",
                   std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
 
-        metrics["decode"] += std::chrono::duration_cast<std::chrono::microseconds>(decode_end - decode_start).count();
-        metrics["transfer"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
+        metrics["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
                 .count() >= 1) {
@@ -446,6 +454,11 @@ protected:
         }
     }
 
+    void stop() override {
+        running = false;
+        decode_q_thread->join();
+    }
+
 private:
     std::shared_ptr<switchboard>                   sb;
     std::shared_ptr<spdlog::logger>                log;
@@ -453,7 +466,8 @@ private:
     switchboard::buffered_reader<compressed_frame> frames_reader;
     switchboard::network_writer<fast_pose_type>    pose_writer;
     std::shared_ptr<pose_prediction>               pp;
-    std::atomic<bool>                              ready = false;
+    std::atomic<bool>                              ready   = false;
+    std::atomic<bool>                              running = true;
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     bool                                                 use_depth      = false;
@@ -468,7 +482,7 @@ private:
     std::array<mmapi_decoder, 2> depth_decoders;
 
     std::shared_ptr<const compressed_frame> received_frame;
-    fast_pose_type                    decoded_frame_pose;
+    fast_pose_type                          decoded_frame_pose;
 
     VkCommandPool command_pool{};
 
@@ -546,6 +560,7 @@ private:
     }
 
     std::shared_ptr<RelativeClock> clock;
+    int                            iter = 0;
 };
 
 class offload_rendering_client_loader
