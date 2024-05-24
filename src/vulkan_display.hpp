@@ -454,7 +454,7 @@ private:
         }
 
         // choose present mode
-        VkPresentModeKHR swapchain_present_mode = VK_PRESENT_MODE_FIFO_KHR;
+        VkPresentModeKHR swapchain_present_mode = VK_PRESENT_MODE_IMMEDIATE_KHR;
         for (const auto& available_present_mode : swapchain_details.present_modes) {
             if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
                 swapchain_present_mode = available_present_mode;

@@ -106,7 +106,7 @@ public:
     }
 
     void mmapi_init_decoders() {
-        for (auto eye = 0; eye < 1; eye++) {
+        for (auto eye = 0; eye < 2; eye++) {
             auto ret = color_decoders[eye].decoder_init();
             assert(ret == 0);
             if (use_depth) {
@@ -211,12 +211,17 @@ public:
 
     void _p_thread_setup() override {
         mmapi_init_decoders();
-        decode_q_thread = std::make_shared<std::thread>([this]() {
+        // open file "left.h264" for writing
+
+        decode_q_thread = std::make_shared<std::thread>([&]() {
+            // auto file = fopen("left.h264", "wb");
+            auto frame = received_frame;
             while (running) {
                 push_pose();
                 if (!network_receive()) {
                     return;
                 }
+                frame = received_frame;
 
                 // system timestamp
                 auto timestamp = std::chrono::high_resolution_clock::now();
@@ -227,15 +232,17 @@ public:
 
                 auto decode_start = std::chrono::high_resolution_clock::now();
                 // receive packets
-                color_decoders[0].queue_output_plane_buffer(received_frame->left_color_nalu,
-                                                            received_frame->left_color_nalu_size);
-//                color_decoders[1].queue_output_plane_buffer(received_frame->right_color_nalu,
-//                                                            received_frame->right_color_nalu_size);
+                color_decoders[0].queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
+                color_decoders[1].queue_output_plane_buffer(received_frame->right_color_nalu,
+                                                            received_frame->right_color_nalu_size);
+
+                // write to file
+                // fwrite(received_frame->left_color_nalu, 1, received_frame->left_color_nalu_size, file);
+                // fflush(file);
+
                 if (use_depth) {
-                    depth_decoders[0].queue_output_plane_buffer(received_frame->left_depth_nalu,
-                                                                received_frame->left_depth_nalu_size);
-                    depth_decoders[1].queue_output_plane_buffer(received_frame->right_depth_nalu,
-                                                                received_frame->right_depth_nalu_size);
+                    depth_decoders[0].queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
+                    depth_decoders[1].queue_output_plane_buffer(frame->right_depth_nalu, frame->right_depth_nalu_size);
                 }
             }
         });
@@ -314,7 +321,6 @@ public:
             dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
             dmaBufImageCreateInfo.queueFamilyIndexCount = 0;
             dmaBufImageCreateInfo.pQueueFamilyIndices   = nullptr;
-            dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED; // NOTE Check spec once more!
             VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, &vkImage));
         }
 
@@ -391,12 +397,13 @@ public:
 
             vkEndCommandBuffer(blitCB);
 
+            std::vector<VkCommandBuffer> cmd_bufs = {blitCB};
             VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
-            submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers    = &blitCB;
+            submitInfo.commandBufferCount = static_cast<uint32_t>(cmd_bufs.size());
+            submitInfo.pCommandBuffers    = cmd_bufs.data();
 
-            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, blitFence);
-            VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
+            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, nullptr);
+//            VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
         }
 
         vkDestroyImage(dp->vk_device, vkImage, nullptr);
@@ -411,14 +418,14 @@ public:
         auto ind = buffer_pool->src_acquire_image();
 
         auto decode_end = std::chrono::high_resolution_clock::now();
-        for (auto eye = 0; eye < 1; eye++) {
+        for (auto eye = 0; eye < 2; eye++) {
             std::function<void(int)> blit_f = [=](int fd) {
                 vkResetFences(dp->vk_device, 1, &blitFence);
                 blitTo(ind, eye, fd, false);
             };
 
             auto ret = color_decoders[eye].dec_capture(blit_f);
-            assert(ret == 0);
+            assert(ret == 0 || ret == -EAGAIN);
 
             if (use_depth) {
                 std::function<void(int)> blit_f = [=](int fd) {
@@ -430,6 +437,7 @@ public:
                 assert(ret == 0);
             }
         }
+
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));

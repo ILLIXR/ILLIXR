@@ -35,6 +35,7 @@
 #include <pthread.h>
 #include <queue>
 #include <semaphore.h>
+#include <chrono>
 
 #define MAX_BUFFERS 32
 
@@ -126,7 +127,7 @@ public:
     int  decoder_init();
     int  dec_capture(std::function<void(int)>& f);
     int  decoder_destroy();
-    bool queue_output_plane_buffer(char* nalu_buffer, size_t nalu_size);
+    void queue_output_plane_buffer(char* nalu_buffer, size_t nalu_size);
     void query_and_set_capture();
     void abort();
 
@@ -134,6 +135,12 @@ private:
     context_t ctx;
     char*      nalu_parse_buffer         = NULL;
     int        i_output_plane_buf_filled = 0;
+    bool       dec_internal(std::istream& istream);
+
+    int                                                         outputQ         = 0;
+    int                                                         captureDQ       = 0;
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastOutputTime  = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastCaptureTime = std::chrono::high_resolution_clock::now();
 };
 
 int decode_main_loop();

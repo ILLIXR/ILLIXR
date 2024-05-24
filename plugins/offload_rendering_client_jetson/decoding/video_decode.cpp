@@ -83,11 +83,6 @@
 
 using namespace std;
 
-int                                                         outputQ         = 0;
-int                                                         captureDQ       = 0;
-std::chrono::time_point<std::chrono::high_resolution_clock> lastOutputTime  = std::chrono::high_resolution_clock::now();
-std::chrono::time_point<std::chrono::high_resolution_clock> lastCaptureTime = std::chrono::high_resolution_clock::now();
-
 /**
  * Read the input NAL unit for h264/H265/Mpeg2/Mpeg4 decoder.
  *
@@ -207,7 +202,7 @@ static int read_decoder_input_nalu(istream& stream, NvBuffer* buffer, char* pars
  * @param stream : Input stream
  * @param buffer : NvBuffer pointer
  */
-static int read_decoder_input_chunk(ifstream* stream, NvBuffer* buffer) {
+static int read_decoder_input_chunk(istream* stream, NvBuffer* buffer) {
     /* Length is the size of the buffer in bytes */
     streamsize bytes_to_read = MIN(CHUNK_SIZE, buffer->planes[0].length);
 
@@ -245,54 +240,6 @@ static int read_mjpeg_decoder_input(ifstream* stream, NvBuffer* buffer) {
         stream->seekg(0, stream->beg);
     }
 
-    return 0;
-}
-
-/**
- * Read the input chunks for Vp8/Vp9/AV1 decoder.
- *
- * @param ctx    : Decoder context
- * @param buffer : NvBuffer pointer
- */
-static int read_vpx_decoder_input_chunk(context_t* ctx, NvBuffer* buffer) {
-    ifstream*      stream = ctx->in_file[0];
-    int            Framesize;
-    unsigned char* bitstreambuffer = (unsigned char*) buffer->planes[0].data;
-    if (ctx->vp9_file_header_flag == 0) {
-        stream->read((char*) buffer->planes[0].data, IVF_FILE_HDR_SIZE);
-        if (stream->gcount() != IVF_FILE_HDR_SIZE) {
-            cerr << "Couldn't read IVF FILE HEADER" << endl;
-            return -1;
-        }
-        if (!((bitstreambuffer[0] == 'D') && (bitstreambuffer[1] == 'K') && (bitstreambuffer[2] == 'I') &&
-              (bitstreambuffer[3] == 'F'))) {
-            cerr << "It's not a valid IVF file \n" << endl;
-            return -1;
-        }
-        cout << "It's a valid IVF file" << endl;
-        ctx->vp9_file_header_flag = 1;
-        if (ctx->copy_timestamp && ctx->decoder_pixfmt == V4L2_PIX_FMT_AV1) {
-            ctx->flag_copyts = true;
-        }
-    }
-    stream->read((char*) buffer->planes[0].data, IVF_FRAME_HDR_SIZE);
-
-    if (!stream->gcount()) {
-        cout << "End of stream" << endl;
-        return 0;
-    }
-
-    if (stream->gcount() != IVF_FRAME_HDR_SIZE) {
-        cerr << "Couldn't read IVF FRAME HEADER" << endl;
-        return -1;
-    }
-    Framesize = (bitstreambuffer[3] << 24) + (bitstreambuffer[2] << 16) + (bitstreambuffer[1] << 8) + bitstreambuffer[0];
-    buffer->planes[0].bytesused = Framesize;
-    stream->read((char*) buffer->planes[0].data, Framesize);
-    if (stream->gcount() != Framesize) {
-        cerr << "Couldn't read Framesize" << endl;
-        return -1;
-    }
     return 0;
 }
 
@@ -504,14 +451,14 @@ void mmapi_decoder::query_and_set_capture() {
             }
             ctx.eglRenderer->setFPS(ctx.fps);
         } else {
-            ctx.vkRenderer =
-                NvVulkanRenderer::createVulkanRenderer("renderer0", window_width, window_height, ctx.window_x, ctx.window_y);
-            TEST_ERROR(!ctx.vkRenderer,
-                       "Error in setting up of vulkan renderer. "
-                       "Check if X is running or run with --disable-rendering",
-                       error);
-            ctx.vkRenderer->setSize(window_width, window_height);
-            ctx.vkRenderer->initVulkan();
+//            ctx.vkRenderer =
+//                NvVulkanRenderer::createVulkanRenderer("renderer0", window_width, window_height, ctx.window_x, ctx.window_y);
+//            TEST_ERROR(!ctx.vkRenderer,
+//                       "Error in setting up of vulkan renderer. "
+//                       "Check if X is running or run with --disable-rendering",
+//                       error);
+//            ctx.vkRenderer->setSize(window_width, window_height);
+//            ctx.vkRenderer->initVulkan();
         }
     }
 
@@ -657,30 +604,30 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
     struct v4l2_event ev;
     int               ret;
 
-//    if (!ctx.capture_ready) {
-//        /* Need to wait for the first Resolution change event, so that
-//           the decoder knows the stream resolution and can allocate appropriate
-//           buffers when we call REQBUFS. */
-//        do {
-//            /* Refer ioctl VIDIOC_DQEVENT */
-//            ret = dec->dqEvent(ev, 50000);
-//            if (ret < 0) {
-//                if (errno == EAGAIN) {
-//                    cerr << "Timed out waiting for first V4L2_EVENT_RESOLUTION_CHANGE" << endl;
-//                } else {
-//                    cerr << "Error in dequeueing decoder event" << endl;
-//                }
-//                abort();
-//                break;
-//            }
-//        } while ((ev.type != V4L2_EVENT_RESOLUTION_CHANGE) && !ctx.got_error);
-//
-//        /* Received the resolution change event, now can do query_and_set_capture. */
-//        if (!ctx.got_error)
-//            query_and_set_capture();
-//
-//        ctx.capture_ready = true;
-//    }
+    if (!ctx.capture_ready) {
+        /* Need to wait for the first Resolution change event, so that
+           the decoder knows the stream resolution and can allocate appropriate
+           buffers when we call REQBUFS. */
+        do {
+            /* Refer ioctl VIDIOC_DQEVENT */
+            ret = dec->dqEvent(ev, 50000);
+            if (ret < 0) {
+                if (errno == EAGAIN) {
+                    cerr << "Timed out waiting for first V4L2_EVENT_RESOLUTION_CHANGE" << endl;
+                } else {
+                    cerr << "Error in dequeueing decoder event" << endl;
+                }
+                abort();
+                break;
+            }
+        } while ((ev.type != V4L2_EVENT_RESOLUTION_CHANGE) && !ctx.got_error);
+
+        /* Received the resolution change event, now can do query_and_set_capture. */
+        if (!ctx.got_error)
+            query_and_set_capture();
+
+        ctx.capture_ready = true;
+    }
 
     if (ctx.got_error || dec->isInError()) {
         cout << "Decoder error or EOS" << endl;
@@ -776,6 +723,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
         if (ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF)
             dec_buffer->planes[0].fd = ctx.dmabuff_fd[v4l2_buf.index];
         /* Perform Blocklinear to PitchLinear conversion. */
+        std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
         ret = NvBufSurf::NvTransform(&transform_params, dec_buffer->planes[0].fd, ctx.dst_dma_fd);
         if (ret == -1) {
             cerr << "Transform failed" << endl;
@@ -795,7 +743,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
         if (!ctx.stats && !ctx.disable_rendering) {
             if (ctx.vkRendering) {
                 f(ctx.dst_dma_fd);
-                // ctx.vkRenderer->render(ctx.dst_dma_fd);
+//                 ctx.vkRenderer->render(ctx.dst_dma_fd);
             } else {
                 ctx.eglRenderer->render(ctx.dst_dma_fd);
             }
@@ -819,6 +767,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
             throw std::runtime_error("Error while queueing buffer at decoder capture plane");
         }
     }
+    return 0;
 handle_eos:
     cout << "Decoder EOS" << endl;
     return -1;
@@ -836,8 +785,8 @@ static void set_defaults(context_t* ctx) {
     ctx->window_width           = 0;
     ctx->window_x               = 0;
     ctx->window_y               = 0;
-    ctx->out_pixfmt             = 1;
-    ctx->fps                    = 30;
+    ctx->out_pixfmt             = 2;
+    ctx->fps                    = 144;
     ctx->output_plane_mem_type  = V4L2_MEMORY_MMAP;
     ctx->capture_plane_mem_type = V4L2_MEMORY_DMABUF;
     ctx->vp9_file_header_flag   = 0;
@@ -847,7 +796,7 @@ static void set_defaults(context_t* ctx) {
     ctx->flag_copyts            = false;
     ctx->start_ts               = 0;
     ctx->file_count             = 1;
-    ctx->dec_fps                = 30;
+    ctx->dec_fps                = 144;
     ctx->dst_dma_fd             = -1;
     ctx->bLoop                  = false;
     ctx->bQueue                 = false;
@@ -858,7 +807,7 @@ static void set_defaults(context_t* ctx) {
     ctx->vkRendering            = true;
 
     ctx->decoder_pixfmt = V4L2_PIX_FMT_H264; // default to H264
-    ctx->input_nalu     = true;
+    ctx->input_nalu     = false;
     pthread_mutex_init(&ctx->queue_lock, NULL);
     pthread_cond_init(&ctx->queue_cond, NULL);
 }
@@ -872,115 +821,10 @@ static void set_defaults(context_t* ctx) {
  * @param current_loop      : iterator count
  * @param nalu_parse_buffer : input parsed nal unit
  */
-bool mmapi_decoder::queue_output_plane_buffer(char* nalu_buffer, size_t nalu_size) {
-    bool               eos = false;
-    int                ret = 0;
-    struct v4l2_buffer temp_buf;
-
-    /* Since all the output plane buffers have been queued, we first need to
-       dequeue a buffer from output plane before we can read new data into it
-       and queue it again. */
-    if (ctx.got_error || ctx.dec->isInError()) {
-        return true;
-    }
-    struct v4l2_buffer v4l2_buf;
-    struct v4l2_plane  planes[MAX_PLANES];
-    NvBuffer*          buffer;
-
-    memset(&v4l2_buf, 0, sizeof(v4l2_buf));
-    memset(planes, 0, sizeof(planes));
-
-    v4l2_buf.m.planes = planes;
-
-    /* dequeue a buffer for output plane. */
-    if (i_output_plane_buf_filled >= ctx.dec->output_plane.getNumBuffers()) {
-        ret = ctx.dec->output_plane.dqBuffer(v4l2_buf, &buffer, NULL, -1);
-        if (ret < 0) {
-            cerr << "Error DQing buffer at output plane" << endl;
-            abort();
-            throw std::runtime_error("Error DQing buffer at output plane");
-        }
-    } else {
-        v4l2_buf.index = i_output_plane_buf_filled;
-        buffer         = ctx.dec->output_plane.getNthBuffer(i_output_plane_buf_filled++);
-    }
-
-    if ((v4l2_buf.flags & V4L2_BUF_FLAG_ERROR) && ctx.enable_input_metadata) {
-        v4l2_ctrl_videodec_inputbuf_metadata dec_input_metadata;
-
-        /* Get the decoder input metadata.
-           Refer V4L2_CID_MPEG_VIDEODEC_INPUT_METADATA */
-        ret = ctx.dec->getInputMetadata(v4l2_buf.index, dec_input_metadata);
-        if (ret == 0) {
-            ret = report_input_metadata(&ctx, &dec_input_metadata);
-            if (ret == -1) {
-                cerr << "Error with input stream header parsing" << endl;
-            }
-        }
-    }
-
-    if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_H264) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_H265) ||
-        (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG2) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG4)) {
-        if (ctx.input_nalu) {
-            array_streambuf nalu_stream(nalu_buffer, nalu_size);
-            auto            stm = istream(&nalu_stream);
-            /* read the input nal unit. */
-            read_decoder_input_nalu(stm, buffer, nalu_parse_buffer, CHUNK_SIZE, &ctx);
-        } else {
-            /* read the input chunks. */
-            // read_decoder_input_chunk(ctx.in_file[current_file], buffer);
-        }
-    }
-
-    // if (ctx.decoder_pixfmt == V4L2_PIX_FMT_MJPEG) {
-    //     read_mjpeg_decoder_input(ctx.in_file[current_file], buffer);
-    // }
-    // if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_VP9) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_VP8) ||
-    //     (ctx.decoder_pixfmt == V4L2_PIX_FMT_AV1)) {
-    //     /* read the input chunks. */
-    //     ret = read_vpx_decoder_input_chunk(&ctx, buffer);
-    //     if (ret != 0)
-    //         cerr << "Couldn't read chunk" << endl;
-    // }
-    v4l2_buf.m.planes[0].bytesused = buffer->planes[0].bytesused;
-
-    if (ctx.input_nalu && ctx.copy_timestamp) {
-        /* Update the timestamp. */
-        v4l2_buf.flags |= V4L2_BUF_FLAG_TIMESTAMP_COPY;
-        if (ctx.flag_copyts)
-            ctx.timestamp += ctx.timestampincr;
-        v4l2_buf.timestamp.tv_sec  = ctx.timestamp / (MICROSECOND_UNIT);
-        v4l2_buf.timestamp.tv_usec = ctx.timestamp % (MICROSECOND_UNIT);
-    }
-
-    if (ctx.copy_timestamp && ctx.input_nalu && ctx.stats) {
-        cout << "[" << v4l2_buf.index
-             << "]"
-                "dec output plane qB timestamp ["
-             << v4l2_buf.timestamp.tv_sec << "s" << v4l2_buf.timestamp.tv_usec << "us]" << endl;
-    }
-
-    /* enqueue a buffer for output plane. */
-    ret = ctx.dec->output_plane.qBuffer(v4l2_buf, NULL);
-    outputQ++;
-    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock ::now() - lastOutputTime).count() >=
-        1) {
-        cout << "Output FPS: " << outputQ << endl;
-        outputQ        = 0;
-        lastOutputTime = std::chrono::high_resolution_clock ::now();
-    }
-
-    if (ret < 0) {
-        cerr << "Error Qing buffer at output plane" << endl;
-        abort();
-        throw std::runtime_error("Error Qing buffer at output plane");
-    }
-    if (v4l2_buf.m.planes[0].bytesused == 0) {
-        eos = true;
-        cout << "Input file read complete" << endl;
-        throw std::runtime_error("Input file read complete");
-    }
-    return eos;
+void mmapi_decoder::queue_output_plane_buffer(char* nalu_buffer, size_t nalu_size) {
+    array_streambuf nalu_stream(nalu_buffer, nalu_size);
+    auto            stm = istream(&nalu_stream);
+    dec_internal(stm);
 }
 
 /**
@@ -991,7 +835,7 @@ bool mmapi_decoder::queue_output_plane_buffer(char* nalu_buffer, size_t nalu_siz
  * @param argv : Argument Vector
  */
 int mmapi_decoder::decoder_init() {
-    log_level = 3;
+//    log_level = 3;
 
     int                    ret          = 0;
     int                    error        = 0;
@@ -1335,4 +1179,113 @@ cleanup:
     free(ctx.out_file_path);
 
     return -error;
+}
+
+bool mmapi_decoder::dec_internal(std::istream& istream) {
+    bool               eos = false;
+    int                ret = 0;
+    struct v4l2_buffer temp_buf;
+
+    /* Since all the output plane buffers have been queued, we first need to
+       dequeue a buffer from output plane before we can read new data into it
+       and queue it again. */
+    if (ctx.got_error || ctx.dec->isInError()) {
+        return true;
+    }
+    struct v4l2_buffer v4l2_buf;
+    struct v4l2_plane  planes[MAX_PLANES];
+    NvBuffer*          buffer;
+
+    memset(&v4l2_buf, 0, sizeof(v4l2_buf));
+    memset(planes, 0, sizeof(planes));
+
+    v4l2_buf.m.planes = planes;
+
+    /* dequeue a buffer for output plane. */
+    if (i_output_plane_buf_filled >= ctx.dec->output_plane.getNumBuffers()) {
+        ret = ctx.dec->output_plane.dqBuffer(v4l2_buf, &buffer, NULL, -1);
+        if (ret < 0) {
+            cerr << "Error DQing buffer at output plane" << endl;
+            abort();
+            throw std::runtime_error("Error DQing buffer at output plane");
+        }
+    } else {
+        v4l2_buf.index = i_output_plane_buf_filled;
+        buffer         = ctx.dec->output_plane.getNthBuffer(i_output_plane_buf_filled++);
+    }
+
+    if ((v4l2_buf.flags & V4L2_BUF_FLAG_ERROR) && ctx.enable_input_metadata) {
+        v4l2_ctrl_videodec_inputbuf_metadata dec_input_metadata;
+
+        /* Get the decoder input metadata.
+           Refer V4L2_CID_MPEG_VIDEODEC_INPUT_METADATA */
+        ret = ctx.dec->getInputMetadata(v4l2_buf.index, dec_input_metadata);
+        if (ret == 0) {
+            ret = report_input_metadata(&ctx, &dec_input_metadata);
+            if (ret == -1) {
+                cerr << "Error with input stream header parsing" << endl;
+            }
+        }
+    }
+
+    if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_H264) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_H265) ||
+        (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG2) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG4)) {
+        if (ctx.input_nalu) {
+            /* read the input nal unit. */
+//            read_decoder_input_nalu(istream, buffer, nalu_parse_buffer, CHUNK_SIZE, &ctx);
+        } else {
+            /* read the input chunks. */
+             read_decoder_input_chunk(&istream, buffer);
+        }
+    }
+
+    // if (ctx.decoder_pixfmt == V4L2_PIX_FMT_MJPEG) {
+    //     read_mjpeg_decoder_input(ctx.in_file[current_file], buffer);
+    // }
+    // if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_VP9) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_VP8) ||
+    //     (ctx.decoder_pixfmt == V4L2_PIX_FMT_AV1)) {
+    //     /* read the input chunks. */
+    //     ret = read_vpx_decoder_input_chunk(&ctx, buffer);
+    //     if (ret != 0)
+    //         cerr << "Couldn't read chunk" << endl;
+    // }
+    v4l2_buf.m.planes[0].bytesused = buffer->planes[0].bytesused;
+
+    if (ctx.input_nalu && ctx.copy_timestamp) {
+        /* Update the timestamp. */
+        v4l2_buf.flags |= V4L2_BUF_FLAG_TIMESTAMP_COPY;
+        if (ctx.flag_copyts)
+            ctx.timestamp += ctx.timestampincr;
+        v4l2_buf.timestamp.tv_sec  = ctx.timestamp / (MICROSECOND_UNIT);
+        v4l2_buf.timestamp.tv_usec = ctx.timestamp % (MICROSECOND_UNIT);
+    }
+
+    if (ctx.copy_timestamp && ctx.input_nalu && ctx.stats) {
+        cout << "[" << v4l2_buf.index
+             << "]"
+                "dec output plane qB timestamp ["
+             << v4l2_buf.timestamp.tv_sec << "s" << v4l2_buf.timestamp.tv_usec << "us]" << endl;
+    }
+
+    /* enqueue a buffer for output plane. */
+    ret = ctx.dec->output_plane.qBuffer(v4l2_buf, NULL);
+    outputQ++;
+    if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock ::now() - lastOutputTime).count() >=
+        1) {
+        cout << "Output FPS: " << outputQ << endl;
+        outputQ        = 0;
+        lastOutputTime = std::chrono::high_resolution_clock ::now();
+    }
+
+    if (ret < 0) {
+        cerr << "Error Qing buffer at output plane" << endl;
+        abort();
+        throw std::runtime_error("Error Qing buffer at output plane");
+    }
+    if (v4l2_buf.m.planes[0].bytesused == 0) {
+        eos = true;
+        cout << "Input file read complete" << endl;
+//        throw std::runtime_error("Input file read complete");
+    }
+    return eos;
 }

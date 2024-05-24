@@ -203,6 +203,16 @@ struct compressed_frame : public switchboard::event {
         , magic(0xdeadbeef)
         { }
 #endif
+    ~compressed_frame() {
+        if (nalu_only) {
+            free(left_color_nalu);
+            free(right_color_nalu);
+            if (use_depth) {
+                free(left_depth_nalu);
+                free(right_depth_nalu);
+            }
+        }
+    }
 };
 } // namespace ILLIXR
 

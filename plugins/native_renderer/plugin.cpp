@@ -182,7 +182,7 @@ public:
         auto next_swap = nullptr; // _m_vsync.get_ro_nullable();
         if (next_swap == nullptr) {
             std::this_thread::sleep_for(display_params::period / 5.0 );
-            printf("WARNING!!! no vsync estimate\n");
+//            printf("WARNING!!! no vsync estimate\n");
         } /*else {
             // convert next_swap_time to std::chrono::time_point
             auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
