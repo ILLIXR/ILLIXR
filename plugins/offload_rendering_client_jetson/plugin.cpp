@@ -25,7 +25,7 @@ public:
     offload_rendering_client(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , sb{pb->lookup_impl<switchboard>()}
-        , log{spdlogger(nullptr)}
+        , log{spdlogger("debug")}
         , dp{pb->lookup_impl<vulkan::display_provider>()}
         , frames_reader{sb->get_buffered_reader<compressed_frame>("compressed_frames")}
         , pose_writer{sb->get_network_writer<fast_pose_type>("render_pose", {})}
@@ -234,8 +234,8 @@ public:
                 frame = received_frame;
 
                 // system timestamp
-                auto timestamp = std::chrono::high_resolution_clock::now();
-                auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
+//                auto timestamp = std::chrono::high_resolution_clock::now();
+//                auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
                 // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
 
                 // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
@@ -488,11 +488,23 @@ public:
 
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
+        fast_pose_type decoded_frame_pose;
+        {
+            std::lock_guard<std::mutex> lock(pose_queue_mutex);
+            decoded_frame_pose = pose_queue.front();
+            pose_queue.pop();
+        }
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
+
+        auto pose_time = decoded_frame_pose.predict_computed_time;
+        auto now       = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        auto diff_ns   = now - pose_time;
+        log->info("pipeline latency (ms): {}", diff_ns.count() / 1000000.0);
         log->info("capture (microseconds): {}",
                   std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
 
         metrics["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
+        metrics["pipeline"] += std::chrono::duration_cast<std::chrono::microseconds>(diff_ns).count();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
                 .count() >= 1) {
@@ -539,7 +551,8 @@ private:
     std::array<mmapi_decoder, 2> depth_decoders;
 
     std::shared_ptr<const compressed_frame> received_frame;
-    fast_pose_type                          decoded_frame_pose;
+    std::queue<fast_pose_type>               pose_queue;
+    std::mutex                              pose_queue_mutex;
 
     VkCommandPool command_pool{};
 
@@ -611,8 +624,11 @@ private:
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
                 .count();
         auto diff_ns = timestamp - received_frame->sent_time;
-        log->info("diff (ms): {}", diff_ns / 1000000.0);
-        decoded_frame_pose = received_frame->pose;
+//        log->info("diff (now - sent_time) (ms): {}", diff_ns / 1000000.0);
+        {
+            std::lock_guard<std::mutex> lock(pose_queue_mutex);
+            pose_queue.push(received_frame->pose);
+        }
         return true;
     }
 
