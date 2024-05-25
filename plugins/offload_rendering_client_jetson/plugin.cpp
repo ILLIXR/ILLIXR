@@ -110,7 +110,7 @@ public:
             auto ret = color_decoders[eye].decoder_init();
             assert(ret == 0);
             if (use_depth) {
-                depth_decoders[eye].decoder_init();
+                ret = depth_decoders[eye].decoder_init();
                 assert(ret == 0);
             }
         }
@@ -119,13 +119,23 @@ public:
     void vk_resources_init() {
         command_pool = vulkan::create_command_pool(dp->vk_device, dp->queues[vulkan::queue::GRAPHICS].family);
 
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool        = command_pool;
-        allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = 1;
+        blit_color_cb.resize(buffer_pool->image_pool.size());
+        blit_depth_cb.resize(buffer_pool->image_pool.size());
 
-        VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(dp->vk_device, &allocInfo, &blitCB));
+        for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
+            for (auto eye = 0; eye < 2; eye++) {
+                VkCommandBufferAllocateInfo allocInfo{};
+                allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+                allocInfo.commandPool        = command_pool;
+                allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+                allocInfo.commandBufferCount = 1;
+
+                VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(dp->vk_device, &allocInfo, &blit_color_cb[i][eye]));
+                if (use_depth) {
+                    VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(dp->vk_device, &allocInfo, &blit_depth_cb[i][eye]));
+                }
+            }
+        }
     }
 
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
@@ -302,6 +312,7 @@ public:
         VkImage* vkImage = depth ? &importedDepthImages[eye] : &importedImages[eye];
         uint32_t width  = buffer_pool->image_pool[ind][eye].image_info.extent.width;
         uint32_t height = buffer_pool->image_pool[ind][eye].image_info.extent.height;
+        auto blitCB     = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
         if (*vkImage == nullptr) {
             { // create vk image
                 VkExternalMemoryImageCreateInfo dmaBufExternalMemoryImageCreateInfo{};
@@ -324,7 +335,7 @@ public:
                 dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
                 dmaBufImageCreateInfo.queueFamilyIndexCount = 0;
                 dmaBufImageCreateInfo.pQueueFamilyIndices   = nullptr;
-                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED;
                 VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, vkImage));
             }
 
@@ -335,7 +346,7 @@ public:
                 (void) (duppedFd);
                 //            auto duppedFd = fd;
 
-//                log->info("FD {} dupped to {}", fd, duppedFd);
+                log->info("FD {} dupped to {}, eye {}, depth {}", fd, duppedFd, eye, depth);
 
                 auto vkGetMemoryFdPropertiesKHR =
                     (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
@@ -444,7 +455,7 @@ public:
                 };
 
                 auto ret = depth_decoders[eye].dec_capture(blit_f);
-                assert(ret == 0);
+                assert(ret == 0 || ret == -EAGAIN);
             }
         }
 
@@ -492,7 +503,8 @@ private:
     bool                                                 compare_images = false;
     pose_type                                            fixed_pose;
 
-    VkCommandBuffer                             blitCB;
+    std::vector<std::array<VkCommandBuffer, 2>> blit_color_cb;
+    std::vector<std::array<VkCommandBuffer, 2>> blit_depth_cb;
     std::vector<std::array<VkCommandBuffer, 2>> layout_transition_start_cmd_bufs;
     std::vector<std::array<VkCommandBuffer, 2>> layout_transition_end_cmd_bufs;
 

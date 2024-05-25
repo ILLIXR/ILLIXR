@@ -143,6 +143,8 @@ struct compressed_frame : public switchboard::event {
             if (use_depth) {
                 ar >> left_depth_nalu_size;
                 ar >> right_depth_nalu_size;
+                left_depth_nalu  = (char*) malloc(left_depth_nalu_size);
+                right_depth_nalu = (char*) malloc(right_depth_nalu_size);
                 ar >> boost::serialization::make_array(left_depth_nalu, left_depth_nalu_size);
                 ar >> boost::serialization::make_array(right_depth_nalu, right_depth_nalu_size);
             }
