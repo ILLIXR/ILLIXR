@@ -243,8 +243,8 @@ public:
                 auto decode_start = std::chrono::high_resolution_clock::now();
                 // receive packets
                 color_decoders[0].queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
-                color_decoders[1].queue_output_plane_buffer(received_frame->right_color_nalu,
-                                                            received_frame->right_color_nalu_size);
+                color_decoders[1].queue_output_plane_buffer(frame->right_color_nalu,
+                                                            frame->right_color_nalu_size);
 
                 // write to file
                 // fwrite(received_frame->left_color_nalu, 1, received_frame->left_color_nalu_size, file);
