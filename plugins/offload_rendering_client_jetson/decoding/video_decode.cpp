@@ -418,7 +418,7 @@ void mmapi_decoder::query_and_set_capture() {
     if (!ctx.disable_rendering) {
         /* Destroy the old instance of renderer as resolution might have changed. */
         if (ctx.vkRendering) {
-            delete ctx.vkRenderer;
+//            delete ctx.vkRenderer;
         } else {
             delete ctx.eglRenderer;
         }
@@ -723,7 +723,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
         if (ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF)
             dec_buffer->planes[0].fd = ctx.dmabuff_fd[v4l2_buf.index];
         /* Perform Blocklinear to PitchLinear conversion. */
-        std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
+//        std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
         ret = NvBufSurf::NvTransform(&transform_params, dec_buffer->planes[0].fd, ctx.dst_dma_fd);
         if (ret == -1) {
             cerr << "Transform failed" << endl;
@@ -1155,7 +1155,7 @@ cleanup:
     delete ctx.dec;
     /* Similarly, Renderer destructor does all the cleanup. */
     if (ctx.vkRendering) {
-        delete ctx.vkRenderer;
+//        delete ctx.vkRenderer;
     } else {
         delete ctx.eglRenderer;
     }

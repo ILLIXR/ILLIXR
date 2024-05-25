@@ -295,88 +295,97 @@ public:
         vkCmdPipelineBarrier(cmd_buf, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
+    std::array<VkImage, 2> importedImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkImage, 2> importedDepthImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+
     void blitTo(uint8_t ind, uint8_t eye, int fd, bool depth) {
-        VkImage  vkImage;
+        VkImage* vkImage = depth ? &importedDepthImages[eye] : &importedImages[eye];
         uint32_t width  = buffer_pool->image_pool[ind][eye].image_info.extent.width;
         uint32_t height = buffer_pool->image_pool[ind][eye].image_info.extent.height;
+        if (*vkImage == nullptr) {
+            { // create vk image
+                VkExternalMemoryImageCreateInfo dmaBufExternalMemoryImageCreateInfo{};
+                dmaBufExternalMemoryImageCreateInfo.sType       = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO;
+                dmaBufExternalMemoryImageCreateInfo.pNext       = nullptr;
+                dmaBufExternalMemoryImageCreateInfo.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
 
-        { // create vk image
-            VkExternalMemoryImageCreateInfo dmaBufExternalMemoryImageCreateInfo{};
-            dmaBufExternalMemoryImageCreateInfo.sType       = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO;
-            dmaBufExternalMemoryImageCreateInfo.pNext       = nullptr;
-            dmaBufExternalMemoryImageCreateInfo.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+                VkImageCreateInfo dmaBufImageCreateInfo{};
+                dmaBufImageCreateInfo.sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+                dmaBufImageCreateInfo.pNext                 = &dmaBufExternalMemoryImageCreateInfo;
+                dmaBufImageCreateInfo.flags                 = 0;
+                dmaBufImageCreateInfo.imageType             = VK_IMAGE_TYPE_2D;
+                dmaBufImageCreateInfo.format                = buffer_pool->image_pool[ind][eye].image_info.format;
+                dmaBufImageCreateInfo.extent                = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
+                dmaBufImageCreateInfo.mipLevels             = 1;
+                dmaBufImageCreateInfo.arrayLayers           = 1;
+                dmaBufImageCreateInfo.samples               = VK_SAMPLE_COUNT_1_BIT;
+                dmaBufImageCreateInfo.tiling                = buffer_pool->image_pool[ind][eye].image_info.tiling;
+                dmaBufImageCreateInfo.usage                 = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+                dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
+                dmaBufImageCreateInfo.queueFamilyIndexCount = 0;
+                dmaBufImageCreateInfo.pQueueFamilyIndices   = nullptr;
+                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+                VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, vkImage));
+            }
 
-            VkImageCreateInfo dmaBufImageCreateInfo{};
-            dmaBufImageCreateInfo.sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-            dmaBufImageCreateInfo.pNext                 = &dmaBufExternalMemoryImageCreateInfo;
-            dmaBufImageCreateInfo.flags                 = 0;
-            dmaBufImageCreateInfo.imageType             = VK_IMAGE_TYPE_2D;
-            dmaBufImageCreateInfo.format                = buffer_pool->image_pool[ind][eye].image_info.format;
-            dmaBufImageCreateInfo.extent                = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
-            dmaBufImageCreateInfo.mipLevels             = 1;
-            dmaBufImageCreateInfo.arrayLayers           = 1;
-            dmaBufImageCreateInfo.samples               = VK_SAMPLE_COUNT_1_BIT;
-            dmaBufImageCreateInfo.tiling                = buffer_pool->image_pool[ind][eye].image_info.tiling;
-            dmaBufImageCreateInfo.usage                 = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-            dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
-            dmaBufImageCreateInfo.queueFamilyIndexCount = 0;
-            dmaBufImageCreateInfo.pQueueFamilyIndices   = nullptr;
-            VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, &vkImage));
+            VkDeviceMemory importedImageMemory;
+
+            { // allocate and bind
+                const int duppedFd = dup(fd);
+                (void) (duppedFd);
+                //            auto duppedFd = fd;
+
+//                log->info("FD {} dupped to {}", fd, duppedFd);
+
+                auto vkGetMemoryFdPropertiesKHR =
+                    (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
+                assert(vkGetMemoryFdPropertiesKHR);
+
+                VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
+                dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
+                dmaBufMemoryProperties.pNext = nullptr;
+                VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+                                                             duppedFd, &dmaBufMemoryProperties));
+                // string str = "Fd memory memoryTypeBits: b" + std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string();
+                // COMP_DEBUG_MSG(str);
+
+                VkMemoryRequirements imageMemoryRequirements{};
+                vkGetImageMemoryRequirements(dp->vk_device, *vkImage, &imageMemoryRequirements);
+                // str = "Image memoryTypeBits: b" +  std::bitset<8>(imageMemoryRequirements.memoryTypeBits).to_string();
+                // COMP_DEBUG_MSG(str);
+
+                const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
+                assert(bits != 0);
+
+                const MemoryTypeResult memoryTypeResult =
+                    findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                assert(memoryTypeResult.found);
+                // str = "Memory type index: " + to_string(memoryTypeResult.typeIndex);
+                // COMP_DEBUG_MSG(str);
+
+                VkMemoryDedicatedAllocateInfo dedicatedAllocateInfo{};
+                dedicatedAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;
+                dedicatedAllocateInfo.image = *vkImage;
+                VkImportMemoryFdInfoKHR importFdInfo{};
+                importFdInfo.sType      = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR;
+                importFdInfo.pNext      = &dedicatedAllocateInfo;
+                importFdInfo.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+                importFdInfo.fd         = duppedFd;
+
+                // str = "Memory size = " + to_string(imageMemoryRequirements.size);
+                // COMP_DEBUG_MSG(str);
+
+                VkMemoryAllocateInfo memoryAllocateInfo{};
+                memoryAllocateInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+                memoryAllocateInfo.pNext           = &importFdInfo;
+                memoryAllocateInfo.allocationSize  = imageMemoryRequirements.size;
+                memoryAllocateInfo.memoryTypeIndex = memoryTypeResult.typeIndex;
+                VK_ASSERT_SUCCESS(vkAllocateMemory(dp->vk_device, &memoryAllocateInfo, nullptr, &importedImageMemory));
+
+                VK_ASSERT_SUCCESS(vkBindImageMemory(dp->vk_device, *vkImage, importedImageMemory, 0));
+            }
         }
-
-        VkDeviceMemory importedImageMemory;
-
-        { // allocate and bind
-            const int duppedFd = dup(fd);
-            (void) (duppedFd);
-
-            auto vkGetMemoryFdPropertiesKHR =
-                (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
-            assert(vkGetMemoryFdPropertiesKHR);
-
-            VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
-            dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
-            dmaBufMemoryProperties.pNext = nullptr;
-            VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
-                                                         duppedFd, &dmaBufMemoryProperties));
-            // string str = "Fd memory memoryTypeBits: b" + std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string();
-            // COMP_DEBUG_MSG(str);
-
-            VkMemoryRequirements imageMemoryRequirements{};
-            vkGetImageMemoryRequirements(dp->vk_device, vkImage, &imageMemoryRequirements);
-            // str = "Image memoryTypeBits: b" +  std::bitset<8>(imageMemoryRequirements.memoryTypeBits).to_string();
-            // COMP_DEBUG_MSG(str);
-
-            const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
-            assert(bits != 0);
-
-            const MemoryTypeResult memoryTypeResult =
-                findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-            assert(memoryTypeResult.found);
-            // str = "Memory type index: " + to_string(memoryTypeResult.typeIndex);
-            // COMP_DEBUG_MSG(str);
-
-            VkMemoryDedicatedAllocateInfo dedicatedAllocateInfo{};
-            dedicatedAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;
-            dedicatedAllocateInfo.image = vkImage;
-            VkImportMemoryFdInfoKHR importFdInfo{};
-            importFdInfo.sType      = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR;
-            importFdInfo.pNext      = &dedicatedAllocateInfo;
-            importFdInfo.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
-            importFdInfo.fd         = duppedFd;
-
-            // str = "Memory size = " + to_string(imageMemoryRequirements.size);
-            // COMP_DEBUG_MSG(str);
-
-            VkMemoryAllocateInfo memoryAllocateInfo{};
-            memoryAllocateInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-            memoryAllocateInfo.pNext           = &importFdInfo;
-            memoryAllocateInfo.allocationSize  = imageMemoryRequirements.size;
-            memoryAllocateInfo.memoryTypeIndex = memoryTypeResult.typeIndex;
-            VK_ASSERT_SUCCESS(vkAllocateMemory(dp->vk_device, &memoryAllocateInfo, nullptr, &importedImageMemory));
-
-            VK_ASSERT_SUCCESS(vkBindImageMemory(dp->vk_device, vkImage, importedImageMemory, 0));
-        }
+        assert(*vkImage != VK_NULL_HANDLE);
 
         {
             VK_ASSERT_SUCCESS(vkResetCommandBuffer(blitCB, 0));
@@ -391,13 +400,14 @@ public:
             region.extent.width              = width;
             region.extent.height             = height;
             region.extent.depth              = 1;
-            vkCmdCopyImage(blitCB, vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            vkCmdCopyImage(blitCB, *vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                            depth ? buffer_pool->depth_image_pool[ind][eye].image : buffer_pool->image_pool[ind][eye].image,
                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
             vkEndCommandBuffer(blitCB);
 
-            std::vector<VkCommandBuffer> cmd_bufs = {blitCB};
+            std::vector<VkCommandBuffer> cmd_bufs = {layout_transition_start_cmd_bufs[ind][eye], blitCB,
+                                                     layout_transition_end_cmd_bufs[ind][eye]};
             VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
             submitInfo.commandBufferCount = static_cast<uint32_t>(cmd_bufs.size());
             submitInfo.pCommandBuffers    = cmd_bufs.data();
@@ -406,8 +416,8 @@ public:
 //            VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
         }
 
-        vkDestroyImage(dp->vk_device, vkImage, nullptr);
-        vkFreeMemory(dp->vk_device, importedImageMemory, nullptr);
+//        vkDestroyImage(dp->vk_device, vkImage, nullptr);
+//        vkFreeMemory(dp->vk_device, importedImageMemory, nullptr);
     }
 
     void _p_one_iteration() override {

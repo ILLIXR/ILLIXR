@@ -29,13 +29,14 @@
 #include "NvBufSurface.h"
 #include "NvEglRenderer.h"
 #include "NvVideoDecoder.h"
-#include "NvVulkanRenderer.h"
+//#include "NvVulkanRenderer.h"
 
 #include <fstream>
 #include <pthread.h>
 #include <queue>
 #include <semaphore.h>
 #include <chrono>
+#include <functional>
 
 #define MAX_BUFFERS 32
 
@@ -44,7 +45,7 @@ typedef struct {
     uint32_t        decoder_pixfmt;
 
     NvEglRenderer*    eglRenderer;
-    NvVulkanRenderer* vkRenderer;
+//    NvVulkanRenderer* vkRenderer;
     bool              vkRendering;
 
     char**          in_file_path;

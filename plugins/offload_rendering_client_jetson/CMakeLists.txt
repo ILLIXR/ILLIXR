@@ -37,7 +37,7 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ${JETSON_MULTIMEDIA_API_CLASSES}
         decoding/video_decode.h
         decoding/video_decode.cpp
-        decoding/NvVulkanRenderer.cpp
+#        decoding/NvVulkanRenderer.cpp
 )
 
 target_link_libraries(${PLUGIN_NAME} drm)
