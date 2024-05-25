@@ -24,10 +24,10 @@ extern "C" {
 namespace ILLIXR {
 struct compressed_frame : public switchboard::event {
     bool  nalu_only;
-    char* left_color_nalu;
-    char* right_color_nalu;
-    char* left_depth_nalu;
-    char* right_depth_nalu;
+    char* left_color_nalu = nullptr;
+    char* right_color_nalu = nullptr;
+    char* left_depth_nalu = nullptr;
+    char* right_depth_nalu = nullptr;
     int   left_color_nalu_size;
     int   right_color_nalu_size;
     int   left_depth_nalu_size;
@@ -206,7 +206,7 @@ struct compressed_frame : public switchboard::event {
         { }
 #endif
     ~compressed_frame() {
-        if (nalu_only) {
+        if (nalu_only && left_color_nalu != nullptr && right_color_nalu != nullptr) {
             free(left_color_nalu);
             free(right_color_nalu);
             if (use_depth) {
