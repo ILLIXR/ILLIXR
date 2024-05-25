@@ -125,9 +125,9 @@ public:
 
     fast_pose_type get_fast_pose() const override {
         auto pose = render_pose.get_ro_nullable();
-//        auto now = std::chrono::high_resolution_clock::now();
-//        auto diff = now - pose->predict_computed_time._m_time_since_epoch;
-//        log->info("diff (ms): {}", std::chrono::duration_cast<std::chrono::milliseconds>(diff.time_since_epoch()).count());
+        auto now = std::chrono::high_resolution_clock::now();
+        auto diff = now - pose->predict_computed_time._m_time_since_epoch;
+        log->info("sup diff (ms): {}", std::chrono::duration_cast<std::chrono::milliseconds>(diff.time_since_epoch()).count());
         if (pose == nullptr) {
             return {};
         } else {
