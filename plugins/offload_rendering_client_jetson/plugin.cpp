@@ -298,6 +298,26 @@ public:
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
             src_stage             = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
             dst_stage             = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_GENERAL && new_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            src_stage             = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_GENERAL && new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            src_stage             = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && new_layout == VK_IMAGE_LAYOUT_GENERAL) {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            barrier.dstAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+            src_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && new_layout == VK_IMAGE_LAYOUT_GENERAL) {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
+            src_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
         } else {
             throw std::invalid_argument("unsupported layout transition");
         }
@@ -331,11 +351,11 @@ public:
                 dmaBufImageCreateInfo.arrayLayers           = 1;
                 dmaBufImageCreateInfo.samples               = VK_SAMPLE_COUNT_1_BIT;
                 dmaBufImageCreateInfo.tiling                = buffer_pool->image_pool[ind][eye].image_info.tiling;
-                dmaBufImageCreateInfo.usage                 = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+                dmaBufImageCreateInfo.usage                 = VK_IMAGE_LAYOUT_GENERAL;
                 dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
                 dmaBufImageCreateInfo.queueFamilyIndexCount = 0;
                 dmaBufImageCreateInfo.pQueueFamilyIndices   = nullptr;
-                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED;
+                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_GENERAL;
                 VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, vkImage));
             }
 
@@ -352,11 +372,11 @@ public:
                     (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
                 assert(vkGetMemoryFdPropertiesKHR);
 
-                VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
-                dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
-                dmaBufMemoryProperties.pNext = nullptr;
-                VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
-                                                             duppedFd, &dmaBufMemoryProperties));
+//                VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
+//                dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
+//                dmaBufMemoryProperties.pNext = nullptr;
+//                VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+//                                                             duppedFd, &dmaBufMemoryProperties));
                 // string str = "Fd memory memoryTypeBits: b" + std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string();
                 // COMP_DEBUG_MSG(str);
 
@@ -365,11 +385,13 @@ public:
                 // str = "Image memoryTypeBits: b" +  std::bitset<8>(imageMemoryRequirements.memoryTypeBits).to_string();
                 // COMP_DEBUG_MSG(str);
 
-                const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
-                assert(bits != 0);
+//                const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
+//                assert(bits != 0);
 
+//                const MemoryTypeResult memoryTypeResult =
+//                    findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
                 const MemoryTypeResult memoryTypeResult =
-                    findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                    findMemoryType(dp->vk_physical_device, imageMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
                 assert(memoryTypeResult.found);
                 // str = "Memory type index: " + to_string(memoryTypeResult.typeIndex);
                 // COMP_DEBUG_MSG(str);
@@ -403,6 +425,9 @@ public:
             VkCommandBufferBeginInfo beginInfo{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
 
             VK_ASSERT_SUCCESS(vkBeginCommandBuffer(blitCB, &beginInfo));
+
+            transition_layout(blitCB, *vkImage, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
             VkImageCopy region{};
             region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             region.srcSubresource.layerCount = 1;
@@ -414,6 +439,8 @@ public:
             vkCmdCopyImage(blitCB, *vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                            depth ? buffer_pool->depth_image_pool[ind][eye].image : buffer_pool->image_pool[ind][eye].image,
                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+            transition_layout(blitCB, *vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
 
             vkEndCommandBuffer(blitCB);
 
