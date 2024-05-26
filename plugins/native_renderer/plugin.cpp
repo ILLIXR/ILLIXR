@@ -542,7 +542,7 @@ private:
             1,                                  // mipLevels
             1,                                  // arrayLayers
             VK_SAMPLE_COUNT_1_BIT,              // samples
-            VK_IMAGE_TILING_LINEAR,            // tiling
+            VK_IMAGE_TILING_OPTIMAL,            // tiling
             static_cast<VkImageUsageFlags>(
                 (src->is_external() ? VK_IMAGE_USAGE_TRANSFER_DST_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage

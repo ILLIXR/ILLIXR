@@ -9,6 +9,8 @@
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
 
+#include "cuda_runtime.h"
+
 extern "C" {
 #include "libavfilter_illixr/buffersink.h"
 #include "libavfilter_illixr/buffersrc.h"
@@ -436,6 +438,8 @@ protected:
                 ret = av_hwframe_transfer_data(avvk_depth_frames[ind][eye].frame, decode_out_depth_frames[eye], 0);
             }
             AV_ASSERT_SUCCESS(ret);
+
+            cudaDeviceSynchronize();
 
             std::vector<uint64_t> end_wait_values;
             std::vector<uint64_t> end_signal_values;
