@@ -277,9 +277,9 @@ protected:
         auto encode_time = std::chrono::duration_cast<std::chrono::microseconds>(encode_end_time - encode_start_time).count();
         auto acquire_image_time = std::chrono::duration_cast<std::chrono::microseconds>(acquire_image_end_time - acquire_image_start_time).count();
         // print in nano seconds
-        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
-                  << " left size: " << encode_out_color_packets[0]->size << " right size: " << encode_out_color_packets[1]->size
-                  << std::endl;
+//        std::cout << frame_count << ": copy time: " << copy_time << " encode time: " << encode_time
+//                  << " left size: " << encode_out_color_packets[0]->size << " right size: " << encode_out_color_packets[1]->size
+//                  << std::endl;
 
 	
         metrics["copy_time"]   += copy_time;
@@ -359,7 +359,7 @@ private:
         auto topic_end_time = std::chrono::high_resolution_clock::now();
 
         auto topic_put_time = std::chrono::duration_cast<std::chrono::microseconds>(topic_end_time - topic_start_time).count();
-        log->info("topic put time (microseconds): {}", topic_put_time);
+//        log->info("topic put time (microseconds): {}", topic_put_time);
         // av_packet_free(&pkt);
     }
 

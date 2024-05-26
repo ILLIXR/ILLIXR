@@ -124,9 +124,7 @@ struct compressed_frame : public switchboard::event {
 #endif
 
         ar << pose;
-        std::cout << "pose time " << pose.predict_computed_time.time_since_epoch().count() << std::endl;
         ar << sent_time;
-        std::cout << "sent time " << sent_time << std::endl;
         ar << magic;
     }
 

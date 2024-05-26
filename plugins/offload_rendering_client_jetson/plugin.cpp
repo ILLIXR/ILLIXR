@@ -226,7 +226,7 @@ public:
         decode_q_thread = std::make_shared<std::thread>([&]() {
             // auto file = fopen("left.h264", "wb");
             auto frame = received_frame;
-            while (running) {
+            while (running.load()) {
                 push_pose();
                 if (!network_receive()) {
                     return;
@@ -366,7 +366,6 @@ public:
                 (void) (duppedFd);
                 //            auto duppedFd = fd;
 
-                log->info("FD {} dupped to {}, eye {}, depth {}", fd, duppedFd, eye, depth);
 
                 auto vkGetMemoryFdPropertiesKHR =
                     (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
@@ -446,6 +445,8 @@ public:
 
             std::vector<VkCommandBuffer> cmd_bufs = {layout_transition_start_cmd_bufs[ind][eye], blitCB,
                                                      layout_transition_end_cmd_bufs[ind][eye]};
+
+//            std::vector<VkCommandBuffer> cmd_bufs = {blitCB};
             VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
             submitInfo.commandBufferCount = static_cast<uint32_t>(cmd_bufs.size());
             submitInfo.pCommandBuffers    = cmd_bufs.data();
@@ -467,7 +468,7 @@ public:
 
         auto decode_end = std::chrono::high_resolution_clock::now();
         for (auto eye = 0; eye < 2; eye++) {
-            std::function<void(int)> blit_f = [=](int fd) {
+            std::function<void(int)> blit_f = [&, eye](int fd) {
                 vkResetFences(dp->vk_device, 1, &blitFence);
                 blitTo(ind, eye, fd, false);
             };
@@ -476,7 +477,7 @@ public:
             assert(ret == 0 || ret == -EAGAIN);
 
             if (use_depth) {
-                std::function<void(int)> blit_f = [=](int fd) {
+                std::function<void(int)> blit_f = [&, eye](int fd) {
                     vkResetFences(dp->vk_device, 1, &blitFence);
                     blitTo(ind, eye, fd, true);
                 };
@@ -523,6 +524,7 @@ public:
     }
 
     void stop() override {
+        exit(0);
         running = false;
         decode_q_thread->join();
         threadloop::stop();
