@@ -456,7 +456,7 @@ private:
             VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO, // sType
             nullptr,                                                 // pNext
             format,         // format
-            VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_IDENTITY,          // ycbcrModel
+            VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020,          // ycbcrModel
             VK_SAMPLER_YCBCR_RANGE_ITU_FULL,                        // ycbcrRange
             {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
              VK_COMPONENT_SWIZZLE_IDENTITY}, // components

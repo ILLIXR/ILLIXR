@@ -163,18 +163,18 @@ public:
     void update_uniforms(const pose_type& render_pose) override {}
 
 protected:
-    // skip_option _p_should_skip() override {
-    //     return threadloop::_p_should_skip();
-    // }
     skip_option _p_should_skip() override {
-        if (encoded_num > 100) {
-             using namespace std::chrono_literals;
-            std::this_thread::sleep_for(100ms);
-            return skip_option::skip_and_yield;
-        }
-
-        return skip_option::run;
+        return threadloop::_p_should_skip();
     }
+    // skip_option _p_should_skip() override {
+    //     if (encoded_num > 100) {
+    //          using namespace std::chrono_literals;
+    //         std::this_thread::sleep_for(100ms);
+    //         return skip_option::skip_and_yield;
+    //     }
+
+    //     return skip_option::run;
+    // }
 
     void copy_image_to_cpu_and_save_file(AVFrame* frame) {
         auto cpu_av_frame    = av_frame_alloc();
@@ -214,6 +214,7 @@ protected:
             log->info("no decoded image, returning");
             return;
         }
+
         auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
         std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res  = buffer_pool->post_processing_acquire_image(last_frame_ind);
         auto acquire_image_end_time = std::chrono::high_resolution_clock::now();
@@ -226,6 +227,8 @@ protected:
             return;
         }
         last_frame_ind = ind;
+
+        log->debug("Starting encode of new frame");
 
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = av_hwframe_transfer_data(encode_src_color_frames[eye], avvk_color_frames[ind][eye].frame, 0);
@@ -294,6 +297,8 @@ protected:
         metrics["acquire_image_time"] += acquire_image_time;
 
         enqueue_for_network_send(pose);
+
+        log->debug("Sent new frame");
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time).count() >= 1) {
             log->info("Encoder FPS: {}", fps_counter);

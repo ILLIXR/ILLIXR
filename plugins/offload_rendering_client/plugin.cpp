@@ -295,7 +295,7 @@ protected:
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.image               = image;
-        barrier.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+        barrier.subresourceRange    = {VK_IMAGE_ASPECT_PLANE_0_BIT | VK_IMAGE_ASPECT_PLANE_1_BIT, 0, 1, 0, 1};
 
         VkPipelineStageFlags src_stage;
         VkPipelineStageFlags dst_stage;
@@ -336,6 +336,8 @@ protected:
         if (!network_receive()) {
             return;
         }
+
+        log->debug("Received new frame - decoding");
 
         // system timestamp
         auto timestamp = std::chrono::high_resolution_clock::now();
@@ -429,7 +431,10 @@ protected:
                 .pSignalSemaphores = timelines.data(),
             };
 //            submit_command_buffer(layout_transition_start_cmd_bufs[ind][eye]);
-            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_start_submit, nullptr);
+            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_start_submit, fence);
+            
+            vkWaitForFences(dp->vk_device, 1, &fence, VK_TRUE, UINT64_MAX);
+            vkResetFences(dp->vk_device, 1, &fence);
 
             auto ret = av_hwframe_transfer_data(avvk_color_frames[ind][eye].frame, decode_out_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
