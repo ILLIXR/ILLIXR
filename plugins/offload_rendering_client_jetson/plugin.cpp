@@ -486,7 +486,6 @@ public:
             }
         }
 
-
         auto transfer_end = std::chrono::high_resolution_clock::now();
         fast_pose_type decoded_frame_pose;
         {
@@ -496,15 +495,16 @@ public:
         }
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
 
-        auto pose_time = decoded_frame_pose.predict_computed_time;
         auto now       = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
-        auto diff_ns   = now - pose_time;
-        log->info("pipeline latency (ms): {}", diff_ns.count() / 1000000.0);
-        log->info("capture (microseconds): {}",
-                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
+        auto network_latency   = decoded_frame_pose.predict_target_time - decoded_frame_pose.predict_computed_time;
+        auto pipeline_latency  = now - decoded_frame_pose.predict_target_time;
+//        log->info("pipeline latency (ms): {}", diff_ns.count() / 1000000.0);
+//        log->info("capture (microseconds): {}",
+//                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
 
         metrics["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
-        metrics["pipeline"] += std::chrono::duration_cast<std::chrono::microseconds>(diff_ns).count();
+        metrics["network"] += std::chrono::duration_cast<std::chrono::microseconds>(network_latency).count();
+        metrics["pipeline"] += std::chrono::duration_cast<std::chrono::microseconds>(pipeline_latency).count();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
                 .count() >= 1) {
@@ -525,6 +525,7 @@ public:
     void stop() override {
         running = false;
         decode_q_thread->join();
+        threadloop::stop();
     }
 
 private:
@@ -625,9 +626,12 @@ private:
                 .count();
         auto diff_ns = timestamp - received_frame->sent_time;
 //        log->info("diff (now - sent_time) (ms): {}", diff_ns / 1000000.0);
+        auto pose = received_frame->pose;
+        pose.predict_computed_time = time_point{std::chrono::duration<long, std::nano>{received_frame->sent_time}};
+        pose.predict_target_time  = time_point{std::chrono::duration<long, std::nano>{timestamp}};
         {
             std::lock_guard<std::mutex> lock(pose_queue_mutex);
-            pose_queue.push(received_frame->pose);
+            pose_queue.push(pose);
         }
         return true;
     }
