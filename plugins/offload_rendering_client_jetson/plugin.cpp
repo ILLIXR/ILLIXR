@@ -1,3 +1,6 @@
+#include <boost/thread.hpp>
+#include <boost/thread/barrier.hpp>
+
 #include "decoding/video_decode.h"
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
@@ -10,6 +13,8 @@
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
 
+#include <boost/lockfree/queue.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
 #include <cstdlib>
 #include <set>
 
@@ -34,8 +39,10 @@ public:
         use_depth = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
         if (use_depth) {
             log->debug("Encoding depth images for the client");
+            barrier = std::make_unique<boost::barrier>(5);
         } else {
             log->debug("Not encoding depth images for the client");
+            barrier = std::make_unique<boost::barrier>(3);
         }
 
         compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
@@ -121,6 +128,7 @@ public:
 
         blit_color_cb.resize(buffer_pool->image_pool.size());
         blit_depth_cb.resize(buffer_pool->image_pool.size());
+        blit_cb_recorded.resize(buffer_pool->image_pool.size());
 
         for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
             for (auto eye = 0; eye < 2; eye++) {
@@ -217,13 +225,12 @@ public:
         }
     }
 
-    std::shared_ptr<std::thread> decode_q_thread;
 
     void _p_thread_setup() override {
         mmapi_init_decoders();
         // open file "left.h264" for writing
 
-        decode_q_thread = std::make_shared<std::thread>([&]() {
+        decode_q_thread = std::thread([&]() {
             // auto file = fopen("left.h264", "wb");
             auto frame = received_frame;
             while (running) {
@@ -234,8 +241,8 @@ public:
                 frame = received_frame;
 
                 // system timestamp
-//                auto timestamp = std::chrono::high_resolution_clock::now();
-//                auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
+                // auto timestamp = std::chrono::high_resolution_clock::now();
+                // auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
                 // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
 
                 // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
@@ -243,8 +250,7 @@ public:
                 auto decode_start = std::chrono::high_resolution_clock::now();
                 // receive packets
                 color_decoders[0].queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
-                color_decoders[1].queue_output_plane_buffer(frame->right_color_nalu,
-                                                            frame->right_color_nalu_size);
+                color_decoders[1].queue_output_plane_buffer(frame->right_color_nalu, frame->right_color_nalu_size);
 
                 // write to file
                 // fwrite(received_frame->left_color_nalu, 1, received_frame->left_color_nalu_size, file);
@@ -256,6 +262,43 @@ public:
                 }
             }
         });
+
+        for (auto eye = 0; eye < 2; eye++) {
+            dec_capture_loop_color[eye] = std::thread([&, eye]() {
+                while (running) {
+                    std::function<void(int)> blit_f = [&](int fd) {
+                        vkResetFences(dp->vk_device, 1, &blitFence);
+                        barrier->wait();
+                        blitTo(latest_ind, eye, fd, false);
+                    };
+
+                    auto ret = color_decoders[eye].dec_capture(blit_f);
+                    assert(ret == 0 || ret == -EAGAIN);
+                    while (ret == -EAGAIN) {
+                        ret = color_decoders[eye].dec_capture(blit_f);
+                    }
+                }
+
+            });
+
+            if (use_depth) {
+                dec_capture_loop_depth[eye] = std::thread([&, eye]() {
+                    while (running) {
+                        std::function<void(int)> blit_f = [&](int fd) {
+                            vkResetFences(dp->vk_device, 1, &blitFence);
+                            barrier->wait();
+                            blitTo(latest_ind, eye, fd, true);
+                        };
+
+                        auto ret = depth_decoders[eye].dec_capture(blit_f);
+                        while(ret == -EAGAIN) {
+                            ret = depth_decoders[eye].dec_capture(blit_f);
+                        }
+                        assert(ret == 0 || ret == -EAGAIN);
+                    }
+                });
+            }
+        }
     }
 
     skip_option _p_should_skip() override {
@@ -325,14 +368,14 @@ public:
         vkCmdPipelineBarrier(cmd_buf, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
-    std::array<VkImage, 2> importedImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkImage, 2> importedImages      = {VK_NULL_HANDLE, VK_NULL_HANDLE};
     std::array<VkImage, 2> importedDepthImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
 
     void blitTo(uint8_t ind, uint8_t eye, int fd, bool depth) {
         VkImage* vkImage = depth ? &importedDepthImages[eye] : &importedImages[eye];
-        uint32_t width  = buffer_pool->image_pool[ind][eye].image_info.extent.width;
-        uint32_t height = buffer_pool->image_pool[ind][eye].image_info.extent.height;
-        auto blitCB     = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
+        uint32_t width   = buffer_pool->image_pool[ind][eye].image_info.extent.width;
+        uint32_t height  = buffer_pool->image_pool[ind][eye].image_info.extent.height;
+        auto     blitCB  = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
         if (*vkImage == nullptr) {
             { // create vk image
                 VkExternalMemoryImageCreateInfo dmaBufExternalMemoryImageCreateInfo{};
@@ -364,7 +407,7 @@ public:
             { // allocate and bind
                 const int duppedFd = dup(fd);
                 (void) (duppedFd);
-                //            auto duppedFd = fd;
+                // auto duppedFd = fd;
 
                 log->info("FD {} dupped to {}, eye {}, depth {}", fd, duppedFd, eye, depth);
 
@@ -372,26 +415,26 @@ public:
                     (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
                 assert(vkGetMemoryFdPropertiesKHR);
 
-//                VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
-//                dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
-//                dmaBufMemoryProperties.pNext = nullptr;
-//                VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
-//                                                             duppedFd, &dmaBufMemoryProperties));
-                // string str = "Fd memory memoryTypeBits: b" + std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string();
-                // COMP_DEBUG_MSG(str);
+                // VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
+                // dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
+                // dmaBufMemoryProperties.pNext = nullptr;
+                // VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+                //                                              duppedFd, &dmaBufMemoryProperties));
+                // string str = "Fd memory memoryTypeBits: b" +
+                // std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string(); COMP_DEBUG_MSG(str);
 
                 VkMemoryRequirements imageMemoryRequirements{};
                 vkGetImageMemoryRequirements(dp->vk_device, *vkImage, &imageMemoryRequirements);
                 // str = "Image memoryTypeBits: b" +  std::bitset<8>(imageMemoryRequirements.memoryTypeBits).to_string();
                 // COMP_DEBUG_MSG(str);
 
-//                const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
-//                assert(bits != 0);
+                // const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
+                // assert(bits != 0);
 
-//                const MemoryTypeResult memoryTypeResult =
-//                    findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-                const MemoryTypeResult memoryTypeResult =
-                    findMemoryType(dp->vk_physical_device, imageMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                // const MemoryTypeResult memoryTypeResult =
+                //     findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                const MemoryTypeResult memoryTypeResult = findMemoryType(
+                    dp->vk_physical_device, imageMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
                 assert(memoryTypeResult.found);
                 // str = "Memory type index: " + to_string(memoryTypeResult.typeIndex);
                 // COMP_DEBUG_MSG(str);
@@ -420,8 +463,10 @@ public:
         }
         assert(*vkImage != VK_NULL_HANDLE);
 
-        {
-            VK_ASSERT_SUCCESS(vkResetCommandBuffer(blitCB, 0));
+        auto recorded = blit_cb_recorded[ind][eye];
+        if (!recorded) {
+            blit_cb_recorded[ind][eye] = true;
+            //                VK_ASSERT_SUCCESS(vkResetCommandBuffer(blitCB, 0));
             VkCommandBufferBeginInfo beginInfo{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
 
             VK_ASSERT_SUCCESS(vkBeginCommandBuffer(blitCB, &beginInfo));
@@ -443,19 +488,21 @@ public:
             transition_layout(blitCB, *vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
 
             vkEndCommandBuffer(blitCB);
+        }
 
+        {
             std::vector<VkCommandBuffer> cmd_bufs = {layout_transition_start_cmd_bufs[ind][eye], blitCB,
                                                      layout_transition_end_cmd_bufs[ind][eye]};
-            VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
+            VkSubmitInfo                 submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
             submitInfo.commandBufferCount = static_cast<uint32_t>(cmd_bufs.size());
             submitInfo.pCommandBuffers    = cmd_bufs.data();
 
             vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, nullptr);
-//            VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
+            // VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
         }
 
-//        vkDestroyImage(dp->vk_device, vkImage, nullptr);
-//        vkFreeMemory(dp->vk_device, importedImageMemory, nullptr);
+        // vkDestroyImage(dp->vk_device, vkImage, nullptr);
+        // vkFreeMemory(dp->vk_device, importedImageMemory, nullptr);
     }
 
     void _p_one_iteration() override {
@@ -463,48 +510,33 @@ public:
             return;
         }
 
-        auto ind = buffer_pool->src_acquire_image();
+        latest_ind = buffer_pool->src_acquire_image();
 
-        auto decode_end = std::chrono::high_resolution_clock::now();
-        for (auto eye = 0; eye < 2; eye++) {
-            std::function<void(int)> blit_f = [=](int fd) {
-                vkResetFences(dp->vk_device, 1, &blitFence);
-                blitTo(ind, eye, fd, false);
-            };
-
-            auto ret = color_decoders[eye].dec_capture(blit_f);
-            assert(ret == 0 || ret == -EAGAIN);
-
-            if (use_depth) {
-                std::function<void(int)> blit_f = [=](int fd) {
-                    vkResetFences(dp->vk_device, 1, &blitFence);
-                    blitTo(ind, eye, fd, true);
-                };
-
-                auto ret = depth_decoders[eye].dec_capture(blit_f);
-                assert(ret == 0 || ret == -EAGAIN);
-            }
-        }
+        auto                       decode_end = std::chrono::high_resolution_clock::now();
+        barrier->wait();
 
 
-        auto transfer_end = std::chrono::high_resolution_clock::now();
+        auto           transfer_end = std::chrono::high_resolution_clock::now();
         fast_pose_type decoded_frame_pose;
         {
             std::lock_guard<std::mutex> lock(pose_queue_mutex);
             decoded_frame_pose = pose_queue.front();
             pose_queue.pop();
         }
-        buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
+        buffer_pool->src_release_image(latest_ind, std::move(decoded_frame_pose));
 
-        auto pose_time = decoded_frame_pose.predict_computed_time;
-        auto now       = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
-        auto diff_ns   = now - pose_time;
-        log->info("pipeline latency (ms): {}", diff_ns.count() / 1000000.0);
-        log->info("capture (microseconds): {}",
-                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
+        auto now =
+            time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        auto network_latency = decoded_frame_pose.predict_target_time - decoded_frame_pose.predict_computed_time;
+        // log->info("network latency (ms): {}", network_latency.count() / 1000000.0);
+        // log->info("pipeline latency (ms): {}", (now - decoded_frame_pose.predict_target_time).count() / 1000000.0);
+        // log->info("capture (microseconds): {}",
+        //           std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
 
         metrics["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
-        metrics["pipeline"] += std::chrono::duration_cast<std::chrono::microseconds>(diff_ns).count();
+        metrics["network_latency"] += std::chrono::duration_cast<std::chrono::microseconds>(network_latency).count();
+        metrics["pipeline_latency"] +=
+            std::chrono::duration_cast<std::chrono::microseconds>(now - decoded_frame_pose.predict_target_time).count();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
                 .count() >= 1) {
@@ -524,7 +556,7 @@ public:
 
     void stop() override {
         running = false;
-        decode_q_thread->join();
+        decode_q_thread.join();
     }
 
 private:
@@ -544,6 +576,7 @@ private:
 
     std::vector<std::array<VkCommandBuffer, 2>> blit_color_cb;
     std::vector<std::array<VkCommandBuffer, 2>> blit_depth_cb;
+    std::vector<std::array<bool, 2>>             blit_cb_recorded;
     std::vector<std::array<VkCommandBuffer, 2>> layout_transition_start_cmd_bufs;
     std::vector<std::array<VkCommandBuffer, 2>> layout_transition_end_cmd_bufs;
 
@@ -551,8 +584,13 @@ private:
     std::array<mmapi_decoder, 2> depth_decoders;
 
     std::shared_ptr<const compressed_frame> received_frame;
-    std::queue<fast_pose_type>               pose_queue;
+    std::queue<fast_pose_type>              pose_queue;
     std::mutex                              pose_queue_mutex;
+    std::thread decode_q_thread;
+    std::array<std::thread, 2> dec_capture_loop_color;
+    std::array<std::thread, 2> dec_capture_loop_depth;
+    uint8_t latest_ind = 0;
+    std::unique_ptr<boost::barrier> barrier;
 
     VkCommandPool command_pool{};
 
@@ -623,11 +661,14 @@ private:
         uint64_t timestamp =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
                 .count();
-        auto diff_ns = timestamp - received_frame->sent_time;
-//        log->info("diff (now - sent_time) (ms): {}", diff_ns / 1000000.0);
+        // auto diff_ns = timestamp - received_frame->sent_time;
+        auto pose                  = received_frame->pose;
+        pose.predict_computed_time = time_point{std::chrono::duration<long, std::nano>{received_frame->sent_time}};
+        pose.predict_target_time   = time_point{std::chrono::high_resolution_clock::now().time_since_epoch()};
+        // log->info("diff (now - sent_time) (ms): {}", diff_ns / 1000000.0);
         {
             std::lock_guard<std::mutex> lock(pose_queue_mutex);
-            pose_queue.push(received_frame->pose);
+            pose_queue.push(pose);
         }
         return true;
     }

@@ -53,6 +53,10 @@ target_link_libraries(${PLUGIN_NAME} ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
 target_include_directories(${PLUGIN_NAME} BEFORE PUBLIC ${Vulkan_INCLUDE_DIRS} /usr/include/libdrm)
 
+# boost
+find_package(Boost REQUIRED COMPONENTS system thread)
+target_link_libraries(${PLUGIN_NAME} Boost::system Boost::thread)
+
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 if(Vulkan_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
