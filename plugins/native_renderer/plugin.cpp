@@ -420,17 +420,49 @@ private:
     }
 
     void create_multi_plane_conversion() {
+        VkFormat format = VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+        VkChromaLocation xy_chroma_offset;
+        VkFilter chroma_filter;
+
+        VkFormatProperties2 format_properties;
+        format_properties.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+        format_properties.pNext = nullptr; // used for possible extensions
+
+        vkGetPhysicalDeviceFormatProperties2(ds->vk_physical_device, format, &format_properties);
+        if ((format_properties.formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) != 0) {
+            // supported
+            if ((format_properties.formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT) != 0) {
+                log->debug("VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT supported and selected");
+                xy_chroma_offset = VK_CHROMA_LOCATION_MIDPOINT;
+            } else if ((format_properties.formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT) != 0) {
+                log->debug("VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT supported and selected");
+                xy_chroma_offset = VK_CHROMA_LOCATION_COSITED_EVEN;
+            } else {
+                throw std::runtime_error("Vulkan NV12 format cannot be used for multi-plane sampling!");
+            }
+
+             if ((format_properties.formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT ) != 0) {
+                log->debug("Linear filtering supported for NV12 format - selected!");
+                chroma_filter = VK_FILTER_LINEAR;
+             } else {
+                log->debug("Linear filtering not supported for NV12 format - defaulting to nearest.");
+                chroma_filter = VK_FILTER_NEAREST;
+             }
+        } else {
+            throw std::runtime_error("Vulkan NV12 format cannot be sampled!");
+        }
+
         VkSamplerYcbcrConversionCreateInfo conversion_create_info = {
             VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO, // sType
             nullptr,                                                 // pNext
-            VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,         // format
-            VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020,          // ycbcrModel
+            format,         // format
+            VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_IDENTITY,          // ycbcrModel
             VK_SAMPLER_YCBCR_RANGE_ITU_FULL,                        // ycbcrRange
             {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
              VK_COMPONENT_SWIZZLE_IDENTITY}, // components
-            VK_CHROMA_LOCATION_MIDPOINT,  // xChromaOffset
-            VK_CHROMA_LOCATION_MIDPOINT,  // yChromaOffset
-            VK_FILTER_NEAREST,                 // chromaFilter
+            xy_chroma_offset,  // xChromaOffset
+            xy_chroma_offset,  // yChromaOffset
+            chroma_filter,                 // chromaFilter
             VK_FALSE,                          // forceExplicitReconstruction
         };
 
@@ -511,7 +543,7 @@ private:
      * @brief Creates an offscreen target for the application to render to.
      * @param image Pointer to the offscreen image handle.
      */
-    void create_offscreen_target(vulkan::vk_image& image) {
+    void create_offscreen_target(vulkan::vk_image& image) {        
         std::vector<uint32_t> queue_family_indices;
         queue_family_indices.push_back(ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         if (ds->queues.find(vulkan::queue::queue_type::COMPUTE) != ds->queues.end() &&
