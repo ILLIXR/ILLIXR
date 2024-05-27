@@ -7,18 +7,13 @@ namespace ILLIXR::vulkan {
 
 typedef int8_t image_index_t;
 
-struct image_allocation {
-    uint32_t memory_type;
-    VkDeviceSize size;
-    VkDeviceSize offset;
-    VkDeviceMemory memory;
-};
-
 struct vk_image {
     VkImageCreateInfo image_info;
+    VkExternalMemoryImageCreateInfo export_image_info;
     VkImage image;
     VkImageView image_view;
-    image_allocation alloc_info[2]; // NV12 planes allocated disjointly
+    VmaAllocation allocation;
+    VmaAllocationInfo allocation_info;
 };
 
 template <typename T>
@@ -35,8 +30,6 @@ struct buffer_pool {
     std::vector<image_state> image_states;
     std::vector<T> image_data;
     std::mutex image_state_mutex;
-
-    VkSamplerYcbcrConversion ycbcr_conversion = VK_NULL_HANDLE;
 
     image_index_t latest_decoded_image = -1;
 

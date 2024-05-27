@@ -166,15 +166,6 @@ protected:
     skip_option _p_should_skip() override {
         return threadloop::_p_should_skip();
     }
-    // skip_option _p_should_skip() override {
-    //     if (encoded_num > 100) {
-    //          using namespace std::chrono_literals;
-    //         std::this_thread::sleep_for(100ms);
-    //         return skip_option::skip_and_yield;
-    //     }
-
-    //     return skip_option::run;
-    // }
 
     void copy_image_to_cpu_and_save_file(AVFrame* frame) {
         auto cpu_av_frame    = av_frame_alloc();
@@ -214,7 +205,6 @@ protected:
             log->info("no decoded image, returning");
             return;
         }
-
         auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
         std::pair<ILLIXR::vulkan::image_index_t, fast_pose_type> res  = buffer_pool->post_processing_acquire_image(last_frame_ind);
         auto acquire_image_end_time = std::chrono::high_resolution_clock::now();
@@ -227,8 +217,6 @@ protected:
             return;
         }
         last_frame_ind = ind;
-
-        log->debug("Starting encode of new frame");
 
         for (auto eye = 0; eye < 2; eye++) {
             auto ret = av_hwframe_transfer_data(encode_src_color_frames[eye], avvk_color_frames[ind][eye].frame, 0);
@@ -298,8 +286,6 @@ protected:
 
         enqueue_for_network_send(pose);
 
-        log->debug("Sent new frame");
-
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time).count() >= 1) {
             log->info("Encoder FPS: {}", fps_counter);
             fps_start_time = std::chrono::high_resolution_clock::now();
@@ -311,15 +297,13 @@ protected:
             }
             
             if (pass_depth) {
-                std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[1]->size << std::endl;
-            }	
+		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
+	}	
 
             fps_counter = 0;
         } else {
             fps_counter++;
         }
-
-        encoded_num++;
     }
 
 private:
@@ -336,8 +320,6 @@ private:
     long bitrate = OFFLOAD_RENDERING_BITRATE;
 
     bool pass_depth = false;
-
-    int encoded_num = 0;
 
     AVBufferRef* device_ctx;
     AVBufferRef* cuda_device_ctx;
@@ -494,9 +476,9 @@ private:
                 // The image index is just 0 here for AVVKFrame since we're not using multi-plane
                 vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
                 vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
-                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].alloc_info[0].memory;
-                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].alloc_info[0].size;
-                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].alloc_info[0].offset;
+                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
+                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].allocation_info.size;
+                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].allocation_info.offset;
                 vk_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                 VkExportSemaphoreCreateInfo export_semaphore_create_info{
@@ -531,9 +513,9 @@ private:
 
                     vk_depth_frame->img[0]          = buffer_pool->depth_image_pool[i][eye].image;
                     vk_depth_frame->tiling          = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
-                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].alloc_info[0].memory;
-                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].alloc_info[0].size;
-                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].alloc_info[0].offset;
+                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
+                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].allocation_info.size;
+                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].allocation_info.offset;
                     vk_depth_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                     // VkExportSemaphoreCreateInfo export_semaphore_create_info{
