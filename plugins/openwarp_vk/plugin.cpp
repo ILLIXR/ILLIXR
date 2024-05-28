@@ -753,7 +753,23 @@ private:
             // The server can render at a larger FoV, so the inverse should account for that.
             // The FOVs provided here should match the ones provided to Monado.
             Eigen::Matrix4f server_fov;
-            math_util::unreal_projection(&server_fov, server_params::fov_left[eye], server_params::fov_right[eye], server_params::fov_up[eye], server_params::fov_down[eye]);
+            float scale = 1.0f;
+            if (std::getenv("ILLIXR_OVERSCAN") != nullptr) {
+                scale = std::stof(std::getenv("ILLIXR_OVERSCAN"));
+            }
+            float tan_left = server_params::fov_left[eye];
+            float tan_right = server_params::fov_right[eye];
+            float tan_up = server_params::fov_up[eye];
+            float tan_down = server_params::fov_down[eye];
+            float fov_left = std::atan(tan_left);
+            float fov_right = std::atan(tan_right);
+            float fov_up = std::atan(tan_up);
+            float fov_down = std::atan(tan_down);
+            tan_left = std::tan(fov_left * scale);
+            tan_right = std::tan(fov_right * scale);
+            tan_up = std::tan(fov_up * scale);
+            tan_down = std::tan(fov_down * scale);
+            math_util::unreal_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
             invProjection[eye] = server_fov.inverse();
         }
 

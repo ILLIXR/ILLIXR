@@ -662,6 +662,15 @@ private:
         }
         decode_src_color_packets[0] = frame->left_color;
         decode_src_color_packets[1] = frame->right_color;
+
+//        // save bytestream to file
+//        if (left_eye_stream == nullptr) {
+//            left_eye_stream = fopen("left_eye.h264", "wb");
+//            right_eye_stream = fopen("right_eye.h264", "wb");
+//        }
+//        fwrite(frame->left_color->data, 1, frame->left_color->size, left_eye_stream);
+//        fwrite(frame->right_color->data, 1, frame->right_color->size, right_eye_stream);
+
         if (use_depth) {
             decode_src_depth_packets[0] = frame->left_depth;
         decode_src_depth_packets[1] = frame->right_depth;
@@ -927,6 +936,7 @@ private:
         codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_color_ctx->framerate     = {0, 1};
         codec_color_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
+        codec_color_ctx->color_range = AVCOL_RANGE_JPEG;
         // codec_ctx->flags2 |= AV_CODEC_FLAG2_CHUNKS;
 
         // Set zero latency
@@ -981,6 +991,8 @@ private:
     }
 
     std::shared_ptr<RelativeClock> clock;
+    FILE*                          left_eye_stream;
+    FILE*                          right_eye_stream;
 };
 
 class offload_rendering_client_loader
