@@ -14,7 +14,9 @@
 #include "illixr/vk/vulkan_utils.hpp"
 #include "utils/hmd.hpp"
 
+#include <algorithm>
 #include <future>
+#include <fstream>
 #include <iostream>
 #include <mutex>
 #include <stack>
@@ -142,13 +144,25 @@ public:
         clamp_edge = std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
         compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
         if (compare_images) {
-            // Constant pose as recorded from the GT. Note that the Quaternion constructor takes the w component first.
-            // Always try warping back to the 0ms psoe.
+            // Note that the Quaternion constructor takes the w component first.
+            assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
+            std::string pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
+            std::cout << "Reading file from " << pose_filename << std::endl;
 
-            // 0 ms
-            // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
-                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+            std::ifstream pose_file(pose_filename);
+            std::string line;
+            while (std::getline(pose_file, line)) {
+                float p_x, p_y, p_z;
+                float q_x, q_y, q_z, q_w;
+                std::stringstream ss(line);
+                ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;   
+
+                fixed_poses.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
+            }
+
+            std::cout << "Read " << fixed_poses.size() << "poses" << std::endl;
+            
+            pose_file.close();
         }
     }
 
@@ -181,8 +195,15 @@ public:
         auto next_vsync = _m_vsync.get_ro_nullable();
         pose_type latest_pose       = disable_warp ? render_pose : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
         if (compare_images) {
-            latest_pose = fixed_pose;
+            // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
+            // (this should be reflected in the screenshot layer)
+            int pose_index = std::clamp(static_cast<int>(frame_count - 150) / 100, 0, static_cast<int>(fixed_poses.size()) - 1);
+            latest_pose = fixed_poses[pose_index];
+
+            std::cout << "At frame " << frame_count << std::endl;
+            std::cout << "Using pose " << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z();
         }
+
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -209,6 +230,8 @@ public:
         num_record_calls++;
 
         VkDeviceSize offsets = 0;
+
+        if (left) frame_count++;
 
         // Timewarp handles distortion correction at the same time
         VkRenderPassBeginInfo tw_render_pass_info{};
@@ -849,7 +872,8 @@ private:
     VmaAllocator                      vma_allocator{};
 
     bool compare_images = false;
-    pose_type fixed_pose;
+    std::vector<pose_type> fixed_poses;
+    uint64_t frame_count = 0;
 
     size_t                                  swapchain_width;
     size_t                                  swapchain_height;

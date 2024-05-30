@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <future>
+#include <fstream>
 #include <iostream>
 #include <mutex>
 #include <stack>
@@ -192,16 +193,25 @@ public:
 
         compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
         if (compare_images) {
-            // Constant pose as recorded from the GT. Note that the Quaternion constructor takes the w component first.
-            // Always try warping back to the 0ms psoe.
+            // Note that the Quaternion constructor takes the w component first.
+            assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
+            std::string pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
+            std::cout << "Reading file from " << pose_filename << std::endl;
+            
+            std::ifstream pose_file(pose_filename);
+            std::string line;
+            while (std::getline(pose_file, line)) {
+                float p_x, p_y, p_z;
+                float q_x, q_y, q_z, q_w;
+                std::stringstream ss(line);
+                ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;  
 
-            // 0 ms
-            // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
-                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+                fixed_poses.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
+            }
 
-//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
-//                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
+            std::cout << "Read " << fixed_poses.size() << "poses" << std::endl;
+            
+            pose_file.close();
         }
     }
 
@@ -238,8 +248,14 @@ public:
 
         pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
         if (compare_images) {
-            latest_pose = fixed_pose;
+            // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
+            // (this should be reflected in the screenshot layer)
+            int pose_index = std::clamp(static_cast<int>(frame_count - 150) / 100, 0, static_cast<int>(fixed_poses.size()) - 1);
+            latest_pose = fixed_poses[pose_index];
+
+            std::cout << "Using pose:" << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z() << std::endl;
         }
+
         Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose);
 
         for (int eye = 0; eye < 2; eye++) {
@@ -254,6 +270,8 @@ public:
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
+
+        if (left) frame_count++;
         
         VkDeviceSize offsets = 0;
         VkClearValue clear_colors[2];
@@ -1430,7 +1448,8 @@ private:
     bool input_texture_vulkan_coordinates = true;
 
     bool compare_images = false;
-    pose_type fixed_pose;
+    std::vector<pose_type> fixed_poses;
+    uint64_t frame_count = 0;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
