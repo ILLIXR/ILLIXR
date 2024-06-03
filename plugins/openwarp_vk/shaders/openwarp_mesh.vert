@@ -45,8 +45,8 @@ layout (push_constant) uniform Eye {
 } eye;
 
 // Constant for now
-//float bleedRadius = 0.005f;
-float bleedRadius = 0.01f;
+float bleedRadius = 0.005f;
+//float bleedRadius = 0.01f;
 float edgeTolerance = 0.01f;
 
 layout (location = 0) in vec3 in_position;

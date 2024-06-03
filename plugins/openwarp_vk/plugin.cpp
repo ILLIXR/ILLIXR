@@ -769,6 +769,7 @@ private:
             tan_right = std::tan(fov_right * scale);
             tan_up = std::tan(fov_up * scale);
             tan_down = std::tan(fov_down * scale);
+
             math_util::unreal_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
             invProjection[eye] = server_fov.inverse();
         }

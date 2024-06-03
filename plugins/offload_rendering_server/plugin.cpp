@@ -631,6 +631,9 @@ private:
             codec_depth_ctx->framerate     = {framerate, 1};
             codec_depth_ctx->bit_rate      = bitrate; // 10 Mbps
 
+            // Set lossless encoding using AVOptions
+//            av_opt_set_int(codec_depth_ctx->priv_data, "lossless", 1, 0);
+
             // Set zero latency
             codec_depth_ctx->max_b_frames = 0;
             codec_depth_ctx->gop_size     = 0; // intra-only for now
