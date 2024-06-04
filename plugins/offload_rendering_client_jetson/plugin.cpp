@@ -10,6 +10,7 @@
 #include "illixr/vk/vk_extension_request.h"
 #include "illixr/vk/vulkan_utils.hpp"
 
+#include <bitset>
 #include <cstdlib>
 #include <set>
 
@@ -106,13 +107,11 @@ public:
     }
 
     void mmapi_init_decoders() {
-        for (auto eye = 0; eye < 2; eye++) {
-            auto ret = color_decoders[eye].decoder_init();
+        auto ret = color_decoder.decoder_init();
+        assert(ret == 0);
+        if (use_depth) {
+            ret = depth_decoder.decoder_init();
             assert(ret == 0);
-            if (use_depth) {
-                ret = depth_decoders[eye].decoder_init();
-                assert(ret == 0);
-            }
         }
     }
 
@@ -209,11 +208,9 @@ public:
     }
 
     void destroy() override {
-        for (auto eye = 0; eye < 2; eye++) {
-            color_decoders[eye].decoder_destroy();
-            if (use_depth) {
-                depth_decoders[eye].decoder_destroy();
-            }
+        color_decoder.decoder_destroy();
+        if (use_depth) {
+            depth_decoder.decoder_destroy();
         }
     }
 
@@ -242,8 +239,8 @@ public:
 
                 auto decode_start = std::chrono::high_resolution_clock::now();
                 // receive packets
-                color_decoders[0].queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
-                color_decoders[1].queue_output_plane_buffer(frame->right_color_nalu,
+                color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
+                color_decoder.queue_output_plane_buffer(frame->right_color_nalu,
                                                             frame->right_color_nalu_size);
 
                 // write to file
@@ -251,8 +248,8 @@ public:
                 // fflush(file);
 
                 if (use_depth) {
-                    depth_decoders[0].queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
-                    depth_decoders[1].queue_output_plane_buffer(frame->right_depth_nalu, frame->right_depth_nalu_size);
+                    depth_decoder.queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
+                    depth_decoder.queue_output_plane_buffer(frame->right_depth_nalu, frame->right_depth_nalu_size);
                 }
             }
         });
@@ -318,6 +315,11 @@ public:
             barrier.dstAccessMask = VK_ACCESS_MEMORY_WRITE_BIT;
             src_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
             dst_stage             = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+        } else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED && new_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            src_stage             = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            dst_stage             = VK_PIPELINE_STAGE_TRANSFER_BIT;
         } else {
             throw std::invalid_argument("unsupported layout transition");
         }
@@ -328,12 +330,13 @@ public:
     std::array<VkImage, 2> importedImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
     std::array<VkImage, 2> importedDepthImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
 
+
     void blitTo(uint8_t ind, uint8_t eye, int fd, bool depth) {
-        VkImage* vkImage = depth ? &importedDepthImages[eye] : &importedImages[eye];
+        VkImage vkImage = VK_NULL_HANDLE;
         uint32_t width  = buffer_pool->image_pool[ind][eye].image_info.extent.width;
         uint32_t height = buffer_pool->image_pool[ind][eye].image_info.extent.height;
-        auto blitCB     = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
-        if (*vkImage == nullptr) {
+        auto     blitCB = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
+        if (vkImage == VK_NULL_HANDLE) {
             { // create vk image
                 VkExternalMemoryImageCreateInfo dmaBufExternalMemoryImageCreateInfo{};
                 dmaBufExternalMemoryImageCreateInfo.sType       = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO;
@@ -351,12 +354,12 @@ public:
                 dmaBufImageCreateInfo.arrayLayers           = 1;
                 dmaBufImageCreateInfo.samples               = VK_SAMPLE_COUNT_1_BIT;
                 dmaBufImageCreateInfo.tiling                = buffer_pool->image_pool[ind][eye].image_info.tiling;
-                dmaBufImageCreateInfo.usage                 = VK_IMAGE_LAYOUT_GENERAL;
+                dmaBufImageCreateInfo.usage                 = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
                 dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
                 dmaBufImageCreateInfo.queueFamilyIndexCount = 0;
                 dmaBufImageCreateInfo.pQueueFamilyIndices   = nullptr;
-                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_GENERAL;
-                VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, vkImage));
+                dmaBufImageCreateInfo.initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED;
+                VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, &vkImage));
             }
 
             VkDeviceMemory importedImageMemory;
@@ -364,40 +367,39 @@ public:
             { // allocate and bind
                 const int duppedFd = dup(fd);
                 (void) (duppedFd);
-                //            auto duppedFd = fd;
+                // auto duppedFd = fd;
 
-
-                auto vkGetMemoryFdPropertiesKHR =
-                    (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
-                assert(vkGetMemoryFdPropertiesKHR);
-
-//                VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
-//                dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
-//                dmaBufMemoryProperties.pNext = nullptr;
-//                VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
-//                                                             duppedFd, &dmaBufMemoryProperties));
-                // string str = "Fd memory memoryTypeBits: b" + std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string();
+                // auto vkGetMemoryFdPropertiesKHR =
+                //     (PFN_vkGetMemoryFdPropertiesKHR) vkGetInstanceProcAddr(dp->vk_instance, "vkGetMemoryFdPropertiesKHR");
+                // assert(vkGetMemoryFdPropertiesKHR);
+                //
+                // VkMemoryFdPropertiesKHR dmaBufMemoryProperties{};
+                // dmaBufMemoryProperties.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
+                // dmaBufMemoryProperties.pNext = nullptr;
+                // VK_ASSERT_SUCCESS(vkGetMemoryFdPropertiesKHR(dp->vk_device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+                //                                              duppedFd, &dmaBufMemoryProperties));
+                // std::string str = "Fd memory memoryTypeBits: b" + std::bitset<8>(dmaBufMemoryProperties.memoryTypeBits).to_string();
                 // COMP_DEBUG_MSG(str);
 
                 VkMemoryRequirements imageMemoryRequirements{};
-                vkGetImageMemoryRequirements(dp->vk_device, *vkImage, &imageMemoryRequirements);
+                vkGetImageMemoryRequirements(dp->vk_device, vkImage, &imageMemoryRequirements);
                 // str = "Image memoryTypeBits: b" +  std::bitset<8>(imageMemoryRequirements.memoryTypeBits).to_string();
                 // COMP_DEBUG_MSG(str);
 
-//                const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
-//                assert(bits != 0);
+                // const uint32_t bits = dmaBufMemoryProperties.memoryTypeBits & imageMemoryRequirements.memoryTypeBits;
+                // assert(bits != 0);
 
-//                const MemoryTypeResult memoryTypeResult =
-//                    findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-                const MemoryTypeResult memoryTypeResult =
-                    findMemoryType(dp->vk_physical_device, imageMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-                assert(memoryTypeResult.found);
-                // str = "Memory type index: " + to_string(memoryTypeResult.typeIndex);
+                // const MemoryTypeResult memoryTypeResult =
+                //     findMemoryType(dp->vk_physical_device, bits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                const MemoryTypeResult memoryTypeResult = findMemoryType(
+                    dp->vk_physical_device, imageMemoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+                // assert(memoryTypeResult.found);
+                //  str = "Memory type index: " + to_string(memoryTypeResult.typeIndex);
                 // COMP_DEBUG_MSG(str);
 
                 VkMemoryDedicatedAllocateInfo dedicatedAllocateInfo{};
                 dedicatedAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;
-                dedicatedAllocateInfo.image = *vkImage;
+                dedicatedAllocateInfo.image = vkImage;
                 VkImportMemoryFdInfoKHR importFdInfo{};
                 importFdInfo.sType      = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR;
                 importFdInfo.pNext      = &dedicatedAllocateInfo;
@@ -414,10 +416,10 @@ public:
                 memoryAllocateInfo.memoryTypeIndex = memoryTypeResult.typeIndex;
                 VK_ASSERT_SUCCESS(vkAllocateMemory(dp->vk_device, &memoryAllocateInfo, nullptr, &importedImageMemory));
 
-                VK_ASSERT_SUCCESS(vkBindImageMemory(dp->vk_device, *vkImage, importedImageMemory, 0));
+                VK_ASSERT_SUCCESS(vkBindImageMemory(dp->vk_device, vkImage, importedImageMemory, 0));
             }
+            assert(vkImage != VK_NULL_HANDLE);
         }
-        assert(*vkImage != VK_NULL_HANDLE);
 
         {
             VK_ASSERT_SUCCESS(vkResetCommandBuffer(blitCB, 0));
@@ -425,7 +427,7 @@ public:
 
             VK_ASSERT_SUCCESS(vkBeginCommandBuffer(blitCB, &beginInfo));
 
-            transition_layout(blitCB, *vkImage, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+            transition_layout(blitCB, vkImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
             VkImageCopy region{};
             region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -435,11 +437,11 @@ public:
             region.extent.width              = width;
             region.extent.height             = height;
             region.extent.depth              = 1;
-            vkCmdCopyImage(blitCB, *vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            vkCmdCopyImage(blitCB, vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                            depth ? buffer_pool->depth_image_pool[ind][eye].image : buffer_pool->image_pool[ind][eye].image,
                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-            transition_layout(blitCB, *vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
+//            transition_layout(blitCB, vkImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
 
             vkEndCommandBuffer(blitCB);
 
@@ -451,8 +453,8 @@ public:
             submitInfo.commandBufferCount = static_cast<uint32_t>(cmd_bufs.size());
             submitInfo.pCommandBuffers    = cmd_bufs.data();
 
-            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, nullptr);
-//            VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
+            vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, blitFence);
+            VK_ASSERT_SUCCESS(vkWaitForFences(dp->vk_device, 1, &blitFence, VK_TRUE, UINT64_MAX));
         }
 
 //        vkDestroyImage(dp->vk_device, vkImage, nullptr);
@@ -473,7 +475,7 @@ public:
                 blitTo(ind, eye, fd, false);
             };
 
-            auto ret = color_decoders[eye].dec_capture(blit_f);
+            auto ret = color_decoder.dec_capture(blit_f);
             assert(ret == 0 || ret == -EAGAIN);
 
             if (use_depth) {
@@ -482,7 +484,7 @@ public:
                     blitTo(ind, eye, fd, true);
                 };
 
-                auto ret = depth_decoders[eye].dec_capture(blit_f);
+                auto ret = depth_decoder.dec_capture(blit_f);
                 assert(ret == 0 || ret == -EAGAIN);
             }
         }
@@ -497,14 +499,13 @@ public:
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
 
         auto now       = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
-        auto network_latency   = decoded_frame_pose.predict_target_time - decoded_frame_pose.predict_computed_time;
+//        auto network_latency   = decoded_frame_pose.predict_target_time - decoded_frame_pose.predict_computed_time;
         auto pipeline_latency  = now - decoded_frame_pose.predict_target_time;
 //        log->info("pipeline latency (ms): {}", diff_ns.count() / 1000000.0);
 //        log->info("capture (microseconds): {}",
 //                  std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count());
 
         metrics["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
-        metrics["network"] += std::chrono::duration_cast<std::chrono::microseconds>(network_latency).count();
         metrics["pipeline"] += std::chrono::duration_cast<std::chrono::microseconds>(pipeline_latency).count();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
@@ -550,8 +551,8 @@ private:
     std::vector<std::array<VkCommandBuffer, 2>> layout_transition_start_cmd_bufs;
     std::vector<std::array<VkCommandBuffer, 2>> layout_transition_end_cmd_bufs;
 
-    std::array<mmapi_decoder, 2> color_decoders;
-    std::array<mmapi_decoder, 2> depth_decoders;
+    mmapi_decoder color_decoder;
+    mmapi_decoder depth_decoder;
 
     std::shared_ptr<const compressed_frame> received_frame;
     std::queue<fast_pose_type>               pose_queue;
@@ -629,7 +630,11 @@ private:
         auto diff_ns = timestamp - received_frame->sent_time;
 //        log->info("diff (now - sent_time) (ms): {}", diff_ns / 1000000.0);
         auto pose = received_frame->pose;
-        pose.predict_computed_time = time_point{std::chrono::duration<long, std::nano>{received_frame->sent_time}};
+        long network_latency = (long) timestamp - (long) received_frame->sent_time;
+        if (network_latency < 0) {
+            std::cout << " ------------------------------- FRAME FROM BEFORE " << network_latency <<std::endl;
+        }
+        metrics["network"] += network_latency / 1000000;
         pose.predict_target_time  = time_point{std::chrono::duration<long, std::nano>{timestamp}};
         {
             std::lock_guard<std::mutex> lock(pose_queue_mutex);

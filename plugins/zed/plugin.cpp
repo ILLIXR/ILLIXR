@@ -65,7 +65,7 @@ std::shared_ptr<Camera> start_camera() {
         zedm->close();
     }
 
-    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, EXPOSURE_TIME_PERCENT);
+    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, VIDEO_SETTINGS_VALUE_AUTO);
 
     return zedm;
 }

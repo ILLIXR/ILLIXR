@@ -32,6 +32,7 @@
 #include "NvUtils.h"
 
 #include <bitset>
+#include <cassert>
 #include <chrono>
 #include <errno.h>
 #include <fcntl.h>
@@ -486,6 +487,7 @@ void mmapi_decoder::query_and_set_capture() {
 
     /* Request (min + extra) buffers, export and map buffers. */
     if (ctx.capture_plane_mem_type == V4L2_MEMORY_MMAP) {
+        assert(false);
         /* Request, Query and export decoder capture plane buffers.
            Refer ioctl VIDIOC_REQBUFS, VIDIOC_QUERYBUF and VIDIOC_EXPBUF */
         ret =
@@ -743,6 +745,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
         if (!ctx.stats && !ctx.disable_rendering) {
             if (ctx.vkRendering) {
                 f(ctx.dst_dma_fd);
+//                f(dec_buffer->planes[0].fd);
 //                 ctx.vkRenderer->render(ctx.dst_dma_fd);
             } else {
                 ctx.eglRenderer->render(ctx.dst_dma_fd);

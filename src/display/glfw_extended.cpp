@@ -62,7 +62,7 @@ glfw_extended::glfw_extended() {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
-                              "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
+                              "ILLIXR Eyebuffer Window (Vulkan)", glfwGetPrimaryMonitor(), nullptr);
 }
 
 std::set<const char*> glfw_extended::get_required_device_extensions() {
