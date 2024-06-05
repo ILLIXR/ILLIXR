@@ -601,7 +601,7 @@ error:
  *
  * @param args : void arguments
  */
-int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
+int mmapi_decoder::dec_capture(int dst_fd) {
     NvVideoDecoder*   dec = ctx.dec;
     struct v4l2_event ev;
     int               ret;
@@ -726,7 +726,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
             dec_buffer->planes[0].fd = ctx.dmabuff_fd[v4l2_buf.index];
         /* Perform Blocklinear to PitchLinear conversion. */
 //        std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
-        ret = NvBufSurf::NvTransform(&transform_params, dec_buffer->planes[0].fd, ctx.dst_dma_fd);
+        ret = NvBufSurf::NvTransform(&transform_params, dec_buffer->planes[0].fd, dst_fd);
         if (ret == -1) {
             cerr << "Transform failed" << endl;
             throw std::runtime_error("Transform failed");
@@ -744,7 +744,7 @@ int mmapi_decoder::dec_capture(std::function<void(int)>& f) {
 
         if (!ctx.stats && !ctx.disable_rendering) {
             if (ctx.vkRendering) {
-                f(ctx.dst_dma_fd);
+//                f(ctx.dst_dma_fd);
 //                f(dec_buffer->planes[0].fd);
 //                 ctx.vkRenderer->render(ctx.dst_dma_fd);
             } else {
@@ -838,8 +838,6 @@ void mmapi_decoder::queue_output_plane_buffer(char* nalu_buffer, size_t nalu_siz
  * @param argv : Argument Vector
  */
 int mmapi_decoder::decoder_init() {
-//    log_level = 3;
-
     int                    ret          = 0;
     int                    error        = 0;
     uint32_t               current_file = 0;

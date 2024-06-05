@@ -126,7 +126,7 @@ public:
     mmapi_decoder() = default;
 
     int  decoder_init();
-    int  dec_capture(std::function<void(int)>& f);
+    int  dec_capture(int dst_fd);
     int  decoder_destroy();
     void queue_output_plane_buffer(char* nalu_buffer, size_t nalu_size);
     void query_and_set_capture();
@@ -143,5 +143,3 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> lastOutputTime  = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> lastCaptureTime = std::chrono::high_resolution_clock::now();
 };
-
-int decode_main_loop();

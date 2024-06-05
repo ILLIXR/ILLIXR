@@ -14,6 +14,7 @@ struct vk_image {
     VkImageView image_view;
     VmaAllocation allocation;
     VmaAllocationInfo allocation_info;
+    int fd;
 };
 
 template <typename T>

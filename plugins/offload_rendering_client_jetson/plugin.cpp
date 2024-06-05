@@ -137,10 +137,56 @@ public:
         }
     }
 
+    void mmapi_import_dmabuf(vulkan::vk_image& eye) {
+        NvBufSurfaceMapParams params {};
+        params.num_planes = 1;
+        params.gpuId = 0;
+        params.fd = eye.fd;
+        params.totalSize = eye.allocation_info.size;
+        params.memType = NVBUF_MEM_SURFACE_ARRAY;
+        params.layout = NVBUF_LAYOUT_BLOCK_LINEAR;
+        params.scanformat = NVBUF_DISPLAYSCANFORMAT_PROGRESSIVE;
+        params.colorFormat = NVBUF_COLOR_FORMAT_BGRA;
+        params.planes[0].width = eye.image_info.extent.width;
+        params.planes[0].height = eye.image_info.extent.height;
+
+//        VkSubresourceLayout layout;
+//        const VkImageSubresource subresource = {
+//            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+//            .mipLevel = 0,
+//            .arrayLayer = 0,
+//        };
+//        vkGetImageSubresourceLayout(dp->vk_device, eye.image, &subresource, &layout);
+        params.planes[0].pitch = eye.image_info.extent.width * 4;
+        params.planes[0].offset = 0;
+        params.planes[0].psize = eye.allocation_info.size;
+        params.planes[0].secondfieldoffset = 0;
+        params.planes[0].blockheightlog2 = 4;
+
+        NvBufSurface* surface;
+        auto ret = NvBufSurfaceImport(&surface, &params);
+        surface->numFilled = 1;
+        assert(ret == 0);
+    }
+
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override {
         this->buffer_pool = buffer_pool;
         vk_resources_init();
+
+        for (auto &image : buffer_pool->image_pool) {
+            for (auto &eye : image) {
+                mmapi_import_dmabuf(eye);
+            }
+        }
+
+        if (use_depth) {
+            for (auto &image : buffer_pool->depth_image_pool) {
+                for (auto &eye : image) {
+                    mmapi_import_dmabuf(eye);
+                }
+            }
+        }
 
         ready = true;
 
@@ -469,25 +515,24 @@ public:
         auto ind = buffer_pool->src_acquire_image();
 
         auto decode_end = std::chrono::high_resolution_clock::now();
-        for (auto eye = 0; eye < 2; eye++) {
-            std::function<void(int)> blit_f = [&, eye](int fd) {
-                vkResetFences(dp->vk_device, 1, &blitFence);
-                blitTo(ind, eye, fd, false);
-            };
 
-            auto ret = color_decoder.dec_capture(blit_f);
-            assert(ret == 0 || ret == -EAGAIN);
-
-            if (use_depth) {
-                std::function<void(int)> blit_f = [&, eye](int fd) {
-                    vkResetFences(dp->vk_device, 1, &blitFence);
-                    blitTo(ind, eye, fd, true);
-                };
-
-                auto ret = depth_decoder.dec_capture(blit_f);
+        std::thread color = std::thread([&] {
+            for (auto eye = 0; eye < 2; eye++) {
+                auto ret = color_decoder.dec_capture(buffer_pool->image_pool[ind][eye].fd);
                 assert(ret == 0 || ret == -EAGAIN);
             }
+        });
+        if (use_depth) {
+            std::thread depth = std::thread([&] {
+                for (auto eye = 0; eye < 2; eye++) {
+                    auto ret = depth_decoder.dec_capture(buffer_pool->depth_image_pool[ind][eye].fd);
+                    assert(ret == 0 || ret == -EAGAIN);
+                }
+            });
+            depth.join();
         }
+        color.join();
+
 
         auto transfer_end = std::chrono::high_resolution_clock::now();
         fast_pose_type decoded_frame_pose;

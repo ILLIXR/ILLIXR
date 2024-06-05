@@ -23,7 +23,8 @@
 
 using namespace ILLIXR;
 
-#define NATIVE_RENDERER_BUFFER_POOL_SIZE 3
+#define NATIVE_RENDERER_BUFFER_POOL_SIZE 10
+#define DMA_EXPORT                       1
 
 class native_renderer : public threadloop {
 public:
@@ -39,10 +40,10 @@ public:
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
         if (std::getenv("ILLIXR_SERVER_WIDTH") == nullptr || std::getenv("ILLIXR_SERVER_HEIGHT") == nullptr) {
-        	throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
+            throw std::runtime_error("Please define ILLIXR_SERVER_WIDTH and ILLIXR_SERVER_HEIGHT");
         }
-        
-        server_width = std::stoi(std::getenv("ILLIXR_SERVER_WIDTH"));
+
+        server_width  = std::stoi(std::getenv("ILLIXR_SERVER_WIDTH"));
         server_height = std::stoi(std::getenv("ILLIXR_SERVER_HEIGHT"));
     }
 
@@ -181,8 +182,8 @@ public:
         // TODO: for DRM, get vsync estimate
         auto next_swap = nullptr; // _m_vsync.get_ro_nullable();
         if (next_swap == nullptr) {
-            std::this_thread::sleep_for(display_params::period / 5.0 );
-//            printf("WARNING!!! no vsync estimate\n");
+            std::this_thread::sleep_for(display_params::period / 5.0);
+            // printf("WARNING!!! no vsync estimate\n");
         } /*else {
             // convert next_swap_time to std::chrono::time_point
             auto next_swap_time_point = std::chrono::time_point<std::chrono::system_clock>(
@@ -331,9 +332,9 @@ private:
                 clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
 
                 // Make sure the depth image is also cleared correctly
-                float clear_depth = rendering_params::reverse_z ? 0.0f : 1.0f;
-                clear_values[1].color                    = {{clear_depth, clear_depth, clear_depth, 1.0f}};
-                clear_values[2].depthStencil.depth       = clear_depth;
+                float clear_depth                  = rendering_params::reverse_z ? 0.0f : 1.0f;
+                clear_values[1].color              = {{clear_depth, clear_depth, clear_depth, 1.0f}};
+                clear_values[2].depthStencil.depth = clear_depth;
 
                 VkRenderPassBeginInfo render_pass_info{
                     VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,  // sType
@@ -431,8 +432,8 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_D32_SFLOAT,                // format
             {
-                server_width,                                       // width
-                server_height,                                          // height
+                server_width,                                                         // width
+                server_height,                                                        // height
                 1                                                                     // depth
             },                                                                        // extent
             1,                                                                        // mipLevels
@@ -468,7 +469,7 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            }                              // subresourceRange
+            } // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &depth_image.image_view))
@@ -482,16 +483,16 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                server_width, // width
-                server_height,    // height
-                1                               // depth
-            },                                  // extent
-            1,                                  // mipLevels
-            1,                                  // arrayLayers
-            VK_SAMPLE_COUNT_1_BIT,              // samples
-            VK_IMAGE_TILING_OPTIMAL,            // tiling
+                server_width,                                              // width
+                server_height,                                             // height
+                1                                                          // depth
+            },                                                             // extent
+            1,                                                             // mipLevels
+            1,                                                             // arrayLayers
+            VK_SAMPLE_COUNT_1_BIT,                                         // samples
+            DMA_EXPORT ? VK_IMAGE_TILING_LINEAR : VK_IMAGE_TILING_OPTIMAL, // tiling
             static_cast<VkImageUsageFlags>(
-                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
+                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (DMA_EXPORT ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
             {},                                                                                      // sharingMode
             0,                                                                                       // queueFamilyIndexCount
@@ -504,8 +505,9 @@ private:
                                            .usage = VMA_MEMORY_USAGE_GPU_ONLY};
         vmaFindMemoryTypeIndexForImageInfo(ds->vma_allocator, &sample_create_info, &alloc_info, &mem_type_index);
 
-        offscreen_export_mem_alloc_info.sType       = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
-        offscreen_export_mem_alloc_info.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+        offscreen_export_mem_alloc_info.sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO;
+        offscreen_export_mem_alloc_info.handleTypes =
+            DMA_EXPORT ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
 
         VmaPoolCreateInfo pool_create_info   = {};
         pool_create_info.memoryTypeIndex     = mem_type_index;
@@ -525,7 +527,8 @@ private:
         if (tw->is_external() || src->is_external()) {
             assert(offscreen_pool != VK_NULL_HANDLE);
             image.export_image_info = {VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO, nullptr,
-                                       VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
+                                       DMA_EXPORT ? VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
+                                                  : VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT};
         }
 
         std::vector<uint32_t> queue_family_indices;
@@ -546,16 +549,16 @@ private:
             VK_IMAGE_TYPE_2D,                                                               // imageType
             VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
             {
-                server_width, // width
-                server_height,    // height
-                1                               // depth
-            },                                  // extent
-            1,                                  // mipLevels
-            1,                                  // arrayLayers
-            VK_SAMPLE_COUNT_1_BIT,              // samples
-            VK_IMAGE_TILING_OPTIMAL,            // tiling
+                server_width,                                              // width
+                server_height,                                             // height
+                1                                                          // depth
+            },                                                             // extent
+            1,                                                             // mipLevels
+            1,                                                             // arrayLayers
+            VK_SAMPLE_COUNT_1_BIT,                                         // samples
+            DMA_EXPORT ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_OPTIMAL, // tiling
             static_cast<VkImageUsageFlags>(
-                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) |
+                (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (DMA_EXPORT ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
                 (tw->is_external() ? VK_IMAGE_USAGE_TRANSFER_SRC_BIT : VK_IMAGE_USAGE_SAMPLED_BIT)), // usage
             VK_SHARING_MODE_CONCURRENT,                                                              // sharingMode
             static_cast<uint32_t>(queue_family_indices.size()),                                      // queueFamilyIndexCount
@@ -588,10 +591,22 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            }                              // subresourceRange
+            } // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &image.image_view))
+
+        if (DMA_EXPORT) {
+            VkMemoryGetFdInfoKHR get_fd_info{VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR, // sType
+                                             nullptr,                                  // pNext
+                                             image.allocation_info.deviceMemory,       // memory
+                                             VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT};
+
+            auto GetMemoryFdKHR =
+                reinterpret_cast<PFN_vkGetMemoryFdKHR>(vkGetDeviceProcAddr(ds->vk_device, "vkGetMemoryFdKHR"));
+
+            VK_ASSERT_SUCCESS(GetMemoryFdKHR(ds->vk_device, &get_fd_info, &image.fd))
+        }
     }
 
     /**
@@ -748,12 +763,12 @@ private:
             0,                                 // flags
             ds->swapchain_image_format.format, // format
             VK_SAMPLE_COUNT_1_BIT,             // samples
-            VK_ATTACHMENT_LOAD_OP_DONT_CARE,        // loadOp
+            VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // loadOp
             VK_ATTACHMENT_STORE_OP_STORE,      // storeOp
             VK_ATTACHMENT_LOAD_OP_DONT_CARE,   // stencilLoadOp
             VK_ATTACHMENT_STORE_OP_DONT_CARE,  // stencilStoreOp
-            VK_IMAGE_LAYOUT_UNDEFINED, // initialLayout
-            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR  // finalLayout
+            VK_IMAGE_LAYOUT_UNDEFINED,         // initialLayout
+            VK_IMAGE_LAYOUT_PRESENT_SRC_KHR    // finalLayout
         }}};
 
         VkAttachmentReference color_attachment_ref{
@@ -762,10 +777,10 @@ private:
         };
 
         VkSubpassDependency dependency = {
-            .srcSubpass = VK_SUBPASS_EXTERNAL,
-            .dstSubpass = 0,
-            .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcSubpass    = VK_SUBPASS_EXTERNAL,
+            .dstSubpass    = 0,
+            .srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
             .srcAccessMask = 0,
             .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
         };
@@ -794,7 +809,7 @@ private:
             1,                                                   // subpassCount
             &subpass,                                            // pSubpasses
             1,                                                   // dependencyCount
-            &dependency                                              // pDependencies
+            &dependency                                          // pDependencies
         };
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &timewarp_pass))
@@ -807,8 +822,8 @@ private:
     const std::shared_ptr<vulkan::timewarp>         tw;
     const std::shared_ptr<vulkan::app>              src;
     const std::shared_ptr<const RelativeClock>      _m_clock;
-    
-    uint32_t server_width = 0;
+
+    uint32_t server_width  = 0;
     uint32_t server_height = 0;
 
     VkCommandPool   command_pool{};
