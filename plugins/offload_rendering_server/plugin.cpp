@@ -600,7 +600,7 @@ private:
 
         // Set zero latency
         codec_color_ctx->max_b_frames = 0;
-        codec_color_ctx->gop_size     = 0; // intra-only for now
+        codec_color_ctx->gop_size     = 15; // intra-only for now
         av_opt_set_int(codec_color_ctx->priv_data, "zerolatency", 1, 0);
         av_opt_set_int(codec_color_ctx->priv_data, "delay", 0, 0);
 
@@ -637,7 +637,7 @@ private:
 
             // Set zero latency
             codec_depth_ctx->max_b_frames = 0;
-            codec_depth_ctx->gop_size     = 0; // intra-only for now
+            codec_depth_ctx->gop_size     = 15; // intra-only for now
             av_opt_set_int(codec_depth_ctx->priv_data, "zerolatency", 1, 0);
             av_opt_set_int(codec_depth_ctx->priv_data, "delay", 0, 0);
 
