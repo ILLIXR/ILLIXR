@@ -553,9 +553,12 @@ private:
             encode_src_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
             encode_src_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             encode_src_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
-//            encode_src_color_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
-            encode_src_color_frames[eye]->colorspace    = AVCOL_SPC_RGB;
-//            encode_src_color_frames[eye]->color_trc     = AVCOL_TRC_LINEAR;
+
+            encode_src_color_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
+            encode_src_color_frames[eye]->colorspace    = AVCOL_SPC_BT709;
+            encode_src_color_frames[eye]->color_trc     = AVCOL_TRC_GAMMA22;
+            encode_src_color_frames[eye]->color_primaries = AVCOL_PRI_BT709;
+
             encode_src_color_frames[eye]->pict_type     = AV_PICTURE_TYPE_I;
             // encode_src_frames[eye]->buf[0] = av_buffer_alloc(1);
             auto ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_color_frames[eye], 0);
@@ -570,9 +573,12 @@ private:
                 encode_src_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_frame_ctx);
                 encode_src_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
                 encode_src_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
-//                encode_src_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
-                encode_src_depth_frames[eye]->colorspace    = AVCOL_SPC_RGB;
-//                encode_src_depth_frames[eye]->color_trc     = AVCOL_TRC_LINEAR;
+
+                encode_src_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
+                encode_src_depth_frames[eye]->colorspace    = AVCOL_SPC_BT709;
+                encode_src_depth_frames[eye]->color_trc     = AVCOL_TRC_GAMMA22;
+                encode_src_depth_frames[eye]->color_primaries = AVCOL_PRI_BT709;
+
                 encode_src_depth_frames[eye]->pict_type     = AV_PICTURE_TYPE_I;
                 ret = av_hwframe_get_buffer(cuda_frame_ctx, encode_src_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
@@ -602,9 +608,11 @@ private:
         codec_color_ctx->time_base     = {1, framerate}; // 90 fps
         codec_color_ctx->framerate     = {framerate, 1};
         codec_color_ctx->bit_rate      = bitrate;
-//        codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
-        codec_color_ctx->colorspace    = AVCOL_SPC_RGB;
-//        codec_color_ctx->color_trc     = AVCOL_TRC_LINEAR;
+
+        codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
+        codec_color_ctx->colorspace    = AVCOL_SPC_BT709;
+        codec_color_ctx->color_trc     = AVCOL_TRC_GAMMA22;
+        codec_color_ctx->color_primaries = AVCOL_PRI_BT709;
 
         // Set zero latency
         codec_color_ctx->max_b_frames = 0;
@@ -638,9 +646,11 @@ private:
             codec_depth_ctx->time_base     = {1, framerate}; // 90 fps
             codec_depth_ctx->framerate     = {framerate, 1};
             codec_depth_ctx->bit_rate      = bitrate; // 10 Mbps
-//            codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
-            codec_depth_ctx->colorspace    = AVCOL_SPC_RGB;
-//            codec_color_ctx->color_trc     = AVCOL_TRC_LINEAR;
+
+            codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
+            codec_depth_ctx->colorspace    = AVCOL_SPC_BT709;
+            codec_depth_ctx->color_trc     = AVCOL_TRC_GAMMA22;
+            codec_depth_ctx->color_primaries = AVCOL_PRI_BT709;
 
             // Set lossless encoding using AVOptions
 //            av_opt_set_int(codec_depth_ctx->priv_data, "lossless", 1, 0);
