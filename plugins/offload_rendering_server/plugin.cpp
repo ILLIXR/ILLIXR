@@ -599,6 +599,7 @@ private:
         codec_color_ctx->bit_rate      = bitrate;
         codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
         codec_color_ctx->colorspace    = AVCOL_SPC_BT709;
+        codec_color_ctx->color_trc     = AVCOL_TRC_LINEAR;
 
         // Set zero latency
         codec_color_ctx->max_b_frames = 0;
@@ -634,6 +635,7 @@ private:
             codec_depth_ctx->bit_rate      = bitrate; // 10 Mbps
             codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
             codec_depth_ctx->colorspace    = AVCOL_SPC_BT709;
+            codec_color_ctx->color_trc     = AVCOL_TRC_LINEAR;
 
             // Set lossless encoding using AVOptions
 //            av_opt_set_int(codec_depth_ctx->priv_data, "lossless", 1, 0);
