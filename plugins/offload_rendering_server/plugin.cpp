@@ -556,7 +556,7 @@ private:
 
             encode_src_color_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
             encode_src_color_frames[eye]->colorspace    = AVCOL_SPC_BT709;
-            encode_src_color_frames[eye]->color_trc     = AVCOL_TRC_GAMMA22;
+            encode_src_color_frames[eye]->color_trc     = AVCOL_TRC_BT709;
             encode_src_color_frames[eye]->color_primaries = AVCOL_PRI_BT709;
 
             encode_src_color_frames[eye]->pict_type     = AV_PICTURE_TYPE_I;
@@ -576,7 +576,7 @@ private:
 
                 encode_src_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
                 encode_src_depth_frames[eye]->colorspace    = AVCOL_SPC_BT709;
-                encode_src_depth_frames[eye]->color_trc     = AVCOL_TRC_GAMMA22;
+                encode_src_depth_frames[eye]->color_trc     = AVCOL_TRC_BT709;
                 encode_src_depth_frames[eye]->color_primaries = AVCOL_PRI_BT709;
 
                 encode_src_depth_frames[eye]->pict_type     = AV_PICTURE_TYPE_I;
@@ -611,7 +611,7 @@ private:
 
         codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
         codec_color_ctx->colorspace    = AVCOL_SPC_BT709;
-        codec_color_ctx->color_trc     = AVCOL_TRC_GAMMA22;
+        codec_color_ctx->color_trc     = AVCOL_TRC_BT709;
         codec_color_ctx->color_primaries = AVCOL_PRI_BT709;
 
         // Set zero latency
@@ -649,7 +649,7 @@ private:
 
             codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
             codec_depth_ctx->colorspace    = AVCOL_SPC_BT709;
-            codec_depth_ctx->color_trc     = AVCOL_TRC_GAMMA22;
+            codec_depth_ctx->color_trc     = AVCOL_TRC_BT709;
             codec_depth_ctx->color_primaries = AVCOL_PRI_BT709;
 
             // Set lossless encoding using AVOptions
