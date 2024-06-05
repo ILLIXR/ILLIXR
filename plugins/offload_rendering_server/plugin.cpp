@@ -597,8 +597,6 @@ private:
         codec_color_ctx->time_base     = {1, framerate}; // 90 fps
         codec_color_ctx->framerate     = {framerate, 1};
         codec_color_ctx->bit_rate      = bitrate;
-        codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
-        codec_color_ctx->colorspace    = AVCOL_SPC_BT709;
 
         // Set zero latency
         codec_color_ctx->max_b_frames = 0;
