@@ -21,7 +21,7 @@ extern "C" {
 #include <cstdlib>
 #include <set>
 
-#define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "h264"
+#define OFFLOAD_RENDERING_FFMPEG_DECODER_NAME "hevc"
 
 using namespace ILLIXR;
 using namespace ILLIXR::vulkan::ffmpeg_utils;

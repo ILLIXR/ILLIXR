@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <shared_mutex>
 
+#define LIGHTHOUSE
+
 using namespace ILLIXR;
 
 class pose_prediction_impl : public pose_prediction {
@@ -73,7 +75,9 @@ public:
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (imu_raw == nullptr) {
 #ifndef NDEBUG
+    #ifndef LIGHTHOUSE
             spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
+    #endif
 #endif
             // No imu_raw, return slow_pose
             return fast_pose_type{
@@ -113,10 +117,7 @@ public:
         // Several timestamps are logged:
         //       - the prediction compute time (time when this prediction was computed, i.e., now)
         //       - the prediction target (the time that was requested for this pose.)
-        return fast_pose_type{
-            predicted_pose,
-            _m_clock->now(),
-            future_timestamp};
+        return fast_pose_type{predicted_pose, _m_clock->now(), future_timestamp};
     }
 
     void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
@@ -139,6 +140,9 @@ public:
     }
 
     bool fast_pose_reliable() const override {
+#ifdef LIGHTHOUSE
+        return true;
+#endif
         return _m_slow_pose.get_ro_nullable() && _m_imu_raw.get_ro_nullable();
         /*
           SLAM takes some time to initialize, so initially fast_pose
@@ -171,6 +175,9 @@ public:
     // Correct the orientation of the pose due to the lopsided IMU in the
     // current Dataset we are using (EuRoC)
     pose_type correct_pose(const pose_type& pose) const override {
+#ifdef LIGHTHOUSE
+        return pose;
+#endif
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below

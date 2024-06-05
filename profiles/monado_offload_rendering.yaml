@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: offload_rendering_server,offload_rendering_client,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,zed,gtsam_integrator
+plugins: offload_rendering_server,offload_rendering_client,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,zed,gtsam_integrator,pose_lookup,lighthouse
 use_monado: true
 build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
 build_type: Release
