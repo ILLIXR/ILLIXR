@@ -495,40 +495,43 @@ void mmapi_decoder::query_and_set_capture() {
         TEST_ERROR(ret < 0, "Error in decoder capture plane setup", error);
     } else if (ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF) {
         /* Set colorformats for relevant colorspaces. */
-        switch (format.fmt.pix_mp.colorspace) {
-        case V4L2_COLORSPACE_SMPTE170M:
-            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
-                cout << "Decoder colorspace ITU-R BT.601 with standard range luma (16-235)" << endl;
-                pix_format = NVBUF_COLOR_FORMAT_NV12;
-            } else {
-                cout << "Decoder colorspace ITU-R BT.601 with extended range luma (0-255)" << endl;
-                pix_format = NVBUF_COLOR_FORMAT_NV12_ER;
-            }
-            break;
-        case V4L2_COLORSPACE_REC709:
-            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
-                cout << "Decoder colorspace ITU-R BT.709 with standard range luma (16-235)" << endl;
-                pix_format = NVBUF_COLOR_FORMAT_NV12_709;
-            } else {
-                cout << "Decoder colorspace ITU-R BT.709 with extended range luma (0-255)" << endl;
-                pix_format = NVBUF_COLOR_FORMAT_NV12_709_ER;
-            }
-            break;
-        case V4L2_COLORSPACE_BT2020: {
-            cout << "Decoder colorspace ITU-R BT.2020" << endl;
-            pix_format = NVBUF_COLOR_FORMAT_NV12_2020;
-        } break;
-        default:
-            cout << "supported colorspace details not available, use default" << endl;
-            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
-                cout << "Decoder colorspace ITU-R BT.601 with standard range luma (16-235)" << endl;
-                pix_format = NVBUF_COLOR_FORMAT_NV12;
-            } else {
-                cout << "Decoder colorspace ITU-R BT.601 with extended range luma (0-255)" << endl;
-                pix_format = NVBUF_COLOR_FORMAT_NV12_ER;
-            }
-            break;
-        }
+//        switch (format.fmt.pix_mp.colorspace) {
+//        case V4L2_COLORSPACE_SMPTE170M:
+//            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
+//                cout << "Decoder colorspace ITU-R BT.601 with standard range luma (16-235)" << endl;
+//                pix_format = NVBUF_COLOR_FORMAT_NV12;
+//            } else {
+//                cout << "Decoder colorspace ITU-R BT.601 with extended range luma (0-255)" << endl;
+//                pix_format = NVBUF_COLOR_FORMAT_NV12_ER;
+//            }
+//            break;
+//        case V4L2_COLORSPACE_REC709:
+//            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
+//                cout << "Decoder colorspace ITU-R BT.709 with standard range luma (16-235)" << endl;
+//                pix_format = NVBUF_COLOR_FORMAT_NV12_709;
+//            } else {
+//                cout << "Decoder colorspace ITU-R BT.709 with extended range luma (0-255)" << endl;
+//                pix_format = NVBUF_COLOR_FORMAT_NV12_709_ER;
+//            }
+//            break;
+//        case V4L2_COLORSPACE_BT2020: {
+//            cout << "Decoder colorspace ITU-R BT.2020" << endl;
+//            pix_format = NVBUF_COLOR_FORMAT_NV12_2020;
+//        } break;
+//        default:
+//            cout << "supported colorspace details not available, use default" << endl;
+//            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
+//                cout << "Decoder colorspace ITU-R BT.601 with standard range luma (16-235)" << endl;
+//                pix_format = NVBUF_COLOR_FORMAT_NV12;
+//            } else {
+//                cout << "Decoder colorspace ITU-R BT.601 with extended range luma (0-255)" << endl;
+//                pix_format = NVBUF_COLOR_FORMAT_NV12_ER;
+//            }
+//            break;
+//        }
+
+        cout << "Decoder colorspace ITU-R BT.709 with extended range luma (0-255)" << endl;
+        pix_format = NVBUF_COLOR_FORMAT_NV12_709_ER;
 
         ctx.numCapBuffers = min_dec_capture_buffers + ctx.extra_cap_plane_buffer;
 
@@ -809,7 +812,7 @@ static void set_defaults(context_t* ctx) {
     ctx->blocking_mode          = 1;
     ctx->vkRendering            = true;
 
-    ctx->decoder_pixfmt = V4L2_PIX_FMT_H264; // default to H264
+    ctx->decoder_pixfmt = V4L2_PIX_FMT_H265; // default to H264
     ctx->input_nalu     = false;
     pthread_mutex_init(&ctx->queue_lock, NULL);
     pthread_cond_init(&ctx->queue_cond, NULL);

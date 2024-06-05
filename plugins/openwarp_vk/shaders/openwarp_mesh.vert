@@ -96,7 +96,7 @@ void main( void )
 	if(outlier - z > edgeTolerance){
 		z = outlier;
 	}
-	z = (z > 0.04045) ? pow((z + 0.055) / 1.055, 2.4) : z / 12.0;
+	z = (z > 0.04045) ? pow((z + 0.055) / 1.055, 2.4) : z / 12.92;
 	z = max(0.01, z);
 #else
 	float outlier = min(              											
