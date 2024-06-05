@@ -630,6 +630,7 @@ private:
             codec_depth_ctx->time_base     = {1, framerate}; // 90 fps
             codec_depth_ctx->framerate     = {framerate, 1};
             codec_depth_ctx->bit_rate      = bitrate; // 10 Mbps
+            codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
 
             // Set lossless encoding using AVOptions
 //            av_opt_set_int(codec_depth_ctx->priv_data, "lossless", 1, 0);
