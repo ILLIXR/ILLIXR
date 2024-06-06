@@ -127,6 +127,12 @@ public:
 
         openwarp_width = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
         openwarp_height = std::stoi(std::getenv("ILLIXR_OPENWARP_HEIGHT"));
+
+        using_godot = std::getenv("ILLIXR_USING_GODOT") != nullptr && std::stoi(std::getenv("ILLIXR_USING_GODOT"));
+        if (using_godot)
+            std::cout << "Using Godot projection matrices!" << std::endl;
+        else
+            std::cout << "Godot not enabled - defaulting to Unreal projection matrices and reverse Z" << std::endl;
     }
 
     // For objects that only need to be created a single time and do not need to change.
@@ -276,6 +282,8 @@ public:
         VkDeviceSize offsets = 0;
         VkClearValue clear_colors[2];
         clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        // Fortunately for us, Godot swapped to reverse Z as of Godot 4.3...
         clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
         // First render OpenWarp offscreen for a distortion correction pass later
@@ -766,12 +774,18 @@ private:
 
         // Hacked in projection matrix from Unreal and hardcoded values
         for (int eye = 0; eye < 2; eye++) {
-            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
-
             // The server can render at a larger FoV, so the inverse should account for that.
-            // The FOVs provided here should match the ones provided to Monado.
+            // The FOVs provided to the server should match the ones provided to Monado.
             Eigen::Matrix4f server_fov;
-            math_util::unreal_projection(&server_fov, server_params::fov_left[eye], server_params::fov_right[eye], server_params::fov_up[eye], server_params::fov_down[eye]);
+            if (using_godot) {
+                math_util::godot_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+                math_util::godot_projection(&server_fov, server_params::fov_left[eye], server_params::fov_right[eye], server_params::fov_up[eye], server_params::fov_down[eye]);
+            }
+            else {
+                math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+                math_util::unreal_projection(&server_fov, server_params::fov_left[eye], server_params::fov_right[eye], server_params::fov_up[eye], server_params::fov_down[eye]);
+            }
+            
             invProjection[eye] = server_fov.inverse();
         }
 
@@ -1242,7 +1256,7 @@ private:
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
         depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable                       = VK_TRUE;
-        depthStencil.depthWriteEnable                       = VK_TRUE;
+        depthStencil.depthWriteEnable                      = VK_TRUE;
         depthStencil.minDepthBounds                        = 0.0f;
         depthStencil.maxDepthBounds                        = 1.0f;
         depthStencil.depthCompareOp                        = rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
@@ -1446,6 +1460,8 @@ private:
 
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
+
+    bool using_godot = false;
 
     bool compare_images = false;
     std::vector<pose_type> fixed_poses;

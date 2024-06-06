@@ -115,5 +115,43 @@ namespace math_util {
         (*result)(3, 2) = -1;
         (*result)(3, 3) = 0;
     }
+
+    void godot_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right,
+                                                   const float fov_up, const float fov_down) {
+        // Godot's default far and near planes are 4000m and 0.05m respectively.
+        // https://github.com/godotengine/godot/blob/e96ad5af98547df71b50c4c4695ac348638113e0/modules/openxr/openxr_util.cpp#L97
+        // The Vulkan implementation passes in GRAPHICS_OPENGL for some reason...
+        constexpr float near_z = 0.05;
+        constexpr float far_z = 4000;
+        constexpr float offset_z = near_z;
+
+        const float angle_left = tanf(static_cast<float>(fov_left));
+        const float angle_right = tanf(static_cast<float>(fov_right));
+        const float angle_up = tanf(static_cast<float>(fov_up));
+        const float angle_down = tanf(static_cast<float>(fov_down));
+
+        const float angle_width = angle_right - angle_left;
+        const float angle_height = angle_up - angle_down;
+
+        (*result)(0, 0) = 2 / angle_width;
+        (*result)(0, 1) = 0;
+        (*result)(0, 2) = (angle_right + angle_left) / angle_width;
+        (*result)(0, 3) = 0;
+
+        (*result)(1, 0) = 0;
+        (*result)(1, 1) = 2 / angle_height;
+        (*result)(1, 2) = (angle_up + angle_down) / angle_height;
+        (*result)(1, 3) = 0;
+
+        (*result)(2, 0) = 0;
+        (*result)(2, 1) = 0;
+        (*result)(2, 2) = -(far_z + offset_z) / (far_z - near_z);
+        (*result)(2, 3) = -(far_z * (near_z + offset_z)) / (far_z - near_z);
+
+        (*result)(3, 0) = 0;
+        (*result)(3, 1) = 0;
+        (*result)(3, 2) = -1;
+        (*result)(3, 3) = 0;
+    }
 } // namespace math_util
 } // namespace ILLIXR
