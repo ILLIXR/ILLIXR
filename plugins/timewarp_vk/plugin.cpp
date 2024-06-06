@@ -233,6 +233,9 @@ public:
 
         if (left) frame_count++;
 
+        VkClearValue clear_color;
+        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+
         // Timewarp handles distortion correction at the same time
         VkRenderPassBeginInfo tw_render_pass_info{};
         tw_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -242,8 +245,8 @@ public:
         tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width);
         tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
         tw_render_pass_info.framebuffer = framebuffer;
-        tw_render_pass_info.clearValueCount = 0;
-        tw_render_pass_info.pClearValues = nullptr;
+        tw_render_pass_info.clearValueCount = 1;
+        tw_render_pass_info.pClearValues = &clear_color;
 
         VkViewport tw_viewport{};
         tw_viewport.x = 0;
