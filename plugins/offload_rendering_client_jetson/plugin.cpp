@@ -284,6 +284,13 @@ public:
                 // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
 
                 auto decode_start = std::chrono::high_resolution_clock::now();
+                if (!resolutionRequeue) {
+                    color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
+                    if (use_depth) {
+                        depth_decoder.queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
+                    }
+                    resolutionRequeue = true;
+                }
                 // receive packets
                 color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
                 color_decoder.queue_output_plane_buffer(frame->right_color_nalu,
@@ -585,6 +592,7 @@ private:
     std::shared_ptr<pose_prediction>               pp;
     std::atomic<bool>                              ready   = false;
     std::atomic<bool>                              running = true;
+    bool resolutionRequeue = false;
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     bool                                                 use_depth      = false;
@@ -677,7 +685,7 @@ private:
         auto pose = received_frame->pose;
         long network_latency = (long) timestamp - (long) received_frame->sent_time;
         if (network_latency < 0) {
-            std::cout << " ------------------------------- FRAME FROM BEFORE " << network_latency <<std::endl;
+//            std::cout << " ------------------------------- FRAME FROM BEFORE " << network_latency <<std::endl;
         }
         metrics["network"] += network_latency / 1000000;
         pose.predict_target_time  = time_point{std::chrono::duration<long, std::nano>{timestamp}};
