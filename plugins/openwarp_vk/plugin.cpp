@@ -234,15 +234,16 @@ public:
     void update_uniforms(const pose_type& render_pose) override {
         num_update_uniforms_calls++;
 
-        Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose);
 
         pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
         if (compare_images) {
             latest_pose = fixed_pose;
         }
-        Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose);
 
         for (int eye = 0; eye < 2; eye++) {
+            Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose, eye);
+            Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose, eye);
+
             Eigen::Matrix4f warpVP = basicProjection[eye] * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
 
             auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
@@ -1415,9 +1416,10 @@ private:
     }
 
     /* Compute a view matrix with rotation and position */
-    static Eigen::Matrix4f create_camera_matrix(const pose_type& pose) {
+    static Eigen::Matrix4f create_camera_matrix(const pose_type& pose, int eye) {
         Eigen::Matrix4f cameraMatrix = Eigen::Matrix4f::Identity();
-        cameraMatrix.block<3,1>(0,3) = pose.position;
+        auto ipd = display_params::ipd / 2.0f;
+        cameraMatrix.block<3,1>(0,3) = pose.position + pose.orientation * Eigen::Vector3f(eye == 0 ? -ipd : ipd, 0, 0);
         cameraMatrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
         return cameraMatrix;
     }
