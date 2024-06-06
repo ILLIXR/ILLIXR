@@ -1252,7 +1252,7 @@ private:
         colorBlending.attachmentCount                     = 1;
         colorBlending.pAttachments                        = &colorBlendAttachment;
 
-        // disable depth testing
+        // enable depth testing
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
         depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable                       = VK_TRUE;

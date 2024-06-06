@@ -120,7 +120,7 @@ namespace math_util {
                                                    const float fov_up, const float fov_down) {
         // Godot's default far and near planes are 4000m and 0.05m respectively.
         // https://github.com/godotengine/godot/blob/e96ad5af98547df71b50c4c4695ac348638113e0/modules/openxr/openxr_util.cpp#L97
-        // The Vulkan implementation passes in GRAPHICS_OPENGL for some reason...
+        // The Vulkan implementation passes in GRAPHICS_OPENGL for some reason..
         constexpr float near_z = 0.05;
         constexpr float far_z = 4000;
         constexpr float offset_z = near_z;
@@ -133,25 +133,53 @@ namespace math_util {
         const float angle_width = angle_right - angle_left;
         const float angle_height = angle_up - angle_down;
 
-        (*result)(0, 0) = 2 / angle_width;
-        (*result)(0, 1) = 0;
-        (*result)(0, 2) = (angle_right + angle_left) / angle_width;
-        (*result)(0, 3) = 0;
+        Eigen::Matrix4f openxr_matrix;
 
-        (*result)(1, 0) = 0;
-        (*result)(1, 1) = 2 / angle_height;
-        (*result)(1, 2) = (angle_up + angle_down) / angle_height;
-        (*result)(1, 3) = 0;
+        openxr_matrix(0, 0) = 2 / angle_width;
+        openxr_matrix(0, 1) = 0;
+        openxr_matrix(0, 2) = (angle_right + angle_left) / angle_width;
+        openxr_matrix(0, 3) = 0;
 
-        (*result)(2, 0) = 0;
-        (*result)(2, 1) = 0;
-        (*result)(2, 2) = -(far_z + offset_z) / (far_z - near_z);
-        (*result)(2, 3) = -(far_z * (near_z + offset_z)) / (far_z - near_z);
+        openxr_matrix(1, 0) = 0;
+        openxr_matrix(1, 1) = 2 / angle_height;
+        openxr_matrix(1, 2) = (angle_up + angle_down) / angle_height;
+        openxr_matrix(1, 3) = 0;
 
-        (*result)(3, 0) = 0;
-        (*result)(3, 1) = 0;
-        (*result)(3, 2) = -1;
-        (*result)(3, 3) = 0;
+        openxr_matrix(2, 0) = 0;
+        openxr_matrix(2, 1) = 0;
+        openxr_matrix(2, 2) = -(far_z + offset_z) / (far_z - near_z);
+        openxr_matrix(2, 3) = -(far_z * (near_z + offset_z)) / (far_z - near_z);
+
+        openxr_matrix(3, 0) = 0;
+        openxr_matrix(3, 1) = 0;
+        openxr_matrix(3, 2) = -1;
+        openxr_matrix(3, 3) = 0;
+
+        // Godot then remaps the matrix... 
+        // https://github.com/Khasehemwy/godot/blob/d950f5f83819240771aebb602bfdd4875363edce/core/math/projection.cpp#L722
+        Eigen::Matrix4f remap_z;
+
+        remap_z(0, 0) = 1;
+        remap_z(0, 1) = 0;
+        remap_z(0, 2) = 0;
+        remap_z(0, 3) = 0;
+
+        remap_z(1, 0) = 0;
+        remap_z(1, 1) = 1;
+        remap_z(1, 2) = 0;
+        remap_z(1, 3) = 0;
+
+        remap_z(2, 0) = 0;
+        remap_z(2, 1) = 0;
+        remap_z(2, 2) = -0.5;
+        remap_z(2, 3) = 0;
+
+        remap_z(3, 0) = 0;
+        remap_z(3, 1) = 0;
+        remap_z(3, 2) = 0.5;
+        remap_z(3, 3) = 1;
+
+        (*result) = remap_z * openxr_matrix;
     }
 } // namespace math_util
 } // namespace ILLIXR
