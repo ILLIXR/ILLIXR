@@ -116,6 +116,7 @@ namespace math_util {
         (*result)(3, 3) = 0;
     }
 
+    // TODO: this is just a complicated version to achieve reverse Z with a finite far plane.
     void godot_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right,
                                                    const float fov_up, const float fov_down) {
         // Godot's default far and near planes are 4000m and 0.05m respectively.
@@ -172,11 +173,11 @@ namespace math_util {
         remap_z(2, 0) = 0;
         remap_z(2, 1) = 0;
         remap_z(2, 2) = -0.5;
-        remap_z(2, 3) = 0;
+        remap_z(2, 3) = 0.5;
 
         remap_z(3, 0) = 0;
         remap_z(3, 1) = 0;
-        remap_z(3, 2) = 0.5;
+        remap_z(3, 2) = 0;
         remap_z(3, 3) = 1;
 
         (*result) = remap_z * openxr_matrix;
