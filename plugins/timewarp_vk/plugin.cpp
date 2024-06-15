@@ -240,26 +240,26 @@ public:
         VkRenderPassBeginInfo tw_render_pass_info{};
         tw_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         tw_render_pass_info.renderPass = timewarp_render_pass;
-        tw_render_pass_info.renderArea.offset.x = 0;
+        tw_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
         tw_render_pass_info.renderArea.offset.y = 0;
-        tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width);
+        tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
         tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
         tw_render_pass_info.framebuffer = framebuffer;
         tw_render_pass_info.clearValueCount = 1;
         tw_render_pass_info.pClearValues = &clear_color;
 
         VkViewport tw_viewport{};
-        tw_viewport.x = 0;
+        tw_viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
 	    tw_viewport.y = 0;
-	    tw_viewport.width = static_cast<uint32_t>(swapchain_width);
+	    tw_viewport.width = static_cast<uint32_t>(swapchain_width / 2);
 	    tw_viewport.height = static_cast<uint32_t>(swapchain_height);
 	    tw_viewport.minDepth = 0.0f;
 	    tw_viewport.maxDepth = 1.0f;
 
         VkRect2D tw_scissor{};
-        tw_scissor.offset.x = 0;
+        tw_scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
         tw_scissor.offset.y = 0; 
-        tw_scissor.extent.width = static_cast<uint32_t>(swapchain_width);
+        tw_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
         tw_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
 
         vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
@@ -808,7 +808,7 @@ private:
                     // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
                     // hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + eye + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
+                        (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide)));
 
                     // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
