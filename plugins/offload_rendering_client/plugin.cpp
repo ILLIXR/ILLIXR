@@ -95,8 +95,8 @@ public:
 
             // -200 ms
             // Timepoint: 25003 ms; Pose Position: -0.912881 0.729179 -0.527451; Pose Orientiation: 0.0463598 -0.0647321 0.0649133 0.994709
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
-                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
+            fixed_pose = pose_type(time_point(), Eigen::Vector3f(0, 0, 0),
+                                   Eigen::Quaternionf(1, 0, 0, 0));
         } else {
             log->debug("Cliont sending normal poses (not comparing images)");
         }
@@ -876,6 +876,10 @@ private:
             decode_out_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
             decode_out_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
             auto ret                              = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_color_frames[eye], 0);
+            decode_out_color_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
+            decode_out_color_frames[eye]->colorspace    = AVCOL_SPC_BT709;
+            decode_out_color_frames[eye]->color_trc     = AVCOL_TRC_BT709;
+            decode_out_color_frames[eye]->color_primaries = AVCOL_PRI_BT709;
             AV_ASSERT_SUCCESS(ret);
 
             decode_converted_color_frames[eye]                = av_frame_alloc();
@@ -893,6 +897,9 @@ private:
                 decode_out_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
                 decode_out_depth_frames[eye]->height        = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
                 decode_out_depth_frames[eye]->color_range   = AVCOL_RANGE_JPEG;
+                decode_out_depth_frames[eye]->colorspace    = AVCOL_SPC_BT709;
+                decode_out_depth_frames[eye]->color_trc     = AVCOL_TRC_BT709;
+                decode_out_depth_frames[eye]->color_primaries = AVCOL_PRI_BT709;
                 ret                              = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
 
@@ -936,7 +943,10 @@ private:
         codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
         codec_color_ctx->framerate     = {0, 1};
         codec_color_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
-        codec_color_ctx->color_range = AVCOL_RANGE_JPEG;
+        codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
+        codec_color_ctx->colorspace    = AVCOL_SPC_BT709;
+        codec_color_ctx->color_trc     = AVCOL_TRC_BT709;
+        codec_color_ctx->color_primaries = AVCOL_PRI_BT709;
         // codec_ctx->flags2 |= AV_CODEC_FLAG2_CHUNKS;
 
         // Set zero latency
@@ -971,6 +981,10 @@ private:
             codec_depth_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
             codec_depth_ctx->framerate     = {0, 1};
             codec_depth_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
+            codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
+            codec_depth_ctx->colorspace    = AVCOL_SPC_BT709;
+            codec_depth_ctx->color_trc     = AVCOL_TRC_BT709;
+            codec_depth_ctx->color_primaries = AVCOL_PRI_BT709;
             // codec_ctx->flags2 |= AV_CODEC_FLAG2_CHUNKS;
 
             // Set zero latency
