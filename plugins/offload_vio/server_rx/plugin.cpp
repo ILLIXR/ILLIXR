@@ -52,10 +52,9 @@ public:
 #ifndef NDEBUG
             spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
 #endif
-            read_socket = new TCPSocket( socket.socket_accept() ); /* Blocking operation, waiting for client to connect */
+            read_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}",
-                                     read_socket->peer_address());
+            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket->peer_address());
 #endif
         } else {
             auto        now        = timestamp();
