@@ -1,6 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -18,14 +18,15 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
-        , server_addr(SERVER_IP, SERVER_PORT_2) {
+        , server_ip(SERVER_IP)
+        , server_port(SERVER_PORT_2) {
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
         pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
         switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
         _m_pose.put(std::move(datum_pose));
 
-        socket.set_reuseaddr();
-        socket.bind(Address(CLIENT_IP, CLIENT_PORT_2));
+        socket.socket_set_reuseaddr();
+        socket.socket_bind(CLIENT_IP, CLIENT_PORT_2);
         socket.enable_no_delay();
         is_socket_connected = false;
     }
@@ -33,11 +34,11 @@ public:
     skip_option _p_should_skip() override {
         if (!is_socket_connected) {
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.device_rx]: Connecting to {}", server_addr.str(":"));
+            spdlog::get(name)->debug("[offload_vio.device_rx]: Connecting to {}:{}", server_ip, server_port);
 #endif
-            socket.connect(server_addr);
+            socket.socket_connect(server_ip, server_port);
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.device_rx]: Connected to {}", server_addr.str(":"));
+            spdlog::get(name)->debug("[offload_vio.device_rx]: Connected to {}:{}", server_ip, server_port);
 #endif
             is_socket_connected = true;
         }
@@ -48,7 +49,7 @@ public:
         if (is_socket_connected) {
             auto        now        = timestamp();
             std::string delimitter = "END!";
-            std::string recv_data  = socket.read(); /* Blocking operation, wait for the data to come */
+            std::string recv_data  = socket.read_data(); /* Blocking operation, wait for the data to come */
             if (!recv_data.empty()) {
                 buffer_str                          = buffer_str + recv_data;
                 std::string::size_type end_position = buffer_str.find(delimitter);
@@ -123,7 +124,8 @@ private:
 
     TCPSocket   socket;
     bool        is_socket_connected;
-    Address     server_addr;
+    std::string server_ip;
+    int         server_port;
     std::string buffer_str;
 };
 
