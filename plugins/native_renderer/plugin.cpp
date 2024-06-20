@@ -122,6 +122,7 @@ public:
         auto fast_pose = pp->get_fast_pose();
         if (!src->is_external()) {
             // Get the current fast pose and update the uniforms
+            log->debug("Updating uniforms");
             src->update_uniforms(fast_pose.pose);
 
             VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))

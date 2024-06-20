@@ -61,8 +61,10 @@ public:
         auto bitrate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_BITRATE");
         if (bitrate_env == nullptr) {
             bitrate = OFFLOAD_RENDERING_BITRATE;
+        } else {
+            bitrate = std::stol(bitrate_env);
         }
-        bitrate = std::stol(bitrate_env);
+
         if (bitrate <= 0) {
             throw std::runtime_error{"Invalid bitrate value"};
         }
@@ -71,8 +73,9 @@ public:
         auto framerate_env = std::getenv("ILLIXR_OFFLOAD_RENDERING_FRAMERATE");
         if (framerate_env == nullptr) {
             framerate = 144;
+        } else {
+            framerate = std::stoi(framerate_env);
         }
-        framerate = std::stoi(framerate_env);
         if (framerate <= 0) {
             throw std::runtime_error{"Invalid framerate value"};
         }
@@ -608,6 +611,7 @@ private:
         codec_color_ctx->time_base     = {1, framerate}; // 90 fps
         codec_color_ctx->framerate     = {framerate, 1};
         codec_color_ctx->bit_rate      = bitrate;
+        codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
 
         codec_color_ctx->color_range   = AVCOL_RANGE_JPEG;
         codec_color_ctx->colorspace    = AVCOL_SPC_BT709;
@@ -646,6 +650,7 @@ private:
             codec_depth_ctx->time_base     = {1, framerate}; // 90 fps
             codec_depth_ctx->framerate     = {framerate, 1};
             codec_depth_ctx->bit_rate      = bitrate; // 10 Mbps
+//            codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
 
             codec_depth_ctx->color_range   = AVCOL_RANGE_JPEG;
             codec_depth_ctx->colorspace    = AVCOL_SPC_BT709;
