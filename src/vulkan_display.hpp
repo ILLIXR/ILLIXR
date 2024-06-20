@@ -168,9 +168,12 @@ private:
         }
 
         // enable validation layers
-        const std::vector<const char*> validation_layers = {
+        std::vector<const char*> validation_layers = {
             "VK_LAYER_KHRONOS_validation"
         };
+
+        if (std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"))) 
+            validation_layers.push_back("VK_LAYER_LUNARG_screenshot");
 
         if (enable_validation_layers) {
             create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());

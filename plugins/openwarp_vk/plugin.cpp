@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <future>
+#include <fstream>
 #include <iostream>
 #include <mutex>
 #include <stack>
@@ -126,6 +127,12 @@ public:
 
         openwarp_width = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
         openwarp_height = std::stoi(std::getenv("ILLIXR_OPENWARP_HEIGHT"));
+
+        using_godot = std::getenv("ILLIXR_USING_GODOT") != nullptr && std::stoi(std::getenv("ILLIXR_USING_GODOT"));
+        if (using_godot)
+            std::cout << "Using Godot projection matrices!" << std::endl;
+        else
+            std::cout << "Godot not enabled - defaulting to Unreal projection matrices and reverse Z" << std::endl;
     }
 
     // For objects that only need to be created a single time and do not need to change.
@@ -192,16 +199,25 @@ public:
 
         compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
         if (compare_images) {
-            // Constant pose as recorded from the GT. Note that the Quaternion constructor takes the w component first.
-            // Always try warping back to the 0ms psoe.
+            // Note that the Quaternion constructor takes the w component first.
+            assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
+            std::string pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
+            std::cout << "Reading file from " << pose_filename << std::endl;
 
-            // 0 ms
-            // Timepoint: 25205 ms; Pose Position: -0.891115 0.732361 -0.536178; Pose Orientiation: 0.0519684 -0.113465 0.0679164 0.989855
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.891115, 0.732361, -0.536178),
-                                   Eigen::Quaternionf(0.989855, 0.0519684, -0.113465, 0.0679164));
+            std::ifstream pose_file(pose_filename);
+            std::string line;
+            while (std::getline(pose_file, line)) {
+                float p_x, p_y, p_z;
+                float q_x, q_y, q_z, q_w;
+                std::stringstream ss(line);
+                ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
 
-//            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
-//                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
+                fixed_poses.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
+            }
+
+            std::cout << "Read " << fixed_poses.size() << "poses" << std::endl;
+
+            pose_file.close();
         }
     }
 
@@ -237,7 +253,12 @@ public:
 
         pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
         if (compare_images) {
-            latest_pose = fixed_pose;
+            // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
+            // (this should be reflected in the screenshot layer)
+            int pose_index = std::clamp(static_cast<int>(frame_count - 150) / 100, 0, static_cast<int>(fixed_poses.size()) - 1);
+            latest_pose = fixed_poses[pose_index];
+
+            std::cout << "Using pose:" << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z() << std::endl;
         }
 
         for (int eye = 0; eye < 2; eye++) {
@@ -255,10 +276,14 @@ public:
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
-        
+
+        if (left) frame_count++;
+
         VkDeviceSize offsets = 0;
         VkClearValue clear_colors[2];
         clear_colors[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        // Fortunately for us, Godot swapped to reverse Z as of Godot 4.3...
         clear_colors[1].depthStencil.depth = rendering_params::reverse_z ? 0.0 : 1.0;
 
         // First render OpenWarp offscreen for a distortion correction pass later
@@ -751,9 +776,6 @@ private:
         for (int eye = 0; eye < 2; eye++) {
             math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
 
-            // The server can render at a larger FoV, so the inverse should account for that.
-            // The FOVs provided here should match the ones provided to Monado.
-            Eigen::Matrix4f server_fov;
             float scale = 1.0f;
             if (std::getenv("ILLIXR_OVERSCAN") != nullptr) {
                 scale = std::stof(std::getenv("ILLIXR_OVERSCAN"));
@@ -771,7 +793,18 @@ private:
             tan_up = std::tan(fov_up * scale);
             tan_down = std::tan(fov_down * scale);
 
-            math_util::unreal_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
+            // The server can render at a larger FoV, so the inverse should account for that.
+            // The FOVs provided to the server should match the ones provided to Monado.
+            Eigen::Matrix4f server_fov;
+            if (using_godot) {
+                math_util::godot_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+                math_util::godot_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
+            }
+            else {
+                math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+                math_util::unreal_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
+            }
+
             invProjection[eye] = server_fov.inverse();
         }
 
@@ -790,7 +823,7 @@ private:
 
                     // flip the y coordinates for Vulkan texture
                     distortion_vertices[eye * num_distortion_vertices + index].pos.y =
-                        // (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
+                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
                         (-1.0f +
                          2.0f * (static_cast<float>(hmd_info.eyeTilesHigh - y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
                              (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
@@ -853,7 +886,7 @@ private:
                 size_t index = y * (width + 1) + x;
 
                 openwarp_vertices[index].uv.x = ((float) x / width);
-                openwarp_vertices[index].uv.y = (((height - (float) y) / height));
+                openwarp_vertices[index].uv.y = ((float) y / height);
 
                 if (x == 0) {
                     openwarp_vertices[index].uv.x = -0.5f;
@@ -863,10 +896,10 @@ private:
                 }
 
                 if (y == 0) {
-                    openwarp_vertices[index].uv.y = 1.5f;
+                    openwarp_vertices[index].uv.y = -0.5f;
                 }
                 if (y == height) {
-                    openwarp_vertices[index].uv.y = -0.5f;
+                    openwarp_vertices[index].uv.y = 1.5f;
                 }
             }
         }
@@ -1238,11 +1271,11 @@ private:
         colorBlending.attachmentCount                     = 1;
         colorBlending.pAttachments                        = &colorBlendAttachment;
 
-        // disable depth testing
+        // enable depth testing
         VkPipelineDepthStencilStateCreateInfo depthStencil = {};
         depthStencil.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable                       = VK_TRUE;
-        depthStencil.depthWriteEnable                       = VK_TRUE;
+        depthStencil.depthWriteEnable                      = VK_TRUE;
         depthStencil.minDepthBounds                        = 0.0f;
         depthStencil.maxDepthBounds                        = 1.0f;
         depthStencil.depthCompareOp                        = rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
@@ -1448,8 +1481,11 @@ private:
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
 
+    bool using_godot = false;
+
     bool compare_images = false;
-    pose_type fixed_pose;
+    std::vector<pose_type> fixed_poses;
+    uint64_t frame_count = 0;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
