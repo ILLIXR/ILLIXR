@@ -270,40 +270,7 @@ public:
             // auto file = fopen("left.h264", "wb");
             auto frame = received_frame;
             while (running.load()) {
-                push_pose();
-                if (!network_receive()) {
-                    return;
-                }
-                frame = received_frame;
-
-                // system timestamp
-//                auto timestamp = std::chrono::high_resolution_clock::now();
-//                auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
-                // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
-
-                // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
-
-                auto decode_start = std::chrono::high_resolution_clock::now();
-                if (!resolutionRequeue) {
-                    color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
-                    if (use_depth) {
-                        depth_decoder.queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
-                    }
-                    resolutionRequeue = true;
-                }
-                // receive packets
-                color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
-                color_decoder.queue_output_plane_buffer(frame->right_color_nalu,
-                                                            frame->right_color_nalu_size);
-
-                // write to file
-                // fwrite(received_frame->left_color_nalu, 1, received_frame->left_color_nalu_size, file);
-                // fflush(file);
-
-                if (use_depth) {
-                    depth_decoder.queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
-                    depth_decoder.queue_output_plane_buffer(frame->right_depth_nalu, frame->right_depth_nalu_size);
-                }
+                queue_bytestream();
             }
         });
     }
@@ -514,6 +481,43 @@ public:
 //        vkFreeMemory(dp->vk_device, importedImageMemory, nullptr);
     }
 
+    void queue_bytestream() {
+        push_pose();
+        if (!network_receive()) {
+            return;
+        }
+        auto frame = received_frame;
+
+        // system timestamp
+        //                auto timestamp = std::chrono::high_resolution_clock::now();
+        //                auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
+        // log->info("diff (ms): {}", diff.time_since_epoch().count() / 1000000.0);
+
+        // log->debug("Position: {}, {}, {}", pose.position[0], pose.position[1], pose.position[2]);
+
+        auto decode_start = std::chrono::high_resolution_clock::now();
+//        if (!resolutionRequeue) {
+//            color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
+//            if (use_depth) {
+//                depth_decoder.queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
+//            }
+//            resolutionRequeue = true;
+//        }
+        // receive packets
+        color_decoder.queue_output_plane_buffer(frame->left_color_nalu, frame->left_color_nalu_size);
+        color_decoder.queue_output_plane_buffer(frame->right_color_nalu,
+                                                frame->right_color_nalu_size);
+
+        // write to file
+        // fwrite(received_frame->left_color_nalu, 1, received_frame->left_color_nalu_size, file);
+        // fflush(file);
+
+        if (use_depth) {
+            depth_decoder.queue_output_plane_buffer(frame->left_depth_nalu, frame->left_depth_nalu_size);
+            depth_decoder.queue_output_plane_buffer(frame->right_depth_nalu, frame->right_depth_nalu_size);
+        }
+    }
+
     void _p_one_iteration() override {
         if (!ready) {
             return;
@@ -526,6 +530,9 @@ public:
         std::thread color = std::thread([&] {
             for (auto eye = 0; eye < 2; eye++) {
                 auto ret = color_decoder.dec_capture(buffer_pool->image_pool[ind][eye].fd);
+                while (ret == -EAGAIN) {
+                    ret = color_decoder.dec_capture(buffer_pool->image_pool[ind][eye].fd);
+                }
                 assert(ret == 0 || ret == -EAGAIN);
             }
         });
@@ -533,6 +540,9 @@ public:
             std::thread depth = std::thread([&] {
                 for (auto eye = 0; eye < 2; eye++) {
                     auto ret = depth_decoder.dec_capture(buffer_pool->depth_image_pool[ind][eye].fd);
+                    while (ret == -EAGAIN) {
+                        ret = depth_decoder.dec_capture(buffer_pool->depth_image_pool[ind][eye].fd);
+                    }
                     assert(ret == 0 || ret == -EAGAIN);
                 }
             });

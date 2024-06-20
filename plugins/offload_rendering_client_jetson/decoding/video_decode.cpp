@@ -793,7 +793,7 @@ static void set_defaults(context_t* ctx) {
     ctx->window_y               = 0;
     ctx->out_pixfmt             = 2;
     ctx->fps                    = 144;
-    ctx->output_plane_mem_type  = V4L2_MEMORY_MMAP;
+    ctx->output_plane_mem_type  = V4L2_MEMORY_USERPTR;
     ctx->capture_plane_mem_type = V4L2_MEMORY_DMABUF;
     ctx->vp9_file_header_flag   = 0;
     ctx->vp8_file_header_flag   = 0;
