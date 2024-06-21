@@ -823,7 +823,7 @@ private:
 
                     // flip the y coordinates for Vulkan texture
                     distortion_vertices[eye * num_distortion_vertices + index].pos.y =
-                        (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
+                        // (input_texture_vulkan_coordinates ? -1.0f : 1.0f) *
                         (-1.0f +
                          2.0f * (static_cast<float>(hmd_info.eyeTilesHigh - y) / static_cast<float>(hmd_info.eyeTilesHigh)) *
                              (static_cast<float>(hmd_info.eyeTilesHigh * hmd_info.tilePixelsHigh) /
@@ -886,7 +886,7 @@ private:
                 size_t index = y * (width + 1) + x;
 
                 openwarp_vertices[index].uv.x = ((float) x / width);
-                openwarp_vertices[index].uv.y = ((float) y / height);
+                openwarp_vertices[index].uv.y = (height - (float) y) / height;
 
                 if (x == 0) {
                     openwarp_vertices[index].uv.x = -0.5f;
@@ -896,10 +896,10 @@ private:
                 }
 
                 if (y == 0) {
-                    openwarp_vertices[index].uv.y = -0.5f;
+                    openwarp_vertices[index].uv.y = 1.5f;
                 }
                 if (y == height) {
-                    openwarp_vertices[index].uv.y = 1.5f;
+                    openwarp_vertices[index].uv.y = -0.5f;
                 }
             }
         }

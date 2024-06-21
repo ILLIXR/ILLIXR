@@ -45,7 +45,7 @@ layout (push_constant) uniform Eye {
 } eye;
 
 // Constant for now
-float bleedRadius = 0.005f;
+float bleedRadius = 0.002f;
 //float bleedRadius = 0.01f;
 float edgeTolerance = 0.01f;
 
@@ -54,6 +54,7 @@ layout (location = 1) in vec2 in_uv;
 
 layout (location = 0) out vec4 worldspace;
 layout (location = 1) out vec2 warpUv;
+//layout (location = 2) out vec2 warpUvFlat;
 
 // Define this macro if the OpenXR application is using reverse depth
 #define REVERSE_Z
@@ -120,12 +121,12 @@ void main( void )
 	z = min(0.99, z);
 #endif
 
-	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, in_uv.y * 2.0 - 1.0, z, 1.0);
+	vec4 clipSpacePosition = vec4(in_uv.x * 2.0 - 1.0, 1.0 - in_uv.y * 2.0, z, 1.0);
 	vec4 frag_viewspace = warp_matrices.u_renderInverseP[eye.index] * clipSpacePosition;
 	frag_viewspace /= frag_viewspace.w;
 	vec4 frag_worldspace = (warp_matrices.u_renderInverseV[eye.index] * frag_viewspace);
-	 vec4 result = warp_matrices.u_warpVP[eye.index] * frag_worldspace;
-	 result /= abs(result.w);
+	vec4 result = warp_matrices.u_warpVP[eye.index] * frag_worldspace;
+	result /= abs(result.w);
 
 	// Uncomment the line below to disable warping.
     // result = vec4(in_uv.x * 2.0 - 1.0, in_uv.y * 2.0 - 1.0, 0.5, 1.0);
@@ -134,4 +135,5 @@ void main( void )
 
 	worldspace = frag_worldspace;
 	warpUv = in_uv;
+	//warpUvFlat = in_uv;
 }
