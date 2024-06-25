@@ -181,9 +181,9 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-            spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
-            spdlog::get("illixr")->debug("start");
-            spdlog::get("illixr")->set_pattern("%+");
+            //spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
+            //spdlog::get("illixr")->debug("start");
+            //spdlog::get("illixr")->set_pattern("%+");
 #endif
         }
 
