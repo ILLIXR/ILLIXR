@@ -11,32 +11,51 @@ set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp
-        imgui/imgui.cpp
-        imgui/imgui_demo.cpp
-        imgui/imgui_draw.cpp
-        imgui/imgui_impl_glfw.cpp
-        imgui/imgui_impl_opengl3.cpp
-        imgui/imgui_widgets.cpp
-        imgui/imconfig.h
-        imgui/imgui.h
-        imgui/imgui_impl_glfw.h
-        imgui/imgui_impl_opengl3.h
-        imgui/imgui_internal.h
-        imgui/imstb_rectpack.h
-        imgui/imstb_textedit.h
-        imgui/imstb_truetype.h
-        ../../include/illixr/shaders/demo_shader.hpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/opencv_data_types.hpp
-        ../../include/illixr/error_util.hpp
-        ../../include/illixr/gl_util/obj.hpp
-        ../../include/illixr/global_module_defs.hpp
-        ../../include/illixr/math_util.hpp
-        ../../include/illixr/pose_prediction.hpp
-        ../../include/illixr/shader_util.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/threadloop.hpp
-        )
+    imgui/imgui.cpp
+    imgui/imgui_demo.cpp
+    imgui/imgui_draw.cpp
+    imgui/imgui_impl_glfw.cpp
+    imgui/imgui_impl_opengl3.cpp
+    imgui/imgui_widgets.cpp
+    imgui/imconfig.h
+    imgui/imgui.h
+    imgui/imgui_impl_glfw.h
+    imgui/imgui_impl_opengl3.h
+    imgui/imgui_internal.h
+    imgui/imstb_rectpack.h
+    imgui/imstb_textedit.h
+    imgui/imstb_truetype.h
+    ../../include/illixr/data_format.hpp
+    ../../include/illixr/error_util.hpp
+    ../../include/illixr/frame_info.hpp
+    ../../include/illixr/gen_guid.hpp
+    ../../include/illixr/global_module_defs.hpp
+    ../../include/illixr/managed_thread.hpp
+    ../../include/illixr/math_util.hpp
+    ../../include/illixr/opencv_data_types.hpp
+    ../../include/illixr/phonebook.hpp
+    ../../include/illixr/plugin.hpp
+    ../../include/illixr/pose_prediction.hpp
+    ../../include/illixr/relative_clock.hpp
+    ../../include/illixr/shader_util.hpp
+    ../../include/illixr/switchboard.hpp
+    ../../include/illixr/stoplight.hpp
+    ../../include/illixr/concurrentqueue/blockingconcurrentqueue.hpp
+    ../../include/illixr/concurrentqueue/concurrentqueue.hpp
+    ../../include/illixr/concurrentqueue/lightweightsemaphore.hpp
+    ../../include/illixr/cpu_timer/clock.hpp
+    ../../include/illixr/cpu_timer/cpu_timer.hpp
+    ../../include/illixr/cpu_timer/cpu_timer_internal.hpp
+    ../../include/illixr/cpu_timer/compiler_specific.hpp
+    ../../include/illixr/cpu_timer/global_state.hpp
+    ../../include/illixr/cpu_timer/os_specific.hpp
+    ../../include/illixr/cpu_timer/type_eraser.hpp
+    ../../include/illixr/cpu_timer/util.hpp
+    ../../include/illixr/gl_util/obj.hpp
+    ../../include/illixr/gl_util/lib/stb_image.h
+    ../../include/illixr/gl_util/lib/tiny_obj_loader.h
+    ../../include/illixr/shaders/demo_shader.hpp
+)
 
 add_library(${PLUGIN_NAME} SHARED ${DEBUGVIEW_SOURCES})
 

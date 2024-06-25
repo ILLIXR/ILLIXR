@@ -1,6 +1,7 @@
 #include "illixr/plugin.hpp"
 
 #include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "third_party/filter.h"
