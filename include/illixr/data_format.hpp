@@ -4,7 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <GL/gl.h>
 #include <utility>
-//#undef Complex // For 'Complex' conflict
+// #undef Complex // For 'Complex' conflict
 
 #include "relative_clock.hpp"
 #include "switchboard.hpp"
