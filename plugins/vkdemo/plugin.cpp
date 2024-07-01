@@ -511,7 +511,7 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            }                              // subresourceRange
+            } // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &textures[i].image_view))

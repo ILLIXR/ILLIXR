@@ -33,14 +33,14 @@ public:
     /**
      * @brief Polls window events using whatever the windowing backend is.
      */
-    virtual void poll_window_events(){};
+    virtual void poll_window_events() {};
 
     // addtionally required for native display
 
     /**
      * @brief Recreates the swapchain when an outdated or nonoptimal swapchain is detected.
      */
-    virtual void recreate_swapchain(){};
+    virtual void recreate_swapchain() {};
 
     void*                    window;
     VkSurfaceKHR             vk_surface;

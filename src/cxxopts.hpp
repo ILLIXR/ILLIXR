@@ -606,11 +606,11 @@ namespace values {
 
             IntegerDesc desc;
             desc.negative = match[1];
-            desc.base = match[2];
-            desc.value = match[3];
+            desc.base     = match[2];
+            desc.value    = match[3];
 
             if (match.length(4) > 0) {
-                desc.base = match[5];
+                desc.base  = match[5];
                 desc.value = "0";
                 return desc;
             }
@@ -641,7 +641,7 @@ namespace values {
             OptionNames split_names;
 
             constexpr int use_non_matches{-1};
-            auto token_iterator =
+            auto          token_iterator =
                 std::sregex_token_iterator(text.begin(), text.end(), option_specifier_separator, use_non_matches);
             std::copy(token_iterator, std::sregex_token_iterator(), std::back_inserter(split_names));
             return split_names;
@@ -654,9 +654,9 @@ namespace values {
 
             ArguDesc argu_desc;
             if (matched) {
-                argu_desc.arg_name = result[1].str();
+                argu_desc.arg_name  = result[1].str();
                 argu_desc.set_value = result[2].length() > 0;
-                argu_desc.value = result[3].str();
+                argu_desc.value     = result[3].str();
                 if (result[4].length() > 0) {
                     argu_desc.grouping = true;
                     argu_desc.arg_name = result[4].str();
