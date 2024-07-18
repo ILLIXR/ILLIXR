@@ -57,7 +57,6 @@ public:
             spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket->peer_address());
 #endif
         } else {
-            auto        now        = timestamp();
             std::string delimitter = "EEND!";
             std::string recv_data  = read_socket->read_data(); /* Blocking operation, wait for the data to come */
             buffer_str             = buffer_str + recv_data;

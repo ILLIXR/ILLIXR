@@ -47,7 +47,6 @@ public:
 
     void _p_one_iteration() override {
         if (is_socket_connected) {
-            auto        now        = timestamp();
             std::string delimitter = "END!";
             std::string recv_data  = socket.read_data(); /* Blocking operation, wait for the data to come */
             if (!recv_data.empty()) {
