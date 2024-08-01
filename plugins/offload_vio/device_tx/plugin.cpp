@@ -1,7 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
-#include "illixr/network/timestamp.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/stoplight.hpp"
@@ -36,12 +35,12 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
-        , server_addr(SERVER_IP, SERVER_PORT_1) {
+        , server_ip(SERVER_IP)
+        , server_port(SERVER_PORT_1) {
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
+        socket.socket_set_reuseaddr();
+        socket.socket_bind(CLIENT_IP, CLIENT_PORT_1);
         socket.enable_no_delay();
-        initial_timestamp();
 
         std::srand(std::time(0));
     }
@@ -66,11 +65,11 @@ public:
         encoder->init();
 
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
+        spdlog::get(name)->debug("[offload_vio.device_tx] TEST: Connecting to {}:{}", server_ip, server_port);
 #endif
-        socket.connect(server_addr);
+        socket.socket_connect(server_ip, server_port);
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] Connected to {}", server_addr.str(":"));
+        spdlog::get(name)->debug("[offload_vio.device_tx] Connected to {}:{}", server_ip, server_port);
 #endif
 
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
@@ -97,7 +96,7 @@ public:
         std::string data_to_be_sent = data_buffer->SerializeAsString();
         std::string delimitter      = "EEND!";
 
-        socket.write(data_to_be_sent + delimitter);
+        socket.write_data(data_to_be_sent + delimitter);
 
         frame_id++;
         delete data_buffer;
@@ -209,8 +208,9 @@ private:
     const std::shared_ptr<Stoplight>       _m_stoplight;
     switchboard::buffered_reader<cam_type> _m_cam;
 
-    TCPSocket socket;
-    Address   server_addr;
+    TCPSocket   socket;
+    std::string server_ip;
+    int         server_port;
 };
 
 PLUGIN_MAIN(offload_writer)
