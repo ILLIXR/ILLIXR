@@ -1,7 +1,7 @@
 # This file was auto generated, take caution if manually editing.
-plugins: pose_lookup,offload_rendering_client,timewarp_vk,native_renderer
+plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,offload_rendering_client,timewarp_vk,native_renderer,tcp_network_backend
 build_flags: -DILLIXR_VULKAN
-visualizers: ""
+visualizers: openvins
 vulkan: true
 enable_offload: false
 enable_alignment: false

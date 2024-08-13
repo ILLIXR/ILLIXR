@@ -52,6 +52,7 @@ public:
             client = false;
             std::thread([this]() { start_server(); }).detach();
 
+            // The "ready" will be true anyway once the client is started
             while (!ready) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }

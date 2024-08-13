@@ -610,6 +610,7 @@ private:
 
         auto now =
             time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        // Are these right?
         current_pose.predict_target_time   = now;
         current_pose.predict_computed_time = now;
         pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
@@ -645,7 +646,7 @@ private:
 
         if (use_depth) {
             decode_src_depth_packets[0] = frame->left_depth;
-        decode_src_depth_packets[1] = frame->right_depth;
+            decode_src_depth_packets[1] = frame->right_depth;
         }
         // log->info("Received frame {}", frame_count);
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();

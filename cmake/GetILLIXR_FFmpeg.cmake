@@ -8,11 +8,11 @@ set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_
 
 get_external(Vulkan)
 
-pkg_check_modules(libavcodec_illixr QUIET libavcodec_illixr)
-pkg_check_modules(libavdevice_illixr QUIET libavdevice_illixr)
-pkg_check_modules(libavformat_illixr QUIET libavformat_illixr)
-pkg_check_modules(libavutil_illixr QUIET libavutil_illixr)
-pkg_check_modules(libswscale_illixr QUIET libswscale_illixr)
+pkg_check_modules(libavcodec_illixr libavcodec_illixr)
+pkg_check_modules(libavdevice_illixr libavdevice_illixr)
+pkg_check_modules(libavformat_illixr libavformat_illixr)
+pkg_check_modules(libavutil_illixr libavutil_illixr)
+pkg_check_modules(libswscale_illixr libswscale_illixr)
 
 set(FINALIZE_INSTALL "#!/usr/bin/env sh
 
