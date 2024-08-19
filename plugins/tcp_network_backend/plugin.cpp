@@ -138,7 +138,7 @@ public:
             return;
         }
 
-//        std::cout << "Sending to peer: " << topic_name << std::endl;
+        std::cout << "Sending to peer: " << topic_name << std::endl;
         send_to_peer(topic_name, std::string(message.begin(), message.end()));
     }
 

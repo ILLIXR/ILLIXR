@@ -614,6 +614,7 @@ private:
         current_pose.predict_target_time   = now;
         current_pose.predict_computed_time = now;
         pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
+        log->info("Pushed one pose over the network");
     }
 
     bool network_receive() {
