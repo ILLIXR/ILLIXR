@@ -92,14 +92,13 @@ public:
         return plugin_logger;
     }
 
-    void spd_add_file_sink(const std::string& file_name, const std::string& extension) {
+    void spd_add_file_sink(const std::string& file_name, const std::string& extension, const std::string& log_level) {
         if (!plugin_logger) {
             throw std::runtime_error("Logger not found");
         }
 
         auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + file_name + "." + extension, true);
-        // file_sink->set_level(spdlog::level::from_str(log_level));
-        // file_sink->set_pattern("%Y-%m-%d %H:%M:%S,%l,%v");  // Set CSV format
+        file_sink->set_level(spdlog::level::from_str(log_level));
         plugin_logger->sinks().push_back(file_sink);
         size_t sink_count = plugin_logger->sinks().size();
         plugin_logger->sinks()[sink_count-1]->set_pattern("%v");
