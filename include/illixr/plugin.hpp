@@ -58,7 +58,7 @@ public:
      *
      * Concrete plugins are responsible for initializing their specific logger and sinks.
      */
-    virtual void stop() { }
+    virtual void stop() { if (plugin_logger) plugin_logger->flush(); }
 
     plugin(std::string name_, phonebook* pb_)
         : name{std::move(name_)}
@@ -86,10 +86,23 @@ public:
         auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks.push_back(file_sink);
         sinks.push_back(console_sink);
-        auto plugin_logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
+        plugin_logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
         plugin_logger->set_level(spdlog::level::from_str(log_level));
         spdlog::register_logger(plugin_logger);
         return plugin_logger;
+    }
+
+    void spd_add_file_sink(const std::string& file_name, const std::string& extension) {
+        if (!plugin_logger) {
+            throw std::runtime_error("Logger not found");
+        }
+
+        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + file_name + "." + extension, true);
+        // file_sink->set_level(spdlog::level::from_str(log_level));
+        // file_sink->set_pattern("%Y-%m-%d %H:%M:%S,%l,%v");  // Set CSV format
+        plugin_logger->sinks().push_back(file_sink);
+        size_t sink_count = plugin_logger->sinks().size();
+        plugin_logger->sinks()[sink_count-1]->set_pattern("%v");
     }
 
 protected:
@@ -98,6 +111,7 @@ protected:
     const std::shared_ptr<record_logger> record_logger_;
     const std::shared_ptr<gen_guid>      gen_guid_;
     const std::size_t                    id;
+    std::shared_ptr<spdlog::logger>      plugin_logger;
 };
 
 #define PLUGIN_MAIN(plugin_class)                           \
