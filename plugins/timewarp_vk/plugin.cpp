@@ -85,6 +85,14 @@ public:
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
+    ~timewarp_vk()
+    {
+        if (dump_rendered_and_warped_poses)
+        {
+            pose_dump_file.close();
+        }
+    }
+
     void initialize() {
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
@@ -164,6 +172,12 @@ public:
             
             pose_file.close();
         }
+
+        dump_rendered_and_warped_poses = std::getenv("ILLIXR_DUMP_RENDERED_AND_WARPED_POSES") != nullptr;
+        if (dump_rendered_and_warped_poses)
+        {
+            pose_dump_file.open(std::string(std::getenv("ILLIXR_DUMP_RENDERED_AND_WARPED_POSES")));
+        }
     }
 
     void partial_destroy() {
@@ -202,6 +216,21 @@ public:
 
             std::cout << "At frame " << frame_count << std::endl;
             std::cout << "Using pose " << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z();
+        }
+
+        if (dump_rendered_and_warped_poses)
+        {
+            // Dump the pose that was used for rendering.
+            pose_dump_file << "R " << render_pose.position.x() << " " << render_pose.position.y() << " " << render_pose.position.z() << " "
+                                   << render_pose.orientation.x() << " " << render_pose.orientation.y() << " " << render_pose.orientation.z() << " " << render_pose.orientation.w() << std::endl;
+            
+            // Next dump the pose that the frame is being warped to.
+            pose_dump_file << "W " << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z() << " " 
+                                   << latest_pose.orientation.x() << " " << latest_pose.orientation.y() << " " << latest_pose.orientation.z() << " " << latest_pose.orientation.w() << std::endl;
+
+            // Leave a newline in between.
+            pose_dump_file << "\n";
+            pose_dump_file.flush(); 
         }
 
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
@@ -584,6 +613,8 @@ private:
                 bufferInfo.offset                 = 0;
                 bufferInfo.range                  = sizeof(UniformBufferObject);
 
+                std::cout << buffer_pool->image_pool[i][eye].image_view << std::endl;
+
                 VkDescriptorImageInfo imageInfo = {};
                 imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView =
@@ -873,6 +904,9 @@ private:
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
+
+    bool dump_rendered_and_warped_poses = false;
+    std::ofstream pose_dump_file;
 
     bool compare_images = false;
     std::vector<pose_type> fixed_poses;
