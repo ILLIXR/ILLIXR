@@ -17,6 +17,16 @@ struct cam_type : switchboard::event {
         , img1{std::move(_img1)} { }
 };
 
+struct frame_type : switchboard::event {
+    time_point time;
+    cv::Mat    img;
+
+    frame_type(time_point _time, cv::Mat _img)
+        : time{_time}
+        , img{std::move(_img)} {}
+
+};
+
 struct rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
     cv::Mat                     rgb;
