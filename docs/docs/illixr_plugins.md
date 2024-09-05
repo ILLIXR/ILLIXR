@@ -135,6 +135,28 @@ ILLIXR supports additional plugins to replace some of the default plugins.
     Topic details:
     -   *Publishes* `pose_position` on `fast_pose` topic.
 
+-   [`hand_tracking`][43]:
+    Detects and identifies hands in an image, currently CPU based with plans to allow GPU based calculations in the future. The output from this plugin can be used to track hand movements and recognize hand gestures.
+
+    Topic details:
+    
+    -   Synchronously *reads/subscribes* to `frame_type` on `webcam` topic. Future development will allow for more input types, dynamically selected at runtime.
+    -   *Publishes* `ht_frame` on `ht` topic.
+
+-   [`hand_tracking.viewer`][43]:
+    Reads the output of the `hand_tracking` plugin and displays the results on the screen. This is most useful for debugging. The capabilites of this plugin will be merged into the `debugview` plugin in the future.
+
+    Topic details:
+
+    -   Synchronously *reads/subscribes* to `ht_frame` on `ht` topic.
+
+-   [`hand_tracking.webcam`][44]:
+    Uses a webcam to capture images for input into the `hand_tracking` plugin. This plugin is useful for debugging and is not meant to be used in a production pipeline.
+
+    Topic details:
+
+    -   *Publishes* `frame_type` on `webcam` topic.
+
 -   [`hologram`][9]:
     Adapts the eyebuffer for use on a holographic display.
     By default, this plugin is disabled, since an NVIDIA GPU is currently required.
@@ -238,3 +260,5 @@ See [Getting Started][31] for more information on adding plugins to a [_profile_
 [40]:   glossary.md#profile
 [41]:   glossary.md#plugin
 [42]:	plugin_README/README_fauxpose.md
+[43]:   plugin_README/README_hand_tracking.md#viewer
+[44]:   plugin_README/README_hand_tracking.md#webcam
