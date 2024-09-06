@@ -37,7 +37,7 @@ The plugin published an `ht_frame` which contains the following data
 
 Each vector of hand points contains 21 items which refencence the following (from https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)
 
-[!hand_landmark_map](../images/hand_landmark_reference.png)
+![hand_landmark_map](../images/hand_landmark_reference.png)
 
 The `landmark_points` `enum` can be used to reference the individual points in each vector
 
