@@ -16,7 +16,10 @@ endif()
 
 #add_definitions(-Wall -Wextra -Werror)
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GTSAM_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(${PLUGIN_NAME} ${GTSAM_LIBRARIES} ${Eigen3_LIBRARIES} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${GTSAM_LIBRARIES} ${Eigen3_LIBRARIES})
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 

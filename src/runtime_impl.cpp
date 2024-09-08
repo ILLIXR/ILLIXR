@@ -14,14 +14,18 @@
 #include <algorithm>
 #include <GL/glx.h>
 #include <memory>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 
+#ifdef USE_SPDLOGGER
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+#endif
+
 using namespace ILLIXR;
 
+#ifdef USE_SPDLOGGER
 void spdlogger(const std::string& name, const char* log_level) {
     if (!log_level) {
 #ifdef NDEBUG
@@ -37,11 +41,14 @@ void spdlogger(const std::string& name, const char* log_level) {
     logger->set_level(spdlog::level::from_str(log_level));
     spdlog::register_logger(logger);
 }
+#endif
 
 class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
+#ifdef USE_SPDLOGGER
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
+#endif
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));

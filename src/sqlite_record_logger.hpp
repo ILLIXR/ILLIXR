@@ -10,8 +10,11 @@
 #include <iostream>
 #include <mutex>
 #include <shared_mutex>
-#include <spdlog/spdlog.h>
 #include <thread>
+
+#ifdef USE_SPDLOGGER
+#include <spdlog/spdlog.h>
+#endif
 
 /**
  * There are many SQLite3 wrapper libraries.
@@ -101,9 +104,11 @@ public:
         std::vector<record> record_batch{max_record_batch_size};
         std::size_t         actual_batch_size;
 
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [sqlite_record_logger] thread %t %v");
         spdlog::get("illixr")->debug("{}", table_name);
         spdlog::get("illixr")->set_pattern("%+");
+#endif
 
         std::size_t processed = 0;
         while (!terminate.load()) {
@@ -125,8 +130,10 @@ public:
             process(record_batch, actual_batch_size);
             post_processed += actual_batch_size;
         }
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->debug("[sqlite_record_logger] Drained {} (sqlite); {}/{} done post real time", table_name,
                                      post_processed, (processed + post_processed));
+#endif
     }
 
     void process(const std::vector<record>& record_batch, std::size_t batch_size) {

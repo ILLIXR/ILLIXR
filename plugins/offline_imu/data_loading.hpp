@@ -6,8 +6,11 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <spdlog/spdlog.h>
 #include <string>
+
+#ifdef USE_SPDLOGGER
+#include <spdlog/spdlog.h>
+#endif
 
 typedef unsigned long long ullong;
 
@@ -23,7 +26,9 @@ typedef struct {
 static std::map<ullong, sensor_types> load_data() {
     const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
     if (!illixr_data_c_str) {
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->error("[offline_imu] Please define ILLIXR_DATA");
+#endif
         ILLIXR::abort();
     }
     std::string illixr_data = std::string{illixr_data_c_str};
@@ -33,7 +38,9 @@ static std::map<ullong, sensor_types> load_data() {
     const std::string imu0_subpath = "/imu0/data.csv";
     std::ifstream     imu0_file{illixr_data + imu0_subpath};
     if (!imu0_file.good()) {
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->error("[offline_imu] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", imu0_subpath, illixr_data);
+#endif
         ILLIXR::abort();
     }
     for (CSVIterator row{imu0_file, 1}; row != CSVIterator{}; ++row) {

@@ -48,7 +48,10 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 add_dependencies(${PLUGIN_NAME} Vkdemo_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 install_shaders(SPIRV_BINARY_FILES vkdemo ${PLUGIN_NAME})

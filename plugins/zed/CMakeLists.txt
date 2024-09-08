@@ -27,7 +27,10 @@ endif()
 
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDA_INCLUDE_DIRS} ${ZED_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} Threads::Threads spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} Threads::Threads)
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

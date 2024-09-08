@@ -41,7 +41,9 @@ public:
         const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync =
             _m_vsync_estimate.get_ro_nullable();
         if (estimated_vsync == nullptr) {
+#ifdef USE_SPDLOGGER
             spdlog::get("illixr")->warn("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
+#endif
             return get_fast_pose(_m_clock->now());
         } else {
             return get_fast_pose(**estimated_vsync);
@@ -129,16 +131,20 @@ public:
 
         if (nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) after last datum {}", lookup_time,
                                          std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
                                          _m_sensor_data.rbegin()->first);
 #endif
+#endif
             nearest_row--;
         } else if (nearest_row == _m_sensor_data.cbegin()) {
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) before first datum {}", lookup_time,
                                          std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
                                          _m_sensor_data.cbegin()->first);
+#endif
 #endif
         } else {
             // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.

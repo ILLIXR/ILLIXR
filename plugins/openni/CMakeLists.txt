@@ -18,7 +18,10 @@ if(BUILD_OPENCV)
 endif()
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${libopenni2_INCLUDE_DIR})
-target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} ${libopenni2_LIBRARY} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${OpenCV_LIBRARIES} ${libopenni2_LIBRARY})
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)

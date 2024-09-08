@@ -1,10 +1,13 @@
 #include <chrono>
 #include <mutex>
 #include <list>
+#include <thread>
+
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
 #include <spdlog/spdlog.h>
 #endif
-#include <thread>
+#endif
 
 namespace moodycamel {
 	template <typename T>
@@ -17,7 +20,9 @@ namespace moodycamel {
 
 		bool try_dequeue(T& elem) {
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[queue] try_dequeue");
+#endif
 #endif
 			std::lock_guard{mut};
 			if (!list.empty()) {
@@ -29,7 +34,9 @@ namespace moodycamel {
 		}
 
 		bool wait_dequeue_timed(T& elem, size_t usecs_) {
+#ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[queue] wait_dequeue_timed");
+#endif
 			std::chrono::microseconds usecs {usecs_};
 			auto start = std::chrono::system_clock::now();
 			while (std::chrono::system_clock::now() < start + usecs) {
@@ -42,7 +49,9 @@ namespace moodycamel {
 		}
 
 		bool enqueue(T&& elem) {
+#ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[queue] enqueue");
+#endif
 			std::lock_guard{mut};
 			list.emplace_back(elem);
 			return true;

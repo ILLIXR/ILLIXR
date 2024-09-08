@@ -1,12 +1,15 @@
 #pragma once
 #include "phonebook.hpp"
 #include "record_logger.hpp"
+
+#ifdef USE_SPDLOGGER
 #include "spdlog/common.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/spdlog.h>
+#endif
 
 #include <memory>
-#include <spdlog/spdlog.h>
 #include <string>
 #include <typeinfo>
 #include <utility>
@@ -73,6 +76,7 @@ public:
         return name;
     }
 
+#ifdef USE_SPDLOGGER
     void spdlogger(const char* log_level) {
         if (!log_level) {
 #ifdef NDEBUG
@@ -90,6 +94,7 @@ public:
         plugin_logger->set_level(spdlog::level::from_str(log_level));
         spdlog::register_logger(plugin_logger);
     }
+#endif
 
 protected:
     std::string                          name;

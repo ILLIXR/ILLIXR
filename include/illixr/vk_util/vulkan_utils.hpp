@@ -4,9 +4,12 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <vector>
+
+#ifdef USE_SPDLOGGER
+#include <spdlog/spdlog.h>
+#endif
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -25,6 +28,7 @@
 #include "third_party/vk_mem_alloc.h"
 #pragma clang diagnostic pop
 
+#ifdef USE_SPDLOGGER
 #define VK_ASSERT_SUCCESS(x)                                                                        \
     {                                                                                               \
         VkResult result = (x);                                                                      \
@@ -33,6 +37,15 @@
             throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
         }                                                                                           \
     }
+#else
+#define VK_ASSERT_SUCCESS(x)                                                                        \
+    {                                                                                               \
+        VkResult result = (x);                                                                      \
+        if (result != VK_SUCCESS) {                                                                 \
+            throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
+        }                                                                                           \
+    }
+#endif
 
 class vulkan_utils {
 public:

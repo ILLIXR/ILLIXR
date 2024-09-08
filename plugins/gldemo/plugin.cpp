@@ -44,7 +44,9 @@ public:
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_image_handle{sb->get_writer<image_handle>("image_handle")}
         , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} {
+#ifdef USE_SPDLOGGER
         spdlogger(std::getenv("GLDEMO_LOG_LEVEL"));
+#endif
     }
 
     // Essentially, a crude equivalent of XRWaitFrame.
@@ -63,7 +65,9 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("First vsync is in {} ms", vsync_in);
+#endif
         }
 #endif
 
@@ -84,7 +88,9 @@ public:
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
                 double wait_in = duration2double<std::milli>(wait_time - now);
+#ifdef USE_SPDLOGGER
                 spdlog::get(name)->debug("Waiting until next vsync, in {} ms", wait_in);
+#endif
             }
 #endif
             // Perform the sleep.
@@ -93,9 +99,11 @@ public:
             std::this_thread::sleep_for(wait_time - now);
         } else {
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
             if (log_count > LOG_PERIOD) {
                 spdlog::get(name)->debug("We haven't rendered yet, rendering immediately");
             }
+#endif
 #endif
         }
     }
@@ -177,10 +185,12 @@ public:
         const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
         const double fps              = 1.0 / frame_duration_s;
 
+#ifdef USE_SPDLOGGER
         if (log_count > LOG_PERIOD) {
             spdlog::get(name)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s,
                                      fps);
         }
+#endif
 #endif
         lastTime = _m_clock->now();
 
@@ -277,7 +287,9 @@ private:
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         // Bind eyebuffer texture
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->info("About to bind eyebuffer texture, texture handle: {}", *texture_handle);
+#endif
 
         glBindTexture(GL_TEXTURE_2D, *texture_handle);
         glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, *texture_handle, 0);
@@ -299,7 +311,9 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+#endif
             ILLIXR::abort("Failed to initialize GLEW");
         }
 
@@ -323,7 +337,9 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
+#endif
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

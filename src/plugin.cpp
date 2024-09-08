@@ -24,11 +24,15 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
         spdlog::get("illixr")->info("[main] PID: {}", pid);
         spdlog::get("illixr")->info("[main] Sleeping for {} seconds...", ILLIXR_PRE_SLEEP_DURATION);
+#endif
         sleep(ILLIXR_PRE_SLEEP_DURATION);
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->info("[main] Resuming...");
+#endif
     }
 #endif /// NDEBUG
     // read in yaml config file

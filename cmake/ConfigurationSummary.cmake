@@ -288,6 +288,7 @@ report_value("Library suffix" "${ILLIXR_BUILD_SUFFIX}${CMAKE_SHARED_LIBRARY_SUFF
 report_value("C compilation flags" "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}}")
 report_value("C++ compilation flags" "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}}")
 report_value("Install location" "${CMAKE_INSTALL_PREFIX}")
+report_value("Using spdlog library" "${USE_SPDLOGGER}")
 
 # ------------------------- External Libraries ---------------------------------
 message("${COLOR_BLUE_BOLD}External Libraries${RESET_FORMAT}")

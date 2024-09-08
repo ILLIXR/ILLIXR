@@ -8,8 +8,11 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <spdlog/spdlog.h>
 #include <string>
+
+#ifdef USE_SPDLOGGER
+#include <spdlog/spdlog.h>
+#endif
 
 // timestamp
 // p_RS_R_x [m], p_RS_R_y [m], p_RS_R_z [m]
@@ -35,7 +38,9 @@ static std::map<ullong, sensor_types> load_data() {
     std::ifstream gt_file{illixr_data + subpath};
 
     if (!gt_file.good()) {
+#ifdef USE_SPDLOGGER
         spdlog::get("illixr")->error("[groundtruthslam] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", subpath, illixr_data);
+#endif
         ILLIXR::abort();
     }
 

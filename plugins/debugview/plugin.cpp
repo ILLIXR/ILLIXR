@@ -48,7 +48,9 @@ Eigen::Matrix4f lookAt(const Eigen::Vector3f& eye, const Eigen::Vector3f& target
  * @brief Callback function to handle glfw errors
  */
 static void glfw_error_callback(int error, const char* description) {
+#ifdef USE_SPDLOGGER
     spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
+#endif
     ILLIXR::abort();
 }
 
@@ -66,7 +68,9 @@ public:
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
+#ifdef USE_SPDLOGGER
         spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
+#endif
     }
 
     void draw_GUI() {
@@ -494,7 +498,9 @@ public:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         gui_window = glfwCreateWindow(1600, 1000, "ILLIXR Debug View", nullptr, nullptr);
         if (gui_window == nullptr) {
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->error("couldn't create window {}:{}", __FILE__, __LINE__);
+#endif
             ILLIXR::abort();
         }
 
@@ -512,7 +518,9 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+#endif
             glfwDestroyWindow(gui_window);
             ILLIXR::abort("[debugview] Failed to initialize GLEW");
         }
@@ -535,7 +543,9 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
+#endif
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

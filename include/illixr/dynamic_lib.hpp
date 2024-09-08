@@ -6,9 +6,12 @@
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <spdlog/spdlog.h>
 #include <string>
 #include <utility>
+
+#ifdef USE_SPDLOGGER
+#include <spdlog/spdlog.h>
+#endif
 
 namespace ILLIXR {
 
@@ -44,9 +47,11 @@ public:
 
     ~dynamic_lib() {
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         if (!_m_lib_path.empty()) {
             spdlog::get("illixr")->debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
         }
+#endif /// USE_SPDLOGGER
 #endif /// NDEBUG
     }
 
@@ -76,7 +81,9 @@ public:
                          int   ret = dlclose(handle);
                          if ((error = dlerror()) || ret) {
                              const std::string msg_error{"dlclose(): " + (error == nullptr ? "NULL" : std::string{error})};
+#ifdef USE_SPDLOGGER
                              spdlog::get("illixr")->error("[dynamic_lib] {}", msg_error);
+#endif
                              throw std::runtime_error{msg_error};
                          }
                      }},

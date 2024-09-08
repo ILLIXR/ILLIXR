@@ -54,7 +54,10 @@ add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
 
-target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${Vulkan_LIBRARIES})
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 

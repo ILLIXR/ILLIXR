@@ -82,6 +82,7 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(USE_SPDLOGGER "Build with spdlogger enabled" OFF)
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")
@@ -186,7 +187,10 @@ find_package(Git REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS filesystem serialization)
 
-find_package(spdlog REQUIRED)
+if(USE_SPDLOGGER)
+    add_definitions(-DUSE_SPDLOGGER)
+    find_package(spdlog REQUIRED)
+endif()
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)

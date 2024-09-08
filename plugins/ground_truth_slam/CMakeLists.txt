@@ -14,7 +14,10 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PLUGIN_NAME} PRIVATE ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
-target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES})
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
 
