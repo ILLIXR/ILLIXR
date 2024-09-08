@@ -3,7 +3,7 @@
 #include "../error_util.hpp"
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -87,9 +87,9 @@ public:
         bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_dir_term.c_str());
         if (!warn.empty()) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->warn("[obj] {}", warn);
-#endif
+    #endif
 #endif
         }
         if (!err.empty()) {
@@ -111,10 +111,10 @@ public:
             for (size_t mat_idx = 0; mat_idx < materials.size(); mat_idx++) {
                 tinyobj::material_t* mp = &materials[mat_idx];
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                 spdlog::get("illixr")->debug("[obj] Loading material named: {}", materials[mat_idx].name);
                 spdlog::get("illixr")->debug("[obj] Material texture name: {}", materials[mat_idx].diffuse_texname);
-#endif
+    #endif
 #endif
                 if (mp->diffuse_texname.length() > 0) {
                     // If we haven't loaded the texture yet...
@@ -126,16 +126,16 @@ public:
 
                         if (texture_data == nullptr) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                             spdlog::get("illixr")->warn("[obj TEXTURE] Loading of {} failed.", filename);
-#endif
+    #endif
 #endif
                             successfully_loaded_texture = false;
                         } else {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                             spdlog::get("illixr")->debug("[obj TEXTURE] Loaded  {}: Resolution ({}, {})", filename, x, y);
-#endif
+    #endif
 #endif
                             GLuint texture_handle;
 
@@ -173,10 +173,10 @@ public:
             // Iterate over "shapes" (objects in .obj file)
             for (size_t shape_idx = 0; shape_idx < shapes.size(); shape_idx++) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                 spdlog::get("illixr")->debug("[obj] Num verts in shape: {}", shapes[shape_idx].mesh.indices.size());
                 spdlog::get("illixr")->debug("[obj] Num tris in shape: {}", shapes[shape_idx].mesh.indices.size() / 3);
-#endif
+    #endif
 #endif
                 // Unified buffer for pos + uv. Interleaving vertex data (good practice!)
                 std::vector<vertex_t> buffer;

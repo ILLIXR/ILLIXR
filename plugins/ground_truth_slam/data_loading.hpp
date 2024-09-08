@@ -11,7 +11,7 @@
 #include <string>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 // timestamp

@@ -5,9 +5,9 @@
 #include <mutex>
 #include <shared_mutex>
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
-    #include <spdlog/spdlog.h>
-#endif
+    #ifdef USE_SPDLOGGER
+        #include <spdlog/spdlog.h>
+    #endif
 #endif
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
@@ -183,11 +183,11 @@ private:
 
         void thread_on_start() {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
             spdlog::get("illixr")->debug("start");
             spdlog::get("illixr")->set_pattern("%+");
-#endif
+    #endif
 #endif
         }
 
@@ -294,9 +294,9 @@ private:
     public:
         topic_buffer() {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->info("[switchboard] topic buffer created");
-#endif
+    #endif
 #endif
         }
 
@@ -465,10 +465,10 @@ public:
             : _m_topic{topic_} {
 #ifndef NDEBUG
             if (typeid(specific_event) != _m_topic.ty()) {
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                 spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", _m_topic.name(),
                                              _m_topic.ty().name(), typeid(specific_event).name());
-#endif
+    #endif
                 abort();
             }
 #endif
@@ -605,10 +605,10 @@ private:
                 topic& topic_ = found->second;
 #ifndef NDEBUG
                 if (typeid(specific_event) != topic_.ty()) {
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                     spdlog::get("illixr")->error("[switchboard] topic '{}' holds type {}, but caller used type {}", topic_name,
                                                  topic_.ty().name(), typeid(specific_event).name());
-#endif
+    #endif
                     abort();
                 }
 #endif
@@ -617,9 +617,9 @@ private:
         }
 
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get("illixr")->debug("[switchboard] Creating: {} for {}", topic_name, typeid(specific_event).name());
-#endif
+    #endif
 #endif
         // Topic not found. Need to create it here.
         const std::unique_lock lock{_m_registry_lock};

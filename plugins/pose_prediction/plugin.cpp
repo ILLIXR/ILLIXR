@@ -73,9 +73,9 @@ public:
         switchboard::ptr<const imu_raw_type> imu_raw = _m_imu_raw.get_ro_nullable();
         if (imu_raw == nullptr) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[POSEPREDICTION] FAST POSE IS SLOW POSE!");
-#endif
+    #endif
 #endif
             // No imu_raw, return slow_pose
             return fast_pose_type{

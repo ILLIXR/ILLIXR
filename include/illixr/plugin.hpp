@@ -3,10 +3,11 @@
 #include "record_logger.hpp"
 
 #ifdef USE_SPDLOGGER
-#include "spdlog/common.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include <spdlog/spdlog.h>
+    #include "spdlog/common.h"
+    #include "spdlog/sinks/basic_file_sink.h"
+    #include "spdlog/sinks/stdout_color_sinks.h"
+
+    #include <spdlog/spdlog.h>
 #endif
 
 #include <memory>
@@ -79,11 +80,11 @@ public:
 #ifdef USE_SPDLOGGER
     void spdlogger(const char* log_level) {
         if (!log_level) {
-#ifdef NDEBUG
+    #ifdef NDEBUG
             log_level = "warn";
-#else
+    #else
             log_level = "debug";
-#endif
+    #endif
         }
         std::vector<spdlog::sink_ptr> sinks;
         auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + name + ".log");

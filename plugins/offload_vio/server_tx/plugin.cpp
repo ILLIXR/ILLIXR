@@ -47,15 +47,15 @@ public:
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
         socket.socket_listen();
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.server_tx]: Waiting for connection!");
-#endif
+    #endif
 #endif
         write_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.server_tx]: Connection is established with {}", write_socket->peer_address());
-#endif
+    #endif
 #endif
     }
 

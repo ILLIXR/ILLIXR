@@ -13,7 +13,7 @@
 #include <utility>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 /**
@@ -129,9 +129,9 @@ private:
             // os << "cpu_timer," << _p_account_name << "," << count_duration<duration>(_p_duration) << "\n";
             if (rand() % 100 == 0) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                 spdlog::get("illixr")->info("cpu_timer.hpp is DEPRECATED. See logging.hpp.");
-#endif
+    #endif
 #endif
             }
         }

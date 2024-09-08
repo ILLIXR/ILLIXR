@@ -36,15 +36,15 @@ public:
     skip_option _p_should_skip() override {
         if (!is_socket_connected) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("[offload_vio.device_rx]: Connecting to {}:{}", server_ip, server_port);
-#endif
+    #endif
 #endif
             socket.socket_connect(server_ip, server_port);
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("[offload_vio.device_rx]: Connected to {}:{}", server_ip, server_port);
-#endif
+    #endif
 #endif
             is_socket_connected = true;
         }

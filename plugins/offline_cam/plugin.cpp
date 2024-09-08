@@ -45,11 +45,11 @@ public:
 
         if (after_nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->warn("Running out of the dataset! Time {} ({} + {}) after last datum {}", lookup_time,
                                     _m_rtc->now().time_since_epoch().count(), dataset_first_time,
                                     _m_sensor_data.rbegin()->first);
-#endif
+    #endif
 #endif
             // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
             // to be nearest_row to avoiding sleeping at the end.
@@ -60,11 +60,11 @@ public:
         } else if (after_nearest_row == _m_sensor_data.cbegin()) {
             // Should not happen because lookup_time is bigger than dataset_first_time
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->warn("Time {} ({} + {}) before first datum {}", lookup_time,
                                     _m_rtc->now().time_since_epoch().count(), dataset_first_time,
                                     _m_sensor_data.cbegin()->first);
-#endif
+    #endif
 #endif
         } else {
             // Most recent

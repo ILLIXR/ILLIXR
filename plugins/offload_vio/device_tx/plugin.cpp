@@ -67,15 +67,15 @@ public:
         encoder->init();
 
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.device_tx] TEST: Connecting to {}:{}", server_ip, server_port);
-#endif
+    #endif
 #endif
         socket.socket_connect(server_ip, server_port);
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.device_tx] Connected to {}:{}", server_ip, server_port);
-#endif
+    #endif
 #endif
 
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {

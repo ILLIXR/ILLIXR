@@ -52,15 +52,15 @@ public:
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.socket_listen();
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
-#endif
+    #endif
 #endif
             read_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket->peer_address());
-#endif
+    #endif
 #endif
         } else {
             std::string delimitter = "EEND!";

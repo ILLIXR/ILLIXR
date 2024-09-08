@@ -131,20 +131,20 @@ public:
 
         if (nearest_row == _m_sensor_data.cend()) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) after last datum {}", lookup_time,
                                          std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
                                          _m_sensor_data.rbegin()->first);
-#endif
+    #endif
 #endif
             nearest_row--;
         } else if (nearest_row == _m_sensor_data.cbegin()) {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) before first datum {}", lookup_time,
                                          std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
                                          _m_sensor_data.cbegin()->first);
-#endif
+    #endif
 #endif
         } else {
             // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.

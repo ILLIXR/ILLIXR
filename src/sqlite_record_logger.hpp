@@ -13,7 +13,7 @@
 #include <thread>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 /**

@@ -10,7 +10,7 @@
 #include <string>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 /**
@@ -45,12 +45,12 @@ inline void report_and_clear_errno([[maybe_unused]] const std::string& file, [[m
 #ifndef NDEBUG
     if (errno > 0) {
         if (ILLIXR::ENABLE_VERBOSE_ERRORS) {
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get("illixr")->error("[error_util] || Errno was set: {} @ {}:{} [{}]", errno, file, line, function);
             if (!msg.empty()) {
                 spdlog::get("illixr")->error("[error_util]|> Message: {}", msg);
             }
-#endif
+    #endif
         }
         errno = 0;
     }

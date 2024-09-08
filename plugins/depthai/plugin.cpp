@@ -34,9 +34,9 @@ public:
         spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
 #endif
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("pipeline started");
-#endif
+    #endif
 #endif
         colorQueue                             = device.getOutputQueue("preview", 1, false);
         depthQueue                             = device.getOutputQueue("depth", 1, false);
@@ -161,16 +161,16 @@ public:
 
     ~depthai() override {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet, imu_pub, rgbd_pub);
-#endif
+    #endif
         auto dur = std::chrono::steady_clock::now() - first_packet_time;
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("Time since first packet: {} ms",
                                  std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
         spdlog::get(name)->debug("RGB: {} Left: {} Right: {} Depth: {} All: {}", rgb_count, left_count, right_count,
                                  depth_count, all_count);
-#endif
+    #endif
 #endif
     }
 
@@ -211,9 +211,9 @@ private:
 
     dai::Pipeline createCameraPipeline() const {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("creating pipeline");
-#endif
+    #endif
 #endif
         dai::Pipeline p;
 

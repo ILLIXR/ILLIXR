@@ -314,9 +314,9 @@ private:
 
 #ifndef NDEBUG
         double time = duration2double<std::milli>(offload_duration);
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("Texture image collecting time: {} ms", time);
-#endif
+    #endif
 #endif
 
         return pixels;
@@ -841,7 +841,7 @@ public:
     #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
         if (log_count > LOG_PERIOD) {
-#ifdef USE_SPDLOGGER
+        #ifdef USE_SPDLOGGER
             const double     time_swap         = duration2double<std::milli>(time_after_swap - time_before_swap);
             const double     latency_mtd       = duration2double<std::milli>(imu_to_display);
             const double     latency_ptd       = duration2double<std::milli>(predict_to_display);
@@ -854,7 +854,7 @@ public:
             spdlog::get(name)->debug("Prediction-to-display latency: {} ms", latency_ptd);
             spdlog::get(name)->debug("Render-to-display latency: {} ms", latency_rtd);
             spdlog::get(name)->debug("Next swap in: {} ms in the future", timewarp_estimate);
-#endif
+        #endif
         }
     #endif
 

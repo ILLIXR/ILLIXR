@@ -65,9 +65,9 @@ public:
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
             double vsync_in = duration2double<std::milli>(**next_vsync - now);
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("First vsync is in {} ms", vsync_in);
-#endif
+    #endif
         }
 #endif
 
@@ -88,9 +88,9 @@ public:
 #ifndef NDEBUG
             if (log_count > LOG_PERIOD) {
                 double wait_in = duration2double<std::milli>(wait_time - now);
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
                 spdlog::get(name)->debug("Waiting until next vsync, in {} ms", wait_in);
-#endif
+    #endif
             }
 #endif
             // Perform the sleep.
@@ -99,11 +99,11 @@ public:
             std::this_thread::sleep_for(wait_time - now);
         } else {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
             if (log_count > LOG_PERIOD) {
                 spdlog::get(name)->debug("We haven't rendered yet, rendering immediately");
             }
-#endif
+    #endif
 #endif
         }
     }
@@ -185,12 +185,12 @@ public:
         const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
         const double fps              = 1.0 / frame_duration_s;
 
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         if (log_count > LOG_PERIOD) {
             spdlog::get(name)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s,
                                      fps);
         }
-#endif
+    #endif
 #endif
         lastTime = _m_clock->now();
 
@@ -337,9 +337,9 @@ public:
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
-#endif
+    #endif
 #endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");

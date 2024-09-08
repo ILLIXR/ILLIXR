@@ -407,10 +407,10 @@ private:
         int  width, height, channels;
         auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get("illixr")->debug("[vkdemo] Loaded texture {} with dimensions {}x{} and {} channels", path, width, height,
                                      channels);
-#endif
+    #endif
 #endif
         if (data == nullptr) {
             throw std::runtime_error("Failed to load texture image!");
@@ -596,9 +596,9 @@ private:
         }
 
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get("illixr")->debug("[vkdemo] Loaded {} textures", textures.size());
-#endif
+    #endif
 #endif
 
         std::unordered_map<Vertex, uint32_t> unique_vertices{};

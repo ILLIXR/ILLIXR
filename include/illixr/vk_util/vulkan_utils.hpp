@@ -8,7 +8,7 @@
 #include <vector>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 #define GLM_FORCE_RADIANS
@@ -29,22 +29,22 @@
 #pragma clang diagnostic pop
 
 #ifdef USE_SPDLOGGER
-#define VK_ASSERT_SUCCESS(x)                                                                        \
-    {                                                                                               \
-        VkResult result = (x);                                                                      \
-        if (result != VK_SUCCESS) {                                                                 \
-            spdlog::get("illixr")->debug("[Vulkan] error: {}", vulkan_utils::error_string(result)); \
-            throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
-        }                                                                                           \
-    }
+    #define VK_ASSERT_SUCCESS(x)                                                                        \
+        {                                                                                               \
+            VkResult result = (x);                                                                      \
+            if (result != VK_SUCCESS) {                                                                 \
+                spdlog::get("illixr")->debug("[Vulkan] error: {}", vulkan_utils::error_string(result)); \
+                throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
+            }                                                                                           \
+        }
 #else
-#define VK_ASSERT_SUCCESS(x)                                                                        \
-    {                                                                                               \
-        VkResult result = (x);                                                                      \
-        if (result != VK_SUCCESS) {                                                                 \
-            throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result));        \
-        }                                                                                           \
-    }
+    #define VK_ASSERT_SUCCESS(x)                                                                 \
+        {                                                                                        \
+            VkResult result = (x);                                                               \
+            if (result != VK_SUCCESS) {                                                          \
+                throw std::runtime_error("Vulkan error: " + vulkan_utils::error_string(result)); \
+            }                                                                                    \
+        }
 #endif
 
 class vulkan_utils {

@@ -13,9 +13,9 @@
 #endif
 
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
-    #include <spdlog/spdlog.h>
-#endif
+    #ifdef USE_SPDLOGGER
+        #include <spdlog/spdlog.h>
+    #endif
 #endif
 
 namespace ILLIXR {
@@ -108,9 +108,9 @@ public:
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         spdlog::get("illixr")->debug("[phonebook] Register {}", type_index.name());
-#endif
+    #endif
 #endif
         assert(_m_registry.count(type_index) == 0);
         _m_registry.try_emplace(type_index, impl);

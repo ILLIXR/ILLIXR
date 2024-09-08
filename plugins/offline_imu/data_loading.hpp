@@ -9,7 +9,7 @@
 #include <string>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 typedef unsigned long long ullong;

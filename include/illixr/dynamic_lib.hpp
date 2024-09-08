@@ -10,7 +10,7 @@
 #include <utility>
 
 #ifdef USE_SPDLOGGER
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 namespace ILLIXR {
@@ -47,12 +47,12 @@ public:
 
     ~dynamic_lib() {
 #ifndef NDEBUG
-#ifdef USE_SPDLOGGER
+    #ifdef USE_SPDLOGGER
         if (!_m_lib_path.empty()) {
             spdlog::get("illixr")->debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
         }
-#endif /// USE_SPDLOGGER
-#endif /// NDEBUG
+    #endif /// USE_SPDLOGGER
+#endif     /// NDEBUG
     }
 
     static dynamic_lib create(const std::string& path) {
