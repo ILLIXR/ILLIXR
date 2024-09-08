@@ -37,7 +37,9 @@ public:
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , server_ip(SERVER_IP)
         , server_port(SERVER_PORT_1) {
+#ifdef USE_SPDLOGGER
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+#endif
         socket.socket_set_reuseaddr();
         socket.socket_bind(CLIENT_IP, CLIENT_PORT_1);
         socket.enable_no_delay();
@@ -65,11 +67,15 @@ public:
         encoder->init();
 
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.device_tx] TEST: Connecting to {}:{}", server_ip, server_port);
+#endif
 #endif
         socket.socket_connect(server_ip, server_port);
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.device_tx] Connected to {}:{}", server_ip, server_port);
+#endif
 #endif
 
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {

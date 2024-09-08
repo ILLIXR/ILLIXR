@@ -35,7 +35,9 @@ public:
         , server_ip(SERVER_IP)
         , server_port(SERVER_PORT_1)
         , buffer_str("") {
+#ifdef USE_SPDLOGGER
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+#endif
         socket.socket_set_reuseaddr();
         socket.socket_bind(server_ip, server_port);
         socket.enable_no_delay();
@@ -50,11 +52,15 @@ public:
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.socket_listen();
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
+#endif
 #endif
             read_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket->peer_address());
+#endif
 #endif
         } else {
             std::string delimitter = "EEND!";
@@ -69,8 +75,10 @@ public:
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
+#ifdef USE_SPDLOGGER
                         spdlog::get(name)->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
                                                  before.size());
+#endif
                     } else {
                         ReceiveVioInput(vio_input);
                     }

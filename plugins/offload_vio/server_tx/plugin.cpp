@@ -21,7 +21,9 @@ public:
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_ip(CLIENT_IP)
         , client_port(CLIENT_PORT_2) {
+#ifdef USE_SPDLOGGER
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+#endif
         socket.socket_set_reuseaddr();
         socket.socket_bind(SERVER_IP, SERVER_PORT_2);
         socket.enable_no_delay();
@@ -45,11 +47,15 @@ public:
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
         socket.socket_listen();
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.server_tx]: Waiting for connection!");
+#endif
 #endif
         write_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
+#ifdef USE_SPDLOGGER
         spdlog::get(name)->debug("[offload_vio.server_tx]: Connection is established with {}", write_socket->peer_address());
+#endif
 #endif
     }
 
@@ -143,7 +149,9 @@ public:
 
             delete vio_output_params;
         } else {
+#ifdef USE_SPDLOGGER
             spdlog::get(name)->error("[offload_vio.server_tx] ERROR: write_socket is not yet created!");
+#endif
         }
     }
 
