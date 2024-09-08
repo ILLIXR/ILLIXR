@@ -55,6 +55,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -94,6 +95,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -257,6 +259,7 @@
         "OpenXR",
         "Vulkan",
         "libusb",
+        "libuvc",
         "SDL2"
       ]
     },
@@ -270,6 +273,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -292,6 +296,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -833,6 +838,43 @@
       }
     },
     {
+      "libuvc": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            },
+            "38": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "CentOS does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            }
+          }
+        }
+      }
+    },
+    {
       "OpenCV": {
         "pkg": {
           "Ubuntu": {
@@ -876,7 +918,7 @@
             "20": {
               "pkg": "libopenxr-dev libopenxr1-monado",
               "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#openU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"openU20\">sudo apt-get -y install wget software-properties-common\nsudo apt-get update\nsudo add-apt-repository ppa:monado-xr/monado -y -u\nsudo wget -nv https://monado.freedesktop.org/keys/monado-ci.asc -O /etc/apt/trusted.gpg.d/monado-ci.asc\nsudo echo 'deb https://monado.pages.freedesktop.org/monado/apt focal main' | tee /etc/apt/sources.list.d/monado-ci.list\nsudo apt update</pre></div>"
+              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#openU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"openU20\">sudo apt-get -y install wget software-properties-common\nsudo apt-get update\nsudo add-apt-repository ppa:monado-xr/monado -y -u\nsudo wget -nv https://monado.freedesktop.org/keys/monado-ci.asc -O /etc/apt/trusted.gpg.d/monado-ci.asc\necho 'deb https://monado.pages.freedesktop.org/monado/apt focal main' | sudo tee /etc/apt/sources.list.d/monado-ci.list\nsudo apt update</pre></div>"
             },
             "22": {
               "pkg": "libopenxr-dev libopenxr1-monado",
@@ -1061,12 +1103,12 @@
             "20": {
               "pkg": "librealsense2-dev librealsense2-gl-dev",
               "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU20\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\nsudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null\nsudo echo \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU20\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
             },
             "22": {
               "pkg": "librealsense2-dev librealsense2-gl-dev",
               "postnotes": "",
-              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU22\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\nsudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | tee /etc/apt/keyrings/librealsense.pgp > /dev/null\nsudo echo \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
+              "notes": "Ubuntu does not have a system supplied package for librealsense, but it can be installed from the vendor (Intel) by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#realU22\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"realU22\">sudo apt-get -y install curl apt-transport-https lsb-core\nsudo mkdir -p /etc/apt/keyrings\ncurl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main\" | sudo tee /etc/apt/sources.list.d/librealsense.list > /dev/null\nsudo apt-get update</pre></div>"
             }
           },
           "Fedora": {
