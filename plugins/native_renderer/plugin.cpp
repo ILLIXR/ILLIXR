@@ -32,7 +32,9 @@ public:
         , src{pb->lookup_impl<app>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , last_fps_update{std::chrono::duration<long, std::nano>{0}} {
+#ifdef USE_SPDLOGGER
         spdlogger(std::getenv("NATIVE_RENDERER_LOG_LEVEL"));
+#endif
     }
 
     /**

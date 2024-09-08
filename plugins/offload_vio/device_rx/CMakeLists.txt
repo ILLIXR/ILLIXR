@@ -21,10 +21,10 @@ set(protobuf_files
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${Protobuf_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include)
 
 PROTOBUF_TARGET_CPP(${PLUGIN_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../proto ${protobuf_files})
-target_link_libraries(${PLUGIN_NAME}
-        protobuf::libprotobuf
-        spdlog::spdlog
-        )
+target_link_libraries(${PLUGIN_NAME} protobuf::libprotobuf)
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 

@@ -20,7 +20,10 @@ endif()
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS} ${realsense2_INCLUDE_DIR} ${ILLIXR_SOURCE_DIR}/include)
 add_definitions(-Wno-format-extra-args)
-target_link_libraries(${PLUGIN_NAME} ${DEPENDENCIES} ${OpenCV_LIBRARIES} ${realsense2_LIBRARY} ${Eigen3_LIBRATIES} spdlog::spdlog)
+target_link_libraries(${PLUGIN_NAME} ${DEPENDENCIES} ${OpenCV_LIBRARIES} ${realsense2_LIBRARY} ${Eigen3_LIBRATIES})
+if(USE_SPDLOGGER)
+target_link_libraries(${PLUGIN_NAME} spdlog::spdlog)
+endif()
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
 
 install(TARGETS ${PLUGIN_NAME} DESTINATION lib)
