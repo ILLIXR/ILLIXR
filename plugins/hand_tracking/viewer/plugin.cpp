@@ -72,7 +72,7 @@ public:
         
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            //spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
             glfwDestroyWindow(_viewport);
             ILLIXR::abort("[debugview] Failed to initialize GLEW");
         }
@@ -156,30 +156,25 @@ public:
         //auto frame = _frame_reader.get_ro_nullable();
         // get processed frame
         cv::Mat processed;
-        cv::Mat combined;
+        cv::Mat combined, flattened;
         //std::cout << "Have Frame " << _clock->absolute_ns(frame->time) << " " << std::endl;
-            std::cout << "Have Frame " << _clock->absolute_ns(frame->time) << " " << std::endl;
-            current_frame = frame.get();
-            if(!frame->img.empty()) {
-                std::cout << "     have proc image ";
-                processed = frame->img.clone();
-                glBindTexture(GL_TEXTURE_2D, textures[1]);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  processed.cols, processed.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, processed.ptr());
+        current_frame = frame.get();
+        if(!frame->img.empty()) {
+            processed = frame->img.clone();
+            cv::Mat mask, inv, r;
+            cv::cvtColor(processed, mask, cv::COLOR_RGBA2GRAY);
+            cv::threshold(mask, mask, 10, 255, cv::THRESH_BINARY);
+            cv::bitwise_not(mask, mask);
+            cv::bitwise_and(raw_img, raw_img, r, mask);
+            cv::imwrite("test1.png", r);
+            cv::cvtColor(processed, flattened, cv::COLOR_RGBA2RGB);
+            glBindTexture(GL_TEXTURE_2D, textures[1]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,  flattened.cols, flattened.rows, 0, GL_RGB, GL_UNSIGNED_BYTE, flattened.ptr());
 
-                cv::Mat mask, r;
-                cv::extractChannel(processed, mask, 3);
-                cv::bitwise_not(mask, mask);
-                cv::bitwise_and(raw_img, raw_img, r, mask);
-                cv::cvtColor(processed, combined, cv::COLOR_RGBA2RGB);
-
-                combined = combined + r;
-                glBindTexture(GL_TEXTURE_2D, textures[2]);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined.cols, combined.rows, 0, GL_RGB, GL_UNSIGNED_BYTE, combined.ptr());
-            }
-        //} else {
-        //    current_frame = nullframe;
-        //    std::cout << "Missing frame" << std::endl;
-        //}
+            combined = flattened + r;
+            glBindTexture(GL_TEXTURE_2D, textures[2]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined.cols, combined.rows, 0, GL_RGB, GL_UNSIGNED_BYTE, combined.ptr());
+        }
 
         glUseProgram(demoShaderProgram);
         int d_width, d_height;
@@ -311,7 +306,7 @@ public:
                     ImGui::SameLine();
                     ImGui::Image((void*) (intptr_t) textures[1], ImVec2(windowsize.x / 3, windowsize.y));
                     ImGui::SameLine();
-                    ImGui::Image((void*) (intptr_t) textures[2], ImVec2(windowsize.x / 3, windowsize.y - vert_offset * 2));
+                    ImGui::Image((void*) (intptr_t) textures[2], ImVec2(windowsize.x / 3, windowsize.y));
                 }
             }
             ImGui::End();
