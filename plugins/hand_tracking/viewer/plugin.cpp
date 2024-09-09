@@ -157,7 +157,7 @@ public:
         // get processed frame
         cv::Mat processed;
         cv::Mat combined;
-        //if (frame) {
+        //std::cout << "Have Frame " << _clock->absolute_ns(frame->time) << " " << std::endl;
             std::cout << "Have Frame " << _clock->absolute_ns(frame->time) << " " << std::endl;
             current_frame = frame.get();
             if(!frame->img.empty()) {
@@ -304,18 +304,15 @@ public:
         {
             ImGui::Begin("Images");
             if(raw != nullptr) {
-                std::cout << "Images";
                 auto windowsize  = ImGui::GetWindowSize();
                 auto vert_offset = ImGui::GetCursorPos().y;
                 ImGui::Image((void*) (intptr_t) textures[0], ImVec2(windowsize.x / 3, windowsize.y));
                 if (!processed.empty()) {
-                    std::cout << " proc";
                     ImGui::SameLine();
                     ImGui::Image((void*) (intptr_t) textures[1], ImVec2(windowsize.x / 3, windowsize.y));
                     ImGui::SameLine();
                     ImGui::Image((void*) (intptr_t) textures[2], ImVec2(windowsize.x / 3, windowsize.y - vert_offset * 2));
                 }
-                std::cout << std::endl;
             }
             ImGui::End();
         }
