@@ -89,7 +89,7 @@ public:
             ILLIXR::abort();
         }
 
-        glfwSetWindowSize(_viewport, 640*3 + 20, 1000);
+        glfwSetWindowSize(_viewport, 640*3 + 20, 480 * 3 + 20);
 
         glfwMakeContextCurrent(_viewport);
 
@@ -245,15 +245,6 @@ public:
         }
     }
 
-    void display_images(const int start_idx, const image_type it) {
-        std::string title = image_type_string(it) + "_images";
-        ImGui::Begin(title.c_str());
-        ImGui::Image((void*) (intptr_t) textures[start_idx], ImVec2(640, 480));
-        ImGui::Image((void*) (intptr_t) textures[start_idx + 1], ImVec2(640, 480));
-        ImGui::Image((void*) (intptr_t) textures[start_idx + 2], ImVec2(640, 480));
-        ImGui::End();
-    }
-
     void make_gui(const switchboard::ptr<const ht_frame>& frame) {
         glfwMakeContextCurrent(_viewport);
         glfwPollEvents();
@@ -281,9 +272,10 @@ public:
             }
         } else if (_wc) {
             auto raw = _raw_monoc.size() == 0 ? nullptr : _raw_monoc.dequeue();
-            if (raw != nullptr && frame->find(LEFT) != frame->images.end()) {
+            if (raw != nullptr && frame->find(RGB) != frame->images.end()) {
                 found_types.push_back(LEFT);
-                raw_img[0] = raw->at(LEFT).clone();
+                found_types.push_back(RGB);
+                raw_img[0] = raw->at(RGB).clone();
                 cv::flip(raw_img[0], raw_img[0], 1);
             }
         } else if (_cam) {
@@ -300,22 +292,6 @@ public:
                 }
             }
         }
-        // get raw frame from camera input
-        if (std::find(found_types.begin(), found_types.end(), LEFT) != found_types.end()) {
-            glBindTexture(GL_TEXTURE_2D, textures[0]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, raw_img[0].cols, raw_img[0].rows, 0, GL_RGB, GL_UNSIGNED_BYTE, raw_img[0].ptr());
-        }
-        if(std::find(found_types.begin(), found_types.end(), RIGHT) != found_types.end()) {
-            glBindTexture(GL_TEXTURE_2D, textures[last_idx * 3]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, raw_img[last_idx].cols, raw_img[last_idx].rows, 0, GL_RGB8, GL_UNSIGNED_BYTE, raw_img[last_idx].ptr());
-        }
-        if(std::find(found_types.begin(), found_types.end(), RGB) != found_types.end()) {
-            glBindTexture(GL_TEXTURE_2D, textures[0]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, raw_img[0].cols, raw_img[0].rows, 0, GL_RGB8, GL_UNSIGNED_BYTE, raw_img[0].ptr());
-        }
-
-        //auto frame = _frame_reader.get_ro_nullable();
-        // get processed frame
         cv::Mat processed[2];
         cv::Mat combined[2], flattened[2];
 
@@ -334,6 +310,10 @@ public:
         //std::cout << "Have Frame " << _clock->absolute_ns(frame->time) << " " << std::endl;
         current_frame = frame.get();
         for(size_t i = 0; i < found_types.size(); i++) {
+            // get raw frame from camera input
+            glBindTexture(GL_TEXTURE_2D, textures[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, raw_img[i].cols, raw_img[i].rows, 0,
+                         GL_RGB, GL_UNSIGNED_BYTE, raw_img[i].ptr());
             processed[i] = frame->at(found_types[i]).clone();
             cv::Mat mask, inv, r;
             cv::cvtColor(processed[i], mask, cv::COLOR_RGBA2GRAY);
@@ -349,7 +329,7 @@ public:
             glBindTexture(GL_TEXTURE_2D, textures[(i * 3) + 2]);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined[i].cols, combined[i].rows, 0, GL_RGB, GL_UNSIGNED_BYTE, combined[i].ptr());
 
-            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2.,
+            ImGui::SetNextWindowPos(ImVec2(i * ImGui::GetIO().DisplaySize.x / 2.,
                                            ImGui::GetIO().DisplaySize.y),
                                     ImGuiCond_Once, ImVec2(0.f, 1.f));
             {
@@ -368,7 +348,9 @@ public:
                     ImGui::TableSetColumnIndex(det_col);
                     make_detection_table(frame->detections.at(found_types[i]), found_types[i]);
                     ImGui::TableSetColumnIndex(im_col);
-                    display_images(i * 3, found_types[i]);
+                    ImGui::Image((void*) (intptr_t) textures[i * 3], ImVec2(640, 480));
+                    ImGui::Image((void*) (intptr_t) textures[(i * 3) + 1], ImVec2(640, 480));
+                    ImGui::Image((void*) (intptr_t) textures[(i * 3) + 2], ImVec2(640, 480));
                     ImGui::EndTable();
                 }
                 ImGui::End();
