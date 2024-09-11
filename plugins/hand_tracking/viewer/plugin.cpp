@@ -114,8 +114,8 @@ public:
         ImGui_ImplOpenGL3_Init(glsl_version.data());
 
         glGenTextures(6, &(textures[0]));
-        for (int i = 0; i < 6; i++) {
-            glBindTexture(GL_TEXTURE_2D, textures[i]);
+        for (unsigned int texture : textures) {
+            glBindTexture(GL_TEXTURE_2D, texture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         }
@@ -307,7 +307,6 @@ public:
 
         ImGui::NewFrame();
 
-        //std::cout << "Have Frame " << _clock->absolute_ns(frame->time) << " " << std::endl;
         current_frame = frame.get();
         for(size_t i = 0; i < found_types.size(); i++) {
             // get raw frame from camera input
@@ -323,11 +322,13 @@ public:
             //cv::imwrite("test1.png", r);
             cv::cvtColor(processed[i], flattened[i], cv::COLOR_RGBA2RGB);
             glBindTexture(GL_TEXTURE_2D, textures[(i * 3) + 1]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,  flattened[i].cols, flattened[i].rows, 0, GL_RGB, GL_UNSIGNED_BYTE, flattened[i].ptr());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,  flattened[i].cols, flattened[i].rows, 0,
+                         GL_RGB, GL_UNSIGNED_BYTE, flattened[i].ptr());
 
             combined[i] = flattened[i] + r;
             glBindTexture(GL_TEXTURE_2D, textures[(i * 3) + 2]);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined[i].cols, combined[i].rows, 0, GL_RGB, GL_UNSIGNED_BYTE, combined[i].ptr());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined[i].cols, combined[i].rows, 0,
+                         GL_RGB, GL_UNSIGNED_BYTE, combined[i].ptr());
 
             ImGui::SetNextWindowPos(ImVec2(i * ImGui::GetIO().DisplaySize.x / 2.,
                                            ImGui::GetIO().DisplaySize.y),
@@ -363,7 +364,6 @@ public:
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(_viewport);
 
-        //std::this_thread::sleep_for(std::chrono::nanoseconds(33300000));
         count++;
     }
 private:
@@ -373,8 +373,8 @@ private:
     switchboard::buffered_reader<monocular_cam_type>  _raw_monoc;
     switchboard::buffered_reader<binocular_cam_type>  _raw_binoc;
     switchboard::buffered_reader<cam_type_zed>        _raw_zed;
-    std::shared_ptr<ht_frame>          _ht_frame;
-    GLFWwindow*                        _viewport{};
+    std::shared_ptr<ht_frame>                         _ht_frame;
+    GLFWwindow*                                       _viewport{};
     uint count = 0;
 
     GLuint          textures[6];
