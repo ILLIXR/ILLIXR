@@ -12,7 +12,7 @@ class webcam : public threadloop {
 public:
     webcam(const std::string& name_, phonebook* pb_) : threadloop{name_, pb_}
         , _switchboard{pb_->lookup_impl<switchboard>()}
-        , _frame_pub{_switchboard->get_writer<frame_type>("webcam")}
+        , _frame_pub{_switchboard->get_writer<monocular_cam_type>("webcam")}
         , _start_time{time(NULL)} {
         const char* video_stream = std::getenv("INPUT_VIDEO");
         _load_video = video_stream != nullptr;
@@ -40,12 +40,12 @@ public:
         cv::Mat camera_frame;
         cv::cvtColor(camera_frame_raw, camera_frame, cv::COLOR_BGR2RGB);
         time_point current_time(std::chrono::duration<long, std::nano>{time(NULL) - _start_time});
-        _frame_pub.put(_frame_pub.allocate<frame_type>(frame_type{current_time, camera_frame}));
+        _frame_pub.put(_frame_pub.allocate<monocular_cam_type>({current_time, camera_frame}));
     }
 
 private:
     const std::shared_ptr<switchboard> _switchboard;
-    switchboard::writer<frame_type>    _frame_pub;
+    switchboard::writer<monocular_cam_type>    _frame_pub;
     cv::VideoCapture _capture;
     time_t _start_time;
     bool _load_video;

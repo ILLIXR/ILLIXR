@@ -24,7 +24,7 @@ target_include_directories(${PLUGIN_NAME} PRIVATE ${DepthAI_INCLUDE_DIRS} ${Open
 # if we are building DepthAI from source
 if(DepthAI_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} DepthAI_ext)
-    target_link_libraries(${PLUGIN_NAME} PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE ${DepthAI_LIBRARIES} spdlog::spdlog)
+    target_link_libraries(${PLUGIN_NAME} PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE spdlog::spdlog ${DepthAI_LIBRARIES})
 else()  # DepthAI already installed
     target_link_libraries(${PLUGIN_NAME} PUBLIC ${DEPENDENCIES} ${OpenCV_LIBRARIES} PRIVATE depthai::core)
 endif()

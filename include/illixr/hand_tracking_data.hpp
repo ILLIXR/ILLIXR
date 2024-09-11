@@ -1,6 +1,7 @@
 #pragma once
 
 #include "switchboard.hpp"
+#include "opencv_data_types.hpp"
 
 #include <map>
 #include <sstream>
@@ -322,8 +323,7 @@ struct rect {
 /**
  * Struct containing all the data from a hand detection
  */
-struct ht_frame : switchboard::event {
-    time_point time;    //!< timestamp
+struct ht_detection {
     cv::Mat img;        //!< image containing the results RGBA format
     rect left_palm;     //!< left palm detection
     rect right_palm;    //!< right palm detection
@@ -336,35 +336,32 @@ struct ht_frame : switchboard::event {
     hand_points left_hand_points;  //!< left hand landmark points
     hand_points right_hand_points; //!< right hand landmark points
 
-    ht_frame(time_point _time, cv::Mat* _img, rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
-        : time(_time), left_confidence(lc), right_confidence(rc) {
-        if (_img) {
-            _img->copyTo(img);
-        } else {
-            img = cv::Mat();
-        }
-        //delete _img;
+    ht_detection(rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
+        : left_confidence(lc), right_confidence(rc) {
         left_palm  = (lp) ? *lp : rect();
-        //delete lp;
         right_palm = (rp) ? *rp : rect();
-        //delete rp;
         left_hand  = (lh) ? *lh : rect();
-        //delete lh;
         right_hand = (rh) ? *rh : rect();
-        //delete rh;
         if (lhp) {
             left_hand_points = *lhp;
-            //delete lhp;
         } else {
             left_hand_points.assign(NUM_LANDMARKS, point());
         }
         if (rhp) {
             right_hand_points = *rhp;
-            //delete rhp;
         } else {
             right_hand_points.assign(NUM_LANDMARKS, point());
         }
     }
+};
+
+struct ht_frame : cam_base_type {
+    std::map<image_type, ht_detection> detections;
+
+    ht_frame(time_point _time, std::map<image_type, cv::Mat> _imgs, std::map<image_type, ht_detection> _detections)
+        : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? BINOCULAR : MONOCULAR)
+        , detections(std::move(_detections)) {}
+
 };
 
 }

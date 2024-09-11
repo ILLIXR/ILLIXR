@@ -15,7 +15,7 @@ public:
     offline_cam(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
+        , _m_cam_publisher{sb->get_writer<binocular_cam_type>("cam")}
         , _m_sensor_data{load_data()}
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
@@ -73,7 +73,7 @@ public:
 
             time_point expected_real_time_given_dataset_time(
                 std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time});
-            _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>(cam_type{
+            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>(binocular_cam_type{
                 expected_real_time_given_dataset_time,
                 img0,
                 img1,
@@ -85,7 +85,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard>             sb;
-    switchboard::writer<cam_type>                  _m_cam_publisher;
+    switchboard::writer<binocular_cam_type>        _m_cam_publisher;
     const std::map<ullong, sensor_types>           _m_sensor_data;
     ullong                                         dataset_first_time;
     ullong                                         last_ts;

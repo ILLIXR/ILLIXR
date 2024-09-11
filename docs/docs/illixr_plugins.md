@@ -23,7 +23,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
     -   Asynchronously *reads* `fast_pose` on `imu_raw` topic. ([_IMU_][36] biases are unused).
     -   Asynchronously *reads* `slow_pose` on `slow_pose` topic.
     -   Synchronously *reads* `imu` on `imu` topic.
-    -   Asynchronously *reads* buffered `cam_type` on `cam` topic.
+    -   Asynchronously *reads* buffered `binocular_cam_type` on `cam` topic.
 
 -   [`gldemo`][5]:
     Renders a static scene (into left and right [_eye buffers_][34]) given the [_pose_][37]
@@ -69,7 +69,7 @@ This page details the structure of ILLIXR's [_plugins_][41] and how they interac
 
     Topic details:
 
-    -   *Publishes* `cam_type` on `cam` topic.
+    -   *Publishes* `binocular_cam_type` on `cam` topic.
 -   [`pose_prediction`][17]:
     Uses the latest [_IMU_][36] value to predict a [_pose_][37] for a future point in time.
     Implements the `pose_prediction` service (defined in `common`),

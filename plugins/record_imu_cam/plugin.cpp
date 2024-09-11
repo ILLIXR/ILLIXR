@@ -21,7 +21,7 @@ public:
     record_imu_cam(std::string name_, phonebook* pb_)
         : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
+        , _m_cam{sb->get_buffered_reader<binocular_cam_type>("cam")}
         , record_data{get_record_data_path()}
         , cam0_data_dir{record_data / "cam0" / "data"}
         , cam1_data_dir{record_data / "cam1" / "data"} {
@@ -63,15 +63,15 @@ public:
                     << "," << linear_a[0] << "," << linear_a[1] << "," << linear_a[2] << std::endl;
 
         // write cam0 and cam1
-        switchboard::ptr<const cam_type> cam;
+        switchboard::ptr<const binocular_cam_type> cam;
         cam                  = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
         std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         if (cam != nullptr) {
             cam0_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-            cv::imwrite(cam0_img, cam->img0);
+            cv::imwrite(cam0_img, cam->at(LEFT));
             cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-            cv::imwrite(cam1_img, cam->img1);
+            cv::imwrite(cam1_img, cam->at(RIGHT));
         }
     }
 
@@ -87,7 +87,7 @@ private:
     std::ofstream                      cam1_wt_file;
     const std::shared_ptr<switchboard> sb;
 
-    switchboard::buffered_reader<cam_type> _m_cam;
+    switchboard::buffered_reader<binocular_cam_type> _m_cam;
 
     const boost::filesystem::path record_data;
     const boost::filesystem::path cam0_data_dir;

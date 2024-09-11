@@ -28,21 +28,6 @@ const record_header __imu_cam_record{"imu_cam",
                                          {"has_camera", typeid(bool)},
                                      }};
 
-struct cam_type_zed : public switchboard::event {
-    cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
-        : img0{std::move(_img0)}
-        , img1{std::move(_img1)}
-        , rgb{std::move(_rgb)}
-        , depth{std::move(_depth)}
-        , serial_no{_serial_no} { }
-
-    cv::Mat     img0;
-    cv::Mat     img1;
-    cv::Mat     rgb;
-    cv::Mat     depth;
-    std::size_t serial_no;
-};
-
 std::shared_ptr<Camera> start_camera() {
     std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
 
@@ -133,9 +118,12 @@ protected:
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
+        _clock_duration ts = _clock_duration(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
+        _m_cam.put(_m_cam.allocate<cam_type_zed>({time_point{ts},
+                                                  imageL_ocv.clone(), imageR_ocv.clone(), rgb_ocv.clone(), depth_ocv.clone(), ++serial_no}));
 
-        _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()},
-                                                  cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
+        //_m_cam.put(_m_cam.allocate<cam_type_zed>({_clock_duration{ts.getNanoseconds()}, imageL_ocv.clone(), imageR_ocv.clone(),
+        //                                          rgb_ocv.clone(), depth_ocv.clone(), ++serial_no}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -156,7 +144,7 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam_reader{sb->get_reader<cam_type_zed>("cam_zed")}
-        , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
+        , _m_cam_publisher{sb->get_writer<binocular_cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , it_log{record_logger_} {
         camera_thread_.start();
@@ -207,8 +195,8 @@ protected:
 
         switchboard::ptr<const cam_type_zed> c = _m_cam_reader.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
-            _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>({imu_time_point, cv::Mat{c->img0}, cv::Mat{c->img1}}));
-            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb}, cv::Mat{c->depth}}));
+            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>({imu_time_point, cv::Mat{c->at(LEFT)}, cv::Mat{c->at(RIGHT)}}));
+            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->at(RGB)}, cv::Mat{c->at(DEPTH)}}));
             last_serial_no = c->serial_no;
         }
 
@@ -225,7 +213,7 @@ private:
     const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_type>              _m_imu;
     switchboard::reader<cam_type_zed>          _m_cam_reader;
-    switchboard::writer<cam_type>              _m_cam_publisher;
+    switchboard::writer<binocular_cam_type>              _m_cam_publisher;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
 
     // IMU

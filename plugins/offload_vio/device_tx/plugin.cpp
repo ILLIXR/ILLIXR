@@ -35,7 +35,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
+        , _m_cam{sb->get_buffered_reader<binocular_cam_type>("cam")}
         , server_addr(SERVER_IP, SERVER_PORT_1) {
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
         socket.set_reuseaddr();
@@ -135,13 +135,13 @@ public:
             send_imu_cam_data(latest_cam_time);
         }
 
-        switchboard::ptr<const cam_type> cam;
+        switchboard::ptr<const binocular_cam_type> cam;
 
         if (_m_cam.size() != 0 && !latest_cam_time) {
             cam = _m_cam.dequeue();
 
-            cv::Mat cam_img0 = (cam->img0).clone();
-            cv::Mat cam_img1 = (cam->img1).clone();
+            cv::Mat cam_img0 = (cam->at(LEFT)).clone();
+            cv::Mat cam_img1 = (cam->at(RIGHT)).clone();
 
             // size of img0 before compression
             double cam_img0_size = cam_img0.total() * cam_img0.elemSize();
@@ -207,7 +207,7 @@ private:
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<RelativeClock>   _m_clock;
     const std::shared_ptr<Stoplight>       _m_stoplight;
-    switchboard::buffered_reader<cam_type> _m_cam;
+    switchboard::buffered_reader<binocular_cam_type> _m_cam;
 
     TCPSocket socket;
     Address   server_addr;

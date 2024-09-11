@@ -35,7 +35,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam{sb->get_writer<cam_type>("cam")}
+        , _m_cam{sb->get_writer<binocular_cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
         , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
         spdlogger(std::getenv("REALSENSE_LOG_LEVEL"));
@@ -120,7 +120,7 @@ public:
                                         .first<rs2::depth_sensor>()
                                         .get_depth_scale(); // for converting measurements into millimeters
                 depth.convertTo(converted_depth, CV_32FC1, depth_scale * 1000.f);
-                _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, ir_left, ir_right}));
+                _m_cam.put(_m_cam.allocate<binocular_cam_type>({cam_time_point, ir_left, ir_right}));
                 _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, rgb, depth}));
             } else if (cam_select == T26X) {
                 rs2::video_frame fisheye_frame_left  = fs.get_fisheye_frame(1);
@@ -129,7 +129,7 @@ public:
                     cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_left.get_data());
                 cv::Mat fisheye_right =
                     cv::Mat(cv::Size(IMAGE_WIDTH_T26X, IMAGE_HEIGHT_T26X), CV_8UC1, (void*) fisheye_frame_right.get_data());
-                _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, fisheye_left, fisheye_right}));
+                _m_cam.put(_m_cam.allocate<binocular_cam_type>({cam_time_point, fisheye_left, fisheye_right}));
             }
         }
     };
@@ -149,7 +149,7 @@ private:
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_type>              _m_imu;
-    switchboard::writer<cam_type>              _m_cam;
+    switchboard::writer<binocular_cam_type>    _m_cam;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
     std::mutex                                 mutex;
     rs2::pipeline_profile                      profiles;

@@ -65,7 +65,7 @@ public:
         , _m_slow_pose{sb->get_reader<pose_type>("slow_pose")}
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
+        , _m_cam{sb->get_buffered_reader<binocular_cam_type>("cam")} {
         spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
     }
 
@@ -244,14 +244,14 @@ public:
             use_cam = true;
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-        cv::Mat img0{cam->img0.clone()};
+        cv::Mat img0{cam->at(LEFT).clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
         camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
         GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-        cv::Mat img1{cam->img1.clone()}; /// <- Adding this here to simulate the copy
+        cv::Mat img1{cam->at(RIGHT).clone()}; /// <- Adding this here to simulate the copy
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
         camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
         GLint swizzleMask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -273,12 +273,12 @@ public:
             use_rgbd = true;
 
         glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
-        cv::Mat rgb{rgbd->rgb.clone()};
+        cv::Mat rgb{rgbd->at(RGB).clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
         rgbd_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
 
         glBindTexture(GL_TEXTURE_2D, rgbd_textures[1]);
-        cv::Mat depth{rgbd->depth.clone()};
+        cv::Mat depth{rgbd->at(DEPTH).clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
                      depth.ptr());
         rgbd_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);
@@ -421,11 +421,11 @@ private:
     const std::shared_ptr<switchboard>     sb;
     const std::shared_ptr<pose_prediction> pp;
 
-    switchboard::reader<pose_type>         _m_slow_pose;
-    switchboard::reader<imu_raw_type>      _m_fast_pose;
-    switchboard::reader<rgb_depth_type>    _m_rgb_depth;
-    switchboard::buffered_reader<cam_type> _m_cam;
-    GLFWwindow*                            gui_window{};
+    switchboard::reader<pose_type>                   _m_slow_pose;
+    switchboard::reader<imu_raw_type>                _m_fast_pose;
+    switchboard::reader<rgb_depth_type>              _m_rgb_depth;
+    switchboard::buffered_reader<binocular_cam_type> _m_cam;
+    GLFWwindow*                                      gui_window{};
 
     uint8_t test_pattern[TEST_PATTERN_WIDTH][TEST_PATTERN_HEIGHT]{};
 
@@ -440,10 +440,10 @@ private:
 
     Eigen::Vector3f tracking_position_offset = Eigen::Vector3f{0.0f, 0.0f, 0.0f};
 
-    switchboard::ptr<const cam_type>       cam;
-    switchboard::ptr<const rgb_depth_type> rgbd;
-    bool                                   use_cam  = false;
-    bool                                   use_rgbd = false;
+    switchboard::ptr<const binocular_cam_type> cam;
+    switchboard::ptr<const rgb_depth_type>     rgbd;
+    bool                                       use_cam  = false;
+    bool                                       use_rgbd = false;
     // std::vector<std::optional<cv::Mat>> camera_data = {std::nullopt, std::nullopt};
     GLuint          camera_textures[2];
     Eigen::Vector2i camera_texture_sizes[2] = {Eigen::Vector2i::Zero(), Eigen::Vector2i::Zero()};
@@ -512,7 +512,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("GLEW Error: {}", (void*)glewGetErrorString(glew_err));
             glfwDestroyWindow(gui_window);
             ILLIXR::abort("[debugview] Failed to initialize GLEW");
         }
