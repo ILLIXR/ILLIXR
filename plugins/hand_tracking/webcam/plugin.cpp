@@ -1,4 +1,3 @@
-#include "illixr/hand_tracking_data.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/relative_clock.hpp"
