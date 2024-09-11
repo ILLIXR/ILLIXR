@@ -251,9 +251,11 @@ public:
         std::vector<image_type> found_types;
         cv::Mat raw_img[2];
         int last_idx = 0;
+        long step = 0;
         if (_zed) {
             auto raw = _raw_zed.size() == 0 ? nullptr : _raw_zed.dequeue();
             if (raw != nullptr) {
+                step = frame->time.time_since_epoch().count() - raw->time.time_since_epoch().count();
                 if (frame->find(LEFT) != frame->images.end()) {
                     found_types.push_back(LEFT);
                     raw_img[0] = raw->at(LEFT).clone();
@@ -273,7 +275,7 @@ public:
         } else if (_wc) {
             auto raw = _raw_monoc.size() == 0 ? nullptr : _raw_monoc.dequeue();
             if (raw != nullptr && frame->find(RGB) != frame->images.end()) {
-                found_types.push_back(LEFT);
+                step = frame->time.time_since_epoch().count() - raw->time.time_since_epoch().count();
                 found_types.push_back(RGB);
                 raw_img[0] = raw->at(RGB).clone();
                 cv::flip(raw_img[0], raw_img[0], 1);
@@ -281,6 +283,7 @@ public:
         } else if (_cam) {
             auto raw = _raw_binoc.size() == 0 ? nullptr : _raw_binoc.dequeue();
             if (raw != nullptr) {
+                step = frame->time.time_since_epoch().count() - raw->time.time_since_epoch().count();
                 if (frame->find(LEFT) != frame->images.end()) {
                     found_types.push_back(LEFT);
                     raw_img[0] = raw->at(LEFT).clone();
@@ -336,6 +339,16 @@ public:
             {
                 std::string title = image_type_string(found_types[i]);
                 ImGui::Begin((title  + " Camera Hand Detections").c_str());
+                if (ImGui::BeginTable((title + "_time").c_str(), 2, ImGuiTableFlags_Borders)) {
+                    ImGui::TableSetupColumn((title + "d_label").c_str());
+                    ImGui::TableSetupColumn((title + "d_time").c_str());
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", "Processing time (ms)");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%ld", step / 1000000);
+                    ImGui::EndTable();
+                }
                 if (ImGui::BeginTable((title + "_results_table").c_str(), 2, ImGuiTableFlags_Borders)) {
                     ImGui::TableSetupColumn((title + "_det").c_str());
                     ImGui::TableSetupColumn((title + "_img").c_str());
