@@ -42,6 +42,7 @@ static void sigint_handler([[maybe_unused]] int sig) {
 int main(int argc, const char* argv[]) {
     cxxopts::Options options("ILLIXR", "Main program");
     options.show_positional_help();
+    options.allow_unrecognised_options();
     // std::string illixr_data, illixr_demo_data, realsense_cam;
     // illixr_data = illixr_demo_data = realsense_cam = "";
     // bool offload_enable, alignment_enable, enable_verbose_errors, enable_pre_sleep;

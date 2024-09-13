@@ -4,6 +4,7 @@
 #include <list>
 #include <mutex>
 #include <shared_mutex>
+#include <algorithm>
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
 #endif
@@ -23,6 +24,38 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
+                                           "DEPTHAI_LOG_LEVEL",
+                                           "FAUXPOSE_AMPLITUDE",
+                                           "FAUXPOSE_CENTER",
+                                           "FAUXPOSE_PERIOD",
+                                           "GLDEMO_LOG_LEVEL",
+                                           "GROUND_TRUTH_SLAM_LOG_LEVEL",
+                                           "GTSAM_INTEGRATOR_LOG_LEVEL",
+                                           "HT_INPUT",
+                                           "ILLIXR_ALIGNMENT_ENABLE",
+                                           "ILLIXR_ALIGNMENT_FILE",
+                                           "ILLIXR_BITRATE",
+                                           "ILLIXR_DATA",
+                                           "ILLIXR_DEMO_DATA",
+                                           "ILLIXR_ENABLE_PRE_SLEEP",
+                                           "ILLIXR_LOG_LEVEL",
+                                           "ILLIXR_OFFLOAD_ENABLE",
+                                           "ILLIXR_OFFLOAD_PATH",
+                                           "ILLIXR_RUN_DURATION",
+                                           "ILLIXR_TIMEWARP_DISABLE",
+                                           "INPUT_VIDEO",
+                                           "NATIVE_RENDERER_LOG_LEVEL",
+                                           "OFFLINE_CAM_LOG_LEVEL",
+                                           "OFFLOAD_DATA_LOG_LEVEL",
+                                           "OFFLOAD_VIO_LOG_LEVEL",
+                                           "OPENNI_LOG_LEVEL",
+                                           "REALSENSE_CAM",
+                                           "REALSENSE_LOG_LEVEL",
+                                           "TIMEWARP_GL_LOG_LEVEL",
+                                           "ILLIXR_STDOUT_METRICS",
+                                           "ILLIXR_ENABLE_VERBOSE_ERRORS"
+};
 /**
  * @Should be private to Switchboard.
  */
@@ -584,9 +617,10 @@ public:
     };
 
 private:
-    std::unordered_map<std::string, topic> _m_registry;
-    std::shared_mutex                      _m_registry_lock;
-    std::shared_ptr<record_logger>         _m_record_logger;
+    std::unordered_map<std::string, topic>       _m_registry;
+    std::shared_mutex                            _m_registry_lock;
+    std::shared_ptr<record_logger>               _m_record_logger;
+    std::unordered_map<std::string, std::string> _m_env_vars;
 
     template<typename specific_event>
     topic& try_register_topic(const std::string& topic_name) {
@@ -619,8 +653,47 @@ public:
      * If @p pb is null, then logging is disabled.
      */
     switchboard(const phonebook* pb)
-        : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
+        : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} {
+        for (const auto& item : ENV_VARS) {
+            char* value = getenv(item.c_str());
+            if (value) {
+                _m_env_vars[item] = value;
+            } else {
+                _m_env_vars[item] = "";
+            }
+        }
+    }
 
+    void set_env(const std::string& var, const std::string& val) {
+        _m_env_vars[var] = val;
+    }
+
+    std::vector<std::string> env_names() const {
+        std::vector<std::string> keys(_m_env_vars.size());
+        std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair){return pair.first;});
+        return keys;
+    }
+
+    std::string get_env(const std::string& var, std::string _default = "") {
+        try {
+            if (!_m_env_vars.at(var).empty())
+                return _m_env_vars.at(var);
+            _m_env_vars.at(var) = _default;
+            return _default;
+        } catch(std::out_of_range &) {
+            char* val = std::getenv(var.c_str());
+            if (val)
+                return {val};
+            return _default;
+        }
+    }
+
+    const char* get_env_char(const std::string& var, std::string _default = "") {
+        std::string val = get_env(var, _default);
+        if (val.empty())
+            return nullptr;
+        return val.c_str();
+    }
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
      *

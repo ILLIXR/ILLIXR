@@ -35,7 +35,7 @@ public:
         , server_ip(SERVER_IP)
         , server_port(SERVER_PORT_1)
         , buffer_str("") {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
         socket.socket_set_reuseaddr();
         socket.socket_bind(server_ip, server_port);
         socket.enable_no_delay();

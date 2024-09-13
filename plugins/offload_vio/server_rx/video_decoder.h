@@ -11,6 +11,7 @@
 #include <opencv2/core/mat.hpp>
 #include <queue>
 #include <utility>
+#include <functional>
 
 namespace ILLIXR {
 

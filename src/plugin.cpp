@@ -1,5 +1,6 @@
 #include "illixr.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -7,6 +8,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <yaml-cpp/yaml.h>
+#include <stdlib.h>
 
 ILLIXR::runtime* r = nullptr;
 
@@ -17,11 +19,37 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::vector<std::string> plugins;
 
     r = ILLIXR::runtime_factory();
+    // set internal env_vars
+    const std::shared_ptr<switchboard> sb = r->get_switchboard();
+
+    YAML::Node config;
+    if (options.count("yaml")) {
+        std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
+        config = YAML::LoadFile(options["yaml"].as<std::string>());
+    }
+
+    // read in config file first, as command line args will override
+    for (auto& item: sb->env_names()){
+        if (config[item])
+            sb->set_env(item, config[item].as<std::string>());
+    }
+    // command line specified env_vars
+    for (auto& item : options.unmatched()) {
+        bool matched = false;
+        cxxopts::values::parser_tool::ArguDesc ad = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
+
+        if (!sb->get_env(ad.arg_name, "").empty()) {
+            if (!ad.set_value)
+                ad.value = "True";
+            sb->set_env(ad.arg_name, ad.value);
+            setenv(ad.arg_name.c_str(), ad.value.c_str(), 1);  // env vars from command line take precedence
+        }
+    }
 
 #ifndef NDEBUG
     /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
     /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
-    const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
+    const bool enable_pre_sleep = ILLIXR::str_to_bool(sb->get_env("ILLIXR_ENABLE_PRE_SLEEP", "False"));
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
         spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
@@ -32,18 +60,13 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     }
 #endif /// NDEBUG
     // read in yaml config file
-    YAML::Node config;
-    if (options.count("yaml")) {
-        std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
-        config = YAML::LoadFile(options["yaml"].as<std::string>());
-    }
     if (options.count("duration")) {
         run_duration = std::chrono::seconds{options["duration"].as<long>()};
     } else if (config["duration"]) {
         run_duration = std::chrono::seconds{config["duration"].as<long>()};
     } else {
-        run_duration = getenv("ILLIXR_RUN_DURATION")
-            ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
+        run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
+            ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
             : ILLIXR_RUN_DURATION_DEFAULT;
     }
     GET_STRING(data, ILLIXR_DATA)

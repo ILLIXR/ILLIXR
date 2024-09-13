@@ -72,19 +72,18 @@ public:
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
         , mtp_logger{record_logger_}
-        // TODO: Use #198 to configure this. Delete getenv_or.
         // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
         // Timewarp poses a "second channel" by which pose data can correct the video stream,
         // which results in a "multipath" between the pose and the video stream.
         // In production systems, this is certainly a good thing, but it makes the system harder to analyze.
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+        , disable_warp{ILLIXR::str_to_bool(sb->get_env("ILLIXR_TIMEWARP_DISABLE", "False"))}
+        , enable_offload{ILLIXR::str_to_bool(sb->get_env("ILLIXR_OFFLOAD_ENABLE", "False"))}
 #else
         , _m_signal_quad{sb->get_writer<signal_to_quad>("signal_quad")}
 #endif
         , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
-        spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("TIMEWARP_GL_LOG_LEVEL"));
 #ifndef ILLIXR_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
@@ -519,7 +518,7 @@ public:
         glewExperimental      = GL_TRUE;
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("[timewarp_gl] GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("[timewarp_gl] GLEW Error: {}", (void*)glewGetErrorString(glew_err));
             ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
         }
 
