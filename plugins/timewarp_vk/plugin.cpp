@@ -79,7 +79,7 @@ public:
         : pb{pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
+        , disable_warp{ILLIXR::str_to_bool(sb->get_env("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
         ds = pb->lookup_impl<display_sink>();

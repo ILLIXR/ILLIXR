@@ -2,8 +2,7 @@
 
 #include "illixr/data_format.hpp"
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
-#include "illixr/network/timestamp.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "vio_output.pb.h"
@@ -20,10 +19,11 @@ public:
         : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-        , client_addr(CLIENT_IP, CLIENT_PORT_2) {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(Address(SERVER_IP, SERVER_PORT_2));
+        , client_ip(CLIENT_IP)
+        , client_port(CLIENT_PORT_2) {
+        spdlogger(sb->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
+        socket.socket_set_reuseaddr();
+        socket.socket_bind(SERVER_IP, SERVER_PORT_2);
         socket.enable_no_delay();
         is_client_connected = false;
     }
@@ -43,15 +43,13 @@ public:
     }
 
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
-        socket.listen();
+        socket.socket_listen();
 #ifndef NDEBUG
         spdlog::get(name)->debug("[offload_vio.server_tx]: Waiting for connection!");
 #endif
-        write_socket = new TCPSocket(FileDescriptor(system_call(
-            "accept", ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+        write_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.server_tx]: Connection is established with {}",
-                                 write_socket->peer_address().str(":"));
+        spdlog::get(name)->debug("[offload_vio.server_tx]: Connection is established with {}", write_socket->peer_address());
 #endif
     }
 
@@ -141,7 +139,7 @@ public:
             std::string data_to_be_sent = vio_output_params->SerializeAsString();
             std::string delimitter      = "END!";
 
-            write_socket->write(data_to_be_sent + delimitter);
+            write_socket->write_data(data_to_be_sent + delimitter);
 
             delete vio_output_params;
         } else {
@@ -153,10 +151,11 @@ private:
     const std::shared_ptr<switchboard>        sb;
     switchboard::reader<imu_integrator_input> _m_imu_int_input;
 
-    TCPSocket  socket;
-    TCPSocket* write_socket = NULL;
-    Address    client_addr;
-    bool       is_client_connected;
+    TCPSocket   socket;
+    TCPSocket*  write_socket = NULL;
+    std::string client_ip;
+    int         client_port;
+    bool        is_client_connected;
 };
 
 PLUGIN_MAIN(server_writer)

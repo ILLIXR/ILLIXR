@@ -41,10 +41,11 @@ void spdlogger(const std::string& name, const char* log_level) {
 class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
-        spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
+        auto sb = pb.lookup_impl<switchboard>();
+        spdlogger("illixr", sb->get_env_char("ILLIXR_LOG_LEVEL"));
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
         pb.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
@@ -141,6 +142,9 @@ public:
          */
     }
 
+    std::shared_ptr<switchboard> get_switchboard() override {
+        return pb.lookup_impl<switchboard>();
+    }
 private:
     // I have to keep the dynamic libs in scope until the program is dead
     std::vector<dynamic_lib>             libs;

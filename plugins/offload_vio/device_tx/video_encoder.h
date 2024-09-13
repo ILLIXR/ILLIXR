@@ -5,6 +5,7 @@
 #ifndef ILLIXR_COMPRESSION_VIDEO_ENCODER_H
 #define ILLIXR_COMPRESSION_VIDEO_ENCODER_H
 
+#include "illixr/switchboard.hpp"
 #include "gst/gst.h"
 
 #include <condition_variable>
@@ -17,6 +18,7 @@ namespace ILLIXR {
 
 class video_encoder {
 private:
+    //std::shared_ptr<switchboard> _sb;
     std::function<void(const GstMapInfo&, const GstMapInfo&)> _callback;
 
     // unsigned int _sample_rate = 15;
@@ -40,7 +42,9 @@ private:
     void create_pipelines();
 
 public:
-    explicit video_encoder(std::function<void(const GstMapInfo&, const GstMapInfo&)> callback);
+    explicit video_encoder(std::function<void(const GstMapInfo&, const GstMapInfo&)> callback
+                           //, std::shared_ptr<switchboard>& sb
+                           );
 
     void init();
 

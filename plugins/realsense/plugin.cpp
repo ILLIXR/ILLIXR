@@ -37,8 +37,8 @@ public:
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<binocular_cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , realsense_cam{ILLIXR::getenv_or("REALSENSE_CAM", "auto")} {
-        spdlogger(std::getenv("REALSENSE_LOG_LEVEL"));
+        , realsense_cam{sb->get_env("REALSENSE_CAM", "auto")} {
+        spdlogger(sb->get_env_char("REALSENSE_LOG_LEVEL"));
         accel_data.iteration = -1;
         cfg.disable_all_streams();
         configure_camera();

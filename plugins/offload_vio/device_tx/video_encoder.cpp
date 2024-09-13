@@ -36,8 +36,11 @@ GstFlowReturn cb_new_sample(GstElement* appsink, gpointer* user_data) {
     return reinterpret_cast<video_encoder*>(user_data)->cb_appsink(appsink);
 }
 
-video_encoder::video_encoder(std::function<void(const GstMapInfo&, const GstMapInfo&)> callback)
-    : _callback(std::move(callback)) { }
+video_encoder::video_encoder(std::function<void(const GstMapInfo&, const GstMapInfo&)> callback
+                             //, std::shared_ptr<switchboard>& sb
+                             )
+    : //_sb(sb),
+    _callback(std::move(callback)) { }
 
 void video_encoder::create_pipelines() {
     gst_init(nullptr, nullptr);
@@ -60,8 +63,8 @@ void video_encoder::create_pipelines() {
     gst_caps_unref(caps_8uc1);
 
     // set bitrate from environment variables
-    // g_object_set(G_OBJECT(encoder_img0), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
-    // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(std::getenv("ILLIXR_BITRATE")), nullptr, 10);
+    // g_object_set(G_OBJECT(encoder_img0), "bitrate", std::stoi(sb->get_env("ILLIXR_BITRATE")), nullptr, 10);
+    // g_object_set(G_OBJECT(encoder_img1), "bitrate", std::stoi(sb->get_env("ILLIXR_BITRATE")), nullptr, 10);
 
     // set bitrate from defined variables
     g_object_set(G_OBJECT(encoder_img0), "bitrate", ILLIXR_BITRATE, nullptr);
