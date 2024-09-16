@@ -8,6 +8,7 @@ find_package(OpenGL REQUIRED)
 set(PLUGIN_NAME plugin.hand_tracking.viewer${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
+            plugin.hpp
             imgui/imconfig.h
             imgui/imgui.cpp
             imgui/imgui.h
