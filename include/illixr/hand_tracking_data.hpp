@@ -324,7 +324,6 @@ struct rect {
  * Struct containing all the data from a hand detection
  */
 struct ht_detection {
-    cv::Mat img;        //!< image containing the results RGBA format
     rect left_palm;     //!< left palm detection
     rect right_palm;    //!< right palm detection
     rect left_hand;     //!< left hand detection
@@ -357,10 +356,11 @@ struct ht_detection {
 
 struct ht_frame : cam_base_type {
     std::map<image_type, ht_detection> detections;
-
-    ht_frame(time_point _time, std::map<image_type, cv::Mat> _imgs, std::map<image_type, ht_detection> _detections)
+    time_point start_time;
+    ht_frame(time_point _start, time_point _time, std::map<image_type, cv::Mat> _imgs, std::map<image_type, ht_detection> _detections)
         : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? BINOCULAR : MONOCULAR)
-        , detections(std::move(_detections)) {}
+        , detections(std::move(_detections))
+        , start_time(_start){}
 
 };
 
