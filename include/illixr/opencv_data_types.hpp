@@ -12,7 +12,11 @@ enum image_type {
     LEFT,
     RIGHT,
     RGB,
-    DEPTH
+    DEPTH,
+    LEFT_PROCESSED,
+    RIGHT_PROCESSED,
+    RGB_PROCESSED,
+    DEPTH_PROCESSED
 };
 
 enum cam_type {
@@ -62,7 +66,7 @@ struct monocular_cam_type : cam_base_type {
     monocular_cam_type(time_point _time, cv::Mat _img)
         : cam_base_type(_time, {{RGB, _img}}, MONOCULAR) {}
 
-    cv::Mat img() const {
+    [[nodiscard]] cv::Mat img() const {
         return images.at(RGB);
     }
 };
