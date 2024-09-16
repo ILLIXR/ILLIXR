@@ -1,8 +1,4 @@
-#include "illixr/plugin.hpp"
-
-#include "illixr/data_format.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/pose_prediction.hpp"
+#include "plugin.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <filesystem>
@@ -10,9 +6,7 @@
 
 using namespace ILLIXR;
 
-class pose_prediction_impl : public pose_prediction {
-public:
-    explicit pose_prediction_impl(const phonebook* const pb)
+    pose_prediction_impl::pose_prediction_impl(const phonebook* const pb)
         : switchboard_{pb->lookup_impl<switchboard>()}
         , clock_{pb->lookup_impl<relative_clock>()}
         , slow_pose_{switchboard_->get_reader<pose_type>("slow_pose")}
@@ -24,17 +18,17 @@ public:
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
     // So we will predict to `now()`, as a temporary approximation
-    fast_pose_type get_fast_pose() const override {
+    fast_pose_type pose_prediction_impl::get_fast_pose() const {
         switchboard::ptr<const switchboard::event_wrapper<time_point>> vsync_estimate = vsync_estimate_.get_ro_nullable();
 
         if (vsync_estimate == nullptr) {
             return get_fast_pose(clock_->now());
         } else {
-            return get_fast_pose(*vsync_estimate);
+            return get_fast_pose(vsync_estimate.get()->operator time_point());
         }
     }
 
-    pose_type get_true_pose() const override {
+    pose_type pose_prediction_impl::get_true_pose() const {
         switchboard::ptr<const pose_type>                                   pose_ptr   = true_pose_.get_ro_nullable();
         switchboard::ptr<const switchboard::event_wrapper<Eigen::Vector3f>> offset_ptr = ground_truth_offset_.get_ro_nullable();
 
@@ -58,7 +52,7 @@ public:
     }
 
     // future_time: An absolute timepoint in the future
-    fast_pose_type get_fast_pose(time_point future_timestamp) const override {
+    fast_pose_type pose_prediction_impl::get_fast_pose(time_point future_timestamp) const {
         switchboard::ptr<const pose_type> slow_pose = slow_pose_.get_ro_nullable();
         if (slow_pose == nullptr) {
             // No slow pose, return 0
@@ -116,7 +110,7 @@ public:
             .pose = predicted_pose, .predict_computed_time = clock_->now(), .predict_target_time = future_timestamp};
     }
 
-    void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override {
+    void pose_prediction_impl::set_offset(const Eigen::Quaternionf& raw_o_times_offset) {
         std::unique_lock   lock{offset_mutex_};
         Eigen::Quaternionf raw_o = raw_o_times_offset * offset_.inverse();
         offset_                  = raw_o.inverse();
@@ -130,12 +124,12 @@ public:
          */
     }
 
-    Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const {
+    Eigen::Quaternionf pose_prediction_impl::apply_offset(const Eigen::Quaternionf& orientation) const {
         std::shared_lock lock{offset_mutex_};
         return orientation * offset_;
     }
 
-    bool fast_pose_reliable() const override {
+    bool pose_prediction_impl::fast_pose_reliable() const {
         return slow_pose_.get_ro_nullable() && imu_raw_.get_ro_nullable();
         /*
           SLAM takes some time to initialize, so initially fast_pose
@@ -152,7 +146,7 @@ public:
          */
     }
 
-    bool true_pose_reliable() const override {
+    bool pose_prediction_impl::true_pose_reliable() const {
         // return true_pose_.valid();
         /*
           We do not have a "ground truth" available in all cases, such
@@ -161,13 +155,13 @@ public:
         return bool(true_pose_.get_ro_nullable());
     }
 
-    Eigen::Quaternionf get_offset() override {
+    Eigen::Quaternionf pose_prediction_impl::get_offset() {
         return offset_;
     }
 
     // Correct the orientation of the pose due to the lopsided IMU in the
     // current Dataset we are using (EuRoC)
-    pose_type correct_pose(const pose_type& pose) const override {
+    pose_type pose_prediction_impl::correct_pose(const pose_type& pose) const {
         pose_type swapped_pose;
 
         // Make any changes to the axes direction below
@@ -188,11 +182,11 @@ public:
         return swapped_pose;
     }
 
-private:
+
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
     // most recent imu reading used to perform this prediction.
-    std::pair<Eigen::Matrix<double, 13, 1>, time_point> predict_mean_rk4(double dt) const {
+    std::pair<Eigen::Matrix<double, 13, 1>, time_point> pose_prediction_impl::predict_mean_rk4(double dt) const {
         // Pre-compute things
         switchboard::ptr<const imu_raw_type> imu_raw = imu_raw_.get_ro();
 
@@ -278,7 +272,7 @@ private:
      * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf).
      *
      */
-    static inline Eigen::Matrix<double, 4, 4> Omega(Eigen::Matrix<double, 3, 1> w) {
+    inline Eigen::Matrix<double, 4, 4> pose_prediction_impl::Omega(Eigen::Matrix<double, 3, 1> w) {
         Eigen::Matrix<double, 4, 4> mat;
         mat.block(0, 0, 3, 3) = -skew_x(w);
         mat.block(3, 0, 1, 3) = -w.transpose();
@@ -292,7 +286,7 @@ private:
      * @param q_t Quaternion to normalized
      * @return Normalized quaterion
      */
-    static inline Eigen::Matrix<double, 4, 1> quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
+    inline Eigen::Matrix<double, 4, 1> pose_prediction_impl::quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
         if (q_t(3, 0) < 0) {
             q_t *= -1;
         }
@@ -312,7 +306,7 @@ private:
      * @param[in] w 3x1 vector to be made a skew-symmetric
      * @return 3x3 skew-symmetric matrix
      */
-    static inline Eigen::Matrix<double, 3, 3> skew_x(const Eigen::Matrix<double, 3, 1>& w) {
+    inline Eigen::Matrix<double, 3, 3> pose_prediction_impl::skew_x(const Eigen::Matrix<double, 3, 1>& w) {
         Eigen::Matrix<double, 3, 3> w_x;
         w_x << 0, -w(2), w(1), w(2), 0, -w(0), -w(1), w(0), 0;
         return w_x;
@@ -329,7 +323,7 @@ private:
      * @param[in] q JPL quaternion
      * @return 3x3 SO(3) rotation matrix
      */
-    static inline Eigen::Matrix<double, 3, 3> quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
+    inline Eigen::Matrix<double, 3, 3> pose_prediction_impl::quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
         Eigen::Matrix<double, 3, 3> q_x = skew_x(q.block(0, 0, 3, 1));
         Eigen::MatrixXd             Rot = (2 * std::pow(q(3, 0), 2) - 1) * Eigen::MatrixXd::Identity(3, 3) - 2 * q(3, 0) * q_x +
             2 * q.block(0, 0, 3, 1) * (q.block(0, 0, 3, 1).transpose());
@@ -354,7 +348,7 @@ private:
      * @param[in] p Second JPL quaternion
      * @return 4x1 resulting p*q quaternion
      */
-    static inline Eigen::Matrix<double, 4, 1> quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
+    inline Eigen::Matrix<double, 4, 1> pose_prediction_impl::quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
                                                             const Eigen::Matrix<double, 4, 1>& p) {
         Eigen::Matrix<double, 4, 1> q_t;
         Eigen::Matrix<double, 4, 4> Qm;
@@ -372,17 +366,6 @@ private:
         return q_t / q_t.norm();
     }
 
-    mutable std::atomic<bool>                                        first_time_{true};
-    const std::shared_ptr<switchboard>                               switchboard_;
-    const std::shared_ptr<const relative_clock>                      clock_;
-    switchboard::reader<pose_type>                                   slow_pose_;
-    switchboard::reader<imu_raw_type>                                imu_raw_;
-    switchboard::reader<pose_type>                                   true_pose_;
-    switchboard::reader<switchboard::event_wrapper<Eigen::Vector3f>> ground_truth_offset_;
-    switchboard::reader<switchboard::event_wrapper<time_point>>      vsync_estimate_;
-    mutable Eigen::Quaternionf                                       offset_{Eigen::Quaternionf::Identity()};
-    mutable std::shared_mutex                                        offset_mutex_;
-};
 
 class pose_prediction_plugin : public plugin {
 public:

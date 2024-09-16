@@ -11,6 +11,7 @@ set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp
+    plugin.hpp
     third_party/imgui.cpp
     third_party/imgui_demo.cpp
     third_party/imgui_draw.cpp

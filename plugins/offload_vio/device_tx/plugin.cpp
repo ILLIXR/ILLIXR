@@ -1,16 +1,8 @@
-#include "illixr/data_format.hpp"
-#include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
-#include "illixr/network/timestamp.hpp"
-#include "illixr/opencv_data_types.hpp"
-#include "illixr/phonebook.hpp"
-#include "illixr/stoplight.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
-#include "video_encoder.h"
-#include "vio_input.pb.h"
+#include "plugin.hpp"
 
-#include <boost/lockfree/spsc_queue.hpp>
+#include "illixr/network/net_config.hpp"
+#include "illixr/network/timestamp.hpp"
+
 #include <cassert>
 #include <opencv2/core/mat.hpp>
 
@@ -18,9 +10,7 @@ using namespace ILLIXR;
 
 // #define USE_COMPRESSION
 
-class offload_writer : public threadloop {
-public:
-    offload_writer(const std::string& name, phonebook* pb)
+[[maybe_unused]] offload_writer::offload_writer(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , switchboard_{phonebook_->lookup_impl<switchboard>()}
         , clock_{phonebook_->lookup_impl<relative_clock>()}
@@ -36,7 +26,7 @@ public:
         std::srand(std::time(0));
     }
 
-    void start() override {
+    void offload_writer::start() {
         threadloop::start();
 
         encoder_ = std::make_unique<video_encoder>([this](const GstMapInfo& img0, const GstMapInfo& img1) {
@@ -69,7 +59,7 @@ public:
         });
     }
 
-    void send_imu_cam_data(std::optional<time_point>& cam_time) {
+    void offload_writer::send_imu_cam_data(std::optional<time_point>& cam_time) {
         data_buffer_->set_real_timestamp(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         data_buffer_->set_frame_id(frame_id_);
@@ -85,7 +75,7 @@ public:
         cam_time.reset();
     }
 
-    void prepare_imu_cam_data(switchboard::ptr<const imu_type> datum) {
+    void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum) {
         // Ensures that slam doesnt start before valid IMU readings come in
         if (datum == nullptr) {
             assert(!latest_imu_time_);
@@ -178,37 +168,13 @@ public:
         }
     }
 
-protected:
-    void _p_thread_setup() override { }
 
     // TODO not the best way to use threadloop and stoplight
-    void _p_one_iteration() override {
+    void offload_writer::_p_one_iteration() {
         while (!stoplight_->check_should_stop()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
 
-private:
-    boost::lockfree::spsc_queue<uint64_t> queue_{1000};
-    std::vector<int32_t>                  sizes_;
-    std::mutex                            mutex_;
-    std::condition_variable               condition_var_;
-    GstMapInfo                            img0_;
-    GstMapInfo                            img1_;
-    bool                                  img_ready_ = false;
-
-    std::unique_ptr<video_encoder>         encoder_ = nullptr;
-    std::optional<time_point>              latest_imu_time_;
-    std::optional<time_point>              latest_cam_time_;
-    int                                    frame_id_    = 0;
-    vio_input_proto::IMUCamVec*            data_buffer_ = new vio_input_proto::IMUCamVec();
-    const std::shared_ptr<switchboard>     switchboard_;
-    const std::shared_ptr<relative_clock>  clock_;
-    const std::shared_ptr<stoplight>       stoplight_;
-    switchboard::buffered_reader<cam_type> cam_;
-
-    TCPSocket socket_;
-    Address   server_addr_;
-};
 
 PLUGIN_MAIN(offload_writer)

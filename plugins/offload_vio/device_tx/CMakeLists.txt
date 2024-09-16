@@ -8,14 +8,15 @@ set(PLUGIN_NAME plugin.offload_vio.device_tx${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        video_encoder.cpp
-        video_encoder.h
-        ../../../include/illixr/plugin.hpp
-        ../../../include/illixr/data_format.hpp
-        ../../../include/illixr/opencv_data_types.hpp
-        ../../../include/illixr/phonebook.hpp
-        ../../../include/illixr/switchboard.hpp
-        )
+            plugin.hpp
+            video_encoder.cpp
+            video_encoder.hpp
+            ../../../include/illixr/plugin.hpp
+            ../../../include/illixr/data_format.hpp
+            ../../../include/illixr/opencv_data_types.hpp
+            ../../../include/illixr/phonebook.hpp
+            ../../../include/illixr/switchboard.hpp
+)
 
 # if building on CentOS make sure we use the correct OpenCV
 if(BUILD_OPENCV)

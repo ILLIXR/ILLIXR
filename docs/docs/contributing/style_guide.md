@@ -46,7 +46,8 @@ Here is the basic directory structure used by ILLIXR (some files/directories hav
 │   │   └── CMakeLists.txt            # if the plugin is from another repository, then only this file is needed
 │   ├── <plugin_name>
 │   │   ├── CMakeLists.txt            # cmake file which configures the build for this plugin
-│   │   ├── *.hpp                     # header files, if any, for the plugin
+│   │   ├── plugin.hpp                # header file for the plugin, defining the class
+│   │   ├── *.hpp                     # additional header files, if any, for the plugin
 │   │   └── plugin.cpp                # every plugin must have this file which contains the code for the plugin
 │   └── plugins.yaml                  # yaml style file listing configurations and plugins
 ├── profiles
@@ -66,6 +67,7 @@ plugins
     ├── third_party
     │   ├── vk_mapper.c        # third party code
     │   └── vk_mapper.h
+    ├── plugin.hpp             # plugin header
     ├── plugin.cpp             # plugin code
     └── CMakeLists.txt         # plugin CMake file
 ```
@@ -79,6 +81,7 @@ Illixr has adopted the following file naming conventions:
   - header files should have the `.hpp` suffix
   - code files should have the `.cpp` suffix
   - documentation files should have the `.md` suffix
+  - each plugin must have its own header file called `plugin.hpp` which defines the class, this is to make it easier to see all the variables, etc. which could become buried in code otherwise 
   - any third party code used in ILLIXR is not subject to the above rules and can keep their original naming conventions
 
 ### Header Files

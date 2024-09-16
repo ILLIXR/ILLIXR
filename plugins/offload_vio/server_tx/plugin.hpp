@@ -1,0 +1,27 @@
+#pragma once
+
+#include "illixr/data_format.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/network/socket.hpp"
+
+
+namespace ILLIXR {
+class server_writer : public plugin {
+public:
+    [[maybe_unused]] server_writer(const std::string& name, phonebook* pb);
+    void start() override;
+    void start_accepting_connection(const switchboard::ptr<const connection_signal>& datum);
+    void send_vio_output(const switchboard::ptr<const pose_type>& datum);
+private:
+    const std::shared_ptr<switchboard>        switchboard_;
+    switchboard::reader<imu_integrator_input> imu_int_input_;
+
+    TCPSocket                socket_;
+    TCPSocket*               write_socket = nullptr;
+    [[maybe_unused]] Address client_addr_;
+    [[maybe_unused]] bool    is_client_connected_;
+
+};
+}
