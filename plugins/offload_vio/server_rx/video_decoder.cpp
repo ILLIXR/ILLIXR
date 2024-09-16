@@ -2,7 +2,7 @@
 // Created by steven on 7/8/22.
 //
 
-#include "video_decoder.h"
+#include "video_decoder.hpp"
 
 #include "illixr/error_util.hpp"
 
