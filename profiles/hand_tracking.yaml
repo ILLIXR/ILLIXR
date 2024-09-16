@@ -1,5 +1,5 @@
 # This file was auto generated, take caution if manually editing.
-plugins: hand_tracking.webcam,hand_tracking,hand_tracking.viewer
+plugins: webcam,hand_tracking,hand_tracking.viewer
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false

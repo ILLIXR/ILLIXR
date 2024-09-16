@@ -1,6 +1,7 @@
-set(PLUGIN_NAME plugin.hand_tracking.webcam${ILLIXR_BUILD_SUFFIX})
+set(PLUGIN_NAME plugin.webcam${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
+            plugin.hpp
             ../../../include/illixr/hand_tracking_data.hpp
             ../../../include/illixr/opencv_data_types.hpp
             ../../../include/illixr/threadloop.hpp
