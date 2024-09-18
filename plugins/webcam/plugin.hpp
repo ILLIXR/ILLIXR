@@ -16,6 +16,10 @@ private:
     switchboard::writer<monocular_cam_type>    _frame_pub;
     cv::VideoCapture _capture;
     bool _load_video;
+    cv::Mat last_image;
+    size_t last_send;
+    double fps = 30.;
+    int count = 0;
 };
 
 }
