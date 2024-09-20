@@ -21,7 +21,7 @@ public:
     void make_gui(const switchboard::ptr<const ht_frame>& frame);
 
 private:
-    static void make_detection_table(const ht_detection& det, const image_type it);
+    static void make_detection_table(const ht_detection& det, const image::image_type it);
 
     std::shared_ptr<RelativeClock>     _clock;
     const std::shared_ptr<switchboard> _switchboard;

@@ -69,9 +69,9 @@ public:
         std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         if (cam != nullptr) {
             cam0_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-            cv::imwrite(cam0_img, cam->at(LEFT));
+            cv::imwrite(cam0_img, cam->at(image::LEFT));
             cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-            cv::imwrite(cam1_img, cam->at(RIGHT));
+            cv::imwrite(cam1_img, cam->at(image::RIGHT));
         }
     }
 

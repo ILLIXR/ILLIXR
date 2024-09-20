@@ -167,10 +167,10 @@ private:
     }
 
 private:
-    const std::shared_ptr<switchboard>     sb;
-    switchboard::writer<imu_type>          _m_imu;
-    switchboard::writer<binocular_cam_type>          _m_cam;
-    switchboard::writer<connection_signal> _conn_signal;
+    const std::shared_ptr<switchboard>      sb;
+    switchboard::writer<imu_type>           _m_imu;
+    switchboard::writer<binocular_cam_type> _m_cam;
+    switchboard::writer<connection_signal>  _conn_signal;
 
     TCPSocket   socket;
     TCPSocket*  read_socket = NULL;

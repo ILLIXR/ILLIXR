@@ -244,14 +244,14 @@ public:
             use_cam = true;
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[0]);
-        cv::Mat img0{cam->at(LEFT).clone()};
+        cv::Mat img0{cam->at(image::LEFT).clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img0.cols, img0.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img0.ptr());
         camera_texture_sizes[0] = Eigen::Vector2i(img0.cols, img0.rows);
         GLint swizzleMask[]     = {GL_RED, GL_RED, GL_RED, GL_RED};
         glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
         glBindTexture(GL_TEXTURE_2D, camera_textures[1]);
-        cv::Mat img1{cam->at(RIGHT).clone()}; /// <- Adding this here to simulate the copy
+        cv::Mat img1{cam->at(image::RIGHT).clone()}; /// <- Adding this here to simulate the copy
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, img1.cols, img1.rows, 0, GL_RED, GL_UNSIGNED_BYTE, img1.ptr());
         camera_texture_sizes[1] = Eigen::Vector2i(img1.cols, img1.rows);
         GLint swizzleMask1[]    = {GL_RED, GL_RED, GL_RED, GL_RED};
@@ -273,12 +273,12 @@ public:
             use_rgbd = true;
 
         glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
-        cv::Mat rgb{rgbd->at(RGB).clone()};
+        cv::Mat rgb{rgbd->at(image::RGB).clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
         rgbd_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
 
         glBindTexture(GL_TEXTURE_2D, rgbd_textures[1]);
-        cv::Mat depth{rgbd->at(DEPTH).clone()};
+        cv::Mat depth{rgbd->at(image::DEPTH).clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
                      depth.ptr());
         rgbd_texture_sizes[1] = Eigen::Vector2i(depth.cols, depth.rows);

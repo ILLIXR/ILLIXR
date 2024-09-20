@@ -195,8 +195,8 @@ protected:
 
         switchboard::ptr<const cam_type_zed> c = _m_cam_reader.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
-            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>({imu_time_point, cv::Mat{c->at(LEFT)}, cv::Mat{c->at(RIGHT)}}));
-            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->at(RGB)}, cv::Mat{c->at(DEPTH)}}));
+            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>({imu_time_point, cv::Mat{c->at(image::LEFT)}, cv::Mat{c->at(image::RIGHT)}}));
+            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->at(image::RGB)}, cv::Mat{c->at(image::DEPTH)}}));
             last_serial_no = c->serial_no;
         }
 

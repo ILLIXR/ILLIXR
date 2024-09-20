@@ -18,19 +18,19 @@ static void glfw_error_callback(int error, const char* description) {
     ILLIXR::abort();
 }
 
-std::string image_type_string(const image_type it) {
+std::string image_type_string(const image::image_type it) {
     switch(it) {
-    case LEFT:
-    case LEFT_PROCESSED:
+    case image::LEFT:
+    case image::LEFT_PROCESSED:
         return "left";
-    case RIGHT:
-    case RIGHT_PROCESSED:
+    case image::RIGHT:
+    case image::RIGHT_PROCESSED:
         return "right";
-    case RGB:
-    case RGB_PROCESSED:
+    case image::RGB:
+    case image::RGB_PROCESSED:
         return "rgb";
-    case DEPTH:
-    case DEPTH_PROCESSED:
+    case image::DEPTH:
+    case image::DEPTH_PROCESSED:
         return "depth";
     }
 }
@@ -133,7 +133,7 @@ viewer::~viewer() {
     glfwTerminate();
 }
 
-void viewer::make_detection_table(const ht_detection& det, const image_type it) {
+void viewer::make_detection_table(const ht_detection& det, const image::image_type it) {
     ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
     std::string title = image_type_string(it);
 
@@ -239,27 +239,26 @@ void viewer::make_detection_table(const ht_detection& det, const image_type it) 
 void viewer::make_gui(const switchboard::ptr<const ht_frame>& frame) {
     glfwMakeContextCurrent(_viewport);
     glfwPollEvents();
-    std::vector<image_type> found_types;
+    std::vector<image::image_type> found_types;
     cv::Mat raw_img[2];
     int last_idx = 0;
-    long step = frame->time.time_since_epoch().count() - frame->start_time.time_since_epoch().count();
 
-    if (frame->find(LEFT_PROCESSED) != frame->images.end()) {
-        found_types.push_back(LEFT_PROCESSED);
-        raw_img[0] = frame->at(LEFT).clone();
+    if (frame->find(image::LEFT_PROCESSED) != frame->images.end()) {
+        found_types.push_back(image::LEFT_PROCESSED);
+        raw_img[0] = frame->at(image::LEFT).clone();
         last_idx++;
         if (_zed)
             cv::cvtColor(raw_img[0], raw_img[0], cv::COLOR_GRAY2RGB);
     }
-    if (frame->find(RIGHT_PROCESSED) != frame->images.end()) {
-        found_types.push_back(RIGHT_PROCESSED);
-        raw_img[last_idx] = frame->at(RIGHT).clone();
+    if (frame->find(image::RIGHT_PROCESSED) != frame->images.end()) {
+        found_types.push_back(image::RIGHT_PROCESSED);
+        raw_img[last_idx] = frame->at(image::RIGHT).clone();
         if (_zed)
             cv::cvtColor(raw_img[last_idx], raw_img[last_idx], cv::COLOR_GRAY2RGB);
     }
-    if (found_types.empty() && frame->find(RGB_PROCESSED) != frame->images.end()) {
-        found_types.push_back(RGB_PROCESSED);
-        raw_img[0] = frame->at(RGB).clone();
+    if (found_types.empty() && frame->find(image::RGB_PROCESSED) != frame->images.end()) {
+        found_types.push_back(image::RGB_PROCESSED);
+        raw_img[0] = frame->at(image::RGB).clone();
         if (_wc)
             cv::flip(raw_img[0], raw_img[0], 1);
     }
@@ -315,7 +314,7 @@ void viewer::make_gui(const switchboard::ptr<const ht_frame>& frame) {
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%s", "Processing time (ms)");
                 ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%ld", step / 1000000);
+                ImGui::Text("%ld", frame->detections.at(found_types[i]).proc_time / 1000000);
                 ImGui::EndTable();
             }
             if (ImGui::BeginTable((title + "_results_table").c_str(), 2, ImGuiTableFlags_Borders)) {

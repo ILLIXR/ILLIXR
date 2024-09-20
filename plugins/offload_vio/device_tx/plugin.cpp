@@ -139,8 +139,8 @@ public:
         if (_m_cam.size() != 0 && !latest_cam_time) {
             cam = _m_cam.dequeue();
 
-            cv::Mat cam_img0 = (cam->at(LEFT)).clone();
-            cv::Mat cam_img1 = (cam->at(RIGHT)).clone();
+            cv::Mat cam_img0 = (cam->at(image::LEFT)).clone();
+            cv::Mat cam_img1 = (cam->at(image::RIGHT)).clone();
 
             // size of img0 before compression
             double cam_img0_size = cam_img0.total() * cam_img0.elemSize();

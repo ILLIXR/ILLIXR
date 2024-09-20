@@ -324,6 +324,7 @@ struct rect {
  * Struct containing all the data from a hand detection
  */
 struct ht_detection {
+    size_t proc_time;   //!< nanoseconds of processing time
     rect left_palm;     //!< left palm detection
     rect right_palm;    //!< right palm detection
     rect left_hand;     //!< left hand detection
@@ -335,8 +336,8 @@ struct ht_detection {
     hand_points left_hand_points;  //!< left hand landmark points
     hand_points right_hand_points; //!< right hand landmark points
 
-    ht_detection(rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
-        : left_confidence(lc), right_confidence(rc) {
+    ht_detection(size_t ptime, rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
+        : proc_time{ptime}, left_confidence(lc), right_confidence(rc) {
         left_palm  = (lp) ? *lp : rect();
         right_palm = (rp) ? *rp : rect();
         left_hand  = (lh) ? *lh : rect();
@@ -355,12 +356,11 @@ struct ht_detection {
 };
 
 struct ht_frame : cam_base_type {
-    std::map<image_type, ht_detection> detections;
-    time_point start_time;
-    ht_frame(time_point _start, time_point _time, std::map<image_type, cv::Mat> _imgs, std::map<image_type, ht_detection> _detections)
-        : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? BINOCULAR : MONOCULAR)
-        , detections(std::move(_detections))
-        , start_time(_start){}
+    std::map<image::image_type, ht_detection> detections;
+    ht_frame(time_point _time, std::map<image::image_type, cv::Mat> _imgs,
+             std::map<image::image_type, ht_detection> _detections)
+        : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? image::BINOCULAR : image::MONOCULAR)
+        , detections(std::move(_detections)) {}
 
 };
 
