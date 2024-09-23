@@ -259,8 +259,8 @@ void viewer::make_gui(const switchboard::ptr<const ht_frame>& frame) {
     if (found_types.empty() && frame->find(image::RGB_PROCESSED) != frame->images.end()) {
         found_types.push_back(image::RGB_PROCESSED);
         raw_img[0] = frame->at(image::RGB).clone();
-        if (_wc)
-            cv::flip(raw_img[0], raw_img[0], 1);
+        //if (_wc)
+        //    cv::flip(raw_img[0], raw_img[0], 1);
     }
 
     cv::Mat processed[2];
