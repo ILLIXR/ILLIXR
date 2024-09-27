@@ -114,8 +114,8 @@ protected:
         // ullong cam_time = static_cast<ullong>(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
 
         // Retrieve images
-        zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
-        zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
+        zedm->retrieveImage(imageL_zed, VIEW::LEFT, MEM::CPU, image_size);
+        zedm->retrieveImage(imageR_zed, VIEW::RIGHT, MEM::CPU, image_size);
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
         zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
         _clock_duration ts = _clock_duration(zedm->getTimestamp(TIME_REFERENCE::IMAGE).getNanoseconds());
@@ -195,7 +195,10 @@ protected:
 
         switchboard::ptr<const cam_type_zed> c = _m_cam_reader.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
-            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>({imu_time_point, cv::Mat{c->at(image::LEFT)}, cv::Mat{c->at(image::RIGHT)}}));
+            cv::Mat left_gray, right_gray;
+            cv::cvtColor(c->at(image::LEFT), left_gray, cv::COLOR_RGB2GRAY);
+            cv::cvtColor(c->at(image::RIGHT), right_gray, cv::COLOR_RGB2GRAY);
+            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>({imu_time_point, cv::Mat{left_gray}, cv::Mat{right_gray}}));
             _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->at(image::RGB)}, cv::Mat{c->at(image::DEPTH)}}));
             last_serial_no = c->serial_no;
         }
