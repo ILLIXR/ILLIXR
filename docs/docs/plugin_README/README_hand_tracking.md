@@ -2,7 +2,7 @@
 
 ## Summary
 
-`hand_tracking` is a plugin which detects hands in an image. The plugin integrates the Mediapipe hand landmark detection[1] algorithm into the ILLIXR framework.
+`hand_tracking` and `hand_tracking_gpu` are plugins which detects hands in an image. The plugins integrate the Mediapipe hand landmark detection[1] algorithm into the ILLIXR framework. The only difference between `hand_tracking` and `hand_tracking_gpu` are where the data are processed: CPU vs GPU. Their operation and interface are identical.
 
 ## Switchboard connection
 
@@ -50,10 +50,6 @@ will get the `point` for the tip of the left thumb.
 ## Helper plugins
 
 There are two additional plugins which are designed to aid in debugging the `hand_tracking` plugin.
-
-### Webcam
-
-The `hand_tracking.webcam` plugin is currently the only way to feed images to the `hand_tracking` plugin.
 
 ### Viewer
 

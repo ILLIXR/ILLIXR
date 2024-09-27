@@ -1,0 +1,6 @@
+# This file was auto generated, take caution if manually editing.
+plugins: webcam,hand_tracking_gpu,hand_tracking.viewer
+enable_offload: false
+enable_alignment: false
+enable_verbose_errors: false
+enable_pre_sleep: false

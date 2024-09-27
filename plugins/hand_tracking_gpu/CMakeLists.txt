@@ -1,2 +1,2 @@
-set(HT_ENABLE_GPU OFF)
+set(HT_ENABLE_GPU ON)
 include(GetHandTracking)
