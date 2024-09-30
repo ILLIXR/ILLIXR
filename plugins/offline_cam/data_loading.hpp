@@ -2,6 +2,7 @@
 
 #include "illixr/csv_iterator.hpp"
 #include "illixr/data_format.hpp"
+#include "illixr/error_util.hpp"
 
 #include <fstream>
 #include <iostream>

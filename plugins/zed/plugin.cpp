@@ -22,12 +22,6 @@ using namespace ILLIXR;
 // Set exposure to 8% of camera frame time. This is an empirically determined number
 static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
 
-const record_header __imu_cam_record{"imu_cam",
-                                     {
-                                         {"iteration_no", typeid(std::size_t)},
-                                         {"has_camera", typeid(bool)},
-                                     }};
-
 struct cam_type_zed : public switchboard::event {
     cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
         : img0{std::move(_img0)}
@@ -157,8 +151,7 @@ public:
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam_reader{sb->get_reader<cam_type_zed>("cam_zed")}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
-        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
-        , it_log{record_logger_} {
+        , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} {
         camera_thread_.start();
     }
 
@@ -210,6 +203,7 @@ protected:
             _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>({imu_time_point, cv::Mat{c->img0}, cv::Mat{c->img1}}));
             _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb}, cv::Mat{c->depth}}));
             last_serial_no = c->serial_no;
+            CPU_TIMER_TIME_BLOCK("load_camera")
         }
 
         last_imu_ts = sensors_data.imu.timestamp;
@@ -232,9 +226,6 @@ private:
     SensorsData sensors_data;
     Timestamp   last_imu_ts    = 0;
     std::size_t last_serial_no = 0;
-
-    // Logger
-    record_coalescer it_log;
 
     std::optional<ullong>     _m_first_imu_time;
     std::optional<time_point> _m_first_real_time;

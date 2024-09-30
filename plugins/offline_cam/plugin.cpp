@@ -1,4 +1,5 @@
 #include "data_loading.hpp"
+#include "illixr/cpu_timer/cpu_timer.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"

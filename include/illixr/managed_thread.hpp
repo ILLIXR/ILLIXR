@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cpu_timer/cpu_timer.hpp"
+
 #include <atomic>
 #include <cassert>
 #include <functional>
@@ -19,8 +21,10 @@ private:
     std::function<void()> _m_body;
     std::function<void()> _m_on_start;
     std::function<void()> _m_on_stop;
+    cpu_timer::TypeEraser _m_info;
 
     void thread_main() {
+        CPU_TIMER_TIME_FUNCTION_INFO(_m_info);
         assert(_m_body);
         if (_m_on_start) {
             _m_on_start();
