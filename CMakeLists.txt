@@ -177,7 +177,7 @@ find_package(Eigen3 REQUIRED)
 
 find_package(Git REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+find_package(Boost REQUIRED CONFIG COMPONENTS filesystem serialization)
 
 find_package(spdlog REQUIRED)
 
