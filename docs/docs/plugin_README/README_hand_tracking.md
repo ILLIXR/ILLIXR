@@ -55,5 +55,9 @@ There are two additional plugins which are designed to aid in debugging the `han
 
 The `hand_tracking.viewer` plugin subscribes to the output of the `hand_tracking` plugin and displays the results, both graphically and in tabular format.
 
+### Webcam
+
+The `webcam` plugin can feed single frame images to the hand tracking plugin.
+
 [//]: # (- References -)
 [1]: https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker
