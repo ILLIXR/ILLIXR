@@ -29,3 +29,5 @@ openxr_launch.sh
 
 
 scripts/__pycache__/
+
+profiles/all.yaml

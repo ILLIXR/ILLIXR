@@ -1,6 +1,6 @@
 # Adding Mediapipe Based Plugins
 
-There are several tools from [Mediapipe][1] which a may be of use to the ILLIXR project as a plugin. This page documents the process for converting these tools to plugins, follwoing the experience of converting the hand larndmark detection tool.
+There are several tools from [Mediapipe][1] which a may be of use to the ILLIXR project as a plugin. This page documents the process for converting these tools to plugins, following the experience of converting the hand landmark detection tool.
 
 # Steps
 1. [Clone the repo](#clone-the-repo)
@@ -60,7 +60,7 @@ There are several tools from [Mediapipe][1] which a may be of use to the ILLIXR 
 ## Clone the repo
 
 These tools are provided by Mediapipe in a single git repo (https://github.com/google-ai-edge/mediapipe.git). So clone
-the repo to your workspace. Since these tools share a number of dependencies and compnents in some cases it is best for
+the repo to your workspace. Since these tools share a number of dependencies and components in some cases it is best for
 all the wrapped tool to come from the same version of the Mediapipe codebase (currently v0.10.14).
 
 <div class="code-box-copy">
@@ -106,7 +106,7 @@ There are only a few object types we need to concern ourselves with for wrapping
   - **cc_library**: describes what is needed to build a library component (usually produces a single object file)
   - **cc_library_with_tflite**: specialized version of cc_library which links to tensorflow lite components
   - **mediapipe_proto_library**: describes what is needed to build a library component from a protobuf file
-  - **http_archive**: describes where to find and build an external library, similar to CMake's ExternalProject or Fetchcontent funtionality
+  - **http_archive**: describes where to find and build an external library, similar to CMake's ExternalProject or Fetchcontent functionality
   - **mediapipe_simple_subgraph**: describes a workflow, or sub-workflow, for a tool
   - **http_file**: describes where to find a single file on the web, typically a precompiled data file
 
@@ -232,7 +232,7 @@ mediapipe_binary_graph(
 
   - **name**: name of the component
   - **graph**: the name of the file that describes the graph
-  - **iutput_name**: name of the output files after processing
+  - **output_name**: name of the output files after processing
   - **deps**: list of dependencies for this component
 
 #### External library
@@ -315,10 +315,10 @@ target_link_library(landmarks_to_render_data_calculator PUBLIC absl::memory)
 ## Find the necessary code files
 
 Now that we have a handle on the basic structure of the files we will be going through, we can start to construct a list
-of the files we actually need to build our tool. Starting with the dependencies in the `cc_binary` desriptor we will 
+of the files we actually need to build our tool. Starting with the dependencies in the `cc_binary` descriptor we will 
 need to locate each dependency, then find all of their dependencies, and so on until the only descriptors left have 
 no internal dependencies (external ones are ok, as these libraries will be built beforehand and do not contribute source
-files). Note that some objects will be the dependency of many other objetcs.
+files). Note that some objects will be the dependency of many other objects.
 
 ### C++
 
@@ -327,20 +327,20 @@ name, you will need to add the path to each of these items, so we can keep track
 
 ### Protobuf
 
-Create a seperate list of the source files of the `mediapipe_proto_library` items you need.
+Create a separate list of the source files of the `mediapipe_proto_library` items you need.
 
 ### Pbtxt
 
-Create a list of all files listed in graph elements of `mediapipe_simple_subgraph` items you need. Additioanlly, keep a
+Create a list of all files listed in graph elements of `mediapipe_simple_subgraph` items you need. Additionally, keep a
 list of all the dependencies for each of these, including the dependencies of those dependencies.
 
 ### Data
 
-Create a list of all data files that are listed in any desciptors. Thes are mainly tflite files.
+Create a list of all data files that are listed in any descriptors. These are mainly tflite files.
 
 ### Move the Files
 
-Now that you have a list of the necessary file to build the tool you should create a seperate GitHub repostiory for your
+Now that you have a list of the necessary file to build the tool you should create a separate GitHub repository for your
 plugin. Once that is done, create files and directories in the repo as follows:
 
 ```bash
@@ -353,7 +353,7 @@ plugin. Once that is done, create files and directories in the repo as follows:
 ```
 
 Copy/move all the needed files from your **src**, **hdr**, **protobuf**, **pbtxt**, and **data** file lists into the 
-`mediapipe` directory, maintining their relative paths.
+`mediapipe` directory, maintaining their relative paths.
 You should also create  CMakeLists.txt and protobuf.cmake files in the mediapipe directory. Additionally, you should 
 copy [encoder.cmake][10], [make_pb_binary.cmake][11], and [protoc_generate_obj.cmake][12] from the ILLIXR hand tracking
 repository. These files contain helper functions for processing the protobuf files and should go in a directory called 
@@ -415,7 +415,7 @@ endif()
 ```
 
 As with the Hand Tracking plugin, there will likely be a good number of external package dependencies. So that all of
-the `find_package` calls in the plugin work as expected, a seperate [repo][13] was created. This allows for the 
+the `find_package` calls in the plugin work as expected, a separate [repo][13] was created. This allows for the 
 dependencies to be built and installed before the plugin tries to find its dependencies. You may need a similar
 mechanism for your tool (or even just use the hand tracking one)
 
@@ -603,7 +603,7 @@ protobuf_generate_obj(PROTO_PATH calculators/util OBJ_NAME annotation_overlay_ca
 The `protobuf_generate_obj` function generates a CMake TARGET which can be used to link against when compiling the code.
 The signature for the function is:
 
-  - **PROTO_PATH** - the path to the protobuf file (not inculding the file name), relative to the mediapipe directory
+  - **PROTO_PATH** - the path to the protobuf file (not including the file name), relative to the mediapipe directory
   - **OBJ_NAME** - the name of the protobuf file (without the extension)
   - **DESCRIPTORS** - A flag that will append descriptor files to the master list in CACHE
 
@@ -731,7 +731,7 @@ initializing code, and lives in mediapipe/graph/<tool> and are usually small com
 other graph files (also called calculators in this context). All the other pbtxt files will be compiled into the tool
 library.
 
-Let's look at the hand tracking main graph file (hand_tracking_desktop_live.pbtxt) in snipets.
+Let's look at the hand tracking main graph file (hand_tracking_desktop_live.pbtxt) in snippets.
 
 ```
 # CPU image. (ImageFrame)
@@ -763,10 +763,10 @@ The `node` defines a single calculator/subgraph. The name of the calculator/subg
 entry. This will match a class which has already bee compiled in the code (case-sensitive).
 
 As above, the `input_stream` and `output_stream` define the inputs and outputs to/from the calculator. Note that the 
-names of the streams are different from above. They have a format of `NAME:stream_name`. The fisrt, all caps, name acts 
+names of the streams are different from above. They have a format of `NAME:stream_name`. The first, all caps, name acts 
 as a reference to the second name. When the streams are referenced in the C++ code, the name used will be the first (or 
 as above, only name). Thus using the two name scheme allows you to change the actual stream (second name) in the graph
-files, without haveing to change the C++ code, which uses the first name reference.
+files, without having to change the C++ code, which uses the first name reference.
 
 For a more complete guide on the graph file format see this [guide][14]. You can also visualize and error check graphs 
 with this hany online [tool][16]
@@ -806,13 +806,13 @@ else
 
 The if statement checks to see if there is a packet available. The `Next` function returns a boolean (true if a packet 
 is available), and puts the packet, if any, in the `_packet` variable. The following line extracts and casts the packet
-to the apropriate type. The following lines can use the data `output_frame` in this exmaple, as needed.
+to the appropriate type. The following lines can use the data `output_frame` in this example, as needed.
 
 ### Adding a Calculator
 
 In some instances you may want to manipulate the output stream from a tool to better suit your needs. The original 
 version of the hand tracking tool only returned an image with the hand tracking results visually represented. For
-ILLIXR, we wanted to have the actiual hand tracking data available (points on each hand, what hand(s) were detected,
+ILLIXR, we wanted to have the actual hand tracking data available (points on each hand, what hand(s) were detected,
 etc.). So a calculator was added to the end of the tool which gathered the relevant data together into a single 
 structure. On of the other calculators was also modified so that the output image was transparent, so that the visual
 representation could be used as an overlay. Here we will look at how to create a new calculator from scratch.
@@ -895,7 +895,7 @@ one and add something like 10 to get your number. This file will also go in `med
 
 #### Calculator Code
 
-Mediapipe calculators are class based objects that inherit from `CalculatorBase`. You should name your c alculator 
+Mediapipe calculators are class based objects that inherit from `CalculatorBase`. You should name your calculator 
 something useful and put the header and code files in `mediapipe/calculators/util`. The code below is a minimum outline 
 of what you will need.
 
@@ -918,12 +918,12 @@ protected:
 };
 ```
 
-You can add any additional funtions and data members you need. The sections below will cover the three required functions.
+You can add any additional functions and data members you need. The sections below will cover the three required functions.
 
 ##### Common Function Calls
 
-There are several functions that are used mutiple times throughout a calculator. These deal with checking inputs and 
-outputs, getting input streams, publishing to output setreams, and setting data types for these streams. In each of the
+There are several functions that are used multiple times throughout a calculator. These deal with checking inputs and 
+outputs, getting input streams, publishing to output streams, and setting data types for these streams. In each of the
 snippets below `cc` refers to either a `CalculatorContract` or `CalculatorContext`, which for these functions we can 
 treat as identical.
 
@@ -973,7 +973,7 @@ absl::Status stat = myfunc();
 if(!stat.ok())   // returns a boolean: true = success
     throw std::runtime_error(std::string(stat.message()));  // throws an exception with the contents of any error messages
 ```
-##### GetContract 
+##### GetContract
 
 > Calculator authors can specify the expected types of inputs and outputs of a calculator in GetContract(). When a graph
 > is initialized, the framework calls a static method to verify if the packet types of the connected inputs and outputs
