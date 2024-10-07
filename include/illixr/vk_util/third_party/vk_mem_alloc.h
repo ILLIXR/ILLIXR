@@ -2653,7 +2653,7 @@ VMA_CALL_PRE void VMA_CALL_POST vmaFreeStatsString(VmaAllocator VMA_NOT_NULL all
     // If your compiler is not compatible with C++17 and definition of
     // aligned_alloc() function is missing, uncommenting following line may help:
 
-    //#include <malloc.h>
+    // #include <malloc.h>
 
         #if defined(__ANDROID_API__) && (__ANDROID_API__ < 16)
             #include <cstdlib>
@@ -2677,8 +2677,8 @@ static void* vma_aligned_alloc(size_t alignment, size_t size) {
 static void* vma_aligned_alloc(size_t alignment, size_t size) {
     // Unfortunately, aligned_alloc causes VMA to crash due to it returning null pointers. (At least under 11.4)
     // Therefore, for now disable this specific exception until a proper solution is found.
-    //#if defined(__APPLE__) && (defined(MAC_OS_X_VERSION_10_16) || defined(__IPHONE_14_0))
-    //#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_16 || __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+    // #if defined(__APPLE__) && (defined(MAC_OS_X_VERSION_10_16) || defined(__IPHONE_14_0))
+    // #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_16 || __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
     //    // For C++14, usr/include/malloc/_malloc.h declares aligned_alloc()) only
     //    // with the MacOSX11.0 SDK in Xcode 12 (which is what adds
     //    // MAC_OS_X_VERSION_10_16), even though the function is marked
@@ -2687,8 +2687,8 @@ static void* vma_aligned_alloc(size_t alignment, size_t size) {
     //    // People who use C++17 could call aligned_alloc with the 10.15 SDK already.
     //    if (__builtin_available(macOS 10.15, iOS 13, *))
     //        return aligned_alloc(alignment, size);
-    //#endif
-    //#endif
+    // #endif
+    // #endif
 
     // alignment must be >= sizeof(void*)
     if (alignment < sizeof(void*)) {
@@ -3092,7 +3092,7 @@ static const uint32_t VMA_VENDOR_ID_AMD                               = 4098;
     // This one is tricky. Vulkan specification defines this code as available since
     // Vulkan 1.0, but doesn't actually define it in Vulkan SDK earlier than 1.2.131.
     // See pull request #207.
-    #define VK_ERROR_UNKNOWN_COPY ((VkResult) -13)
+    #define VK_ERROR_UNKNOWN_COPY ((VkResult) - 13)
 
     #if VMA_STATS_STRING_ENABLED
 // Correspond to values of enum VmaSuballocationType.
