@@ -82,6 +82,7 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(HT_ENABLE_GPU "Build for GPU use" OFF)
 include(cmake/HelperFunctions.cmake)
 
 generate_yaml()
