@@ -19,7 +19,7 @@ message("${HT_TARGET_NAME}")
 externalproject_add(
         ${HT_TARGET_NAME}
         GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking.git
-        GIT_TAG 360dae921cb9cae6796db6a59057ae54b0acd98e
+        GIT_TAG ee3bbb816804b2019b304f8bd2004d8ea412bb92
         PREFIX ${PRFX}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DHT_ENABLE_GPU=${HT_ENABLE_GPU} -DILLIXR_ROOT=${CMAKE_SOURCE_DIR}/include -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX}
         DEPENDS hand_tracking_dependencies
