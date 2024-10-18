@@ -225,7 +225,7 @@ macro(giveExecString)
 
     if(USE_ORB_SLAM)
         message("To use ORB-SLAM3")
-        message("  main${ILLIXR_BUILD_SUFFIX}.exe --yaml=${CMAKE_SOURCE_DIR}/illixr.yaml --vis=orb_slam")
+        message("  main${ILLIXR_BUILD_SUFFIX}.exe --yaml=${CMAKE_SOURCE_DIR}/illixr.yaml --vis=orb_slam3")
     endif()
 
 
