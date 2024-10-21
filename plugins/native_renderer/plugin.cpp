@@ -416,7 +416,7 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            }                              // subresourceRange
+            } // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, depth_image_view))
@@ -472,7 +472,7 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            }                              // subresourceRange
+            } // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, offscreen_image_view))
