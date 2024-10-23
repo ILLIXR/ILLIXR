@@ -466,11 +466,11 @@ private:
         for (int eye = 0; eye < 2; eye++) {
             std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
-                       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-                       nullptr,                                        // pNext
-                       {},                                             // descriptorPool
-                       0,                                              // descriptorSetCount
-                       nullptr                                         // pSetLayouts
+                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+                nullptr,                                        // pNext
+                {},                                             // descriptorPool
+                0,                                              // descriptorSetCount
+                nullptr                                         // pSetLayouts
             };
             allocInfo.descriptorPool     = descriptor_pool;
             allocInfo.descriptorSetCount = buffer_pool[0].size();
