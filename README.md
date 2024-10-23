@@ -90,7 +90,7 @@ We request that you cite our following [paper][8] when you use ILLIXR for a publ
 We would also appreciate it if you send us a citation once your work has been published.
 
 ```
-@ARTICLE {9741292,
+@ARTICLE {illixr,
 author = {M. Huzaifa and R. Desai and S. Grayson and X. Jiang and Y. Jing and J. Lee and F. Lu and Y. Pang and J. Ravichandran and F. Sinclair and B. Tian and H. Yuan and J. Zhang and S. V. Adve},
 journal = {IEEE Micro},
 title = {ILLIXR: An Open Testbed to Enable Extended Reality Systems Research},
