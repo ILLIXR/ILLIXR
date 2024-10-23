@@ -4,7 +4,7 @@
 #include "illixr/plugin.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 
 
 namespace ILLIXR {
@@ -18,10 +18,10 @@ private:
     const std::shared_ptr<switchboard>        switchboard_;
     switchboard::reader<imu_integrator_input> imu_int_input_;
 
-    TCPSocket                socket_;
-    TCPSocket*               write_socket = nullptr;
-    [[maybe_unused]] Address client_addr_;
-    [[maybe_unused]] bool    is_client_connected_;
-
+    TCPSocket   socket_;
+    TCPSocket*  write_socket_ = NULL;
+    std::string client_ip_;
+    [[maybe_unused]]int         client_port_;
+    [[maybe_unused]]bool        is_client_connected_;
 };
 }

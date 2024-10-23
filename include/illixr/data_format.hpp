@@ -8,7 +8,7 @@
 #include <GL/glew.h>  // must come first
 #include <GL/gl.h>
 #include <utility>
-//#undef Complex // For 'Complex' conflict
+// #undef Complex // For 'Complex' conflict
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT

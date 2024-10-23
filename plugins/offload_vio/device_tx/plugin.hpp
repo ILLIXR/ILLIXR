@@ -6,7 +6,7 @@
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 
 #include "video_encoder.hpp"
 #include "vio_input.pb.h"
@@ -43,8 +43,8 @@ private:
     const std::shared_ptr<stoplight>       stoplight_;
     switchboard::buffered_reader<cam_type> cam_;
 
-    TCPSocket socket_;
-    Address   server_addr_;
-
+    TCPSocket   socket_;
+    std::string server_ip_;
+    int         server_port_;
 };
 }

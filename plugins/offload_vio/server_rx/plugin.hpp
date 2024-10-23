@@ -5,7 +5,7 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 
 #include "video_decoder.hpp"
 #include "vio_input.pb.h"
@@ -40,7 +40,8 @@ private:
 
     TCPSocket   socket_;
     TCPSocket*  read_socket_ = NULL;
-    Address     server_addr_;
+    std::string server_ip_;
+    [[maybe_unused]]int         server_port_;
     std::string buffer_str_;
 
 };

@@ -1,7 +1,9 @@
 #include "plugin.hpp"
 
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/timestamp.hpp"
+#include "illixr/network/tcpsocket.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
 #include "vio_output.pb.h"
 
 #include <memory>
@@ -9,15 +11,15 @@
 
 using namespace ILLIXR;
 
-
 [[maybe_unused]] server_writer::server_writer(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , imu_int_input_{switchboard_->get_reader<imu_integrator_input>("imu_integrator_input")}
-    , client_addr_(CLIENT_IP, CLIENT_PORT_2) {
+    , client_ip_(CLIENT_IP)
+    , client_port_(CLIENT_PORT_2) {
     spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-    socket_.set_reuseaddr();
-    socket_.bind(Address(SERVER_IP, SERVER_PORT_2));
+    socket_.socket_set_reuseaddr();
+    socket_.socket_bind(SERVER_IP, SERVER_PORT_2);
     socket_.enable_no_delay();
     is_client_connected_ = false;
 }
@@ -39,15 +41,15 @@ void server_writer::start() {
 
 void server_writer::start_accepting_connection(const switchboard::ptr<const connection_signal>& datum) {
     (void) datum;
-    socket_.listen();
+    socket_.socket_listen();
 #ifndef NDEBUG
     spdlog::get(name_)->debug("[offload_vio.server_tx]: Waiting for connection!");
 #endif
-    write_socket = new TCPSocket(FileDescriptor(system_call(
-        "accept", ::accept(socket_.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+        write_socket_ = new TCPSocket(socket_.socket_accept()); /* Blocking operation, waiting for client to connect */
+        is_client_connected_ = true;
 #ifndef NDEBUG
     spdlog::get(name_)->debug("[offload_vio.server_tx]: Connection is established with {}",
-                              write_socket->peer_address().str(":"));
+                              write_socket_->peer_address());
 #endif
 }
 
@@ -137,13 +139,12 @@ void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& dat
         std::string data_to_be_sent = vio_output_params->SerializeAsString();
         std::string delimiter       = "END!";
 
-        write_socket->write(data_to_be_sent + delimiter);
+        write_socket_->write_data(data_to_be_sent + delimiter);
 
         delete vio_output_params;
     } else {
         spdlog::get(name_)->error("[offload_vio.server_tx] ERROR: write_socket is not yet created!");
     }
 }
-
 
 PLUGIN_MAIN(server_writer)

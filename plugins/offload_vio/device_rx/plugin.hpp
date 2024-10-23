@@ -4,7 +4,7 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 
 #include "vio_output.pb.h"
 
@@ -25,7 +25,8 @@ private:
 
     TCPSocket   socket_;
     bool        is_socket_connected_;
-    Address     server_addr_;
+    std::string server_ip_;
+    int         server_port_;
     std::string buffer_str_;
 
 };

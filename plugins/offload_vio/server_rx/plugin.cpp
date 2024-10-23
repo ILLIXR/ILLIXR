@@ -1,7 +1,7 @@
 #include "plugin.hpp"
-
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/timestamp.hpp"
+#include "video_decoder.hpp"
+#include "vio_input.pb.h"
 
 
 using namespace ILLIXR;
@@ -14,11 +14,12 @@ using namespace ILLIXR;
     , imu_{switchboard_->get_writer<imu_type>("imu")}
     , cam_{switchboard_->get_writer<cam_type>("cam")}
     , conn_signal_{switchboard_->get_writer<connection_signal>("connection_signal")}
-    , server_addr_(SERVER_IP, SERVER_PORT_1)
+    , server_ip_(SERVER_IP)
+    , server_port_(SERVER_PORT_1)
     , buffer_str_("") {
     spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-    socket_.set_reuseaddr();
-    socket_.bind(server_addr_);
+    socket_.socket_set_reuseaddr();
+    socket_.socket_bind(server_ip_, server_port_);
     socket_.enable_no_delay();
 }
 
@@ -29,21 +30,17 @@ ILLIXR::threadloop::skip_option server_reader::_p_should_skip() {
 void server_reader::_p_one_iteration() {
     if (read_socket_ == NULL) {
         conn_signal_.put(conn_signal_.allocate<connection_signal>(connection_signal{true}));
-        socket_.listen();
+        socket_.socket_listen();
 #ifndef NDEBUG
         spdlog::get(name_)->debug("[offload_vio.server_rx]: Waiting for connection!");
 #endif
-        read_socket_ = new TCPSocket(FileDescriptor(system_call(
-            "accept",
-            ::accept(socket_.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+        read_socket_ = new TCPSocket(socket_.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-        spdlog::get(name_)->debug("[offload_vio.server_rx]: Connection is established with {}",
-                                  read_socket_->peer_address().str(":"));
+        spdlog::get(name_)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket_->peer_address());
 #endif
     } else {
-        auto        now        = timestamp();
         std::string delimitter = "EEND!";
-        std::string recv_data  = read_socket_->read(); /* Blocking operation, wait for the data to come */
+        std::string recv_data  = read_socket_->read_data(); /* Blocking operation, wait for the data to come */
         buffer_str_            = buffer_str_ + recv_data;
         if (recv_data.size() > 0) {
             std::string::size_type end_position = buffer_str_.find(delimitter);
@@ -150,6 +147,5 @@ void server_reader::receive_vio_input(const vio_input_proto::IMUCamVec& vio_inpu
                  Eigen::Vector3d{last_imu.angular_vel().x(), last_imu.angular_vel().y(), last_imu.angular_vel().z()},
                  Eigen::Vector3d{last_imu.linear_accel().x(), last_imu.linear_accel().y(), last_imu.linear_accel().z()}}));
 }
-
 
 PLUGIN_MAIN(server_reader)

@@ -36,8 +36,8 @@ void native_renderer::_p_thread_setup() {
         create_offscreen_target(&offscreen_images_[i], &offscreen_image_allocations_[i], &offscreen_image_views_[i],
                                 &offscreen_framebuffers_[i]);
     }
-    command_pool_       = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
-    app_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
+    command_pool_            = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
+    app_command_buffer_      = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
     timewarp_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
     create_sync_objects();
     create_app_pass();
