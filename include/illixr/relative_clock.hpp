@@ -9,45 +9,45 @@
 namespace ILLIXR {
 
 /**
- * Mimick of `std::chrono::time_point<Clock, Rep>` [1].
+ * Mimic of `std::chrono::time_point<Clock, Rep>` [1].
  *
  * Can't use `std::chrono::time_point<Clock, Rep>`, because the `Clock` must satisfy the Clock interface [2],
- * but `RelativeClock` cannot satisfy this interface because `RelativeClock::now()`
+ * but `relative_clock` cannot satisfy this interface because `relative_clock::now()`
  * is a stateful (instance method) not pure (class method).
- * Instead, we will mimick the interface of [1] here.
+ * Instead, we will mimic the interface of [1] here.
  *
  * [1]: https://en.cppreference.com/w/cpp/chrono/time_point
  * [2]: https://en.cppreference.com/w/cpp/named_req/Clock
  */
-using _clock_rep      = long;
-using _clock_period   = std::nano;
-using _clock_duration = std::chrono::duration<_clock_rep, _clock_period>;
+using clock_rep_      = long;
+using clock_period_   = std::nano;
+using clock_duration_ = std::chrono::duration<clock_rep_, clock_period_>;
 
 class time_point {
 public:
-    using duration = _clock_duration;
+    using duration = clock_duration_;
 
     time_point() = default;
 
     constexpr explicit time_point(const duration& time_since_epoch)
-        : _m_time_since_epoch{time_since_epoch} { }
+        : time_since_epoch_{time_since_epoch} { }
 
     [[nodiscard]] duration time_since_epoch() const {
-        return _m_time_since_epoch;
+        return time_since_epoch_;
     }
 
     time_point& operator+=(const duration& d) {
-        this->_m_time_since_epoch += d;
+        this->time_since_epoch_ += d;
         return *this;
     }
 
     time_point& operator-=(const duration& d) {
-        this->_m_time_since_epoch -= d;
+        this->time_since_epoch_ -= d;
         return *this;
     }
 
 private:
-    duration _m_time_since_epoch;
+    duration time_since_epoch_;
 };
 
 inline time_point::duration operator-(const time_point& lhs, const time_point& rhs) {
@@ -99,22 +99,18 @@ inline bool operator!=(const time_point& lhs, const time_point& rhs) {
  *
  * [1]: https://en.cppreference.com/w/cpp/named_req/Clock
  */
-class RelativeClock : public phonebook::service {
+class relative_clock : public phonebook::service {
 public:
-    using rep      = _clock_rep;
-    using period   = _clock_period;
-    using duration = _clock_duration;
-    // using time_point                = time_point;
-    static constexpr bool is_steady = true;
+    using duration = clock_duration_;
     static_assert(std::chrono::steady_clock::is_steady);
 
     [[nodiscard]] time_point now() const {
         assert(this->is_started() && "Can't call now() before this clock has been start()ed.");
-        return time_point{std::chrono::steady_clock::now() - _m_start};
+        return time_point{std::chrono::steady_clock::now() - start_};
     }
 
-    int64_t absolute_ns(time_point relative) {
-        return std::chrono::nanoseconds{_m_start.time_since_epoch()}.count() +
+    [[maybe_unused]] int64_t absolute_ns(time_point relative) {
+        return std::chrono::nanoseconds{start_.time_since_epoch()}.count() +
             std::chrono::nanoseconds{relative.time_since_epoch()}.count();
     }
 
@@ -122,35 +118,35 @@ public:
      * @brief Starts the clock. All times are relative to this point.
      */
     void start() {
-        _m_start = std::chrono::steady_clock::now();
+        start_ = std::chrono::steady_clock::now();
     }
 
     /**
      * @brief Check if the clock is started.
      */
     [[nodiscard]] bool is_started() const {
-        return _m_start > std::chrono::steady_clock::time_point{};
+        return start_ > std::chrono::steady_clock::time_point{};
     }
 
     /**
      * @brief Get the start time of the clock.
      */
-    [[nodiscard]] time_point start_time() const {
-        return time_point{_m_start.time_since_epoch()};
+    [[maybe_unused]] [[nodiscard]] time_point start_time() const {
+        return time_point{start_.time_since_epoch()};
     }
 
 private:
-    std::chrono::steady_clock::time_point _m_start;
+    std::chrono::steady_clock::time_point start_;
 };
 
-using duration = RelativeClock::duration;
+using duration = relative_clock::duration;
 
-template<typename unit = std::ratio<1>>
-double duration2double(duration dur) {
-    return std::chrono::duration<double, unit>{dur}.count();
+template<typename Unit = std::ratio<1>>
+double duration_to_double(duration dur) {
+    return std::chrono::duration<double, Unit>{dur}.count();
 }
 
-constexpr duration freq2period(double fps) {
+constexpr duration freq_to_period(double fps) {
     return duration{static_cast<size_t>(std::chrono::nanoseconds{std::chrono::seconds{1}}.count() / fps)};
 }
 

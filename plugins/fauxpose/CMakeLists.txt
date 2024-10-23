@@ -3,9 +3,10 @@
 set(PLUGIN_NAME plugin.fauxpose${ILLIXR_BUILD_SUFFIX})
 
 set(FAUXPOSE_SOURCES plugin.cpp
-        ../../include/illixr/plugin.hpp
-        ../../include/illixr/pose_prediction.hpp
-        )
+    plugin.hpp
+    ../../include/illixr/plugin.hpp
+    ../../include/illixr/pose_prediction.hpp
+)
 
 add_library(${PLUGIN_NAME} SHARED ${FAUXPOSE_SOURCES})
 

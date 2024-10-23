@@ -1,0 +1,61 @@
+#pragma once
+
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
+#include "illixr/pose_prediction.hpp"
+
+namespace ILLIXR {
+/// Create a "pose_prediction" type service
+class faux_pose_impl : public pose_prediction {
+public:
+    explicit faux_pose_impl(const phonebook* const pb);
+    ~faux_pose_impl() override;
+
+    pose_type get_true_pose() const override {
+        throw std::logic_error{"Not Implemented"};
+    }
+
+    bool fast_pose_reliable() const override {
+        return true;
+    }
+
+    bool true_pose_reliable() const override {
+        return false;
+    }
+
+    pose_type          correct_pose(const pose_type& pose) const override;
+    Eigen::Quaternionf get_offset() override;
+    void               set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
+    fast_pose_type     get_fast_pose() const override;
+    // ********************************************************************
+    // get_fast_pose(): returns a "fast_pose_type" with the algorithmically
+    //   determined location values.  (Presently moving in a circle, but
+    //   always facing "front".)
+    //
+    // NOTE: time_type == std::chrono::system_clock::time_point
+    fast_pose_type get_fast_pose(time_point time) const override;
+
+private:
+    const std::shared_ptr<switchboard>                          switchboard_;
+    const std::shared_ptr<const relative_clock>                 clock_;
+    switchboard::reader<switchboard::event_wrapper<time_point>> vsync_estimate_;
+    mutable Eigen::Quaternionf                                  offset_{Eigen::Quaternionf::Identity()};
+    mutable std::shared_mutex                                   offset_mutex_;
+
+    time_point sim_start_time_{}; /* Store the initial time to calculate a known runtime */
+
+    // Parameters
+    double          period_;          /* The period of the circular movement (in seconds) */
+    double          amplitude_;       /* The amplitude of the circular movement (in meters) */
+    Eigen::Vector3f center_location_; /* The location around which the tracking should orbit */
+};
+
+class faux_pose : public plugin {
+public:
+    // ********************************************************************
+    /* Constructor: Provide handles to faux_pose */
+    [[maybe_unused]] faux_pose(const std::string& name, phonebook* pb);
+    ~faux_pose() override;
+};
+} // namespace ILLIXR

@@ -1,15 +1,15 @@
 #pragma once
 
-#ifdef NDEBUG
-    #include <cerrno>
-    #include <cstdlib>
-#endif
 #include "global_module_defs.hpp"
 
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
 
+#ifdef NDEBUG
+    #include <cerrno>
+    #include <cstdlib>
+#endif
 /**
  * @brief Parameterless macro for report_and_clear_errno.
  */

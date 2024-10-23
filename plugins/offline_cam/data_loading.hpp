@@ -24,27 +24,27 @@ typedef unsigned long long ullong;
 
 class lazy_load_image {
 public:
-    lazy_load_image() { }
+    lazy_load_image() = default;
 
-    lazy_load_image(std::string path)
-        : _m_path(std::move(path)) {
+    explicit lazy_load_image(std::string path)
+        : path_(std::move(path)) {
 #ifndef LAZY
-        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+        mat_ = cv::imread(path_, cv::IMREAD_GRAYSCALE);
 #endif
     }
 
     [[nodiscard]] cv::Mat load() const {
 #ifdef LAZY
-        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+        cv::Mat mat_ = cv::imread(path_, cv::IMREAD_GRAYSCALE);
     #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
 #endif
-        assert(!_m_mat.empty());
-        return _m_mat;
+        assert(!mat_.empty());
+        return mat_;
     }
 
 private:
-    std::string _m_path;
-    cv::Mat     _m_mat;
+    std::string path_;
+    cv::Mat     mat_;
 };
 
 typedef struct {
@@ -68,9 +68,9 @@ static std::map<ullong, sensor_types> load_data() {
         spdlog::get("illixr")->error("[offline_cam] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", cam0_subpath, illixr_data);
         ILLIXR::abort();
     }
-    for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
+    for (csv_iterator row{cam0_file, 1}; row != csv_iterator{}; ++row) {
         ullong t     = std::stoull(row[0]);
-        data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
+        data[t].cam0 = lazy_load_image(illixr_data + "/cam0/data/" + row[1]);
     }
 
     const std::string cam1_subpath = "/cam1/data.csv";
@@ -79,10 +79,10 @@ static std::map<ullong, sensor_types> load_data() {
         spdlog::get("illixr")->error("[offline_cam] ${ILLIXR_DATA} {0} ({1}{0}) is not a good path", cam1_subpath, illixr_data);
         ILLIXR::abort();
     }
-    for (CSVIterator row{cam1_file, 1}; row != CSVIterator{}; ++row) {
+    for (csv_iterator row{cam1_file, 1}; row != csv_iterator{}; ++row) {
         ullong      t     = std::stoull(row[0]);
         std::string fname = row[1];
-        data[t].cam1      = {illixr_data + "/cam1/data/" + row[1]};
+        data[t].cam1      = lazy_load_image(illixr_data + "/cam1/data/" + row[1]);
     }
 
     return data;

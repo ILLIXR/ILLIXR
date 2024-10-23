@@ -42,7 +42,7 @@ The process of measuring the eye movement of a user (who is possibly also wearin
 
 For more information, see the [Wikipedia article][20].
 
-#### Event Stream
+#### event Stream
 
 A communication interface supporting writes, sychronous reads, and asynchronous reads.
 For synchronous reads, every value written to the stream is visible to consumers.

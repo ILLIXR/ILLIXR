@@ -2,9 +2,13 @@ site_name: ILLIXR Docs
 theme: readthedocs
 site_dir: @MKDOCS_BUILD_DIR@
 site_url: https://illixr.github.io/ILLIXR/docs
+markdown_extensions:
+    - codehilite
+    - fenced_code
 extra_css:
     - css/code-box-copy.css
     - css/prism.min.css
+    - css/styles.css
 extra_javascript:
     - js/clipboard.min.js
     - js/code-box-copy.js
@@ -18,8 +22,20 @@ nav:
         - 'ILLIXR Debugging Tips': debugging_illixr.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
+        - 'Contributing to ILLIXR':
+            - 'Code of Conduct': contributing/code_of_conduct.md
+            - 'Asking Questions': contributing/asking_questions.md
+            - 'Reporting a Bug': contributing/opening_an_issue.md
+            - 'Suggesting a Feature/Improvement': contributing/feature_request.md
+            - 'Programming Style Guide': contributing/style_guide.md
+            - 'Using 3rd Party Code/Libraries': contributing/third_party.md
+            - 'Licenses': contributing/licenses.md
+            - 'Creating a Pull Request': contributing/pull_request.md
+            - 'Code Review Guidelines': contributing/code_review.md
         - 'Modifying a Plugin': modifying_a_plugin.md
-        - 'Writing Your Plugin': writing_your_plugin.md
+        - 'Writing Your Plugin':
+            - 'How to Write a Plugin': writing_your_plugin.md
+            - 'Modules': modules.md
         - 'Plugin Details':
             - 'Debugview': plugin_README/README_debugview.md
             - 'Display_VK': plugin_README/README_display_vk.md
@@ -39,6 +55,5 @@ nav:
         - 'ILLIXR Glossary': glossary.md
         - 'ILLIXR API': api/html/annotated.html
         - 'ILLIXR License': LICENSE.md
-        - 'Contributing Guidelines': CONTRIBUTING.md
         - 'Updating Tags and Documentation': updating_tags_and_docs.md
         - 'Using Switchboard and Phonebook Externally': external_switchboard_and_phonebook.md

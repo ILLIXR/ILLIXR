@@ -6,12 +6,14 @@ set(PLUGIN_NAME plugin.depthai${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/opencv_data_types.hpp
-        ../../include/illixr/relative_clock.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/threadloop.hpp
-        )
+            plugin.hpp
+            ../../include/illixr/data_format.hpp
+            ../../include/illixr/opencv_data_types.hpp
+            ../../include/illixr/relative_clock.hpp
+            ../../include/illixr/switchboard.hpp
+            ../../include/illixr/threadloop.hpp
+)
+
 add_definitions(-Wno-format-extra-args)
 
 # if building on CentOS make sure we use the correct OpenCV

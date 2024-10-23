@@ -17,7 +17,7 @@
 
 namespace ILLIXR {
 
-const record_header __threadloop_iteration_header{
+const record_header _threadloop_iteration_header{
     "threadloop_iteration",
     {
         {"plugin_id", typeid(std::size_t)},
@@ -32,15 +32,15 @@ const record_header __threadloop_iteration_header{
 /**
  * @brief A reusable threadloop for plugins.
  *
- * The thread continuously runs `_p_one_iteration()` and is stopable by `stop()`.
+ * The thread continuously runs `_p_one_iteration()` and is stoppable by `stop()`.
  *
  * This factors out the common code I noticed in many different plugins.
  */
 class threadloop : public plugin {
 public:
-    threadloop(const std::string& name_, phonebook* pb_)
-        : plugin{name_, pb_}
-        , _m_stoplight{pb->lookup_impl<Stoplight>()} { }
+    threadloop(const std::string& name, phonebook* pb)
+        : plugin{name, pb}
+        , stoplight_{pb->lookup_impl<stoplight>()} { }
 
     /**
      * @brief Starts the thread.
@@ -57,9 +57,11 @@ public:
      */
     void start() override {
         plugin::start();
-        _m_thread = std::thread(std::bind(&threadloop::thread_main, this));
-        assert(!_m_stoplight->check_should_stop());
-        assert(_m_thread.joinable());
+        thread_ = std::thread([this] {
+            thread_main();
+        });
+        assert(!stoplight_->check_should_stop());
+        assert(thread_.joinable());
     }
 
     /**
@@ -68,9 +70,9 @@ public:
      * Must have already stopped the stoplight.
      */
     void stop() override {
-        assert(_m_stoplight->check_should_stop());
-        assert(_m_thread.joinable());
-        _m_thread.join();
+        assert(stoplight_->check_should_stop());
+        assert(thread_.joinable());
+        thread_.join();
     }
 
     /**
@@ -79,70 +81,12 @@ public:
      * A thread should call this if it wants to stop itself (due to out of data for example).
      */
     virtual void internal_stop() {
-        _m_internal_stop.store(true);
+        internal_stop_.store(true);
     }
 
     ~threadloop() override {
-        assert(_m_stoplight->check_should_stop());
-        assert(!_m_thread.joinable());
-    }
-
-protected:
-    std::size_t iteration_no = 0;
-    std::size_t skip_no      = 0;
-
-private:
-    void thread_main() {
-        record_coalescer it_log{record_logger_};
-
-        // TODO: In the future, synchronize the main loop instead of the setup.
-        // This is currently not possible because RelativeClock is required in
-        // some setup functions, and RelativeClock is only guaranteed to be
-        // available once `wait_for_ready()` unblocks.
-        _m_stoplight->wait_for_ready();
-        _p_thread_setup();
-
-        while (!_m_stoplight->check_should_stop() && !should_terminate()) {
-            skip_option s = _p_should_skip();
-
-            switch (s) {
-            case skip_option::skip_and_yield:
-                std::this_thread::yield();
-                ++skip_no;
-                break;
-            case skip_option::skip_and_spin:
-                ++skip_no;
-                break;
-            case skip_option::run: {
-                auto iteration_start_cpu_time  = thread_cpu_time();
-                auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
-
-                RAC_ERRNO();
-                _p_one_iteration();
-                RAC_ERRNO();
-
-                it_log.log(record{__threadloop_iteration_header,
-                                  {
-                                      {id},
-                                      {iteration_no},
-                                      {skip_no},
-                                      {iteration_start_cpu_time},
-                                      {thread_cpu_time()},
-                                      {iteration_start_wall_time},
-                                      {std::chrono::high_resolution_clock::now()},
-                                  }});
-                ++iteration_no;
-                skip_no = 0;
-                break;
-            }
-            case skip_option::stop:
-                // Break out of the switch AND the loop
-                // See https://stackoverflow.com/questions/27788326/breaking-out-of-nested-loop-c
-                goto break_loop;
-            }
-        }
-    break_loop:
-        [[maybe_unused]] int cpp_requires_a_statement_after_a_label_plz_optimize_me_away;
+        assert(stoplight_->check_should_stop());
+        assert(!thread_.joinable());
     }
 
 protected:
@@ -186,13 +130,69 @@ protected:
      * Check this before doing long-running computation; it makes termination more responsive.
      */
     bool should_terminate() {
-        return _m_internal_stop.load();
+        return internal_stop_.load();
     }
 
+    std::size_t iteration_no = 0;
+    std::size_t skip_no      = 0;
+
 private:
-    std::atomic<bool>                _m_internal_stop{false};
-    std::thread                      _m_thread;
-    std::shared_ptr<const Stoplight> _m_stoplight;
+    void thread_main() {
+        record_coalescer it_log{record_logger_};
+
+        // TODO: In the future, synchronize the main loop instead of the setup.
+        // This is currently not possible because relative_clock is required in
+        // some setup functions, and relative_clock is only guaranteed to be
+        // available once `wait_for_ready()` unblocks.
+        stoplight_->wait_for_ready();
+        _p_thread_setup();
+
+        while (!stoplight_->check_should_stop() && !should_terminate()) {
+            skip_option s = _p_should_skip();
+
+            switch (s) {
+            case skip_option::skip_and_yield:
+                std::this_thread::yield();
+                ++skip_no;
+                break;
+            case skip_option::skip_and_spin:
+                ++skip_no;
+                break;
+            case skip_option::run: {
+                auto iteration_start_cpu_time  = thread_cpu_time();
+                auto iteration_start_wall_time = std::chrono::high_resolution_clock::now();
+
+                RAC_ERRNO();
+                _p_one_iteration();
+                RAC_ERRNO();
+
+                it_log.log(record{_threadloop_iteration_header,
+                                  {
+                                      {id_},
+                                      {iteration_no},
+                                      {skip_no},
+                                      {iteration_start_cpu_time},
+                                      {thread_cpu_time()},
+                                      {iteration_start_wall_time},
+                                      {std::chrono::high_resolution_clock::now()},
+                                  }});
+                ++iteration_no;
+                skip_no = 0;
+                break;
+            }
+            case skip_option::stop:
+                // Break out of the switch AND the loop
+                // See https://stackoverflow.com/questions/27788326/breaking-out-of-nested-loop-c
+                goto break_loop;
+            }
+        }
+    break_loop:
+        [[maybe_unused]] int cpp_requires_a_statement_after_a_label_plz_optimize_me_away;
+    }
+
+    std::atomic<bool>                internal_stop_{false};
+    std::thread                      thread_;
+    std::shared_ptr<const stoplight> stoplight_;
 };
 
 } // namespace ILLIXR
