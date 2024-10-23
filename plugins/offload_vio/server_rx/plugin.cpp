@@ -1,7 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
-#include "illixr/network/timestamp.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -33,11 +32,12 @@ public:
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
-        , server_addr(SERVER_IP, SERVER_PORT_1)
+        , server_ip(SERVER_IP)
+        , server_port(SERVER_PORT_1)
         , buffer_str("") {
         spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(server_addr);
+        socket.socket_set_reuseaddr();
+        socket.socket_bind(server_ip, server_port);
         socket.enable_no_delay();
     }
 
@@ -48,21 +48,17 @@ public:
     void _p_one_iteration() override {
         if (read_socket == NULL) {
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
-            socket.listen();
+            socket.socket_listen();
 #ifndef NDEBUG
             spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
 #endif
-            read_socket = new TCPSocket(FileDescriptor(system_call(
-                "accept",
-                ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
+            read_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}",
-                                     read_socket->peer_address().str(":"));
+            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket->peer_address());
 #endif
         } else {
-            auto        now        = timestamp();
             std::string delimitter = "EEND!";
-            std::string recv_data  = read_socket->read(); /* Blocking operation, wait for the data to come */
+            std::string recv_data  = read_socket->read_data(); /* Blocking operation, wait for the data to come */
             buffer_str             = buffer_str + recv_data;
             if (recv_data.size() > 0) {
                 std::string::size_type end_position = buffer_str.find(delimitter);
@@ -178,7 +174,8 @@ private:
 
     TCPSocket   socket;
     TCPSocket*  read_socket = NULL;
-    Address     server_addr;
+    std::string server_ip;
+    int         server_port;
     std::string buffer_str;
 };
 
