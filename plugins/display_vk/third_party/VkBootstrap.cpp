@@ -700,8 +700,8 @@ Result<Instance> InstanceBuilder::build() const {
 #elif defined(__linux__)
         // make sure all three calls to check_add_window_ext, don't allow short circuiting
         bool added_window_exts = check_add_window_ext("VK_KHR_xcb_surface");
-        added_window_exts = check_add_window_ext("VK_KHR_xlib_surface") || added_window_exts;
-        added_window_exts = check_add_window_ext("VK_KHR_wayland_surface") || added_window_exts;
+        added_window_exts      = check_add_window_ext("VK_KHR_xlib_surface") || added_window_exts;
+        added_window_exts      = check_add_window_ext("VK_KHR_wayland_surface") || added_window_exts;
 #elif defined(__APPLE__)
         bool added_window_exts = check_add_window_ext("VK_EXT_metal_surface");
 #endif
@@ -1045,6 +1045,7 @@ bool supports_features(VkPhysicalDeviceFeatures supported,
 
     // clang-format on
     // Finds the first queue which supports the desired operations. Returns QUEUE_INDEX_MAX_VALUE if none is found
+
     uint32_t get_first_queue_index(std::vector<VkQueueFamilyProperties> const& families, VkQueueFlags desired_flags) {
         for (uint32_t i = 0; i < static_cast<uint32_t>(families.size()); i++) {
             if ((families[i].queueFlags & desired_flags) == desired_flags)
