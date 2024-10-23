@@ -1,0 +1,53 @@
+dep_map:
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: debugview
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: gldemo
+- dependencies:
+  - needs: app
+    provided_by:
+    - vkdemo
+  - needs: display_sink
+    provided_by:
+    - display_vk
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  - needs: timewarp
+    provided_by:
+    - timewarp_vk
+  plugin: native_renderer
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: timewarp_gl
+- dependencies:
+  - needs: display_sink
+    provided_by:
+    - display_vk
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: timewarp_vk
+- dependencies:
+  - needs: display_sink
+    provided_by:
+    - display_vk
+  plugin: vkdemo
