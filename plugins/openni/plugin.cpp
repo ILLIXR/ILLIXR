@@ -94,8 +94,7 @@ bool openni_plugin::camera_initialize() {
 #ifndef NDEBUG
     for (int i = 0; i < modes_depth.getSize(); i++) {
         spdlog::get(name_)->debug("Depth Mode {}: {}x{}, {} fps, {} format", i, modes_depth[i].getResolutionX(),
-                                  modes_depth[i].getResolutionY(), modes_depth[i].getFps(),
-                                  modes_depth[i].getPixelFormat());
+                                  modes_depth[i].getResolutionY(), modes_depth[i].getFps(), modes_depth[i].getPixelFormat());
     }
 #endif
     device_status_ = depth_.setVideoMode(modes_depth[DEPTH_MODE]);
@@ -120,8 +119,7 @@ bool openni_plugin::camera_initialize() {
 #ifndef NDEBUG
     for (int i = 0; i < modes_color.getSize(); i++) {
         spdlog::get(name_)->debug("Color Mode {}: {}x{}, {} fps, {} format", i, modes_color[i].getResolutionX(),
-                                  modes_color[i].getResolutionY(), modes_color[i].getFps(),
-                                  modes_color[i].getPixelFormat());
+                                  modes_color[i].getResolutionY(), modes_color[i].getFps(), modes_color[i].getPixelFormat());
     }
 #endif
     device_status_ = color_.setVideoMode(modes_color[RGB_MODE]);
@@ -138,6 +136,5 @@ bool openni_plugin::camera_initialize() {
 
     return depth_.isValid() && color_.isValid();
 }
-
 
 PLUGIN_MAIN(openni_plugin)

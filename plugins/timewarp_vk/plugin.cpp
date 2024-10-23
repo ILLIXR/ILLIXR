@@ -14,55 +14,55 @@
 using namespace ILLIXR;
 
 struct vertex {
-glm::vec3 pos;
-glm::vec2 uv0;
-glm::vec2 uv1;
-glm::vec2 uv2;
+    glm::vec3 pos;
+    glm::vec2 uv0;
+    glm::vec2 uv1;
+    glm::vec2 uv2;
 
-static VkVertexInputBindingDescription get_binding_description() {
-    VkVertexInputBindingDescription binding_description = {};
-    binding_description.binding                         = 0;              // index of the binding in the array of bindings
-    binding_description.stride                          = sizeof(vertex); // number of bytes from one entry to the next
-    binding_description.inputRate                       = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
+    static VkVertexInputBindingDescription get_binding_description() {
+        VkVertexInputBindingDescription binding_description = {};
+        binding_description.binding                         = 0;              // index of the binding in the array of bindings
+        binding_description.stride                          = sizeof(vertex); // number of bytes from one entry to the next
+        binding_description.inputRate                       = VK_VERTEX_INPUT_RATE_VERTEX; // no instancing
 
-    return binding_description;
-}
+        return binding_description;
+    }
 
-static std::array<VkVertexInputAttributeDescription, 4> get_attribute_descriptions() {
-    std::array<VkVertexInputAttributeDescription, 4> attribute_descriptions = {};
+    static std::array<VkVertexInputAttributeDescription, 4> get_attribute_descriptions() {
+        std::array<VkVertexInputAttributeDescription, 4> attribute_descriptions = {};
 
-    // position
-    attribute_descriptions[0].binding  = 0;                          // which binding the per-vertex data comes from
-    attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
-    attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
-    attribute_descriptions[0].offset =
-        offsetof(vertex, pos); // number of bytes since the start of the per-vertex data to read from
+        // position
+        attribute_descriptions[0].binding  = 0;                          // which binding the per-vertex data comes from
+        attribute_descriptions[0].location = 0;                          // location directive of the input in the vertex shader
+        attribute_descriptions[0].format   = VK_FORMAT_R32G32B32_SFLOAT; // format of the data
+        attribute_descriptions[0].offset =
+            offsetof(vertex, pos); // number of bytes since the start of the per-vertex data to read from
 
-    // uv0
-    attribute_descriptions[1].binding  = 0;
-    attribute_descriptions[1].location = 1;
-    attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
-    attribute_descriptions[1].offset   = offsetof(vertex, uv0);
+        // uv0
+        attribute_descriptions[1].binding  = 0;
+        attribute_descriptions[1].location = 1;
+        attribute_descriptions[1].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[1].offset   = offsetof(vertex, uv0);
 
-    // uv1
-    attribute_descriptions[2].binding  = 0;
-    attribute_descriptions[2].location = 2;
-    attribute_descriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
-    attribute_descriptions[2].offset   = offsetof(vertex, uv1);
+        // uv1
+        attribute_descriptions[2].binding  = 0;
+        attribute_descriptions[2].location = 2;
+        attribute_descriptions[2].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[2].offset   = offsetof(vertex, uv1);
 
-    // uv2
-    attribute_descriptions[3].binding  = 0;
-    attribute_descriptions[3].location = 3;
-    attribute_descriptions[3].format   = VK_FORMAT_R32G32_SFLOAT;
-    attribute_descriptions[3].offset   = offsetof(vertex, uv2);
+        // uv2
+        attribute_descriptions[3].binding  = 0;
+        attribute_descriptions[3].location = 3;
+        attribute_descriptions[3].format   = VK_FORMAT_R32G32_SFLOAT;
+        attribute_descriptions[3].offset   = offsetof(vertex, uv2);
 
-    return attribute_descriptions;
-}
+        return attribute_descriptions;
+    }
 };
 
 struct uniform_buffer_object {
-glm::mat4 timewarp_start_transform;
-glm::mat4 timewarp_end_transform;
+    glm::mat4 timewarp_start_transform;
+    glm::mat4 timewarp_end_transform;
 };
 
 timewarp_vk::timewarp_vk(const phonebook* const pb)
@@ -77,8 +77,8 @@ void timewarp_vk::initialize() {
     if (display_sink_->vma_allocator) {
         this->vma_allocator_ = display_sink_->vma_allocator;
     } else {
-        this->vma_allocator_ = vulkan_utils::create_vma_allocator(
-            display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
+        this->vma_allocator_ = vulkan_utils::create_vma_allocator(display_sink_->vk_instance, display_sink_->vk_physical_device,
+                                                                  display_sink_->vk_device);
         deletion_queue_.emplace([=]() {
             vmaDestroyAllocator(vma_allocator_);
         });
@@ -98,7 +98,7 @@ void timewarp_vk::initialize() {
 }
 
 void timewarp_vk::setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
-           bool input_texture_vulkan_coordinates_in) {
+                        bool input_texture_vulkan_coordinates_in) {
     std::lock_guard<std::mutex> lock{setup_mutex_};
 
     this->input_texture_vulkan_coordinates_ = input_texture_vulkan_coordinates_in;
@@ -213,8 +213,8 @@ void timewarp_vk::create_vertex_buffer() {
 
     VkBuffer      staging_buffer;
     VmaAllocation staging_alloc;
-    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
-                                      &staging_alloc, nullptr))
+    VK_ASSERT_SUCCESS(
+        vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
 
     VkBufferCreateInfo buffer_info = {
         VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -283,8 +283,8 @@ void timewarp_vk::create_index_buffer() {
 
     VkBuffer      staging_buffer;
     VmaAllocation staging_alloc;
-    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer,
-                                      &staging_alloc, nullptr))
+    VK_ASSERT_SUCCESS(
+        vmaCreateBuffer(vma_allocator_, &staging_buffer_info, &staging_alloc_info, &staging_buffer, &staging_alloc, nullptr))
 
     VkBufferCreateInfo buffer_info = {
         VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -397,7 +397,7 @@ void timewarp_vk::create_descriptor_set_layout() {
     VkDescriptorSetLayoutCreateInfo             layout_info = {};
     layout_info.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layout_info.bindingCount                                = static_cast<uint32_t>(bindings.size());
-    layout_info.pBindings = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
+    layout_info.pBindings                                   = bindings.data(); // array of VkDescriptorSetLayoutBinding structs
 
     VK_ASSERT_SUCCESS(vkCreateDescriptorSetLayout(display_sink_->vk_device, &layout_info, nullptr, &descriptor_set_layout_))
     deletion_queue_.emplace([=]() {
@@ -424,8 +424,8 @@ void timewarp_vk::create_uniform_buffer() {
     create_info.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
     create_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &create_info, &uniform_buffer_, &uniform_alloc_,
-                                      &uniform_alloc_info_))
+    VK_ASSERT_SUCCESS(
+        vmaCreateBuffer(vma_allocator_, &buffer_info, &create_info, &uniform_buffer_, &uniform_alloc_, &uniform_alloc_info_))
     deletion_queue_.emplace([=]() {
         vmaDestroyBuffer(vma_allocator_, uniform_buffer_, uniform_alloc_);
     });
@@ -458,11 +458,11 @@ void timewarp_vk::create_descriptor_sets() {
     for (int eye = 0; eye < 2; eye++) {
         std::vector<VkDescriptorSetLayout> layouts    = {buffer_pool_[0].size(), descriptor_set_layout_};
         VkDescriptorSetAllocateInfo        alloc_info = {
-                   VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-                   nullptr,                                        // pNext
-                   {},                                             // descriptorPool
-                   0,                                              // descriptorSetCount
-                   nullptr                                         // pSetLayouts
+            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+            nullptr,                                        // pNext
+            {},                                             // descriptorPool
+            0,                                              // descriptorSetCount
+            nullptr                                         // pSetLayouts
         };
         alloc_info.descriptorPool     = descriptor_pool_;
         alloc_info.descriptorSetCount = buffer_pool_[0].size();
@@ -698,8 +698,7 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
                 distortion_positions_[eye * num_distortion_vertices_ + index].y =
                     (input_texture_vulkan_coordinates_ ? -1.0f : 1.0f) *
                     (-1.0f +
-                     2.0f *
-                         (static_cast<float>(hmd_info.eye_tiles_high - y) / static_cast<float>(hmd_info.eye_tiles_high)) *
+                     2.0f * (static_cast<float>(hmd_info.eye_tiles_high - y) / static_cast<float>(hmd_info.eye_tiles_high)) *
                          (static_cast<float>(hmd_info.eye_tiles_high * hmd_info.tile_pixels_high) /
                           static_cast<float>(hmd_info.display_pixels_high)));
                 distortion_positions_[eye * num_distortion_vertices_ + index].z = 0.0f;
@@ -723,8 +722,8 @@ void timewarp_vk::build_timewarp(HMD::hmd_info_t& hmd_info) {
 
 /* Calculate timewarp transform from projection matrix, view matrix, etc */
 void timewarp_vk::calculate_timewarp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
-                                         const Eigen::Matrix4f& render_view_matrix,
-                                         const Eigen::Matrix4f& new_view_matrix) {
+                                               const Eigen::Matrix4f& render_view_matrix,
+                                               const Eigen::Matrix4f& new_view_matrix) {
     // Eigen stores matrices internally in column-major order.
     // However, the (i,j) accessors are row-major (i.e, the first argument
     // is which row, and the second argument is which column.)
@@ -746,7 +745,6 @@ void timewarp_vk::calculate_timewarp_transform(Eigen::Matrix4f& transform, const
     // Accumulate the transforms.
     transform = tex_coord_projection * delta_view_matrix;
 }
-
 
 [[maybe_unused]] timewarp_vk_plugin::timewarp_vk_plugin(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
@@ -774,6 +772,5 @@ threadloop::skip_option timewarp_vk_plugin::_p_should_skip() {
         return skip_option::run;
     }
 }
-
 
 PLUGIN_MAIN(timewarp_vk_plugin)

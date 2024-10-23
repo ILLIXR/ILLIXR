@@ -13,6 +13,7 @@ public:
     [[maybe_unused]] record_rgb_depth(const std::string& name, phonebook* pb);
     void dump_data(const switchboard::ptr<const rgb_depth_type>& datum);
     ~record_rgb_depth() override;
+
 private:
     static boost::filesystem::path get_record_data_path();
 
@@ -25,4 +26,4 @@ private:
     const boost::filesystem::path depth_data_dir_;
 };
 
-}
+} // namespace ILLIXR

@@ -1,6 +1,6 @@
-#include "illixr/data_format.hpp" // must appear first
 #include "plugin.hpp"
 
+#include "illixr/data_format.hpp" // must appear first
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
@@ -25,21 +25,21 @@ using namespace ILLIXR;
 typedef void (*glx_swap_interval_ext_proc)(Display* display_, GLXDrawable drawable, int interval);
 
 const record_header timewarp_gpu_record{"timewarp_gpu",
-                                    {
-                                        {"iteration_no", typeid(std::size_t)},
-                                        {"wall_time_start", typeid(time_point)},
-                                        {"wall_time_stop", typeid(time_point)},
-                                        {"gpu_time_duration", typeid(std::chrono::nanoseconds)},
-                                    }};
+                                        {
+                                            {"iteration_no", typeid(std::size_t)},
+                                            {"wall_time_start", typeid(time_point)},
+                                            {"wall_time_stop", typeid(time_point)},
+                                            {"gpu_time_duration", typeid(std::chrono::nanoseconds)},
+                                        }};
 
 const record_header mtp_record{"mtp_record",
-                           {
-                               {"iteration_no", typeid(std::size_t)},
-                               {"vsync", typeid(time_point)},
-                               {"imu_to_display", typeid(std::chrono::nanoseconds)},
-                               {"predict_to_display", typeid(std::chrono::nanoseconds)},
-                               {"render_to_display", typeid(std::chrono::nanoseconds)},
-                           }};
+                               {
+                                   {"iteration_no", typeid(std::size_t)},
+                                   {"vsync", typeid(time_point)},
+                                   {"imu_to_display", typeid(std::chrono::nanoseconds)},
+                                   {"predict_to_display", typeid(std::chrono::nanoseconds)},
+                                   {"render_to_display", typeid(std::chrono::nanoseconds)},
+                               }};
 
 #ifdef ILLIXR_MONADO
 typedef plugin timewarp_type;
@@ -158,13 +158,11 @@ timewarp_gl::timewarp_gl(const std::string& name, phonebook* pb)
     this->_setup();
 
 #ifdef ILLIXR_MONADO
-    switchboard_->schedule<rendered_frame>(id_, "eyebuffer",
-                                           [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
-                                               this->warp(datum);
-                                           });
+    switchboard_->schedule<rendered_frame>(id_, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
+        this->warp(datum);
+    });
 #endif
 }
-
 
 GLubyte* timewarp_gl::read_texture_image() {
     const unsigned mem_size = display_params::width_pixels * display_params::height_pixels * 3;
@@ -333,8 +331,7 @@ void timewarp_gl::build_timewarp(HMD::hmd_info_t& hmd_info) {
 }
 
 /* Calculate timewarp transform from projection matrix, view matrix, etc */
-void timewarp_gl::calculate_time_warp_transform(Eigen::Matrix4f& transform,
-                                                const Eigen::Matrix4f& render_projection_matrix,
+void timewarp_gl::calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
                                                 const Eigen::Matrix4f& render_view_matrix,
                                                 const Eigen::Matrix4f& new_view_matrix) {
     // Eigen stores matrices internally in column-major order.
@@ -388,15 +385,14 @@ void timewarp_gl::_setup() {
 
     // set swap interval for 1
     // TODO do we still need this if timewarp is not doing the presenting?
-    auto glx_swap_interval_ext =
-        (glx_swap_interval_ext_proc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
+    auto glx_swap_interval_ext = (glx_swap_interval_ext_proc) glXGetProcAddressARB((const GLubyte*) "glx_swap_interval_ext");
     glx_swap_interval_ext(display_, root_window_, 1);
 
     // Init and verify GLEW
     glewExperimental      = GL_TRUE;
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        spdlog::get(name_)->error("[timewarp_gl] GLEW Error: {}", (void*)glewGetErrorString(glew_err));
+        spdlog::get(name_)->error("[timewarp_gl] GLEW Error: {}", (void*) glewGetErrorString(glew_err));
         ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
     }
 
@@ -573,7 +569,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
     Eigen::Matrix4f view_matrix_begin = Eigen::Matrix4f::Identity();
     Eigen::Matrix4f view_matrix_end   = Eigen::Matrix4f::Identity();
 
-    const fast_pose_type latest_pose = disable_warp_ ? most_recent_frame->render_pose : pose_prediction_->get_fast_pose();
+    const fast_pose_type latest_pose    = disable_warp_ ? most_recent_frame->render_pose : pose_prediction_->get_fast_pose();
     view_matrix_begin.block(0, 0, 3, 3) = latest_pose.pose.orientation.toRotationMatrix();
 
     // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
@@ -710,7 +706,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
                                {render_to_display},
                            }});
 
-#ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
+    #ifndef NDEBUG // Timewarp only has vsync estimates if we're running with native-gl
 
     if (log_count_ > LOG_PERIOD_) {
         const double     time_swap         = duration_to_double<std::milli>(time_after_swap - time_before_swap);
@@ -726,7 +722,7 @@ void timewarp_gl::warp(const switchboard::ptr<const rendered_frame>& most_recent
         spdlog::get(name_)->debug("Render-to-display latency: {} ms", latency_rtd);
         spdlog::get(name_)->debug("Next swap in: {} ms in the future", timewarp_estimate);
     }
-#endif
+    #endif
 
     // For now, it only makes sense to enable offloading in native mode
     // because running timewarp with Monado will not produce a single texture.

@@ -1,8 +1,8 @@
 #include "plugin.hpp"
+
 #include "illixr/network/net_config.hpp"
 #include "video_decoder.hpp"
 #include "vio_input.pb.h"
-
 
 using namespace ILLIXR;
 

@@ -16,6 +16,7 @@ public:
     void callback();
 
     ~depthai() override;
+
 private:
     dai::Pipeline create_camera_pipeline() const;
 
@@ -53,4 +54,4 @@ private:
     std::optional<ullong>     first_cam_time_;
     std::optional<time_point> first_real_cam_time_;
 };
-}
+} // namespace ILLIXR

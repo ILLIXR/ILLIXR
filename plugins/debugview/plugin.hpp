@@ -33,8 +33,7 @@ public:
 
     bool load_rgb_depth();
 
-    static Eigen::Matrix4f generate_headset_transform(const Eigen::Vector3f& position,
-                                                      const Eigen::Quaternionf& rotation,
+    static Eigen::Matrix4f generate_headset_transform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
                                                       const Eigen::Vector3f& position_offset);
 
     void _p_thread_setup() override;
@@ -46,6 +45,7 @@ public:
     void start() override;
 
     ~debugview() override;
+
 private:
     // GLFWwindow * const glfw_context;
     const std::shared_ptr<switchboard>     switchboard_;
@@ -94,7 +94,6 @@ private:
     ObjScene headset_;
 
     Eigen::Matrix4f basic_projection_;
-
 };
 
-}
+} // namespace ILLIXR

@@ -1,6 +1,7 @@
 #define VMA_IMPLEMENTATION
 
 #include "plugin.hpp"
+
 #include "illixr/global_module_defs.hpp"
 
 #include <array>
@@ -36,8 +37,8 @@ void native_renderer::_p_thread_setup() {
         create_offscreen_target(&offscreen_images_[i], &offscreen_image_allocations_[i], &offscreen_image_views_[i],
                                 &offscreen_framebuffers_[i]);
     }
-    command_pool_            = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
-    app_command_buffer_      = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
+    command_pool_       = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
+    app_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
     timewarp_command_buffer_ = vulkan_utils::create_command_buffer(display_sink_->vk_device, command_pool_);
     create_sync_objects();
     create_app_pass();
@@ -46,8 +47,7 @@ void native_renderer::_p_thread_setup() {
     create_offscreen_framebuffers();
     create_swapchain_framebuffers();
     app_->setup(app_pass_, 0);
-    timewarp_->setup(timewarp_pass_, 0, {std::vector{offscreen_image_views_[0]}, std::vector{offscreen_image_views_[1]}},
-                     true);
+    timewarp_->setup(timewarp_pass_, 0, {std::vector{offscreen_image_views_[0]}, std::vector{offscreen_image_views_[1]}}, true);
 }
 
 void native_renderer::_p_one_iteration() {
@@ -320,8 +320,7 @@ void native_renderer::create_sync_objects() {
     VK_ASSERT_SUCCESS(vkCreateFence(display_sink_->vk_device, &fence_info, nullptr, &frame_fence_))
 }
 
-void native_renderer::create_depth_image(VkImage* depth_image,
-                                         VmaAllocation* depth_image_allocation,
+void native_renderer::create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation,
                                          VkImageView* depth_image_view) {
     VkImageCreateInfo image_info{
         VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
@@ -348,8 +347,8 @@ void native_renderer::create_depth_image(VkImage* depth_image,
     VmaAllocationCreateInfo alloc_info{};
     alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
-    VK_ASSERT_SUCCESS(vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, depth_image,
-                                     depth_image_allocation, nullptr))
+    VK_ASSERT_SUCCESS(
+        vmaCreateImage(display_sink_->vma_allocator, &image_info, &alloc_info, depth_image, depth_image_allocation, nullptr))
 
     VkImageViewCreateInfo view_info{
         VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
@@ -365,15 +364,14 @@ void native_renderer::create_depth_image(VkImage* depth_image,
             1,                         // levelCount
             0,                         // baseArrayLayer
             1                          // layerCount
-        }                              // subresourceRange
+        } // subresourceRange
     };
 
     VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, depth_image_view))
 }
 
-void native_renderer::create_offscreen_target(VkImage* offscreen_image,
-                                              VmaAllocation* offscreen_image_allocation,
-                                              VkImageView* offscreen_image_view,
+void native_renderer::create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
+                                              VkImageView*                    offscreen_image_view,
                                               [[maybe_unused]] VkFramebuffer* offscreen_framebuffer) {
     VkImageCreateInfo image_info{
         VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
@@ -416,7 +414,7 @@ void native_renderer::create_offscreen_target(VkImage* offscreen_image,
             1,                         // levelCount
             0,                         // baseArrayLayer
             1                          // layerCount
-        }                              // subresourceRange
+        } // subresourceRange
     };
 
     VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, offscreen_image_view))

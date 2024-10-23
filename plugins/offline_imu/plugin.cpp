@@ -1,6 +1,5 @@
 #include "plugin.hpp"
 
-
 #include <chrono>
 
 using namespace ILLIXR;
@@ -15,7 +14,6 @@ using namespace ILLIXR;
     , dataset_now_{0}
     , imu_cam_log_{record_logger_}
     , clock_{phonebook_->lookup_impl<relative_clock>()} { }
-
 
 ILLIXR::threadloop::skip_option offline_imu::_p_should_skip() {
     if (sensor_data_it_ != sensor_data_.end()) {
@@ -41,7 +39,5 @@ void offline_imu::_p_one_iteration() {
     imu_.put(imu_.allocate<imu_type>(imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));
     ++sensor_data_it_;
 }
-
-
 
 PLUGIN_MAIN(offline_imu)

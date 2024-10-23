@@ -1,6 +1,5 @@
 #include "plugin.hpp"
 
-
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <numeric>
@@ -21,10 +20,9 @@ using namespace ILLIXR;
     , is_success_{true} /// TODO: Set with #198
     , obj_dir_{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
     spdlogger(std::getenv("OFFLOAD_DATA_LOG_LEVEL"));
-    switchboard_->schedule<texture_pose>(id_, "texture_pose",
-                                         [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
-                                             callback(datum);
-                                         });
+    switchboard_->schedule<texture_pose>(id_, "texture_pose", [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
+        callback(datum);
+    });
 }
 
 void offload_data::callback(const switchboard::ptr<const texture_pose>& datum) {
@@ -45,7 +43,6 @@ offload_data::~offload_data() {
         write_data_to_disk();
     }
 }
-
 
 void offload_data::write_metadata() {
     double mean  = std::accumulate(_time_seq.begin(), _time_seq.end(), 0.0) / static_cast<double>(_time_seq.size());
@@ -143,6 +140,5 @@ void offload_data::write_data_to_disk() {
     std::cout << std::endl;
     write_metadata();
 }
-
 
 PLUGIN_MAIN(offload_data)

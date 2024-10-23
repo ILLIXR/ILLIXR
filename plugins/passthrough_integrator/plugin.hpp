@@ -1,17 +1,17 @@
 #pragma once
 
-#include "illixr/plugin.hpp"
-
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
 class passthrough_integrator : public plugin {
 public:
-    [[maybe_unused]]passthrough_integrator(const std::string& name, phonebook* pb);
+    [[maybe_unused]] passthrough_integrator(const std::string& name, phonebook* pb);
 
     void callback(const switchboard::ptr<const imu_type>& datum);
+
 private:
     const std::shared_ptr<switchboard> switchboard_;
 
@@ -22,4 +22,4 @@ private:
     switchboard::writer<imu_raw_type> imu_raw_;
 };
 
-}
+} // namespace ILLIXR

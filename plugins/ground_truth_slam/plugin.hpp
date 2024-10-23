@@ -1,9 +1,8 @@
 #pragma once
 
 #include "data_loading.hpp"
-
-#include "illixr/plugin.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
@@ -15,12 +14,12 @@ namespace ILLIXR {
 #define ViconRoom2Medium    1413393885975760384
 #define ViconRoom2Hard      1413394881555760384
 
-
 class ground_truth_slam : public plugin {
 public:
     [[maybe_unused]] ground_truth_slam(const std::string& name, phonebook* pb);
     void start() override;
     void feed_ground_truth(const switchboard::ptr<const imu_type>& datum);
+
 private:
     const std::shared_ptr<switchboard> switchboard_;
     switchboard::writer<pose_type>     true_pose_;
@@ -29,6 +28,5 @@ private:
     const std::map<ullong, sensor_types>                             sensor_data_;
     ullong                                                           dataset_first_time_;
     bool                                                             first_time_;
-
 };
-}
+} // namespace ILLIXR

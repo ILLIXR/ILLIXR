@@ -5,9 +5,7 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
 #include "zed_opencv.hpp"
-
 
 namespace ILLIXR {
 struct cam_type_zed : public switchboard::event {
@@ -31,7 +29,8 @@ public:
 
 protected:
     skip_option _p_should_skip() override;
-    void _p_one_iteration() override;
+    void        _p_one_iteration() override;
+
 private:
     const std::shared_ptr<switchboard>          switchboard_;
     const std::shared_ptr<const relative_clock> clock_;
@@ -62,7 +61,7 @@ public:
 
 protected:
     skip_option _p_should_skip() override;
-    void _p_one_iteration() override;
+    void        _p_one_iteration() override;
 
 private:
     std::shared_ptr<Camera> zed_cam_;
@@ -87,4 +86,4 @@ private:
     std::optional<time_point> first_real_time_;
 };
 
-}
+} // namespace ILLIXR

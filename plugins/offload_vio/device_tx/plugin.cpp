@@ -124,8 +124,7 @@ void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum
 #ifdef USE_COMPRESSION
         /** WITH COMPRESSION **/
         uint64_t curr =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                .count();
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         queue_.push(curr);
         std::unique_lock<std::mutex> lock{mutex_};
         encoder_->enqueue(cam_img0, cam_img1);
@@ -167,7 +166,6 @@ void offload_writer::prepare_imu_cam_data(switchboard::ptr<const imu_type> datum
         }
     }
 }
-
 
 // TODO not the best way to use threadloop and stoplight
 void offload_writer::_p_one_iteration() {

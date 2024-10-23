@@ -1,13 +1,12 @@
 #pragma once
 
 #include "illixr/data_format.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/network/tcpsocket.hpp"
-
 #include "video_encoder.hpp"
 #include "vio_input.pb.h"
 
@@ -22,8 +21,10 @@ public:
     void prepare_imu_cam_data(switchboard::ptr<const imu_type> datum);
 
 protected:
-    void _p_thread_setup() override {}
+    void _p_thread_setup() override { }
+
     void _p_one_iteration() override;
+
 private:
     boost::lockfree::spsc_queue<uint64_t> queue_{1000};
     std::vector<int32_t>                  sizes_;
@@ -47,4 +48,4 @@ private:
     std::string server_ip_;
     int         server_port_;
 };
-}
+} // namespace ILLIXR

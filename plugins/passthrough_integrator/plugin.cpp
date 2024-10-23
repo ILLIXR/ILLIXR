@@ -37,9 +37,7 @@ void passthrough_integrator::callback(const switchboard::ptr<const imu_type>& da
     a_hat2 = datum->linear_a - input_values->bias_acc;
 
     imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
-                                   Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
-                                   datum->time));
+                                   Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)}, datum->time));
 }
-
 
 PLUGIN_MAIN(passthrough_integrator)

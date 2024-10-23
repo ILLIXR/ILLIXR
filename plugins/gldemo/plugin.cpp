@@ -21,8 +21,6 @@ using namespace ILLIXR;
 // Wake up 1 ms after vsync instead of exactly at vsync to account for scheduling uncertainty
 static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};
 
-
-
 [[maybe_unused]] gldemo::gldemo(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , ext_window_{new xlib_gl_extended_window{1, 1, phonebook_->lookup_impl<xlib_gl_extended_window>()->context_}}
@@ -125,8 +123,7 @@ void gldemo::_p_one_iteration() {
 
     for (auto eye_idx = 0; eye_idx < 2; eye_idx++) {
         // Offset of eyeball from pose
-        auto eyeball =
-            Eigen::Vector3f((eye_idx == LEFT_EYE ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
+        auto eyeball = Eigen::Vector3f((eye_idx == LEFT_EYE ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
 
         // Apply head rotation to eyeball offset vector
         eyeball = head_rotation_matrix * eyeball;
@@ -201,7 +198,7 @@ void gldemo::start() {
     // Init and verify GLEW
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        spdlog::get(name_)->error("GLEW Error: {}", (void*)glewGetErrorString(glew_err));
+        spdlog::get(name_)->error("GLEW Error: {}", (void*) glewGetErrorString(glew_err));
         ILLIXR::abort("Failed to initialize GLEW");
     }
 
@@ -210,8 +207,7 @@ void gldemo::start() {
 
     // Create two shared textures, one for each eye.
     create_shared_eyebuffer(&(eye_textures_[0]));
-    image_handle_.put(
-        image_handle_.allocate<image_handle>(image_handle{eye_textures_[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
+    image_handle_.put(image_handle_.allocate<image_handle>(image_handle{eye_textures_[0], 1, swapchain_usage::LEFT_SWAPCHAIN}));
     create_shared_eyebuffer(&(eye_textures_[1]));
     image_handle_.put(
         image_handle_.allocate<image_handle>(image_handle{eye_textures_[1], 1, swapchain_usage::RIGHT_SWAPCHAIN}));
@@ -254,7 +250,6 @@ void gldemo::start() {
     // Try to run gldemo right away.
     threadloop::start();
 }
-
 
 void gldemo::create_shared_eyebuffer(GLuint* texture_handle) {
     // Create the shared eye texture handle
@@ -301,7 +296,5 @@ void gldemo::create_FBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth
     // Unbind FBO
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
-
 
 PLUGIN_MAIN(gldemo)

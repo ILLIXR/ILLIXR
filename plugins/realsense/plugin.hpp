@@ -53,4 +53,4 @@ private:
     std::optional<time_point> first_real_time_cam_;
 };
 
-}
+} // namespace ILLIXR

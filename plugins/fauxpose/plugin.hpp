@@ -1,9 +1,8 @@
 #pragma once
 
-#include "illixr/plugin.hpp"
-
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
 
 namespace ILLIXR {
@@ -12,13 +11,23 @@ class faux_pose_impl : public pose_prediction {
 public:
     explicit faux_pose_impl(const phonebook* const pb);
     ~faux_pose_impl() override;
-    pose_type get_true_pose() const override {throw std::logic_error{"Not Implemented"};}
-    bool fast_pose_reliable() const override {return true;}
-    bool true_pose_reliable() const override {return false;}
-    pose_type correct_pose(const pose_type& pose) const override;
+
+    pose_type get_true_pose() const override {
+        throw std::logic_error{"Not Implemented"};
+    }
+
+    bool fast_pose_reliable() const override {
+        return true;
+    }
+
+    bool true_pose_reliable() const override {
+        return false;
+    }
+
+    pose_type          correct_pose(const pose_type& pose) const override;
     Eigen::Quaternionf get_offset() override;
-    void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
-    fast_pose_type get_fast_pose() const override;
+    void               set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
+    fast_pose_type     get_fast_pose() const override;
     // ********************************************************************
     // get_fast_pose(): returns a "fast_pose_type" with the algorithmically
     //   determined location values.  (Presently moving in a circle, but
@@ -40,7 +49,6 @@ private:
     double          period_;          /* The period of the circular movement (in seconds) */
     double          amplitude_;       /* The amplitude of the circular movement (in meters) */
     Eigen::Vector3f center_location_; /* The location around which the tracking should orbit */
-
 };
 
 class faux_pose : public plugin {
@@ -49,6 +57,5 @@ public:
     /* Constructor: Provide handles to faux_pose */
     [[maybe_unused]] faux_pose(const std::string& name, phonebook* pb);
     ~faux_pose() override;
-
 };
-}
+} // namespace ILLIXR

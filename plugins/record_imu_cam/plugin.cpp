@@ -77,6 +77,5 @@ boost::filesystem::path record_imu_cam::get_record_data_path() {
     return ILLIXR_DIR / "data_record";
 }
 
-
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(record_imu_cam)

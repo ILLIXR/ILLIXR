@@ -6,15 +6,15 @@
 using namespace ILLIXR;
 
 [[maybe_unused]] offline_cam::offline_cam(const std::string& name, phonebook* pb)
-: threadloop{name, pb}
-, switchboard_{phonebook_->lookup_impl<switchboard>()}
-, cam_publisher_{switchboard_->get_writer<cam_type>("cam")}
-, sensor_data_{load_data()}
-, dataset_first_time_{sensor_data_.cbegin()->first}
-, last_timestamp_{0}
-, clock_{phonebook_->lookup_impl<relative_clock>()}
-, next_row_{sensor_data_.cbegin()} {
-spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
+    : threadloop{name, pb}
+    , switchboard_{phonebook_->lookup_impl<switchboard>()}
+    , cam_publisher_{switchboard_->get_writer<cam_type>("cam")}
+    , sensor_data_{load_data()}
+    , dataset_first_time_{sensor_data_.cbegin()->first}
+    , last_timestamp_{0}
+    , clock_{phonebook_->lookup_impl<relative_clock>()}
+    , next_row_{sensor_data_.cbegin()} {
+    spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
 }
 
 ILLIXR::threadloop::skip_option offline_cam::_p_should_skip() {
@@ -37,8 +37,7 @@ void offline_cam::_p_one_iteration() {
     if (after_nearest_row == sensor_data_.cend()) {
 #ifndef NDEBUG
         spdlog::get(name_)->warn("Running out of the dataset! Time {} ({} + {}) after last datum {}", lookup_time,
-                                 clock_->now().time_since_epoch().count(), dataset_first_time_,
-                                 sensor_data_.rbegin()->first);
+                                 clock_->now().time_since_epoch().count(), dataset_first_time_, sensor_data_.rbegin()->first);
 #endif
         // Handling the last camera images. There's no more rows after the nearest_row, so we set after_nearest_row
         // to be nearest_row to avoiding sleeping at the end.
@@ -50,8 +49,7 @@ void offline_cam::_p_one_iteration() {
         // Should not happen because lookup_time is bigger than dataset_first_time_
 #ifndef NDEBUG
         spdlog::get(name_)->warn("Time {} ({} + {}) before first datum {}", lookup_time,
-                                 clock_->now().time_since_epoch().count(), dataset_first_time_,
-                                 sensor_data_.cbegin()->first);
+                                 clock_->now().time_since_epoch().count(), dataset_first_time_, sensor_data_.cbegin()->first);
 #endif
     } else {
         // Most recent
@@ -75,7 +73,5 @@ void offline_cam::_p_one_iteration() {
     std::this_thread::sleep_for(std::chrono::nanoseconds(after_nearest_row->first - dataset_first_time_ -
                                                          clock_->now().time_since_epoch().count() - 2));
 }
-
-
 
 PLUGIN_MAIN(offline_cam)

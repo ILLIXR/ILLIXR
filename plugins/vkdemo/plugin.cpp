@@ -23,25 +23,22 @@
 
 using namespace ILLIXR;
 
-
-
-
 struct model_push_constant {
-[[maybe_unused]] int texture_index;
+    [[maybe_unused]] int texture_index;
 };
 
 namespace std {
 template<>
 struct hash<vertex> {
-size_t operator()(vertex const& vertex) const {
-    return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec2>()(vertex.uv) << 1)) >> 1);
-}
+    size_t operator()(vertex const& vertex) const {
+        return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec2>()(vertex.uv) << 1)) >> 1);
+    }
 };
 } // namespace std
 
 struct uniform_buffer_object {
-glm::mat4 model_view;
-glm::mat4 proj;
+    glm::mat4 model_view;
+    glm::mat4 proj;
 };
 
 vkdemo::vkdemo(const phonebook* const pb)
@@ -53,8 +50,8 @@ void vkdemo::initialize() {
     if (display_sink_->vma_allocator) {
         this->vma_allocator_ = display_sink_->vma_allocator;
     } else {
-        this->vma_allocator_ = vulkan_utils::create_vma_allocator(
-            display_sink_->vk_instance, display_sink_->vk_physical_device, display_sink_->vk_device);
+        this->vma_allocator_ = vulkan_utils::create_vma_allocator(display_sink_->vk_instance, display_sink_->vk_physical_device,
+                                                                  display_sink_->vk_device);
     }
 
     command_pool_   = vulkan_utils::create_command_pool(display_sink_->vk_device, display_sink_->graphics_queue_family);
@@ -92,8 +89,8 @@ void vkdemo::record_command_buffer(VkCommandBuffer command_buffer, int eye) {
     VkDeviceSize offsets[]        = {0};
     vkCmdBindVertexBuffers(command_buffer, 0, 1, vertex_buffers, offsets);
     vkCmdBindIndexBuffer(command_buffer, index_buffer_, 0, VK_INDEX_TYPE_UINT32);
-    vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1, &descriptor_sets_[eye],
-                            0, nullptr);
+    vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0, 1, &descriptor_sets_[eye], 0,
+                            nullptr);
 
     for (auto& model : models_) {
         model_push_constant push_constant{};
@@ -204,7 +201,7 @@ void vkdemo::create_uniform_buffers() {
         };
 
         VmaAllocationCreateInfo alloc_info{};
-        alloc_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+        alloc_info.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
         alloc_info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &uniform_buffers_[i],
@@ -296,7 +293,7 @@ void vkdemo::create_descriptor_set() {
                                                                   VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,      // descriptorType
                                                                   nullptr,                                // pImageInfo
                                                                   &buffer_infos[0],                       // pBufferInfo
-                                                                  nullptr // pTexelBufferView
+                                                                  nullptr                                 // pTexelBufferView
                                                               },
                                                               {
                                                                   VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, // sType
@@ -308,11 +305,11 @@ void vkdemo::create_descriptor_set() {
                                                                   VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,      // descriptorType
                                                                   nullptr,                                // pImageInfo
                                                                   &buffer_infos[1],                       // pBufferInfo
-                                                                  nullptr // pTexelBufferView
+                                                                  nullptr                                 // pTexelBufferView
                                                               }}};
 
-    vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()),
-                           descriptor_writes.data(), 0, nullptr);
+    vkUpdateDescriptorSets(display_sink_->vk_device, static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(),
+                           0, nullptr);
 
     std::vector<VkWriteDescriptorSet> image_descriptor_writes = {};
     for (auto i = 0; i < 2; i++) {
@@ -397,8 +394,8 @@ void vkdemo::load_texture(const std::string& path, int i) {
     alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
     alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
 
-    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &staging_buffer,
-                                      &staging_buffer_allocation, &staging_buffer_allocation_info))
+    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &staging_buffer, &staging_buffer_allocation,
+                                      &staging_buffer_allocation_info))
 
     memcpy(staging_buffer_allocation_info.pMappedData, data, static_cast<size_t>(image_size));
 
@@ -435,8 +432,8 @@ void vkdemo::load_texture(const std::string& path, int i) {
     image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    vulkan_utils::copy_buffer_to_image(display_sink_->vk_device, display_sink_->graphics_queue, command_pool_,
-                                       staging_buffer, textures_[i].image, width, height);
+    vulkan_utils::copy_buffer_to_image(display_sink_->vk_device, display_sink_->graphics_queue, command_pool_, staging_buffer,
+                                       textures_[i].image, width, height);
 
     image_layout_transition(textures_[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -457,14 +454,14 @@ void vkdemo::load_texture(const std::string& path, int i) {
             1,                         // levelCount
             0,                         // baseArrayLayer
             1                          // layerCount
-        }                              // subresourceRange
+        } // subresourceRange
     };
 
     VK_ASSERT_SUCCESS(vkCreateImageView(display_sink_->vk_device, &view_info, nullptr, &textures_[i].image_view))
 }
 
-void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format,
-                                     VkImageLayout old_layout, VkImageLayout new_layout) {
+void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
+                                     VkImageLayout new_layout) {
     VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(display_sink_->vk_device, command_pool_);
 
     VkImageMemoryBarrier barrier{
@@ -496,8 +493,7 @@ void vkdemo::image_layout_transition(VkImage image, [[maybe_unused]] VkFormat fo
 
         source_stage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-               new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    } else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
@@ -554,8 +550,7 @@ void vkdemo::load_model() {
             vertex.pos = {attrib.vertices[3 * index.vertex_index + 0] * 2, attrib.vertices[3 * index.vertex_index + 1] * 2,
                           attrib.vertices[3 * index.vertex_index + 2] * 2};
 
-            vertex.uv = {attrib.texcoords[2 * index.texcoord_index + 0],
-                         1.0f - attrib.texcoords[2 * index.texcoord_index + 1]};
+            vertex.uv = {attrib.texcoords[2 * index.texcoord_index + 0], 1.0f - attrib.texcoords[2 * index.texcoord_index + 1]};
 
             if (unique_vertices.count(vertex) == 0) {
                 unique_vertices[vertex] = static_cast<uint32_t>(vertices_.size());
@@ -610,8 +605,7 @@ void vkdemo::create_vertex_buffer() {
     alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
     VmaAllocation buffer_allocation;
-    VK_ASSERT_SUCCESS(
-        vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &vertex_buffer_, &buffer_allocation, nullptr))
+    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &vertex_buffer_, &buffer_allocation, nullptr))
 
     void* mapped_data;
     VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_buffer_allocation, &mapped_data))
@@ -667,8 +661,7 @@ void vkdemo::create_index_buffer() {
     alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
     VmaAllocation buffer_allocation;
-    VK_ASSERT_SUCCESS(
-        vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &index_buffer_, &buffer_allocation, nullptr))
+    VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator_, &buffer_info, &alloc_info, &index_buffer_, &buffer_allocation, nullptr))
 
     void* mapped_data;
     VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator_, staging_buffer_allocation, &mapped_data))
@@ -877,7 +870,6 @@ void vkdemo::create_pipeline(VkRenderPass render_pass, uint32_t subpass) {
     vkDestroyShaderModule(display_sink_->vk_device, vert, nullptr);
     vkDestroyShaderModule(display_sink_->vk_device, frag, nullptr);
 }
-
 
 [[maybe_unused]] vkdemo_plugin::vkdemo_plugin(const std::string& name, phonebook* pb)
     : plugin{name, pb}

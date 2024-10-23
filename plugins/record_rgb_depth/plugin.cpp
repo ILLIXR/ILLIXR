@@ -4,7 +4,6 @@
 
 using namespace ILLIXR;
 
-
 [[maybe_unused]] record_rgb_depth::record_rgb_depth(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
@@ -51,13 +50,11 @@ record_rgb_depth::~record_rgb_depth() {
     depth_wt_file_.close();
 }
 
-
 // TODO: This should come from a yaml file
 boost::filesystem::path record_rgb_depth::get_record_data_path() {
     boost::filesystem::path ILLIXR_DIR = boost::filesystem::current_path();
     return ILLIXR_DIR / "data_rgbd_record";
 }
-
 
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(record_rgb_depth)

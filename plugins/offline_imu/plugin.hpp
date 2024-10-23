@@ -15,7 +15,8 @@ public:
 
 protected:
     skip_option _p_should_skip() override;
-    void _p_one_iteration() override;
+    void        _p_one_iteration() override;
+
 private:
     const std::map<ullong, sensor_types>           sensor_data_;
     std::map<ullong, sensor_types>::const_iterator sensor_data_it_;
@@ -30,6 +31,5 @@ private:
     record_coalescer imu_cam_log_;
 
     std::shared_ptr<relative_clock> clock_;
-
 };
-}
+} // namespace ILLIXR

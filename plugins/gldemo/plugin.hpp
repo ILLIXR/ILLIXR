@@ -28,9 +28,10 @@ public:
     void _p_thread_setup() override;
     void _p_one_iteration() override;
     void start() override;
+
 private:
     static void create_shared_eyebuffer(GLuint* texture_handle);
-    void create_FBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth_target);
+    void        create_FBO(const GLuint* texture_handle, GLuint* fbo, GLuint* depth_target);
 
     const std::unique_ptr<const xlib_gl_extended_window>              ext_window_;
     const std::shared_ptr<switchboard>                                switchboard_;
@@ -66,6 +67,5 @@ private:
     Eigen::Matrix4f basic_projection_;
 
     time_point last_time_{};
-
 };
-}
+} // namespace ILLIXR

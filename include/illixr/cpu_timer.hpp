@@ -26,7 +26,7 @@ static inline std::chrono::nanoseconds cpp_clock_get_time(clockid_t clock_id) {
                  : /* InputOperands */
                  : "memory" /* Clobbers */);
 
-    struct timespec time_spec { };
+    struct timespec time_spec{};
 
     RAC_ERRNO_MSG("cpu_timer before clock_get_time");
 

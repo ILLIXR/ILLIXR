@@ -6,7 +6,6 @@ using namespace ILLIXR;
 display_vk::display_vk(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()} { }
 
-
 void display_vk::setup() {
     setup_glfw();
     setup_vk();
@@ -15,9 +14,9 @@ void display_vk::setup() {
 void display_vk::recreate_swapchain() {
     vkb::SwapchainBuilder swapchain_builder{vkb_device_};
     auto                  swapchain_ret = swapchain_builder.set_old_swapchain(vk_swapchain)
-        .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-        .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
-        .build();
+                             .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+                             .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
+                             .build();
     if (!swapchain_ret) {
         ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
     }
@@ -29,11 +28,9 @@ void display_vk::recreate_swapchain() {
     swapchain_extent       = vkb_swapchain_.extent;
 }
 
-
 void display_vk::poll_window_events() {
     should_poll_ = true;
 }
-
 
 void display_vk::setup_glfw() {
     if (!glfwInit()) {
@@ -43,10 +40,9 @@ void display_vk::setup_glfw() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
-                              "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
+    window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "ILLIXR Eyebuffer Window (Vulkan)",
+                              nullptr, nullptr);
 }
-
 
 void display_vk::setup_vk() {
     vkb::InstanceBuilder builder;
@@ -55,15 +51,15 @@ void display_vk::setup_vk() {
             .require_api_version(1, 2)
             .request_validation_layers()
             .enable_validation_layers()
-            .set_debug_callback(
-                [](VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type,
-                   const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data, void* p_user_data) -> VkBool32 {
-                    (void) p_user_data;
-                    auto severity = vkb::to_string_message_severity(message_severity);
-                    auto type     = vkb::to_string_message_type(message_type);
-                    spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, p_callback_data->pMessage);
-                    return VK_FALSE;
-                })
+            .set_debug_callback([](VkDebugUtilsMessageSeverityFlagBitsEXT      message_severity,
+                                   VkDebugUtilsMessageTypeFlagsEXT             message_type,
+                                   const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data, void* p_user_data) -> VkBool32 {
+                (void) p_user_data;
+                auto severity = vkb::to_string_message_severity(message_severity);
+                auto type     = vkb::to_string_message_type(message_type);
+                spdlog::get("illixr")->debug("[display_vk] [{}: {}] {}", severity, type, p_callback_data->pMessage);
+                return VK_FALSE;
+            })
             .build();
     if (!instance_ret) {
         ILLIXR::abort("Failed to create Vulkan instance. Error: " + instance_ret.error().message());
@@ -77,10 +73,10 @@ void display_vk::setup_vk() {
     }
 
     auto physical_device_ret = selector.set_surface(vk_surface)
-        .set_minimum_version(1, 2)
-        .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
-            // .add_required_extension(VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME)
-        .select();
+                                   .set_minimum_version(1, 2)
+                                   .prefer_gpu_device_type(vkb::PreferredDeviceType::discrete)
+                                   // .add_required_extension(VK_EXT_DISPLAY_CONTROL_EXTENSION_NAME)
+                                   .select();
 
     if (!physical_device_ret) {
         ILLIXR::abort("Failed to select Vulkan Physical Device. Error: " + physical_device_ret.error().message());
@@ -121,9 +117,9 @@ void display_vk::setup_vk() {
 
     vkb::SwapchainBuilder swapchain_builder{vkb_device_};
     auto swapchain_ret = swapchain_builder.set_desired_format({VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR})
-        .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
-        .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
-        .build();
+                             .set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+                             .set_desired_extent(display_params::width_pixels, display_params::height_pixels)
+                             .build();
     if (!swapchain_ret) {
         ILLIXR::abort("Failed to create Vulkan swapchain. Error: " + swapchain_ret.error().message());
     }
@@ -141,8 +137,6 @@ void display_vk::setup_vk() {
 #endif
     vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
 }
-
-
 
 [[maybe_unused]] display_vk_plugin::display_vk_plugin(const std::string& name, phonebook* pb)
     : plugin{name, pb}
@@ -163,7 +157,6 @@ void display_vk_plugin::stop() {
     running_ = false;
 }
 
-
 void display_vk_plugin::main_loop() {
     display_vk_->setup();
 
@@ -175,6 +168,5 @@ void display_vk_plugin::main_loop() {
         }
     }
 }
-
 
 PLUGIN_MAIN(display_vk_plugin)

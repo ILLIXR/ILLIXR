@@ -1,11 +1,10 @@
 #pragma once
 
-#include "illixr/plugin.hpp"
-
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
 
 namespace ILLIXR {
@@ -14,6 +13,7 @@ public:
     [[maybe_unused]] offload_data(const std::string& name, phonebook* pb);
     void callback(const switchboard::ptr<const texture_pose>& datum);
     ~offload_data() override;
+
 private:
     void write_metadata();
     void write_data_to_disk();
@@ -27,6 +27,5 @@ private:
     bool        enable_offload_;
     bool        is_success_;
     std::string obj_dir_;
-
 };
-}
+} // namespace ILLIXR

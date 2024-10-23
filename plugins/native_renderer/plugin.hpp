@@ -4,7 +4,6 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
 #include "illixr/vk_util/display_sink.hpp"
 #include "illixr/vk_util/render_pass.hpp"
 
@@ -32,6 +31,7 @@ public:
      * @throws runtime_error If any Vulkan operation fails.
      */
     void _p_one_iteration() override;
+
 private:
     /**
      * @brief Recreates the Vulkan swapchain.
@@ -73,8 +73,7 @@ private:
      * @param depth_image_allocation Pointer to the depth image memory allocation handle.
      * @param depth_image_view Pointer to the depth image view handle.
      */
-    void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation,
-                            VkImageView* depth_image_view);
+    void create_depth_image(VkImage* depth_image, VmaAllocation* depth_image_allocation, VkImageView* depth_image_view);
 
     /**
      * @brief Creates an offscreen target for the application to render to.
@@ -84,8 +83,7 @@ private:
      * @param offscreen_framebuffer Pointer to the offscreen framebuffer handle.
      */
     void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
-                                 VkImageView* offscreen_image_view,
-                                 [[maybe_unused]] VkFramebuffer* offscreen_framebuffer);
+                                 VkImageView* offscreen_image_view, [[maybe_unused]] VkFramebuffer* offscreen_framebuffer);
 
     /**
      * @brief Creates the offscreen framebuffers for the application.
@@ -142,4 +140,4 @@ private:
     int        fps_{};
     time_point last_fps_update_;
 };
-}
+} // namespace ILLIXR

@@ -32,8 +32,7 @@ pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
 }
 
 fast_pose_type pose_lookup_impl::get_fast_pose() const {
-    const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync =
-        vsync_estimate_.get_ro_nullable();
+    const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync = vsync_estimate_.get_ro_nullable();
     if (estimated_vsync == nullptr) {
         spdlog::get("illixr")->warn("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
         return get_fast_pose(clock_->now());
@@ -76,8 +75,8 @@ pose_type pose_lookup_impl::correct_pose(const pose_type& pose) const {
         input_pose.position = align_scale_ * align_rot_ * input_pose.position + align_trans_;
 
         // Step 2.2: Orientation alignment
-        Eigen::Vector4f quat_in  = {pose.orientation.x(), pose.orientation.y(), pose.orientation.z(), pose.orientation.w()};
-        Eigen::Vector4f quat_out = ori_multiply(quat_in, ori_inv(align_quat_));
+        Eigen::Vector4f quat_in    = {pose.orientation.x(), pose.orientation.y(), pose.orientation.z(), pose.orientation.w()};
+        Eigen::Vector4f quat_out   = ori_multiply(quat_in, ori_inv(align_quat_));
         input_pose.orientation.x() = quat_out(0);
         input_pose.orientation.y() = quat_out(1);
         input_pose.orientation.z() = quat_out(2);
@@ -147,13 +146,12 @@ fast_pose_type pose_lookup_impl::get_fast_pose(time_point time) const {
         .pose = correct_pose(looked_up_pose), .predict_computed_time = clock_->now(), .predict_target_time = time};
 }
 
-
 class pose_lookup_plugin : public plugin {
 public:
-[[maybe_unused]] pose_lookup_plugin(const std::string& name, phonebook* pb)
-    : plugin{name, pb} {
-    pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<pose_lookup_impl>(pb)));
-}
+    [[maybe_unused]] pose_lookup_plugin(const std::string& name, phonebook* pb)
+        : plugin{name, pb} {
+        pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<pose_lookup_impl>(pb)));
+    }
 };
 
 PLUGIN_MAIN(pose_lookup_plugin)

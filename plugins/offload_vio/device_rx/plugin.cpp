@@ -98,10 +98,8 @@ void offload_reader::receive_vio_output(const vio_output_proto::VIOOutput& vio_o
         },
         Eigen::Vector3d{imu_int_input.biasacc().x(), imu_int_input.biasacc().y(), imu_int_input.biasacc().z()},
         Eigen::Vector3d{imu_int_input.biasgyro().x(), imu_int_input.biasgyro().y(), imu_int_input.biasgyro().z()},
-        Eigen::Matrix<double, 3, 1>{imu_int_input.position().x(), imu_int_input.position().y(),
-                                    imu_int_input.position().z()},
-        Eigen::Matrix<double, 3, 1>{imu_int_input.velocity().x(), imu_int_input.velocity().y(),
-                                    imu_int_input.velocity().z()},
+        Eigen::Matrix<double, 3, 1>{imu_int_input.position().x(), imu_int_input.position().y(), imu_int_input.position().z()},
+        Eigen::Matrix<double, 3, 1>{imu_int_input.velocity().x(), imu_int_input.velocity().y(), imu_int_input.velocity().z()},
         Eigen::Quaterniond{imu_int_input.rotation().w(), imu_int_input.rotation().x(), imu_int_input.rotation().y(),
                            imu_int_input.rotation().z()}};
 

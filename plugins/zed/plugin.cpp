@@ -21,36 +21,34 @@ static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
 //                                          {"has_camera", typeid(bool)},
 //                                      }};
 
-
 std::shared_ptr<Camera> start_camera() {
-std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
+    std::shared_ptr<Camera> zedm = std::make_shared<Camera>();
 
-assert(zedm != nullptr && "Zed camera should be initialized");
+    assert(zedm != nullptr && "Zed camera should be initialized");
 
-// Cam setup
-InitParameters init_params;
-init_params.camera_resolution      = RESOLUTION::VGA;
-init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
-init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
-init_params.camera_fps             = 30;                                         // gives best user experience
-init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
-init_params.depth_stabilization    = true;
-init_params.depth_minimum_distance = 0.3;
+    // Cam setup
+    InitParameters init_params;
+    init_params.camera_resolution      = RESOLUTION::VGA;
+    init_params.coordinate_units       = UNIT::MILLIMETER;                           // For scene reconstruction
+    init_params.coordinate_system      = COORDINATE_SYSTEM::RIGHT_HANDED_Z_UP_X_FWD; // Coordinate system used in ROS
+    init_params.camera_fps             = 30;                                         // gives best user experience
+    init_params.depth_mode             = DEPTH_MODE::PERFORMANCE;
+    init_params.depth_stabilization    = true;
+    init_params.depth_minimum_distance = 0.3;
 
-// Open the camera
-ERROR_CODE err = zedm->open(init_params);
-if (err != ERROR_CODE::SUCCESS) {
-    spdlog::get("illixr")->info("[zed] {}", toString(err).c_str());
-    zedm->close();
+    // Open the camera
+    ERROR_CODE err = zedm->open(init_params);
+    if (err != ERROR_CODE::SUCCESS) {
+        spdlog::get("illixr")->info("[zed] {}", toString(err).c_str());
+        zedm->close();
+    }
+
+    zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, EXPOSURE_TIME_PERCENT);
+
+    return zedm;
 }
 
-zedm->setCameraSettings(VIDEO_SETTINGS::EXPOSURE, EXPOSURE_TIME_PERCENT);
-
-return zedm;
-}
-
-zed_camera_thread::zed_camera_thread(const std::string& name, phonebook* pb,
-                                     std::shared_ptr<Camera> zedm_)
+zed_camera_thread::zed_camera_thread(const std::string& name, phonebook* pb, std::shared_ptr<Camera> zedm_)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , clock_{phonebook_->lookup_impl<relative_clock>()}
@@ -69,7 +67,6 @@ zed_camera_thread::zed_camera_thread(const std::string& name, phonebook* pb,
     rgb_ocv_    = slMat_to_cvMat(rgb_zed_);
     depth_ocv_  = slMat_to_cvMat(depth_zed_);
 }
-
 
 threadloop::skip_option zed_camera_thread::_p_should_skip() {
     if (zed_cam_->grab(runtime_parameters_) == ERROR_CODE::SUCCESS) {
@@ -91,12 +88,11 @@ void zed_camera_thread::_p_one_iteration() {
     zed_cam_->retrieveMeasure(depth_zed_, MEASURE::DEPTH, MEM::CPU, image_size_);
     zed_cam_->retrieveImage(rgb_zed_, VIEW::LEFT, MEM::CPU, image_size_);
 
-    cam_.put(cam_.allocate<cam_type_zed>({cv::Mat{imageL_ocv_.clone()}, cv::Mat{imageR_ocv_.clone()},
-                                          cv::Mat{rgb_ocv_.clone()}, cv::Mat{depth_ocv_.clone()}, ++serial_no_}));
+    cam_.put(cam_.allocate<cam_type_zed>({cv::Mat{imageL_ocv_.clone()}, cv::Mat{imageR_ocv_.clone()}, cv::Mat{rgb_ocv_.clone()},
+                                          cv::Mat{depth_ocv_.clone()}, ++serial_no_}));
 
     RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
 }
-
 
 void zed_imu_thread::stop() {
     camera_thread_.stop();

@@ -6,7 +6,6 @@
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
 #include "utils/hmd.hpp"
 
 namespace ILLIXR {
@@ -25,21 +24,20 @@ public:
     void warp(const switchboard::ptr<const rendered_frame>& most_recent_frame);
 #ifndef ILLIXR_MONADO
     skip_option _p_should_skip() override;
-    void _p_thread_setup() override;
-    void _p_one_iteration() override;
+    void        _p_thread_setup() override;
+    void        _p_one_iteration() override;
 #endif
 
 private:
-    GLubyte* read_texture_image();
+    GLubyte*      read_texture_image();
     static GLuint convert_vk_format_to_GL(int64_t vk_format);
-    void import_vulkan_image(const vk_image_handle& vk_handle, swapchain_usage usage);
-    void build_timewarp(HMD::hmd_info_t& hmd_info);
-    static void calculate_time_warp_transform(Eigen::Matrix4f& transform,
-                                              const Eigen::Matrix4f& render_projection_matrix,
-                                              const Eigen::Matrix4f& render_view_matrix,
-                                              const Eigen::Matrix4f& new_view_matrix);
+    void          import_vulkan_image(const vk_image_handle& vk_handle, swapchain_usage usage);
+    void          build_timewarp(HMD::hmd_info_t& hmd_info);
+    static void   calculate_time_warp_transform(Eigen::Matrix4f& transform, const Eigen::Matrix4f& render_projection_matrix,
+                                                const Eigen::Matrix4f& render_view_matrix,
+                                                const Eigen::Matrix4f& new_view_matrix);
 #ifndef ILLIXR_MONADO
-    [[nodiscard]] time_point get_next_swap_time_estimate() const;
+    [[nodiscard]] time_point                get_next_swap_time_estimate() const;
     [[maybe_unused]] [[nodiscard]] duration estimate_time_to_sleep(const double frame_percentage) const;
 #endif
 
@@ -161,4 +159,4 @@ private:
 #endif
 };
 
-}
+} // namespace ILLIXR

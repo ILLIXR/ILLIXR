@@ -1,15 +1,13 @@
 #pragma once
 
 #include "illixr/data_format.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/network/tcpsocket.hpp"
-
 #include "video_decoder.hpp"
 #include "vio_input.pb.h"
-
 
 #include <boost/lockfree/spsc_queue.hpp>
 
@@ -18,9 +16,10 @@ class server_reader : public threadloop {
 public:
     [[maybe_unused]] server_reader(const std::string& name, phonebook* pb);
     skip_option _p_should_skip() override;
-    void _p_one_iteration() override;
+    void        _p_one_iteration() override;
     ~server_reader() override;
     void start() override;
+
 private:
     void receive_vio_input(const vio_input_proto::IMUCamVec& vio_input);
 
@@ -38,11 +37,10 @@ private:
     switchboard::writer<cam_type>          cam_;
     switchboard::writer<connection_signal> conn_signal_;
 
-    TCPSocket   socket_;
-    TCPSocket*  read_socket_ = NULL;
-    std::string server_ip_;
-    [[maybe_unused]]int         server_port_;
-    std::string buffer_str_;
-
+    TCPSocket            socket_;
+    TCPSocket*           read_socket_ = NULL;
+    std::string          server_ip_;
+    [[maybe_unused]] int server_port_;
+    std::string          buffer_str_;
 };
-}
+} // namespace ILLIXR

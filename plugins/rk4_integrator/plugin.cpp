@@ -115,8 +115,7 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
 }
 
 // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
-std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_type>& imu_data,
-                                                          time_point time_begin,
+std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
                                                           time_point time_end) {
     std::vector<imu_type> prop_data;
     if (imu_data.size() < 2) {
@@ -158,19 +157,16 @@ std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_
 }
 
 // For when an integration time ever falls inbetween two imu measurements (modeled after OpenVINS)
-imu_type rk4_integrator::interpolate_imu(const imu_type& imu_1, const imu_type& imu_2,
-                                         time_point timestamp) {
+imu_type rk4_integrator::interpolate_imu(const imu_type& imu_1, const imu_type& imu_2, time_point timestamp) {
     double lambda = duration_to_double(timestamp - imu_1.time) / duration_to_double(imu_2.time - imu_1.time);
     return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
                     (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
 }
 
-void rk4_integrator::predict_mean_rk4(const Eigen::Vector4d& quat, const Eigen::Vector3d& pos,
-                                      const Eigen::Vector3d& vel, double dt,
-                                      const Eigen::Vector3d& w_hat1, const Eigen::Vector3d& a_hat1,
-                                      const Eigen::Vector3d& w_hat2, const Eigen::Vector3d& a_hat2,
-                                      Eigen::Vector4d& new_q, Eigen::Vector3d& new_v,
-                                      Eigen::Vector3d& new_p) {
+void rk4_integrator::predict_mean_rk4(const Eigen::Vector4d& quat, const Eigen::Vector3d& pos, const Eigen::Vector3d& vel,
+                                      double dt, const Eigen::Vector3d& w_hat1, const Eigen::Vector3d& a_hat1,
+                                      const Eigen::Vector3d& w_hat2, const Eigen::Vector3d& a_hat2, Eigen::Vector4d& new_q,
+                                      Eigen::Vector3d& new_v, Eigen::Vector3d& new_p) {
     Eigen::Matrix<double, 3, 1> gravity_vec = Eigen::Matrix<double, 3, 1>(0.0, 0.0, 9.81);
 
     // Pre-compute things
@@ -325,7 +321,7 @@ inline Eigen::Matrix<double, 3, 3> rk4_integrator::quat_2_Rot(const Eigen::Matri
  * @return 4x1 resulting p*q quaternion
  */
 inline Eigen::Matrix<double, 4, 1> rk4_integrator::quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
-                                                        const Eigen::Matrix<double, 4, 1>& p) {
+                                                                 const Eigen::Matrix<double, 4, 1>& p) {
     Eigen::Matrix<double, 4, 1> q_t;
     Eigen::Matrix<double, 4, 4> Qm;
     // create big L matrix
@@ -341,6 +337,5 @@ inline Eigen::Matrix<double, 4, 1> rk4_integrator::quat_multiply(const Eigen::Ma
     // normalize and return
     return q_t / q_t.norm();
 }
-
 
 PLUGIN_MAIN(rk4_integrator)

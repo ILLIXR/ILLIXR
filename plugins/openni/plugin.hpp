@@ -17,8 +17,8 @@ public:
 
 protected:
     skip_option _p_should_skip() override;
-    void _p_one_iteration() override;
-    bool camera_initialize();
+    void        _p_one_iteration() override;
+    bool        camera_initialize();
 
 private:
     // ILLIXR
@@ -38,6 +38,5 @@ private:
     uint64_t   first_time_{};
     time_point first_real_time_{};
     uint64_t   time_sleep_{};
-
 };
-}
+} // namespace ILLIXR

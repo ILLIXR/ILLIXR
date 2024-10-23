@@ -95,13 +95,11 @@ void realsense::callback(const rs2::frame& frame) {
             rs2::video_frame ir_frame_right = fs.get_infrared_frame(2);
             rs2::video_frame depth_frame    = fs.get_depth_frame();
             rs2::video_frame rgb_frame      = fs.get_color_frame();
-            cv::Mat          ir_left =
-                cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_left.get_data());
+            cv::Mat ir_left = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_left.get_data());
             cv::Mat ir_right =
                 cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC1, (void*) ir_frame_right.get_data());
-            cv::Mat rgb = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void*) rgb_frame.get_data());
-            cv::Mat depth =
-                cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void*) depth_frame.get_data());
+            cv::Mat rgb   = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_8UC3, (void*) rgb_frame.get_data());
+            cv::Mat depth = cv::Mat(cv::Size(IMAGE_WIDTH_D4XX, IMAGE_HEIGHT_D4XX), CV_16UC1, (void*) depth_frame.get_data());
             cv::Mat converted_depth;
             float   depth_scale = pipeline_.get_active_profile()
                                     .get_device()

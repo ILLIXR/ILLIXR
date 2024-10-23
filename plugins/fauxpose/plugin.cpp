@@ -114,7 +114,7 @@ fast_pose_type faux_pose_impl::get_fast_pose() const {
     if (vsync_estimate == nullptr) {
         return get_fast_pose(clock_->now());
     } else {
-        return get_fast_pose( vsync_estimate.get()->operator time_point());
+        return get_fast_pose(vsync_estimate.get()->operator time_point());
     }
 }
 
@@ -143,7 +143,6 @@ fast_pose_type faux_pose_impl::get_fast_pose(time_point time) const {
     return fast_pose_type{.pose = simulated_pose, .predict_computed_time = clock_->now(), .predict_target_time = time};
 }
 
-
 [[maybe_unused]] faux_pose::faux_pose(const std::string& name, phonebook* pb)
     : plugin{name, pb} {
     // "pose_prediction" is a class inheriting from "phonebook::service"
@@ -159,7 +158,6 @@ faux_pose::~faux_pose() {
     spdlog::get("illixr")->debug("[fauxpose] Ending Plugin");
 #endif
 }
-
 
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(faux_pose)

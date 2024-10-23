@@ -1,7 +1,7 @@
 #pragma once
 
-#include "illixr/pose_prediction.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/vk_util/display_sink.hpp"
@@ -76,8 +76,8 @@ private:
     void create_texture_sampler_();
     void create_descriptor_set();
     void load_texture(const std::string& path, int i);
-    void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format,
-                                 VkImageLayout old_layout, VkImageLayout new_layout);
+    void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
+                                 VkImageLayout new_layout);
     void load_model();
     void create_vertex_buffer();
     void create_index_buffer();
@@ -122,8 +122,9 @@ class vkdemo_plugin : public plugin {
 public:
     [[maybe_unused]] vkdemo_plugin(const std::string& name, phonebook* pb);
     void start() override;
+
 private:
     std::shared_ptr<vkdemo> vkd_;
 };
 
-}
+} // namespace ILLIXR

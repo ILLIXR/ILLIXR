@@ -4,7 +4,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-
 #include "illixr/vk_util/display_sink.hpp"
 
 namespace ILLIXR {
@@ -25,7 +24,8 @@ public:
     /**
      * @brief This function polls GLFW events. See display_sink::poll_window_events().
      */
-     void poll_window_events() override;
+    void poll_window_events() override;
+
 private:
     /**
      * @brief Sets up the GLFW environment.
@@ -45,7 +45,7 @@ private:
      *
      * @throws runtime_error If any of the Vulkan setup steps fail.
      */
-     void setup_vk();
+    void                               setup_vk();
     const std::shared_ptr<switchboard> switchboard_;
     vkb::Instance                      vkb_instance_;
     vkb::PhysicalDevice                physical_device_;
@@ -55,7 +55,6 @@ private:
     std::atomic<bool> should_poll_{true};
 
     friend class display_vk_plugin;
-
 };
 
 class display_vk_plugin : public plugin {
@@ -65,12 +64,11 @@ public:
     void stop() override;
 
 private:
-    void main_loop();
+    void                        main_loop();
     std::thread                 main_thread_;
     std::atomic<bool>           ready_{false};
     std::shared_ptr<display_vk> display_vk_;
     std::atomic<bool>           running_{true};
     phonebook*                  phonebook_;
-
 };
-}
+} // namespace ILLIXR

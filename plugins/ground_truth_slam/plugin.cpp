@@ -39,8 +39,8 @@ void ground_truth_slam::feed_ground_truth(const switchboard::ptr<const imu_type>
         true_pose_.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
 #ifndef NDEBUG
-    spdlog::get(name_)->debug("Ground truth pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
-                              rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
+    spdlog::get(name_)->debug("Ground truth pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})", rounded_time,
+                              true_pose->position[0], true_pose->position[1], true_pose->position[2],
                               true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(),
                               true_pose->orientation.z());
 #endif

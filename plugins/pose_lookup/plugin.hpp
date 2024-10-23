@@ -1,25 +1,25 @@
 #pragma once
 
 #include "data_loading.hpp"
-
-#include "illixr/plugin.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
 
 namespace ILLIXR {
 class pose_lookup_impl : public pose_prediction {
 public:
     explicit pose_lookup_impl(const phonebook* const pb);
-    fast_pose_type get_fast_pose() const override;
-    pose_type get_true_pose() const override;
-    bool fast_pose_reliable() const override;
-    bool true_pose_reliable() const override;
+    fast_pose_type     get_fast_pose() const override;
+    pose_type          get_true_pose() const override;
+    bool               fast_pose_reliable() const override;
+    bool               true_pose_reliable() const override;
     Eigen::Quaternionf get_offset() override;
-    pose_type correct_pose(const pose_type& pose) const override;
-    void set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
+    pose_type          correct_pose(const pose_type& pose) const override;
+    void               set_offset(const Eigen::Quaternionf& raw_o_times_offset) override;
     Eigen::Quaternionf apply_offset(const Eigen::Quaternionf& orientation) const;
-    fast_pose_type get_fast_pose(time_point time) const override;
+    fast_pose_type     get_fast_pose(time_point time) const override;
+
 private:
     const std::shared_ptr<switchboard>          switchboard_;
     const std::shared_ptr<const relative_clock> clock_;
@@ -39,4 +39,4 @@ private:
     double          align_scale_;
 };
 
-}
+} // namespace ILLIXR

@@ -76,20 +76,20 @@ void depthai::callback() {
 
         time_point cam_time_point{*first_real_cam_time_ + std::chrono::nanoseconds(cam_time - *first_cam_time_)};
 
-        cv::Mat color = cv::Mat(static_cast<int>(color_frame->getHeight()), static_cast<int>(color_frame->getWidth()),
-                                CV_8UC3, color_frame->getData().data());
+        cv::Mat color = cv::Mat(static_cast<int>(color_frame->getHeight()), static_cast<int>(color_frame->getWidth()), CV_8UC3,
+                                color_frame->getData().data());
         cv::Mat rgb_out{color.clone()};
-        cv::Mat rectified_left_frame = cv::Mat(static_cast<int>(rectifL->getHeight()),
-                                               static_cast<int>(rectifL->getWidth()), CV_8UC1, rectifL->getData().data());
+        cv::Mat rectified_left_frame = cv::Mat(static_cast<int>(rectifL->getHeight()), static_cast<int>(rectifL->getWidth()),
+                                               CV_8UC1, rectifL->getData().data());
         cv::Mat left_out{rectified_left_frame.clone()};
         cv::flip(left_out, left_out, 1);
-        cv::Mat rectified_right_frame = cv::Mat(static_cast<int>(rectifR->getHeight()),
-                                                static_cast<int>(rectifR->getWidth()), CV_8UC1, rectifR->getData().data());
+        cv::Mat rectified_right_frame = cv::Mat(static_cast<int>(rectifR->getHeight()), static_cast<int>(rectifR->getWidth()),
+                                                CV_8UC1, rectifR->getData().data());
         cv::Mat right_out{rectified_right_frame.clone()};
         cv::flip(right_out, right_out, 1);
 
-        cv::Mat depth = cv::Mat(static_cast<int>(depth_frame->getHeight()), static_cast<int>(depth_frame->getWidth()),
-                                CV_16UC1, depth_frame->getData().data());
+        cv::Mat depth = cv::Mat(static_cast<int>(depth_frame->getHeight()), static_cast<int>(depth_frame->getWidth()), CV_16UC1,
+                                depth_frame->getData().data());
         cv::Mat converted_depth;
         depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 
@@ -135,25 +135,23 @@ void depthai::callback() {
         imu_pub_++;
 #endif
         imu_writer_.put(imu_writer_.allocate<imu_type>({
-                                                           imu_time_point,
-                                                           av,
-                                                           la,
-                                                       }));
+            imu_time_point,
+            av,
+            la,
+        }));
     }
 }
 
 depthai::~depthai() {
 #ifndef NDEBUG
-    spdlog::get(name_)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}",
-                              imu_packet_, imu_pub_, rgbd_pub_);
+    spdlog::get(name_)->debug("Destructor: Packets Received {} Published: IMU: {} RGB-D: {}", imu_packet_, imu_pub_, rgbd_pub_);
     auto dur = std::chrono::steady_clock::now() - first_packet_time_;
     spdlog::get(name_)->debug("Time since first packet: {} ms",
                               std::chrono::duration_cast<std::chrono::milliseconds>(dur).count());
     spdlog::get(name_)->debug("RGB: {} Left: {} Right: {} Depth: {} All: {}", rgb_count_, left_count_, right_count_,
                               depth_count_, all_count_);
 #endif
-    }
-
+}
 
 dai::Pipeline depthai::create_camera_pipeline() const {
 #ifndef NDEBUG
@@ -246,8 +244,6 @@ dai::Pipeline depthai::create_camera_pipeline() const {
 
     return p;
 }
-
-
 
 // This line makes the plugin importable by Spindle
 PLUGIN_MAIN(depthai)

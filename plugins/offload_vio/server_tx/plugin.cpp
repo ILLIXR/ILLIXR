@@ -29,10 +29,9 @@ using namespace ILLIXR;
 void server_writer::start() {
     plugin::start();
 
-    switchboard_->schedule<pose_type>(id_, "slow_pose",
-                                      [this](const switchboard::ptr<const pose_type>& datum, std::size_t) {
-                                          this->send_vio_output(datum);
-                                      });
+    switchboard_->schedule<pose_type>(id_, "slow_pose", [this](const switchboard::ptr<const pose_type>& datum, std::size_t) {
+        this->send_vio_output(datum);
+    });
     switchboard_->schedule<connection_signal>(id_, "connection_signal",
                                               [this](const switchboard::ptr<const connection_signal>& datum, std::size_t) {
                                                   this->start_accepting_connection(datum);
@@ -45,11 +44,10 @@ void server_writer::start_accepting_connection(const switchboard::ptr<const conn
 #ifndef NDEBUG
     spdlog::get(name_)->debug("[offload_vio.server_tx]: Waiting for connection!");
 #endif
-        write_socket_ = new TCPSocket(socket_.socket_accept()); /* Blocking operation, waiting for client to connect */
-        is_client_connected_ = true;
+    write_socket_        = new TCPSocket(socket_.socket_accept()); /* Blocking operation, waiting for client to connect */
+    is_client_connected_ = true;
 #ifndef NDEBUG
-    spdlog::get(name_)->debug("[offload_vio.server_tx]: Connection is established with {}",
-                              write_socket_->peer_address());
+    spdlog::get(name_)->debug("[offload_vio.server_tx]: Connection is established with {}", write_socket_->peer_address());
 #endif
 }
 
@@ -131,8 +129,7 @@ void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& dat
         vio_output_params->set_allocated_imu_int_input(protobuf_imu_int_input);
 
         unsigned long long end_pose_time =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                .count();
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         vio_output_params->set_end_server_timestamp(end_pose_time);
 
         // Prepare data delivery

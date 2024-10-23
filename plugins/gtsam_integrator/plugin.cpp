@@ -46,60 +46,56 @@ void gtsam_integrator::callback(const switchboard::ptr<const imu_type>& datum) {
     RAC_ERRNO_MSG("gtsam_integrator");
 }
 
-
 gtsam_integrator::pim_object::pim_object(const imu_int_t& imu_int_input)
-        : imu_bias_{imu_int_input.bias_acc, imu_int_input.bias_gyro}
-        , pim_{nullptr} {
-        pim_t::Params params{imu_int_input.params.n_gravity};
-        params.setGyroscopeCovariance(std::pow(imu_int_input.params.gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
-        params.setAccelerometerCovariance(std::pow(imu_int_input.params.acc_noise, 2.0) * Eigen::Matrix3d::Identity());
-        params.setIntegrationCovariance(std::pow(imu_int_input.params.imu_integration_sigma, 2.0) *
-                                        Eigen::Matrix3d::Identity());
-        params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
-        params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
+    : imu_bias_{imu_int_input.bias_acc, imu_int_input.bias_gyro}
+    , pim_{nullptr} {
+    pim_t::Params params{imu_int_input.params.n_gravity};
+    params.setGyroscopeCovariance(std::pow(imu_int_input.params.gyro_noise, 2.0) * Eigen::Matrix3d::Identity());
+    params.setAccelerometerCovariance(std::pow(imu_int_input.params.acc_noise, 2.0) * Eigen::Matrix3d::Identity());
+    params.setIntegrationCovariance(std::pow(imu_int_input.params.imu_integration_sigma, 2.0) * Eigen::Matrix3d::Identity());
+    params.setBiasAccCovariance(std::pow(imu_int_input.params.acc_walk, 2.0) * Eigen::Matrix3d::Identity());
+    params.setBiasOmegaCovariance(std::pow(imu_int_input.params.gyro_walk, 2.0) * Eigen::Matrix3d::Identity());
 
-        pim_ = new pim_t{std::make_shared<pim_t::Params>(std::move(params)), imu_bias_};
-        reset_integration_and_set_bias(imu_int_input);
-    }
+    pim_ = new pim_t{std::make_shared<pim_t::Params>(std::move(params)), imu_bias_};
+    reset_integration_and_set_bias(imu_int_input);
+}
 
-    gtsam_integrator::pim_object::~pim_object() {
-        assert(pim_ != nullptr && "pim_ should not be null");
+gtsam_integrator::pim_object::~pim_object() {
+    assert(pim_ != nullptr && "pim_ should not be null");
 
-        /// Note: Deliberately leak pim_ => Removes SEGV read during destruction
-        /// delete pim_;
-    }
+    /// Note: Deliberately leak pim_ => Removes SEGV read during destruction
+    /// delete pim_;
+}
 
-    void gtsam_integrator::pim_object::reset_integration_and_set_bias(const imu_int_t& imu_int_input) noexcept {
-        assert(pim_ != nullptr && "pim_ should not be null");
+void gtsam_integrator::pim_object::reset_integration_and_set_bias(const imu_int_t& imu_int_input) noexcept {
+    assert(pim_ != nullptr && "pim_ should not be null");
 
-        imu_bias_ = bias_t{imu_int_input.bias_acc, imu_int_input.bias_gyro};
-        pim_->resetIntegrationAndSetBias(imu_bias_);
+    imu_bias_ = bias_t{imu_int_input.bias_acc, imu_int_input.bias_gyro};
+    pim_->resetIntegrationAndSetBias(imu_bias_);
 
-        navstate_lkf_ =
-            nav_t{gtsam::Pose3{gtsam::Rot3{imu_int_input.quat}, imu_int_input.position}, imu_int_input.velocity};
-    }
+    navstate_lkf_ = nav_t{gtsam::Pose3{gtsam::Rot3{imu_int_input.quat}, imu_int_input.position}, imu_int_input.velocity};
+}
 
-    void gtsam_integrator::pim_object::integrate_measurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept {
-        assert(pim_ != nullptr && "pim_ shuold not be null");
+void gtsam_integrator::pim_object::integrate_measurement(const imu_t& imu_input, const imu_t& imu_input_next) noexcept {
+    assert(pim_ != nullptr && "pim_ shuold not be null");
 
-        const gtsam::Vector3 measured_acc{imu_input.linear_a};
-        const gtsam::Vector3 measured_omega{imu_input.angular_v};
+    const gtsam::Vector3 measured_acc{imu_input.linear_a};
+    const gtsam::Vector3 measured_omega{imu_input.angular_v};
 
-        duration delta_t = imu_input_next.time - imu_input.time;
+    duration delta_t = imu_input_next.time - imu_input.time;
 
-        pim_->integrateMeasurement(measured_acc, measured_omega, duration_to_double(delta_t));
-    }
+    pim_->integrateMeasurement(measured_acc, measured_omega, duration_to_double(delta_t));
+}
 
-    [[nodiscard]] bias_t gtsam_integrator::pim_object::bias_hat() const noexcept {
-        assert(pim_ != nullptr && "pim_ shuold not be null");
-        return pim_->biasHat();
-    }
+[[nodiscard]] bias_t gtsam_integrator::pim_object::bias_hat() const noexcept {
+    assert(pim_ != nullptr && "pim_ shuold not be null");
+    return pim_->biasHat();
+}
 
-    [[nodiscard]] nav_t gtsam_integrator::pim_object::predict() const noexcept {
-        assert(pim_ != nullptr && "pim_ should not be null");
-        return pim_->predict(navstate_lkf_, imu_bias_);
-    }
-
+[[nodiscard]] nav_t gtsam_integrator::pim_object::predict() const noexcept {
+    assert(pim_ != nullptr && "pim_ should not be null");
+    return pim_->predict(navstate_lkf_, imu_bias_);
+}
 
 // Remove IMU values older than 'IMU_TTL' from the imu buffer
 void gtsam_integrator::clean_imu_vec(time_point timestamp) {
@@ -182,8 +178,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
 
     auto                        seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
     auto                        original_quaternion = out_pose.rotation().toQuaternion();
-    Eigen::Matrix<double, 3, 1> rotation_angles =
-        original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
+    Eigen::Matrix<double, 3, 1> rotation_angles  = original_quaternion.toRotationMatrix().eulerAngles(0, 1, 2).cast<double>();
     Eigen::Matrix<double, 3, 1> filtered_sins    = filters_[6](rotation_angles.array().sin(), seconds_since_epoch);
     Eigen::Matrix<double, 3, 1> filtered_cosines = filters_[7](rotation_angles.array().cos(), seconds_since_epoch);
     Eigen::Matrix<double, 3, 1> filtered_angles{atan2(filtered_sins[0], filtered_cosines[0]),
@@ -222,7 +217,7 @@ void gtsam_integrator::propagate_imu_values(time_point real_time) {
 
 // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
 std::vector<imu_type> gtsam_integrator::select_imu_readings(const std::vector<imu_type>& imu_data, const time_point time_begin,
-                                                 const time_point time_end) {
+                                                            const time_point time_end) {
     std::vector<imu_type> prop_data;
     if (imu_data.size() < 2) {
         return prop_data;
@@ -269,6 +264,5 @@ imu_type gtsam_integrator::interpolate_imu(const imu_type& imu_1, const imu_type
     return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
                     (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
 }
-
 
 PLUGIN_MAIN(gtsam_integrator)

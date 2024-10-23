@@ -1,9 +1,5 @@
 #include "plugin.hpp"
 
-#include <iostream>
-#include <opencv2/opencv.hpp>
-
-
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
@@ -13,8 +9,10 @@
 #include "third_party/imgui_impl_glfw.h"
 #include "third_party/imgui_impl_opengl3.h"
 
-using namespace ILLIXR;
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
+using namespace ILLIXR;
 
 // Loosely inspired by
 // http://spointeau.blogspot.com/2013/12/hello-i-am-looking-at-opengl-3.html
@@ -108,8 +106,8 @@ void debugview::draw_GUI() {
     if (pose_prediction_->fast_pose_reliable()) {
         const pose_type predicted_pose = pose_prediction_->get_fast_pose().pose;
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid predicted pose pointer");
-        ImGui::Text("Predicted pose position (XYZ):\n  (%f, %f, %f)", predicted_pose.position.x(),
-                    predicted_pose.position.y(), predicted_pose.position.z());
+        ImGui::Text("Predicted pose position (XYZ):\n  (%f, %f, %f)", predicted_pose.position.x(), predicted_pose.position.y(),
+                    predicted_pose.position.z());
         ImGui::Text("Predicted pose quaternion (XYZW):\n  (%f, %f, %f, %f)", predicted_pose.orientation.x(),
                     predicted_pose.orientation.y(), predicted_pose.orientation.z(), predicted_pose.orientation.w());
     } else {
@@ -122,9 +120,9 @@ void debugview::draw_GUI() {
     switchboard::ptr<const imu_raw_type> raw_imu = fast_pose_reader_.get_ro_nullable();
     if (raw_imu) {
         pose_type raw_pose;
-        raw_pose.position      = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
-        raw_pose.orientation   = Eigen::Quaternionf{float(raw_imu->quat.w()), float(raw_imu->quat.x()),
-                                                  float(raw_imu->quat.y()), float(raw_imu->quat.z())};
+        raw_pose.position    = Eigen::Vector3f{float(raw_imu->pos(0)), float(raw_imu->pos(1)), float(raw_imu->pos(2))};
+        raw_pose.orientation = Eigen::Quaternionf{float(raw_imu->quat.w()), float(raw_imu->quat.x()), float(raw_imu->quat.y()),
+                                                  float(raw_imu->quat.z())};
         pose_type swapped_pose = pose_prediction_->correct_pose(raw_pose);
 
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid fast pose pointer");
@@ -159,8 +157,8 @@ void debugview::draw_GUI() {
         ImGui::TextColored(ImVec4(0.0, 1.0, 0.0, 1.0), "Valid ground truth pose pointer");
         ImGui::Text("Ground truth position (XYZ):\n  (%f, %f, %f)", true_pose.position.x(), true_pose.position.y(),
                     true_pose.position.z());
-        ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose.orientation.x(),
-                    true_pose.orientation.y(), true_pose.orientation.z(), true_pose.orientation.w());
+        ImGui::Text("Ground truth quaternion (XYZW):\n  (%f, %f, %f, %f)", true_pose.orientation.x(), true_pose.orientation.y(),
+                    true_pose.orientation.z(), true_pose.orientation.w());
     } else {
         ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), "Invalid ground truth pose pointer");
     }
@@ -197,19 +195,17 @@ void debugview::draw_GUI() {
         // if there are RGBD stream and Stereo images stream, then move the RGBD display window up
         // essentially making the display images of RGBD on top of stereo
         if (use_cam_)
-            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350),
-                                    ImGuiCond_Once, ImVec2(1.0f, 1.0f));
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - 350), ImGuiCond_Once,
+                                    ImVec2(1.0f, 1.0f));
         else
             ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y), ImGuiCond_Once,
                                     ImVec2(1.0f, 1.0f));
         ImGui::Begin("Onboard RGBD views");
         auto window_size     = ImGui::GetWindowSize();
         auto vertical_offset = ImGui::GetCursorPos().y;
-        ImGui::Image((void*) (intptr_t) rgb_depth_texture_[0],
-                     ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
+        ImGui::Image((void*) (intptr_t) rgb_depth_texture_[0], ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
         ImGui::SameLine();
-        ImGui::Image((void*) (intptr_t) rgb_depth_texture_[1],
-                     ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
+        ImGui::Image((void*) (intptr_t) rgb_depth_texture_[1], ImVec2(window_size.x / 2, window_size.y - vertical_offset * 2));
         ImGui::End();
     }
 
@@ -265,8 +261,7 @@ bool debugview::load_rgb_depth() {
 
     glBindTexture(GL_TEXTURE_2D, rgb_depth_texture_[1]);
     cv::Mat depth{rgb_depth_->depth.clone()};
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT,
-                 depth.ptr());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depth.cols, depth.rows, 0, GL_DEPTH_COMPONENT, GL_SHORT, depth.ptr());
     rgbd_texture_size_[1] = Eigen::Vector2i(depth.cols, depth.rows);
     GLint swizzle_mask[]  = {GL_RED, GL_RED, GL_RED, 1};
     glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle_mask);
@@ -275,8 +270,7 @@ bool debugview::load_rgb_depth() {
     return true;
 }
 
-Eigen::Matrix4f debugview::generate_headset_transform(const Eigen::Vector3f& position,
-                                                      const Eigen::Quaternionf& rotation,
+Eigen::Matrix4f debugview::generate_headset_transform(const Eigen::Vector3f& position, const Eigen::Quaternionf& rotation,
                                                       const Eigen::Vector3f& position_offset) {
     Eigen::Matrix4f headset_position;
     headset_position << 1, 0, 0, position.x() + position_offset.x(), 0, 1, 0, position.y() + position_offset.y(), 0, 0, 1,
@@ -337,7 +331,7 @@ void debugview::_p_one_iteration() {
     if (pose_prediction_->fast_pose_reliable()) {
         const pose_type    pose          = predicted_pose.pose;
         Eigen::Quaternionf combined_quat = pose.orientation;
-        headset_pose = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
+        headset_pose                     = generate_headset_transform(pose.position, combined_quat, tracking_position_offset_);
     }
 
     Eigen::Matrix4f model_matrix = Eigen::Matrix4f::Identity();
@@ -403,7 +397,6 @@ void debugview::_p_one_iteration() {
     RAC_ERRNO_MSG("debugview after glfwSwapBuffers");
 }
 
-
 void debugview::start() {
     RAC_ERRNO_MSG("debugview at the top of start()");
 
@@ -447,7 +440,7 @@ void debugview::start() {
     // Init and verify GLEW
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        spdlog::get(name_)->error("GLEW Error: {}", (void*)glewGetErrorString(glew_err));
+        spdlog::get(name_)->error("GLEW Error: {}", (void*) glewGetErrorString(glew_err));
         glfwDestroyWindow(gui_window_);
         ILLIXR::abort("[debugview] Failed to initialize GLEW");
     }
@@ -534,6 +527,5 @@ debugview::~debugview() {
 
     glfwTerminate();
 }
-
 
 PLUGIN_MAIN(debugview)

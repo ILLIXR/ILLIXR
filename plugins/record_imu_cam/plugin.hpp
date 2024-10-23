@@ -31,4 +31,4 @@ private:
     const boost::filesystem::path cam1_data_dir_;
 };
 
-}
+} // namespace ILLIXR
