@@ -13,7 +13,7 @@
 
 using namespace ILLIXR;
 
-// #define USE_COMPRESSION
+#define USE_COMPRESSION
 
 class server_reader : public threadloop {
 private:
@@ -25,21 +25,26 @@ private:
     cv::Mat                               img0_dst;
     cv::Mat                               img1_dst;
     bool                                  img_ready = false;
+    std::shared_ptr<spdlog::logger>       log;
 
 public:
     server_reader(std::string name_, phonebook* pb_)
         : threadloop{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_addr(SERVER_IP, SERVER_PORT_1)
-        , buffer_str("") {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(server_addr);
-        socket.enable_no_delay();
-    }
+        , buffer_str("") 
+        , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
+            spd_add_file_sink("server_rx", "csv", "info");
+            spd_add_file_sink("decomp", "csv", "warn");
+            log->info("Camera Time,Uplink Time(ms)");
+            socket.set_reuseaddr();
+            socket.bind(server_addr);
+            socket.enable_no_delay();
+        }
 
     virtual skip_option _p_should_skip() override {
         return skip_option::run;
@@ -50,13 +55,13 @@ public:
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.listen();
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
+            log->debug("[offload_vio.server_rx]: Waiting for connection!");
 #endif
             read_socket = new TCPSocket(FileDescriptor(system_call(
                 "accept",
                 ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
 #ifndef NDEBUG
-            spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}",
+            log->debug("[offload_vio.server_rx]: Connection is established with {}",
                                      read_socket->peer_address().str(":"));
 #endif
         } else {
@@ -73,7 +78,7 @@ public:
                     vio_input_proto::IMUCamVec vio_input;
                     bool                       success = vio_input.ParseFromString(before);
                     if (!success) {
-                        spdlog::get(name)->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
+                        log->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
                                                  before.size());
                     } else {
                         ReceiveVioInput(vio_input);
@@ -114,7 +119,7 @@ private:
         // Logging the transmitting time
         unsigned long long curr_time =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
+        double msec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e6;
 
         // Loop through and publish all IMU values first
         for (int i = 0; i < vio_input.imu_data_size() - 1; i++) {
@@ -126,12 +131,14 @@ private:
         }
         // Publish the Cam value then
         vio_input_proto::CamData cam_data = vio_input.cam_data();
+        log->info("{},{}", cam_data.timestamp(), msec_to_trans);
 
         // Must do a deep copy of the received data (in the form of a string of bytes)
         auto img0_copy = std::string(cam_data.img0_data());
         auto img1_copy = std::string(cam_data.img1_data());
 
 #ifdef USE_COMPRESSION
+        time_point start_decomp = _m_clock->now();
         // With compression
         uint64_t curr =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -147,6 +154,7 @@ private:
         cv::Mat img1(img1_dst.clone());
 
         lock.unlock();
+        log->warn("{},{}", cam_data.timestamp(), (_m_clock->now()-start_decomp).count() / 1e6);
         // With compression end
 #else
         // Without compression
@@ -172,6 +180,7 @@ private:
 
 private:
     const std::shared_ptr<switchboard>     sb;
+    const std::shared_ptr<RelativeClock>   _m_clock;
     switchboard::writer<imu_type>          _m_imu;
     switchboard::writer<cam_type>          _m_cam;
     switchboard::writer<connection_signal> _conn_signal;

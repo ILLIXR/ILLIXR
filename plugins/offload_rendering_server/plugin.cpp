@@ -27,19 +27,21 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , frames_topic{std::move(sb->get_network_writer<compressed_frame>("compressed_frames", {}))}
         , render_pose{sb->get_reader<fast_pose_type>("render_pose")} {
-        // Only encode and pass depth if requested - otherwise skip it.
-        pass_depth = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
-        nalu_only = std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr && std::stoi(std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
-        if (pass_depth) {
-            log->debug("Encoding depth images for the client");
-        } else {
-            log->debug("Not encoding depth images for the client");
-        }
+            // Only encode and pass depth if requested - otherwise skip it.
+            pass_depth = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
+            nalu_only = std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY") != nullptr && std::stoi(std::getenv("ILLIXR_OFFLOAD_RENDERING_NALU_ONLY"));
+            if (pass_depth) {
+                log->debug("Encoding depth images for the client");
+            } else {
+                log->debug("Not encoding depth images for the client");
+            }
 
-        if (nalu_only) {
-            log->info("Only sending NALUs to the client");
+            if (nalu_only) {
+                log->info("Only sending NALUs to the client");
+            }
+            spd_add_file_sink("fps", "csv", "warn");
+            log->warn("Log Time,FPS");
         }
-    }
 
     void start() override {
         threadloop::start();
@@ -207,7 +209,7 @@ protected:
 
     void _p_one_iteration() override {
         if (buffer_pool == nullptr || buffer_pool->latest_decoded_image == -1) {
-//            log->info("no decoded image, returning");
+            // log->info("no decoded image, returning");
             return;
         }
         auto acquire_image_start_time = std::chrono::high_resolution_clock::now();
@@ -294,6 +296,7 @@ protected:
         if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time).count() >= 1) {
             log->info("Encoder FPS: {}", fps_counter);
             fps_start_time = std::chrono::high_resolution_clock::now();
+            log->warn("{},{}", fps_start_time.time_since_epoch().count(), fps_counter);
 
             for (auto& metric : metrics) {
                 double fps = std::max(fps_counter, (double) 0);
@@ -302,8 +305,8 @@ protected:
             }
             
             if (pass_depth) {
-		std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
-	}	
+                std::cout << "depth left: " << encode_out_depth_packets[0]->size << " depth right: " << encode_out_depth_packets[0]->size << std::endl;
+            }	
 
             fps_counter = 0;
         } else {
