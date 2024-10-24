@@ -72,7 +72,7 @@ public:
                 socket->connect(other_addr);
                 success = true;
             } catch (unix_error& e) {
-                std::cout << "Connection failed, retrying in 1 second" << std::endl;
+                std::cout << "Connection failed to " + peer_ip + ", " + std::to_string(peer_port) + ", retrying in 1 second" << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }

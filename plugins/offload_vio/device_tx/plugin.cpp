@@ -17,7 +17,7 @@
 
 using namespace ILLIXR;
 
-// #define USE_COMPRESSION
+#define USE_COMPRESSION
 
 class offload_writer : public threadloop {
 private:
@@ -28,6 +28,7 @@ private:
     GstMapInfo                            img0;
     GstMapInfo                            img1;
     bool                                  img_ready = false;
+    std::shared_ptr<spdlog::logger>       log;
 
 public:
     offload_writer(const std::string& name_, phonebook* pb_)
@@ -36,15 +37,18 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
+        , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL")))
         , server_addr(SERVER_IP, SERVER_PORT_1) {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
-        socket.enable_no_delay();
-        initial_timestamp();
+            spd_add_file_sink("device_tx", "csv", "info");
+            log->info("Camera Time,Pre-Uplink(ms)");
 
-        std::srand(std::time(0));
-    }
+            socket.set_reuseaddr();
+            socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
+            socket.enable_no_delay();
+            initial_timestamp();
+
+            std::srand(std::time(0));
+        }
 
     void start() override {
         threadloop::start();
@@ -66,11 +70,11 @@ public:
         encoder->init();
 
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
+        log->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
 #endif
         socket.connect(server_addr);
 #ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] Connected to {}", server_addr.str(":"));
+        log->debug("[offload_vio.revice_tx] Connected to {}", server_addr.str(":"));
 #endif
 
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
@@ -97,6 +101,7 @@ public:
         std::string data_to_be_sent = data_buffer->SerializeAsString();
         std::string delimitter      = "EEND!";
 
+        log->info("{},{}", cam_time.value().time_since_epoch().count(), (_m_clock->now().time_since_epoch().count()-cam_time.value().time_since_epoch().count()) / 1e6);
         socket.write(data_to_be_sent + delimitter);
 
         frame_id++;
