@@ -9,7 +9,7 @@ ILLIXR currently only builds on Linux systems, and has been tested on the follow
     - 20.04[^1]
     - 22.04
     - 24.04
-- Fedora[^1]
+- Fedora[^2]
     - 38+
 
 [^1]: As of this release, Ubuntu 20.04 is still fully supported by Ubuntu, but some of the code in ILLIXR or its dependencies may require features/packages that are not directly available in 20.04, and may require manual installation.
