@@ -8,6 +8,7 @@
 
 #include <boost/filesystem.hpp>
 #include <iostream>
+#include <fstream>
 #include <numeric>
 #include <utility>
 
