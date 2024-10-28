@@ -7,8 +7,8 @@
 #include "illixr/switchboard.hpp"
 
 #include <boost/filesystem.hpp>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <numeric>
 #include <utility>
 
