@@ -83,6 +83,10 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
 option(HT_ENABLE_GPU "Build for GPU use" OFF)
+if(HT_ENABLE_GPU)
+    message(WARNING "Currently gpu processing for hand tracking is not available, turning it off")
+    set(HT_ENABLE_GPU OFF)
+endif()
 include(cmake/HelperFunctions.cmake)
 
 generate_yaml()
