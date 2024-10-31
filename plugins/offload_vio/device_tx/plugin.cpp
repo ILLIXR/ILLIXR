@@ -39,7 +39,7 @@ public:
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL")))
         , server_addr(SERVER_IP, SERVER_PORT_1) {
-            spd_add_file_sink("device_tx", "csv", "info");
+            // spd_add_file_sink("device_tx", "csv", "info");
             log->info("Camera Time,Pre-Uplink(ms)");
 
             socket.set_reuseaddr();

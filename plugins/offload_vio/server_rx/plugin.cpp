@@ -38,8 +38,8 @@ public:
         , server_addr(SERVER_IP, SERVER_PORT_1)
         , buffer_str("") 
         , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
-            spd_add_file_sink("server_rx", "csv", "info");
-            spd_add_file_sink("decomp", "csv", "warn");
+            // spd_add_file_sink("server_rx", "csv", "info");
+            // spd_add_file_sink("decomp", "csv", "warn");
             log->info("Camera Time,Uplink Time(ms)");
             socket.set_reuseaddr();
             socket.bind(server_addr);

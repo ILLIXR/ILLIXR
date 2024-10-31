@@ -10,6 +10,7 @@
 #ifndef NDEBUG
     #include <iostream>
     #include <spdlog/spdlog.h>
+    // #include "spdlog/sinks/stdout_color_sinks.h"
     #include <stdexcept>
 #endif
 
@@ -86,40 +87,40 @@ public:
     class service {
     public:
         
-        auto spdlogger(const char* log_level) {
-            if (!log_level) {
-    #ifdef NDEBUG
-                log_level = "warn";
-    #else
-                log_level = "debug";
-    #endif
-            }
-            std::vector<spdlog::sink_ptr> sinks;
-            auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + type_index.name() + ".log");
-            auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            sinks.push_back(file_sink);
-            sinks.push_back(console_sink);
-            plugin_logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
-            plugin_logger->set_level(spdlog::level::from_str(log_level));
-            spdlog::register_logger(plugin_logger);
-            return plugin_logger;
-        }
+    //     auto spdlogger(const char* log_level) {
+    //         if (!log_level) {
+    // #ifdef NDEBUG
+    //             log_level = "warn";
+    // #else
+    //             log_level = "debug";
+    // #endif
+    //         }
+    //         std::vector<spdlog::sink_ptr> sinks;
+    //         // auto                          file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + type_index.name() + ".log");
+    //         auto                          console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    //         // sinks.push_back(file_sink);
+    //         sinks.push_back(console_sink);
+    //         plugin_logger = std::make_shared<spdlog::logger>(type_index.name(), begin(sinks), end(sinks));
+    //         plugin_logger->set_level(spdlog::level::from_str(log_level));
+    //         spdlog::register_logger(plugin_logger);
+    //         return plugin_logger;
+    //     }
 
-        void spd_add_file_sink(const std::string& file_name, const std::string& extension, const std::string& log_level) {
-            if (!plugin_logger) {
-                throw std::runtime_error("Logger not found");
-            }
+        // void spd_add_file_sink(const std::string& file_name, const std::string& extension, const std::string& log_level) {
+        //     if (!plugin_logger) {
+        //         throw std::runtime_error("Logger not found");
+        //     }
 
-            auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + file_name + "." + extension, true);
-            file_sink->set_level(spdlog::level::from_str(log_level));
-            plugin_logger->sinks().push_back(file_sink);
-            size_t sink_count = plugin_logger->sinks().size();
-            plugin_logger->sinks()[sink_count-1]->set_pattern("%v");
-        }
+        //     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/" + file_name + "." + extension, true);
+        //     file_sink->set_level(spdlog::level::from_str(log_level));
+        //     plugin_logger->sinks().push_back(file_sink);
+        //     size_t sink_count = plugin_logger->sinks().size();
+        //     plugin_logger->sinks()[sink_count-1]->set_pattern("%v");
+        // }
 
         virtual ~service() = default;
 
-        std::shared_ptr<spdlog::logger>      plugin_logger;
+        // std::shared_ptr<spdlog::logger>      plugin_logger;
     };
 
     /**
