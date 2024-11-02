@@ -21,7 +21,6 @@
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
-        "git"
       ]
     },
     {
@@ -76,7 +75,6 @@
       "name": "gtsam_integrator",
       "cmake_flag": "USE_GTSAM_INTEGRATOR=ON",
       "dependencies": [
-        "git"
       ]
     },
     {
@@ -118,14 +116,12 @@
       "name": "offload_data",
       "cmake_flag": "USE_OFFLOAD_DATA=ON",
       "dependencies": [
-        "boost"
       ]
     },
     {
       "name": "offload_vio.device_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_RX=ON",
       "dependencies": [
-        "git",
         "ecal",
         "protobuf",
         "OpenCV"
@@ -135,7 +131,6 @@
       "name": "offload_vio.device_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.DEVICE_TX=ON",
       "dependencies": [
-        "git",
         "glib",
         "gstreamer",
         "ecal",
@@ -147,7 +142,6 @@
       "name": "offload_vio.server_tx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_TX=ON",
       "dependencies": [
-        "git",
         "ecal",
         "protobuf",
         "OpenCV"
@@ -157,7 +151,6 @@
       "name": "offload_vio.server_rx",
       "cmake_flag": "USE_OFFLOAD_VIO.SERVER_RX=ON",
       "dependencies": [
-        "git",
         "glib",
         "gstreamer",
         "ecal",
@@ -177,15 +170,12 @@
       "name": "openvins",
       "cmake_flag": "USE_OPENVINS=ON",
       "dependencies": [
-        "boost"
       ]
     },
     {
       "name": "orb_slam",
       "cmake_flag": "USE_ORB_SLAM=ON",
       "dependencies": [
-        "git",
-        "boost",
         "fmt",
         "patch"
       ]
@@ -217,7 +207,6 @@
       "name": "record_imu_cam",
       "cmake_flag": "USE_RECORD_IMU_CAM=ON",
       "dependencies": [
-        "boost",
         "OpenCV"
       ]
     },
@@ -225,7 +214,6 @@
       "name": "record_rgb_depth",
       "cmake_flag": "USE_RECORD_RGB_DEPTH=ON",
       "dependencies": [
-        "boost",
         "OpenCV"
       ]
     },
@@ -238,7 +226,6 @@
       "name": "timewarp_gl",
       "cmake_flag": "USE_TIMEWARP_GL=ON",
       "dependencies": [
-        "git",
         "glslang",
         "gflags",
         "JPEG",
@@ -313,36 +300,6 @@
     }
   ],
   "dependencies": [
-    {
-      "boost": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libboost-all-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libboost-all-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "libboost-all-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "38+": {
-              "pkg": "boost-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
     {
       "ecal": {
         "pkg": {
@@ -426,36 +383,6 @@
           "Fedora": {
             "38+": {
               "pkg": "gflags-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "git": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "git",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "git",
-              "postnotes": "",
-              "notes": ""
-            },
-            "24": {
-              "pkg": "git",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "38+": {
-              "pkg": "git",
               "postnotes": "",
               "notes": ""
             }

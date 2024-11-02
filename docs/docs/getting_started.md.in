@@ -40,7 +40,8 @@ required only for specific plugins.
 
 <table id="operating_system" style="border-spacing: 20px; border: 1px solid black;"></table>
 
-ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available.
+ILLIXR may compile with other versions of the above operating systems, but some of the necessary prerequesite packages are not supplied by the OS repos and will need to be compiled by hand. You should be able to use the package and cmake commands for other versions of the same OS (other than the missing packages) to compile ILLIXR. RHEL is not supported at this time as many of the prerequisite packages are not natively available. You will also need to have a C++ compiler
+installed (gcc, clang, etc.) as well as a generator (make, ninja, etc.).
 
 #### Pick the ILLIXR plugins you want to use
 
@@ -280,10 +281,10 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
         notes.innerHTML = "";
 
         if(selectedOS == "Ubuntu") {
-            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev";
+            sudoLine = "sudo apt-get install libglew-dev libglu1-mesa-dev libsqlite3-dev libx11-dev libgl-dev pkg-config libopencv-dev libeigen3-dev libc6-dev libspdlog-dev libboost-all-dev git cmake cmake-data";
             postnotes.innerHTML = "";
         } else if(selectedOS == "Fedora") {
-            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel";
+            sudoLine = "sudo dnf install glew-devel mesa-libGLU-devel sqlite-devel libX11-devel mesa-libGL-devel pkgconf-pkg-config opencv-devel eigen3-devel glibc-devel spdlog-devel boost-devel git cmake cmake-data";
             postnotes.innerHTML = "Potential issues:<ul><li>If cmake is having trouble with some of the package-config (.pc) files used to locate packages you may need to run the following:" + makeCopyable("sudo sed -i 's/\^\[ \\t\]\*//g' /usr/lib64/pkgconfig/*", "postF") + "</li><li>If the build step is having issues finding some of the include files you may need the following:" + makeCopyable("sudo ln -s /usr/include /include", "post2F") + "</li></ul>";
         }
 
