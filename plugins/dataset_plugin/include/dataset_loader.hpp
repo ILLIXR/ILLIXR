@@ -45,6 +45,7 @@ private:
     cv::Mat loadGrayscale() {
         m_mat = cv::imread(m_path, cv::IMREAD_GRAYSCALE);
 
+        // sanity check
         assert(!m_mat.empty());
 
         return m_mat;
@@ -53,6 +54,7 @@ private:
     cv::Mat loadRGB() {
         m_mat = cv::imread(m_path, cv::IMREAD_COLOR);
 
+        // sanity check
         assert(!m_mat.empty());
 
         return m_mat;
@@ -61,6 +63,7 @@ private:
     cv::Mat loadDepth() {
         m_mat = cv::imread(m_path, cv::IMREAD_UNCHANGED);
 
+        // sanity check
         assert(!m_mat.empty());
 
         return m_mat;
@@ -69,9 +72,8 @@ private:
     std::string m_path;
     cv::Mat     m_mat;
     std::size_t m_channel;
-
     // tells us what load function to use to load the image
-    ImageType m_type;
+    ImageType   m_type;
 };
 
 struct IMUData {
@@ -87,7 +89,7 @@ struct PoseData {
 };
 
 struct GroundTruthData {
-    std::unordered_map<std::string, Eigen::VectorXd> data;
+    std::multimap<std::string, Eigen::VectorXd> data;
 };
 
 class DatasetLoader {
