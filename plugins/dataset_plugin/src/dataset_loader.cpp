@@ -4,7 +4,13 @@
 
 #include <cstddef> // for the std::size_t data type
 #include <fstream>
-#include <iostream> // for std::clog
+#include <Eigen/Dense>
+
+#ifndef NDEBUG
+    #include <spdlog/spdlog.h> // for debug messages
+#endif
+
+// TODO: Ensure that spdlog is being used correctly. I just copied `extended_window.hpp` for now.
 
 // TODO: update the index-related comments to match the current design.
 
@@ -40,7 +46,7 @@ std::chrono::nanoseconds DatasetLoader::convertToTimestamp(const TimestampUnit& 
 
 void DatasetLoader::loadIMUData() {
 #ifndef NDEBUG
-    std::clog << "Loading IMU Data...\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Loading IMU Data...");
 #endif
 
     for (std::size_t i = 0; i < m_config.imu_config.path_list.size(); ++i) {
@@ -83,14 +89,14 @@ void DatasetLoader::loadIMUData() {
     }
 
 #ifndef NDEBUG
-    std::clog << "Finished loading IMU Data.\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Finished loading IMU Data.");
 #endif
 }
 
 void DatasetLoader::loadImageData() {
     // TODO: Change the loading format to reading a csv file for each type of image.
 #ifndef NDEBUG
-    std::clog << "Loading RGB Images...\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Loading RGB Images...");
 #endif
 
     for (std::size_t i = 0; i < m_config.image_config.rgb_path_list.size(); ++i) {
@@ -120,9 +126,9 @@ void DatasetLoader::loadImageData() {
     }
 
 #ifndef NDEBUG
-    std::clog << "Finished loading RGB Images.\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Finished loading RGB Images.");
 
-    std::clog << "Loading Depth Images...\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Loading Depth Images...");
 #endif
 
     for (std::size_t i = 0; i < m_config.image_config.depth_path_list.size(); ++i) {
@@ -152,9 +158,9 @@ void DatasetLoader::loadImageData() {
     }
 
 #ifndef NDEBUG
-    std::clog << "Finished loading Depth Images.\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Finished loading Depth Images.");
 
-    std::clog << "Loading Grayscale Images...\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Loading Grayscale Images...");
 #endif
 
     for (std::size_t i = 0; i < m_config.image_config.grayscale_path_list.size(); ++i) {
@@ -184,13 +190,13 @@ void DatasetLoader::loadImageData() {
     }
 
 #ifndef NDEBUG
-    std::clog << "Finished loading Grayscale Images.\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Finished loading Grayscale Images.");
 #endif
 }
 
 void DatasetLoader::loadPoseData() {
 #ifndef NDEBUG
-    std::clog << "Loading Pose Data...\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Loading Pose Data...");
 #endif
 
     for (std::size_t i = 0; i < m_config.pose_config.path_list.size(); ++i) {
@@ -217,13 +223,13 @@ void DatasetLoader::loadPoseData() {
     }
 
 #ifndef NDEBUG
-    std::clog << "Finished loading Pose Data.\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Finished loading Pose Data.");
 #endif
 }
 
 void DatasetLoader::loadGroundTruthData() {
 #ifndef NDEBUG
-    std::clog << "Loading Ground Truth Data...\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Loading Ground Truth Data...");
 #endif
 
     std::ifstream groundTruthFile{m_config.ground_truth_config.path};
@@ -254,6 +260,6 @@ void DatasetLoader::loadGroundTruthData() {
     }
 
 #ifndef NDEBUG
-    std::clog << "Finished loading Ground Truth Data.\n";
+    spdlog::get("illixr")->debug("[dataset_plugin] Finished loading Ground Truth Data.");
 #endif
 }
