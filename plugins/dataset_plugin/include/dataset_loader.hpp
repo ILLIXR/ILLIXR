@@ -1,7 +1,7 @@
 #pragma once
 
-#include "include/illixr/data_format.hpp"
 #include "include/config.hpp"
+#include "include/illixr/data_format.hpp"
 
 #include <cassert>
 #include <chrono>
@@ -73,7 +73,7 @@ private:
     cv::Mat     m_mat;
     std::size_t m_channel;
     // tells us what load function to use to load the image
-    ImageType   m_type;
+    ImageType m_type;
 };
 
 struct IMUData {
