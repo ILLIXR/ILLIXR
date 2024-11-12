@@ -2,6 +2,7 @@
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/network_backend.hpp"
 #include "illixr/network/socket.hpp"
+#include "illixr/network/topic_config.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -69,7 +70,9 @@ public:
         bool success = false;
         while (!success) {
             try {
+                std::cout << "Connecting to " + peer_ip + " at port " + std::to_string(peer_port) << std::endl;
                 socket->connect(other_addr);
+                std::cout << "Connected to server" << std::endl;
                 success = true;
             } catch (unix_error& e) {
                 std::cout << "Connection failed to " + peer_ip + ", " + std::to_string(peer_port) + ", retrying in 1 second" << std::endl;
@@ -123,23 +126,30 @@ public:
         }
     }
 
-    void topic_create(std::string topic_name, topic_config config) override {
+    void topic_create(std::string topic_name, topic_config& config) override {
         networked_topics.push_back(topic_name);
-        send_to_peer("illixr_control", "create_topic " + topic_name);
+        networked_topics_configs[topic_name] = config;
+        std::string serializaiton;
+        if (config.serialization_method == topic_config::SerializationMethod::BOOST) {
+            serializaiton = "BOOST";
+        } else {
+            serializaiton = "PROTOBUF";
+        }
+        send_to_peer("illixr_control", "create_topic " + topic_name + serializaiton);
     }
-
+ 
     bool is_topic_networked(std::string topic_name) override {
         return std::find(networked_topics.begin(), networked_topics.end(), topic_name) != networked_topics.end();
     }
 
-    void topic_send(std::string topic_name, std::vector<char>& message) override {
+    void topic_send(std::string topic_name, std::string&& message) override {
         if (is_topic_networked(topic_name) == false) {
             std::cout << "Topic not networked" << std::endl;
             return;
         }
 
         std::cout << "Sending to peer: " << topic_name << std::endl;
-        send_to_peer(topic_name, std::string(message.begin(), message.end()));
+        send_to_peer(topic_name, std::move(message));
     }
 
     // Helper function to queue a received message into the corresponding topic
@@ -148,8 +158,16 @@ public:
             std::string message_str(message.begin(), message.end());
             // check if message starts with "create_topic"
             if (message_str.find("create_topic") == 0) {
-                std::string topic_name = message_str.substr(12);
+                std::string topic_name = message_str.substr(12, topic_name.length());
+                std::string serialization = message_str.substr(12 + topic_name.length());
                 networked_topics.push_back(topic_name);
+                topic_config config;
+                if (serialization == "BOOST") {
+                    config.serialization_method = topic_config::SerializationMethod::BOOST;
+                } else {
+                    config.serialization_method = topic_config::SerializationMethod::PROTOBUF;
+                }
+                networked_topics_configs[topic_name] = config;
                 std::cout << "Received create_topic for " << topic_name << std::endl;
             }
             return;
@@ -159,7 +177,7 @@ public:
             return;
         }
 
-        sb->get_topic(topic_name).deserialize_and_put(message);
+        sb->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs[topic_name]);
     }
 
     void stop() override {
@@ -178,8 +196,9 @@ private:
     int         peer_port = 22222;
 
     std::vector<std::string> networked_topics;
+    std::unordered_map<std::string, topic_config> networked_topics_configs;
 
-    void send_to_peer(std::string topic_name, std::string message) {
+    void send_to_peer(std::string topic_name, std::string&& message) {
         // packet are in the format
         // total_length:4bytes|topic_name_length:4bytes|topic_name|message
         uint32_t total_length = 8 + topic_name.size() + message.size();

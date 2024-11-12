@@ -34,16 +34,10 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
-        , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
-        , server_addr(SERVER_IP, SERVER_PORT_1)
+        , _m_imu_cam_reader{sb->get_buffered_reader<switchboard::event_wrapper<std::string>>("compressed_imu_cam")}
         , buffer_str("") 
         , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
-            // spd_add_file_sink("server_rx", "csv", "info");
-            // spd_add_file_sink("decomp", "csv", "warn");
             log->info("Camera Time,Uplink Time(ms)");
-            socket.set_reuseaddr();
-            socket.bind(server_addr);
-            socket.enable_no_delay();
         }
 
     virtual skip_option _p_should_skip() override {
@@ -51,40 +45,16 @@ public:
     }
 
     void _p_one_iteration() override {
-        if (read_socket == NULL) {
-            _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
-            socket.listen();
-#ifndef NDEBUG
-            log->debug("[offload_vio.server_rx]: Waiting for connection!");
-#endif
-            read_socket = new TCPSocket(FileDescriptor(system_call(
-                "accept",
-                ::accept(socket.fd_num(), nullptr, nullptr)))); /* Blocking operation, waiting for client to connect */
-#ifndef NDEBUG
-            log->debug("[offload_vio.server_rx]: Connection is established with {}",
-                                     read_socket->peer_address().str(":"));
-#endif
-        } else {
-            auto        now        = timestamp();
-            std::string delimitter = "EEND!";
-            std::string recv_data  = read_socket->read(); /* Blocking operation, wait for the data to come */
-            buffer_str             = buffer_str + recv_data;
-            if (recv_data.size() > 0) {
-                std::string::size_type end_position = buffer_str.find(delimitter);
-                while (end_position != std::string::npos) {
-                    std::string before = buffer_str.substr(0, end_position);
-                    buffer_str         = buffer_str.substr(end_position + delimitter.size());
-                    // process the data
-                    vio_input_proto::IMUCamVec vio_input;
-                    bool                       success = vio_input.ParseFromString(before);
-                    if (!success) {
-                        log->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
-                                                 before.size());
-                    } else {
-                        ReceiveVioInput(vio_input);
-                    }
-                    end_position = buffer_str.find(delimitter);
-                }
+        if (_m_imu_cam_reader.size() > 0) {
+            auto buffer_ptr = _m_imu_cam_reader.dequeue();
+            std::string buffer_str = **buffer_ptr;
+            std::string::size_type end_position = buffer_str.find(delimitter);
+            vio_input_proto::IMUCamVec vio_input;
+            bool success = vio_input.ParseFromString(buffer_str.substr(0, end_position));
+            if (!success) {
+                log->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}", buffer_str.size() - delimitter.size());
+            } else {
+                ReceiveVioInput(vio_input);
             }
         }
     }
@@ -183,12 +153,13 @@ private:
     const std::shared_ptr<RelativeClock>   _m_clock;
     switchboard::writer<imu_type>          _m_imu;
     switchboard::writer<cam_type>          _m_cam;
-    switchboard::writer<connection_signal> _conn_signal;
+    switchboard::buffered_reader<switchboard::event_wrapper<std::string>> _m_imu_cam_reader;
 
     TCPSocket   socket;
     TCPSocket*  read_socket = NULL;
     Address     server_addr;
     std::string buffer_str;
+    std::string delimitter = "EEND!";
 };
 
 PLUGIN_MAIN(server_reader)
