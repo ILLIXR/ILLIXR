@@ -623,9 +623,9 @@ public:
 
         void put(ptr<serializable_event>&& this_specific_event) override {
             if (_m_backend->is_topic_networked(this->_m_topic.name())) {
-                auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
-                assert(base_event && "Event is not derived from switchboard::event");
                 if (_m_config.serialization_method == topic_config::SerializationMethod::BOOST) {
+                    auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
+                    assert(base_event && "Event is not derived from switchboard::event");
                     // Default serialization method - Boost
                     std::vector<char> buffer;
                     boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
@@ -638,8 +638,9 @@ public:
                     _m_backend->topic_send(this->_m_topic.name(), std::move(std::string(buffer.begin(), buffer.end())));
                 } else {
                     // PROTOBUF - this_specific_event will be a string
-                    auto message = std::dynamic_pointer_cast<std::string>(base_event);
-                    _m_backend->topic_send(this->_m_topic.name(), std::move(*message));
+                    // auto message = std::dynamic_pointer_cast<std::string>(base_event);
+                    std::string message = **this_specific_event;
+                    _m_backend->topic_send(this->_m_topic.name(), std::move(message));
                 }
             } else {
                 writer<serializable_event>::put(std::move(this_specific_event));

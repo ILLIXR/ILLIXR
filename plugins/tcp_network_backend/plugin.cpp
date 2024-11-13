@@ -135,7 +135,8 @@ public:
         } else {
             serializaiton = "PROTOBUF";
         }
-        send_to_peer("illixr_control", "create_topic" + topic_name + delimiter + serializaiton);
+        std::string message = "create_topic" + topic_name + delimiter + serializaiton;
+        send_to_peer("illixr_control", std::move(message));
     }
  
     bool is_topic_networked(std::string topic_name) override {
