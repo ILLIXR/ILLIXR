@@ -742,7 +742,7 @@ public:
         if (_m_registry.find(topic_name) == _m_registry.end()) {
             backend->topic_create(topic_name, config);
         }
-        return network_writer<specific_event>{try_register_topic<specific_event>(topic_name), backend};
+        return network_writer<specific_event>{try_register_topic<specific_event>(topic_name), backend, config};
     }
 
     /**
