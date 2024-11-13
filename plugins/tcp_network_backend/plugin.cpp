@@ -135,7 +135,7 @@ public:
         } else {
             serializaiton = "PROTOBUF";
         }
-        send_to_peer("illixr_control", "create_topic " + topic_name + delimiter + serializaiton);
+        send_to_peer("illixr_control", "create_topic" + topic_name + delimiter + serializaiton);
     }
  
     bool is_topic_networked(std::string topic_name) override {
@@ -159,7 +159,8 @@ public:
             // check if message starts with "create_topic"
             if (message_str.find("create_topic") == 0) {
                 size_t d_pos = message_str.find(delimiter);
-                std::string topic_name = message_str.substr(12, d_pos);
+                assert(d_pos != std::string::npos);
+                std::string topic_name = message_str.substr(12, d_pos-12);
                 std::string serialization = message_str.substr(d_pos+1);
                 networked_topics.push_back(topic_name);
                 topic_config config;
