@@ -629,8 +629,7 @@ public:
                     // Default serialization method - Boost
                     std::vector<char> buffer;
                     boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
-                    boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{
-                        inserter};
+                    boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
                     boost::archive::binary_oarchive oa{stream};
                     oa << base_event;
                     // flush
@@ -638,8 +637,8 @@ public:
                     _m_backend->topic_send(this->_m_topic.name(), std::move(std::string(buffer.begin(), buffer.end())));
                 } else {
                     // PROTOBUF - this_specific_event will be a string
-                    // auto message = std::dynamic_pointer_cast<std::string>(base_event);
-                    std::string message = **this_specific_event;
+                    auto message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
+                    std::string message = **message_ptr;
                     _m_backend->topic_send(this->_m_topic.name(), std::move(message));
                 }
             } else {
