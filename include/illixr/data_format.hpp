@@ -14,6 +14,8 @@
 
 namespace ILLIXR {
 using ullong = unsigned long long;
+const int LEFT_EYE = 0;
+const int RIGHT_EYE = 1;
 
 struct imu_type : switchboard::event {
     time_point      time;
