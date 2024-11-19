@@ -419,8 +419,9 @@ struct rect {
     }
 };
 
-enum hand {
-    LEFT_HAND, RIGHT_HAND
+enum hand : int {
+    LEFT_HAND = 0,
+    RIGHT_HAND = 1
 };
 const std::vector<hand> hand_map{LEFT_HAND, RIGHT_HAND};
 
@@ -445,7 +446,7 @@ struct ht_detection {
     std::map<hand, float> confidence;
 
     std::map<hand, points_with_validity> points;
-
+    ht_detection() {}
     ht_detection(size_t ptime, rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
         : proc_time{ptime},
         palms{{LEFT_HAND, (lp) ? *lp : rect()}, {RIGHT_HAND, (rp) ? *rp : rect()}},
@@ -469,13 +470,21 @@ struct calculated_point : basic_point {
 };
 
 typedef std::vector<calculated_point> calculated_points;
-enum base_unit {
-    MILLIMETER,
-    CENTIMETER,
-    METER,
-    INCH,
-    FOOT,
-    UNSET
+enum base_unit : int {
+    MILLIMETER = 0,
+    CENTIMETER = 1,
+    METER = 2,
+    INCH = 3,
+    FOOT = 4,
+    UNSET = 5
+};
+
+const std::map<base_unit, const std::string> unit_str{{MILLIMETER, "mm"},
+                                                      {CENTIMETER, "cm"},
+                                                      {METER, "m"},
+                                                      {INCH, "in"},
+                                                      {FOOT, "ft"},
+                                                      {UNSET, "unitless"}
 };
 
 struct true_hand_points {
@@ -507,6 +516,7 @@ struct true_hand_points {
 struct ht_frame : cam_base_type {
     std::map<image::image_type, ht_detection> detections;
     std::map<HandTracking::hand, true_hand_points> hand_positions;
+    ht_frame() : cam_base_type(time_point(_clock_duration{0}), {}, image::BINOCULAR) {}
     ht_frame(time_point _time, std::map<image::image_type, cv::Mat> _imgs,
              std::map<image::image_type, ht_detection> _detections, std::map<HandTracking::hand, true_hand_points> points)
         : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? image::BINOCULAR : image::MONOCULAR)
