@@ -64,6 +64,112 @@ void viewer::start() {
 viewer::~viewer() {
 }
 
+void viewer::make_detection_table(const ht_detection& det, const image::image_type it) {
+    ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+    std::string title = image_type_string(it);
+
+    std::string palm_title = title + "_palms";
+    if (ImGui::BeginTable(palm_title.c_str(), 6, flags)) {
+        ImGui::TableSetupColumn("");
+        ImGui::TableSetupColumn("Unit");
+        ImGui::TableSetupColumn("Center");
+        ImGui::TableSetupColumn("Width");
+        ImGui::TableSetupColumn("Height");
+        ImGui::TableSetupColumn("Rotation");
+        ImGui::TableHeadersRow();
+        rect current_rect;
+        for (auto i : hand_map) {
+            current_rect = det.palms.at(i);
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%s", (i == 0) ? "Left palm" : "Right palm");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%s", (current_rect.normalized) ? "%" : "px");
+            if (current_rect.valid) {
+                ImGui::TableSetColumnIndex(2);
+                ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
+                ImGui::TableSetColumnIndex(3);
+                ImGui::Text("%.2f", current_rect.width);
+                ImGui::TableSetColumnIndex(4);
+                ImGui::Text("%.2f", current_rect.height);
+                ImGui::TableSetColumnIndex(5);
+                ImGui::Text("%.2f", current_rect.rotation);
+            }
+        }
+        ImGui::EndTable();
+    }
+    std::string hand_table_title = title + "_hands";
+    if (ImGui::BeginTable(hand_table_title.c_str(), 6, flags)) {
+        ImGui::TableSetupColumn("");
+        ImGui::TableSetupColumn("Unit");
+        ImGui::TableSetupColumn("Center");
+        ImGui::TableSetupColumn("Width");
+        ImGui::TableSetupColumn("Height");
+        ImGui::TableSetupColumn("Rotation");
+        ImGui::TableHeadersRow();
+        rect current_rect;
+        for (auto i : hand_map) {
+            current_rect = det.hands.at(i);
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%s", (i == 0) ? "Left hand" : "Right hand");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%s", (current_rect.normalized) ? "%" : "px");
+            if (current_rect.valid) {
+                ImGui::TableSetColumnIndex(2);
+                ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
+                ImGui::TableSetColumnIndex(3);
+                ImGui::Text("%.2f", current_rect.width);
+                ImGui::TableSetColumnIndex(4);
+                ImGui::Text("%.2f", current_rect.height);
+                ImGui::TableSetColumnIndex(5);
+                ImGui::Text("%.2f", current_rect.rotation);
+            }
+        }
+        ImGui::EndTable();
+    }
+    std::string hand_results_title = title + "_results";
+    if (ImGui::BeginTable(hand_results_title.c_str(), 3, flags)) {
+        ImGui::TableSetupColumn("Point");
+        ImGui::TableSetupColumn("Left");
+        ImGui::TableSetupColumn("Right");
+        ImGui::TableHeadersRow();
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("%s", "Confidence");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%.2f", det.confidence.at(LEFT_HAND));
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%.2f", det.confidence.at(RIGHT_HAND));
+        for (int row = WRIST; row <= PINKY_TIP; row++) {
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%s", point_map.at(row).c_str());
+            ImGui::TableSetColumnIndex(1);
+            auto pnt = det.points.at(LEFT_HAND)[row];
+            if (pnt.valid) {
+                ImGui::Text("%.2f, %.2f, %.2f", pnt.x, pnt.y, pnt.z);
+            } else {
+                ImGui::Text("%s", "");
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+            }
+            ImGui::TableSetColumnIndex(2);
+            pnt = det.points.at(RIGHT_HAND)[row];
+            if (pnt.valid) {
+                ImGui::Text("%.2f, %.2f, %.2f", pnt.x, pnt.y, pnt.z);
+            } else {
+                ImGui::Text("%s", "");
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+            }
+        }
+
+        ImGui::EndTable();
+    }
+}
+
+void viewer::make_gui(const switchboard::ptr<const ht_frame>& frame) {
+    glfwMakeContextCurrent(_viewport);
+    glfwPollEvents();
 void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& frame) {
     std::vector<image::image_type> found_types;
     std::cout << "      Writing frame " << frame->time.time_since_epoch().count() << std::endl;
