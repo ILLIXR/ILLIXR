@@ -2,6 +2,7 @@
 
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/threadloop.hpp"
+#include "include/data_format.hpp"
 
 #include <opencv4/opencv2/videoio.hpp>
 
@@ -13,9 +14,10 @@ public:
 
 private:
     const std::shared_ptr<switchboard> _switchboard;
-    switchboard::writer<monocular_cam_type>    _frame_pub;
-    cv::VideoCapture _capture;
-    bool _load_video;
+    switchboard::writer<binocular_cam_type>    _frame_pub;
+    new_map left_data;
+    new_map right_data;
+    bool written = false;
 };
 
 }
