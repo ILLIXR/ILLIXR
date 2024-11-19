@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cctype>
 #include <iostream>
 #include <list>
 #include <mutex>
@@ -33,6 +34,7 @@ const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "GROUND_TRUTH_SLAM_LOG_LEVEL",
                                            "GTSAM_INTEGRATOR_LOG_LEVEL",
                                            "HT_INPUT",
+                                           "HT_INPUT_TYPE",
                                            "ILLIXR_ALIGNMENT_ENABLE",
                                            "ILLIXR_ALIGNMENT_FILE",
                                            "ILLIXR_BITRATE",
@@ -672,6 +674,16 @@ public:
         std::vector<std::string> keys(_m_env_vars.size());
         std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair){return pair.first;});
         return keys;
+    }
+
+    bool get_env_bool(const std::string& var) {
+        std::string val = get_env(var, "false");
+        const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
+        for(auto s : affirmative) {
+            if(std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {return std::tolower(a) == std::tolower(b);}))
+                return true;
+        }
+        return false;
     }
 
     std::string get_env(const std::string& var, std::string _default = "") {
