@@ -578,8 +578,8 @@ private:
         std::vector<tinyobj::material_t> materials;
         std::string                      warn, err;
 
-        auto path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + "scene.obj";
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), std::getenv("ILLIXR_DEMO_DATA"))) {
+        auto path = sb->get_env("ILLIXR_DEMO_DATA") + "/scene.obj";
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), sb->get_env_char("ILLIXR_DEMO_DATA"))) {
             throw std::runtime_error(warn + err);
         }
 
@@ -588,7 +588,7 @@ private:
         for (auto i = 0; i < static_cast<int>(materials.size()); i++) {
             auto material = materials[i];
             if (material.diffuse_texname.length() > 0) {
-                path = std::string(std::getenv("ILLIXR_DEMO_DATA")) + "/" + material.diffuse_texname;
+                path = sb->get_env("ILLIXR_DEMO_DATA") + "/" + material.diffuse_texname;
                 load_texture(path, i);
             }
         }

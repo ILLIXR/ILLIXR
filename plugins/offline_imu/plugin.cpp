@@ -14,9 +14,9 @@ class offline_imu : public ILLIXR::threadloop {
 public:
     offline_imu(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
-        , _m_sensor_data{load_data()}
-        , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , _m_sb{pb->lookup_impl<switchboard>()}
+        , _m_sensor_data{load_data(_m_sb)}
+        , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , _m_imu{_m_sb->get_writer<imu_type>("imu")}
         , dataset_first_time{_m_sensor_data_it->first}
         , dataset_now{0}
@@ -50,9 +50,9 @@ protected:
     }
 
 private:
+    const std::shared_ptr<switchboard>             _m_sb;
     const std::map<ullong, sensor_types>           _m_sensor_data;
     std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
-    const std::shared_ptr<switchboard>             _m_sb;
     switchboard::writer<imu_type>                  _m_imu;
 
     // Timestamp of the first IMU value from the dataset

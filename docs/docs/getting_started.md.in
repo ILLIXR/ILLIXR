@@ -181,6 +181,10 @@ Where the entries are defined as (* indicates required field):
 
 In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
 
+## Environment Variables
+
+ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However in ILLIXR the switchboard acts as an interface to these functions with get_env (returns std::string), get_env_bool (returns bool) get_env_char (returns char*) and set_env. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the the switchboard interface wherever possible.
+
 ## ILLIXR Graphics Backends
 
 ILLIXR currently supports both OpenGL and Vulkan backends (indicated as `gl` and `vk` in the config suffixes). Since some plugins should behave differently (and compile differently) based on what backend is being used, it's important to run `make clean` if you want to try swapping between the two backends.

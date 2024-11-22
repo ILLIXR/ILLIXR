@@ -1,6 +1,7 @@
 #pragma once
 
 #include "illixr/phonebook.hpp"
+#include "illixr/switchboard.hpp"
 
 #include <GL/glx.h>
 #include <string>
@@ -28,6 +29,7 @@ public:
      */
     virtual void stop() = 0;
 
+    virtual std::shared_ptr<switchboard> get_switchboard() = 0;
     virtual ~runtime() = default;
 };
 

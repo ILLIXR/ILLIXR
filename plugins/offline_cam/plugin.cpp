@@ -16,12 +16,12 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
-        , _m_sensor_data{load_data()}
+        , _m_sensor_data{load_data(sb)}
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} {
-        spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLINE_CAM_LOG_LEVEL"));
     }
 
     skip_option _p_should_skip() override {
