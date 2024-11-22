@@ -29,20 +29,20 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     }
 
     // set env vars from config file first, as command line args will override
-    for (auto& item: sb->env_names()){
+    for (auto& item : sb->env_names()) {
         if (config[item])
             sb->set_env(item, config[item].as<std::string>());
     }
     // command line specified env_vars
     for (auto& item : options.unmatched()) {
-        bool matched = false;
-        cxxopts::values::parser_tool::ArguDesc ad = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
+        bool                                   matched = false;
+        cxxopts::values::parser_tool::ArguDesc ad      = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
 
         if (!sb->get_env(ad.arg_name, "").empty()) {
             if (!ad.set_value)
                 ad.value = "True";
             sb->set_env(ad.arg_name, ad.value);
-            setenv(ad.arg_name.c_str(), ad.value.c_str(), 1);  // env vars from command line take precedence
+            setenv(ad.arg_name.c_str(), ad.value.c_str(), 1); // env vars from command line take precedence
         }
     }
 

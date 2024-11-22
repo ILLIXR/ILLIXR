@@ -58,8 +58,7 @@ const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "USE_WCS",
                                            "WCS_ORIGIN",
                                            "ZED_RESOLUTION",
-                                           "ZED_DEPTH_TYPE"
-};
+                                           "ZED_DEPTH_TYPE"};
 
 /**
  * @Should be private to Switchboard.
@@ -682,7 +681,9 @@ public:
      */
     std::vector<std::string> env_names() const {
         std::vector<std::string> keys(_m_env_vars.size());
-        std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair){return pair.first;});
+        std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair) {
+            return pair.first;
+        });
         return keys;
     }
 
@@ -699,10 +700,10 @@ public:
                 return _m_env_vars.at(var);
             _m_env_vars.at(var) = _default;
             return _default;
-        } catch(std::out_of_range &) {
+        } catch (std::out_of_range&) {
             char* val = std::getenv(var.c_str());
             if (val) {
-                set_env(var, val);   // store it locally for faster retrieval
+                set_env(var, val); // store it locally for faster retrieval
                 return {val};
             }
             return _default;
@@ -713,10 +714,12 @@ public:
      * @brief Get the boolean value of the given environment variable
      */
     bool get_env_bool(const std::string& var, const std::string& def = "false") {
-        std::string val = get_env(var, def);
+        std::string                    val = get_env(var, def);
         const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
-        for(auto s : affirmative) {
-            if(std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {return std::tolower(a) == std::tolower(b);}))
+        for (auto s : affirmative) {
+            if (std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {
+                    return std::tolower(a) == std::tolower(b);
+                }))
                 return true;
         }
         return false;

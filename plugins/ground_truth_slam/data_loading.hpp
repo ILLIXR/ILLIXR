@@ -27,7 +27,7 @@ static std::map<ullong, sensor_types> load_data(const std::shared_ptr<switchboar
     if (illixr_data.empty()) {
         ILLIXR::abort("Please define ILLIXR_DATA");
     }
-    const std::string subpath     = "/state_groundtruth_estimate0/data.csv";
+    const std::string subpath = "/state_groundtruth_estimate0/data.csv";
 
     std::map<ullong, sensor_types> data;
 
