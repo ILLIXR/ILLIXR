@@ -3,12 +3,11 @@
 #include <algorithm> // for std::for_each
 #include <chrono>    // for std::chrono::nanoseconds
 // #include <cstddef>
-#include <functional> // for std::greater
-#include <queue>     // for std::priority_queue
-
+#include "dataset_loader.hpp"
 #include "illixr/common/data_format.hpp"
 
-#include "dataset_loader.hpp"
+#include <functional> // for std::greater
+#include <queue>      // for std::priority_queue
 
 enum class DataType {
     IMAGE,
@@ -19,7 +18,7 @@ enum class DataType {
 
 struct DataEntry {
     std::chrono::nanoseconds timestamp;
-    DataType type;
+    DataType                 type;
 };
 
 class DataEmitter {
@@ -28,8 +27,10 @@ class DataEmitter {
     // emitted at that time.
     //
     // When the time comes, we emit the relevant data on the relevant channel.
-    public:
-    DataEmitter() : data_list{}, data{} {
+public:
+    DataEmitter()
+        : data_list{}
+        , data{} {
         // initializing the DatasetLoader loads in all the data from the dataset, so
         // we don't need to do anything special here.
 
@@ -49,7 +50,7 @@ class DataEmitter {
         std::for_each(data.m_groundTruthData.cbegin(), data.m_groundTruthData.cend(), [&](const auto& elem) {
             insertDataEntry(elem.first, DataType::GROUND_TRUTH);
         });
-        
+
         // the top element is the one with the earliest timestamp.
         // We record this for the purposes of
         // aligning the dataset time with the system time as much as possible
@@ -73,8 +74,7 @@ class DataEmitter {
         }
 
         while (data_list.top.first - current_time >= error_cushion) {
-            // this means that 
-
+            // this means that
         }
         emitImageData()
     }
@@ -86,7 +86,7 @@ class DataEmitter {
 
     std::chrono::nanoseconds sleep_for() {
         // how long should the data emitter thread sleep for?
-        
+
         // what is the next time at which we must emit some data?
         std::chrono::nanoseconds dataset_next = data_list.top.first;
 
@@ -97,36 +97,26 @@ class DataEmitter {
         return sleep_time;
     }
 
-    private:
+private:
     void insertDataEntry(std::uint64_t timestamp, DataType type) {
         DataEntry entry{timestamp, type};
         data_list.push(entry); // Automatically sorted by timestamp
     }
 
-    void emitImageData() {
-        
-    }
+    void emitImageData() { }
 
-    void emitIMUData() {
+    void emitIMUData() { }
 
-    }
+    void emitPoseData() { }
 
-    void emitPoseData() {
-
-    }
-
-    void emitGroundTruthData() {
-
-    }
+    void emitGroundTruthData() { }
 
     std::priority_queue<DataEntry, std::greater<std::chrono::nanoseconds>> data_list;
     // using the custom comparator means that the earliest timestamp appears earlier in the queue.
     DatasetLoader data;
 
-    
     std::chrono::nanoseconds       dataset_first_time;
     const std::chrono::nanoseconds error_cushion{500};
-
 
     // writers
     using namespace ILLIXR;
@@ -135,9 +125,6 @@ class DataEmitter {
     switchboard::writer<pose_type>         m_pose_publisher;
     switchboard::writer<ground_truth_type> m_ground_truth_publisher;
 };
-
-
-
 
 // EMISSION
 if (!priorityQueue.empty()) {
@@ -148,25 +135,26 @@ if (!priorityQueue.empty()) {
 
 // EMISSION WITH TOLERANCE CHECK
 const uint64_t EMISSION_TOLERANCE_NS = 1000000; // Example: 1 ms
+
 void processNextEmission() {
     uint64_t currentTime = getCurrentTime();
 
     while (!priorityQueue.empty()) {
         DataEntry nextEntry = priorityQueue.top();
-        
+
         if (currentTime < nextEntry.timestamp) {
             // Not yet time to emit
             break;
         }
-        
+
         if (currentTime - nextEntry.timestamp > EMISSION_TOLERANCE_NS) {
             // Too late to emit, drop this entry
-            priorityQueue.pop();  // Drop the entry
+            priorityQueue.pop(); // Drop the entry
             continue;
         }
 
         // Emit the data
         emitData(nextEntry);
-        priorityQueue.pop();  // Remove the emitted entry
+        priorityQueue.pop(); // Remove the emitted entry
     }
 }

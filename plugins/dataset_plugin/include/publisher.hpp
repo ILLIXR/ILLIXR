@@ -1,13 +1,13 @@
 #pragma once
 
+#include "dataset_loader.hpp"
 #include "illixr/common/data_format.hpp"
 #include "illixr/common/phonebook.hpp"
 #include "illixr/common/relative_clock.hpp"
 #include "illixr/common/threadloop.hpp"
-#include "dataset_loader.hpp"
 
-#include <chrono> // for std::chrono::nanoseconds
-#include <memory> // for std::shared_ptr
+#include <chrono>  // for std::chrono::nanoseconds
+#include <memory>  // for std::shared_ptr
 #include <thread>  // for std::this_thread::sleep_for
 #include <utility> // for std::move
 
@@ -18,34 +18,32 @@ public:
     Publisher(std::string name, phonebook* pb)
         : threadloop{name, pb}
         , sb{pb->lookup_impl<switchboard>()}
-        , data_emitter{sb->get_writer<ground_truth_type>("image")
-                     , sb->get_writer<ground_truth_type>("imu")
-                     , sb->get_writer<ground_truth_type>("pose")
-                     , sb->get_writer<ground_truth_type>("ground truth")
-          }
+        , data_emitter{sb->get_writer<ground_truth_type>("image"), sb->get_writer<ground_truth_type>("imu"),
+                       sb->get_writer<ground_truth_type>("pose"), sb->get_writer<ground_truth_type>("ground truth")}
         , m_rtc{pb->lookup_impl<RelativeClock>()} { }
-        // : threadloop{name, pb}
-        // , sb{pb->lookup_impl<switchboard>()}
-        // , m_dataset_loader{std::shared_ptr<DatasetLoader>(DatasetLoader::getInstance())}
-        
-        // , m_img_data{m_dataset_loader->getImageData()}
-        // , m_img_iterator{m_img_data.cbegin()}
-        // , m_img_publisher{sb->get_writer<ground_truth_type>("image")}
 
-        // , m_imu_data{m_dataset_loader->getIMUData()}
-        // , m_imu_iterator{m_imu_data.cbegin()}
-        // , m_imu_publisher{sb->get_writer<ground_truth_type>("imu")}
+    // : threadloop{name, pb}
+    // , sb{pb->lookup_impl<switchboard>()}
+    // , m_dataset_loader{std::shared_ptr<DatasetLoader>(DatasetLoader::getInstance())}
 
-        // , m_pose_data{m_dataset_loader->getPoseData()}
-        // , m_pose_iterator{m_pose_data.cbegin()}
-        // , m_pose_publisher{sb->get_writer<ground_truth_type>("pose")}
+    // , m_img_data{m_dataset_loader->getImageData()}
+    // , m_img_iterator{m_img_data.cbegin()}
+    // , m_img_publisher{sb->get_writer<ground_truth_type>("image")}
 
-        // , m_ground_truth_data{m_dataset_loader->getGroundTruthData()}
-        // , m_ground_truth_iterator{m_ground_truth_data.cbegin()}
-        // , m_ground_truth_publisher{sb->get_writer<ground_truth_type>("ground truth")}
-        
-        // // , dataset_first_time{m_data_iterator->first}
-        // , m_rtc{pb->lookup_impl<RelativeClock>()} { }
+    // , m_imu_data{m_dataset_loader->getIMUData()}
+    // , m_imu_iterator{m_imu_data.cbegin()}
+    // , m_imu_publisher{sb->get_writer<ground_truth_type>("imu")}
+
+    // , m_pose_data{m_dataset_loader->getPoseData()}
+    // , m_pose_iterator{m_pose_data.cbegin()}
+    // , m_pose_publisher{sb->get_writer<ground_truth_type>("pose")}
+
+    // , m_ground_truth_data{m_dataset_loader->getGroundTruthData()}
+    // , m_ground_truth_iterator{m_ground_truth_data.cbegin()}
+    // , m_ground_truth_publisher{sb->get_writer<ground_truth_type>("ground truth")}
+
+    // // , dataset_first_time{m_data_iterator->first}
+    // , m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
     virtual skip_option _p_should_skip() override {
         if (!data_emitter.empty()) {
@@ -64,9 +62,9 @@ public:
     }
 
 private:
-    const std::shared_ptr<switchboard>                                       sb;
+    const std::shared_ptr<switchboard> sb;
     // const std::shared_ptr<DatasetLoader>                                     m_dataset_loader;
-    
+
     // Image stuff
     // switchboard::writer<image_type>                                          m_image_publisher;
     // const std::multimap<std::chrono::nanoseconds, ImageData>                 m_img_data;
@@ -89,7 +87,7 @@ private:
 
     DataEmitter data_emitter;
     // std::chrono::nanoseconds                                                 dataset_first_time;
-    std::shared_ptr<RelativeClock>                                           m_rtc;
+    std::shared_ptr<RelativeClock> m_rtc;
 
     // const std::chrono::nanoseconds                                           error_cushion{250};
 }

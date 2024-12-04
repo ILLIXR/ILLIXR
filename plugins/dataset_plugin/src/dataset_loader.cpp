@@ -3,8 +3,8 @@
 #include "include/illixr/csv_iterator.hpp"
 
 #include <cstddef> // for the std::size_t data type
-#include <fstream>
 #include <Eigen/Dense>
+#include <fstream>
 
 #ifndef NDEBUG
     #include <spdlog/spdlog.h> // for debug messages
