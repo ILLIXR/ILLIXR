@@ -1,4 +1,4 @@
-#include "include/config.hpp"
+#include "config.hpp"
 
 #include "include/illixr/error_util.hpp"
 

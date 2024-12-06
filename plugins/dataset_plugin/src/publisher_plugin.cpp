@@ -1,4 +1,4 @@
-#include "include/publisher.hpp"
+#include "publisher.hpp"
 
 #include "illixr/common/plugin.hpp"
 
