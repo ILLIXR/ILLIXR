@@ -2,12 +2,11 @@
 
 #include "illixr/error_util.hpp"
 
-#include <cassert>  // for assert()
-#include <iostream> // for std::cerr
+#include <cassert>         // for assert()
+#include <iostream>        // for std::cerr
+#include <spdlog/spdlog.h> // for debug messages
 #include <sstream>
 #include <string>
-
-#include <spdlog/spdlog.h> // for debug messages
 
 std::vector<std::filesystem::path> convertPathStringToPathList(const std::string& path_string) {
     // TODO: Come up with a better, more descriptive name
