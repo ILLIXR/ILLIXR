@@ -38,13 +38,13 @@ public:
 
     virtual void _p_one_iteration() override {
         std::chrono::nanoseconds time_since_start = m_rtc->now().time_since_epoch();
-        
+
         data_emitter.emit(time_since_start);
     }
 
 private:
     const std::shared_ptr<switchboard> sb;
 
-    DataEmitter data_emitter;
+    DataEmitter                    data_emitter;
     std::shared_ptr<RelativeClock> m_rtc;
 }

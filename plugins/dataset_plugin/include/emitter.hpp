@@ -6,10 +6,9 @@
 #include "dataset_loader.hpp"
 #include "illixr/common/data_format.hpp"
 
+#include <functional>      // for std::greater
+#include <queue>           // for std::priority_queue
 #include <spdlog/spdlog.h> // for debug messages
-
-#include <functional> // for std::greater
-#include <queue>      // for std::priority_queue
 
 enum class DataType {
     IMAGE,
@@ -71,7 +70,7 @@ public:
         }
 
         // we simply publish all the data that has timestamps <= `current_time`
-        while(data_list.top().timestamp < dataset_time && !data_list.empty()) {
+        while (data_list.top().timestamp < dataset_time && !data_list.empty()) {
             DataEntry entry = priorityQueue.pop();
 
             if (entry.type == IMAGE) {
@@ -92,53 +91,53 @@ public:
     // void emit(std::chrono::nanoseconds current_time) {
     //     // we assume that current_time is the time since the Unix Epoch.
 
-    //     // time that has elapsed since startup, plus offset (first time in the dataset).
-    //     std::chrono::nanoseconds lower_bound_time = (current_time - starting_time) + dataset_first_time;
+    // // time that has elapsed since startup, plus offset (first time in the dataset).
+    // std::chrono::nanoseconds lower_bound_time = (current_time - starting_time) + dataset_first_time;
 
-    //     std::chrono::nanoseconds upper_bound_time = lower_bound_time + error_cushion;
+    // std::chrono::nanoseconds upper_bound_time = lower_bound_time + error_cushion;
 
-    //     // if (currentTime - nextEntry.timestamp > EMISSION_TOLERANCE_NS) {
-    //     //     // Too late to emit, drop this entry
-    //     //     priorityQueue.pop(); // Drop the entry
-    //     //     continue;
-    //     // }
+    // // if (currentTime - nextEntry.timestamp > EMISSION_TOLERANCE_NS) {
+    // //     // Too late to emit, drop this entry
+    // //     priorityQueue.pop(); // Drop the entry
+    // //     continue;
+    // // }
 
-    //     // print info about how many entries were dropped due to the thread waking up late.
-    //     int count = 0;
-    //     while (data_list.top().timestamp < lower_bound_time) {
-    //         data_list.pop();
-    //         count++;
-    //     }
+    // // print info about how many entries were dropped due to the thread waking up late.
+    // int count = 0;
+    // while (data_list.top().timestamp < lower_bound_time) {
+    //     data_list.pop();
+    //     count++;
+    // }
 
-    //     spdlog::get("illixr")->info("[dataset_plugin] Dropped {} data items due to thread scheduling.", count);
+    // spdlog::get("illixr")->info("[dataset_plugin] Dropped {} data items due to thread scheduling.", count);
 
-    //     // EMISSION
-    //     // if (!priorityQueue.empty()) {
-    //     //     DataEntry nextEntry = priorityQueue.top();
-    //     //     // Emit data based on nextEntry.type
-    //     //     priorityQueue.pop();
-    //     // }
+    // // EMISSION
+    // // if (!priorityQueue.empty()) {
+    // //     DataEntry nextEntry = priorityQueue.top();
+    // //     // Emit data based on nextEntry.type
+    // //     priorityQueue.pop();
+    // // }
 
-    //     if (data_list.empty()) {
-    //         // there is no more data left to emit.
-    //         return;
-    //     }
+    // if (data_list.empty()) {
+    //     // there is no more data left to emit.
+    //     return;
+    // }
 
-    //     // we simply publish all the data that has timestamps 
-    //     for (auto it = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++it) {
-    //         auto [timestamp, type] = *it;
+    // // we simply publish all the data that has timestamps
+    // for (auto it = m_data.lower_bound(lower_bound_time); it != m_data.upper_bound(upper_bound_time); ++it) {
+    //     auto [timestamp, type] = *it;
 
-    //         if (type == IMAGE) {
-    //             emitImageData(timestamp);
-    //         } else if (type == IMU) {
-    //             emitIMUData(timestamp);
-    //         } else if (type == POSE) {
-    //             emitPoseData(timestamp);
-    //         } else {
-    //             // ground truth
-    //             emitGroundTruthData(timestamp);
-    //         }
-    //     }
+    // if (type == IMAGE) {
+    //     emitImageData(timestamp);
+    // } else if (type == IMU) {
+    //     emitIMUData(timestamp);
+    // } else if (type == POSE) {
+    //     emitPoseData(timestamp);
+    // } else {
+    //     // ground truth
+    //     emitGroundTruthData(timestamp);
+    // }
+    // }
     // }
 
     bool finished() {
@@ -177,8 +176,8 @@ private:
             // we will publish 314ns as the timestamp.
             time_point time(timestamp - dataset_first_time);
 
-            m_image_publisher.put(m_image_publisher.allocate<image_type>(
-                image_type{time, datum.loadImage(), datum.getChannel()}));
+            m_image_publisher.put(
+                m_image_publisher.allocate<image_type>(image_type{time, datum.loadImage(), datum.getChannel()}));
         }
     }
 
@@ -194,8 +193,8 @@ private:
             // we will publish 314ns as the timestamp.
             time_point time(timestamp - dataset_first_time);
 
-            m_imu_publisher.put(m_imu_publisher.allocate<imu_type>(
-                imu_type{time, datum.angular_v, datum.linear_a, datum.channel}));
+            m_imu_publisher.put(
+                m_imu_publisher.allocate<imu_type>(imu_type{time, datum.angular_v, datum.linear_a, datum.channel}));
         }
     }
 
@@ -211,8 +210,7 @@ private:
             // we will publish 314ns as the timestamp.
             time_point time(timestamp - dataset_first_time);
 
-            m_pose_publisher.put(m_pose_publisher.allocate<pose_type>(
-                pose_type{time, datum.position, datum.orientation}));
+            m_pose_publisher.put(m_pose_publisher.allocate<pose_type>(pose_type{time, datum.position, datum.orientation}));
         }
     }
 
@@ -228,8 +226,8 @@ private:
             // we will publish 314ns as the timestamp.
             time_point time(timestamp - dataset_first_time);
 
-            m_ground_truth_publisher.put(m_ground_truth_publisher.allocate<ground_truth_type>(
-                ground_truth_type{time, datum.data}));
+            m_ground_truth_publisher.put(
+                m_ground_truth_publisher.allocate<ground_truth_type>(ground_truth_type{time, datum.data}));
         }
     }
 
@@ -237,8 +235,8 @@ private:
     // using the custom comparator means that the earliest timestamp appears earlier in the queue.
     DatasetLoader data;
 
-    std::chrono::nanoseconds       dataset_first_time;
-    std::chrono::nanoseconds       time_since_start;
+    std::chrono::nanoseconds dataset_first_time;
+    std::chrono::nanoseconds time_since_start;
     // const std::chrono::nanoseconds error_cushion{500};
 
     // writers
@@ -252,22 +250,22 @@ private:
 // void processNextEmission() {
 //     uint64_t currentTime = getCurrentTime();
 
-//     while (!priorityQueue.empty()) {
-//         DataEntry nextEntry = priorityQueue.top();
+// while (!priorityQueue.empty()) {
+//     DataEntry nextEntry = priorityQueue.top();
 
-//         if (currentTime < nextEntry.timestamp) {
-//             // Not yet time to emit
-//             break;
-//         }
+// if (currentTime < nextEntry.timestamp) {
+//     // Not yet time to emit
+//     break;
+// }
 
-//         if (currentTime - nextEntry.timestamp > EMISSION_TOLERANCE_NS) {
-//             // Too late to emit, drop this entry
-//             priorityQueue.pop(); // Drop the entry
-//             continue;
-//         }
+// if (currentTime - nextEntry.timestamp > EMISSION_TOLERANCE_NS) {
+//     // Too late to emit, drop this entry
+//     priorityQueue.pop(); // Drop the entry
+//     continue;
+// }
 
-//         // Emit the data
-//         emitData(nextEntry);
-//         priorityQueue.pop(); // Remove the emitted entry
-//     }
+// // Emit the data
+// emitData(nextEntry);
+// priorityQueue.pop(); // Remove the emitted entry
+// }
 // }
