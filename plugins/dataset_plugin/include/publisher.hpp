@@ -1,10 +1,10 @@
 #pragma once
 
 #include "emitter.hpp"
-#include "illixr/common/data_format.hpp"
-#include "illixr/common/phonebook.hpp"
-#include "illixr/common/relative_clock.hpp"
-#include "illixr/common/threadloop.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
+#include "illixr/relative_clock.hpp"
+#include "illixr/threadloop.hpp"
 
 #include <chrono>  // for std::chrono::nanoseconds
 #include <memory>  // for std::shared_ptr

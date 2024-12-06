@@ -4,7 +4,7 @@
 #include <chrono>    // for std::chrono::nanoseconds
 // #include <cstddef>
 #include "dataset_loader.hpp"
-#include "illixr/common/data_format.hpp"
+#include "illixr/data_format.hpp"
 
 #include <functional>      // for std::greater
 #include <queue>           // for std::priority_queue

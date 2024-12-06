@@ -1,7 +1,7 @@
 #pragma once
 
-#include "include/config.hpp"
-#include "include/illixr/data_format.hpp"
+#include "config.hpp"
+#include "illixr/data_format.hpp"
 
 #include <cassert>
 #include <chrono>

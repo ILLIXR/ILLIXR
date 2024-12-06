@@ -1,6 +1,6 @@
 #include "config.hpp"
 
-#include "include/illixr/error_util.hpp"
+#include "illixr/error_util.hpp"
 
 #include <cassert>  // for assert()
 #include <iostream> // for std::cerr
