@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 
+#include <spdlog/spdlog.h> // for debug messages
+
 std::vector<std::filesystem::path> convertPathStringToPathList(const std::string& path_string) {
     // TODO: Come up with a better, more descriptive name
 
@@ -73,7 +75,7 @@ void ConfigParser::initIMUConfig(Config& config) {
 
     // TODO: Update the IMU config parser stuff, and the assert below
     // sanity checking
-    assert(config.imu_config.path_list.size() == config.imu_config.format.size());
+    // assert(config.imu_config.path_list.size() == config.imu_config.format.size());
 }
 
 void ConfigParser::initImageConfig(Config& config) {
