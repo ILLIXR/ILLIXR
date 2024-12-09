@@ -98,20 +98,51 @@ struct imu_raw_type : public switchboard::event {
         , imu_time{imu_time_} { }
 };
 
-struct pose_type : public switchboard::event {
-    time_point         sensor_time; // Recorded time of sensor data ingestion
+struct pose_data {
     Eigen::Vector3f    position;
     Eigen::Quaternionf orientation;
+    float confidence;
+    units::measurement_unit unit;
+    coordinates::frame co_frame;
+    coordinates::reference_space ref_space;
+
+    pose_data()
+    : position{0., 0., 0.}
+    , orientation{1., 0., 0., 0.}
+    , confidence{0}
+    , unit{units::UNSET}
+    , co_frame{coordinates::RIGHT_HANDED_Y_UP}
+    , ref_space{coordinates::VIEWER} {}
+
+    pose_data(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, units::measurement_unit unit_ = units::UNSET,
+              coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
+              coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
+        : position{std::move(position_)}
+        , orientation{std::move(orientation_)}
+        , confidence(confidence_)
+        , unit{unit_}
+        , co_frame{frm}
+        , ref_space{ref} {}
+};
+
+struct pose_type : public switchboard::event, public pose_data {
+    time_point sensor_time; // Recorded time of sensor data ingestion
 
     pose_type()
-        : sensor_time{time_point{}}
-        , position{Eigen::Vector3f{0, 0, 0}}
-        , orientation{Eigen::Quaternionf{1, 0, 0, 0}} { }
+        : pose_data()
+        , sensor_time{time_point{}} {}
 
-    pose_type(time_point sensor_time_, Eigen::Vector3f position_, Eigen::Quaternionf orientation_)
-        : sensor_time{sensor_time_}
-        , position{std::move(position_)}
-        , orientation{std::move(orientation_)} { }
+    pose_type(time_point sensor_time_, Eigen::Vector3f& position_, Eigen::Quaternionf& orientation_,
+              units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
+              coordinates::reference_space ref = coordinates::VIEWER,const float confidence_ = 0.)
+        : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
+        , sensor_time{sensor_time_} {}
+
+    pose_type(time_point sensor_time_, const Eigen::Vector3f position_, const Eigen::Quaternionf orientation_,
+              units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
+              coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
+        : pose_data{std::move(position_), std::move(orientation_), unit_, frm, ref, confidence_}
+        , sensor_time{sensor_time_} {}
 };
 
 typedef struct {
