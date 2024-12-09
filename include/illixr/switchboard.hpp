@@ -493,6 +493,7 @@ public:
     private:
         /// Reference to the underlying topic
         topic& _m_topic;
+        bool _valid;
 
     public:
         reader(topic& topic_)
@@ -504,6 +505,7 @@ public:
                 abort();
             }
 #endif
+            _valid = true;
         }
 
         /**
