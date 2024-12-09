@@ -2,8 +2,12 @@
 
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
+#include <algorithm>
+#include <string>
+#include <map>
 #include <GL/gl.h>
 #include <utility>
+#include <type_traits>
 //#undef Complex // For 'Complex' conflict
 
 #include "relative_clock.hpp"
@@ -13,9 +17,97 @@
 #define USE_ALT_EYE_FORMAT
 
 namespace ILLIXR {
+
 using ullong = unsigned long long;
-const int LEFT_EYE = 0;
-const int RIGHT_EYE = 1;
+struct point_with_units;
+
+namespace units {
+    enum eyes : int { LEFT_EYE = 0, RIGHT_EYE = 1 };
+
+    enum measurement_unit : int { MILLIMETER = 0, CENTIMETER = 1, METER = 2, INCH = 3, FOOT = 4, PERCENT = 5, PIXEL = 6, UNSET = 7 };
+
+    const std::map<measurement_unit, const std::string> unit_str{{MILLIMETER, "mm"},
+                                                                 {CENTIMETER, "cm"},
+                                                                 {METER, "m"},
+                                                                 {INCH, "in"},
+                                                                 {FOOT, "ft"},
+                                                                 {PERCENT, "%"},
+                                                                 {PIXEL, "px"},
+                                                                 {UNSET, "unitless"}
+    };
+    constexpr int last_convertable_unit = FOOT;
+    //                                          mm          cm          m            ft                 in
+    constexpr float conversion_factor[5][5] = {{1.,         0.1,        .001,        1./(25.4 * 12.),   1./25.4},   // mm
+                                               {10.,        1.,         .01,         1./(2.54 * 12.),   1./2.54},   // cm
+                                               {1000.,      100.,       1.,          100./(2.54 * 12.), 100./2.54}, // m
+                                               {12. * 25.4, 12. * 2.54, 12. * .0254, 1.,                12.},       // ft
+                                               {25.4,       2.54,       .0254,       1./12.,            1.}         // in
+    };
+
+    inline float convert(const int from, const int to, float val) {
+        return conversion_factor[from][to] * val;
+    }
+
+    inline eyes non_primary(eyes eye) {
+        if (eye == LEFT_EYE)
+            return RIGHT_EYE;
+        return LEFT_EYE;
+    }
+
+}
+
+namespace coordinates {
+    enum frame {
+        IMAGE,
+        LEFT_HANDED_Y_UP,
+        LEFT_HANDED_Z_UP,
+        RIGHT_HANDED_Y_UP,// XR_REFERENCE_SPACE_TYPE_VIEW
+        RIGHT_HANDED_Z_UP,
+        RIGHT_HANDED_Z_UP_X_FWD
+    };
+
+    struct reference_frame : switchboard::event {
+        time_point time;
+        const frame reference;
+
+        reference_frame(time_point time_, frame ref)
+        : time{time_}
+        , reference{ref} {}
+    };
+    enum reference_space {
+        VIEWER,
+        WORLD,
+        ROOM = WORLD
+    };
+
+    /*
+     * Rotation matrix for a point tp rotate its axes to convert it to a new coordinate system
+     *
+     */
+    inline Eigen::Matrix3f rotation(const float alpha, const float beta, const float gamma) {
+        Eigen::Matrix3f rot;
+        double ra = alpha * M_PI / 180.;
+        double rb = beta * M_PI / 180.;
+        double rg = gamma * M_PI / 180;
+        rot << (cos(rg)*cos(rb)), (cos(rg)*sin(rb)*sin(ra) - sin(rg)*cos(ra)), (cos(rg)*sin(rb)*cos(ra) + sin(rg)*sin(ra)),
+                (sin(rg)*cos(rb)), (sin(rg)*sin(rb)*sin(ra) + cos(rg)*cos(ra)), (sin(rg)*sin(rb)*cos(ra) - cos(rg)*sin(ra)),
+                -sin(rb), (cos(rb)*sin(ra)), (cos(rb)*cos(ra));
+        return rot;
+    }
+    const Eigen::Matrix3f invert_x = (Eigen::Matrix3f() << -1., 0., 0., 0., 1., 0., 0., 0., 1.).finished();
+    const Eigen::Matrix3f invert_y = (Eigen::Matrix3f() << 1., 0., 0., 0., -1., 0., 0., 0., 1.).finished();
+    const Eigen::Matrix3f invert_z = (Eigen::Matrix3f() << 1., 0., 0., 0., 1., 0., 0., 0., -1.).finished();
+    const Eigen::Matrix3f identity = Eigen::Matrix3f::Identity();
+
+    //                                 from:      IM                                LHYU                               RHYU                               RHZU                               LHZU                                RHZUXF                                             to:
+    const Eigen::Matrix3f conversion[6][6] = {{identity,                           invert_y,                          rotation(180., 0., 0.),            rotation(-90., 0., 0.),            rotation(-90., 0., 90.) * invert_z, rotation(-90., 0., -90.)},                       // IM
+                                              {invert_y,                           identity,                          invert_z,                          rotation(-90., 0., 0.) * invert_y, rotation(90., 0., 90.),             rotation(-90., 0., -90.) * invert_y},            // LHYU
+                                              {rotation(180., 0., 0.),             invert_z,                          identity,                          rotation(90., 0., 0.),             rotation(90., 0., 90.) * invert_z,  rotation(-90., 0., 90.) * invert_x * invert_y},  // RHYU
+                                              {rotation(90., 0., 0.),              invert_y * rotation(90.,0.,0.),    rotation(-90., 0., 0.),            identity,                          rotation(0., 0., 90.) * invert_y,   rotation(0., 0., -90.)},                         // RHZU
+                                              {rotation(90., -90., 0.) * invert_y, rotation(-90.,-90.,0.),            rotation(0., 90., 90.) * invert_y, invert_x * rotation(0, 0.,90),     identity,                           invert_y},                                       // LHZU
+                                              {rotation(90., -90., 0.),            rotation(-90.,-90.,0.) * invert_y, rotation(0., 90., 90.),            rotation(0, 0.,90),                invert_y,                           identity}};                                      // RHZUXF
+
+}
 
 struct imu_type : switchboard::event {
     time_point      time;
@@ -278,6 +370,13 @@ struct texture_pose : public switchboard::event {
         , latest_quaternion{std::move(latest_quaternion_)}
         , render_quaternion{std::move(render_quaternion_)} { }
 };
+
+inline bool compare(const std::string& input, const std::string& val) {
+    std::string v1, v2;
+    std::transform(input.begin(), input.end(), v1.begin(), ::tolower);
+    std::transform(val.begin(), val.end(), v2.begin(), ::tolower);
+    return v1 == v2;
+}
 
 typedef std::map<units::eyes, pose_type> multi_pose_map;
 

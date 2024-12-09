@@ -2,7 +2,9 @@
 
 #include <map>
 
+#include "data_format.hpp"
 #include "switchboard.hpp"
+#include <fstream>
 #include <opencv2/core/mat.hpp>
 #include <utility>
 
@@ -79,8 +81,16 @@ struct [[maybe_unused]] monocular_cam_type : cam_base_type {
 };
 
 struct [[maybe_unused]] rgb_depth_type : cam_base_type {
-    rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
-        : cam_base_type(_time, {{image::RGB, _rgb}, {image::DEPTH, _depth}}, image::RGB_DEPTH) {}
+    units::measurement_unit units;
+    rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth, units::measurement_unit units_ = units::UNSET)
+        : cam_base_type(_time, {{image::RGB, _rgb}, {image::DEPTH, _depth}}, camera::RGB_DEPTH)
+        , units{units_} {}
 };
 
+struct [[maybe_unused]] depth_type : cam_base_type {
+    units::measurement_unit units;
+    depth_type(time_point _time, cv::Mat _depth, units::measurement_unit units_)
+        : cam_base_type(_time, {{image::DEPTH, _depth}}, camera::DEPTH)
+        , units{units_} {}
+};
 } // namespace ILLIXR

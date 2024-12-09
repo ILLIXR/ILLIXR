@@ -180,26 +180,26 @@ struct ht_frame : cam_base_type {
         , reference{ref_sp} {}
 };
 
-    float center_y = 0.;        //!> optical center pixel along y-axis
-    double vertical_fov = 0.;    //!> vertical field of view
-    double horizontal_fov = 0.;  //!> horizontal field of view
-    bool valid = false;
-    camera_params(): valid{false} {}
-    camera_params(const float xc, const float yc, const double vfov, const double hfov) : center_x{xc}
-            , center_y{yc}
-            , vertical_fov{vfov}
-            , horizontal_fov{hfov}
-            , valid{true} {}
-};
+inline void transform_point(point_with_units& pnt, const pose_data& pose) {
+    Eigen::Vector3f new_pnt = pose.orientation * pnt;
+    pnt.set(new_pnt + pose.position);
+}
 
-struct camera_config {
-    std::map <int, camera_params> cam_par;
-    size_t width = 0;
-    size_t height = 0;
-    float fps = 0.;
-    float baseline = 0.;
-    base_unit units = UNSET;
-    bool valid = false;
+inline static void transform_points(points_with_units& points, const pose_data& pose, coordinates::reference_space from,
+                                   coordinates::reference_space to) {
+    if (to == from)
+        return;
+    if (to == coordinates::WORLD) {
+        for (auto& point : points.points) {
+            Eigen::Vector3f newpnt = pose.orientation * point;
+            point.set(newpnt + pose.position);
+        }
+    } else {
+
+    }
+}
+
+}  // namespace: HandTracking
 
 template<>
 void normalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth) {
