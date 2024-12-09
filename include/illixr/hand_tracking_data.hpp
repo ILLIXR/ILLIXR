@@ -8,12 +8,13 @@
 #include <sstream>
 #include <opencv2/core/mat.hpp>
 
-namespace ILLIXR::HandTracking {
+namespace ILLIXR {
+    namespace HandTracking {
 const int NUM_LANDMARKS = 21;
 /*
  * Enum for the landmark points on a hand
  */
-enum landmark_points {
+enum landmark_points : int {
     WRIST, // = 0,
     THUMB_CMC, // = 1,
     THUMB_MCP, // = 2,
@@ -514,11 +515,11 @@ struct true_hand_points {
 };
 
 struct ht_frame : cam_base_type {
-    std::map<image::image_type, ht_detection> detections;
+    std::map<units::eyes, ht_detection> detections;
     std::map<HandTracking::hand, true_hand_points> hand_positions;
     ht_frame() : cam_base_type(time_point(_clock_duration{0}), {}, image::BINOCULAR) {}
     ht_frame(time_point _time, std::map<image::image_type, cv::Mat> _imgs,
-             std::map<image::image_type, ht_detection> _detections, std::map<HandTracking::hand, true_hand_points> points)
+             std::map<units::eyes, ht_detection> _detections, std::map<HandTracking::hand, hand_points> points,
         : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? image::BINOCULAR : image::MONOCULAR)
         , detections(std::move(_detections))
         , hand_positions{points} {}
