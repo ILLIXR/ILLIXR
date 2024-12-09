@@ -10,6 +10,8 @@
 #include <queue>           // for std::priority_queue
 #include <spdlog/spdlog.h> // for debug messages
 
+using namespace ILLIXR;
+
 enum class DataType {
     IMAGE,
     IMU,
@@ -31,7 +33,7 @@ class DataEmitter {
 public:
     DataEmitter(std::chrono::nanoseconds starting_time)
         : data_list{}
-        , data{}
+        , data{DatasetLoader::getInstance()}
         , starting_time{starting_time} {
         // initializing the DatasetLoader loads in all the data from the dataset, so
         // we don't need to do anything special here.
@@ -81,7 +83,7 @@ public:
                 emitPoseData(dataset_time);
             } else {
                 // ground truth
-                emitGroundTruthData(timestamp);
+                emitGroundTruthData(dataset_time);
             }
         }
     }
@@ -233,14 +235,13 @@ private:
 
     std::priority_queue<DataEntry, std::greater<std::chrono::nanoseconds>> data_list;
     // using the custom comparator means that the earliest timestamp appears earlier in the queue.
-    DatasetLoader data;
+    DatasetLoader* data;
 
     std::chrono::nanoseconds dataset_first_time;
-    std::chrono::nanoseconds time_since_start;
+    std::chrono::nanoseconds starting_time;
     // const std::chrono::nanoseconds error_cushion{500};
 
     // writers
-    using namespace ILLIXR;
     switchboard::writer<image_type>        m_image_publisher;
     switchboard::writer<imu_type>          m_imu_publisher;
     switchboard::writer<pose_type>         m_pose_publisher;

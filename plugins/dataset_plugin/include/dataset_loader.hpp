@@ -153,6 +153,8 @@ private:
 
     Config m_config;
 
+    public:
+    // stopgap to solve the huge number of errors. TODO: Fix the design in this part.
     std::multimap<std::chrono::nanoseconds, IMUData>         m_IMUData;
     std::multimap<std::chrono::nanoseconds, ImageData>       m_imageData;
     std::multimap<std::chrono::nanoseconds, PoseData>        m_poseData;

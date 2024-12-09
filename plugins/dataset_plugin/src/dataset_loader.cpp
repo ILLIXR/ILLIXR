@@ -218,7 +218,7 @@ void DatasetLoader::loadPoseData() {
             Eigen::Vector3f    position{std::stof(row[0]), std::stof(row[1]), std::stof(row[2])};
             Eigen::Quaternionf orientation{std::stof(row[3]), std::stof(row[4]), std::stof(row[5]), std::stof(row[6])};
 
-            m_poseData.insert({timestamp, PoseData{position, orientation}});
+            m_poseData.insert({timestamp, PoseData{position, orientation, i}});
         }
     }
 
@@ -253,7 +253,7 @@ void DatasetLoader::loadGroundTruthData() {
                 data[k] = std::stod(row[rowIndex++]);
             }
 
-            newEntry.data[m_config.ground_truth_config.name_list[j]] = data;
+            newEntry.data.insert({m_config.ground_truth_config.name_list[j], data});
         }
 
         m_groundTruthData.insert({timestamp, newEntry});
