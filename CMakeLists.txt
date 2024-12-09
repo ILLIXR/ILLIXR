@@ -78,6 +78,7 @@ set(OPENXR_PLUGINS "")
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
+option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 option(BUILD_DOCS "Build documentation" OFF)
@@ -185,6 +186,7 @@ find_package(Git REQUIRED)
 find_package(Boost REQUIRED CONFIG COMPONENTS filesystem serialization)
 
 find_package(spdlog REQUIRED)
+add_definitions(-DFMT_HEADER_ONLY)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)

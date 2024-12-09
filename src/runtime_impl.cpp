@@ -1,5 +1,6 @@
 #include "illixr/runtime.hpp"
 
+#include "illixr/data_format.hpp"
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
@@ -45,7 +46,6 @@ public:
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
-        auto sb = pb.lookup_impl<switchboard>();
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
         pb.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
@@ -55,6 +55,8 @@ public:
     }
 
     void load_so(const std::vector<std::string>& so_paths) override {
+        switchboard::writer<coordinates::reference_frame> reference_writer{pb.lookup_impl<switchboard>()->get_writer<coordinates::reference_frame>("coord_ref")};
+        reference_writer.put(reference_writer.allocate<coordinates::reference_frame>({time_point{_clock_duration(0)}, coordinates::RIGHT_HANDED_Y_UP}));
         RAC_ERRNO_MSG("runtime_impl before creating any dynamic library");
 
         std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {

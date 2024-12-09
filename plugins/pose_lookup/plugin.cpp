@@ -20,7 +20,7 @@ public:
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , dataset_first_time{_m_sensor_data_it->first}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} /// TODO: Set with #198
-        , enable_alignment{ILLIXR::str_to_bool(sb->get_env("ILLIXR_ALIGNMENT_ENABLE", "False"))}
+        , enable_alignment{sb->get_env_bool("ILLIXR_ALIGNMENT_ENABLE", "False")}
         , init_pos_offset{Eigen::Vector3f::Zero()}
         , align_rot{Eigen::Matrix3f::Zero()}
         , align_trans{Eigen::Vector3f::Zero()}

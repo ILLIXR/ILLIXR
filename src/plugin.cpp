@@ -2,17 +2,27 @@
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
+#ifndef BOOST_DATE_TIME_NO_LIB
+#define BOOST_DATE_TIME_NO_LIB
+#endif
 #include <algorithm>
+#ifdef OXR_INTERFACE
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+#endif
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
 #include <yaml-cpp/yaml.h>
-#include <stdlib.h>
 
 ILLIXR::runtime* r = nullptr;
 
 using namespace ILLIXR;
+#ifdef OXR_INTERFACE
+namespace b_intp = boost::interprocess;
+const char* illixr_shm_name = "ILLIXR_OXR_SHM";
+#endif
 
 int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::chrono::seconds     run_duration;
@@ -49,7 +59,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 #ifndef NDEBUG
     /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
     /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
-    const bool enable_pre_sleep = ILLIXR::str_to_bool(sb->get_env("ILLIXR_ENABLE_PRE_SLEEP", "False"));
+    const bool enable_pre_sleep = sb->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
     if (enable_pre_sleep) {
         const pid_t pid = getpid();
         spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
@@ -75,7 +85,17 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     GET_BOOL(alignment_enable, ILLIXR_ALIGNMENT_ENABLE)
     GET_BOOL(enable_verbose_errors, ILLIXR_ENABLE_VERBOSE_ERRORS)
     GET_BOOL(enable_pre_sleep, ILLIXR_ENABLE_PRE_SLEEP)
+    GET_BOOL(openxr, ILLIXR_OPENXR)
     GET_STRING(realsense_cam, REALSENSE_CAM)
+
+#ifdef OXR_INTERFACE
+    b_intp::shared_memory_object shm_obj(b_intp::create_only, illixr_shm_name, b_intp::read_write);
+    shm_obj.truncate(64);
+    b_intp::mapped_region region(shm_obj, b_intp::read_write);
+    auto shp = reinterpret_cast<std::uintptr_t>(sb.get());
+    std::memcpy(region.get_address(), (void*)shp, sizeof(shp));
+#endif
+
 
     setenv("__GL_MaxFramesAllowed", "1", false);
     setenv("__GL_SYNC_TO_VBLANK", "1", false);
@@ -103,7 +123,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     }
 
     if (config["install_prefix"]) {
-        std::string temp_path(getenv("LD_LIBRARY_PATH"));
+        std::string temp_path(sb->get_env("LD_LIBRARY_PATH"));
         temp_path = config["install_prefix"].as<std::string>() + ":" + temp_path;
         setenv("LD_LIBRARY_PATH", temp_path.c_str(), true);
     }
@@ -131,5 +151,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     th.join();
 
     delete r;
+#ifdef OXR_INTERFACE
+    shm_obj.remove(illixr_shm_name);
+#endif
     return 0;
 }
