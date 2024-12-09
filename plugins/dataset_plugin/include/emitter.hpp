@@ -8,6 +8,7 @@
 
 #include <functional>      // for std::greater
 #include <queue>           // for std::priority_queue
+#include <vector>
 #include <spdlog/spdlog.h> // for debug messages
 
 using namespace ILLIXR;
@@ -31,27 +32,30 @@ class DataEmitter {
     //
     // When the time comes, we emit the relevant data on the relevant channel.
 public:
-    DataEmitter(std::chrono::nanoseconds starting_time)
-        : data_list{}
+    DataEmitter(switchboard::writer<image_type> img_publisher,
+                switchboard::writer<imu_type> imu_publisher,
+                switchboard::writer<pose_type> pose_publisher,
+                switchboard::writer<ground_truth_type> ground_truth_publisher)
+        : data_list{{}, {}} // default initialize the underlying container and comparator function.
         , data{DatasetLoader::getInstance()}
-        , starting_time{starting_time} {
+        , starting_time{0} {
         // initializing the DatasetLoader loads in all the data from the dataset, so
         // we don't need to do anything special here.
 
         // we enter each timestamp and the corresponding data type to the priority queue
-        std::for_each(data.m_imageData.cbegin(), data.m_imageData.cend(), [&](const auto& elem) {
+        std::for_each(data->m_imageData.cbegin(), data->m_imageData.cend(), [&](const auto& elem) {
             insertDataEntry(elem.first, DataType::IMAGE);
         });
 
-        std::for_each(data.m_IMUData.cbegin(), data.m_IMUData.cend(), [&](const auto& elem) {
+        std::for_each(data->m_IMUData.cbegin(), data->m_IMUData.cend(), [&](const auto& elem) {
             insertDataEntry(elem.first, DataType::IMU);
         });
 
-        std::for_each(data.m_poseData.cbegin(), data.m_poseData.cend(), [&](const auto& elem) {
+        std::for_each(data->m_poseData.cbegin(), data->m_poseData.cend(), [&](const auto& elem) {
             insertDataEntry(elem.first, DataType::POSE);
         });
 
-        std::for_each(data.m_groundTruthData.cbegin(), data.m_groundTruthData.cend(), [&](const auto& elem) {
+        std::for_each(data->m_groundTruthData.cbegin(), data->m_groundTruthData.cend(), [&](const auto& elem) {
             insertDataEntry(elem.first, DataType::GROUND_TRUTH);
         });
 
@@ -59,7 +63,7 @@ public:
         // We record this for the purposes of
         // aligning the dataset time with the system time as much as possible
         // TODO: see if 2nd sentence makes sense.
-        dataset_first_time = data_list.top.first;
+        dataset_first_time = data_list.top().timestamp;
     }
 
     void emit(std::chrono::nanoseconds current_time) {
@@ -73,13 +77,16 @@ public:
 
         // we simply publish all the data that has timestamps <= `current_time`
         while (data_list.top().timestamp < dataset_time && !data_list.empty()) {
-            DataEntry entry = priorityQueue.pop();
+            // `pop()` only removes the topmost element and doesn't return it, so
+            // we make a copy using `top()` first.
+            DataEntry entry = data_list.top();
+            data_list.pop();
 
-            if (entry.type == IMAGE) {
+            if (entry.type == DataType::IMAGE) {
                 emitImageData(dataset_time);
-            } else if (entry.type == IMU) {
+            } else if (entry.type == DataType::IMU) {
                 emitIMUData(dataset_time);
-            } else if (entry.type == POSE) {
+            } else if (entry.type == DataType::POSE) {
                 emitPoseData(dataset_time);
             } else {
                 // ground truth
@@ -142,32 +149,32 @@ public:
     // }
     // }
 
-    bool finished() {
+    bool finished() const {
         // have we run out of data to emit?
         return data_list.empty();
     }
 
-    std::chrono::nanoseconds sleep_for() {
+    std::chrono::nanoseconds sleep_for(std::chrono::nanoseconds current_time) {
         // how long should the data emitter thread sleep for?
 
         // what is the next time at which we must emit some data?
-        std::chrono::nanoseconds dataset_next = data_list.top.first;
+        std::chrono::nanoseconds dataset_next = data_list.top().timestamp;
 
         // the time difference needs to be casted to `time_point` because `m_rtc` returns that type.
         // the explicit type of the `sleep_time` variable will trigger a typecast of the final calculated expression.
-        std::chrono::nanoseconds sleep_time = time_point{dataset_next - dataset_first_time} - m_rtc->now();
+        std::chrono::nanoseconds sleep_time = time_point{dataset_next - dataset_first_time} - current_time;
 
         return sleep_time;
     }
 
 private:
-    void insertDataEntry(std::uint64_t timestamp, DataType type) {
+    void insertDataEntry(std::chrono::nanoseconds timestamp, DataType type) {
         DataEntry entry{timestamp, type};
         data_list.push(entry); // Automatically sorted by timestamp
     }
 
     void emitImageData(std::chrono::nanoseconds timestamp) {
-        auto range = data.getImageData.equal_range(timestamp);
+        auto range = data->getImageData().equal_range(timestamp);
 
         for (auto it = range.first; it != range.second; ++it) {
             ImageData datum = it->second;
@@ -184,7 +191,7 @@ private:
     }
 
     void emitIMUData(std::chrono::nanoseconds timestamp) {
-        auto range = data.getIMUData.equal_range(timestamp);
+        auto range = data->getIMUData().equal_range(timestamp);
 
         for (auto it = range.first; it != range.second; ++it) {
             IMUData datum = it->second;
@@ -201,7 +208,7 @@ private:
     }
 
     void emitPoseData(std::chrono::nanoseconds timestamp) {
-        auto range = data.getPoseData.equal_range(timestamp);
+        auto range = data->getPoseData().equal_range(timestamp);
 
         for (auto it = range.first; it != range.second; ++it) {
             PoseData datum = it->second;
@@ -217,10 +224,10 @@ private:
     }
 
     void emitGroundTruthData(std::chrono::nanoseconds timestamp) {
-        auto range = data.getImageData.equal_range(timestamp);
+        auto range = data->getGroundTruthData().equal_range(timestamp);
 
         for (auto it = range.first; it != range.second; ++it) {
-            ImageData datum = it->second;
+            GroundTruthData datum = it->second;
 
             // we report the time relative to the first timestamp. That is, we report how long it has been since the
             // first data item was emitted.
@@ -233,7 +240,7 @@ private:
         }
     }
 
-    std::priority_queue<DataEntry, std::greater<std::chrono::nanoseconds>> data_list;
+    std::priority_queue<DataEntry, std::vector<DataEntry>, std::greater<std::chrono::nanoseconds>> data_list;
     // using the custom comparator means that the earliest timestamp appears earlier in the queue.
     DatasetLoader* data;
 

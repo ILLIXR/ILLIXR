@@ -18,14 +18,14 @@ public:
     Publisher(std::string name, phonebook* pb)
         : threadloop{name, pb}
         , sb{pb->lookup_impl<switchboard>()}
-        , data_emitter{sb->get_writer<ground_truth_type>("image"), sb->get_writer<ground_truth_type>("imu"),
-                       sb->get_writer<ground_truth_type>("pose"), sb->get_writer<ground_truth_type>("ground truth")}
+        , data_emitter{sb->get_writer<image_type>("image"), sb->get_writer<imu_type>("imu"),
+                       sb->get_writer<pose_type>("pose"), sb->get_writer<ground_truth_type>("ground truth")}
         , m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
     virtual skip_option _p_should_skip() override {
-        if (!data_emitter.empty()) {
+        if (!data_emitter.finished()) {
             // how much time should this thread sleep for?
-            std::chrono::nanoseconds sleep_time = data_emitter.sleep_for();
+            std::chrono::nanoseconds sleep_time = data_emitter.sleep_for(m_rtc->now().time_since_epoch());
 
             // sleep for the calculated amount of time
             std::this_thread::sleep_for(sleep_time);
@@ -47,4 +47,4 @@ private:
 
     DataEmitter                    data_emitter;
     std::shared_ptr<RelativeClock> m_rtc;
-}
+};
