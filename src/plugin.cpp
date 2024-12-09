@@ -29,9 +29,10 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     }
 
     // set env vars from config file first, as command line args will override
-    for (auto& item : sb->env_names()) {
-        if (config[item])
-            sb->set_env(item, config[item].as<std::string>());
+    for (const auto& item : config) {
+        const auto val = item.first.as<std::string>();
+        if (std::find(ignore_vars.begin(), ignore_vars.end(), val) == ignore_vars.end())
+            sb->set_env(val, item.second.as<std::string>());
     }
     // command line specified env_vars
     for (auto& item : options.unmatched()) {

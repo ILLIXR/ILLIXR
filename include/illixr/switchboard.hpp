@@ -23,6 +23,15 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+const std::vector<std::string> ignore_vars = {"plugins",
+                                              "data",
+                                              "demo_data",
+                                              "install_prefix",
+                                              "enable_offload",
+                                              "enable_alignment",
+                                              "enable_verbose_errors",
+                                              "enable_pre_sleep"
+};
 const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "DEPTHAI_LOG_LEVEL",
                                            "FAUXPOSE_AMPLITUDE",
