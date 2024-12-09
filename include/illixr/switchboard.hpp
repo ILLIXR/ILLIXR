@@ -174,12 +174,12 @@ public:
         underlying_type underlying_data;
 
     public:
-        event_wrapper() { }
+        event_wrapper() = default;
 
-        event_wrapper(underlying_type underlying_data_)
+        explicit event_wrapper(underlying_type underlying_data_)
             : underlying_data{underlying_data_} { }
 
-        operator underlying_type() const {
+        explicit operator underlying_type() const {
             return underlying_data;
         }
 
@@ -219,7 +219,7 @@ private:
         // so it is destructed before the data it uses.
         managed_thread _m_thread;
 
-        void thread_on_start() {
+        static void thread_on_start() {
 #ifndef NDEBUG
             spdlog::get("illixr")->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [switchboard] thread %t %v");
             spdlog::get("illixr")->debug("start");
@@ -340,7 +340,7 @@ private:
             assert(ret);
         }
 
-        size_t size() const {
+        [[nodiscard]] size_t size() const {
             return _m_queue_size;
         }
 
@@ -380,9 +380,9 @@ private:
 
     public:
         topic(std::string name, const std::type_info& ty, std::shared_ptr<record_logger> record_logger_)
-            : _m_name{name}
+            : _m_name{std::move(name)}
             , _m_ty{ty}
-            , _m_record_logger{record_logger_}
+            , _m_record_logger{std::move(record_logger_)}
             , _m_latest_index{0} { }
 
         const std::string& name() {
@@ -659,7 +659,7 @@ public:
     /**
      * If @p pb is null, then logging is disabled.
      */
-    switchboard(const phonebook* pb)
+    explicit switchboard(const phonebook* pb)
         : _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} {
         for (const auto& item : ENV_VARS) {
             char* value = getenv(item.c_str());
@@ -671,26 +671,29 @@ public:
         }
     }
 
+    /**
+     * @brief Set the local environment variable to the given value
+     */
     void set_env(const std::string& var, const std::string& val) {
         _m_env_vars[var] = val;
     }
 
+    /**
+     * @brief Get a vector of the currently known environment variables
+     */
     std::vector<std::string> env_names() const {
         std::vector<std::string> keys(_m_env_vars.size());
         std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair){return pair.first;});
         return keys;
     }
 
-    bool get_env_bool(const std::string& var) {
-        std::string val = get_env(var, "false");
-        const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
-        for(auto s : affirmative) {
-            if(std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {return std::tolower(a) == std::tolower(b);}))
-                return true;
-        }
-        return false;
-    }
-
+    /**
+     * @brief Switchboard access point for environment variables
+     *
+     * If the given variable `var` has a non-empty entry in the map, that value is returned. If the
+     * entry is empty then the system getenv is called. If this is non-empty then that value is stored
+     * and returned, otherwise the default value is returned (not stored).
+     */
     std::string get_env(const std::string& var, std::string _default = "") {
         try {
             if (!_m_env_vars.at(var).empty())
@@ -699,17 +702,35 @@ public:
             return _default;
         } catch(std::out_of_range &) {
             char* val = std::getenv(var.c_str());
-            if (val)
+            if (val) {
+                set_env(var, val);   // store it locally for faster retrieval
                 return {val};
+            }
             return _default;
         }
     }
 
-    const char* get_env_char(const std::string& var, std::string _default = "") {
+    /**
+     * @brief Get the boolean value of the given environment variable
+     */
+    bool get_env_bool(const std::string& var, const std::string& def = "false") {
+        std::string val = get_env(var, def);
+        const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
+        for(auto s : affirmative) {
+            if(std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {return std::tolower(a) == std::tolower(b);}))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Get a char* of the given environment variable
+     */
+    const char* get_env_char(const std::string& var, const std::string _default = "") {
         std::string val = get_env(var, _default);
         if (val.empty())
             return nullptr;
-        return val.c_str();
+        return strdup(val.c_str());
     }
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
