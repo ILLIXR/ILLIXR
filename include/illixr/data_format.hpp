@@ -278,4 +278,427 @@ struct texture_pose : public switchboard::event {
         , latest_quaternion{std::move(latest_quaternion_)}
         , render_quaternion{std::move(render_quaternion_)} { }
 };
+
+typedef std::map<units::eyes, pose_type> multi_pose_map;
+
+/**
+ * Struct which defines a representation of a rectangle
+ */
+struct rect {
+    double x_center; //!< x-coordinate of the rectangle's center
+    double y_center; //!< y-coordinate of the rectangle's center
+    double width;    //!< width of the rectangle (parallel to x-axis when rotation angle is 0)
+    double height;   //!< height of the rectangle (parallel to y-axis when rotation angle is 0)
+
+    double                  rotation; //!< rotation angle of the rectangle in radians
+    units::measurement_unit unit;
+    bool                    valid;    //!< if the rectangle is valid
+
+    /**
+     * Generic constructor which sets all values to 0
+     */
+    rect()
+        : x_center{0.}
+        , y_center{0.}
+        , width{0.}
+        , height{0.}
+        , rotation{0.}
+        , unit{units::UNSET}
+        , valid{false} { }
+
+    /**
+     * Copy constructor
+     * @param other The rect to copy
+     */
+    explicit rect(rect* other) {
+        if (other != nullptr) {
+            x_center = other->x_center;
+            y_center = other->y_center;
+            width    = other->width;
+            height   = other->height;
+            rotation = other->rotation;
+            unit     = other->unit;
+            valid    = other->valid;
+        }
+    }
+
+    /**
+     * General constructor
+     * @param xc the x-coordinate
+     * @param yc the y-coordinate
+     * @param w the width
+     * @param h the height
+     * @param r rotation angle
+     */
+    rect(const double xc, const double yc, const double w, const double h, const double r,
+         units::measurement_unit unit_ = units::UNSET)
+        : x_center{xc}
+        , y_center{yc}
+        , width{w}
+        , height{h}
+        , rotation{r}
+        , unit{unit_}
+        , valid{true} { }
+
+    /**
+     * Set the rect's values after construction
+     * @param xc the x-coordinate
+     * @param yc the y-coordinate
+     * @param w the width
+     * @param h the height
+     * @param r rotation angle
+     */
+    void set(const double xc, const double yc, const double w, const double h, const double r,
+             units::measurement_unit unit_ = units::UNSET) {
+        x_center = xc;
+        y_center = yc;
+        width    = w;
+        height   = h;
+
+        rotation = r;
+        unit     = unit_;
+        valid    = true;
+    }
+
+    void flip_y() {
+        if (unit == units::PERCENT)
+            y_center = 1.0 - y_center;
+        else
+            throw std::runtime_error("Cannot rectify rect with non percent units");
+    }
+};
+
+
+//**********************************************************************************
+//  Points
+//**********************************************************************************
+
+struct point : Eigen::Vector3f {
+    point() : Eigen::Vector3f{0., 0. ,0.} {}
+    point(const float x, const float y, const float z = 0.) : Eigen::Vector3f(x, y, z) {}
+    void set(const float x_, const float y_, const float z_ = 0.) {
+        x() = x_;
+        y() = y_;
+        z() = z_;
+    }
+
+    point& operator=(const Eigen::Vector3f& other) {
+        x() = other.x();
+        y() = other.y();
+        z() = other.z();
+        return *this;
+    }
+
+    template<typename T, typename U, int Option>
+    point& operator=(const Eigen::Product<T, U, Option>& pr) {
+        x() = pr.x();
+        y() = pr.y();
+        z() = pr.z();
+        return *this;
+    }
+
+    point& operator+=(Eigen::Vector3f& other) {
+        x() += other.x();
+        y() += other.y();
+        z() += other.z();
+        return *this;
+    }
+
+    point& operator-=(Eigen::Vector3f& other) {
+        x() -= other.x();
+        y() -= other.y();
+        z() -= other.z();
+        return *this;
+    }
+};
+
+struct point_with_validity : point {
+    bool valid = false;
+    float confidence = 0.;
+
+    point_with_validity() : point(), valid{false} {}
+    point_with_validity(const float x, const float y, const float z, bool valid_ = true, const float confidence_ = 0.)
+        : point{x, y, z}
+        , valid{valid_}
+        , confidence{confidence_} {}
+    point_with_validity(const point& pnt, bool valid_ = true, const float confidence_ = 0.)
+        : point{pnt}
+        , valid{valid_}
+        , confidence{confidence_} {}
+};
+
+struct point_with_units : point_with_validity {
+    units::measurement_unit unit;
+
+    explicit point_with_units(units::measurement_unit unit_ = units::UNSET)
+        : point_with_validity()
+        , unit{unit_} {}
+
+    point_with_units(const float x, const float y, const float z, units::measurement_unit unit_ = units::UNSET, bool valid_ = true,
+                     const float confidence_ = 0.)
+        : point_with_validity{x, y, z, valid_, confidence_}
+        , unit{unit_} {}
+
+    point_with_units(const point& pnt, units::measurement_unit unit_ = units::UNSET, bool valid_ = true, const float confidence_ = 0.)
+        : point_with_validity{pnt, valid_, confidence_}
+        , unit{unit_} {}
+
+    explicit point_with_units(const point_with_validity& pnt, units::measurement_unit unit_ = units::UNSET)
+        : point_with_validity{pnt}
+        , unit{unit_} {}
+
+    point_with_units operator+(const point_with_units& pnt) const {
+        point_with_units p_out;
+        p_out.x() = x() + pnt.x();
+        p_out.y() = y() + pnt.y();
+        p_out.z() = z() + pnt.z();
+        p_out.unit = unit;
+        p_out.valid = valid && pnt.valid;
+        return p_out;
+    }
+
+    point_with_units operator-(const point_with_units& pnt) const {
+        point_with_units p_out;
+        p_out.x() = x() - pnt.x();
+        p_out.y() = y() - pnt.y();
+        p_out.z() = z() - pnt.z();
+        p_out.unit = unit;
+        p_out.valid = valid && pnt.valid;
+        return p_out;
+    }
+
+    point_with_units operator+(const Eigen::Vector3f& pnt) const {
+        point_with_units p_out;
+        p_out.x() = x() + pnt.x();
+        p_out.y() = y() + pnt.y();
+        p_out.z() = z() + pnt.z();
+        p_out.unit = unit;
+        p_out.valid = valid;
+        return p_out;
+    }
+
+    point_with_units operator-(const Eigen::Vector3f& pnt) const {
+        point_with_units p_out;
+        p_out.x() = x() - pnt.x();
+        p_out.y() = y() - pnt.y();
+        p_out.z() = z() - pnt.z();
+        p_out.unit = unit;
+        p_out.valid = valid;
+        return p_out;
+    }
+
+
+    point_with_units operator*(const float val) const {
+        point_with_units p_out;
+        p_out.x() *= val;
+        p_out.y() *= val;
+        p_out.z() *= val;
+        p_out.unit = unit;
+        p_out.valid = valid;
+        return p_out;
+    }
+
+    point_with_units operator/(const float val) const {
+        point_with_units p_out;
+        p_out.x() /= val;
+        p_out.y() /= val;
+        p_out.z() /= val;
+        p_out.unit = unit;
+        p_out.valid = valid;
+        return p_out;
+    }
+
+    void set(const float x_, const float y_, const float z_, units::measurement_unit unit_, bool valid_ = true) {
+        x() = x_;
+        y() = y_;
+        z() = z_;
+        unit = unit_;
+        valid = valid_;
+    }
+
+    void set(const Eigen::Vector3f& vec) {
+        x() = vec.x();
+        y() = vec.y();
+        z() = vec.z();
+    }
+};
+
+inline point abs(const point& pnt) {
+    return {std::abs(pnt.x()), std::abs(pnt.y()), std::abs(pnt.z())};
+}
+
+inline point_with_validity abs(const point_with_validity& pnt) {
+    return {abs(point(pnt.x(), pnt.y(), pnt.z())), pnt.valid, pnt.confidence};
+}
+
+/**
+ * Determine the absolute value of a point (done on each coordinate)
+ * @param value The point to take the absolute value of
+ * @return A point containing the result
+ */
+inline point_with_units abs(const point_with_units& pnt) {
+    return {abs(point(pnt.x(), pnt.y(), pnt.z())), pnt.unit, pnt.valid, pnt.confidence};
+}
+
+/*
+ * Normalize the coordinates, using the input size as reference
+ */
+template<typename T>
+void normalize(T& obj, const float width, const float height, const float depth) {
+    if (obj.unit == units::PERCENT) {
+        std::cout << "Already normalized" << std::endl;
+        return;
+    }
+    obj.x() /= width;
+    obj.y() /= height;
+    obj.z() /= depth;
+    obj.unit = units::PERCENT;
+
+}
+
+template<typename T>
+void normalize(T& obj, const float width, const float height) {
+    normalize<T>(obj, width, height, 1.);
+}
+
+template<typename T>
+void denormalize(T& obj, const float width, const float height, const float depth, units::measurement_unit unit_ = units::PIXEL) {
+    if (obj.unit != units::PERCENT){
+        std::cout << "Already denormalized" << std::endl;
+        return;
+    }
+    if (unit_ == units::PERCENT)
+        throw std::runtime_error("Cannot denormalize to PERCENT");
+
+    obj.x() *= width;
+    obj.y() *= height;
+    obj.z() *= depth;
+    obj.unit = unit_;
+}
+
+template<typename T>
+void denormalize(T& obj, const float width, const float height, units::measurement_unit unit_ = units::PIXEL) {
+    denormalize<T>(obj, width, height, 1., unit_);
+}
+
+template<>
+void normalize<rect>(rect& obj, const float width, const float height, const float depth) {
+    (void) depth;
+    if (obj.unit == units::PERCENT) {
+        std::cout << "Rect is already normalized" << std::endl;
+        return;
+    }
+    obj.x_center /= width;
+    obj.y_center /= height;
+    obj.width /= width;
+    obj.height /= height;
+    obj.unit = units::PERCENT;
+}
+
+template<>
+void denormalize<rect>(rect& obj, const float width, const float height, const float depth, units::measurement_unit unit) {
+    (void)depth;
+    if (obj.unit != units::PERCENT) {
+        std::cout << "Rect is already denormalized" << std::endl;
+        return;
+    }
+    if (unit == units::PERCENT)
+        throw std::runtime_error("Cannot denormalize to PERCENT");
+    obj.x_center *= width;
+    obj.y_center *= height;
+    obj.width *= width;
+    obj.height *= height;
+    obj.unit = unit;
+}
+
+
+struct points_with_units {
+    std::vector<point_with_units> points;
+    units::measurement_unit unit;
+    bool valid;
+    bool fixed = false;
+
+    explicit points_with_units(units::measurement_unit unit_ = units::UNSET)
+        : points{std::vector<point_with_units>()}
+        , unit{unit_}, valid{false} {}
+    explicit points_with_units(const int size, units::measurement_unit unit_ = units::UNSET)
+        : points{std::vector<point_with_units>(size, point_with_units(unit_))}
+        , unit{unit_}
+        , valid{false}
+        , fixed{true} {}
+    explicit points_with_units(std::vector<point_with_units> points_)
+        : points{std::move(points_)} {
+        if (!points.empty())
+            unit = points[0].unit;
+        valid = true;
+        for (const auto& pnt : points)
+            valid &= pnt.valid;
+    }
+    points_with_units(const points_with_units& points_)
+        : points_with_units(points_.points) {}
+
+    explicit points_with_units(std::vector<point_with_validity>& points_, units::measurement_unit unit_ = units::UNSET)
+        : unit{unit_} {
+        points.resize(points_.size());
+        valid = true;
+        for (size_t i = 0; i < points_.size(); i++) {
+            points[i] = point_with_units(points_[i], unit_);
+            valid &= points_[i].valid;
+        }
+    }
+    explicit points_with_units(std::vector<point>& points_, units::measurement_unit unit_ = units::UNSET, bool valid_ = true)
+        : unit{unit_}
+        , valid{valid_} {
+        points.resize(points_.size());
+        for (size_t i = 0; i < points_.size(); i++)
+            points[i] = point_with_units(points_[i], unit_, valid_);
+    }
+
+    point_with_units& operator[](const size_t idx) {
+        if (fixed)
+            return points.at(idx);
+        return points[idx];
+    }
+    point_with_units& at(const size_t idx) {
+        return points.at(idx);
+    }
+
+    [[nodiscard]] const point_with_units& at(const size_t idx) const {
+        return points.at(idx);
+    }
+
+    [[nodiscard]] size_t size() const {
+        return points.size();
+    }
+
+    void mult(const Eigen::Matrix3f& ref_frm) {
+        for (point& pnt : points)
+            pnt = ref_frm * pnt;
+    }
+
+    void transform(const pose_data& pose) {
+        for (point& pnt : points)
+            pnt = (Eigen::Vector3f)((pose.orientation * pnt) + pose.position);
+    }
+};
+
+template<>
+void normalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth) {
+    if (obj.unit == units::PERCENT) {
+        std::cout << "Points are already normalized";
+        return;
+    }
+    for (auto& pnt : obj.points)
+        ::ILLIXR::normalize(pnt, width, height, depth);
+    obj.unit = units::PERCENT;
+}
+
+template<>
+void denormalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth,
+                                    units::measurement_unit unit_) {
+    for (auto& pnt : obj.points)
+        ::ILLIXR::denormalize(pnt, width, height, depth, unit_);
+    obj.unit = unit_;
+}
+
 } // namespace ILLIXR
