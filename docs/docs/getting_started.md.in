@@ -183,7 +183,22 @@ In general, you should not edit a [profile][23] file directly. The exception to 
 
 ## Environment Variables
 
-ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However in ILLIXR the switchboard acts as an interface to these functions with get_env (returns std::string), get_env_bool (returns bool) get_env_char (returns char*) and set_env. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the the switchboard interface wherever possible.
+ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However, in ILLIXR the switchboard acts as an interface to these functions with `get_env` (returns std::string), `get_env_bool` (returns bool), `get_env_char` (returns char*), and `set_env`. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the switchboard interface wherever possible. Any items given on the command line which do not match expected command line arguments are considered to be environment variables. For example:
+
+```bash
+main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
+```
+
+This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
+
+```yaml
+plugins: fauxpose,gldemo,debugview,audio_pipeline
+enable_offload: false
+DATA_SOURCE: /home/my/data
+PROCESS_DATA: true
+```
+
+Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be eset to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
 
 ## ILLIXR Graphics Backends
 
