@@ -160,7 +160,7 @@ public:
 
         // the time difference needs to be casted to `time_point` because `m_rtc` returns that type.
         // the explicit type of the `sleep_time` variable will trigger a typecast of the final calculated expression.
-        std::chrono::nanoseconds sleep_time = time_point{dataset_next - dataset_first_time} - current_time;
+        std::chrono::nanoseconds sleep_time = dataset_next - dataset_first_time - current_time;
 
         return sleep_time;
     }
