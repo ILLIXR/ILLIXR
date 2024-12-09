@@ -8,8 +8,8 @@
 
 #include <functional>      // for std::greater
 #include <queue>           // for std::priority_queue
-#include <vector>
 #include <spdlog/spdlog.h> // for debug messages
+#include <vector>
 
 using namespace ILLIXR;
 
@@ -32,10 +32,8 @@ class DataEmitter {
     //
     // When the time comes, we emit the relevant data on the relevant channel.
 public:
-    DataEmitter(switchboard::writer<image_type> img_publisher,
-                switchboard::writer<imu_type> imu_publisher,
-                switchboard::writer<pose_type> pose_publisher,
-                switchboard::writer<ground_truth_type> ground_truth_publisher)
+    DataEmitter(switchboard::writer<image_type> img_publisher, switchboard::writer<imu_type> imu_publisher,
+                switchboard::writer<pose_type> pose_publisher, switchboard::writer<ground_truth_type> ground_truth_publisher)
         : data_list{{}, {}} // default initialize the underlying container and comparator function.
         , data{DatasetLoader::getInstance()}
         , starting_time{0} {

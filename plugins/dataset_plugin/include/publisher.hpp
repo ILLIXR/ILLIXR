@@ -18,8 +18,8 @@ public:
     Publisher(std::string name, phonebook* pb)
         : threadloop{name, pb}
         , sb{pb->lookup_impl<switchboard>()}
-        , data_emitter{sb->get_writer<image_type>("image"), sb->get_writer<imu_type>("imu"),
-                       sb->get_writer<pose_type>("pose"), sb->get_writer<ground_truth_type>("ground truth")}
+        , data_emitter{sb->get_writer<image_type>("image"), sb->get_writer<imu_type>("imu"), sb->get_writer<pose_type>("pose"),
+                       sb->get_writer<ground_truth_type>("ground truth")}
         , m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
     virtual skip_option _p_should_skip() override {
