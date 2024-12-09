@@ -21,7 +21,7 @@ public:
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_ip(CLIENT_IP)
         , client_port(CLIENT_PORT_2) {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
         socket.socket_set_reuseaddr();
         socket.socket_bind(SERVER_IP, SERVER_PORT_2);
         socket.enable_no_delay();

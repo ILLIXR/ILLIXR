@@ -66,7 +66,7 @@ public:
         , _m_fast_pose{sb->get_reader<imu_raw_type>("imu_raw")} //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
         , _m_rgb_depth(sb->get_reader<rgb_depth_type>("rgb_depth"))
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")} {
-        spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("DEBUGVIEW_LOG_LEVEL"));
     }
 
     void draw_GUI() {
@@ -512,7 +512,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
             glfwDestroyWindow(gui_window);
             ILLIXR::abort("[debugview] Failed to initialize GLEW");
         }
@@ -546,13 +546,13 @@ public:
         RAC_ERRNO_MSG("debugview after glGetUniformLocation");
 
         // Load/initialize the demo scene.
-        char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-        if (obj_dir == nullptr) {
+        const std::string obj_dir = sb->get_env("ILLIXR_DEMO_DATA");
+        if (obj_dir.empty()) {
             ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
         }
 
-        demoscene = ObjScene(std::string(obj_dir), "scene.obj");
-        headset   = ObjScene(std::string(obj_dir), "headset.obj");
+        demoscene = ObjScene(obj_dir, "scene.obj");
+        headset   = ObjScene(obj_dir, "headset.obj");
 
         // Generate fun test pattern for missing camera images.
         for (unsigned x = 0; x < TEST_PATTERN_WIDTH; x++) {

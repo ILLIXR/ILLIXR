@@ -23,13 +23,13 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_true_pose{sb->get_writer<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-        , _m_sensor_data{load_data()}
+        , _m_sensor_data{load_data(sb)}
         // The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
         // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
         , _m_dataset_first_time{ViconRoom1Medium}
         , _m_first_time{true} {
-        spdlogger(std::getenv("GROUND_TRUTH_SLAM_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("GROUND_TRUTH_SLAM_LOG_LEVEL"));
     }
 
     void start() override {

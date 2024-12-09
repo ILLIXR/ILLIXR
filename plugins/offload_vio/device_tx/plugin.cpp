@@ -37,7 +37,7 @@ public:
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
         , server_ip(SERVER_IP)
         , server_port(SERVER_PORT_1) {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
         socket.socket_set_reuseaddr();
         socket.socket_bind(CLIENT_IP, CLIENT_PORT_1);
         socket.enable_no_delay();

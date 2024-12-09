@@ -20,13 +20,12 @@ typedef struct {
     raw_imu_type imu0;
 } sensor_types;
 
-static std::map<ullong, sensor_types> load_data() {
-    const char* illixr_data_c_str = std::getenv("ILLIXR_DATA");
-    if (!illixr_data_c_str) {
+static std::map<ullong, sensor_types> load_data(const std::shared_ptr<ILLIXR::switchboard>& sb) {
+    std::string illixr_data = sb->get_env("ILLIXR_DATA");
+    if (illixr_data.empty()) {
         spdlog::get("illixr")->error("[offline_imu] Please define ILLIXR_DATA");
         ILLIXR::abort();
     }
-    std::string illixr_data = std::string{illixr_data_c_str};
 
     std::map<ullong, sensor_types> data;
 
