@@ -8,28 +8,29 @@
 
 namespace ILLIXR {
 namespace image {
-    enum image_type { LEFT,
-                      RIGHT,
+    enum image_type { LEFT_EYE,
+                      RIGHT_EYE,
                       RGB,
                       DEPTH,
-                      LEFT_PROCESSED,
-                      RIGHT_PROCESSED,
+                      LEFT_EYE_PROCESSED,
+                      RIGHT_EYE_PROCESSED,
                       RGB_PROCESSED,
-                      DEPTH_PROCESSED,
                       CONFIDENCE};
-
+}
+namespace camera {
     enum cam_type { BINOCULAR,
                     MONOCULAR,
                     RGB_DEPTH,
+                    DEPTH,
                     ZED };
 }
 
 struct cam_base_type : switchboard::event {
     time_point time;
-    image::cam_type type;
+    camera::cam_type type;
     std::map<image::image_type, cv::Mat> images{};
 
-    cam_base_type(time_point _time, std::map<image::image_type, cv::Mat> imgs, image::cam_type _type)
+    cam_base_type(time_point _time, std::map<image::image_type, cv::Mat> imgs, camera::cam_type _type)
         : time(_time)
         , type(_type)
         , images{std::move(imgs)} {}
@@ -65,12 +66,12 @@ struct cam_base_type : switchboard::event {
 
 struct [[maybe_unused]] binocular_cam_type : cam_base_type {
     binocular_cam_type(time_point _time, cv::Mat _img0, cv::Mat _img1)
-        : cam_base_type(_time, {{image::LEFT, _img0}, {image::RIGHT, _img1}}, image::BINOCULAR) { }
+        : cam_base_type(_time, {{image::LEFT_EYE, _img0}, {image::RIGHT_EYE, _img1}}, camera::BINOCULAR) { }
 };
 
 struct [[maybe_unused]] monocular_cam_type : cam_base_type {
     monocular_cam_type(time_point _time, cv::Mat _img)
-        : cam_base_type(_time, {{image::RGB, _img}}, image::MONOCULAR) {}
+        : cam_base_type(_time, {{image::RGB, _img}}, camera::MONOCULAR) {}
 
     [[nodiscard]] cv::Mat img() const {
         return images.at(image::RGB);
