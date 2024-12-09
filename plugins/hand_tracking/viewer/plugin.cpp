@@ -1,34 +1,42 @@
 #include "plugin.hpp"
 
-//#include "illixr/gl_util/obj.hpp"
 #include "illixr/opencv_data_types.hpp"
-//#include "illixr/shader_util.hpp"
-//#include "imgui/backends/imgui_impl_glfw.h"
-//#include "imgui/backends/imgui_impl_opengl3.h"
-#include "include/data_format.hpp"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "illixr/gl_util/obj.hpp"
+#include "illixr/shader_util.hpp"
 
 #include <opencv2/opencv.hpp>
 
 using namespace ILLIXR;
-using namespace io;
+
+/**
+* @brief Callback function to handle glfw errors
+ */
+static void glfw_error_callback(int error, const char* description) {
+    spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
+    ILLIXR::abort();
+}
+
 /**
 * @brief Callback function to handle glfw errors
 */
 
 std::string image_type_string(const image::image_type it) {
     switch(it) {
-    case image::LEFT:
-    case image::LEFT_PROCESSED:
+    case image::LEFT_EYE:
+    case image::LEFT_EYE_PROCESSED:
         return "left";
-    case image::RIGHT:
-    case image::RIGHT_PROCESSED:
+    case image::RIGHT_EYE:
+    case image::RIGHT_EYE_PROCESSED:
         return "right";
     case image::RGB:
     case image::RGB_PROCESSED:
         return "rgb";
     case image::DEPTH:
-    case image::DEPTH_PROCESSED:
         return "depth";
+    case image::CONFIDENCE:
+        return "confidence";
     }
 }
 
@@ -36,13 +44,11 @@ viewer::viewer(const std::string& name_, phonebook* pb_) :
     plugin{name_, pb_}, _clock{pb->lookup_impl<RelativeClock>()}
     , _switchboard{pb_->lookup_impl<switchboard>()}
     , current_frame(nullptr) {
-    const char* input = std::getenv("HT_INPUT");
-    if (input) {
-        if (strcmp(input, "webcam") == 0) {
-            _zed = true;
-        } else if (strcmp(input, "cam") == 0) {
-
-        } else if (strcmp(input, "zed") == 0) {
+    std::string input = _switchboard->get_env("HT_INPUT");
+    if (!input.empty()) {
+        if (compare(input, "webcam")) {
+            _wc = true;
+        } else if (compare(input, "zed")) {
             _zed = true;
         }
     } else {
@@ -51,20 +57,84 @@ viewer::viewer(const std::string& name_, phonebook* pb_) :
 }
 
 void viewer::start() {
-    plugin::start();
-    std::string sub_path = "fps30_dur3_CCF";
-    files* fls = files::getInstance(sub_path);
-    ht_out.open(files::ht_file, std::ofstream::out);
-    //threadloop::start();
+    if (!glfwInit()) {
+        ILLIXR::abort("[viewer] Failed to initalize glfw");
+    }
+
+    /// Registering error callback for additional debug info
+    glfwSetErrorCallback(glfw_error_callback);
+
+    /// Enable debug context for glDebugMessageCallback to work
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+
+    constexpr std::string_view glsl_version{"#version 330 core"};
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    _viewport = glfwCreateWindow(640*3 + 20, 1000, "ILLIXR Debug View", nullptr, nullptr);
+    if (_viewport == nullptr) {
+        spdlog::get(name)->error("couldn't create window {}:{}", __FILE__, __LINE__);
+        ILLIXR::abort();
+    }
+
+    glfwSetWindowSize(_viewport, 640*3 + 20, 480 * 3 + 20);
+
+    glfwMakeContextCurrent(_viewport);
+
+    glfwSwapInterval(1);
+
+    const GLenum glew_err = glewInit();
+    if (glew_err != GLEW_OK) {
+        //spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+        glfwDestroyWindow(_viewport);
+        ILLIXR::abort("[debugview] Failed to initialize GLEW");
+    }
+
+    // Initialize IMGUI context.
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    // Dark theme, of course.
+    ImGui::StyleColorsDark();
+
+    // Init IMGUI for OpenGL
+    ImGui_ImplGlfw_InitForOpenGL(_viewport, true);
+    ImGui_ImplOpenGL3_Init(glsl_version.data());
+
+    glGenTextures(6, &(textures[0]));
+    for (unsigned int texture : textures) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+    // Construct a basic perspective projection
+    //math_util::projection_fov(&basicProjection, 40.0f, 40.0f, 40.0f, 40.0f, 0.03f, 20.0f);
+
+    glfwMakeContextCurrent(nullptr);
     _switchboard->schedule<HandTracking::ht_frame>(id, "ht", [this](const switchboard::ptr<const HandTracking::ht_frame>& ht_frame, std::size_t) {
         this->make_gui(ht_frame);
     });
 }
 
 viewer::~viewer() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(_viewport);
+
+    RAC_ERRNO_MSG("debugview during destructor");
+
+    glfwTerminate();
 }
 
-void viewer::make_detection_table(const ht_detection& det, const image::image_type it) {
+void viewer::make_detection_table(const HandTracking::ht_detection& det, const image::image_type it) {
     ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
     std::string title = image_type_string(it);
 
@@ -78,13 +148,13 @@ void viewer::make_detection_table(const ht_detection& det, const image::image_ty
         ImGui::TableSetupColumn("Rotation");
         ImGui::TableHeadersRow();
         rect current_rect;
-        for (auto i : hand_map) {
+        for (auto i : HandTracking::hand_map) {
             current_rect = det.palms.at(i);
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("%s", (i == 0) ? "Left palm" : "Right palm");
             ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%s", (current_rect.normalized) ? "%" : "px");
+            ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
             if (current_rect.valid) {
                 ImGui::TableSetColumnIndex(2);
                 ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
@@ -108,13 +178,13 @@ void viewer::make_detection_table(const ht_detection& det, const image::image_ty
         ImGui::TableSetupColumn("Rotation");
         ImGui::TableHeadersRow();
         rect current_rect;
-        for (auto i : hand_map) {
+        for (auto i : HandTracking::hand_map) {
             current_rect = det.hands.at(i);
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("%s", (i == 0) ? "Left hand" : "Right hand");
             ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%s", (current_rect.normalized) ? "%" : "px");
+            ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
             if (current_rect.valid) {
                 ImGui::TableSetColumnIndex(2);
                 ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
@@ -138,25 +208,25 @@ void viewer::make_detection_table(const ht_detection& det, const image::image_ty
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("%s", "Confidence");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text("%.2f", det.confidence.at(LEFT_HAND));
+        ImGui::Text("%.2f", det.confidence.at(HandTracking::LEFT_HAND));
         ImGui::TableSetColumnIndex(2);
-        ImGui::Text("%.2f", det.confidence.at(RIGHT_HAND));
-        for (int row = WRIST; row <= PINKY_TIP; row++) {
+        ImGui::Text("%.2f", det.confidence.at(HandTracking::RIGHT_HAND));
+        for (int row = HandTracking::WRIST; row <= HandTracking::PINKY_TIP; row++) {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", point_map.at(row).c_str());
+            ImGui::Text("%s", HandTracking::point_str_map.at(row).c_str());
             ImGui::TableSetColumnIndex(1);
-            auto pnt = det.points.at(LEFT_HAND)[row];
+            auto pnt = det.points.at(HandTracking::LEFT_HAND).at(row);
             if (pnt.valid) {
-                ImGui::Text("%.2f, %.2f, %.2f", pnt.x, pnt.y, pnt.z);
+                ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
             } else {
                 ImGui::Text("%s", "");
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
             }
             ImGui::TableSetColumnIndex(2);
-            pnt = det.points.at(RIGHT_HAND)[row];
+            pnt = det.points.at(HandTracking::RIGHT_HAND).at(row);
             if (pnt.valid) {
-                ImGui::Text("%.2f, %.2f, %.2f", pnt.x, pnt.y, pnt.z);
+                ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
             } else {
                 ImGui::Text("%s", "");
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
@@ -167,27 +237,24 @@ void viewer::make_detection_table(const ht_detection& det, const image::image_ty
     }
 }
 
-void viewer::make_gui(const switchboard::ptr<const ht_frame>& frame) {
+void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& frame) {
     glfwMakeContextCurrent(_viewport);
     glfwPollEvents();
-void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& frame) {
     std::vector<image::image_type> found_types;
-    std::cout << "      Writing frame " << frame->time.time_since_epoch().count() << std::endl;
     cv::Mat raw_img[2];
     int last_idx = 0;
 
     current_frame = frame.get();
-    ht_out << *current_frame << std::endl;
-/*
-    if (frame->find(image::LEFT_PROCESSED) != frame->images.end()) {
-        found_types.push_back(image::LEFT_PROCESSED);
-        raw_img[0] = frame->at(image::LEFT).clone();
+
+    if (frame->find(image::LEFT_EYE_PROCESSED) != frame->images.end()) {
+        found_types.push_back(image::LEFT_EYE_PROCESSED);
+        raw_img[0] = frame->at(image::LEFT_EYE).clone();
         last_idx++;
 
     }
-    if (frame->find(image::RIGHT_PROCESSED) != frame->images.end()) {
-        found_types.push_back(image::RIGHT_PROCESSED);
-        raw_img[last_idx] = frame->at(image::RIGHT).clone();
+    if (frame->find(image::RIGHT_EYE_PROCESSED) != frame->images.end()) {
+        found_types.push_back(image::RIGHT_EYE_PROCESSED);
+        raw_img[last_idx] = frame->at(image::RIGHT_EYE).clone();
 
 
     }
@@ -198,15 +265,21 @@ void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& fram
         //    cv::flip(raw_img[0], raw_img[0], 1);
     }
 
-
-
-    /*
     cv::Mat processed[2];
     cv::Mat combined[2], flattened[2];
+    int d_width, d_height;
+    glfwGetFramebufferSize(_viewport, &d_width, &d_height);
+    glViewport(0, 0, d_width, d_height);
+    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
 
+    ImGui_ImplOpenGL3_NewFrame();
 
+    ImGui_ImplGlfw_NewFrame();
 
+    ImGui::NewFrame();
 
+    current_frame = frame.get();
     for(size_t i = 0; i < found_types.size(); i++) {
         // get raw frame from camera input
         glBindTexture(GL_TEXTURE_2D, textures[i * 3]);
@@ -242,7 +315,7 @@ void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& fram
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%s", "Processing time (ms)");
                 ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%ld", frame->detections.at(found_types[i]).proc_time / 1000000);
+                ImGui::Text("%ld", frame->detections.at(static_cast<const units::eyes>(found_types[i])).proc_time / 1000000);
                 ImGui::EndTable();
             }
             if (ImGui::BeginTable((title + "_results_table").c_str(), 2, ImGuiTableFlags_Borders)) {
@@ -256,7 +329,7 @@ void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& fram
                     im_col = 0;
                 }
                 ImGui::TableSetColumnIndex(det_col);
-                make_detection_table(frame->detections.at(found_types[i]), found_types[i]);
+                make_detection_table(frame->detections.at(static_cast<const units::eyes>(found_types[i])), found_types[i]);
                 ImGui::TableSetColumnIndex(im_col);
                 ImGui::Image((void*) (intptr_t) textures[i * 3], ImVec2(640, 480));
                 ImGui::Image((void*) (intptr_t) textures[(i * 3) + 1], ImVec2(640, 480));
@@ -273,7 +346,7 @@ void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& fram
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(_viewport);
 
-    count++;*/
+    count++;
 }
 
 PLUGIN_MAIN(viewer)
