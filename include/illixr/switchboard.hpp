@@ -56,7 +56,12 @@ const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "REALSENSE_LOG_LEVEL",
                                            "TIMEWARP_GL_LOG_LEVEL",
                                            "ILLIXR_STDOUT_METRICS",
-                                           "ILLIXR_ENABLE_VERBOSE_ERRORS"
+                                           "ILLIXR_ENABLE_VERBOSE_ERRORS",
+                                           "USE_WCS",
+                                           "WCS_ORIGIN",
+                                           "ZED_RESOLUTION",
+                                           "ZED_DEPTH_TYPE",
+                                           "LD_LIBRARY_PATH"
 };
 /**
  * @Should be private to Switchboard.
