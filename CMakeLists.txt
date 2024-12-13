@@ -194,12 +194,6 @@ find_package(Threads)
 include(src/CMakeLists.txt)
 
 # set any plugins that are being built
-foreach(ITEM IN LISTS PLUGIN_LIST)
-    string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
-    if(${ITEM_UPPER})
-        add_definitions("-D${ITEM_UPPER}")
-    endif()
-endforeach ()
 set(FULL_PLUGIN_LIST "")
 foreach(ITEM IN LISTS PLUGIN_LIST)
     string(TOUPPER "USE_${ITEM}" ITEM_UPPER)
