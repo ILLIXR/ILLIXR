@@ -79,13 +79,14 @@ public:
                            return std::unique_ptr<plugin>{plugin_factory(&pb)};
                        });
 
+        pb.lookup_impl<RelativeClock>()->start();
+
         std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
             // Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
         });
 
         // This actually kicks off the plugins
-        pb.lookup_impl<RelativeClock>()->start();
         pb.lookup_impl<Stoplight>()->signal_ready();
     }
 

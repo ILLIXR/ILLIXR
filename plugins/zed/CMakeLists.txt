@@ -14,7 +14,6 @@ find_package(Threads REQUIRED)
 find_package(ZED 3 REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
-
 set(SRC_FILES plugin.cpp
 	zed_camera.cpp
 	zed_camera_thread.cpp

@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <opencv2/opencv.hpp>
 
 #include "illixr/error_util.hpp"
 
@@ -63,16 +64,21 @@ zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     , initial_position_pub_{switchboard_->get_writer<pose_type>("wcs_origin")}
     , cam_conf_pub_{switchboard_->get_writer<camera_data>("cam_data")}
     , it_log_{record_logger_} {
-    initial_position_pub_.put(initial_position_pub_.allocate<pose_type>(pose_type{clock_->now(), zed_cam_->get_translation(),
-                                                                                  zed_cam_->get_orientation(), units::UNITS,
-                                                                                  units::RIGHT_HANDED_Y_UP, units::WORLD, 1.}));
-    cam_conf_pub_.put(cam_conf_pub_.allocate<camera_data>(camera_data{zed_cam_->get_config()}));
     camera_thread_.start();
+
 }
 
 // destructor
 zed_imu_thread::~zed_imu_thread() {
     zed_cam_->close();
+}
+
+void zed_imu_thread::start() {
+    threadloop::start();
+    initial_position_pub_.put(initial_position_pub_.allocate<pose_type>(
+        pose_type{clock_->now(), zed_cam_->get_translation(), zed_cam_->get_orientation(), units::UNITS,
+                  coordinates::RIGHT_HANDED_Y_UP, coordinates::WORLD, 1.}));
+    cam_conf_pub_.put(cam_conf_pub_.allocate<camera_data>(camera_data{zed_cam_->get_config()}));
 }
 
 threadloop::skip_option zed_imu_thread::_p_should_skip() {
@@ -87,7 +93,6 @@ threadloop::skip_option zed_imu_thread::_p_should_skip() {
 
 void zed_imu_thread::_p_one_iteration() {
     RAC_ERRNO_MSG("zed at start of _p_one_iteration");
-
     // std::cout << "IMU Rate: " << sensors_data.imu.effective_rate << "\n" << std::endl;
 
     // Time as ullong (nanoseconds)
