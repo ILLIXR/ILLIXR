@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef USE_ZED
+#ifdef HAVE_ZED
 #include <utility>
 
 #include "camera_data.hpp"

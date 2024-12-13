@@ -10,8 +10,8 @@ sl::ERROR_CODE zed_camera::open(const sl::InitParameters& params) {
     if (err != sl::ERROR_CODE::SUCCESS) {
         return err;
     }
-    sl::Translation trans{0., 0., 0.};
-    sl::Orientation orient{{1., 0., 0., 0.}};
+/*    sl::Translation trans{0., 0., 0.};
+    sl::Orientation orient{{0., 0., 0., 1.}};
     if (frame == sl::REFERENCE_FRAME::WORLD) {
         std::string ini_pose = switchboard_->get_env("WCF_ORIGIN");
 
@@ -44,7 +44,7 @@ sl::ERROR_CODE zed_camera::open(const sl::InitParameters& params) {
     }
     initial_position_.setTranslation(trans);
     initial_position_.setOrientation(orient);
-
+*/
     auto cam_conf = getCameraInformation().camera_configuration;
     sl::CameraParameters left_cam = cam_conf.calibration_parameters.left_cam;
     sl::CameraParameters right_cam = cam_conf.calibration_parameters.right_cam;
@@ -59,7 +59,8 @@ sl::ERROR_CODE zed_camera::open(const sl::InitParameters& params) {
                                                                 right_cam.h_fov * (M_PI / 180.)}}}};
 
     sl::PositionalTrackingParameters tracking_params;
-    tracking_params.initial_world_transform = initial_position_;
+//    tracking_params.initial_world_transform.setTranslation(initial_position_.getTranslation());
+//    tracking_params.initial_world_transform.setOrientation(initial_position_.getOrientation());
     err = enablePositionalTracking(tracking_params);
     if (err != sl::ERROR_CODE::SUCCESS) {
         spdlog::get("illixr")->info("[zed] {}", toString(err).c_str());

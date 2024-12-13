@@ -1,10 +1,12 @@
 #pragma once
 
+#ifndef HAVE_ZED
+#define HAVE_ZED
+#endif
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "illixr/zed_cam.hpp"
 #include "zed_camera.hpp"
-#include "include/zed_opencv.hpp"
 
 namespace ILLIXR {
 class zed_camera_thread : public threadloop {

@@ -1,4 +1,5 @@
 #include "zed_camera_thread.hpp"
+#include "include/zed_opencv.hpp"
 
 using namespace ILLIXR;
 
@@ -57,8 +58,8 @@ void zed_camera_thread::_p_one_iteration() {
         sl::Pose zed_pose_left;
         // Get the pose of the camera relative to the world frame
         sl::POSITIONAL_TRACKING_STATE state = zed_cam_->getPosition(zed_pose_left);
-        if (state == sl::POSITIONAL_TRACKING_STATE::OFF || state == sl::POSITIONAL_TRACKING_STATE::UNAVAILABLE)
-            throw std::runtime_error("Tracking failed");
+        //if (state != sl::POSITIONAL_TRACKING_STATE::OK)
+        //    throw std::runtime_error("Tracking failed");
         sl::Pose zed_pose_right{zed_pose_left};
         transform_zed_pose(zed_pose_left.pose_data, zed_pose_right.pose_data, zed_cam_->getBaseline());
         pose_type left_eye_pose{time_point(_clock_duration(zed_pose_left.timestamp.getNanoseconds())),

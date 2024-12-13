@@ -1,8 +1,7 @@
 #pragma once
 
 #include <eigen3/Eigen/Dense>
-
-#include "include/zed_opencv.hpp"
+#include <sl/Camera.hpp>
 
 #include "illixr/camera_data.hpp"
 #include "illixr/switchboard.hpp"
