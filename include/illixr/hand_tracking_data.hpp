@@ -173,6 +173,7 @@ struct ht_frame : cam_base_type {
     std::map<HandTracking::hand, velocity> hand_velocities;
     pose_data offset_pose;
     coordinates::reference_space reference;
+    units::measurement_unit unit;
 
     ht_frame(time_point _time, std::map<image::image_type, cv::Mat> _imgs,
              std::map<units::eyes, ht_detection> _detections, std::map<HandTracking::hand, hand_points> points,
@@ -183,7 +184,17 @@ struct ht_frame : cam_base_type {
         , hand_positions{points}
         , hand_velocities{velocities}
         , offset_pose{_pose}
-        , reference{ref_sp} {}
+        , reference{ref_sp} {
+        if (offset_pose.valid) {
+            unit = offset_pose.unit;
+        } else if (hand_positions.count(LEFT_HAND) > 0 && hand_positions.at(LEFT_HAND).valid) {
+            unit = hand_positions.at(LEFT_HAND).unit;
+        } else if (hand_positions.count(RIGHT_HAND) > 0 && hand_positions.at(RIGHT_HAND).valid) {
+            unit = hand_positions.at(RIGHT_HAND).unit;
+        } else {
+            unit = units::UNSET;
+        }
+    }
 };
 
 inline void transform_point(point_with_units& pnt, const pose_data& pose) {
