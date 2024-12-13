@@ -197,6 +197,7 @@ struct pose_data {
     units::measurement_unit unit;
     coordinates::frame co_frame;
     coordinates::reference_space ref_space;
+    bool valid;
 
     pose_data()
     : position{0., 0., 0.}
@@ -204,17 +205,21 @@ struct pose_data {
     , confidence{0}
     , unit{units::UNSET}
     , co_frame{coordinates::RIGHT_HANDED_Y_UP}
-    , ref_space{coordinates::VIEWER} {}
+    , ref_space{coordinates::VIEWER}
+    , valid{false} {}
 
     pose_data(Eigen::Vector3f position_, Eigen::Quaternionf orientation_, units::measurement_unit unit_ = units::UNSET,
               coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
-              coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
+              coordinates::reference_space ref = coordinates::VIEWER,
+              const float confidence_ = 0.,
+              bool valid_ = true)
         : position{std::move(position_)}
         , orientation{std::move(orientation_)}
         , confidence(confidence_)
         , unit{unit_}
         , co_frame{frm}
-        , ref_space{ref} {}
+        , ref_space{ref}
+        , valid{valid_} {}
 };
 
 struct pose_type : public switchboard::event, public pose_data {
