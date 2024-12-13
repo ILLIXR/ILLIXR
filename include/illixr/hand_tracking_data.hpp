@@ -97,12 +97,18 @@ struct hand_points : points_with_units {
         points.clear();
     }
 
-    void flip_y() {
-        if (unit == units::PERCENT)
-            for (auto &pnt : points)
+    void flip_y(const uint im_height = 0) {
+        if (unit == units::PERCENT) {
+            for (auto& pnt : points) {
                 pnt.y() = 1.0 - pnt.y();
-        else
-            throw std::runtime_error("Cannot rectify point with non-precent units");
+            }
+            return;
+        }
+        if (im_height == 0)
+            throw std::runtime_error("Cannot rectify point with non-precent units with no height given.");
+        for (auto& pnt : points) {
+            pnt.y() = (float)im_height - pnt.y();
+        }
     }
 };
 

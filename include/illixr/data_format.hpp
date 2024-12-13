@@ -464,11 +464,14 @@ struct rect {
         valid    = true;
     }
 
-    void flip_y() {
-        if (unit == units::PERCENT)
+    void flip_y(const uint im_height = 0) {
+        if (unit == units::PERCENT) {
             y_center = 1.0 - y_center;
-        else
-            throw std::runtime_error("Cannot rectify rect with non percent units");
+            return;
+        }
+        if (im_height == 0)
+            throw std::runtime_error("Cannot rectify rect with non percent units if no image height is given.");
+        y_center = (float)im_height - y_center;
     }
 };
 
@@ -657,7 +660,6 @@ inline void normalize(T& obj, const float width, const float height, const float
     obj.y() /= height;
     obj.z() /= depth;
     obj.unit = units::PERCENT;
-
 }
 
 template<typename T>
@@ -667,11 +669,13 @@ inline void normalize(T& obj, const float width, const float height) {
 
 template<typename T>
 inline void denormalize(T& obj, const float width, const float height, const float depth, units::measurement_unit unit_ = units::PIXEL) {
+    if (!obj.valid)
+        return;
     if (obj.unit != units::PERCENT){
         std::cout << "Already denormalized" << std::endl;
         return;
     }
-    if (unit_ == units::PERCENT)
+    if (unit_ == units::PERCENT || unit_ == units::UNSET)
         throw std::runtime_error("Cannot denormalize to PERCENT");
 
     obj.x() *= width;
@@ -702,6 +706,8 @@ inline void normalize<rect>(rect& obj, const float width, const float height, co
 template<>
 inline void denormalize<rect>(rect& obj, const float width, const float height, const float depth, units::measurement_unit unit) {
     (void)depth;
+    if (!obj.valid)
+        return;
     if (obj.unit != units::PERCENT) {
         std::cout << "Rect is already denormalized" << std::endl;
         return;
@@ -783,6 +789,31 @@ struct points_with_units {
     void transform(const pose_data& pose) {
         for (point& pnt : points)
             pnt = (Eigen::Vector3f)((pose.orientation * pnt) + pose.position);
+    }
+
+    void enforce_bounds(const float x_lim = -1., const float y_lim = -1, const float z_lim = -1) {
+        for (auto& pnt : points) {
+            if (!pnt.valid)
+                continue;
+            if (x_lim > 0.) {
+                if (pnt.x() < 0. || pnt.x() >= x_lim) {
+                    pnt.valid = false;
+                    continue;
+                }
+            }
+            if (y_lim > 0.) {
+                if (pnt.y() < 0. || pnt.y() >= y_lim) {
+                    pnt.valid = false;
+                    continue;
+                }
+            }
+            if (z_lim > 0.) {
+                if (pnt.z() < 0. || pnt.z() >= z_lim) {
+                    pnt.valid = false;
+                    continue;
+                }
+            }
+        }
     }
 };
 
