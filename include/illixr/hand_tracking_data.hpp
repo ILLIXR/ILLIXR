@@ -202,7 +202,7 @@ inline static void transform_points(points_with_units& points, const pose_data& 
 }  // namespace: HandTracking
 
 template<>
-void normalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth) {
+inline void normalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
@@ -213,7 +213,7 @@ void normalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const 
 }
 
 template<>
-void denormalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth,
+inline void denormalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth,
                                     units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
         ::ILLIXR::denormalize(pnt, width, height, depth, unit_);
@@ -221,7 +221,7 @@ void denormalize<HandTracking::hand_points>(HandTracking::hand_points& obj, cons
 }
 
 template<>
-void normalize<HandTracking::velocity>(HandTracking::velocity& obj, const float width, const float height, const float depth) {
+inline void normalize<HandTracking::velocity>(HandTracking::velocity& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
@@ -232,7 +232,7 @@ void normalize<HandTracking::velocity>(HandTracking::velocity& obj, const float 
 }
 
 template<>
-void denormalize<HandTracking::velocity>(HandTracking::velocity& obj, const float width, const float height, const float depth,
+inline void denormalize<HandTracking::velocity>(HandTracking::velocity& obj, const float width, const float height, const float depth,
                                             units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
         ::ILLIXR::denormalize(pnt, width, height, depth, unit_);
@@ -240,7 +240,7 @@ void denormalize<HandTracking::velocity>(HandTracking::velocity& obj, const floa
 }
 
 template<>
-void normalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, const float width, const float height,
+inline void normalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, const float width, const float height,
                                            const float depth) {
     for (auto& palm : obj.palms)
         normalize(palm.second, width, height, depth);
@@ -251,7 +251,7 @@ void normalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, cons
 }
 
 template<>
-void normalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float width, const float height,
+inline void normalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float width, const float height,
                                        const float depth) {
     for (auto& det : obj.detections)
         normalize(det.second, width, height, depth);
@@ -262,7 +262,7 @@ void normalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float 
 }
 
 template<>
-void denormalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, const float width, const float height,
+inline void denormalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, const float width, const float height,
                                              const float depth, units::measurement_unit unit) {
     for (auto& palm : obj.palms)
         denormalize(palm.second, width, height, depth, unit);
@@ -273,7 +273,7 @@ void denormalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, co
 }
 
 template<>
-void denormalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float width, const float height,
+inline void denormalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float width, const float height,
                                          const float depth, units::measurement_unit unit) {
     for (auto& det : obj.detections)
         denormalize(det.second, width, height, depth, unit);

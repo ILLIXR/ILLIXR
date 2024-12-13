@@ -648,7 +648,7 @@ inline point_with_units abs(const point_with_units& pnt) {
  * Normalize the coordinates, using the input size as reference
  */
 template<typename T>
-void normalize(T& obj, const float width, const float height, const float depth) {
+inline void normalize(T& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Already normalized" << std::endl;
         return;
@@ -661,12 +661,12 @@ void normalize(T& obj, const float width, const float height, const float depth)
 }
 
 template<typename T>
-void normalize(T& obj, const float width, const float height) {
+inline void normalize(T& obj, const float width, const float height) {
     normalize<T>(obj, width, height, 1.);
 }
 
 template<typename T>
-void denormalize(T& obj, const float width, const float height, const float depth, units::measurement_unit unit_ = units::PIXEL) {
+inline void denormalize(T& obj, const float width, const float height, const float depth, units::measurement_unit unit_ = units::PIXEL) {
     if (obj.unit != units::PERCENT){
         std::cout << "Already denormalized" << std::endl;
         return;
@@ -681,12 +681,12 @@ void denormalize(T& obj, const float width, const float height, const float dept
 }
 
 template<typename T>
-void denormalize(T& obj, const float width, const float height, units::measurement_unit unit_ = units::PIXEL) {
+inline void denormalize(T& obj, const float width, const float height, units::measurement_unit unit_ = units::PIXEL) {
     denormalize<T>(obj, width, height, 1., unit_);
 }
 
 template<>
-void normalize<rect>(rect& obj, const float width, const float height, const float depth) {
+inline void normalize<rect>(rect& obj, const float width, const float height, const float depth) {
     (void) depth;
     if (obj.unit == units::PERCENT) {
         std::cout << "Rect is already normalized" << std::endl;
@@ -700,7 +700,7 @@ void normalize<rect>(rect& obj, const float width, const float height, const flo
 }
 
 template<>
-void denormalize<rect>(rect& obj, const float width, const float height, const float depth, units::measurement_unit unit) {
+inline void denormalize<rect>(rect& obj, const float width, const float height, const float depth, units::measurement_unit unit) {
     (void)depth;
     if (obj.unit != units::PERCENT) {
         std::cout << "Rect is already denormalized" << std::endl;
@@ -787,7 +787,7 @@ struct points_with_units {
 };
 
 template<>
-void normalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth) {
+inline void normalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
@@ -798,7 +798,7 @@ void normalize<points_with_units>(points_with_units& obj, const float width, con
 }
 
 template<>
-void denormalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth,
+inline void denormalize<points_with_units>(points_with_units& obj, const float width, const float height, const float depth,
                                     units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
         ::ILLIXR::denormalize(pnt, width, height, depth, unit_);
