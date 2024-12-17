@@ -519,7 +519,7 @@ public:
         glewExperimental      = GL_TRUE;
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("[timewarp_gl] GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("[timewarp_gl] GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
             ILLIXR::abort("[timewarp_gl] Failed to initialize GLEW");
         }
 

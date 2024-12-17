@@ -299,7 +299,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
             ILLIXR::abort("Failed to initialize GLEW");
         }
 
