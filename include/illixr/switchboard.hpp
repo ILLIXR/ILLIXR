@@ -8,6 +8,9 @@
 #include <algorithm>
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
+
 #endif
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
@@ -169,17 +172,17 @@ public:
      * \endcode
      */
     template<typename underlying_type>
-    class event_wrapper : public event {
+    class [[maybe_unused]]event_wrapper : public event {
     private:
         underlying_type underlying_data;
 
     public:
-        event_wrapper() = default;
+        event_wrapper() {}
 
-        explicit event_wrapper(underlying_type underlying_data_)
+        event_wrapper(underlying_type underlying_data_)
             : underlying_data{underlying_data_} { }
 
-        explicit operator underlying_type() const {
+        operator underlying_type() const {
             return underlying_data;
         }
 
@@ -372,7 +375,7 @@ private:
         const std::type_info&                               _m_ty;
         const std::shared_ptr<record_logger>                _m_record_logger;
         std::atomic<size_t>                                 _m_latest_index;
-        static constexpr std::size_t                        _m_latest_buffer_size = 256;
+        static constexpr std::size_t                        _m_latest_buffer_size = 16;
         std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
         std::list<topic_subscription>                       _m_subscriptions;
         std::list<topic_buffer>                             _m_buffers;
@@ -629,7 +632,7 @@ private:
     std::unordered_map<std::string, topic>       _m_registry;
     std::shared_mutex                            _m_registry_lock;
     std::shared_ptr<record_logger>               _m_record_logger;
-    std::unordered_map<std::string, std::string> _m_env_vars;
+    static std::unordered_map<std::string, std::string> _m_env_vars;
 
     template<typename specific_event>
     topic& try_register_topic(const std::string& topic_name) {
@@ -676,14 +679,14 @@ public:
     /**
      * @brief Set the local environment variable to the given value
      */
-    void set_env(const std::string& var, const std::string& val) {
+    static void set_env(const std::string& var, const std::string& val) {
         _m_env_vars[var] = val;
     }
 
     /**
      * @brief Get a vector of the currently known environment variables
      */
-    std::vector<std::string> env_names() const {
+    static std::vector<std::string> env_names() {
         std::vector<std::string> keys(_m_env_vars.size());
         std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair){return pair.first;});
         return keys;
@@ -696,7 +699,7 @@ public:
      * entry is empty then the system getenv is called. If this is non-empty then that value is stored
      * and returned, otherwise the default value is returned (not stored).
      */
-    std::string get_env(const std::string& var, std::string _default = "") {
+    static std::string get_env(const std::string& var, std::string _default = "") {
         try {
             if (!_m_env_vars.at(var).empty())
                 return _m_env_vars.at(var);
@@ -715,7 +718,7 @@ public:
     /**
      * @brief Get the boolean value of the given environment variable
      */
-    bool get_env_bool(const std::string& var, const std::string& def = "false") {
+    static bool get_env_bool(const std::string& var, const std::string& def = "false") {
         std::string val = get_env(var, def);
         const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
         for(auto s : affirmative) {
@@ -728,7 +731,7 @@ public:
     /**
      * @brief Get a char* of the given environment variable
      */
-    const char* get_env_char(const std::string& var, const std::string _default = "") {
+    static const char* get_env_char(const std::string& var, const std::string _default = "") {
         std::string val = get_env(var, _default);
         if (val.empty())
             return nullptr;
@@ -798,6 +801,56 @@ public:
             pair.second.stop();
         }
     }
+private:
+    class coordinate_system {
+    private:
+        Eigen::Vector3f _position;
+        Eigen::Quaternionf _orientation;
+
+    public:
+        coordinate_system()
+        : _position{0., 0., 0.}
+        , _orientation{1., 0., 0., 0.} {
+            std::string ini_pose = get_env("WCF_ORIGIN");
+            if (!ini_pose.empty()) {
+                std::stringstream iss(ini_pose);
+                std::string token;
+                std::vector<float> ip;
+                while (!iss.eof() && std::getline(iss, token, ',')) {
+                    ip.emplace_back(std::stof(token));
+                }
+                if (ip.size() == 3) {
+                    _position.x() = ip[0];
+                    _position.y() = ip[1];
+                    _position.z() = ip[2];
+                } else if (ip.size() == 4) {
+                    _orientation.w() = ip[0];
+                    _orientation.x() = ip[1];
+                    _orientation.y() = ip[2];
+                    _orientation.z() = ip[3];
+                } else if (ip.size() == 7) {
+                    _position.x() = ip[0];
+                    _position.y() = ip[1];
+                    _position.z() = ip[2];
+                    _orientation.w() = ip[3];
+                    _orientation.x() = ip[4];
+                    _orientation.y() = ip[5];
+                    _orientation.z() = ip[6];
+                }
+            }
+        }
+
+        [[nodiscard]] const Eigen::Vector3f& position() const {
+            return _position;
+        }
+
+        [[nodiscard]] const Eigen::Quaternionf& orientation() const {
+            return _orientation;
+        }
+    };
+
+public:
+    coordinate_system root_coordinates;
 };
 
 } // namespace ILLIXR
