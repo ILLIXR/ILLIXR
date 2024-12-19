@@ -15,7 +15,8 @@
 #include <vulkan/vulkan.h>
 // clang-format on
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -30,6 +31,7 @@
 #include "utils/hmd.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
 

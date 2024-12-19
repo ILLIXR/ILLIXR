@@ -26,7 +26,8 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
             imgui/backends/imgui_impl_glfw.cpp
             imgui/backends/imgui_impl_opengl3.h
             imgui/backends/imgui_impl_opengl3.cpp
-            ../../../include/illixr/hand_tracking_data.hpp
+            ../../../include/illixr/data_format/hand_tracking_data.hpp
+            ../../../include/illixr/data_format/opencv_data_types.hpp
             ../../../include/illixr/threadloop.hpp
             ../../../include/illixr/switchboard.hpp
 )

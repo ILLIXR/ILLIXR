@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 [[maybe_unused]] webcam::webcam(const std::string& name_, phonebook* pb_) : threadloop{name_, pb_}
     , _switchboard{pb_->lookup_impl<switchboard>()}

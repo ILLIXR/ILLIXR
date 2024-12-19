@@ -11,8 +11,8 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         video_encoder.cpp
         video_encoder.h
         ../../../include/illixr/plugin.hpp
-        ../../../include/illixr/data_format.hpp
-        ../../../include/illixr/opencv_data_types.hpp
+            ../../../include/illixr/data_format/misc.hpp
+            ../../../include/illixr/data_format/opencv_data_types.hpp
         ../../../include/illixr/phonebook.hpp
         ../../../include/illixr/switchboard.hpp
         )

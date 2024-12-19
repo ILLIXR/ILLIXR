@@ -1,16 +1,18 @@
 #pragma once
 
-#include "switchboard.hpp"
+#include "illixr/switchboard.hpp"
 #include "opencv_data_types.hpp"
-#include "data_format.hpp"
+#include "point.hpp"
+#include "shape.hpp"
+#include "template.hpp"
 
 #include <eigen3/Eigen/Dense>
 #include <map>
 #include <sstream>
-#include <opencv2/core/mat.hpp>
+#include <opencv4/opencv2/core/mat.hpp>
 
-namespace ILLIXR {
-    namespace HandTracking {
+namespace ILLIXR::data_format {
+    namespace ht {
 const int NUM_LANDMARKS = 21;
 /*
  * Enum for the landmark points on a hand
@@ -100,27 +102,29 @@ struct hand_points : points_with_units {
     void flip_y(const uint im_height = 0) {
         if (unit == units::PERCENT) {
             for (auto& pnt : points) {
-                pnt.y() = 1.0 - pnt.y();
+                if(pnt.y() -= 0.)
+                    pnt.y() = 1.0 - pnt.y();
             }
             return;
         }
         if (im_height == 0)
             throw std::runtime_error("Cannot rectify point with non-precent units with no height given.");
         for (auto& pnt : points) {
-            pnt.y() = (float)im_height - pnt.y();
+            if (pnt.y() != 0.)
+                pnt.y() = (float)im_height - pnt.y();
         }
     }
 };
 
 struct position {
-    std::map<HandTracking::hand, HandTracking::hand_points> points;
-    ::ILLIXR::units::measurement_unit unit;
+    std::map<ht::hand, ht::hand_points> points;
+    units::measurement_unit unit;
     uint64_t time;
     bool valid = false;
 
     position() {}
-    position(const std::map<HandTracking::hand, HandTracking::hand_points>& pnts,
-             ::ILLIXR::units::measurement_unit unit_,
+    position(const std::map<ht::hand, ht::hand_points>& pnts,
+             units::measurement_unit unit_,
              uint64_t time_)
              : points{pnts}
              , unit{unit_}
@@ -151,17 +155,17 @@ struct velocity : hand_points {
  */
 struct ht_detection {
     size_t proc_time;             //!< nanoseconds of processing time
-    std::map<hand, ::ILLIXR::rect> palms;   //!< left palm detection
-    std::map<hand, ::ILLIXR::rect> hands;   //!< left hand detection
+    std::map<hand, rect> palms;   //!< left palm detection
+    std::map<hand, rect> hands;   //!< left hand detection
 
     std::map<hand, float> confidence;
 
     std::map<hand, hand_points> points;
     ht_detection() {}
-    ht_detection(size_t ptime, ::ILLIXR::rect* lp, ::ILLIXR::rect* rp, ::ILLIXR::rect* lh, ::ILLIXR::rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
+    ht_detection(size_t ptime, rect* lp, rect* rp, rect* lh, rect* rh, float lc, float rc, hand_points *lhp, hand_points *rhp)
         : proc_time{ptime},
-        palms{{LEFT_HAND, (lp) ? *lp : ::ILLIXR::rect()}, {RIGHT_HAND, (rp) ? *rp : ::ILLIXR::rect()}},
-        hands{{LEFT_HAND, (lh) ? *lh : ::ILLIXR::rect()}, {RIGHT_HAND, (rh) ? *rh : ::ILLIXR::rect()}},
+        palms{{LEFT_HAND, (lp) ? *lp : rect()}, {RIGHT_HAND, (rp) ? *rp : rect()}},
+        hands{{LEFT_HAND, (lh) ? *lh : rect()}, {RIGHT_HAND, (rh) ? *rh : rect()}},
         confidence{{LEFT_HAND, lc}, {RIGHT_HAND, rc}},
         points{{LEFT_HAND, (lhp) ? *lhp : hand_points()},
                {RIGHT_HAND, (rhp) ? *rhp : hand_points()}} {}
@@ -169,15 +173,15 @@ struct ht_detection {
 
 struct ht_frame : cam_base_type {
     std::map<units::eyes, ht_detection> detections;
-    std::map<HandTracking::hand, hand_points> hand_positions;
-    std::map<HandTracking::hand, velocity> hand_velocities;
+    std::map<ht::hand, hand_points> hand_positions;
+    std::map<ht::hand, velocity> hand_velocities;
     pose_data offset_pose;
     coordinates::reference_space reference;
     units::measurement_unit unit;
 
     ht_frame(time_point _time, std::map<image::image_type, cv::Mat> _imgs,
-             std::map<units::eyes, ht_detection> _detections, std::map<HandTracking::hand, hand_points> points,
-             std::map<HandTracking::hand, velocity> velocities = {}, pose_data _pose = {},
+             std::map<units::eyes, ht_detection> _detections, std::map<ht::hand, hand_points> points,
+             std::map<ht::hand, velocity> velocities = {}, pose_data _pose = {},
              coordinates::reference_space ref_sp = coordinates::VIEWER)
         : cam_base_type(_time, std::move(_imgs), (_imgs.size() == 2) ? camera::BINOCULAR : camera::MONOCULAR)
         , detections(std::move(_detections))
@@ -219,46 +223,46 @@ inline static void transform_points(points_with_units& points, const pose_data& 
 }  // namespace: HandTracking
 
 template<>
-inline void normalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth) {
+inline void normalize<ht::hand_points>(ht::hand_points& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
     }
     for (auto& pnt : obj.points)
-        ::ILLIXR::normalize(pnt, width, height, depth);
+        normalize(pnt, width, height, depth);
     obj.unit = units::PERCENT;
 }
 
 template<>
-inline void denormalize<HandTracking::hand_points>(HandTracking::hand_points& obj, const float width, const float height, const float depth,
-                                    units::measurement_unit unit_) {
+inline void denormalize<ht::hand_points>(ht::hand_points& obj, const float width, const float height, const float depth,
+                                         units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
-        ::ILLIXR::denormalize(pnt, width, height, depth, unit_);
+        denormalize(pnt, width, height, depth, unit_);
     obj.unit = unit_;
 }
 
 template<>
-inline void normalize<HandTracking::velocity>(HandTracking::velocity& obj, const float width, const float height, const float depth) {
+inline void normalize<ht::velocity>(ht::velocity& obj, const float width, const float height, const float depth) {
     if (obj.unit == units::PERCENT) {
         std::cout << "Points are already normalized";
         return;
     }
     for (auto& pnt : obj.points)
-        ::ILLIXR::normalize(pnt, width, height, depth);
+        normalize(pnt, width, height, depth);
     obj.unit = units::PERCENT;
 }
 
 template<>
-inline void denormalize<HandTracking::velocity>(HandTracking::velocity& obj, const float width, const float height, const float depth,
-                                            units::measurement_unit unit_) {
+inline void denormalize<ht::velocity>(ht::velocity& obj, const float width, const float height, const float depth,
+                                      units::measurement_unit unit_) {
     for (auto& pnt : obj.points)
-        ::ILLIXR::denormalize(pnt, width, height, depth, unit_);
+        denormalize(pnt, width, height, depth, unit_);
     obj.unit = unit_;
 }
 
 template<>
-inline void normalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, const float width, const float height,
-                                           const float depth) {
+inline void normalize<ht::ht_detection>(ht::ht_detection& obj, const float width, const float height,
+                                        const float depth) {
     for (auto& palm : obj.palms)
         normalize(palm.second, width, height, depth);
     for (auto& hnd : obj.hands)
@@ -268,8 +272,8 @@ inline void normalize<HandTracking::ht_detection>(HandTracking::ht_detection& ob
 }
 
 template<>
-inline void normalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float width, const float height,
-                                       const float depth) {
+inline void normalize<ht::ht_frame>(ht::ht_frame& obj, const float width, const float height,
+                                    const float depth) {
     for (auto& det : obj.detections)
         normalize(det.second, width, height, depth);
     for (auto& hp : obj.hand_positions)
@@ -279,8 +283,8 @@ inline void normalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const
 }
 
 template<>
-inline void denormalize<HandTracking::ht_detection>(HandTracking::ht_detection& obj, const float width, const float height,
-                                             const float depth, units::measurement_unit unit) {
+inline void denormalize<ht::ht_detection>(ht::ht_detection& obj, const float width, const float height,
+                                          const float depth, units::measurement_unit unit) {
     for (auto& palm : obj.palms)
         denormalize(palm.second, width, height, depth, unit);
     for (auto& hnd : obj.hands)
@@ -290,8 +294,8 @@ inline void denormalize<HandTracking::ht_detection>(HandTracking::ht_detection& 
 }
 
 template<>
-inline void denormalize<HandTracking::ht_frame>(HandTracking::ht_frame& obj, const float width, const float height,
-                                         const float depth, units::measurement_unit unit) {
+inline void denormalize<ht::ht_frame>(ht::ht_frame& obj, const float width, const float height,
+                                      const float depth, units::measurement_unit unit) {
     for (auto& det : obj.detections)
         denormalize(det.second, width, height, depth, unit);
     for (auto& hp : obj.hand_positions)

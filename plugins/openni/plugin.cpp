@@ -1,4 +1,4 @@
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -13,6 +13,7 @@
 #define DEPTH_MODE 0
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class openni_plugin : public ILLIXR::threadloop {
 public:

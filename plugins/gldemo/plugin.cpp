@@ -2,7 +2,8 @@
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
@@ -24,6 +25,7 @@
 #include <thread>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // Wake up 1 ms after vsync instead of exactly at vsync to account for scheduling uncertainty
 static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};

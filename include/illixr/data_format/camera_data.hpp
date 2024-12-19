@@ -2,10 +2,13 @@
 #include <cstddef>
 #include <map>
 #include <utility>
-#include "data_format.hpp"
+
+#include "illixr/data_format/unit.hpp"
+#include "illixr/switchboard.hpp"
+
 constexpr double T_M_PI = 2 * M_PI;
 
-namespace ILLIXR {
+namespace ILLIXR::data_format {
 
 /**
  * @brief A data structure to hold relevant camera information. This information is constant (per camera)

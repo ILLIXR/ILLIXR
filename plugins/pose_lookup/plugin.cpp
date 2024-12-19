@@ -10,6 +10,7 @@
 #include <shared_mutex>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class pose_lookup_impl : public pose_prediction {
 public:

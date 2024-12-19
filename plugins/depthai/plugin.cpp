@@ -11,14 +11,16 @@
 #include <utility>
 
 // ILLIXR includes
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class depthai : public plugin {
 public:

@@ -2,6 +2,9 @@
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
+// static member initialization
+std::unordered_map<std::string, std::string> ILLIXR::switchboard::_m_env_vars = {};
+
 #ifndef BOOST_DATE_TIME_NO_LIB
     #define BOOST_DATE_TIME_NO_LIB
 #endif

@@ -12,7 +12,8 @@
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
@@ -23,6 +24,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 constexpr size_t TEST_PATTERN_WIDTH  = 256;
 constexpr size_t TEST_PATTERN_HEIGHT = 256;

@@ -30,7 +30,6 @@
 
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 
@@ -42,6 +41,7 @@
 #include <mutex>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 /// Create a "pose_prediction" type service
 class faux_pose_impl : public pose_prediction {

@@ -1,6 +1,5 @@
 #include "illixr/runtime.hpp"
 
-#include "illixr/data_format.hpp"
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
@@ -55,8 +54,6 @@ public:
     }
 
     void load_so(const std::vector<std::string>& so_paths) override {
-        switchboard::writer<coordinates::reference_frame> reference_writer{pb.lookup_impl<switchboard>()->get_writer<coordinates::reference_frame>("coord_ref")};
-        reference_writer.put(reference_writer.allocate<coordinates::reference_frame>({time_point{_clock_duration(0)}, coordinates::RIGHT_HANDED_Y_UP}));
         RAC_ERRNO_MSG("runtime_impl before creating any dynamic library");
 
         std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {

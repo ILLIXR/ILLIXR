@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <boost/filesystem.hpp>
@@ -8,6 +8,7 @@
 #include <opencv2/imgcodecs.hpp>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class record_rgb_depth : public plugin {
 public:

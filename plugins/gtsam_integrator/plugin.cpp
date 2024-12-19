@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "third_party/filter.h"
@@ -16,6 +16,8 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
+
 // IMU sample time to live in seconds
 constexpr duration IMU_TTL{std::chrono::seconds{5}};
 
@@ -83,7 +85,7 @@ private:
      */
     class PimObject {
     public:
-        using imu_int_t = ILLIXR::imu_integrator_input;
+        using imu_int_t = ILLIXR::data_format::imu_integrator_input;
         using imu_t     = imu_type;
         using bias_t    = ImuBias;
         using nav_t     = gtsam::NavState;
