@@ -2,7 +2,9 @@
 
 #include "zed_camera_thread.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 
 namespace ILLIXR {
 
@@ -20,17 +22,17 @@ protected:
 private:
     std::shared_ptr<zed_camera> start_camera();
 
-    const std::shared_ptr<switchboard>          switchboard_;
-    std::shared_ptr<zed_camera> zed_cam_;
-    zed_camera_thread           camera_thread_;
+    const std::shared_ptr<switchboard>    switchboard_;
+    std::shared_ptr<zed_camera>           zed_cam_;
+    zed_camera_thread                     camera_thread_;
 
-    const std::shared_ptr<const RelativeClock>  clock_;
-    switchboard::writer<imu_type>               imu_;
-    switchboard::reader<cam_type_zed>           cam_reader_;
-    switchboard::writer<binocular_cam_type>     cam_publisher_;
-    switchboard::writer<rgb_depth_type>         rgb_depth_;
-    switchboard::writer<pose_type>              initial_position_pub_;
-    switchboard::writer<camera_data>            cam_conf_pub_;
+    const std::shared_ptr<const RelativeClock>               clock_;
+    switchboard::writer<data_format::imu_type>               imu_;
+    switchboard::reader<data_format::cam_type_zed>           cam_reader_;
+    switchboard::writer<data_format::binocular_cam_type>     cam_publisher_;
+    switchboard::writer<data_format::rgb_depth_type>         rgb_depth_;
+    switchboard::writer<data_format::pose_type>              initial_position_pub_;
+    switchboard::writer<data_format::camera_data>            cam_conf_pub_;
 
     // IMU
     sl::SensorsData sensors_data_;

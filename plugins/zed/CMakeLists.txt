@@ -22,7 +22,10 @@ set(HDR_FILES include/zed_opencv.hpp
 	zed_camera.hpp
 	zed_camera_thread.hpp
 	plugin.hpp
-	../../include/illixr/opencv_data_types.hpp
+    ../../include/illixr/data_format/opencv_data_types.hpp
+	../../include/illixr/data_format/zed_cam.hpp
+	../../include/illixr/data_format/pose.hpp
+	../../include/illixr/data_format/imu.hpp
 )
 
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})

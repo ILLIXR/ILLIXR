@@ -3,7 +3,7 @@
 #include <eigen3/Eigen/Dense>
 #include <sl/Camera.hpp>
 
-#include "illixr/camera_data.hpp"
+#include "illixr/data_format/camera_data.hpp"
 #include "illixr/switchboard.hpp"
 
 #define UNITS MILLIMETER
@@ -22,7 +22,7 @@ public:
         return initial_position_;
     }
 
-    [[nodiscard]] const camera_data& get_config() const {
+    [[nodiscard]] const data_format::camera_data& get_config() const {
         return config_;
     };
 
@@ -47,7 +47,7 @@ public:
 private:
     const std::shared_ptr<switchboard> switchboard_;
     sl::Transform                      initial_position_;
-    camera_data                        config_;
+    data_format::camera_data                        config_;
     sl::REFERENCE_FRAME                frame;
 };
 }

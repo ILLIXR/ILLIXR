@@ -12,6 +12,7 @@
 #include "plugin.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 constexpr int EXPOSURE_TIME_PERCENT = 30;
 
