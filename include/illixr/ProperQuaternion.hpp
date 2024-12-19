@@ -74,7 +74,7 @@ public:
      * Constructor from a vector. Assumes the vector is x, y, z, w order.
      * @param vec The input vector
      */
-    [[maybe_unused]] explicit ProperQuaternion(const Eigen::Vector<Scalar_, 4>& vec)
+    [[maybe_unused]] explicit ProperQuaternion(const Eigen::Matrix<Scalar_, 4, 1>& vec)
         : Eigen::Quaternion<Scalar_, Options_>(vec[3], vec[0], vec[1], vec[2]) { }
 
     /**
@@ -139,8 +139,9 @@ public:
      * @brief Convert theis object into a 4-element vector, with the order x, y, z, w
      * @return The vector representing this instance.
      */
-    Eigen::Vector4<Scalar_> asVector() const {
-        return Eigen::Vector4<Scalar_>(this->x(), this->y(), this->z(), this->w());
+    Eigen::Matrix<Scalar_, 4, 1> asVector() const {
+        // return Eigen::Vector4<Scalar_>(this->x(), this->y(), this->z(), this->w());
+        return Eigen::Vector4d(this->x(), this->y(), this->z(), this->w());
     }
 
     /**
