@@ -54,7 +54,7 @@ public:
      * the thread before the derived class can be safely destructed. However, the derived
      * class's destructor is called before its parent (threadloop), so threadloop doesn't get a
      * chance to join the thread before the derived class is destroyed, and the thread accesses
-     * freed memory. Instead, we call plugin->stop manually before destrying anything.
+     * freed memory. Instead, we call plugin->stop manually before destroying anything.
      *
      * Concrete plugins are responsible for initializing their specific logger and sinks.
      */
