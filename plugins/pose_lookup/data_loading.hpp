@@ -1,6 +1,7 @@
 #pragma once
 #include "illixr/csv_iterator.hpp"
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/pose.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -19,6 +20,7 @@
 // b_a_RS_S_x [m s^-2], b_a_RS_S_y [m s^-2], b_a_RS_S_z [m s^-2]
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 typedef pose_type sensor_types;
 

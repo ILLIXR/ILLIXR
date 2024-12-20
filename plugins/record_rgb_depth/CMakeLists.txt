@@ -2,10 +2,10 @@
 set(PLUGIN_NAME plugin.record_rgb_depth${ILLIXR_BUILD_SUFFIX})
 
 set(RECORD_RGB_SOURCES plugin.cpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/phonebook.hpp
-        ../../include/illixr/plugin.hpp
-        )
+    ../../include/illixr/data_format/opencv_data_types.hpp
+    ../../include/illixr/phonebook.hpp
+    ../../include/illixr/plugin.hpp
+)
 add_library(${PLUGIN_NAME} SHARED ${RECORD_RGB_SOURCES})
 
 # OpenCV

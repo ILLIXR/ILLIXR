@@ -3,10 +3,11 @@
 #ifdef HAVE_ZED
 #include <utility>
 
-#include "camera_data.hpp"
-#include "opencv_data_types.hpp"
+#include "illixr/data_format/camera_data.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
+#include "illixr/data_format/pose.hpp"
 
-namespace ILLIXR {
+namespace ILLIXR::data_format {
 
 struct [[maybe_unused]] cam_type_zed : cam_base_type {
     std::size_t    serial_no;

@@ -4,10 +4,10 @@ set(PLUGIN_NAME plugin.gtsam_integrator${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/plugin.hpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/switchboard.hpp
-        )
+            ../../include/illixr/plugin.hpp
+            ../../include/illixr/data_format/imu.hpp
+            ../../include/illixr/switchboard.hpp
+)
 
 # if GTSAM is being built from source
 if(GTSAM_EXTERNAL)

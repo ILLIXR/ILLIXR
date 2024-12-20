@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class passthrough_integrator : public plugin {
 public:

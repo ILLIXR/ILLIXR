@@ -1,5 +1,5 @@
 #include "data_loading.hpp"
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
@@ -9,6 +9,7 @@
 #include <chrono>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class offline_imu : public ILLIXR::threadloop {
 public:

@@ -6,7 +6,7 @@
 #include <vector>
 
 #define VMA_IMPLEMENTATION
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/phonebook.hpp"

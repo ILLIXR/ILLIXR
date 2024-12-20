@@ -1,7 +1,7 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -15,6 +15,7 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class record_imu_cam : public plugin {
 public:

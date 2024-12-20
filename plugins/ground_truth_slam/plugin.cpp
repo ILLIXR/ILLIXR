@@ -1,6 +1,7 @@
 #include "illixr/plugin.hpp"
 
 #include "data_loading.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 
@@ -8,6 +9,7 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 // These are the first IMU timestamp of the datasets. See line#31 for more info.
 #define ViconRoom1Easy      1403715273262142976
 #define ViconRoom1Medium    1403715523912143104

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <map>
-
-#include "data_format.hpp"
-#include "switchboard.hpp"
 #include <fstream>
-#include <opencv2/core/mat.hpp>
+#include <map>
+#include <opencv4/opencv2/core/mat.hpp>
 #include <utility>
 
-namespace ILLIXR {
+#include "illixr/data_format/unit.hpp"
+#include "illixr/switchboard.hpp"
+
+namespace ILLIXR::data_format {
 namespace image {
     enum image_type { LEFT_EYE,
                       RIGHT_EYE,

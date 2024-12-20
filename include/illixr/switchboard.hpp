@@ -7,14 +7,13 @@
 #include <shared_mutex>
 #include <algorithm>
 #ifndef NDEBUG
-#include <spdlog/spdlog.h>
-#endif
-
+    #include <spdlog/spdlog.h>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 
+#endif
 #if __has_include("cpu_timer.hpp")
-#include "cpu_timer.hpp"
+    #include "cpu_timer.hpp"
 #else
 static std::chrono::nanoseconds thread_cpu_time() {
     return {};
@@ -181,7 +180,7 @@ public:
         event_wrapper() {}
 
         event_wrapper(underlying_type underlying_data_)
-                : underlying_data{underlying_data_} { }
+            : underlying_data{underlying_data_} { }
 
         operator underlying_type() const {
             return underlying_data;
@@ -376,7 +375,7 @@ private:
         const std::type_info&                               _m_ty;
         const std::shared_ptr<record_logger>                _m_record_logger;
         std::atomic<size_t>                                 _m_latest_index;
-        static constexpr std::size_t                        _m_latest_buffer_size = 64;  // reduced from 256 to reduce memory usage
+        static constexpr std::size_t                        _m_latest_buffer_size = 16;
         std::array<ptr<const event>, _m_latest_buffer_size> _m_latest_buffer;
         std::list<topic_subscription>                       _m_subscriptions;
         std::list<topic_buffer>                             _m_buffers;
@@ -810,8 +809,8 @@ private:
 
     public:
         coordinate_system()
-                : _position{0., 0., 0.}
-                , _orientation{1., 0., 0., 0.} {
+        : _position{0., 0., 0.}
+        , _orientation{1., 0., 0., 0.} {
             std::string ini_pose = get_env("WCF_ORIGIN");
             if (!ini_pose.empty()) {
                 std::stringstream iss(ini_pose);

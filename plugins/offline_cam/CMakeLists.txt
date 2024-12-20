@@ -6,13 +6,13 @@ set(PLUGIN_NAME plugin.offline_cam${ILLIXR_BUILD_SUFFIX})
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         data_loading.hpp
         ../../include/illixr/plugin.hpp
-        ../../include/illixr/opencv_data_types.hpp
+            ../../include/illixr/data_format/opencv_data_types.hpp
         ../../include/illixr/phonebook.hpp
         ../../include/illixr/pose_prediction.hpp
         ../../include/illixr/relative_clock.hpp
         ../../include/illixr/threadloop.hpp
         ../../include/illixr/csv_iterator.hpp
-        ../../include/illixr/data_format.hpp
+            ../../include/illixr/data_format/misc.hpp
         )
 
 # if building on CentOS make sure we use the correct OpenCV

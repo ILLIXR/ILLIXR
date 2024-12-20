@@ -34,26 +34,26 @@ static void glfw_error_callback(int error, const char* description) {
 
 std::string image_type_string(const image::image_type it) {
     switch(it) {
-        case image::LEFT_EYE:
-        case image::LEFT_EYE_PROCESSED:
-            return "left";
-        case image::RIGHT_EYE:
-        case image::RIGHT_EYE_PROCESSED:
-            return "right";
-        case image::RGB:
-        case image::RGB_PROCESSED:
-            return "rgb";
-        case image::DEPTH:
-            return "depth";
-        case image::CONFIDENCE:
-            return "confidence";
+    case image::LEFT_EYE:
+    case image::LEFT_EYE_PROCESSED:
+        return "left";
+    case image::RIGHT_EYE:
+    case image::RIGHT_EYE_PROCESSED:
+        return "right";
+    case image::RGB:
+    case image::RGB_PROCESSED:
+        return "rgb";
+    case image::DEPTH:
+        return "depth";
+    case image::CONFIDENCE:
+        return "confidence";
     }
 }
 
 viewer::viewer(const std::string& name_, phonebook* pb_) :
-        plugin{name_, pb_}, _clock{pb->lookup_impl<RelativeClock>()}
-        , _switchboard{pb_->lookup_impl<switchboard>()}
-        , current_frame(nullptr) {
+    plugin{name_, pb_}, _clock{pb->lookup_impl<RelativeClock>()}
+    , _switchboard{pb_->lookup_impl<switchboard>()}
+    , current_frame(nullptr) {
 }
 
 void viewer::start() {

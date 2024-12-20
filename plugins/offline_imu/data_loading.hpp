@@ -1,6 +1,6 @@
 #pragma once
 #include "illixr/csv_iterator.hpp"
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <eigen3/Eigen/Dense>

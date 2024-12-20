@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
@@ -17,6 +17,7 @@
 #include "illixr/gl_util/lib/stb_image_write.h"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class offload_data : public plugin {
 public:

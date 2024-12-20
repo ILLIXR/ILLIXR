@@ -37,16 +37,15 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        third_party/VkBootstrap.cpp
-        ../../include/illixr/vk_util/third_party/VkBootstrap.h
-        ../../include/illixr/vk_util/third_party/VkBootstrapDispatch.h
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/phonebook.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/threadloop.hpp
-        ../../include/illixr/vk_util/display_sink.hpp
-        ../../include/illixr/vk_util/vulkan_utils.hpp
-        )
+            third_party/VkBootstrap.cpp
+            ../../include/illixr/vk_util/third_party/VkBootstrap.h
+            ../../include/illixr/vk_util/third_party/VkBootstrapDispatch.h
+            ../../include/illixr/phonebook.hpp
+            ../../include/illixr/switchboard.hpp
+            ../../include/illixr/threadloop.hpp
+            ../../include/illixr/vk_util/display_sink.hpp
+            ../../include/illixr/vk_util/vulkan_utils.hpp
+)
 
 add_dependencies(${PLUGIN_NAME} Display_VK_Shaders)
 set_target_properties(${PLUGIN_NAME} PROPERTIES OUTPUT_NAME ${PLUGIN_NAME})
