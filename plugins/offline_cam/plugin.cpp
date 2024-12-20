@@ -1,15 +1,79 @@
-#include "data_loading.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/threadloop.hpp"
 
 #include <chrono>
+#include <opencv2/core/mat.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <regex>
 #include <shared_mutex>
 #include <thread>
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
+
+/*
+ * Uncommenting this preprocessor macro makes the offline_cam load each data from the disk as it is needed.
+ * Otherwise, we load all of them at the beginning, hold them in memory, and drop them in the queue as needed.
+ * Lazy loading has an artificial negative impact on performance which is absent from an online-sensor system.
+ * Eager loading deteriorates the startup time and uses more memory.
+ */
+// #define LAZY
+
+class lazy_load_image {
+public:
+    lazy_load_image() { }
+
+    lazy_load_image(std::string path)
+        : _m_path(std::move(path)) {
+#ifndef LAZY
+        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+#endif
+    }
+
+    [[nodiscard]] cv::Mat load() const {
+#ifdef LAZY
+        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+    #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
+#endif
+        assert(!_m_mat.empty());
+        return _m_mat;
+    }
+
+private:
+    std::string _m_path;
+    cv::Mat     _m_mat;
+};
+
+typedef struct {
+    lazy_load_image cam0;
+    lazy_load_image cam1;
+} sensor_types;
+
+// combine two maps into one
+std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>& cam0,
+                                        const std::map<ullong, lazy_load_image>& cam1) {
+    std::map<ullong, sensor_types> data;
+    for (auto& it : cam0) {
+        data[it.first].cam0 = it.second;
+    }
+    for (auto& it : cam1) {
+        data[it.first].cam1 = it.second;
+    }
+    return data;
+}
+
+inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, lazy_load_image> data;
+    auto                              name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
+    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+        ullong t = std::stoull(row[0]);
+        data[t]  = {name + row[1]};
+    }
+    return data;
+}
 
 class offline_cam : public threadloop {
 public:
@@ -17,7 +81,8 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam_publisher{sb->get_writer<binocular_cam_type>("cam")}
-        , _m_sensor_data{load_data(sb)}
+        , _m_sensor_data{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data),
+                                  load_data<lazy_load_image>("cam1", "offline_cam", &read_data))}
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}

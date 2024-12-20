@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "data_loading.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
@@ -12,12 +12,26 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+typedef pose_type sensor_types;
+
+inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, pose_type> data;
+
+    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+        ullong             t = std::stoull(row[0]);
+        Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
+        Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
+        data[t] = {{}, av, la};
+    }
+    return data;
+}
+
 class pose_lookup_impl : public pose_prediction {
 public:
     explicit pose_lookup_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_sensor_data{load_data(sb)}
+        , _m_sensor_data{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data)}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , dataset_first_time{_m_sensor_data_it->first}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} /// TODO: Set with #198

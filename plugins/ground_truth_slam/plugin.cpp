@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "data_loading.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -18,6 +18,20 @@ using namespace ILLIXR::data_format;
 #define ViconRoom2Medium    1413393885975760384
 #define ViconRoom2Hard      1413394881555760384
 
+typedef pose_type sensor_types;
+
+inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, pose_type> data;
+
+    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+        ullong             t = std::stoull(row[0]);
+        Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
+        Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
+        data[t] = {{}, av, la};
+    }
+    return data;
+}
+
 class ground_truth_slam : public plugin {
 public:
     ground_truth_slam(std::string name_, phonebook* pb_)
@@ -25,7 +39,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_true_pose{sb->get_writer<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-        , _m_sensor_data{load_data(sb)}
+        , _m_sensor_data{load_data<pose_type>("state_groundtruth_estimate0", "ground_truth_slam", &read_data)}
         // The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
         // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.

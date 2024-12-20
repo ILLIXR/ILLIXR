@@ -244,12 +244,35 @@ include(cmake/ConfigurationSummary.cmake)
 # set up to install profile files
 if(ILLIXR_PROFILE_NAMES)
     foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
-        install(FILES "profiles/${GRP}.yaml"
+        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
                 DESTINATION $ENV{HOME}/.illixr/profiles)
-        install(FILES "profiles/${GRP}.yaml"
+        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
+
+# reset this, so it is clean for subsequent runs of cmake
+set(VISUALIZER "" CACHE STRING "")
+
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_FOUND)
+    set(dependencies "")
+    if(USE_AUDIO_PIPELINE)
+        set(dependencies "audio_pipeline ")
+    endif()
+    if(USE_OPENVINS)
+        set(dependencies "${dependencies} OpenVINS")
+    endif()
+    add_custom_command(
+            OUTPUT "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+            DEPENDS ${dependencies}
+            COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+    )
+endif()
+install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+        DESTINATION $ENV{HOME}/.illixr/profiles)
+install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
 
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
