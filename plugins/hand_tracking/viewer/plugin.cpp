@@ -116,8 +116,8 @@ viewer::viewer(const std::string& name_, phonebook* pb_) :
         plugin{name_, pb_}, _clock{pb->lookup_impl<RelativeClock>()}
         , _switchboard{pb_->lookup_impl<switchboard>()}
         , _pose{_switchboard->root_coordinates.position(), _switchboard->root_coordinates.orientation()}
-        , _true_hand_positions{{ht::LEFT_HAND,  ht::hand_points()},
-                               {ht::RIGHT_HAND, ht::hand_points()}}
+        //, _true_hand_positions{{ht::LEFT_HAND,  ht::hand_points()},
+        //                       {ht::RIGHT_HAND, ht::hand_points()}}
         , current_frame(nullptr) {}
 
 void viewer::start() {
@@ -241,18 +241,18 @@ void viewer::make_position_table() const {
             }
 
             ImGui::TableSetColumnIndex(idx);
-            if (ImGui::BeginTable(label.c_str(), 8, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+            if (ImGui::BeginTable(label.c_str(), 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
                 ImGui::TableSetupColumn("Point");
                 ImGui::TableSetupColumn("x");
                 ImGui::TableSetupColumn("y");
                 ImGui::TableSetupColumn("z");
                 ImGui::TableSetupColumn("Confidence");
-                ImGui::TableSetupColumn("Wx");
-                ImGui::TableSetupColumn("Wy");
-                ImGui::TableSetupColumn("Wz");
+                //ImGui::TableSetupColumn("Wx");
+                //ImGui::TableSetupColumn("Wy");
+                //ImGui::TableSetupColumn("Wz");
                 ImGui::TableHeadersRow();
                 auto points = current_frame->hand_positions.at(static_cast<ht::hand>(idx));
-                auto thp = _true_hand_positions.at(static_cast<ht::hand>(idx));
+                //auto thp = _true_hand_positions.at(static_cast<ht::hand>(idx));
                 bool skip = points.points.empty();
                 for (int row = ht::WRIST; row < ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
@@ -266,16 +266,16 @@ void viewer::make_position_table() const {
                         ImGui::TableSetColumnIndex(i + 1);
                         if (pnt.valid) {
                             ImGui::Text("%.3f", pnt[i] * convert[points.unit][requested_unit_]);
-                            ImGui::TableSetColumnIndex(i + 1 + 4);
-                            ImGui::Text("%.3f", thp.at(row)[i] * convert[points.unit][requested_unit_]);
+                            //ImGui::TableSetColumnIndex(i + 1 + 4);
+                            //ImGui::Text("%.3f", thp.at(row)[i] * convert[points.unit][requested_unit_]);
                         } else {
                             ImGui::Text("");
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg,
                                                    ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
-                            ImGui::TableSetColumnIndex(i + 1 + 4);
-                            ImGui::Text("");
-                            ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg,
-                                                   ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+                            //ImGui::TableSetColumnIndex(i + 1 + 4);
+                            //ImGui::Text("");
+                            //ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg,
+                            //                       ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
                         }
                     }
                     ImGui::TableSetColumnIndex(4);
@@ -522,15 +522,15 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
             if (enabled_right) {
                 make_detection_table(units::RIGHT_EYE, 1, "Right Eye Raw");
             }
-            const Eigen::Matrix3f rot = current_frame->offset_pose.orientation.toRotationMatrix();
+            //const Eigen::Matrix3f rot = current_frame->offset_pose.orientation.toRotationMatrix();
             if (ImGui::BeginTabItem("True Position")) {
                 //dump_pose(current_frame->offset_pose);
-                for (auto h : ht::hand_map) {
-                    for (int i = ht::WRIST; i <= ht::PINKY_TIP; i++) {
-                        _true_hand_positions[h][i].set(rot * current_frame->hand_positions.at(h).at(i));
-                        _true_hand_positions[h][i] += current_frame->offset_pose.position;
-                    }
-                }
+            //    for (auto h : ht::hand_map) {
+            //        for (int i = ht::WRIST; i <= ht::PINKY_TIP; i++) {
+            //            _true_hand_positions[h][i].set(rot * current_frame->hand_positions.at(h).at(i));
+            //            _true_hand_positions[h][i] += current_frame->offset_pose.position;
+            //        }
+            //    }
                 //dump_points(_true_hand_positions[ht::RIGHT_HAND]);
 
                 make_position_table();
