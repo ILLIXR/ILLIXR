@@ -7,9 +7,8 @@
 
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/hand_tracking_data.hpp"
-#include "illixr/camera_data.hpp"
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/hand_tracking_data.hpp"
+#include "illixr/data_format/camera_data.hpp"
 #include "imgui/imgui.h"
 
 #include <eigen3/Eigen/Core>
@@ -20,20 +19,19 @@ public:
     viewer(const std::string& name_, phonebook* pb_);
     void start() override;
     ~viewer() override;
-    void make_gui(const switchboard::ptr<const HandTracking::ht_frame>& frame);
+    void make_gui(const switchboard::ptr<const data_format::ht::ht_frame>& frame);
 
 private:
-//    static void make_detection_table(const HandTracking::ht_detection& det, image::image_type it);
-    void make_detection_table(units::eyes eye, int idx, const std::string& label);
-    void make_position_table();
+    void make_detection_table(data_format::units::eyes eye, int idx, const std::string& label) const;
+    void make_position_table() const;
 
-    std::shared_ptr<RelativeClock>          _clock;
-    const std::shared_ptr<switchboard>      _switchboard;
-    std::shared_ptr<HandTracking::ht_frame> _ht_frame;
-    std::shared_ptr<pose_type>              _pose;
-    std::shared_ptr<camera_data>            _camera;
-    GLFWwindow*                             _viewport{};
-    uint count = 0;
+    std::shared_ptr<RelativeClock>                       _clock;
+    const std::shared_ptr<switchboard>                   _switchboard;
+    std::shared_ptr<data_format::ht::ht_frame>           _ht_frame;
+    const data_format::pose_data                         _pose;
+    std::map<data_format::ht::hand, data_format::ht::hand_points> _true_hand_positions;
+
+    GLFWwindow*                                          _viewport{};
 
     GLuint          textures[2];
     Eigen::Vector2i raw_size = Eigen::Vector2i::Zero();
@@ -43,17 +41,17 @@ private:
     bool _wc = false;   // webcam images need to be flipped
     bool _zed = false;
     Eigen::Matrix4f basicProjection;
-    const HandTracking::ht_frame *current_frame;
+    const data_format::ht::ht_frame *current_frame;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     bool enabled_right = false;
     std::string tab_label;
-    units::eyes single_eye = units::LEFT_EYE;
-    std::vector<ILLIXR::image::image_type> detections;
+    data_format::units::eyes single_eye = data_format::units::LEFT_EYE;
+    std::vector<ILLIXR::data_format::image::image_type> detections;
 
-    std::map<uint64_t, HandTracking::ht_frame> ht_frames;
+    std::map<uint64_t, data_format::ht::ht_frame> ht_frames;
     static int requested_unit_;
-    static units::measurement_unit base_unit_;
+    static data_format::units::measurement_unit base_unit_;
 };
 
 }
