@@ -55,6 +55,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -94,6 +95,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -257,6 +259,7 @@
         "OpenXR",
         "Vulkan",
         "libusb",
+        "libuvc",
         "SDL2"
       ]
     },
@@ -270,6 +273,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -292,6 +296,7 @@
         "glm",
         "OpenXR",
         "libusb",
+        "libuvc",
         "udev",
         "JPEG",
         "PNG",
@@ -827,6 +832,43 @@
               "pkg": "libusb1-devel",
               "postnotes": "",
               "notes": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "libuvc": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libuvc-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            },
+            "38": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "Fedora does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "",
+              "postnotes": "",
+              "notes": "CentOS does not supply libuvc from its repositories. You will need to install it from <a href=\"https://github.com/libuvc/libuvc\">https://github.com/libuvc/libuvc</a>."
             }
           }
         }
