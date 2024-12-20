@@ -1,15 +1,15 @@
+#include "plugin.hpp"
+
+#include "illixr/error_util.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <cmath>
 #include <memory>
+#include <opencv2/opencv.hpp>
 #include <optional>
 #include <string>
-#include <opencv2/opencv.hpp>
-
-#include "illixr/error_util.hpp"
-
-#include "plugin.hpp"
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
@@ -23,16 +23,16 @@ const record_header __imu_cam_record{"imu_cam",
                                      }};
 
 std::shared_ptr<zed_camera> zed_imu_thread::start_camera() {
-    std::shared_ptr<zed_camera> zed_cam = std::make_shared<zed_camera>(switchboard_);
-    bool with_hand_tracking = true;
+    std::shared_ptr<zed_camera> zed_cam            = std::make_shared<zed_camera>(switchboard_);
+    bool                        with_hand_tracking = true;
     assert(zed_cam != nullptr && "Zed camera should be initialized");
 
     // Cam setup
     sl::InitParameters init_params;
     init_params.camera_resolution      = (with_hand_tracking) ? sl::RESOLUTION::HD720 : sl::RESOLUTION::VGA;
-    init_params.coordinate_units       = sl::UNIT::UNITS;                           // For scene reconstruction
+    init_params.coordinate_units       = sl::UNIT::UNITS;                          // For scene reconstruction
     init_params.coordinate_system      = sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP; // Coordinate system used in ROS
-    init_params.camera_fps             = 30;                                         // gives the best user experience
+    init_params.camera_fps             = 30;                                       // gives the best user experience
     init_params.depth_mode             = (with_hand_tracking) ? sl::DEPTH_MODE::QUALITY : sl::DEPTH_MODE::PERFORMANCE;
     init_params.depth_stabilization    = true;
     init_params.depth_minimum_distance = 0.3;
@@ -66,7 +66,6 @@ zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     , cam_conf_pub_{switchboard_->get_writer<camera_data>("cam_data")}
     , it_log_{record_logger_} {
     camera_thread_.start();
-
 }
 
 // destructor
@@ -83,7 +82,7 @@ void zed_imu_thread::start() {
 }
 
 threadloop::skip_option zed_imu_thread::_p_should_skip() {
-    zed_cam_->getSensorsData(sensors_data_,sl:: TIME_REFERENCE::CURRENT);
+    zed_cam_->getSensorsData(sensors_data_, sl::TIME_REFERENCE::CURRENT);
     if (sensors_data_.imu.timestamp > last_imu_ts_) {
         std::this_thread::sleep_for(std::chrono::milliseconds{2});
         return skip_option::run;
@@ -123,8 +122,10 @@ void zed_imu_thread::_p_one_iteration() {
         cv::Mat left_gray, right_gray;
         cv::cvtColor(c->at(image::LEFT_EYE), left_gray, cv::COLOR_RGB2GRAY);
         cv::cvtColor(c->at(image::RIGHT_EYE), right_gray, cv::COLOR_RGB2GRAY);
-        cam_publisher_.put(cam_publisher_.allocate<binocular_cam_type>({imu_time_point, cv::Mat{left_gray}, cv::Mat{right_gray}}));
-        rgb_depth_.put(rgb_depth_.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->at(image::RGB)}, cv::Mat{c->at(image::DEPTH)}}));
+        cam_publisher_.put(
+            cam_publisher_.allocate<binocular_cam_type>({imu_time_point, cv::Mat{left_gray}, cv::Mat{right_gray}}));
+        rgb_depth_.put(
+            rgb_depth_.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->at(image::RGB)}, cv::Mat{c->at(image::DEPTH)}}));
         last_serial_no_ = c->serial_no;
     }
 

@@ -1,5 +1,5 @@
-#include "illixr/data_loading.hpp"
 #include "illixr/data_format/imu.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"

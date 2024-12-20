@@ -152,7 +152,7 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
 int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
-    try{
+    try {
         r = ILLIXR::runtime_factory();
         // set internal env_vars
         const std::shared_ptr<switchboard> sb = r->get_switchboard();
@@ -171,25 +171,25 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         }
 #endif /// NDEBUG
 
-        YAML::Node config;
+        YAML::Node  config;
         std::string exec_path = get_exec_path();
         std::string home_dir  = get_home_dir();
         if (options.count("yaml")) {
             std::cout << "Reading " << options["yaml"].as<std::string>() << std::endl;
-            auto config_file_full = options["yaml"].as<std::string>();
-            std::string config_file = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
-            std::vector<std::string> config_list = {config_file,
-                                                    home_dir + "/.illixr/profiles/" + config_file_full,
-                                                    home_dir + "/.illixr/profiles/" + config_file,
-                                                    home_dir + "/" + config_file_full,
-                                                    home_dir + "/" + config_file,
-                                                    exec_path + "/../share/illixr/profiles/" + config_file_full,
-                                                    exec_path + "/../share/illixr/profiles/" + config_file};
-            for (auto &filepath: config_list) {
+            auto                     config_file_full = options["yaml"].as<std::string>();
+            std::string              config_file      = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
+            std::vector<std::string> config_list      = {config_file,
+                                                         home_dir + "/.illixr/profiles/" + config_file_full,
+                                                         home_dir + "/.illixr/profiles/" + config_file,
+                                                         home_dir + "/" + config_file_full,
+                                                         home_dir + "/" + config_file,
+                                                         exec_path + "/../share/illixr/profiles/" + config_file_full,
+                                                         exec_path + "/../share/illixr/profiles/" + config_file};
+            for (auto& filepath : config_list) {
                 try {
                     config = YAML::LoadFile(filepath);
                     break;
-                } catch (YAML::BadFile &) {}
+                } catch (YAML::BadFile&) { }
             }
 
             if (config.size() == 0)
@@ -198,20 +198,20 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         }
 
         // read in config file first, as command line args will override
-        for (auto& item: sb->env_names()){
+        for (auto& item : sb->env_names()) {
             if (config[item])
                 sb->set_env(item, config[item].as<std::string>());
         }
         // command line specified env_vars
         for (auto& item : options.unmatched()) {
-            bool matched = false;
-            cxxopts::values::parser_tool::ArguDesc ad = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
+            bool                                   matched = false;
+            cxxopts::values::parser_tool::ArguDesc ad      = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
 
             if (!sb->get_env(ad.arg_name, "").empty()) {
                 if (!ad.set_value)
                     ad.value = "True";
                 sb->set_env(ad.arg_name, ad.value);
-                setenv(ad.arg_name.c_str(), ad.value.c_str(), 1);  // env vars from command line take precedence
+                setenv(ad.arg_name.c_str(), ad.value.c_str(), 1); // env vars from command line take precedence
             }
         }
 
@@ -221,8 +221,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             run_duration = std::chrono::seconds{config["duration"].as<long>()};
         } else {
             run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
-                           ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
-                           : ILLIXR_RUN_DURATION_DEFAULT;
+                ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
+                : ILLIXR_RUN_DURATION_DEFAULT;
         }
         GET_STRING(data, ILLIXR_DATA)
         GET_STRING(demo_data, ILLIXR_DEMO_DATA)
@@ -249,7 +249,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             } catch (YAML::BadFile&) {
 #ifndef NDEBUG
                 spdlog::get("illixr")->info(
-                        "Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
+                    "Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
 #endif
             }
         }

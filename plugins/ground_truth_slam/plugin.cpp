@@ -1,7 +1,7 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_loading.hpp"
 #include "illixr/data_format/imu.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 

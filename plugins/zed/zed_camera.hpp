@@ -1,10 +1,10 @@
 #pragma once
 
-#include <eigen3/Eigen/Dense>
-#include <sl/Camera.hpp>
-
 #include "illixr/data_format/camera_data.hpp"
 #include "illixr/switchboard.hpp"
+
+#include <eigen3/Eigen/Dense>
+#include <sl/Camera.hpp>
 
 #define UNITS MILLIMETER
 
@@ -14,7 +14,8 @@ public:
     explicit zed_camera(const std::shared_ptr<switchboard>& sb)
         : sl::Camera()
         , switchboard_{sb}
-        , frame{sl::REFERENCE_FRAME::WORLD} {} //(switchboard_->get_env_bool("USE_WCS")) ? sl::REFERENCE_FRAME::WORLD : sl::REFERENCE_FRAME::CAMERA} { }
+        , frame{sl::REFERENCE_FRAME::WORLD} {
+    } //(switchboard_->get_env_bool("USE_WCS")) ? sl::REFERENCE_FRAME::WORLD : sl::REFERENCE_FRAME::CAMERA} { }
 
     sl::ERROR_CODE open(const sl::InitParameters& params);
 
@@ -47,7 +48,7 @@ public:
 private:
     const std::shared_ptr<switchboard> switchboard_;
     sl::Transform                      initial_position_;
-    data_format::camera_data                        config_;
+    data_format::camera_data           config_;
     sl::REFERENCE_FRAME                frame;
 };
-}
+} // namespace ILLIXR

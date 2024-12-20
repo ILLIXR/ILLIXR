@@ -1,7 +1,8 @@
 #pragma once
 
-#include <GL/glu.h>
 #include "illixr/switchboard.hpp"
+
+#include <GL/glu.h>
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
@@ -9,7 +10,6 @@
 using ullong = unsigned long long;
 
 namespace ILLIXR::data_format {
-
 
 struct [[maybe_unused]] connection_signal : public switchboard::event {
     bool start;
@@ -73,7 +73,6 @@ struct [[maybe_unused]] image_handle : public switchboard::event {
         , usage{usage_} { }
 };
 
-
 struct [[maybe_unused]] hologram_input : public switchboard::event {
     uint seq{};
 
@@ -113,4 +112,4 @@ inline bool compare(const std::string& input, const std::string& val) {
     return v1 == v2;
 }
 
-} // namespace ILLIXR
+} // namespace ILLIXR::data_format

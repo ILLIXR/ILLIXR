@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef NDEBUG
-#include <spdlog/spdlog.h>
+    #include <spdlog/spdlog.h>
 #endif
 
 #include "illixr/data_format/template.hpp"
@@ -11,35 +11,41 @@ namespace ILLIXR::data_format {
 /**
  * Struct which defines a representation of a rectangle
  */
-struct [[maybe_unused]]rect {
+struct [[maybe_unused]] rect {
     double x_center; //!< x-coordinate of the rectangle's center
     double y_center; //!< y-coordinate of the rectangle's center
     double width;    //!< width of the rectangle (parallel to x-axis when rotation angle is 0)
     double height;   //!< height of the rectangle (parallel to y-axis when rotation angle is 0)
 
-    double rotation; //!< rotation angle of the rectangle in radians
+    double                  rotation; //!< rotation angle of the rectangle in radians
     units::measurement_unit unit;
-    bool valid;    //!< if the rectangle is valid
+    bool                    valid; //!< if the rectangle is valid
 
     /**
      * Generic constructor which sets all values to 0
      */
     rect()
-            : x_center{0.}, y_center{0.}, width{0.}, height{0.}, rotation{0.}, unit{units::UNSET}, valid{false} {}
+        : x_center{0.}
+        , y_center{0.}
+        , width{0.}
+        , height{0.}
+        , rotation{0.}
+        , unit{units::UNSET}
+        , valid{false} { }
 
     /**
      * Copy constructor
      * @param other The rect to copy
      */
-    explicit rect(rect *other) {
+    explicit rect(rect* other) {
         if (other != nullptr) {
             x_center = other->x_center;
             y_center = other->y_center;
-            width = other->width;
-            height = other->height;
+            width    = other->width;
+            height   = other->height;
             rotation = other->rotation;
-            unit = other->unit;
-            valid = other->valid;
+            unit     = other->unit;
+            valid    = other->valid;
         }
     }
 
@@ -53,7 +59,13 @@ struct [[maybe_unused]]rect {
      */
     rect(const double xc, const double yc, const double w, const double h, const double r,
          units::measurement_unit unit_ = units::UNSET)
-            : x_center{xc}, y_center{yc}, width{w}, height{h}, rotation{r}, unit{unit_}, valid{true} {}
+        : x_center{xc}
+        , y_center{yc}
+        , width{w}
+        , height{h}
+        , rotation{r}
+        , unit{unit_}
+        , valid{true} { }
 
     /**
      * Set the rect's values after construction
@@ -67,12 +79,12 @@ struct [[maybe_unused]]rect {
              units::measurement_unit unit_ = units::UNSET) {
         x_center = xc;
         y_center = yc;
-        width = w;
-        height = h;
+        width    = w;
+        height   = h;
 
         rotation = r;
-        unit = unit_;
-        valid = true;
+        unit     = unit_;
+        valid    = true;
     }
 
     void flip_y(const uint im_height = 0) {
@@ -103,8 +115,9 @@ inline void normalize<rect>(rect& obj, const float width, const float height, co
 }
 
 template<>
-inline void denormalize<rect>(rect& obj, const float width, const float height, const float depth, units::measurement_unit unit) {
-    (void)depth;
+inline void denormalize<rect>(rect& obj, const float width, const float height, const float depth,
+                              units::measurement_unit unit) {
+    (void) depth;
     if (!obj.valid)
         return;
     if (obj.unit != units::PERCENT) {
@@ -122,4 +135,4 @@ inline void denormalize<rect>(rect& obj, const float width, const float height, 
     obj.unit = unit;
 }
 
-}
+} // namespace ILLIXR::data_format

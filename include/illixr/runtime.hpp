@@ -30,7 +30,7 @@ public:
     virtual void stop() = 0;
 
     virtual std::shared_ptr<switchboard> get_switchboard() = 0;
-    virtual ~runtime() = default;
+    virtual ~runtime()                                     = default;
 };
 
 extern "C" runtime* runtime_factory();
