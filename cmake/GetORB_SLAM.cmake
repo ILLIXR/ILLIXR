@@ -15,7 +15,7 @@ endif()
 
 EXTERNALPROJECT_ADD(ORB_Slam
         GIT_REPOSITORY https://github.com/ILLIXR/ORB_SLAM3.git   # Git repo for source code
-        GIT_TAG be78a1266d559bdd47d3cdeb54173b33533130e1         # sha5 hash for specific commit to pull (if there is no specific tag to use)
+        GIT_TAG 9e630a604e73c4a6a0b87c56248b4aeee62baf8c         # sha5 hash for specific commit to pull (if there is no specific tag to use)
         PREFIX ${ORB_SLAM_SOURCE_DIR}                            # the build directory
         DEPENDS ${DBoW2_DEP_STR} ${Pangolin_DEP_STR} ${g2o_DEP_STR} ${Sophus_DEP_STR} ${OpenCV_DEP_STR}   # dependencies of this module
         # force serialized build, otherwise the machine might get slogged down
