@@ -28,6 +28,7 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+// Known env vars that are automatically checked for
 const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "DEPTHAI_LOG_LEVEL",
                                            "FAUXPOSE_AMPLITUDE",
@@ -802,6 +803,18 @@ public:
         }
     }
 private:
+    /**
+     * @brief Base coordinate system
+     *
+     * This class reads in and hold the world coordinate system origin. The origin can be provided by the
+     * WCS_ORIGIN environment/yaml variable and can be specified in one of three ways
+     *
+     *    - a set of 3 comma separated values, representing only the origin in x, y, and z coordinates
+     *    - a set of 4 comma separated values, representing only the quaternion of the origin in w, x, y, z
+     *    - a set of 7 comma seperated values, representing both the origin and its quaternion in the form x, y, z, w, wx, wy, wz
+     *
+     * Any component which is not given defaults to 0 (except w which is set to 1)
+     */
     class coordinate_system {
     private:
         Eigen::Vector3f _position;
@@ -811,7 +824,7 @@ private:
         coordinate_system()
         : _position{0., 0., 0.}
         , _orientation{1., 0., 0., 0.} {
-            std::string ini_pose = get_env("WCF_ORIGIN");
+            std::string ini_pose = get_env("WCS_ORIGIN");
             if (!ini_pose.empty()) {
                 std::stringstream iss(ini_pose);
                 std::string token;
@@ -840,17 +853,25 @@ private:
             }
         }
 
+        /**
+         * Get the position portion of the WCS origin
+         * @return Eigen::Vector3f
+         */
         [[nodiscard]] const Eigen::Vector3f& position() const {
             return _position;
         }
 
+        /**
+         * Get the orientation portion of the WCS origin
+         * @return Eigen::Quaternionf
+         */
         [[nodiscard]] const Eigen::Quaternionf& orientation() const {
             return _orientation;
         }
     };
 
 public:
-    coordinate_system root_coordinates;
+    coordinate_system root_coordinates;    //!> The WCS origin
 };
 
 } // namespace ILLIXR

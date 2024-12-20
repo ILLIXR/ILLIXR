@@ -8,7 +8,9 @@
 #include "illixr/data_format/pose.hpp"
 
 namespace ILLIXR::data_format {
-
+/**
+ * camera type for ZED, can hold images for left eye, eight eye, rgb image
+ */
 struct [[maybe_unused]] cam_type_zed : cam_base_type {
     std::size_t    serial_no;
     multi_pose_map poses;

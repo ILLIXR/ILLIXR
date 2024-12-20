@@ -2,7 +2,7 @@
 externalproject_add(
         hand_tracking_dependencies
         GIT_REPOSITORY https://github.com/ILLIXR/hand_tracking_dependencies.git
-        GIT_TAG 89a568b3ee8dec990ad516b7e77bc96f096c808e
+        GIT_TAG 818f9fc431108ec4017c30f84a116199d8963813
         PREFIX ${CMAKE_BINARY_DIR}/_deps/hand_tracking_deps
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DENABLE_GPU=${HT_ENABLE_GPU} -DLIBRARY_POSTFIX=ht
         INSTALL_COMMAND ""
