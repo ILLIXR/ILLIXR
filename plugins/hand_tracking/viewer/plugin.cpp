@@ -9,6 +9,16 @@
 #include <opencv2/opencv.hpp>
 
 using namespace ILLIXR;
+int viewer::requested_unit_ = -1;
+units::measurement_unit viewer::base_unit_ = units::UNSET;
+
+//                                mm,           cm,           m,                   ft,                    in
+constexpr float convert[5][5] = {{1.,           0.1,          0.001,               (1. / (12. * 25.4)),   (1. / 25.4)},  //mm
+                                 {10.,          1.,           0.01,                (1. / (12 * 2.54)),    (1. / 2.54)},  //cm
+                                 {1000.,        100.,         1.,                  (100. / (2.54 * 12.)), (100. / 2.54)}, // m
+                                 {(25.4 * 12.), (2.54 * 12.), (2.54 * 12. / 100.), 1.,                    12.},  // ft
+                                 { 25.4,        2.54,         0.0254,              (1. / 12.),            1.}  // in
+};
 
 /**
 * @brief Callback function to handle glfw errors
@@ -24,39 +34,30 @@ static void glfw_error_callback(int error, const char* description) {
 
 std::string image_type_string(const image::image_type it) {
     switch(it) {
-    case image::LEFT_EYE:
-    case image::LEFT_EYE_PROCESSED:
-        return "left";
-    case image::RIGHT_EYE:
-    case image::RIGHT_EYE_PROCESSED:
-        return "right";
-    case image::RGB:
-    case image::RGB_PROCESSED:
-        return "rgb";
-    case image::DEPTH:
-        return "depth";
-    case image::CONFIDENCE:
-        return "confidence";
+        case image::LEFT_EYE:
+        case image::LEFT_EYE_PROCESSED:
+            return "left";
+        case image::RIGHT_EYE:
+        case image::RIGHT_EYE_PROCESSED:
+            return "right";
+        case image::RGB:
+        case image::RGB_PROCESSED:
+            return "rgb";
+        case image::DEPTH:
+            return "depth";
+        case image::CONFIDENCE:
+            return "confidence";
     }
 }
 
 viewer::viewer(const std::string& name_, phonebook* pb_) :
-    plugin{name_, pb_}, _clock{pb->lookup_impl<RelativeClock>()}
-    , _switchboard{pb_->lookup_impl<switchboard>()}
-    , current_frame(nullptr) {
-    std::string input = _switchboard->get_env("HT_INPUT");
-    if (!input.empty()) {
-        if (compare(input, "webcam")) {
-            _wc = true;
-        } else if (compare(input, "zed")) {
-            _zed = true;
-        }
-    } else {
-
-    }
+        plugin{name_, pb_}, _clock{pb->lookup_impl<RelativeClock>()}
+        , _switchboard{pb_->lookup_impl<switchboard>()}
+        , current_frame(nullptr) {
 }
 
 void viewer::start() {
+    plugin::start();
     if (!glfwInit()) {
         ILLIXR::abort("[viewer] Failed to initalize glfw");
     }
@@ -106,7 +107,7 @@ void viewer::start() {
     ImGui_ImplGlfw_InitForOpenGL(_viewport, true);
     ImGui_ImplOpenGL3_Init(glsl_version.data());
 
-    glGenTextures(6, &(textures[0]));
+    glGenTextures(2, &(textures[0]));
     for (unsigned int texture : textures) {
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -134,135 +135,208 @@ viewer::~viewer() {
     glfwTerminate();
 }
 
-void viewer::make_detection_table(const HandTracking::ht_detection& det, const image::image_type it) {
-    ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
-    std::string title = image_type_string(it);
-
-    std::string palm_title = title + "_palms";
-    if (ImGui::BeginTable(palm_title.c_str(), 6, flags)) {
-        ImGui::TableSetupColumn("");
-        ImGui::TableSetupColumn("Unit");
-        ImGui::TableSetupColumn("Center");
-        ImGui::TableSetupColumn("Width");
-        ImGui::TableSetupColumn("Height");
-        ImGui::TableSetupColumn("Rotation");
-        ImGui::TableHeadersRow();
-        rect current_rect;
-        for (auto i : HandTracking::hand_map) {
-            current_rect = det.palms.at(i);
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", (i == 0) ? "Left palm" : "Right palm");
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
-            if (current_rect.valid) {
-                ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
-                ImGui::TableSetColumnIndex(3);
-                ImGui::Text("%.2f", current_rect.width);
-                ImGui::TableSetColumnIndex(4);
-                ImGui::Text("%.2f", current_rect.height);
-                ImGui::TableSetColumnIndex(5);
-                ImGui::Text("%.2f", current_rect.rotation);
-            }
-        }
-        ImGui::EndTable();
-    }
-    std::string hand_table_title = title + "_hands";
-    if (ImGui::BeginTable(hand_table_title.c_str(), 6, flags)) {
-        ImGui::TableSetupColumn("");
-        ImGui::TableSetupColumn("Unit");
-        ImGui::TableSetupColumn("Center");
-        ImGui::TableSetupColumn("Width");
-        ImGui::TableSetupColumn("Height");
-        ImGui::TableSetupColumn("Rotation");
-        ImGui::TableHeadersRow();
-        rect current_rect;
-        for (auto i : HandTracking::hand_map) {
-            current_rect = det.hands.at(i);
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", (i == 0) ? "Left hand" : "Right hand");
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
-            if (current_rect.valid) {
-                ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
-                ImGui::TableSetColumnIndex(3);
-                ImGui::Text("%.2f", current_rect.width);
-                ImGui::TableSetColumnIndex(4);
-                ImGui::Text("%.2f", current_rect.height);
-                ImGui::TableSetColumnIndex(5);
-                ImGui::Text("%.2f", current_rect.rotation);
-            }
-        }
-        ImGui::EndTable();
-    }
-    std::string hand_results_title = title + "_results";
-    if (ImGui::BeginTable(hand_results_title.c_str(), 3, flags)) {
-        ImGui::TableSetupColumn("Point");
-        ImGui::TableSetupColumn("Left");
-        ImGui::TableSetupColumn("Right");
-        ImGui::TableHeadersRow();
+void viewer::make_position_table() {
+    ImGui::RadioButton("millimeter", &requested_unit_, 0);
+    ImGui::SameLine();
+    ImGui::RadioButton("centimeter", &requested_unit_, 1);
+    ImGui::SameLine();
+    ImGui::RadioButton("meter", &requested_unit_, 2);
+    ImGui::SameLine();
+    ImGui::RadioButton("foot", &requested_unit_, 3);
+    ImGui::SameLine();
+    ImGui::RadioButton("inch", &requested_unit_, 4);
+    std::string label;
+    if (ImGui::BeginTable("True Points", 2, ImGuiTableFlags_Borders)) {
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        ImGui::Text("%s", "Confidence");
-        ImGui::TableSetColumnIndex(1);
-        ImGui::Text("%.2f", det.confidence.at(HandTracking::LEFT_HAND));
-        ImGui::TableSetColumnIndex(2);
-        ImGui::Text("%.2f", det.confidence.at(HandTracking::RIGHT_HAND));
-        for (int row = HandTracking::WRIST; row <= HandTracking::PINKY_TIP; row++) {
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", HandTracking::point_str_map.at(row).c_str());
-            ImGui::TableSetColumnIndex(1);
-            auto pnt = det.points.at(HandTracking::LEFT_HAND).at(row);
-            if (pnt.valid) {
-                ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
+        for (int idx = 0; idx < 2; idx++) {
+            if (idx == 0){
+                label = "True Points Left";
             } else {
-                ImGui::Text("%s", "");
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+                label = "True Points Right";
             }
-            ImGui::TableSetColumnIndex(2);
-            pnt = det.points.at(HandTracking::RIGHT_HAND).at(row);
-            if (pnt.valid) {
-                ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
-            } else {
-                ImGui::Text("%s", "");
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+
+            ImGui::TableSetColumnIndex(idx);
+            if (ImGui::BeginTable(label.c_str(), 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                ImGui::TableSetupColumn("Point");
+                ImGui::TableSetupColumn("x");
+                ImGui::TableSetupColumn("y");
+                ImGui::TableSetupColumn("z");
+                ImGui::TableSetupColumn("Confidence");
+                ImGui::TableHeadersRow();
+                auto points = current_frame->hand_positions.at(static_cast<ILLIXR::HandTracking::hand>(idx));
+                bool skip = points.points.empty();
+                for (int row = ILLIXR::HandTracking::WRIST; row < ILLIXR::HandTracking::PINKY_TIP; row++) {
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", ILLIXR::HandTracking::point_str_map.at(row).c_str());
+                    ILLIXR::point_with_units pnt;
+                    if (!skip) {
+                        pnt = points.points.at(row);
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        ImGui::TableSetColumnIndex(i + 1);
+                        if (points.valid) {
+                            ImGui::Text("%.3f", pnt[i] * convert[points.unit][requested_unit_]);
+                        } else {
+                            ImGui::Text("");
+                        }
+                    }
+                    ImGui::TableSetColumnIndex(4);
+                    if (points.valid) {
+                        ImGui::Text("%.2f", pnt.confidence);
+                    } else {
+                        ImGui::Text("");
+                    }
+                }
+                ImGui::EndTable();
             }
         }
-
         ImGui::EndTable();
+    }
+}
+
+void viewer::make_detection_table(units::eyes eye, int idx, const std::string& label) {
+    if (ImGui::BeginTabItem(label.c_str())) {
+        if (ImGui::BeginTable("first_det", 2, ImGuiTableFlags_Borders)) {
+            ImGui::TableSetupColumn("first_det_info");
+            ImGui::TableSetupColumn("first_det_img");
+            ImGui::TableNextRow();
+
+            ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+            ImGui::TableSetColumnIndex(0);
+
+            if (ImGui::BeginTable("Palms", 6, flags)) {
+                ImGui::TableSetupColumn("");
+                ImGui::TableSetupColumn("Unit");
+                ImGui::TableSetupColumn("Center");
+                ImGui::TableSetupColumn("Width");
+                ImGui::TableSetupColumn("Height");
+                ImGui::TableSetupColumn("Rotation");
+                ImGui::TableHeadersRow();
+                ILLIXR::rect current_rect;
+                for (auto i: ILLIXR::HandTracking::hand_map) {
+                    current_rect = current_frame->detections.at(eye).palms.at(i);
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", (i == 0) ? "Left palm" : "Right palm");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
+                    if (current_rect.valid) {
+                        ImGui::TableSetColumnIndex(2);
+                        ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
+                        ImGui::TableSetColumnIndex(3);
+                        ImGui::Text("%.2f", current_rect.width);
+                        ImGui::TableSetColumnIndex(4);
+                        ImGui::Text("%.2f", current_rect.height);
+                        ImGui::TableSetColumnIndex(5);
+                        ImGui::Text("%.2f", current_rect.rotation);
+                    }
+                }
+                ImGui::EndTable();
+            }
+            if (ImGui::BeginTable("Hands", 6, flags)) {
+                ImGui::TableSetupColumn("");
+                ImGui::TableSetupColumn("Unit");
+                ImGui::TableSetupColumn("Center");
+                ImGui::TableSetupColumn("Width");
+                ImGui::TableSetupColumn("Height");
+                ImGui::TableSetupColumn("Rotation");
+                ImGui::TableHeadersRow();
+                ILLIXR::rect current_rect;
+                for (auto i: ILLIXR::HandTracking::hand_map) {
+                    current_rect = current_frame->detections.at(eye).hands.at(i);
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", (i == 0) ? "Left hand" : "Right hand");
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%s", units::unit_str.at(current_rect.unit).c_str());
+                    if (current_rect.valid) {
+                        ImGui::TableSetColumnIndex(2);
+                        ImGui::Text("%.2f, %.2f", current_rect.x_center, current_rect.y_center);
+                        ImGui::TableSetColumnIndex(3);
+                        ImGui::Text("%.2f", current_rect.width);
+                        ImGui::TableSetColumnIndex(4);
+                        ImGui::Text("%.2f", current_rect.height);
+                        ImGui::TableSetColumnIndex(5);
+                        ImGui::Text("%.2f", current_rect.rotation);
+                    }
+                }
+                ImGui::EndTable();
+            }
+            if (ImGui::BeginTable("Hand Points", 3, flags)) {
+                ImGui::TableSetupColumn("Point");
+                ImGui::TableSetupColumn("Left");
+                ImGui::TableSetupColumn("Right");
+                ImGui::TableHeadersRow();
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::Text("%s", "Confidence");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::Text("%.2f", current_frame->detections.at(eye).confidence.at(ILLIXR::HandTracking::LEFT_HAND));
+                ImGui::TableSetColumnIndex(2);
+                ImGui::Text("%.2f", current_frame->detections.at(eye).confidence.at(ILLIXR::HandTracking::RIGHT_HAND));
+                for (int row = ILLIXR::HandTracking::WRIST; row <= ILLIXR::HandTracking::PINKY_TIP; row++) {
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", ILLIXR::HandTracking::point_str_map.at(row).c_str());
+                    ImGui::TableSetColumnIndex(1);
+                    auto pnt = current_frame->detections.at(eye).points.at(ILLIXR::HandTracking::LEFT_HAND).points[row];
+                    if (pnt.valid) {
+                        ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
+                    } else {
+                        ImGui::Text("%s", "");
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg,
+                                               ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+                    }
+                    ImGui::TableSetColumnIndex(2);
+                    pnt = current_frame->detections.at(eye).points.at(ILLIXR::HandTracking::RIGHT_HAND).points[row];
+                    if (pnt.valid) {
+                        ImGui::Text("%.2f, %.2f, %.2f", pnt.x(), pnt.y(), pnt.z());
+                    } else {
+                        ImGui::Text("%s", "");
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg,
+                                               ImGui::GetColorU32(ImVec4(0.7f, 0.3f, 0.3f, 0.65f)));
+                    }
+                }
+
+                ImGui::EndTable();
+            }
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Image((void *) (intptr_t) textures[idx], ImVec2(640, 480));
+            ImGui::EndTable();
+        }
+        ImGui::EndTabItem();
     }
 }
 
 void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& frame) {
     glfwMakeContextCurrent(_viewport);
     glfwPollEvents();
+    current_frame = frame.get();
+
+    if (base_unit_ == units::UNSET) {
+        base_unit_ = current_frame->unit;
+        requested_unit_ = base_unit_;
+    }
     std::vector<image::image_type> found_types;
     cv::Mat raw_img[2];
     int last_idx = 0;
 
-    current_frame = frame.get();
 
-    if (frame->find(image::LEFT_EYE_PROCESSED) != frame->images.end()) {
+    if (current_frame->find(image::LEFT_EYE_PROCESSED) != current_frame->images.end()) {
         found_types.push_back(image::LEFT_EYE_PROCESSED);
-        raw_img[0] = frame->at(image::LEFT_EYE).clone();
+        raw_img[0] = current_frame->at(image::LEFT_EYE).clone();
         last_idx++;
-
     }
-    if (frame->find(image::RIGHT_EYE_PROCESSED) != frame->images.end()) {
+
+    if (current_frame->find(image::RIGHT_EYE_PROCESSED) != current_frame->images.end()) {
         found_types.push_back(image::RIGHT_EYE_PROCESSED);
-        raw_img[last_idx] = frame->at(image::RIGHT_EYE).clone();
-
-
+        raw_img[last_idx] = current_frame->at(image::RIGHT_EYE).clone();
     }
-    if (found_types.empty() && frame->find(image::RGB_PROCESSED) != frame->images.end()) {
+
+    if (found_types.empty() && current_frame->find(image::RGB_PROCESSED) != current_frame->images.end()) {
         found_types.push_back(image::RGB_PROCESSED);
-        raw_img[0] = frame->at(image::RGB).clone();
-        //if (_wc)
-        //    cv::flip(raw_img[0], raw_img[0], 1);
+        raw_img[0] = current_frame->at(image::RGB).clone();
     }
 
     cv::Mat processed[2];
@@ -278,75 +352,91 @@ void viewer::make_gui(const switchboard::ptr<const HandTracking::ht_frame>& fram
     ImGui_ImplGlfw_NewFrame();
 
     ImGui::NewFrame();
+    float proc_time;
+    if (current_frame->detections.count(units::LEFT_EYE) == 1 && current_frame->detections.count(units::RIGHT_EYE) == 1) {
+        raw_img[0] = current_frame->at(image::LEFT_EYE).clone();
+        raw_img[1] = current_frame->at(image::RIGHT_EYE).clone();
+        enabled_right = true;
+        tab_label = "Left Eye Raw";
+        single_eye = units::LEFT_EYE;
+        detections = {image::LEFT_EYE_PROCESSED, image::RIGHT_EYE_PROCESSED};
+        proc_time = (float)std::max(current_frame->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time,
+                                    current_frame->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time) / 1000.f;
+    } else {
+        image::image_type img_typ;
+        if (current_frame->detections.count(units::LEFT_EYE) == 1) {
+            single_eye = units::LEFT_EYE;
+            detections = {image::LEFT_EYE_PROCESSED};
+            img_typ = image::LEFT_EYE;
+            proc_time = (float)current_frame->detections.at(static_cast<const units::eyes>(image::LEFT_EYE)).proc_time / 1000.f;
+        } else if (current_frame->detections.count(units::RIGHT_EYE) == 1){
+            single_eye = units::RIGHT_EYE;
+            detections = {image::RIGHT_EYE_PROCESSED};
+            img_typ = image::RIGHT_EYE;
+            proc_time = (float)current_frame->detections.at(static_cast<const units::eyes>(image::RIGHT_EYE)).proc_time / 1000.f;
+        } else {
+            return;
+        }
+        raw_img[0] = current_frame->at(img_typ).clone();
+        raw_img[1].release();
+        enabled_right = false;
+        tab_label = "Raw";
+    }
 
-    current_frame = frame.get();
-    for(size_t i = 0; i < found_types.size(); i++) {
-        // get raw frame from camera input
-        glBindTexture(GL_TEXTURE_2D, textures[i * 3]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, raw_img[i].cols, raw_img[i].rows, 0,
-                     GL_RGB, GL_UNSIGNED_BYTE, raw_img[i].ptr());
-        processed[i] = frame->at(found_types[i]).clone();
+    for (size_t i = 0; i < 2; i++) {
+        if (i == 1 && !enabled_right)
+            break;
+        processed[i] = current_frame->at(detections[i]).clone();
         cv::Mat mask, inv, r;
         cv::cvtColor(processed[i], mask, cv::COLOR_RGBA2GRAY);
         cv::threshold(mask, mask, 10, 255, cv::THRESH_BINARY);
         cv::bitwise_not(mask, mask);
         cv::bitwise_and(raw_img[i], raw_img[i], r, mask);
-        //cv::imwrite("test1.png", r);
         cv::cvtColor(processed[i], flattened[i], cv::COLOR_RGBA2RGB);
-        glBindTexture(GL_TEXTURE_2D, textures[(i * 3) + 1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,  flattened[i].cols, flattened[i].rows, 0,
-                     GL_RGB, GL_UNSIGNED_BYTE, flattened[i].ptr());
-
         combined[i] = flattened[i] + r;
-        glBindTexture(GL_TEXTURE_2D, textures[(i * 3) + 2]);
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, combined[i].cols, combined[i].rows, 0,
                      GL_RGB, GL_UNSIGNED_BYTE, combined[i].ptr());
-
-        ImGui::SetNextWindowPos(ImVec2(i * ImGui::GetIO().DisplaySize.x / 2.,
-                                       ImGui::GetIO().DisplaySize.y),
-                                ImGuiCond_Once, ImVec2(0.f, 1.f));
-        {
-            std::string title = image_type_string(found_types[i]);
-            ImGui::Begin((title  + " Camera Hand Detections").c_str());
-            if (ImGui::BeginTable((title + "_time").c_str(), 2, ImGuiTableFlags_Borders)) {
-                ImGui::TableSetupColumn((title + "d_label").c_str());
-                ImGui::TableSetupColumn((title + "d_time").c_str());
-                ImGui::TableNextRow();
-                ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%s", "Processing time (ms)");
-                ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%ld", frame->detections.at(static_cast<const units::eyes>(found_types[i])).proc_time / 1000000);
-                ImGui::EndTable();
-            }
-            if (ImGui::BeginTable((title + "_results_table").c_str(), 2, ImGuiTableFlags_Borders)) {
-                ImGui::TableSetupColumn((title + "_det").c_str());
-                ImGui::TableSetupColumn((title + "_img").c_str());
-                ImGui::TableNextRow();
-                int det_col = 0;
-                int im_col = 1;
-                if (i == 1) {
-                    det_col = 1;
-                    im_col = 0;
-                }
-                ImGui::TableSetColumnIndex(det_col);
-                make_detection_table(frame->detections.at(static_cast<const units::eyes>(found_types[i])), found_types[i]);
-                ImGui::TableSetColumnIndex(im_col);
-                ImGui::Image((void*) (intptr_t) textures[i * 3], ImVec2(640, 480));
-                ImGui::Image((void*) (intptr_t) textures[(i * 3) + 1], ImVec2(640, 480));
-                ImGui::Image((void*) (intptr_t) textures[(i * 3) + 2], ImVec2(640, 480));
-                ImGui::EndTable();
-            }
-            ImGui::End();
-        }
-
     }
 
+    if (ImGui::Begin("Hand Detections")) {
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Exit")){
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+        if (ImGui::BeginTable("times_table", 2, ImGuiTableFlags_Borders)) {
+            ImGui::TableSetupColumn("title_label");
+            ImGui::TableSetupColumn("time_label");
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%s", "Processing time (ms)");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%f", proc_time);
+            ImGui::EndTable();
+        }
+        ImGui::Separator();
+
+        if (ImGui::BeginTabBar("TabBar")) {
+            make_detection_table(single_eye, 0, tab_label);
+            if (enabled_right) {
+                make_detection_table(units::RIGHT_EYE, 1, "Right Eye Raw");
+            }
+            if (ImGui::BeginTabItem("True Position")) {
+                make_position_table();
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
+        }
+        ImGui::End();
+    }
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(_viewport);
-
-    count++;
 }
 
 PLUGIN_MAIN(viewer)
