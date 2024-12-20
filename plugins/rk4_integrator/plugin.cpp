@@ -3,7 +3,7 @@
 
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
@@ -17,6 +17,7 @@
 #include <vector>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 constexpr duration IMU_SAMPLE_LIFETIME{std::chrono::seconds{5}};
 

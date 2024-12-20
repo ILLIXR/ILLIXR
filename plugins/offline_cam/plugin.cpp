@@ -1,5 +1,5 @@
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/data_loading.hpp"
-#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/threadloop.hpp"
@@ -12,6 +12,7 @@
 #include <thread>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 /*
  * Uncommenting this preprocessor macro makes the offline_cam load each data from the disk as it is needed.
@@ -79,14 +80,14 @@ public:
     offline_cam(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
-        , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
+        , _m_cam_publisher{sb->get_writer<binocular_cam_type>("cam")}
         , _m_sensor_data{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data),
                                   load_data<lazy_load_image>("cam1", "offline_cam", &read_data))}
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} {
-        spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLINE_CAM_LOG_LEVEL"));
     }
 
     skip_option _p_should_skip() override {
@@ -138,7 +139,7 @@ public:
 
             time_point expected_real_time_given_dataset_time(
                 std::chrono::duration<long, std::nano>{nearest_row->first - dataset_first_time});
-            _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>(cam_type{
+            _m_cam_publisher.put(_m_cam_publisher.allocate<binocular_cam_type>(binocular_cam_type{
                 expected_real_time_given_dataset_time,
                 img0,
                 img1,
@@ -150,7 +151,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard>             sb;
-    switchboard::writer<cam_type>                  _m_cam_publisher;
+    switchboard::writer<binocular_cam_type>        _m_cam_publisher;
     const std::map<ullong, sensor_types>           _m_sensor_data;
     ullong                                         dataset_first_time;
     ullong                                         last_ts;

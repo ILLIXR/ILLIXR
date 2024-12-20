@@ -1,10 +1,10 @@
-find_package(PythonInterp)
+find_package(Python3)
 
 find_program(MKDOCS_EXEC mkdocs
-        HINTS "$ENV{HOME}/.local/bin")
+        HINTS "$ENV{HOME}/.local/bin" "/usr/bin/mkdocs" "/usr/local/bin/mkdocs")
 include(GNUInstallDirs)
 
-if(PythonInterp_FOUND AND MKDOCS_EXEC)
+if(Python3_FOUND AND MKDOCS_EXEC)
     set(MKDOCS_DOCS_DIR "${CURRENT_BUILD_DIR}/_docs/docs")
     set(MKDOCS_BUILD_DIR "${CURRENT_BUILD_DIR}/docs/docs" CACHE INTERNAL "")
     set(MKDOCS_INSTALL_DIR "${DOXYGEN_INSTALL_DIR}" CACHE INTERNAL "")

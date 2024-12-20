@@ -1,7 +1,7 @@
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/tcpsocket.hpp"
-#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -30,12 +30,12 @@ public:
         : threadloop{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam{sb->get_writer<cam_type>("cam")}
+        , _m_cam{sb->get_writer<binocular_cam_type>("cam")}
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
         , server_ip(SERVER_IP)
         , server_port(SERVER_PORT_1)
         , buffer_str("") {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
         socket.socket_set_reuseaddr();
         socket.socket_bind(server_ip, server_port);
         socket.enable_no_delay();
@@ -150,7 +150,7 @@ private:
         cv::Mat img1(cam_data.rows(), cam_data.cols(), CV_8UC1, img1_copy.data());
         // Without compression end
 #endif
-        _m_cam.put(_m_cam.allocate<cam_type>(cam_type{
+        _m_cam.put(_m_cam.allocate<binocular_cam_type>(binocular_cam_type{
             time_point{std::chrono::nanoseconds{cam_data.timestamp()}},
             img0.clone(),
             img1.clone(),
@@ -167,10 +167,10 @@ private:
     }
 
 private:
-    const std::shared_ptr<switchboard>     sb;
-    switchboard::writer<imu_type>          _m_imu;
-    switchboard::writer<cam_type>          _m_cam;
-    switchboard::writer<connection_signal> _conn_signal;
+    const std::shared_ptr<switchboard>      sb;
+    switchboard::writer<imu_type>           _m_imu;
+    switchboard::writer<binocular_cam_type> _m_cam;
+    switchboard::writer<connection_signal>  _conn_signal;
 
     TCPSocket   socket;
     TCPSocket*  read_socket = NULL;

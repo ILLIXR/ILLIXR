@@ -1,6 +1,13 @@
 #include "illixr.hpp"
 #include "illixr/error_util.hpp"
+#include "illixr/switchboard.hpp"
 
+// static member initialization
+std::unordered_map<std::string, std::string> ILLIXR::switchboard::_m_env_vars = {};
+
+#ifndef BOOST_DATE_TIME_NO_LIB
+    #define BOOST_DATE_TIME_NO_LIB
+#endif
 #include <algorithm>
 #include <boost/algorithm/string/join.hpp>
 #include <cstdlib>
@@ -147,11 +154,13 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::vector<std::string> plugins;
     try {
         r = ILLIXR::runtime_factory();
+        // set internal env_vars
+        const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
 #ifndef NDEBUG
         /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
-        const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
+        const bool enable_pre_sleep = sb->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
         if (enable_pre_sleep) {
             const pid_t pid = getpid();
             spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
@@ -161,7 +170,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             spdlog::get("illixr")->info("[main] Resuming...");
         }
 #endif /// NDEBUG
-       // read in yaml config file
+
         YAML::Node  config;
         std::string exec_path = get_exec_path();
         std::string home_dir  = get_home_dir();
@@ -182,17 +191,37 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                     break;
                 } catch (YAML::BadFile&) { }
             }
+
             if (config.size() == 0)
                 throw std::runtime_error("Could not load given config file: " + config_file_full);
             config_list.clear();
         }
+
+        // read in config file first, as command line args will override
+        for (auto& item : sb->env_names()) {
+            if (config[item])
+                sb->set_env(item, config[item].as<std::string>());
+        }
+        // command line specified env_vars
+        for (auto& item : options.unmatched()) {
+            bool                                   matched = false;
+            cxxopts::values::parser_tool::ArguDesc ad      = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
+
+            if (!sb->get_env(ad.arg_name, "").empty()) {
+                if (!ad.set_value)
+                    ad.value = "True";
+                sb->set_env(ad.arg_name, ad.value);
+                setenv(ad.arg_name.c_str(), ad.value.c_str(), 1); // env vars from command line take precedence
+            }
+        }
+
         if (options.count("duration")) {
             run_duration = std::chrono::seconds{options["duration"].as<long>()};
         } else if (config["duration"]) {
             run_duration = std::chrono::seconds{config["duration"].as<long>()};
         } else {
-            run_duration = getenv("ILLIXR_RUN_DURATION")
-                ? std::chrono::seconds{std::stol(std::string{getenv("ILLIXR_RUN_DURATION")})}
+            run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
+                ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
                 : ILLIXR_RUN_DURATION_DEFAULT;
         }
         GET_STRING(data, ILLIXR_DATA)
@@ -246,6 +275,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             std::cout << "A list of plugins must be given on the command line or in a YAML file" << std::endl;
             return EXIT_FAILURE;
         }
+
         std::vector<std::string> visualizers;
         if (options.count("vis")) {
             visualizers = options["vis"].as<std::vector<std::string>>();
@@ -262,7 +292,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         check_plugins(plugins, dep_map);
         if (config["install_prefix"]) {
-            std::string temp_path(getenv("LD_LIBRARY_PATH"));
+            std::string temp_path(sb->get_env("LD_LIBRARY_PATH"));
             temp_path = config["install_prefix"].as<std::string>() + ":" + temp_path;
             setenv("LD_LIBRARY_PATH", temp_path.c_str(), true);
         }
@@ -288,6 +318,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         // cancel our sleep, so we can join the other thread
         cs.cancel();
         th.join();
+
         delete r;
     } catch (...) {
         delete r;

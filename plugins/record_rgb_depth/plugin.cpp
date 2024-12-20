@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <boost/filesystem.hpp>
@@ -8,6 +8,7 @@
 #include <opencv2/imgcodecs.hpp>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class record_rgb_depth : public plugin {
 public:
@@ -46,9 +47,9 @@ public:
         std::string rgb_img   = rgb_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         std::string depth_img = depth_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         rgb_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-        cv::imwrite(rgb_img, datum->rgb);
+        cv::imwrite(rgb_img, datum->at(image::RGB));
         depth_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
-        cv::imwrite(depth_img, datum->depth);
+        cv::imwrite(depth_img, datum->at(image::DEPTH));
     }
 
     ~record_rgb_depth() override {

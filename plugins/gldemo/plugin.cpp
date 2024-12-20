@@ -2,7 +2,8 @@
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/frame.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
 #include "illixr/gl_util/obj.hpp"
@@ -24,6 +25,7 @@
 #include <thread>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 // Wake up 1 ms after vsync instead of exactly at vsync to account for scheduling uncertainty
 static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};
@@ -44,7 +46,7 @@ public:
         , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_image_handle{sb->get_writer<image_handle>("image_handle")}
         , _m_eyebuffer{sb->get_writer<rendered_frame>("eyebuffer")} {
-        spdlogger(std::getenv("GLDEMO_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("GLDEMO_LOG_LEVEL"));
     }
 
     // Essentially, a crude equivalent of XRWaitFrame.
@@ -299,7 +301,7 @@ public:
         // Init and verify GLEW
         const GLenum glew_err = glewInit();
         if (glew_err != GLEW_OK) {
-            spdlog::get(name)->error("GLEW Error: {}", glewGetErrorString(glew_err));
+            spdlog::get(name)->error("GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
             ILLIXR::abort("Failed to initialize GLEW");
         }
 
@@ -333,8 +335,8 @@ public:
         colorUniform     = glGetUniformLocation(demoShaderProgram, "u_color");
 
         // Load/initialize the demo scene
-        char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-        if (obj_dir == nullptr) {
+        std::string obj_dir = sb->get_env("ILLIXR_DEMO_DATA");
+        if (obj_dir.empty()) {
             ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
         }
 

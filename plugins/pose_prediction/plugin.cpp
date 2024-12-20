@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 
@@ -9,6 +9,7 @@
 #include <shared_mutex>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class pose_prediction_impl : public pose_prediction {
 public:
