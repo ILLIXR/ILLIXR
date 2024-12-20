@@ -263,10 +263,14 @@ if(Python3_FOUND)
     if(USE_OPENVINS)
         set(dependencies "${dependencies} OpenVINS")
     endif()
-    add_custom_command(
-            OUTPUT "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-            DEPENDS ${dependencies}
-            COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+    if(USE_HAND_TRACKING)
+        #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+    endif()
+    add_custom_target(depmaker ALL
+                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                      DEPENDS ${dependencies}
+                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
