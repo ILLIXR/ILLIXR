@@ -30,7 +30,9 @@ private:
     const std::shared_ptr<switchboard>                   _switchboard;
     std::shared_ptr<data_format::ht::ht_frame>           _ht_frame;
     const data_format::pose_data                         _pose;
-    //std::map<data_format::ht::hand, data_format::ht::hand_points> _true_hand_positions;
+#ifdef VIEW_DUMP
+    std::map<data_format::ht::hand, data_format::ht::hand_points> _true_hand_positions;
+#endif
 
     GLFWwindow*                                          _viewport{};
 
