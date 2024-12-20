@@ -5,7 +5,8 @@
 #endif
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/zed_cam.hpp"
+#include "illixr/data_format/zed_cam.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "zed_camera.hpp"
 
 namespace ILLIXR {
@@ -20,7 +21,7 @@ protected:
 private:
     const std::shared_ptr<switchboard>         switchboard_;
     const std::shared_ptr<const RelativeClock> clock_;
-    switchboard::writer<cam_type_zed>          cam_;
+    switchboard::writer<data_format::cam_type_zed>          cam_;
     std::shared_ptr<zed_camera>                zed_cam_;
     sl::Resolution                             image_size_;
     sl::RuntimeParameters                      runtime_parameters_;

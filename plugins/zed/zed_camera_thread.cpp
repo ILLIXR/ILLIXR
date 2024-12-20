@@ -2,6 +2,7 @@
 #include "include/zed_opencv.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 void transform_zed_pose(sl::Transform &from_pose, sl::Transform &to_pose, float ty) {
     sl::Transform transform_;
