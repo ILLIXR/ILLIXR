@@ -48,10 +48,13 @@ public:
         } else if (!strcmp(env_var, "headless")) {
             std::cout << "Using headless" << std::endl;
             backend_type = display_backend::HEADLESS;
-        } else {
+        } else if (!strcmp(env_var, "x11_direct")) {
             std::cout << "Using X11 direct mode" << std::endl;
             backend_type = display_backend::X11_DIRECT;
-            direct_mode = std::stoi(env_var);
+            direct_mode = true;
+        } else {
+            std::cout << "Defaulting to GLFW for display backend" << std::endl;
+            backend_type = display_backend::GLFW;
         }
 
         setup(std::move(instance_extensions), std::move(device_extensions));
@@ -110,7 +113,7 @@ public:
         }
 
         uint32_t width, height;
-        if (direct_mode == -1) {
+        if (!direct_mode) {
             auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
             width  = std::clamp(fb_size.first, swapchain_extent.width, swapchain_extent.width);
             height = std::clamp(fb_size.second, swapchain_extent.height, swapchain_extent.height);
@@ -539,7 +542,7 @@ private:
 
         vmaDestroyAllocator(vma_allocator);
 
-        if (direct_mode == -1) {
+        if (!direct_mode) {
             vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
         }
 
@@ -552,7 +555,7 @@ private:
         ready = true;
 
         while (running) {
-            if (direct_mode == -1) {
+            if (!direct_mode) {
                 if (should_poll.exchange(false)) {
                     auto glfw_backend = std::dynamic_pointer_cast<glfw_extended>(backend);
                     glfw_backend->poll_window_events();
@@ -575,7 +578,7 @@ private:
     std::atomic<bool>           running{true};
 
     display_backend::display_backend_type backend_type;
-    int direct_mode{-1};
+    bool direct_mode{false};
     int selected_gpu{-1};
 
     std::shared_ptr<display_backend> backend;
