@@ -117,3 +117,4 @@ profile:
   enable_alignment: false
   enable_verbose_errors: false
   enable_pre_sleep: false
+  demo_data: /opt/ILLIXR/assets

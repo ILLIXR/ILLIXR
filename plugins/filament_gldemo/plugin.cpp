@@ -166,7 +166,7 @@ public:
         // Create scene
         scene = engine->createScene();
         view->setVisibleLayers(0x4, 0x4);
-        std::string iblDir = "/opt/ILLIXR/assets/ibl/kloppenheim";
+        std::string iblDir = obj_dir+"/ibl/kloppenheim";
         utils::Path iblPath(iblDir);
         if (!iblPath.exists()) {
             std::cerr << "The specified IBL path does not exist: " << iblPath << std::endl;
@@ -408,6 +408,7 @@ private:
     std::vector<utils::Path> assetPaths;
 
     int numOfAssets;
+    std::string obj_dir;
     Eigen::Vector3f offset;
 
     std::array<filament::gltfio::FilamentAsset*, 2> filamentAssets = {nullptr};
@@ -568,8 +569,15 @@ public:
 
         numOfAssets = 1;
         // modify the asset path appropriately!!
+        // Load/initialize the demo scene
+        char* env_var = std::getenv("ILLIXR_DEMO_DATA");
+        if (env_var == nullptr) {
+            ILLIXR::abort("Please define ILLIXR_DEMO_DATA(the `assets` directory).");
+        }
+        obj_dir = std::string(env_var);
         assetPaths = {
-            utils::Path("/opt/ILLIXR/assets/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
+            //utils::Path("/opt/ILLIXR/assets/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
+            utils::Path(std::string(obj_dir)+"/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
         };
         offset = Eigen::Vector3f(0,4,0);
 
