@@ -255,24 +255,27 @@ private:
             std::array<VkClearValue, 2> clear_values = {};
             clear_values[0].color                    = {{1.0f, 1.0f, 1.0f, 1.0f}};
             clear_values[1].depthStencil             = {1.0f, 0};
+            if (src->get_app_type() != "passthrough") {
+                VkRenderPassBeginInfo render_pass_info{
+                    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
+                    nullptr,                                  // pNext
+                    app_pass,                                 // renderPass
+                    offscreen_framebuffers[eye],              // framebuffer
+                    {
+                        {0, 0},              // offset
+                        ds->swapchain_extent // extent
+                    },                       // renderArea
+                    clear_values.size(),     // clearValueCount
+                    clear_values.data()      // pClearValues
+                };
 
-            VkRenderPassBeginInfo render_pass_info{
-                VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO, // sType
-                nullptr,                                  // pNext
-                app_pass,                                 // renderPass
-                offscreen_framebuffers[eye],              // framebuffer
-                {
-                    {0, 0},              // offset
-                    ds->swapchain_extent // extent
-                },                       // renderArea
-                clear_values.size(),     // clearValueCount
-                clear_values.data()      // pClearValues
-            };
-
-            vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-            // Call app service to record the command buffer
-            src->record_command_buffer(app_command_buffer, eye);
-            vkCmdEndRenderPass(app_command_buffer);
+                vkCmdBeginRenderPass(app_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+                // Call app service to record the command buffer
+                src->record_command_buffer(app_command_buffer, eye);
+                vkCmdEndRenderPass(app_command_buffer);
+            }else{
+                src->record_command_buffer(app_command_buffer, &offscreen_images[eye] , eye);
+            }
         }
         VK_ASSERT_SUCCESS(vkEndCommandBuffer(app_command_buffer))
 
@@ -431,6 +434,15 @@ private:
      */
     void create_offscreen_target(VkImage* offscreen_image, VmaAllocation* offscreen_image_allocation,
                                  VkImageView* offscreen_image_view, [[maybe_unused]] VkFramebuffer* offscreen_framebuffer) {
+        VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        uint32_t         width, height;
+        if (src->get_app_type() == "passthrough") {
+            width = display_params::passthrough_width_pixels;
+            height = display_params::passthrough_height_pixels;
+        }else{
+            width = display_params::width_pixels;
+            height = display_params::height_pixels;
+        }
         VkImageCreateInfo image_info{
             VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // sType
             nullptr,                             // pNext
@@ -438,15 +450,15 @@ private:
             VK_IMAGE_TYPE_2D,                    // imageType
             VK_FORMAT_B8G8R8A8_UNORM,            // format
             {
-                display_params::width_pixels,                                 // width
-                display_params::height_pixels,                                // height
+                width,                                 // width
+                height,                                // height
                 1                                                             // depth
             },                                                                // extent
             1,                                                                // mipLevels
             1,                                                                // arrayLayers
             VK_SAMPLE_COUNT_1_BIT,                                            // samples
             VK_IMAGE_TILING_OPTIMAL,                                          // tiling
-            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, // usage
+            usage,                                                            // usage
             {},                                                               // sharingMode
             0,                                                                // queueFamilyIndexCount
             nullptr,                                                          // pQueueFamilyIndices

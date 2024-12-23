@@ -19,12 +19,14 @@ struct cam_type : switchboard::event {
 
 struct rgb_depth_type : public switchboard::event {
     [[maybe_unused]] time_point time;
-    cv::Mat                     rgb;
+    cv::Mat                     rgb0;
+    cv::Mat                     rgb1;
     cv::Mat                     depth;
 
-    rgb_depth_type(time_point _time, cv::Mat _rgb, cv::Mat _depth)
+    rgb_depth_type(time_point _time, cv::Mat _rgb0, cv::Mat _rgb1, cv::Mat _depth)
         : time{_time}
-        , rgb{std::move(_rgb)}
+        , rgb0{std::move(_rgb0)}
+        , rgb1{std::move(_rgb1)}
         , depth{std::move(_depth)} { }
 };
 

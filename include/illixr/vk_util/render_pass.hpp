@@ -71,4 +71,10 @@ public:
      * @param eye The eye to render.
      */
     virtual void record_command_buffer(VkCommandBuffer commandBuffer, int eye) = 0;
+
+    // TODO::RAHUL: Perhaps, create a new class for passthrough derived from render_pass. Passthrough will ultimately need some customized native rendering code. 
+    // This will require changing of native_renderer plugin as well. 
+    // When using passthrough, remove native_renderer, instead, apps can submit to a passthrough plugin, which will composit app's output on top of camera feed and then send to timewarp.
+    virtual void record_command_buffer(VkCommandBuffer commandBuffer, VkImage* image, int eye) = 0;
+    virtual std::string get_app_type() = 0;
 };

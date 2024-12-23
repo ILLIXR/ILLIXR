@@ -137,6 +137,14 @@ public:
         update_uniform(fp, 1);
     }
 
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkImage* image, int eye){
+
+    }
+
+    std::string get_app_type() override {
+        return "VR";
+    }
+
     void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer     vertexBuffers[] = {vertex_buffer};
