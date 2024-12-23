@@ -273,7 +273,7 @@ public:
             use_rgbd = true;
 
         glBindTexture(GL_TEXTURE_2D, rgbd_textures[0]);
-        cv::Mat rgb{rgbd->rgb.clone()};
+        cv::Mat rgb{rgbd->rgb0.clone()};
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgb.cols, rgb.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb.ptr());
         rgbd_texture_sizes[0] = Eigen::Vector2i(rgb.cols, rgb.rows);
 

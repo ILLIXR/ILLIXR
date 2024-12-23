@@ -29,16 +29,18 @@ const record_header __imu_cam_record{"imu_cam",
                                      }};
 
 struct cam_type_zed : public switchboard::event {
-    cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb, cv::Mat _depth, std::size_t _serial_no)
+    cam_type_zed(cv::Mat _img0, cv::Mat _img1, cv::Mat _rgb0,cv::Mat _rgb1 , cv::Mat _depth, std::size_t _serial_no)
         : img0{std::move(_img0)}
         , img1{std::move(_img1)}
-        , rgb{std::move(_rgb)}
+        , rgb0{std::move(_rgb0)}
+        , rgb1{std::move(_rgb1)}
         , depth{std::move(_depth)}
         , serial_no{_serial_no} { }
 
     cv::Mat     img0;
     cv::Mat     img1;
-    cv::Mat     rgb;
+    cv::Mat     rgb0;
+    cv::Mat     rgb1;
     cv::Mat     depth;
     std::size_t serial_no;
 };
@@ -83,12 +85,14 @@ public:
         // Image setup
         imageL_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
         imageR_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C1, MEM::CPU);
-        rgb_zed.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        rgb_zed_L.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
+        rgb_zed_R.alloc(image_size.width, image_size.height, MAT_TYPE::U8_C4, MEM::CPU);
         depth_zed.alloc(image_size.width, image_size.height, MAT_TYPE::F32_C1, MEM::CPU);
 
         imageL_ocv = slMat2cvMat(imageL_zed);
         imageR_ocv = slMat2cvMat(imageR_zed);
-        rgb_ocv    = slMat2cvMat(rgb_zed);
+        rgbL_ocv    = slMat2cvMat(rgb_zed_L);
+        rgbR_ocv    = slMat2cvMat(rgb_zed_R);
         depth_ocv  = slMat2cvMat(depth_zed);
     }
 
@@ -104,12 +108,14 @@ private:
     Mat imageL_zed;
     Mat imageR_zed;
     Mat depth_zed;
-    Mat rgb_zed;
+    Mat rgb_zed_L;
+    Mat rgb_zed_R;
 
     cv::Mat imageL_ocv;
     cv::Mat imageR_ocv;
     cv::Mat depth_ocv;
-    cv::Mat rgb_ocv;
+    cv::Mat rgbL_ocv;
+    cv::Mat rgbR_ocv;
 
     std::optional<ullong> _m_first_imu_time;
 
@@ -132,10 +138,11 @@ protected:
         zedm->retrieveImage(imageL_zed, VIEW::LEFT_GRAY, MEM::CPU, image_size);
         zedm->retrieveImage(imageR_zed, VIEW::RIGHT_GRAY, MEM::CPU, image_size);
         zedm->retrieveMeasure(depth_zed, MEASURE::DEPTH, MEM::CPU, image_size);
-        zedm->retrieveImage(rgb_zed, VIEW::LEFT, MEM::CPU, image_size);
+        zedm->retrieveImage(rgb_zed_L, VIEW::LEFT, MEM::CPU, image_size);
+        zedm->retrieveImage(rgb_zed_R, VIEW::RIGHT, MEM::CPU, image_size);
 
         _m_cam.put(_m_cam.allocate<cam_type_zed>({cv::Mat{imageL_ocv.clone()}, cv::Mat{imageR_ocv.clone()},
-                                                  cv::Mat{rgb_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
+                                                  cv::Mat{rgbL_ocv.clone()}, cv::Mat{rgbR_ocv.clone()}, cv::Mat{depth_ocv.clone()}, ++serial_no}));
 
         RAC_ERRNO_MSG("zed_cam at end of _p_one_iteration");
     }
@@ -208,7 +215,7 @@ protected:
         switchboard::ptr<const cam_type_zed> c = _m_cam_reader.get_ro_nullable();
         if (c && c->serial_no != last_serial_no) {
             _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>({imu_time_point, cv::Mat{c->img0}, cv::Mat{c->img1}}));
-            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb}, cv::Mat{c->depth}}));
+            _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb0}, cv::Mat{c->rgb1}, cv::Mat{c->depth}}));
             last_serial_no = c->serial_no;
         }
 
