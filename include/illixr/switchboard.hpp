@@ -1,17 +1,16 @@
 #pragma once
 
+#include <algorithm>
 #include <cctype>
 #include <iostream>
 #include <list>
 #include <mutex>
 #include <shared_mutex>
-#include <algorithm>
 #ifndef NDEBUG
     #include <spdlog/spdlog.h>
+#endif
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
-
-#endif
 #if __has_include("cpu_timer.hpp")
     #include "cpu_timer.hpp"
 #else
@@ -28,6 +27,7 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
+// Known env vars that are automatically checked for
 const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "DEPTHAI_LOG_LEVEL",
                                            "FAUXPOSE_AMPLITUDE",
@@ -496,7 +496,7 @@ public:
     private:
         /// Reference to the underlying topic
         topic& _m_topic;
-        bool _valid;
+        bool   _valid;
 
     public:
         reader(topic& topic_)
@@ -629,9 +629,9 @@ public:
     };
 
 private:
-    std::unordered_map<std::string, topic>       _m_registry;
-    std::shared_mutex                            _m_registry_lock;
-    std::shared_ptr<record_logger>               _m_record_logger;
+    std::unordered_map<std::string, topic>              _m_registry;
+    std::shared_mutex                                   _m_registry_lock;
+    std::shared_ptr<record_logger>                      _m_record_logger;
     static std::unordered_map<std::string, std::string> _m_env_vars;
 
     template<typename specific_event>
@@ -688,7 +688,9 @@ public:
      */
     static std::vector<std::string> env_names() {
         std::vector<std::string> keys(_m_env_vars.size());
-        std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair){return pair.first;});
+        std::transform(_m_env_vars.begin(), _m_env_vars.end(), keys.begin(), [](auto pair) {
+            return pair.first;
+        });
         return keys;
     }
 
@@ -705,10 +707,10 @@ public:
                 return _m_env_vars.at(var);
             _m_env_vars.at(var) = _default;
             return _default;
-        } catch(std::out_of_range &) {
+        } catch (std::out_of_range&) {
             char* val = std::getenv(var.c_str());
             if (val) {
-                set_env(var, val);   // store it locally for faster retrieval
+                set_env(var, val); // store it locally for faster retrieval
                 return {val};
             }
             return _default;
@@ -721,8 +723,10 @@ public:
     static bool get_env_bool(const std::string& var, const std::string& def = "false") {
         std::string val = get_env(var, def);
         const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
-        for(auto s : affirmative) {
-            if(std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {return std::tolower(a) == std::tolower(b);}))
+        for (auto s : affirmative) {
+            if (std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {
+                    return std::tolower(a) == std::tolower(b);
+                }))
                 return true;
         }
         return false;
@@ -737,6 +741,7 @@ public:
             return nullptr;
         return strdup(val.c_str());
     }
+
     /**
      * @brief Schedules the callback @p fn every time an event is published to @p topic_name.
      *
@@ -801,20 +806,34 @@ public:
             pair.second.stop();
         }
     }
+
 private:
+    /**
+     * @brief Base coordinate system
+     *
+     * This class reads in and hold the world coordinate system origin. The origin can be provided by the
+     * WCS_ORIGIN environment/yaml variable and can be specified in one of three ways
+     *
+     *    - a set of 3 comma separated values, representing only the origin in x, y, and z coordinates
+     *    - a set of 4 comma separated values, representing only the quaternion of the origin in w, x, y, z
+     *    - a set of 7 comma seperated values, representing both the origin and its quaternion in the form x, y, z, w, wx, wy,
+     * wz
+     *
+     * Any component which is not given defaults to 0 (except w which is set to 1)
+     */
     class coordinate_system {
     private:
-        Eigen::Vector3f _position;
+        Eigen::Vector3f    _position;
         Eigen::Quaternionf _orientation;
 
     public:
         coordinate_system()
-        : _position{0., 0., 0.}
-        , _orientation{1., 0., 0., 0.} {
-            std::string ini_pose = get_env("WCF_ORIGIN");
+            : _position{0., 0., 0.}
+            , _orientation{1., 0., 0., 0.} {
+            std::string ini_pose = get_env("WCS_ORIGIN");
             if (!ini_pose.empty()) {
-                std::stringstream iss(ini_pose);
-                std::string token;
+                std::stringstream  iss(ini_pose);
+                std::string        token;
                 std::vector<float> ip;
                 while (!iss.eof() && std::getline(iss, token, ',')) {
                     ip.emplace_back(std::stof(token));
@@ -829,9 +848,9 @@ private:
                     _orientation.y() = ip[2];
                     _orientation.z() = ip[3];
                 } else if (ip.size() == 7) {
-                    _position.x() = ip[0];
-                    _position.y() = ip[1];
-                    _position.z() = ip[2];
+                    _position.x()    = ip[0];
+                    _position.y()    = ip[1];
+                    _position.z()    = ip[2];
                     _orientation.w() = ip[3];
                     _orientation.x() = ip[4];
                     _orientation.y() = ip[5];
@@ -840,17 +859,25 @@ private:
             }
         }
 
+        /**
+         * Get the position portion of the WCS origin
+         * @return Eigen::Vector3f
+         */
         [[nodiscard]] const Eigen::Vector3f& position() const {
             return _position;
         }
 
+        /**
+         * Get the orientation portion of the WCS origin
+         * @return Eigen::Quaternionf
+         */
         [[nodiscard]] const Eigen::Quaternionf& orientation() const {
             return _orientation;
         }
     };
 
 public:
-    coordinate_system root_coordinates;
+    coordinate_system root_coordinates; //!> The WCS origin
 };
 
 } // namespace ILLIXR

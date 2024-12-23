@@ -7,32 +7,30 @@
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
-// Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
-// Learn about Dear ImGui:
+// Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the
+// backends you need. Learn about Dear ImGui:
 // - FAQ                  https://dearimgui.com/faq
 // - Getting Started      https://dearimgui.com/getting-started
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
 #pragma once
-#include "imgui.h"          // IMGUI_IMPL_API
+#include "imgui.h" // IMGUI_IMPL_API
 #ifndef IMGUI_DISABLE
 
-#include <webgpu/webgpu.h>
+    #include <webgpu/webgpu.h>
 
 // Initialization data, for ImGui_ImplWGPU_Init()
-struct ImGui_ImplWGPU_InitInfo
-{
-    WGPUDevice              Device;
-    int                     NumFramesInFlight = 3;
-    WGPUTextureFormat       RenderTargetFormat = WGPUTextureFormat_Undefined;
-    WGPUTextureFormat       DepthStencilFormat = WGPUTextureFormat_Undefined;
-    WGPUMultisampleState    PipelineMultisampleState = {};
+struct ImGui_ImplWGPU_InitInfo {
+    WGPUDevice           Device;
+    int                  NumFramesInFlight        = 3;
+    WGPUTextureFormat    RenderTargetFormat       = WGPUTextureFormat_Undefined;
+    WGPUTextureFormat    DepthStencilFormat       = WGPUTextureFormat_Undefined;
+    WGPUMultisampleState PipelineMultisampleState = {};
 
-    ImGui_ImplWGPU_InitInfo()
-    {
-        PipelineMultisampleState.count = 1;
-        PipelineMultisampleState.mask = UINT32_MAX;
+    ImGui_ImplWGPU_InitInfo() {
+        PipelineMultisampleState.count                  = 1;
+        PipelineMultisampleState.mask                   = UINT32_MAX;
         PipelineMultisampleState.alphaToCoverageEnabled = false;
     }
 };

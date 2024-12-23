@@ -1,12 +1,12 @@
 #pragma once
 
 #ifndef HAVE_ZED
-#define HAVE_ZED
+    #define HAVE_ZED
 #endif
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/zed_cam.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/data_format/zed_cam.hpp"
-#include "illixr/data_format/misc.hpp"
 #include "zed_camera.hpp"
 
 namespace ILLIXR {
@@ -19,13 +19,13 @@ protected:
     void        _p_one_iteration() override;
 
 private:
-    const std::shared_ptr<switchboard>         switchboard_;
-    const std::shared_ptr<const RelativeClock> clock_;
-    switchboard::writer<data_format::cam_type_zed>          cam_;
-    std::shared_ptr<zed_camera>                zed_cam_;
-    sl::Resolution                             image_size_;
-    sl::RuntimeParameters                      runtime_parameters_;
-    std::size_t                                serial_no_{0};
+    const std::shared_ptr<switchboard>             switchboard_;
+    const std::shared_ptr<const RelativeClock>     clock_;
+    switchboard::writer<data_format::cam_type_zed> cam_;
+    std::shared_ptr<zed_camera>                    zed_cam_;
+    sl::Resolution                                 image_size_;
+    sl::RuntimeParameters                          runtime_parameters_;
+    std::size_t                                    serial_no_{0};
 
     sl::Mat imageL_zed_;
     sl::Mat imageR_zed_;
@@ -41,4 +41,4 @@ private:
     std::optional<ullong> first_imu_time_;
 };
 
-}
+} // namespace ILLIXR

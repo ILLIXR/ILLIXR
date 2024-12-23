@@ -1,20 +1,20 @@
 #pragma once
 
-#include <eigen3/Eigen/Dense>
-
 #include "illixr/switchboard.hpp"
+
+#include <eigen3/Eigen/Dense>
 
 namespace ILLIXR::data_format {
 
-struct [[maybe_unused]]imu_type : switchboard::event {
+struct [[maybe_unused]] imu_type : switchboard::event {
     time_point      time;
     Eigen::Vector3d angular_v;
     Eigen::Vector3d linear_a;
 
     imu_type(time_point time_, Eigen::Vector3d angular_v_, Eigen::Vector3d linear_a_)
-            : time{time_}
-            , angular_v{std::move(angular_v_)}
-            , linear_a{std::move(linear_a_)} { }
+        : time{time_}
+        , angular_v{std::move(angular_v_)}
+        , linear_a{std::move(linear_a_)} { }
 };
 
 // Values needed to initialize the IMU integrator
@@ -29,7 +29,7 @@ typedef struct {
 } imu_params;
 
 // IMU biases, initialization params, and slow pose needed by the IMU integrator
-struct [[maybe_unused]]imu_integrator_input : public switchboard::event {
+struct [[maybe_unused]] imu_integrator_input : public switchboard::event {
     time_point last_cam_integration_time;
     duration   t_offset;
     imu_params params;
@@ -43,18 +43,18 @@ struct [[maybe_unused]]imu_integrator_input : public switchboard::event {
     imu_integrator_input(time_point last_cam_integration_time_, duration t_offset_, imu_params params_,
                          Eigen::Vector3d biasAcc_, Eigen::Vector3d biasGyro_, Eigen::Matrix<double, 3, 1> position_,
                          Eigen::Matrix<double, 3, 1> velocity_, Eigen::Quaterniond quat_)
-            : last_cam_integration_time{last_cam_integration_time_}
-            , t_offset{t_offset_}
-            , params{std::move(params_)}
-            , biasAcc{std::move(biasAcc_)}
-            , biasGyro{std::move(biasGyro_)}
-            , position{std::move(position_)}
-            , velocity{std::move(velocity_)}
-            , quat{std::move(quat_)} { }
+        : last_cam_integration_time{last_cam_integration_time_}
+        , t_offset{t_offset_}
+        , params{std::move(params_)}
+        , biasAcc{std::move(biasAcc_)}
+        , biasGyro{std::move(biasGyro_)}
+        , position{std::move(position_)}
+        , velocity{std::move(velocity_)}
+        , quat{std::move(quat_)} { }
 };
 
 // Output of the IMU integrator to be used by pose prediction
-struct [[maybe_unused]]imu_raw_type : public switchboard::event {
+struct [[maybe_unused]] imu_raw_type : public switchboard::event {
     // Biases from the last two IMU integration iterations used by RK4 for pose predict
     Eigen::Matrix<double, 3, 1> w_hat;
     Eigen::Matrix<double, 3, 1> a_hat;
@@ -70,14 +70,14 @@ struct [[maybe_unused]]imu_raw_type : public switchboard::event {
     imu_raw_type(Eigen::Matrix<double, 3, 1> w_hat_, Eigen::Matrix<double, 3, 1> a_hat_, Eigen::Matrix<double, 3, 1> w_hat2_,
                  Eigen::Matrix<double, 3, 1> a_hat2_, Eigen::Matrix<double, 3, 1> pos_, Eigen::Matrix<double, 3, 1> vel_,
                  Eigen::Quaterniond quat_, time_point imu_time_)
-            : w_hat{std::move(w_hat_)}
-            , a_hat{std::move(a_hat_)}
-            , w_hat2{std::move(w_hat2_)}
-            , a_hat2{std::move(a_hat2_)}
-            , pos{std::move(pos_)}
-            , vel{std::move(vel_)}
-            , quat{std::move(quat_)}
-            , imu_time{imu_time_} { }
+        : w_hat{std::move(w_hat_)}
+        , a_hat{std::move(a_hat_)}
+        , w_hat2{std::move(w_hat2_)}
+        , a_hat2{std::move(a_hat2_)}
+        , pos{std::move(pos_)}
+        , vel{std::move(vel_)}
+        , quat{std::move(quat_)}
+        , imu_time{imu_time_} { }
 };
 
-}
+} // namespace ILLIXR::data_format

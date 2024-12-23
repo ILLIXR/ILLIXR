@@ -155,7 +155,7 @@ if(HAVE_CENTOS)
     # see if it has been built yet
     find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
     if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
-	    message("Building OpenCV")
+        message("Building OpenCV")
         include(cmake/GetOpenCV_Viz.cmake)
         set(OpenCV_DEP_STR OpenCV_Viz)
         set(INTERNAL_OPENCV ${OpenCV_DIR})
@@ -244,12 +244,39 @@ include(cmake/ConfigurationSummary.cmake)
 # set up to install profile files
 if(ILLIXR_PROFILE_NAMES)
     foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
-        install(FILES "profiles/${GRP}.yaml"
+        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
                 DESTINATION $ENV{HOME}/.illixr/profiles)
-        install(FILES "profiles/${GRP}.yaml"
+        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
+
+# reset this, so it is clean for subsequent runs of cmake
+set(VISUALIZER "" CACHE STRING "")
+
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_FOUND)
+    set(dependencies "")
+    if(USE_AUDIO_PIPELINE)
+        set(dependencies "audio_pipeline ")
+    endif()
+    if(USE_OPENVINS)
+        set(dependencies "${dependencies} OpenVINS")
+    endif()
+    if(USE_HAND_TRACKING)
+        #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
+    endif()
+    add_custom_target(depmaker ALL
+                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                      DEPENDS ${dependencies}
+                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+endif()
+install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+        DESTINATION $ENV{HOME}/.illixr/profiles)
+install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
 
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})

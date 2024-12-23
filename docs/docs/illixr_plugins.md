@@ -226,8 +226,24 @@ ILLIXR supports additional plugins to replace some of the default plugins.
     -   *Publishes* `imu_type` on `imu` topic.
     -   *Publishes* `rgb_depth_type` on `rgb_depth` topic.
 
-See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
+## Plugin Interdependencies
 
+Some plugins require other plugins to be loaded in order to work. The table below gives a listing of the plugin interdependencies.
+
+| Plugin          | Requires        | Provided by plugin                      |
+|:----------------|:----------------|:----------------------------------------|
+| debugview       | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+| gldemo          | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+| native_renderer | app             | vkdemo                                  |
+|                 | display_sink    | display_vk                              |
+|                 | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+|                 | timewarp        | timewarp_vk                             |
+| timewarp_gl     | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+| timewarp_vk     | display_sink    | display_vk                              |
+|                 | pose_prediction | faux_pose, pose_lookup, pose_prediction |
+| vkdemo          | display_sink    | display_vk                              |
+
+See [Getting Started][31] for more information on adding plugins to a [_profile_][40] file.
 
 [//]: # (- References -)
 

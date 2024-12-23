@@ -1,5 +1,5 @@
-#include "data_loading.hpp"
 #include "illixr/data_format/imu.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
@@ -11,12 +11,32 @@
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;
 
+typedef struct {
+    Eigen::Vector3d angular_v;
+    Eigen::Vector3d linear_a;
+} raw_imu_type;
+
+typedef struct {
+    raw_imu_type imu0;
+} sensor_types;
+
+inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, sensor_types> data;
+
+    for (CSVIterator row{gt_file, 1}; row != CSVIterator{}; ++row) {
+        ullong          t = std::stoull(row[0]);
+        Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
+        Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
+        data[t].imu0 = {av, la};
+    }
+    return data;
+}
+
 class offline_imu : public ILLIXR::threadloop {
 public:
     offline_imu(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
-        , _m_sb{pb->lookup_impl<switchboard>()}
-        , _m_sensor_data{load_data(_m_sb)}
+        , _m_sensor_data{load_data<sensor_types>("imu0", "offline_imu", &read_data)}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , _m_imu{_m_sb->get_writer<imu_type>("imu")}
         , dataset_first_time{_m_sensor_data_it->first}

@@ -1,7 +1,7 @@
 #include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/tcpsocket.hpp"
-#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
@@ -198,14 +198,14 @@ public:
     }
 
 private:
-    std::unique_ptr<video_encoder>         encoder = nullptr;
-    std::optional<time_point>              latest_imu_time;
-    std::optional<time_point>              latest_cam_time;
-    int                                    frame_id    = 0;
-    vio_input_proto::IMUCamVec*            data_buffer = new vio_input_proto::IMUCamVec();
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<RelativeClock>   _m_clock;
-    const std::shared_ptr<Stoplight>       _m_stoplight;
+    std::unique_ptr<video_encoder>                   encoder = nullptr;
+    std::optional<time_point>                        latest_imu_time;
+    std::optional<time_point>                        latest_cam_time;
+    int                                              frame_id    = 0;
+    vio_input_proto::IMUCamVec*                      data_buffer = new vio_input_proto::IMUCamVec();
+    const std::shared_ptr<switchboard>               sb;
+    const std::shared_ptr<RelativeClock>             _m_clock;
+    const std::shared_ptr<Stoplight>                 _m_stoplight;
     switchboard::buffered_reader<binocular_cam_type> _m_cam;
 
     TCPSocket   socket;

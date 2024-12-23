@@ -1,7 +1,7 @@
 #include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/tcpsocket.hpp"
-#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"

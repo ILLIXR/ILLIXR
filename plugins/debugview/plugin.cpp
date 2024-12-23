@@ -8,12 +8,12 @@
 #include <GLFW/glfw3.h> // Also loading first, just to be safe
 // clang-format on
 
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
-#include "illixr/data_format/opencv_data_types.hpp"
-#include "illixr/data_format/imu.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
