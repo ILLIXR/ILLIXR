@@ -2,41 +2,7 @@
 #include <GL/glew.h> // GLEW has to be loaded before other GL libraries
 // clang-format on
 
-#include <filament/Engine.h>
-#include <filament/SwapChain.h>
-#include <filament/Renderer.h>
-#include <filament/Material.h>
-#include <filament/RenderableManager.h>
-#include <filament/TransformManager.h>
-#include <filament/Scene.h>
-#include <filament/View.h>
-#include <filament/Camera.h>
-#include <filament/Viewport.h>
-#include <filament/IndirectLight.h>
-#include <filament/LightManager.h>
-#include <filament/TextureSampler.h>
-#include <filament/Skybox.h>
-#include <filament/RenderTarget.h>
-
-#include <gltfio/AssetLoader.h>
-#include <gltfio/FilamentAsset.h>
-#include <gltfio/ResourceLoader.h>
-#include <gltfio/TextureProvider.h>
-
-#include <utils/EntityManager.h>
-#include <utils/Log.h>
-#include <utils/NameComponentManager.h>
-
-#include <ktxreader/Ktx2Reader.h>
-#include <camutils/Manipulator.h>
-
 #include "IBL.h"
-
-#include <utils/Path.h>
-
-#include <math/quat.h>
-#include <math/mat4.h>
-
 #include "illixr/data_format.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
@@ -51,25 +17,51 @@
 #include "illixr/threadloop.hpp"
 
 #include <array>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <camutils/Manipulator.h>
 #include <chrono>
 #include <cmath>
 #include <eigen3/Eigen/Core>
-#include <future>
-#include <iostream>
-#include <thread>
-#include <iomanip>
+#include <filament/Camera.h>
+#include <filament/Engine.h>
+#include <filament/IndirectLight.h>
+#include <filament/LightManager.h>
+#include <filament/Material.h>
+#include <filament/RenderableManager.h>
+#include <filament/Renderer.h>
+#include <filament/RenderTarget.h>
+#include <filament/Scene.h>
+#include <filament/Skybox.h>
+#include <filament/SwapChain.h>
+#include <filament/TextureSampler.h>
+#include <filament/TransformManager.h>
+#include <filament/View.h>
+#include <filament/Viewport.h>
 #include <fstream>
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <future>
+#include <gltfio/AssetLoader.h>
+#include <gltfio/FilamentAsset.h>
+#include <gltfio/ResourceLoader.h>
+#include <gltfio/TextureProvider.h>
+#include <iomanip>
+#include <iostream>
+#include <ktxreader/Ktx2Reader.h>
+#include <math/mat4.h>
+#include <math/quat.h>
+#include <thread>
+#include <utils/EntityManager.h>
+#include <utils/Log.h>
+#include <utils/NameComponentManager.h>
+#include <utils/Path.h>
 
 using namespace ILLIXR;
 
 // Wake up 1 ms after vsync instead of exactly at vsync to account for scheduling uncertainty
 static constexpr std::chrono::milliseconds VSYNC_SAFETY_DELAY{1};
 
-class filament_gldemo: public threadloop {
+class filament_gldemo : public threadloop {
 public:
     // Public constructor, create_component passes Switchboard handles ("plugs")
     // to this constructor. In turn, the constructor fills in the private
@@ -149,16 +141,16 @@ public:
         assert(gl_result && "glXMakeCurrent should not fail");
 
         // Initialize filament objects
-        engine = filament::Engine::create(filament::Engine::Backend::OPENGL, nullptr, xwin->glc);
+        engine    = filament::Engine::create(filament::Engine::Backend::OPENGL, nullptr, xwin->glc);
         swapChain = engine->createSwapChain((uint32_t) display_params::width_pixels, (uint32_t) display_params::height_pixels);
-        //swapChain = engine->createSwapChain((void*)&xwin->win);
+        // swapChain = engine->createSwapChain((void*)&xwin->win);
         renderer = engine->createRenderer();
         // Create Filament camera
         utils::EntityManager& em = utils::EntityManager::get();
         em.create(1, &eyeCameraEntity);
         eyeCamera = engine->createCamera(eyeCameraEntity);
-        eyeCamera->setProjection(display_params::fov_x, (double)display_params::width_pixels/display_params::height_pixels,
-        rendering_params::near_z, rendering_params::far_z, filament::Camera::Fov::HORIZONTAL);
+        eyeCamera->setProjection(display_params::fov_x, (double) display_params::width_pixels / display_params::height_pixels,
+                                 rendering_params::near_z, rendering_params::far_z, filament::Camera::Fov::HORIZONTAL);
 
         view = engine->createView();
         view->setName("Main View");
@@ -166,7 +158,7 @@ public:
         // Create scene
         scene = engine->createScene();
         view->setVisibleLayers(0x4, 0x4);
-        std::string iblDir = obj_dir+"/ibl/kloppenheim";
+        std::string iblDir = obj_dir + "/ibl/kloppenheim";
         utils::Path iblPath(iblDir);
         if (!iblPath.exists()) {
             std::cerr << "The specified IBL path does not exist: " << iblPath << std::endl;
@@ -179,7 +171,7 @@ public:
         ibl->getSkybox()->setLayerMask(0x7, 0x4);
         auto indirectLight = ibl->getIndirectLight();
         indirectLight->setIntensity(20000);
-        indirectLight->setRotation(filament::math::mat3f::rotation(0.5f, filament::math::float3{ 0, 1, 0 }));
+        indirectLight->setRotation(filament::math::mat3f::rotation(0.5f, filament::math::float3{0, 1, 0}));
         scene->setSkybox(ibl->getSkybox());
         scene->setIndirectLight(ibl->getIndirectLight());
         view->setScene(scene);
@@ -188,22 +180,23 @@ public:
         view->setScreenSpaceReflectionsOptions(ssr);
         view->setAntiAliasing(filament::View::AntiAliasing::NONE);
         view->setMultiSampleAntiAliasingOptions({.enabled = true, .sampleCount = 4});
-        view->setAmbientOcclusionOptions({.quality=filament::QualityLevel::ULTRA, .enabled=true});
+        view->setAmbientOcclusionOptions({.quality = filament::QualityLevel::ULTRA, .enabled = true});
         // Load glTF assets
-        names = new utils::NameComponentManager(utils::EntityManager::get());
-        materials = filament::gltfio::createJitShaderProvider(engine);
-        assetLoader = filament::gltfio::AssetLoader::create({engine, materials, names });
+        names       = new utils::NameComponentManager(utils::EntityManager::get());
+        materials   = filament::gltfio::createJitShaderProvider(engine);
+        assetLoader = filament::gltfio::AssetLoader::create({engine, materials, names});
 
         for (int i = 0; i < numOfAssets; i++) {
             loadAsset(assetPaths[i], &filamentAssets[i], &filamentInstances[i], assetLoader);
-            loadResources(assetPaths[i], &resourceLoaders[i], engine, &stbDecoder, &ktxDecoder, filamentAssets[i], filamentInstances[i]);
+            loadResources(assetPaths[i], &resourceLoaders[i], engine, &stbDecoder, &ktxDecoder, filamentAssets[i],
+                          filamentInstances[i]);
         }
 
         // Add sun
-        const utils::Entity *entities = filamentAssets[0]->getEntities();
-        filament::LightManager &lm = engine->getLightManager();
-        for(int i=0; i<filamentAssets[0]->getEntityCount(); i++) {
-            if(strcmp(filamentAssets[0]->getName(entities[i]), "SUN") == 0) {
+        const utils::Entity*    entities = filamentAssets[0]->getEntities();
+        filament::LightManager& lm       = engine->getLightManager();
+        for (int i = 0; i < filamentAssets[0]->getEntityCount(); i++) {
+            if (strcmp(filamentAssets[0]->getName(entities[i]), "SUN") == 0) {
                 std::cerr << "Found SUN\n";
                 filament::LightManager::Builder(filament::LightManager::Type::SUN)
                     .color(filament::math::float3(1.0, 1.0, 1.0))
@@ -215,12 +208,12 @@ public:
                     .sunHaloFalloff(240.0f)
                     .build(*engine, entities[i]);
                 scene->addEntity(entities[i]);
-            }
-            else {
+            } else {
                 filament::LightManager::Instance linstance = lm.getInstance(entities[i]);
-                if(lm.getType(linstance) == filament::LightManager::Type::POINT && strcmp(filamentAssets[0]->getName(entities[i]), "HDRI_SKY")) {
-                    auto &tm = engine->getTransformManager();
-                    auto pos = tm.getWorldTransform(tm.getInstance(entities[i]));
+                if (lm.getType(linstance) == filament::LightManager::Type::POINT &&
+                    strcmp(filamentAssets[0]->getName(entities[i]), "HDRI_SKY")) {
+                    auto&                                 tm  = engine->getTransformManager();
+                    auto                                  pos = tm.getWorldTransform(tm.getInstance(entities[i]));
                     filament::LightManager::ShadowOptions shadowOps;
                     shadowOps.mapSize = 2048;
                     filament::LightManager::Builder(filament::LightManager::Type::POINT)
@@ -251,50 +244,69 @@ public:
             _m_image_handle.allocate<image_handle>(image_handle{eyeTextureHandles[1][1], 1, swapchain_usage::RIGHT_SWAPCHAIN}));
 
         eyeTextures[0][0] = filament::Texture::Builder()
-            .width(display_params::width_pixels).height(display_params::height_pixels).levels(1)
-            .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-            .format(filament::Texture::InternalFormat::RGB8).import(eyeTextureHandles[0][0]).build(*engine);
+                                .width(display_params::width_pixels)
+                                .height(display_params::height_pixels)
+                                .levels(1)
+                                .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
+                                .format(filament::Texture::InternalFormat::RGB8)
+                                .import(eyeTextureHandles[0][0])
+                                .build(*engine);
         eyeTextures[0][1] = filament::Texture::Builder()
-            .width(display_params::width_pixels).height(display_params::height_pixels).levels(1)
-            .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-            .format(filament::Texture::InternalFormat::RGB8).import(eyeTextureHandles[0][1]).build(*engine);
+                                .width(display_params::width_pixels)
+                                .height(display_params::height_pixels)
+                                .levels(1)
+                                .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
+                                .format(filament::Texture::InternalFormat::RGB8)
+                                .import(eyeTextureHandles[0][1])
+                                .build(*engine);
         eyeTextures[1][0] = filament::Texture::Builder()
-            .width(display_params::width_pixels).height(display_params::height_pixels).levels(1)
-            .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-            .format(filament::Texture::InternalFormat::RGB8).import(eyeTextureHandles[1][0]).build(*engine);
+                                .width(display_params::width_pixels)
+                                .height(display_params::height_pixels)
+                                .levels(1)
+                                .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
+                                .format(filament::Texture::InternalFormat::RGB8)
+                                .import(eyeTextureHandles[1][0])
+                                .build(*engine);
         eyeTextures[1][1] = filament::Texture::Builder()
-            .width(display_params::width_pixels).height(display_params::height_pixels).levels(1)
-            .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-            .format(filament::Texture::InternalFormat::RGB8).import(eyeTextureHandles[1][1]).build(*engine);
+                                .width(display_params::width_pixels)
+                                .height(display_params::height_pixels)
+                                .levels(1)
+                                .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
+                                .format(filament::Texture::InternalFormat::RGB8)
+                                .import(eyeTextureHandles[1][1])
+                                .build(*engine);
         depthTexture = filament::Texture::Builder()
-            .width(display_params::width_pixels).height(display_params::height_pixels).levels(1)
-            .usage(filament::Texture::Usage::DEPTH_ATTACHMENT)
-            .format(filament::Texture::InternalFormat::DEPTH24).build(*engine);
+                           .width(display_params::width_pixels)
+                           .height(display_params::height_pixels)
+                           .levels(1)
+                           .usage(filament::Texture::Usage::DEPTH_ATTACHMENT)
+                           .format(filament::Texture::InternalFormat::DEPTH24)
+                           .build(*engine);
         renderTargets[0][0] = filament::RenderTarget::Builder()
-            .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[0][0])
-            .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
-            .build(*engine);
+                                  .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[0][0])
+                                  .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
+                                  .build(*engine);
         renderTargets[0][1] = filament::RenderTarget::Builder()
-            .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[0][1])
-            .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
-            .build(*engine);
+                                  .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[0][1])
+                                  .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
+                                  .build(*engine);
         renderTargets[1][0] = filament::RenderTarget::Builder()
-            .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[1][0])
-            .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
-            .build(*engine);
+                                  .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[1][0])
+                                  .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
+                                  .build(*engine);
         renderTargets[1][1] = filament::RenderTarget::Builder()
-            .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[1][1])
-            .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
-            .build(*engine);
-        view->setRenderTarget(renderTargets[0][0]);        
+                                  .texture(filament::RenderTarget::AttachmentPoint::COLOR, eyeTextures[1][1])
+                                  .texture(filament::RenderTarget::AttachmentPoint::DEPTH, depthTexture)
+                                  .build(*engine);
+        view->setRenderTarget(renderTargets[0][0]);
     }
 
     void _p_one_iteration() override {
         for (int i = 0; i < numOfAssets; i++) {
-            if(resourceLoaders[i])
+            if (resourceLoaders[i])
                 resourceLoaders[i]->asyncUpdateLoad();
             populateScene(filamentAssets[i], scene);
-        }        
+        }
         // Essentially, XRWaitFrame.
         wait_vsync();
 
@@ -311,8 +323,7 @@ public:
 
         for (auto eye_idx = 0; eye_idx < 2; eye_idx++) {
             // Offset of eyeball from pose
-            auto eyeball =
-                Eigen::Vector3f((eye_idx == 0 ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
+            auto eyeball = Eigen::Vector3f((eye_idx == 0 ? -display_params::ipd / 2.0f : display_params::ipd / 2.0f), 0, 0);
 
             // Apply head rotation to eyeball offset vector
             eyeball = head_rotation_matrix * eyeball;
@@ -326,10 +337,10 @@ public:
             eye_matrix.block<3, 3>(0, 0) = pose.orientation.toRotationMatrix();
 
             // Objects' "view matrix" is inverse of eye matrix.
-            filament::math::mat4 cameraMatrix(eye_matrix(0,0), eye_matrix(1,0), eye_matrix(2,0), eye_matrix(3,0),
-                                            eye_matrix(0,1), eye_matrix(1,1), eye_matrix(2,1), eye_matrix(3,1),
-                                            eye_matrix(0,2), eye_matrix(1,2), eye_matrix(2,2), eye_matrix(3,2),
-                                            eye_matrix(0,3), eye_matrix(1,3), eye_matrix(2,3), eye_matrix(3,3));
+            filament::math::mat4 cameraMatrix(eye_matrix(0, 0), eye_matrix(1, 0), eye_matrix(2, 0), eye_matrix(3, 0),
+                                              eye_matrix(0, 1), eye_matrix(1, 1), eye_matrix(2, 1), eye_matrix(3, 1),
+                                              eye_matrix(0, 2), eye_matrix(1, 2), eye_matrix(2, 2), eye_matrix(3, 2),
+                                              eye_matrix(0, 3), eye_matrix(1, 3), eye_matrix(2, 3), eye_matrix(3, 3));
 
             eyeCamera->setModelMatrix(cameraMatrix);
             view->setCamera(eyeCamera);
@@ -338,14 +349,13 @@ public:
             if (renderer->beginFrame(swapChain)) {
                 renderer->render(view);
                 renderer->endFrame();
-            }
-            else {
+            } else {
                 renderer->render(view);
                 renderer->endFrame();
             }
         }
 
-        //glFinish();
+        // glFinish();
 
 #ifndef NDEBUG
         const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
@@ -359,11 +369,11 @@ public:
         lastTime = _m_clock->now();
 
         /// Publish our submitted frame index to Switchboard!
-        _m_eyebuffer.put(_m_eyebuffer.allocate<rendered_frame>(rendered_frame{
-            std::array<GLuint, 2>{which_buffer, which_buffer}, std::array<GLuint, 2>{which_buffer, which_buffer}, fast_pose,
-            fast_pose.predict_computed_time, lastTime}));
+        _m_eyebuffer.put(_m_eyebuffer.allocate<rendered_frame>(
+            rendered_frame{std::array<GLuint, 2>{which_buffer, which_buffer}, std::array<GLuint, 2>{which_buffer, which_buffer},
+                           fast_pose, fast_pose.predict_computed_time, lastTime}));
 
-        which_buffer = (which_buffer+1) % 2;
+        which_buffer = (which_buffer + 1) % 2;
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {
@@ -393,35 +403,35 @@ private:
     switchboard::writer<image_handle>   _m_image_handle;
     switchboard::writer<rendered_frame> _m_eyebuffer;
     // Filament objects
-    filament::Engine* engine;
-    filament::View* view;
+    filament::Engine*    engine;
+    filament::View*      view;
     filament::SwapChain* swapChain;
-    filament::Renderer* renderer;
-    utils::Entity eyeCameraEntity;
-    filament::Camera* eyeCamera;
-    filament::Scene* scene;
+    filament::Renderer*  renderer;
+    utils::Entity        eyeCameraEntity;
+    filament::Camera*    eyeCamera;
+    filament::Scene*     scene;
 
     // These are for loading assets
-    filament::gltfio::AssetLoader* assetLoader;
-    filament::gltfio::MaterialProvider *materials;
-    utils::NameComponentManager *names;
-    std::vector<utils::Path> assetPaths;
+    filament::gltfio::AssetLoader*      assetLoader;
+    filament::gltfio::MaterialProvider* materials;
+    utils::NameComponentManager*        names;
+    std::vector<utils::Path>            assetPaths;
 
-    int numOfAssets;
-    std::string obj_dir;
+    int             numOfAssets;
+    std::string     obj_dir;
     Eigen::Vector3f offset;
 
-    std::array<filament::gltfio::FilamentAsset*, 2> filamentAssets = {nullptr};
+    std::array<filament::gltfio::FilamentAsset*, 2>    filamentAssets    = {nullptr};
     std::array<filament::gltfio::FilamentInstance*, 2> filamentInstances = {nullptr};
-    std::array<filament::gltfio::ResourceLoader*, 2> resourceLoaders = {nullptr};
-    filament::gltfio::TextureProvider *stbDecoder = nullptr;
-    filament::gltfio::TextureProvider *ktxDecoder = nullptr;
+    std::array<filament::gltfio::ResourceLoader*, 2>   resourceLoaders   = {nullptr};
+    filament::gltfio::TextureProvider*                 stbDecoder        = nullptr;
+    filament::gltfio::TextureProvider*                 ktxDecoder        = nullptr;
     // Image based lighting
     std::unique_ptr<IBL> ibl;
 
     // Filament textures for color and depth
     std::array<std::array<filament::Texture*, 2>, 2> eyeTextures;
-    filament::Texture* depthTexture;
+    filament::Texture*                               depthTexture;
     // This is basically a framebuffer
     std::array<std::array<filament::RenderTarget*, 2>, 2> renderTargets;
     // Texture handles for publishing the rendered textures
@@ -436,7 +446,8 @@ private:
         return in.tellg();
     }
 
-    void loadAsset(utils::Path filename, filament::gltfio::FilamentAsset** asset, filament::gltfio::FilamentInstance** instance, filament::gltfio::AssetLoader* assetLoader) {
+    void loadAsset(utils::Path filename, filament::gltfio::FilamentAsset** asset, filament::gltfio::FilamentInstance** instance,
+                   filament::gltfio::AssetLoader* assetLoader) {
         // Peek at the file size to allow pre-allocation.
         long contentSize = static_cast<long>(getFileSize(filename.c_str()));
         if (contentSize <= 0) {
@@ -445,7 +456,7 @@ private:
         }
 
         // Consume the glTF file.
-        std::ifstream in(filename.c_str(), std::ifstream::binary | std::ifstream::in);
+        std::ifstream        in(filename.c_str(), std::ifstream::binary | std::ifstream::in);
         std::vector<uint8_t> buffer(static_cast<unsigned long>(contentSize));
         if (!in.read((char*) buffer.data(), contentSize)) {
             std::cerr << "Unable to read " << filename << std::endl;
@@ -453,7 +464,7 @@ private:
         }
 
         // Parse the glTF file and create Filament entities.
-        *asset = assetLoader->createAsset(buffer.data(), buffer.size());
+        *asset    = assetLoader->createAsset(buffer.data(), buffer.size());
         *instance = (*asset)->getInstance();
         buffer.clear();
         buffer.shrink_to_fit();
@@ -464,20 +475,20 @@ private:
         }
     }
 
-    void loadResources(utils::Path filename, filament::gltfio::ResourceLoader **resourceLoader, filament::Engine *engine,
-                    filament::gltfio::TextureProvider **stbDecoder, filament::gltfio::TextureProvider **ktxDecoder, filament::gltfio::FilamentAsset *asset,
-                    filament::gltfio::FilamentInstance *instance) {
+    void loadResources(utils::Path filename, filament::gltfio::ResourceLoader** resourceLoader, filament::Engine* engine,
+                       filament::gltfio::TextureProvider** stbDecoder, filament::gltfio::TextureProvider** ktxDecoder,
+                       filament::gltfio::FilamentAsset* asset, filament::gltfio::FilamentInstance* instance) {
         // Load external textures and buffers.
-        std::string gltfPath = filename.getAbsolutePath();
+        std::string                             gltfPath      = filename.getAbsolutePath();
         filament::gltfio::ResourceConfiguration configuration = {};
-        configuration.engine = engine;
-        configuration.gltfPath = gltfPath.c_str();
-        configuration.normalizeSkinningWeights = true;
+        configuration.engine                                  = engine;
+        configuration.gltfPath                                = gltfPath.c_str();
+        configuration.normalizeSkinningWeights                = true;
 
         if (!(*resourceLoader)) {
             *resourceLoader = new filament::gltfio::ResourceLoader(configuration);
-            *stbDecoder = filament::gltfio::createStbProvider(engine);
-            *ktxDecoder = filament::gltfio::createKtx2Provider(engine);
+            *stbDecoder     = filament::gltfio::createStbProvider(engine);
+            *ktxDecoder     = filament::gltfio::createKtx2Provider(engine);
             (*resourceLoader)->addTextureProvider("image/png", *stbDecoder);
             (*resourceLoader)->addTextureProvider("image/jpeg", *stbDecoder);
             (*resourceLoader)->addTextureProvider("image/ktx2", *ktxDecoder);
@@ -491,17 +502,17 @@ private:
         asset->releaseSourceData();
 
         // Enable stencil writes on all material instances.
-        const size_t matInstanceCount = instance->getMaterialInstanceCount();
-        filament::MaterialInstance* const* const instances = instance->getMaterialInstances();
+        const size_t                             matInstanceCount = instance->getMaterialInstanceCount();
+        filament::MaterialInstance* const* const instances        = instance->getMaterialInstances();
         for (int mi = 0; mi < matInstanceCount; mi++) {
             instances[mi]->setStencilWrite(true);
             instances[mi]->setStencilOpDepthStencilPass(filament::MaterialInstance::StencilOperation::INCR);
         }
     }
 
-    void populateScene(filament::gltfio::FilamentAsset *asset, filament::Scene *scene) {
+    void populateScene(filament::gltfio::FilamentAsset* asset, filament::Scene* scene) {
         static constexpr int kNumAvailable = 128;
-        utils::Entity renderables[kNumAvailable];
+        utils::Entity        renderables[kNumAvailable];
         while (size_t numWritten = asset->popRenderables(renderables, kNumAvailable)) {
             printf("Adding an entity\n");
             scene->addEntities(renderables, numWritten);
@@ -574,12 +585,12 @@ public:
         if (env_var == nullptr) {
             ILLIXR::abort("Please define ILLIXR_DEMO_DATA(the `assets` directory).");
         }
-        obj_dir = std::string(env_var);
+        obj_dir    = std::string(env_var);
         assetPaths = {
-            //utils::Path("/opt/ILLIXR/assets/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
-            utils::Path(std::string(obj_dir)+"/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
+            // utils::Path("/opt/ILLIXR/assets/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
+            utils::Path(std::string(obj_dir) + "/main_sponza/main/NewSponza_Main_glTF_002.gltf"),
         };
-        offset = Eigen::Vector3f(0,4,0);
+        offset = Eigen::Vector3f(0, 4, 0);
 
         [[maybe_unused]] const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(xwin->dpy, None, nullptr));
         assert(gl_result_1 && "glXMakeCurrent should not fail");
