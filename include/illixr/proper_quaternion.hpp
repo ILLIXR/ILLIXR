@@ -33,7 +33,7 @@ public:
     using Base::operator*=;
 
     // constructors
-    proper_quaternion()                              = default;
+    proper_quaternion()                               = default;
     proper_quaternion(const proper_quaternion& other) = default;
 
     /**
@@ -140,8 +140,7 @@ public:
      * @return The vector representing this instance.
      */
     Eigen::Matrix<Scalar_, 4, 1> asVector() const {
-        // return Eigen::Vector4<Scalar_>(this->x(), this->y(), this->z(), this->w());
-        return Eigen::Vector4d(this->x(), this->y(), this->z(), this->w());
+        return Eigen::Matrix<Scalar_, 4, 1>(this->x(), this->y(), this->z(), this->w());
     }
 
     /**
