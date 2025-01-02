@@ -46,7 +46,7 @@ inline proper_quaterniond delta_q(const proper_quaterniond& k_n) {
 
 /**
  * f(x) for the orientation quaternion
- * @param av Vector representing the linear acceleration
+ * @param av Vector representing the angular velocity
  * @param dq The current orientation represented by a quaternion
  * @return The updated quaternion as a new instance
  */
@@ -66,7 +66,7 @@ inline Eigen::Vector3d p_dot(const Eigen::Vector3d& iv, const Eigen::Vector3d& k
 }
 
 /**
- * @brief f(x0 for the velocity
+ * @brief f(x) for the velocity
  * Calculate the updated velocity from the acceleration and initial and delta quaternions
  * @param dq The delta quaternion (change)
  * @param q The initial quaternion
