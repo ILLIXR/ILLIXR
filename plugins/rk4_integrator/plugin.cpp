@@ -83,8 +83,8 @@ private:
             has_last_offset = true;
         }
 
-        ProperQuaterniond           curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
-                                                 input_values->quat.z()};
+        proper_quaterniond           curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
+                                                  input_values->quat.z()};
         Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
         Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
 
@@ -126,7 +126,7 @@ private:
                 a_hat2 = prop_data[i + 1].linear_a - input_values->biasAcc;
 
                 // Compute the new state mean value
-                StatePlus sp = predict_mean_rk4(dt, StatePlus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
+                state_plus sp = predict_mean_rk4(dt, state_plus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
 
                 curr_quat = sp.orientation;
                 curr_pos  = sp.position;
