@@ -91,6 +91,9 @@ public:
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, VkImage* image, int eye) override {
+        if(!cam_buffer) {
+            return;
+        }
         void* data;
         vmaMapMemory(ds->vma_allocator, stagingAllocations[eye], &data);
         memcpy(data, flippedMat[eye].data, static_cast<size_t>(imageSize));
