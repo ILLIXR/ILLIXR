@@ -33,7 +33,7 @@ public:
     using Base::operator*=;
 
     // constructors
-    proper_quaternion()                              = default;
+    proper_quaternion()                               = default;
     proper_quaternion(const proper_quaternion& other) = default;
 
     /**
