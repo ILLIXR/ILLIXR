@@ -7,7 +7,7 @@
 namespace ILLIXR {
 
 const proper_quaterniond dq_0(1., 0., 0., 0.);    /** Initial quaternion*/
-const Eigen::Vector3d   Gravity(0.0, 0.0, 9.81); /** Gravitational acceleration, at sea level, on Earth*/
+const Eigen::Vector3d    Gravity(0.0, 0.0, 9.81); /** Gravitational acceleration, at sea level, on Earth*/
 
 /**
  * @brief Generates a skew-symmetric matrix from the given 3-element vector
@@ -99,8 +99,8 @@ inline T solve(const T& yn, const T& k1, const T& k2, const T& k3, const T& k4) 
  */
 struct state_plus {
     proper_quaterniond orientation;
-    Eigen::Vector3d   velocity;
-    Eigen::Vector3d   position;
+    Eigen::Vector3d    velocity;
+    Eigen::Vector3d    position;
 
     [[maybe_unused]] state_plus(const proper_quaterniond& pq, const Eigen::Vector3d& vel, const Eigen::Vector3d& pos)
         : orientation(pq)
@@ -134,7 +134,7 @@ std::ostream& operator<<(std::ostream& os, const state_plus& sp) {
  * @return The final state
  */
 state_plus predict_mean_rk4(double dt, const state_plus& sp, const Eigen::Vector3d& ang_vel, const Eigen::Vector3d& linear_acc,
-                           const Eigen::Vector3d& ang_vel2, const Eigen::Vector3d& linear_acc2) {
+                            const Eigen::Vector3d& ang_vel2, const Eigen::Vector3d& linear_acc2) {
     Eigen::Vector3d       av       = ang_vel;
     Eigen::Vector3d       la       = linear_acc;
     const Eigen::Vector3d delta_av = (ang_vel2 - ang_vel) / dt;
@@ -142,8 +142,8 @@ state_plus predict_mean_rk4(double dt, const state_plus& sp, const Eigen::Vector
 
     // y0 ================
     proper_quaterniond q_0 = sp.orientation; // initial orientation quaternion
-    Eigen::Vector3d   p_0 = sp.position;    // initial position vector
-    Eigen::Vector3d   v_0 = sp.velocity;    // initial velocity vector
+    Eigen::Vector3d    p_0 = sp.position;    // initial position vector
+    Eigen::Vector3d    v_0 = sp.velocity;    // initial velocity vector
 
     // Calculate the RK4 coefficients
     // solve orientation

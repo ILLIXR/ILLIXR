@@ -83,8 +83,8 @@ private:
             has_last_offset = true;
         }
 
-        proper_quaterniond           curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
-                                                  input_values->quat.z()};
+        proper_quaterniond          curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
+                                                 input_values->quat.z()};
         Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
         Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
 
