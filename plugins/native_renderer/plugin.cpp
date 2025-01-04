@@ -73,6 +73,7 @@ public:
      * @throws runtime_error If any Vulkan operation fails.
      */
     void _p_one_iteration() override {
+        auto start = std::chrono::high_resolution_clock::now();
         ds->poll_window_events();
 
         // Wait for the previous frame to finish rendering
@@ -94,7 +95,12 @@ public:
 
         // Get the current fast pose and update the uniforms
         auto fast_pose = pp->get_fast_pose();
-        src->update_uniforms(fast_pose.pose);
+        pose_type render_pose = fast_pose.pose;
+        if (src->get_app_type() == "VR") {
+            src->update_uniforms(fast_pose.pose);
+        } else {
+            render_pose = src->update_uniforms();
+        }
 
         // Record the command buffer
         VK_ASSERT_SUCCESS(vkResetCommandBuffer(app_command_buffer, 0))
@@ -139,12 +145,14 @@ public:
             &fired_value                           // pValues
         };
         VK_ASSERT_SUCCESS(vkWaitSemaphores(ds->vk_device, &wait_info, UINT64_MAX))
-
+        auto before_tw = std::chrono::high_resolution_clock::now();
         // TODO: for DRM, get vsync estimate
-        std::this_thread::sleep_for(display_params::period / 6.0 * 5);
+        auto sleep_duration = std::chrono::duration_cast<std::chrono::milliseconds>(display_params::period / 6.0 * 5);
+        // std::cout << " RAHUL +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++NATIVE_RENDERER::: Sleeping for " << sleep_duration.count() << " ms" << std::endl;
+        std::this_thread::sleep_for(display_params::period / 6.0 * 5);              // 6ms for 120Hz -- TODO - perhaps not needed in passthrough?
 
         // Update the timewarp uniforms and submit the timewarp command buffer to the graphics queue
-        tw->update_uniforms(fast_pose.pose);
+        tw->update_uniforms(render_pose);
         VkSubmitInfo timewarp_submit_info{
             VK_STRUCTURE_TYPE_SUBMIT_INFO,      // sType
             nullptr,                            // pNext
@@ -156,7 +164,7 @@ public:
             1,                                  // signalSemaphoreCount
             &timewarp_render_finished_semaphore // pSignalSemaphores
         };
-
+        auto before_tw_submit = std::chrono::high_resolution_clock::now();
         VK_ASSERT_SUCCESS(vkQueueSubmit(ds->graphics_queue, 1, &timewarp_submit_info, frame_fence))
 
         // Present the rendered image
@@ -187,6 +195,16 @@ public:
         } else {
             fps++;
         }
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration = end - start;
+        std::chrono::duration<double, std::milli> duration_mid = before_tw - start;
+        std::chrono::duration<double, std::milli> duration_tw = end - before_tw ;
+        std::chrono::duration<double, std::milli> duration_tw_before_submit = before_tw_submit - before_tw ;
+        std::cout << " RAHUL NATIVE_RENDERER::: Total time Before Timewaarp _p_one_iteration: " << duration_mid.count() << " ms" << std::endl;
+        std::cout << " RAHUL NATIVE_RENDERER::: Total time betweeen Timewaarp submit and record : " << duration_tw_before_submit.count() << " ms" << std::endl;
+        std::cout << " RAHUL NATIVE_RENDERER::: Total time during TW _p_one_iteration: " << duration_tw.count() << " ms" << std::endl;
+        std::cout << " RAHUL NATIVE_RENDERER::: Total time taken by _p_one_iteration: " << duration.count() << " ms" << std::endl;
         // #endif
     }
 

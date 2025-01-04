@@ -137,6 +137,8 @@ public:
         update_uniform(fp, 1);
     }
 
+    pose_type update_uniforms() override {}
+
     void record_command_buffer(VkCommandBuffer commandBuffer, VkImage* image, int eye){
 
     }

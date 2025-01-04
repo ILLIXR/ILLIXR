@@ -36,6 +36,7 @@ public:
         : sb{pb->lookup_impl<switchboard>()}
         , ds{pb->lookup_impl<display_sink>()}
         , _m_cam_reader{sb->get_reader<rgb_depth_type>("rgb_depth")}
+        , _m_pose_rgb_depth{sb->get_reader<pose_rgb_depth_type>("pose_rgb_depth")}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , appType("passthrough") { }
 
@@ -45,6 +46,7 @@ public:
         } else {
             this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
+        last_pose = new pose_type();
     }
 
     void setup(VkRenderPass render_pass, uint32_t subpass) override {
@@ -84,6 +86,37 @@ public:
         camImage[1] = cam_buffer->rgb1;
         cv::flip(camImage[0], flippedMat[0], 0);
         cv::flip(camImage[1], flippedMat[1], 0);
+    }
+
+    pose_type update_uniforms() override {
+        switchboard::ptr<const pose_rgb_depth_type> cam = _m_pose_rgb_depth.get_ro_nullable();
+        // If there is not cam data this func call, break early
+
+        if (!cam) {
+            return *last_pose;
+        }
+
+        if (cam->index == last_index){
+            std::cout << "\n\n RAHUL +===========================================================================RGB_PASSTHROUGH:: update_uniforms  same index " << " cam_index " << cam->index << "  last_index  " << last_index << std::endl;
+            // return *last_pose;
+        }
+
+        if ( cam->index == 0 || cam->index != last_index ) {
+            std::cout << " RAHUL RGB_PASSTHROUGH:: update_uniforms  new pose is here " << " cam_index " << cam->index << "  last_index  " << last_index << std::endl;
+            // if the timestamp is the same as the last one, this means that the frame is the same as the last one. So we should return the last pose, skip all updates.
+            cam_buffer  = cam;
+            last_index = cam_buffer->index;
+            last_pose->position = cam_buffer->position;
+            last_pose->orientation = cam_buffer->orientation; 
+            camImage[0] = cam_buffer->rgb0;
+            camImage[1] = cam_buffer->rgb1;
+            cv::flip(camImage[0], flippedMat[0], 0);
+            cv::flip(camImage[1], flippedMat[1], 0);   
+        }
+
+        std::cout << " RAHUL RGB_PASSTHROUGH:: update_uniforms: Last Pose Position: " << last_pose->position(0) << ", " << last_pose->position(1) << ", " << last_pose->position(2) << " cam_index " << cam->index << "  last_index  " << last_index << std::endl;
+        std::cout << " RAHUL RGB_PASSTHROUGH:: update_uniforms: Last Pose Orientation: " << last_pose->orientation.w() << ", " << last_pose->orientation.x() << ", " << last_pose->orientation.y() << ", " << last_pose->orientation.z() << std::endl;
+        return *last_pose;
     }
 
     void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
@@ -165,8 +198,12 @@ private:
 
     std::string appType = "passthrough";
 
-    switchboard::ptr<const rgb_depth_type> cam_buffer;
+    switchboard::ptr<const rgb_depth_type> cam_buffer_old;
     switchboard::reader<rgb_depth_type>    _m_cam_reader;
+    switchboard::reader<pose_rgb_depth_type> _m_pose_rgb_depth;
+    switchboard::ptr<const pose_rgb_depth_type> cam_buffer;
+    std::size_t           last_index; 
+    pose_type*            last_pose;
 
     std::array<VkBuffer, 2>      stagingBuffers{};
     std::array<VmaAllocation, 2> stagingAllocations{};

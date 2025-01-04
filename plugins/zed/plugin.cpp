@@ -13,6 +13,7 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+#include "illixr/pose_prediction.hpp"
 
 // ZED includes
 #include "zed_opencv.hpp"
@@ -20,7 +21,7 @@
 using namespace ILLIXR;
 
 // Set exposure to 8% of camera frame time. This is an empirically determined number
-static constexpr unsigned EXPOSURE_TIME_PERCENT = 8;
+static constexpr unsigned EXPOSURE_TIME_PERCENT = 20;
 
 const record_header __imu_cam_record{"imu_cam",
                                      {
@@ -165,6 +166,8 @@ public:
         , _m_cam_reader{sb->get_reader<cam_type_zed>("cam_zed")}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")}
+        , pp{pb->lookup_impl<pose_prediction>()}
+        , _m_pose_rgb_depth{sb->get_writer<pose_rgb_depth_type>("pose_rgb_depth")}
         , it_log{record_logger_} {
         camera_thread_.start();
     }
@@ -216,6 +219,12 @@ protected:
         if (c && c->serial_no != last_serial_no) {
             _m_cam_publisher.put(_m_cam_publisher.allocate<cam_type>({imu_time_point, cv::Mat{c->img0}, cv::Mat{c->img1}}));
             _m_rgb_depth.put(_m_rgb_depth.allocate<rgb_depth_type>({imu_time_point, cv::Mat{c->rgb0}, cv::Mat{c->rgb1}, cv::Mat{c->depth}}));
+
+            auto fast_pose = pp->get_fast_pose().pose;
+            Eigen::Vector3f position = Eigen::Vector3f{float(fast_pose.position(0)), float(fast_pose.position(1)), float(fast_pose.position(2))};
+            Eigen::Quaternionf orientation = fast_pose.orientation;
+            _m_pose_rgb_depth.put(_m_pose_rgb_depth.allocate<pose_rgb_depth_type>({imu_time_point, cv::Mat{c->rgb0}, cv::Mat{c->rgb1}, cv::Mat{c->depth}, position, orientation, c->serial_no}));
+            std::cout << "\n\n RAHUL ZED_PLUGIN:: Put camera serial number: " << c->serial_no << std::endl;
             last_serial_no = c->serial_no;
         }
 
@@ -234,6 +243,8 @@ private:
     switchboard::reader<cam_type_zed>          _m_cam_reader;
     switchboard::writer<cam_type>              _m_cam_publisher;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
+    const std::shared_ptr<pose_prediction>     pp;
+    switchboard::writer<pose_rgb_depth_type> _m_pose_rgb_depth;
 
     // IMU
     SensorsData sensors_data;

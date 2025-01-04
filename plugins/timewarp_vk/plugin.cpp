@@ -139,6 +139,8 @@ public:
         descriptor_pool = VK_NULL_HANDLE;
     }
 
+    pose_type update_uniforms() override {}
+
     void update_uniforms(const pose_type& render_pose) override {
         num_update_uniforms_calls++;
 
@@ -155,6 +157,8 @@ public:
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
         const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        std::cout << " RAHUL TIMEWAWRP:: ITERATION: ***************** Latest Pose Position: " << latest_pose.position(0) << ", " << latest_pose.position(1) << ", " << latest_pose.position(2) << std::endl;
+        std::cout << " RAHUL TIMEWAWRP:: ITERATION: ***************** Latest Pose Orientation: " << latest_pose.orientation.w() << ", " << latest_pose.orientation.x() << ", " << latest_pose.orientation.y() << ", " << latest_pose.orientation.z() << std::endl;
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for

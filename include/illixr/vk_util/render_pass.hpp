@@ -19,6 +19,7 @@ public:
      * previously supplied to the app pass.
      */
     virtual void update_uniforms(const pose_type& render_pose) = 0;
+    virtual pose_type update_uniforms() = 0;
 
     /**
      * @brief Destroy the render pass and free all Vulkan resources.
