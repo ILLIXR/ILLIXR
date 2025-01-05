@@ -35,7 +35,7 @@ public:
     explicit rgb_passthrough(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , ds{pb->lookup_impl<display_sink>()}
-        , _m_cam_reader{sb->get_reader<rgb_depth_type>("rgb_depth")}
+        // , _m_cam_reader{sb->get_reader<rgb_depth_type>("rgb_depth")}
         , _m_pose_rgb_depth{sb->get_reader<pose_rgb_depth_type>("pose_rgb_depth")}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , appType("passthrough") { }
@@ -76,7 +76,7 @@ public:
     }
 
     void update_uniforms(const pose_type& fp) override {
-        switchboard::ptr<const rgb_depth_type> cam = _m_cam_reader.get_ro_nullable();
+        switchboard::ptr<const pose_rgb_depth_type> cam = _m_pose_rgb_depth.get_ro_nullable();
         // // If there is not cam data this func call, break early
         if (!cam) {
             return;
@@ -198,8 +198,8 @@ private:
 
     std::string appType = "passthrough";
 
-    switchboard::ptr<const rgb_depth_type> cam_buffer_old;
-    switchboard::reader<rgb_depth_type>    _m_cam_reader;
+    // switchboard::ptr<const rgb_depth_type> cam_buffer_old;
+    // switchboard::reader<rgb_depth_type>    _m_cam_reader;
     switchboard::reader<pose_rgb_depth_type> _m_pose_rgb_depth;
     switchboard::ptr<const pose_rgb_depth_type> cam_buffer;
     std::size_t           last_index; 
