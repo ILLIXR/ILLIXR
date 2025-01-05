@@ -64,7 +64,7 @@ profile:
   enable_pre_sleep: false
 
 profile:
-  name: rgb_passthhrough
+  name: rgb_passthrough
   plugins: gtsam_integrator,pose_prediction,zed,display_vk,timewarp_vk,rgb_passthrough,native_renderer,debugview
   build_flags: -DILLIXR_VULKAN
   build_type: Release
