@@ -64,6 +64,17 @@ profile:
   enable_pre_sleep: false
 
 profile:
+  name: rgb_passthhrough
+  plugins: gtsam_integrator,pose_prediction,zed,display_vk,timewarp_vk,rgb_passthrough,native_renderer,debugview
+  build_flags: -DILLIXR_VULKAN
+  build_type: Release
+  visualizers: openvins
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
   name: native_lookup
   plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
   visualizers: openvins
