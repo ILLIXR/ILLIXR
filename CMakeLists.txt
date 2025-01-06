@@ -267,9 +267,10 @@ if(Python3_FOUND)
         set(dependencies "${dependencies} OpenVINS")
     endif()
     add_custom_command(
-            OUTPUT "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+            BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
             DEPENDS ${dependencies}
             COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
