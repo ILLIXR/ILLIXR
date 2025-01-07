@@ -11,31 +11,33 @@ set(PLUGIN_NAME plugin.debugview${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 set(DEBUGVIEW_SOURCES plugin.cpp
-    imgui/imgui.cpp
-    imgui/imgui_demo.cpp
-    imgui/imgui_draw.cpp
-    imgui/imgui_impl_glfw.cpp
-    imgui/imgui_impl_opengl3.cpp
-    imgui/imgui_widgets.cpp
-    imgui/imconfig.h
-    imgui/imgui.h
-    imgui/imgui_impl_glfw.h
-    imgui/imgui_impl_opengl3.h
-    imgui/imgui_internal.h
-    imgui/imstb_rectpack.h
-    imgui/imstb_textedit.h
-    imgui/imstb_truetype.h
-    ../../include/illixr/shaders/demo_shader.hpp
-    ../../include/illixr/data_format/imu.hpp
-    ../../include/illixr/data_format/opencv_data_types.hpp
-    ../../include/illixr/error_util.hpp
-    ../../include/illixr/gl_util/obj.hpp
-    ../../include/illixr/global_module_defs.hpp
-    ../../include/illixr/math_util.hpp
-    ../../include/illixr/pose_prediction.hpp
-    ../../include/illixr/shader_util.hpp
-    ../../include/illixr/switchboard.hpp
-    ../../include/illixr/threadloop.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_demo.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_glfw.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_opengl3.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_widgets.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imconfig.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_glfw.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_opengl3.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_internal.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imstb_rectpack.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imstb_textedit.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imstb_truetype.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/shaders/demo_shader.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/misc/cpp/imgui_stdlib.cpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/imgui/misc/cpp/imgui_stdlib.h
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/imu.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/error_util.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/gl_util/obj.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/global_module_defs.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/math_util.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/pose_prediction.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/shader_util.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
+    ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
 )
 
 add_library(${PLUGIN_NAME} SHARED ${DEBUGVIEW_SOURCES})
