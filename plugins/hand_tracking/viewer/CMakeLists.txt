@@ -9,27 +9,27 @@ set(PLUGIN_NAME plugin.hand_tracking.viewer${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            imgui/imconfig.h
-            imgui/imgui.cpp
-            imgui/imgui.h
-            imgui/imgui_demo.cpp
-            imgui/imgui_draw.cpp
-            imgui/imgui_internal.h
-            imgui/imgui_tables.cpp
-            imgui/imgui_widgets.cpp
-            imgui/imstb_rectpack.h
-            imgui/imstb_textedit.h
-            imgui/imstb_truetype.h
-            imgui/misc/cpp/imgui_stdlib.cpp
-            imgui/misc/cpp/imgui_stdlib.h
-            imgui/backends/imgui_impl_glfw.h
-            imgui/backends/imgui_impl_glfw.cpp
-            imgui/backends/imgui_impl_opengl3.h
-            imgui/backends/imgui_impl_opengl3.cpp
-            ../../../include/illixr/data_format/hand_tracking_data.hpp
-            ../../../include/illixr/data_format/opencv_data_types.hpp
-            ../../../include/illixr/threadloop.hpp
-            ../../../include/illixr/switchboard.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imconfig.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_demo.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_draw.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_internal.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_tables.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imgui_widgets.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imstb_rectpack.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imstb_textedit.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/imstb_truetype.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/misc/cpp/imgui_stdlib.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/misc/cpp/imgui_stdlib.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_glfw.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_glfw.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_opengl3.h
+            ${CMAKE_SOURCE_DIR}/include/illixr/imgui/backends/imgui_impl_opengl3.cpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/hand_tracking_data.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/data_format/opencv_data_types.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/threadloop.hpp
+            ${CMAKE_SOURCE_DIR}/include/illixr/switchboard.hpp
 )
 
 if(BUILD_OPENCV)

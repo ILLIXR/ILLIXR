@@ -9,7 +9,7 @@
 #include "illixr/data_format/hand_tracking_data.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-#include "imgui/imgui.h"
+#include "illixr/imgui/imgui.h"
 
 #include <eigen3/Eigen/Core>
 
