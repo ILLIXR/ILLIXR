@@ -79,6 +79,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
 option(BUILD_OXR_INTERFACE "Build the OpenXR interface (hand tracking only)" OFF)
+option(BUILD_ZED_CAPTURE "Build the ZED capture program" OFF)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 option(BUILD_DOCS "Build documentation" OFF)
@@ -238,6 +239,9 @@ if(DATA_FILE)
     endif()
 endif()
 
+if(BUILD_ZED_CAPTURE)
+    add_subdirectory(plugins/zed/capture)
+endif()
 # give a summary of what will be done
 include(cmake/ConfigurationSummary.cmake)
 

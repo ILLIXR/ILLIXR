@@ -18,7 +18,7 @@ add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
 # yaml parser
 ##############
 if (BUILD_OXR_INTERFACE)
-        target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
+    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
 endif()
 message("plugin.main${ILLIXR_BUILD_SUFFIX}")
 get_external(Yamlcpp)
