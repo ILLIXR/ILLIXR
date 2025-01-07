@@ -327,6 +327,7 @@ endforeach()
 message("")
 report_value("Data file" "${DATA_FILE}")
 report_value("Generating yaml file" "illixr.yaml")
+print_enabled_disabled("${BUILD_ZED_CAPTURE}" "zed_capture")
 message("${COLOR_BLUE_BOLD}-------------------------------------------------------------${RESET_FORMAT}")
 
 set(OUTFILE "illixr.yaml")
