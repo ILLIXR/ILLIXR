@@ -152,8 +152,8 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
 int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
+    r = ILLIXR::runtime_factory();
     try {
-        r = ILLIXR::runtime_factory();
         // set internal env_vars
         const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
@@ -179,6 +179,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             auto                     config_file_full = options["yaml"].as<std::string>();
             std::string              config_file      = config_file_full.substr(config_file_full.find_last_of("/\\") + 1);
             std::vector<std::string> config_list      = {config_file,
+                                                         config_file_full,
                                                          home_dir + "/.illixr/profiles/" + config_file_full,
                                                          home_dir + "/.illixr/profiles/" + config_file,
                                                          home_dir + "/" + config_file_full,
@@ -243,13 +244,18 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         for (auto& dep_file : dep_list) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
+#ifndef NDEBUG
+                spdlog::get("illixr")->info(
+                    "Located plugin dependency map file (" + dep_file + "), verifying plugin dependencies.");
+#endif
                 dep_map.reserve(plugin_deps["dep_map"].size());
                 for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
-            } catch (YAML::BadFile&) {
+                break;
+            } catch (YAML::BadFile& bf) {
 #ifndef NDEBUG
                 spdlog::get("illixr")->info(
-                    "Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
+                    "Could not load plugin dependency map file (" + dep_file + "), cannot verify plugin dependencies.");
 #endif
             }
         }

@@ -62,7 +62,6 @@ zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     , cam_reader_{switchboard_->get_reader<cam_type_zed>("cam_zed")}
     , cam_publisher_{switchboard_->get_writer<binocular_cam_type>("cam")}
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")}
-    , initial_position_pub_{switchboard_->get_writer<pose_type>("wcs_origin")}
     , cam_conf_pub_{switchboard_->get_writer<camera_data>("cam_data")}
     , it_log_{record_logger_} {
     camera_thread_.start();
@@ -75,9 +74,6 @@ zed_imu_thread::~zed_imu_thread() {
 
 void zed_imu_thread::start() {
     threadloop::start();
-    initial_position_pub_.put(initial_position_pub_.allocate<pose_type>(
-        pose_type{clock_->now(), zed_cam_->get_translation(), zed_cam_->get_orientation(), units::UNITS,
-                  coordinates::RIGHT_HANDED_Y_UP, coordinates::WORLD, 1.}));
     cam_conf_pub_.put(cam_conf_pub_.allocate<camera_data>(camera_data{zed_cam_->get_config()}));
 }
 

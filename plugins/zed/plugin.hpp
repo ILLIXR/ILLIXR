@@ -30,7 +30,6 @@ private:
     switchboard::reader<data_format::cam_type_zed>       cam_reader_;
     switchboard::writer<data_format::binocular_cam_type> cam_publisher_;
     switchboard::writer<data_format::rgb_depth_type>     rgb_depth_;
-    switchboard::writer<data_format::pose_type>          initial_position_pub_;
     switchboard::writer<data_format::camera_data>        cam_conf_pub_;
 
     // IMU

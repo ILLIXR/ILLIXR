@@ -2,7 +2,8 @@
 
 #include <vector>
 #define GLFW_INCLUDE_VULKAN
-#include "../phonebook.hpp"
+
+#include "illixr/phonebook.hpp"
 #include "illixr/data_format/misc.hpp"
 
 #include <GLFW/glfw3.h>

@@ -4,7 +4,7 @@ set(PLUGIN_NAME plugin.pose_lookup${ILLIXR_BUILD_SUFFIX})
 
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/data_loading.hpp
+            ../../include/illixr/data_loading.hpp
             utils.hpp
             ../../include/illixr/error_util.hpp
             ../../include/illixr/csv_iterator.hpp
