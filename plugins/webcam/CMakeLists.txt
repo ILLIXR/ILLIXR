@@ -2,10 +2,10 @@ set(PLUGIN_NAME plugin.webcam${ILLIXR_BUILD_SUFFIX})
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            ../../../include/illixr/opencv_data_types.hpp
-            ../../../include/illixr/threadloop.hpp
-            ../../../include/illixr/relative_clock.hpp
-            ../../../include/illixr/switchboard.hpp
+            ../../include/illixr/data_format/opencv_data_types.hpp
+            ../../include/illixr/threadloop.hpp
+            ../../include/illixr/relative_clock.hpp
+            ../../include/illixr/switchboard.hpp
 )
 
 if(BUILD_OPENCV)

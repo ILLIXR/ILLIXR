@@ -52,11 +52,15 @@ struct [[maybe_unused]] pose_type
         : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
         , sensor_time{sensor_time_} { }
 
-    pose_type(time_point sensor_time_, const Eigen::Vector3f position_, const Eigen::Quaternionf orientation_,
+    pose_type(time_point sensor_time_, const Eigen::Vector3f& position_, const Eigen::Quaternionf& orientation_,
               units::measurement_unit unit_ = units::UNSET, coordinates::frame frm = coordinates::RIGHT_HANDED_Y_UP,
               coordinates::reference_space ref = coordinates::VIEWER, const float confidence_ = 0.)
-        : pose_data{std::move(position_), std::move(orientation_), unit_, frm, ref, confidence_}
+        : pose_data{position_, orientation_, unit_, frm, ref, confidence_}
         , sensor_time{sensor_time_} { }
+
+    pose_type(time_point sensor_time_, pose_data& other)
+        : pose_data{other.position, other.orientation, other.unit, other.co_frame, other.ref_space, other.confidence}
+        , sensor_time{sensor_time_} {}
 };
 
 typedef struct {

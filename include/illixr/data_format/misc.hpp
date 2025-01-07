@@ -106,9 +106,10 @@ struct [[maybe_unused]] hmd_physical_info {
 };
 
 inline bool compare(const std::string& input, const std::string& val) {
-    std::string v1, v2;
-    std::transform(input.begin(), input.end(), v1.begin(), ::tolower);
-    std::transform(val.begin(), val.end(), v2.begin(), ::tolower);
+    std::string v1 = input;
+    std::string v2 = val;
+    std::transform(v1.begin(), v1.end(), v1.begin(), ::tolower);
+    std::transform(v2.begin(), v2.end(), v2.begin(), ::tolower);
     return v1 == v2;
 }
 
