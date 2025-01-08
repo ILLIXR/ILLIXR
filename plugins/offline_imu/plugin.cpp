@@ -35,10 +35,8 @@ class offline_imu : public ILLIXR::threadloop {
 public:
     offline_imu(const std::string& name_, phonebook* pb_)
         : threadloop{name_, pb_}
-        , _m_sensor_data{load_data<sensor_types>("imu0", "offline_imu", &read_data)}
-        , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , _m_sb{pb->lookup_impl<switchboard>()}
-        , _m_sensor_data{load_data(_m_sb)}
+        , _m_sensor_data{load_data<sensor_types>("imu0", "offline_imu", &read_data, _m_sb)}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , _m_imu{_m_sb->get_writer<imu_type>("imu")}
         , dataset_first_time{_m_sensor_data_it->first}

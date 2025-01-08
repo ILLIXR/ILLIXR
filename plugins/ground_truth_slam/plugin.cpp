@@ -37,7 +37,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_true_pose{sb->get_writer<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-        , _m_sensor_data{load_data<pose_type>("state_groundtruth_estimate0", "ground_truth_slam", &read_data)}
+        , _m_sensor_data{load_data<pose_type>("state_groundtruth_estimate0", "ground_truth_slam", &read_data, sb)}
         // The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
         // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.

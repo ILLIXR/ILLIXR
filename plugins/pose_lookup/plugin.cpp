@@ -30,7 +30,7 @@ public:
     explicit pose_lookup_impl(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-        , _m_sensor_data{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data)}
+        , _m_sensor_data{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data, sb)}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
         , dataset_first_time{_m_sensor_data_it->first}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} /// TODO: Set with #198
