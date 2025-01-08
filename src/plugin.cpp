@@ -153,7 +153,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         const std::shared_ptr<switchboard> sb = r->get_switchboard();
 
         // read in yaml config file
-        YAML::Node config;
+        YAML::Node  config;
         std::string exec_path = get_exec_path();
         std::string home_dir  = get_home_dir();
         if (options.count("yaml")) {
@@ -217,8 +217,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             run_duration = std::chrono::seconds{config["duration"].as<long>()};
         } else {
             run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
-                           ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
-                           : ILLIXR_RUN_DURATION_DEFAULT;
+                ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
+                : ILLIXR_RUN_DURATION_DEFAULT;
         }
         GET_STRING(data, ILLIXR_DATA)
         GET_STRING(demo_data, ILLIXR_DEMO_DATA)
