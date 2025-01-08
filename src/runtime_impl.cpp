@@ -47,7 +47,7 @@ public:
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
                                                        // pb.register_impl<xlib_gl_extended_window>(
-        //     std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
+        // std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
 #endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());

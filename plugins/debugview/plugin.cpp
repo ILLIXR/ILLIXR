@@ -13,15 +13,15 @@
 #include "illixr/error_util.hpp"
 #include "illixr/gl_util/obj.hpp"
 #include "illixr/global_module_defs.hpp"
+#include "illixr/imgui/backends/imgui_impl_glfw.h"
+#include "illixr/imgui/backends/imgui_impl_opengl3.h"
+#include "illixr/imgui/imgui.h"
 #include "illixr/math_util.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/shader_util.hpp"
 #include "illixr/shaders/demo_shader.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/imgui/imgui.h"
-#include "illixr/imgui/backends/imgui_impl_glfw.h"
-#include "illixr/imgui/backends/imgui_impl_opengl3.h"
 
 using namespace ILLIXR;
 using namespace ILLIXR::data_format;

@@ -60,7 +60,7 @@ struct [[maybe_unused]] pose_type
 
     pose_type(time_point sensor_time_, pose_data& other)
         : pose_data{other.position, other.orientation, other.unit, other.co_frame, other.ref_space, other.confidence}
-        , sensor_time{sensor_time_} {}
+        , sensor_time{sensor_time_} { }
 };
 
 typedef struct {

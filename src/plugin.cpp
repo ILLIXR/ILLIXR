@@ -245,8 +245,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             try {
                 YAML::Node plugin_deps = YAML::LoadFile(dep_file);
 #ifndef NDEBUG
-                spdlog::get("illixr")->info(
-                    "Located plugin dependency map file (" + dep_file + "), verifying plugin dependencies.");
+                spdlog::get("illixr")->info("Located plugin dependency map file (" + dep_file +
+                                            "), verifying plugin dependencies.");
 #endif
                 dep_map.reserve(plugin_deps["dep_map"].size());
                 for (const auto& node : plugin_deps["dep_map"])
@@ -254,8 +254,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                 break;
             } catch (YAML::BadFile& bf) {
 #ifndef NDEBUG
-                spdlog::get("illixr")->info(
-                    "Could not load plugin dependency map file (" + dep_file + "), cannot verify plugin dependencies.");
+                spdlog::get("illixr")->info("Could not load plugin dependency map file (" + dep_file +
+                                            "), cannot verify plugin dependencies.");
 #endif
             }
         }
