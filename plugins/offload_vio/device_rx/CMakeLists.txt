@@ -9,7 +9,7 @@ set(PLUGIN_NAME plugin.offload_vio.device_rx${ILLIXR_BUILD_SUFFIX})
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../../include/illixr/plugin.hpp
-        ../../../include/illixr/data_format.hpp
+            ../../../include/illixr/data_format/misc.hpp
         ../../../include/illixr/phonebook.hpp
         ../../../include/illixr/switchboard.hpp
         )

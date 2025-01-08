@@ -1,4 +1,4 @@
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/imu.hpp"
 #include "illixr/data_loading.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"
@@ -9,6 +9,7 @@
 #include <chrono>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 typedef struct {
     Eigen::Vector3d angular_v;
@@ -37,7 +38,6 @@ public:
         : threadloop{name_, pb_}
         , _m_sensor_data{load_data<sensor_types>("imu0", "offline_imu", &read_data)}
         , _m_sensor_data_it{_m_sensor_data.cbegin()}
-        , _m_sb{pb->lookup_impl<switchboard>()}
         , _m_imu{_m_sb->get_writer<imu_type>("imu")}
         , dataset_first_time{_m_sensor_data_it->first}
         , dataset_now{0}
@@ -71,9 +71,9 @@ protected:
     }
 
 private:
+    const std::shared_ptr<switchboard>             _m_sb;
     const std::map<ullong, sensor_types>           _m_sensor_data;
     std::map<ullong, sensor_types>::const_iterator _m_sensor_data_it;
-    const std::shared_ptr<switchboard>             _m_sb;
     switchboard::writer<imu_type>                  _m_imu;
 
     // Timestamp of the first IMU value from the dataset
