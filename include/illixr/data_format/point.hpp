@@ -324,4 +324,56 @@ inline void denormalize<points_with_units>(points_with_units& obj, const float w
     obj.unit = unit_;
 }
 
+struct raw_point {
+    float x;
+    float y;
+    float z;
+    bool valid;
+
+    raw_point()
+        : x{0.f}
+        , y{0.f}
+        , z{0.f}
+        , valid{false} {}
+
+    explicit raw_point(const point_with_units& pnt)
+        : x{pnt.x()}
+        , y{pnt.y()}
+        , z{pnt.z()}
+        , valid{pnt.valid} {}
+
+    void copy(const point_with_units& pnt){
+        x = pnt.x();
+        y = pnt.y();
+        z = pnt.z();
+        valid = pnt.valid;
+    }
+
+    void mult(const Eigen::Matrix3f& ref_frm) {
+        Eigen::Vector3f vec{x, y, z};
+        vec = ref_frm * vec;
+        x = vec.x();
+        y = vec.y();
+        z = vec.z();
+    }
+
+    void transform(const pose_data& pose) {
+        Eigen::Vector3f vec{x, y, z};
+        vec = (Eigen::Vector3f)((pose.orientation * vec) + pose.position);
+        x = vec.x();
+        y = vec.y();
+        z = vec.z();
+    }
+
+    void de_transform(const pose_data& pose) {
+        Eigen::Vector3f vec{x, y, z};
+        vec -= pose.position;
+        vec = (Eigen::Vector3f) ((pose.orientation.inverse() * vec));
+        x   = vec.x();
+        y   = vec.y();
+        z   = vec.z();
+    }
+
+};
+
 } // namespace ILLIXR::data_format

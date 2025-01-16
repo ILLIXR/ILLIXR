@@ -1,6 +1,13 @@
 #pragma once
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+#include <cmath>
 
 #include <eigen3/Eigen/Core>
+
+#include "data_format/point.hpp"
+#include "data_format/pose.hpp"
 
 namespace ILLIXR {
 namespace math_util {
@@ -45,7 +52,7 @@ namespace math_util {
     }
 
     /*
-     * Rotation matrix for a point tp rotate its axes to convert it to a new coordinate system
+     * Rotation matrix for a point to rotate its axes to convert it to a new coordinate system
      *
      */
     inline Eigen::Matrix3f rotation(const float alpha, const float beta, const float gamma) {
