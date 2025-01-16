@@ -9,10 +9,6 @@ std::unordered_map<std::string, std::string> ILLIXR::switchboard::_m_env_vars = 
     #define BOOST_DATE_TIME_NO_LIB
 #endif
 #include <algorithm>
-#ifdef OXR_INTERFACE
-    #include <boost/interprocess/mapped_region.hpp>
-    #include <boost/interprocess/shared_memory_object.hpp>
-#endif
 #include <boost/algorithm/string/join.hpp>
 #include <cstdlib>
 #include <iostream>
@@ -80,10 +76,6 @@ struct convert<ILLIXR::Dependency> {
 ILLIXR::runtime* r = nullptr;
 
 using namespace ILLIXR;
-#ifdef OXR_INTERFACE
-namespace b_intp            = boost::interprocess;
-const char* illixr_shm_name = "ILLIXR_OXR_SHM";
-#endif
 
 std::string get_exec_path() {
     char        result[PATH_MAX];
@@ -158,9 +150,6 @@ void check_plugins(std::vector<std::string>& plugins, const std::vector<ILLIXR::
 }
 
 int ILLIXR::run(const cxxopts::ParseResult& options) {
-#ifdef OXR_INTERFACE
-    b_intp::shared_memory_object shm_obj;
-#endif
     std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
     r = ILLIXR::runtime_factory();
@@ -245,14 +234,6 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         GET_BOOL(openxr, ILLIXR_OPENXR)
         GET_STRING(realsense_cam, REALSENSE_CAM)
 
-#ifdef OXR_INTERFACE
-        shm_obj.remove(illixr_shm_name);
-        shm_obj = b_intp::shared_memory_object(b_intp::create_only, illixr_shm_name, b_intp::read_write);
-        shm_obj.truncate(64);
-        b_intp::mapped_region region(shm_obj, b_intp::read_write);
-        auto                  shp = reinterpret_cast<std::uintptr_t>(sb.get());
-        std::memcpy(region.get_address(), (void*) shp, sizeof(shp));
-#endif
         setenv("__GL_MaxFramesAllowed", "1", false);
         setenv("__GL_SYNC_TO_VBLANK", "1", false);
 
@@ -347,9 +328,6 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         delete r;
     } catch (...) {
-#ifdef OXR_INTERFACE
-        shm_obj.remove(illixr_shm_name);
-#endif
         delete r;
     }
     return 0;

@@ -234,10 +234,10 @@ void viewer::make_position_table() const {
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Current");
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", current_frame->offset_pose.position.x(),
-                    current_frame->offset_pose.position.y(), current_frame->offset_pose.position.z(),
-                    current_frame->offset_pose.orientation.w(), current_frame->offset_pose.orientation.x(),
-                    current_frame->offset_pose.orientation.y(), current_frame->offset_pose.orientation.z());
+        ImGui::Text("%.2f, %.2f, %.2f : %.2f, %.2f, %.2f, %.2f", current_frame->wcs_offset.position.x(),
+                    current_frame->wcs_offset.position.y(), current_frame->wcs_offset.position.z(),
+                    current_frame->wcs_offset.orientation.w(), current_frame->wcs_offset.orientation.x(),
+                    current_frame->wcs_offset.orientation.y(), current_frame->wcs_offset.orientation.z());
         ImGui::EndTable();
     }
     std::string label;
