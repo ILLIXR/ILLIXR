@@ -7,9 +7,9 @@
 
 #include "illixr/data_format/camera_data.hpp"
 #include "illixr/data_format/hand_tracking_data.hpp"
+#include "illixr/imgui/imgui.h"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
-#include "illixr/imgui/imgui.h"
 
 #include <eigen3/Eigen/Core>
 

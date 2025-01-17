@@ -64,8 +64,7 @@ const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
                                            "WCS_ORIGIN",
                                            "ZED_RESOLUTION",
                                            "ZED_DEPTH_TYPE",
-                                           "LD_LIBRARY_PATH"
-};
+                                           "LD_LIBRARY_PATH"};
 /**
  * @Should be private to Switchboard.
  */
@@ -172,12 +171,12 @@ public:
      * \endcode
      */
     template<typename underlying_type>
-    class [[maybe_unused]]event_wrapper : public event {
+    class [[maybe_unused]] event_wrapper : public event {
     private:
         underlying_type underlying_data;
 
     public:
-        event_wrapper() {}
+        event_wrapper() { }
 
         event_wrapper(underlying_type underlying_data_)
             : underlying_data{underlying_data_} { }
@@ -721,7 +720,7 @@ public:
      * @brief Get the boolean value of the given environment variable
      */
     static bool get_env_bool(const std::string& var, const std::string& def = "false") {
-        std::string val = get_env(var, def);
+        std::string                    val = get_env(var, def);
         const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
         for (auto s : affirmative) {
             if (std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {

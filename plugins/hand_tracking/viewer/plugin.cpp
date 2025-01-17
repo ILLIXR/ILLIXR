@@ -2,9 +2,9 @@
 
 #include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/gl_util/obj.hpp"
-#include "illixr/shader_util.hpp"
 #include "illixr/imgui/backends/imgui_impl_glfw.h"
 #include "illixr/imgui/backends/imgui_impl_opengl3.h"
+#include "illixr/shader_util.hpp"
 
 #ifdef VIEW_DUMP
     #include <fstream>

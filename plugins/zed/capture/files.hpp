@@ -1,12 +1,12 @@
 #pragma once
-#include <boost/filesystem.hpp>
-#include <eigen3/Eigen/Dense>
-#include <cstdint>
-#include <iostream>
-#include <map>
-#include <chrono>
 #include "illixr/data_format/zed_cam.hpp"
 
+#include <boost/filesystem.hpp>
+#include <chrono>
+#include <cstdint>
+#include <eigen3/Eigen/Dense>
+#include <iostream>
+#include <map>
 
 constexpr int LEFT_EYE  = 0;
 constexpr int RIGHT_EYE = 1;
@@ -26,8 +26,8 @@ public:
     static std::string data_file;
     static std::string camL_file;
     static std::string camR_file;
-    //static std::string depth_file;
-    //static std::string conf_file;
+    // static std::string depth_file;
+    // static std::string conf_file;
     static std::string cam_file;
 
     static boost::filesystem::path data_path;
@@ -35,8 +35,8 @@ public:
 
     static boost::filesystem::path camL_path;
     static boost::filesystem::path camR_path;
-    //static boost::filesystem::path depth_path;
-    //static boost::filesystem::path conf_path;
+    // static boost::filesystem::path depth_path;
+    // static boost::filesystem::path conf_path;
 
 private:
     const std::string data_sub_path = "data";
@@ -45,6 +45,7 @@ private:
     explicit files(const std::string& rt, const std::string& path);
     static files* instance;
 };
-}
+} // namespace ILLIXR::zed_capture
+
 std::ostream& operator<<(std::ostream& os, ILLIXR::data_format::pose_type const& dt);
 std::ostream& operator<<(std::ostream& os, ILLIXR::data_format::camera_data const& cc);

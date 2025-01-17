@@ -60,7 +60,7 @@ struct [[maybe_unused]] pose_type
 
     pose_type(time_point sensor_time_, pose_data& other)
         : pose_data{other.position, other.orientation, other.unit, other.co_frame, other.ref_space, other.confidence}
-        , sensor_time{sensor_time_} {}
+        , sensor_time{sensor_time_} { }
 };
 
 typedef struct {
@@ -91,7 +91,6 @@ struct [[maybe_unused]] texture_pose : public switchboard::event {
 
 typedef std::map<units::eyes, pose_type> multi_pose_map;
 
-
 struct raw_pose {
     float x;
     float y;
@@ -100,7 +99,7 @@ struct raw_pose {
     float wx;
     float wy;
     float wz;
-    bool valid;
+    bool  valid;
 
     raw_pose()
         : x{0.f}
@@ -110,20 +109,20 @@ struct raw_pose {
         , wx{0.f}
         , wy{0.f}
         , wz{0.f}
-        , valid{false} {}
+        , valid{false} { }
 
     raw_pose(const pose_data& pd) {
         copy(pd);
     }
 
     void copy(const pose_data& pd) {
-        x = pd.position.x();
-        y = pd.position.y();
-        z = pd.position.z();
-        w = pd.orientation.w();
-        wx = pd.orientation.x();
-        wy = pd.orientation.y();
-        wz = pd.orientation.z();
+        x     = pd.position.x();
+        y     = pd.position.y();
+        z     = pd.position.z();
+        w     = pd.orientation.w();
+        wx    = pd.orientation.x();
+        wy    = pd.orientation.y();
+        wz    = pd.orientation.z();
         valid = pd.valid;
     }
 };
