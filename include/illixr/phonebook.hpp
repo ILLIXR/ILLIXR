@@ -132,10 +132,12 @@ public:
 #endif
 
         std::shared_ptr<service> this_service = _m_registry.at(type_index);
-        assert(this_service);
+        if (!static_cast<bool>(this_service))
+            throw std::runtime_error{"Could not find " + std::string{type_index.name()}};
 
         std::shared_ptr<specific_service> this_specific_service = std::dynamic_pointer_cast<specific_service>(this_service);
-        assert(this_specific_service);
+        if (!static_cast<bool>(this_service))
+            throw std::runtime_error{"Could not find specific " + std::string{type_index.name()}};
 
         return this_specific_service;
     }

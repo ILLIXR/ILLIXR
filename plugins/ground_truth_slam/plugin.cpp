@@ -1,5 +1,6 @@
 #include "illixr/plugin.hpp"
 
+#include "illixr/data_format/imu.hpp"
 #include "illixr/data_loading.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -8,6 +9,7 @@
 #include <utility>
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 // These are the first IMU timestamp of the datasets. See line#31 for more info.
 #define ViconRoom1Easy      1403715273262142976
 #define ViconRoom1Medium    1403715523912143104
@@ -43,7 +45,7 @@ public:
         // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.
         , _m_dataset_first_time{ViconRoom1Medium}
         , _m_first_time{true} {
-        spdlogger(std::getenv("GROUND_TRUTH_SLAM_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("GROUND_TRUTH_SLAM_LOG_LEVEL"));
     }
 
     void start() override {

@@ -33,7 +33,7 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/data_format.hpp
+            ../../include/illixr/data_format/misc.hpp
         ../../include/illixr/global_module_defs.hpp
         ../../include/illixr/math_util.hpp
         ../../include/illixr/pose_prediction.hpp

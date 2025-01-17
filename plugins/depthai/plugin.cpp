@@ -11,14 +11,16 @@
 #include <utility>
 
 // ILLIXR includes
-#include "illixr/data_format.hpp"
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/imu.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class depthai : public plugin {
 public:
@@ -27,10 +29,10 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
-        , _m_cam{sb->get_writer<cam_type>("cam")}
+        , _m_cam{sb->get_writer<binocular_cam_type>("cam")}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
         , device{createCameraPipeline()} {
-        spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("DEPTHAI_LOG_LEVEL"));
 #ifndef NDEBUG
         spdlog::get(name)->debug("pipeline started");
 #endif
@@ -105,7 +107,7 @@ public:
             cv::Mat converted_depth;
             depth.convertTo(converted_depth, CV_32FC1, 1000.f);
 
-            _m_cam.put(_m_cam.allocate<cam_type>({cam_time_point, cv::Mat{LeftOut}, cv::Mat{RightOut}}));
+            _m_cam.put(_m_cam.allocate<binocular_cam_type>({cam_time_point, cv::Mat{LeftOut}, cv::Mat{RightOut}}));
             _m_rgb_depth.put(
                 _m_rgb_depth.allocate<rgb_depth_type>({cam_time_point, cv::Mat{rgb_out}, cv::Mat{converted_depth}}));
         }
@@ -170,7 +172,7 @@ private:
     const std::shared_ptr<switchboard>         sb;
     const std::shared_ptr<const RelativeClock> _m_clock;
     switchboard::writer<imu_type>              _m_imu;
-    switchboard::writer<cam_type>              _m_cam;
+    switchboard::writer<binocular_cam_type>    _m_cam;
     switchboard::writer<rgb_depth_type>        _m_rgb_depth;
     std::mutex                                 mutex;
 

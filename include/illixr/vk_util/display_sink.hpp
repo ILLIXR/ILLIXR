@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../data_format.hpp"
-#include "../phonebook.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/phonebook.hpp"
 #include "third_party/VkBootstrap.h"
 #include "vulkan_utils.hpp"
 

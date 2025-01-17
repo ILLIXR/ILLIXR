@@ -5,7 +5,7 @@
 
 #define VMA_IMPLEMENTATION
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
 #include "illixr/phonebook.hpp"
@@ -79,7 +79,7 @@ public:
         : pb{pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
-        , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
+        , disable_warp{sb->get_env_bool("ILLIXR_TIMEWARP_DISABLE", "False")} { }
 
     void initialize() {
         ds = pb->lookup_impl<display_sink>();

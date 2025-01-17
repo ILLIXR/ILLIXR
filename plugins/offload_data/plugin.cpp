@@ -1,6 +1,6 @@
 #include "illixr/plugin.hpp"
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/pose.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
@@ -18,6 +18,7 @@
 #include "illixr/gl_util/lib/stb_image_write.h"
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class offload_data : public plugin {
 public:
@@ -26,10 +27,10 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , percent{0}
         , img_idx{0}
-        , enable_offload{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_OFFLOAD_ENABLE", "False"))}
+        , enable_offload{ILLIXR::str_to_bool(sb->get_env("ILLIXR_OFFLOAD_ENABLE", "False"))}
         , is_success{true} /// TODO: Set with #198
-        , obj_dir{ILLIXR::getenv_or("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
-        spdlogger(std::getenv("OFFLOAD_DATA_LOG_LEVEL"));
+        , obj_dir{sb->get_env("ILLIXR_OFFLOAD_PATH", "metrics/offloaded_data/")} {
+        spdlogger(sb->get_env_char("OFFLOAD_DATA_LOG_LEVEL"));
         sb->schedule<texture_pose>(id, "texture_pose", [&](const switchboard::ptr<const texture_pose>& datum, size_t) {
             callback(datum);
         });

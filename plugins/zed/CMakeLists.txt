@@ -13,16 +13,26 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.27.0")
 endif()
 
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+cmake_policy(SET CMP0153 OLD)
+cmake_policy(SET CMP0146 OLD)
 
 find_package(Threads REQUIRED)
 find_package(ZED 3 REQUIRED)
 find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
-
-set(SRC_FILES plugin.cpp)
+set(SRC_FILES plugin.cpp
+	zed_camera.cpp
+	zed_camera_thread.cpp
+)
 set(HDR_FILES include/zed_opencv.hpp
-		../../include/illixr/opencv_data_types.hpp
-		)
+	zed_camera.hpp
+	zed_camera_thread.hpp
+	plugin.hpp
+    ../../include/illixr/data_format/opencv_data_types.hpp
+	../../include/illixr/data_format/zed_cam.hpp
+	../../include/illixr/data_format/pose.hpp
+	../../include/illixr/data_format/imu.hpp
+)
 
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 add_library(${PLUGIN_NAME} SHARED ${HDR_FILES} ${SRC_FILES})

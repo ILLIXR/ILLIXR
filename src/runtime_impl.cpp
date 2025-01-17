@@ -41,13 +41,13 @@ void spdlogger(const std::string& name, const char* log_level) {
 class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
-        spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
+        spdlogger("illixr", getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard version
         pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
-        pb.register_impl<xlib_gl_extended_window>(
-            std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
+                                                       // pb.register_impl<xlib_gl_extended_window>(
+        // std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
 #endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
         pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
@@ -76,13 +76,14 @@ public:
                            return std::unique_ptr<plugin>{plugin_factory(&pb)};
                        });
 
+        pb.lookup_impl<RelativeClock>()->start();
+
         std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
             // Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
         });
 
         // This actually kicks off the plugins
-        pb.lookup_impl<RelativeClock>()->start();
         pb.lookup_impl<Stoplight>()->signal_ready();
     }
 
@@ -139,6 +140,10 @@ public:
 
           [1] https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
          */
+    }
+
+    std::shared_ptr<switchboard> get_switchboard() override {
+        return pb.lookup_impl<switchboard>();
     }
 
 private:
