@@ -185,6 +185,11 @@ find_package(Eigen3 REQUIRED)
 #############
 
 find_package(Git REQUIRED)
+if (CMAKE_VERSION VERSION_LESS "3.30.0")
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+else()
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization CONFIG)
+endif()
 
 find_package(Boost REQUIRED CONFIG COMPONENTS filesystem serialization)
 
@@ -262,22 +267,20 @@ set(VISUALIZER "" CACHE STRING "")
 
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
-    set(dependencies "")
+    add_custom_target(depmaker ALL
+                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
     if(USE_AUDIO_PIPELINE)
-        set(dependencies "audio_pipeline ")
+        add_dependencies(depmaker "Audio_Pipeline")
     endif()
     if(USE_OPENVINS)
-        set(dependencies "${dependencies} OpenVINS")
+        add_dependencies(depmaker "OpenVINS")
     endif()
     if(USE_HAND_TRACKING)
         #set(dependencies "${dependencies} ${HT_TARGET_NAME}")
     endif()
-    add_custom_target(depmaker ALL
-                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-                      DEPENDS ${dependencies}
-                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)

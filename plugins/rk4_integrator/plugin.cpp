@@ -7,6 +7,7 @@
 #include "illixr/error_util.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
+#include "illixr/runge-kutta.hpp"
 #include "illixr/switchboard.hpp"
 
 #include <chrono>
@@ -83,8 +84,8 @@ private:
             has_last_offset = true;
         }
 
-        Eigen::Matrix<double, 4, 1> curr_quat = Eigen::Matrix<double, 4, 1>{input_values->quat.x(), input_values->quat.y(),
-                                                                            input_values->quat.z(), input_values->quat.w()};
+        proper_quaterniond          curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
+                                                 input_values->quat.z()};
         Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
         Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
 
@@ -126,19 +127,15 @@ private:
                 a_hat2 = prop_data[i + 1].linear_a - input_values->biasAcc;
 
                 // Compute the new state mean value
-                Eigen::Vector4d new_quat;
-                Eigen::Vector3d new_vel, new_pos;
-                predict_mean_rk4(curr_quat, curr_pos, curr_vel, dt, w_hat, a_hat, w_hat2, a_hat2, new_quat, new_vel, new_pos);
+                state_plus sp = predict_mean_rk4(dt, state_plus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
 
-                curr_quat = new_quat;
-                curr_pos  = new_pos;
-                curr_vel  = new_vel;
+                curr_quat = sp.orientation;
+                curr_pos  = sp.position;
+                curr_vel  = sp.velocity;
             }
         }
 
-        _m_imu_raw.put(_m_imu_raw.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
-                                           Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)},
-                                           real_time));
+        _m_imu_raw.put(_m_imu_raw.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
     }
 
     // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
@@ -188,80 +185,6 @@ private:
         double lambda = duration2double(timestamp - imu_1.time) / duration2double(imu_2.time - imu_1.time);
         return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
                         (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
-    }
-
-    static void predict_mean_rk4(const Eigen::Vector4d& quat, const Eigen::Vector3d& pos, const Eigen::Vector3d& vel, double dt,
-                                 const Eigen::Vector3d& w_hat1, const Eigen::Vector3d& a_hat1, const Eigen::Vector3d& w_hat2,
-                                 const Eigen::Vector3d& a_hat2, Eigen::Vector4d& new_q, Eigen::Vector3d& new_v,
-                                 Eigen::Vector3d& new_p) {
-        Eigen::Matrix<double, 3, 1> gravity_vec = Eigen::Matrix<double, 3, 1>(0.0, 0.0, 9.81);
-
-        // Pre-compute things
-        Eigen::Vector3d w_hat   = w_hat1;
-        Eigen::Vector3d a_hat   = a_hat1;
-        Eigen::Vector3d w_alpha = (w_hat2 - w_hat1) / dt;
-        Eigen::Vector3d a_jerk  = (a_hat2 - a_hat1) / dt;
-
-        // k1 ================
-        Eigen::Vector4d dq_0   = {0, 0, 0, 1};
-        Eigen::Vector4d q0_dot = 0.5 * Omega(w_hat) * dq_0;
-        Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, quat));
-        Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - gravity_vec;
-
-        Eigen::Vector4d k1_q = q0_dot * dt;
-        Eigen::Vector3d k1_p = vel * dt;
-        Eigen::Vector3d k1_v = v0_dot * dt;
-
-        // k2 ================
-        w_hat += 0.5 * w_alpha * dt;
-        a_hat += 0.5 * a_jerk * dt;
-
-        Eigen::Vector4d dq_1 = quatnorm(dq_0 + 0.5 * k1_q);
-        // Eigen::Vector3d p_1 = pos+0.5*k1_p;
-        Eigen::Vector3d v_1 = vel + 0.5 * k1_v;
-
-        Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
-        Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, quat));
-        Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - gravity_vec;
-
-        Eigen::Vector4d k2_q = q1_dot * dt;
-        Eigen::Vector3d k2_p = v_1 * dt;
-        Eigen::Vector3d k2_v = v1_dot * dt;
-
-        // k3 ================
-        Eigen::Vector4d dq_2 = quatnorm(dq_0 + 0.5 * k2_q);
-        // Eigen::Vector3d p_2 = pos+0.5*k2_p;
-        Eigen::Vector3d v_2 = vel + 0.5 * k2_v;
-
-        Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
-        Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, quat));
-        Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - gravity_vec;
-
-        Eigen::Vector4d k3_q = q2_dot * dt;
-        Eigen::Vector3d k3_p = v_2 * dt;
-        Eigen::Vector3d k3_v = v2_dot * dt;
-
-        // k4 ================
-        w_hat += 0.5 * w_alpha * dt;
-        a_hat += 0.5 * a_jerk * dt;
-
-        Eigen::Vector4d dq_3 = quatnorm(dq_0 + k3_q);
-        // Eigen::Vector3d p_3 = pos+k3_p;
-        Eigen::Vector3d v_3 = vel + k3_v;
-
-        Eigen::Vector4d q3_dot = 0.5 * Omega(w_hat) * dq_3;
-        Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3, quat));
-        Eigen::Vector3d v3_dot = R_Gto3.transpose() * a_hat - gravity_vec;
-
-        Eigen::Vector4d k4_q = q3_dot * dt;
-        Eigen::Vector3d k4_p = v_3 * dt;
-        Eigen::Vector3d k4_v = v3_dot * dt;
-
-        // y+dt ================
-        Eigen::Vector4d dq = quatnorm(dq_0 + (1.0 / 6.0) * k1_q + (1.0 / 3.0) * k2_q + (1.0 / 3.0) * k3_q + (1.0 / 6.0) * k4_q);
-        new_q              = quat_multiply(dq, quat);
-        new_p              = pos + (1.0 / 6.0) * k1_p + (1.0 / 3.0) * k2_p + (1.0 / 3.0) * k3_p + (1.0 / 6.0) * k4_p;
-        new_v              = vel + (1.0 / 6.0) * k1_v + (1.0 / 3.0) * k2_v + (1.0 / 3.0) * k3_v + (1.0 / 6.0) * k4_v;
     }
 
     /**
