@@ -74,8 +74,8 @@ Use the following to install the dependencies for the selected plugins:
 
 #### Build command
 
-Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`. 
-If you want the default install path then do not add the option to the command line. 
+Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
+If you want the default install path then do not add the option to the command line.
 Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
 
 <div id="cmake" class="code-box-copy">
@@ -85,7 +85,7 @@ Note that if your install prefix requires sudo privileges then you will need to 
 
 Common CMake command line arguments (always prepend with a `-D`):
 
--  ***CMAKE_INSTALL_PREFIX*** 
+-  ***CMAKE_INSTALL_PREFIX***
    The root path to install the libraries and binary to. This defaults to `/usr/local`.
 -  ***CMAKE_BUILD_TYPE***
    The build type to do: Debug, Release, RelWithDebInfo
@@ -198,7 +198,7 @@ DATA_SOURCE: /home/my/data
 PROCESS_DATA: true
 ```
 
-Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be eset to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
+Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
 
 ## ILLIXR Graphics Backends
 
@@ -421,7 +421,7 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
 
         let count = 0;
         let currentRow = tabRef.insertRow(-1);
-        
+
         let profilecell = currentRow.insertCell(-1);
         profilecell.innerHTML = "<b>Profiles:</b>";
         profilecell.setAttribute("colspan", profiles.length + 2);
