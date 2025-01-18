@@ -718,6 +718,14 @@ public:
      */
     bool get_env_bool(const std::string& var, const std::string& def = "false") {
         std::string                    val = get_env(var, def);
+        // see if we are dealing with an int value
+        try {
+            const int i_val = std::stoi(val);
+            if (i_val <= 0)
+                return false;
+            return true;
+        } catch(...) {}
+
         const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
         for (auto s : affirmative) {
             if (std::equal(val.begin(), val.end(), s.begin(), s.end(), [](char a, char b) {
