@@ -2,11 +2,13 @@
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/socket.hpp"
 #include "illixr/network/timestamp.hpp"
+#include "illixr/network/topic_config.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
+#include "illixr/serializable_data.hpp"
 #include "video_encoder.h"
 #include "vio_input.pb.h"
 
@@ -17,7 +19,7 @@
 
 using namespace ILLIXR;
 
-// #define USE_COMPRESSION
+#define USE_COMPRESSION
 
 class offload_writer : public threadloop {
 private:
@@ -28,6 +30,7 @@ private:
     GstMapInfo                            img0;
     GstMapInfo                            img1;
     bool                                  img_ready = false;
+    std::shared_ptr<spdlog::logger>       log;
 
 public:
     offload_writer(const std::string& name_, phonebook* pb_)
@@ -36,15 +39,11 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
-        , server_addr(SERVER_IP, SERVER_PORT_1) {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        socket.set_reuseaddr();
-        socket.bind(Address(CLIENT_IP, CLIENT_PORT_1));
-        socket.enable_no_delay();
-        initial_timestamp();
-
-        std::srand(std::time(0));
-    }
+        , _m_imu_cam_writer{sb->get_network_writer<switchboard::event_wrapper<std::string>>("compressed_imu_cam", topic_config{.serialization_method=topic_config::SerializationMethod::PROTOBUF})}
+        , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL")))
+        {
+            std::srand(std::time(0));
+        }
 
     void start() override {
         threadloop::start();
@@ -64,14 +63,6 @@ public:
             cv.notify_one();
         });
         encoder->init();
-
-#ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] TEST: Connecting to {}", server_addr.str(":"));
-#endif
-        socket.connect(server_addr);
-#ifndef NDEBUG
-        spdlog::get(name)->debug("[offload_vio.revice_tx] Connected to {}", server_addr.str(":"));
-#endif
 
         sb->schedule<imu_type>(id, "imu", [this](const switchboard::ptr<const imu_type>& datum, std::size_t) {
             this->prepare_imu_cam_data(datum);
@@ -97,7 +88,9 @@ public:
         std::string data_to_be_sent = data_buffer->SerializeAsString();
         std::string delimitter      = "EEND!";
 
-        socket.write(data_to_be_sent + delimitter);
+        log->info("{},{}", cam_time.value().time_since_epoch().count(), (_m_clock->now().time_since_epoch().count()-cam_time.value().time_since_epoch().count()) / 1e6);
+        // socket.write(data_to_be_sent + delimitter);
+        _m_imu_cam_writer.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimitter));
 
         frame_id++;
         delete data_buffer;
@@ -208,9 +201,7 @@ private:
     const std::shared_ptr<RelativeClock>   _m_clock;
     const std::shared_ptr<Stoplight>       _m_stoplight;
     switchboard::buffered_reader<cam_type> _m_cam;
-
-    TCPSocket socket;
-    Address   server_addr;
+    switchboard::network_writer<switchboard::event_wrapper<std::string>> _m_imu_cam_writer;
 };
 
 PLUGIN_MAIN(offload_writer)

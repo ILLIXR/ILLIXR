@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <shared_mutex>
 
-#define LIGHTHOUSE
+// #define LIGHTHOUSE
 
 using namespace ILLIXR;
 

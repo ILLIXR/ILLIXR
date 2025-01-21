@@ -427,12 +427,19 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
-        void deserialize_and_put(std::vector<char>& buffer) {
-            boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-            boost::archive::binary_iarchive ia{stream};
-            ptr<event> this_event;
-            ia >> this_event;
-            put(std::move(this_event));
+        void deserialize_and_put(std::vector<char>& buffer, topic_config& config) {
+            if (config.serialization_method == topic_config::SerializationMethod::BOOST) {
+                // TODO: Need to differentiate and support protobuf deserialization
+                boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
+                boost::archive::binary_iarchive ia{stream};
+                ptr<event> this_event;
+                ia >> this_event;
+                put(std::move(this_event));
+            }
+            else {
+                ptr<event> message = std::make_shared<event_wrapper<std::string>>((std::string(buffer.begin(), buffer.end())));
+                put(std::move(message));
+            }
         }
 
         /**
@@ -609,24 +616,31 @@ public:
     class network_writer : public writer<serializable_event> {
     private:
         ptr<network_backend> _m_backend;
+        topic_config _m_config;
     public:
-        network_writer(topic& topic_, ptr<network_backend> backend_ = nullptr)
-            : writer<serializable_event>{topic_}, _m_backend{backend_} { }
+        network_writer(topic& topic_, ptr<network_backend> backend_ = nullptr, const topic_config& config = {})
+            : writer<serializable_event>{topic_}, _m_backend{backend_}, _m_config{config} { }
 
         void put(ptr<serializable_event>&& this_specific_event) override {
             if (_m_backend->is_topic_networked(this->_m_topic.name())) {
-                auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
-                assert(base_event && "Event is not derived from switchboard::event");
-
-                std::vector<char> buffer;
-                boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
-                boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{
-                    inserter};
-                boost::archive::binary_oarchive oa{stream};
-                oa << base_event;
-                // flush
-                stream.pubsync();
-                _m_backend->topic_send(this->_m_topic.name(), buffer);
+                if (_m_config.serialization_method == topic_config::SerializationMethod::BOOST) {
+                    auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
+                    assert(base_event && "Event is not derived from switchboard::event");
+                    // Default serialization method - Boost
+                    std::vector<char> buffer;
+                    boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
+                    boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
+                    boost::archive::binary_oarchive oa{stream};
+                    oa << base_event;
+                    // flush
+                    stream.pubsync();
+                    _m_backend->topic_send(this->_m_topic.name(), std::move(std::string(buffer.begin(), buffer.end())));
+                } else {
+                    // PROTOBUF - this_specific_event will be a string
+                    auto message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
+                    std::string message = **message_ptr;
+                    _m_backend->topic_send(this->_m_topic.name(), std::move(message));
+                }
             } else {
                 writer<serializable_event>::put(std::move(this_specific_event));
             }
@@ -723,12 +737,12 @@ public:
     }
 
     template<typename specific_event>
-    network_writer<specific_event> get_network_writer(const std::string& topic_name, topic_config config) {
+    network_writer<specific_event> get_network_writer(const std::string& topic_name, topic_config config = {}) {
         auto backend = _m_pb->lookup_impl<network_backend>();
         if (_m_registry.find(topic_name) == _m_registry.end()) {
             backend->topic_create(topic_name, config);
         }
-        return network_writer<specific_event>{try_register_topic<specific_event>(topic_name), backend};
+        return network_writer<specific_event>{try_register_topic<specific_event>(topic_name), backend, config};
     }
 
     /**
