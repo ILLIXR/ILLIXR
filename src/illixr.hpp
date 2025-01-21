@@ -9,34 +9,34 @@
 #include <thread>
 #include <vector>
 
-#define GET_STRING(NAME, ENV)                                         \
-    if (options.count(#NAME)) {                                       \
-        setenv(#ENV, options[#NAME].as<std::string>().c_str(), true); \
-    } else if (config[#NAME]) {                                       \
-        setenv(#ENV, config[#NAME].as<std::string>().c_str(), true);  \
+#define GET_STRING(NAME, ENV)                                \
+    if (options.count(#NAME)) {                              \
+        sb->set_env(#ENV, options[#NAME].as<std::string>()); \
+    } else if (config["env_vars"][#NAME]) {                  \
+        sb->set_env(#ENV, config[#NAME].as<std::string>());  \
     }
 
-#define GET_BOOL(NAME, ENV)                      \
-    if (options.count(#NAME) || config[#NAME]) { \
-        bool val;                                \
-        if (options.count(#NAME)) {              \
-            val = options[#NAME].as<bool>();     \
-        } else {                                 \
-            val = config[#NAME].as<bool>();      \
-        }                                        \
-        if (val) {                               \
-            setenv(#ENV, "True", true);          \
-        } else {                                 \
-            setenv(#ENV, "False", false);        \
-        }                                        \
+#define GET_BOOL(NAME, ENV)                             \
+    if (options.count(#NAME) || config[#NAME]) {        \
+        bool val;                                       \
+        if (options.count(#NAME)) {                     \
+            val = options[#NAME].as<bool>();            \
+        } else {                                        \
+            val = config["env_vars"][#NAME].as<bool>(); \
+        }                                               \
+        if (val) {                                      \
+            sb->set_env(#ENV, "True");                  \
+        } else {                                        \
+            sb->set_env(#ENV, "False");                 \
+        }                                               \
     }
 #define _STR(y)      #y
 #define STRINGIZE(x) _STR(x)
-#define GET_LONG(NAME, ENV)                                                    \
-    if (options.count(#NAME)) {                                                \
-        setenv(#ENV, std::to_string(options[#NAME].as<long>()).c_str(), true); \
-    } else if (config[#NAME]) {                                                \
-        setenv(#ENV, std::to_string(config[#NAME].as<long>()).c_str(), true);  \
+#define GET_LONG(NAME, ENV)                                           \
+    if (options.count(#NAME)) {                                       \
+        sb->set_env(#ENV, std::to_string(options[#NAME].as<long>())); \
+    } else if (config["env_vars"][#NAME]) {                           \
+        sb->set_env(#ENV, std::to_string(config[#NAME].as<long>()));  \
     }
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};

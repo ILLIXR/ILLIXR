@@ -3,7 +3,8 @@ plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,display_vk,tim
 build_flags: -DILLIXR_VULKAN
 build_type: Release
 visualizers: openvins
-enable_offload: false
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false
+env_vars:
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false

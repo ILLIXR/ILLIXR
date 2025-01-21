@@ -52,7 +52,7 @@ public:
         : sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
-        char* env_input; /* pointer to environment variable input */
+        const char* env_input; /* pointer to environment variable input */
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Starting Service");
 #endif
@@ -75,13 +75,13 @@ public:
         amplitude       = 2.0;
 
         // Adjust parameters based on environment variables
-        if ((env_input = getenv("FAUXPOSE_PERIOD"))) {
+        if ((env_input = sb->get_env_char("FAUXPOSE_PERIOD"))) {
             period = std::strtof(env_input, nullptr);
         }
-        if ((env_input = getenv("FAUXPOSE_AMPLITUDE"))) {
+        if ((env_input = sb->get_env_char("FAUXPOSE_AMPLITUDE"))) {
             amplitude = std::strtof(env_input, nullptr);
         }
-        if ((env_input = getenv("FAUXPOSE_CENTER"))) {
+        if ((env_input = sb->get_env_char("FAUXPOSE_CENTER"))) {
             center_location[0] = std::strtof(env_input, nullptr);
             center_location[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
             center_location[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);

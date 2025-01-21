@@ -80,13 +80,13 @@ public:
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_cam_publisher{sb->get_writer<cam_type>("cam")}
-        , _m_sensor_data{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data),
-                                  load_data<lazy_load_image>("cam1", "offline_cam", &read_data))}
+        , _m_sensor_data{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data, sb),
+                                  load_data<lazy_load_image>("cam1", "offline_cam", &read_data, sb))}
         , dataset_first_time{_m_sensor_data.cbegin()->first}
         , last_ts{0}
         , _m_rtc{pb->lookup_impl<RelativeClock>()}
         , next_row{_m_sensor_data.cbegin()} {
-        spdlogger(std::getenv("OFFLINE_CAM_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLINE_CAM_LOG_LEVEL"));
     }
 
     skip_option _p_should_skip() override {
