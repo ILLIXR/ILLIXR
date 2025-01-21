@@ -24,10 +24,11 @@ namespace ILLIXR {
 using plugin_id_t = std::size_t;
 
 const std::vector<std::string> ignore_vars = {"plugins"};
-const std::vector<std::string> ENV_VARS = {"ILLIXR_ENABLE_PRE_SLEEP",
-                                           "ILLIXR_LOG_LEVEL",
-                                           "ILLIXR_RUN_DURATION",
-                                           };
+const std::vector<std::string> ENV_VARS    = {
+    "ILLIXR_ENABLE_PRE_SLEEP",
+    "ILLIXR_LOG_LEVEL",
+    "ILLIXR_RUN_DURATION",
+};
 
 /**
  * @Should be private to Switchboard.
