@@ -15,8 +15,8 @@
 #include "utils/hmd.hpp"
 
 #include <algorithm>
-#include <future>
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <mutex>
 #include <stack>
@@ -89,15 +89,13 @@ public:
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator =
-                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
-        command_pool = vulkan::create_command_pool(
-            ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
@@ -114,12 +112,12 @@ public:
 
         ds = pb->lookup_impl<vulkan::display_provider>();
 
-        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_width  = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
         swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
 
-        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
-                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
-                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height, display_params::width_meters, display_params::height_meters,
+                               display_params::lens_separation, display_params::meters_per_tan_angle,
+                               display_params::aberration, hmd_info);
 
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
         if (!initialized) {
@@ -130,7 +128,7 @@ public:
         }
 
         generate_distortion_data();
-        
+
         create_vertex_buffer();
         create_index_buffer();
 
@@ -141,7 +139,8 @@ public:
         create_pipeline(render_pass, subpass);
         timewarp_render_pass = render_pass;
 
-        clamp_edge = std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
+        clamp_edge =
+            std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
         compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
         if (compare_images) {
             // Note that the Quaternion constructor takes the w component first.
@@ -150,18 +149,18 @@ public:
             std::cout << "Reading file from " << pose_filename << std::endl;
 
             std::ifstream pose_file(pose_filename);
-            std::string line;
+            std::string   line;
             while (std::getline(pose_file, line)) {
-                float p_x, p_y, p_z;
-                float q_x, q_y, q_z, q_w;
+                float             p_x, p_y, p_z;
+                float             q_x, q_y, q_z, q_w;
                 std::stringstream ss(line);
-                ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;   
+                ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
 
                 fixed_poses.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
             }
 
             std::cout << "Read " << fixed_poses.size() << "poses" << std::endl;
-            
+
             pose_file.close();
         }
     }
@@ -192,16 +191,19 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        auto next_vsync = _m_vsync.get_ro_nullable();
-        pose_type latest_pose       = disable_warp ? render_pose : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
+        auto      next_vsync  = _m_vsync.get_ro_nullable();
+        pose_type latest_pose = disable_warp
+            ? render_pose
+            : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
         if (compare_images) {
             // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
             // (this should be reflected in the screenshot layer)
             int pose_index = std::clamp(static_cast<int>(frame_count - 150) / 100, 0, static_cast<int>(fixed_poses.size()) - 1);
-            latest_pose = fixed_poses[pose_index];
+            latest_pose    = fixed_poses[pose_index];
 
             std::cout << "At frame " << frame_count << std::endl;
-            std::cout << "Using pose " << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z();
+            std::cout << "Using pose " << latest_pose.position.x() << " " << latest_pose.position.y() << " "
+                      << latest_pose.position.z();
         }
 
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
@@ -231,40 +233,41 @@ public:
 
         VkDeviceSize offsets = 0;
 
-        if (left) frame_count++;
+        if (left)
+            frame_count++;
 
         VkClearValue clear_color;
         clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
 
         // Timewarp handles distortion correction at the same time
         VkRenderPassBeginInfo tw_render_pass_info{};
-        tw_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        tw_render_pass_info.renderPass = timewarp_render_pass;
-        tw_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        tw_render_pass_info.renderArea.offset.y = 0;
-        tw_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        tw_render_pass_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        tw_render_pass_info.renderPass               = timewarp_render_pass;
+        tw_render_pass_info.renderArea.offset.x      = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        tw_render_pass_info.renderArea.offset.y      = 0;
+        tw_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
         tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
-        tw_render_pass_info.framebuffer = framebuffer;
-        tw_render_pass_info.clearValueCount = 1;
-        tw_render_pass_info.pClearValues = &clear_color;
+        tw_render_pass_info.framebuffer              = framebuffer;
+        tw_render_pass_info.clearValueCount          = 1;
+        tw_render_pass_info.pClearValues             = &clear_color;
 
         VkViewport tw_viewport{};
-        tw_viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-	    tw_viewport.y = 0;
-	    tw_viewport.width = static_cast<uint32_t>(swapchain_width / 2);
-	    tw_viewport.height = static_cast<uint32_t>(swapchain_height);
-	    tw_viewport.minDepth = 0.0f;
-	    tw_viewport.maxDepth = 1.0f;
+        tw_viewport.x        = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        tw_viewport.y        = 0;
+        tw_viewport.width    = static_cast<uint32_t>(swapchain_width / 2);
+        tw_viewport.height   = static_cast<uint32_t>(swapchain_height);
+        tw_viewport.minDepth = 0.0f;
+        tw_viewport.maxDepth = 1.0f;
 
         VkRect2D tw_scissor{};
-        tw_scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        tw_scissor.offset.y = 0; 
-        tw_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        tw_scissor.offset.x      = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        tw_scissor.offset.y      = 0;
+        tw_scissor.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
         tw_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
 
         vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-	    vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
-	    vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
+        vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, &offsets);
@@ -464,7 +467,8 @@ private:
         samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
         samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-        VkSamplerAddressMode sampler_addressing = clamp_edge ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        VkSamplerAddressMode sampler_addressing =
+            clamp_edge ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeU = sampler_addressing;
         samplerInfo.addressModeV = sampler_addressing;
         samplerInfo.addressModeW = sampler_addressing;
@@ -565,11 +569,11 @@ private:
         for (int eye = 0; eye < 2; eye++) {
             std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool->image_pool.size(), descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
-                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-                nullptr,                                        // pNext
-                {},                                             // descriptorPool
-                0,                                              // descriptorSetCount
-                nullptr                                         // pSetLayouts
+                       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+                       nullptr,                                        // pNext
+                       {},                                             // descriptorPool
+                       0,                                              // descriptorSetCount
+                       nullptr                                         // pSetLayouts
             };
             allocInfo.descriptorPool     = descriptor_pool;
             allocInfo.descriptorSetCount = buffer_pool->image_pool.size();
@@ -723,12 +727,12 @@ private:
         pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
 
         VkPushConstantRange push_constant = {};
-        push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        push_constant.offset = 0;
-        push_constant.size = sizeof(uint32_t);
+        push_constant.stageFlags          = VK_SHADER_STAGE_VERTEX_BIT;
+        push_constant.offset              = 0;
+        push_constant.size                = sizeof(uint32_t);
 
         pipelineLayoutInfo.pushConstantRangeCount = 1;
-        pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+        pipelineLayoutInfo.pPushConstantRanges    = &push_constant;
 
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
 
@@ -830,7 +834,8 @@ private:
             }
 
             // Construct perspective projection matrix according to Unreal -- different FOVs not supported here.
-            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                         index_params::fov_up[eye], index_params::fov_down[eye]);
         }
     }
 
@@ -859,13 +864,13 @@ private:
         transform = texCoordProjection * deltaViewMatrix;
     }
 
-    const phonebook* const                    pb;
-    const std::shared_ptr<switchboard>        sb;
-    const std::shared_ptr<pose_prediction>    pp;
-    switchboard::reader<switchboard::event_wrapper<time_point>>                   _m_vsync;
-    bool                                      disable_warp = false;
-    std::shared_ptr<vulkan::display_provider> ds           = nullptr;
-    std::mutex                                m_setup;
+    const phonebook* const                                      pb;
+    const std::shared_ptr<switchboard>                          sb;
+    const std::shared_ptr<pose_prediction>                      pp;
+    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
+    bool                                                        disable_warp = false;
+    std::shared_ptr<vulkan::display_provider>                   ds           = nullptr;
+    std::mutex                                                  m_setup;
 
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
@@ -874,15 +879,15 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
-    bool compare_images = false;
+    bool                   compare_images = false;
     std::vector<pose_type> fixed_poses;
-    uint64_t frame_count = 0;
+    uint64_t               frame_count = 0;
 
-    size_t                                  swapchain_width;
-    size_t                                  swapchain_height;
+    size_t                                               swapchain_width;
+    size_t                                               swapchain_height;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
-    VkSampler                                       fb_sampler{};
-    bool clamp_edge = false;
+    VkSampler                                            fb_sampler{};
+    bool                                                 clamp_edge = false;
 
     VkDescriptorPool                            descriptor_pool{};
     VkDescriptorSetLayout                       descriptor_set_layout{};

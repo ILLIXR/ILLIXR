@@ -35,10 +35,10 @@ public:
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _m_imu_cam_reader{sb->get_buffered_reader<switchboard::event_wrapper<std::string>>("compressed_imu_cam")}
-        , buffer_str("") 
+        , buffer_str("")
         , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
-            log->info("Camera Time,Uplink Time(ms)");
-        }
+        log->info("Camera Time,Uplink Time(ms)");
+    }
 
     virtual skip_option _p_should_skip() override {
         return skip_option::run;
@@ -46,13 +46,14 @@ public:
 
     void _p_one_iteration() override {
         if (_m_imu_cam_reader.size() > 0) {
-            auto buffer_ptr = _m_imu_cam_reader.dequeue();
-            std::string buffer_str = **buffer_ptr;
-            std::string::size_type end_position = buffer_str.find(delimitter);
+            auto                       buffer_ptr   = _m_imu_cam_reader.dequeue();
+            std::string                buffer_str   = **buffer_ptr;
+            std::string::size_type     end_position = buffer_str.find(delimitter);
             vio_input_proto::IMUCamVec vio_input;
-            bool success = vio_input.ParseFromString(buffer_str.substr(0, end_position));
+            bool                       success = vio_input.ParseFromString(buffer_str.substr(0, end_position));
             if (!success) {
-                log->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}", buffer_str.size() - delimitter.size());
+                log->error("[offload_vio.server_rx]Error parsing the protobuf, vio input size = {}",
+                           buffer_str.size() - delimitter.size());
             } else {
                 ReceiveVioInput(vio_input);
             }
@@ -124,7 +125,7 @@ private:
         cv::Mat img1(img1_dst.clone());
 
         lock.unlock();
-        log->warn("{},{}", cam_data.timestamp(), (_m_clock->now()-start_decomp).count() / 1e6);
+        log->warn("{},{}", cam_data.timestamp(), (_m_clock->now() - start_decomp).count() / 1e6);
         // With compression end
 #else
         // Without compression
@@ -149,10 +150,10 @@ private:
     }
 
 private:
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<RelativeClock>   _m_clock;
-    switchboard::writer<imu_type>          _m_imu;
-    switchboard::writer<cam_type>          _m_cam;
+    const std::shared_ptr<switchboard>                                    sb;
+    const std::shared_ptr<RelativeClock>                                  _m_clock;
+    switchboard::writer<imu_type>                                         _m_imu;
+    switchboard::writer<cam_type>                                         _m_cam;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> _m_imu_cam_reader;
 
     TCPSocket   socket;

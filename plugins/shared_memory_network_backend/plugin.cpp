@@ -16,17 +16,17 @@ using namespace boost::interprocess;
 #define MAX_MESSAGE_COUNT 10
 
 struct message_t {
-    std::string       topic_name;
-    std::vector<char> message;
-    int checksum;
+    std::string                                    topic_name;
+    std::vector<char>                              message;
+    int                                            checksum;
     std::chrono::high_resolution_clock::time_point timestamp;
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
-        ar & topic_name;
-        ar & message;
-        ar & checksum;
-        ar & boost::serialization::make_binary_object(&timestamp, sizeof(timestamp));
+        ar& topic_name;
+        ar& message;
+        ar& checksum;
+        ar& boost::serialization::make_binary_object(&timestamp, sizeof(timestamp));
     }
 };
 
@@ -101,14 +101,14 @@ public:
 
         std::vector<char> full_message;
         // serialize using Boost
-        boost::iostreams::back_insert_device<std::vector<char>> inserter{full_message};
-        boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{
-            inserter};
-        boost::archive::binary_oarchive oa{stream};
+        boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{full_message};
+        boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
+        boost::archive::binary_oarchive                                                          oa{stream};
         oa << msg;
         stream.pubsync();
 
-//        log->debug("Sending message on topic {} with size {} ({}) with chksm {}", topic_name, full_message.size(), message.size(), msg.checksum);
+        // log->debug("Sending message on topic {} with size {} ({}) with chksm {}", topic_name, full_message.size(),
+        // message.size(), msg.checksum);
 
         auto priority = networked_topics[topic_name];
         mq_tx->send(full_message.data(), full_message.size(), priority);
@@ -142,10 +142,10 @@ public:
         mq_rx->receive(buffer.data(), buffer.size(), received_size, priority);
 
         // deserialize using Boost
-        message_t msg;
-        boost::iostreams::basic_array_source<char> device{buffer.data(), received_size};
+        message_t                                                            msg;
+        boost::iostreams::basic_array_source<char>                           device{buffer.data(), received_size};
         boost::iostreams::stream<boost::iostreams::basic_array_source<char>> stream{device};
-        boost::archive::binary_iarchive ia{stream};
+        boost::archive::binary_iarchive                                      ia{stream};
         ia >> msg;
 
         auto checksum = calculate_checksum(msg.message);
@@ -154,15 +154,17 @@ public:
             return;
         }
 
-        auto topic_name = msg.topic_name;
-        auto message    = msg.message;
+        auto topic_name   = msg.topic_name;
+        auto message      = msg.message;
         auto message_size = message.size();
-        auto timestamp = msg.timestamp;
+        auto timestamp    = msg.timestamp;
 
         auto latency = std::chrono::high_resolution_clock::now() - timestamp;
-//        log->debug("Received message on topic {} with size {} ({}) with chksm {} with latency (ms) {}", topic_name, received_size, message_size, msg.checksum, std::chrono::duration_cast<std::chrono::milliseconds>(latency).count());
+        // log->debug("Received message on topic {} with size {} ({}) with chksm {} with latency (ms) {}", topic_name,
+        // received_size, message_size, msg.checksum, std::chrono::duration_cast<std::chrono::milliseconds>(latency).count());
 
-//        log->debug("Received message on topic {} with size {} ({}) with chksm {}", topic_name, received_size, message_size, msg.checksum);
+        // log->debug("Received message on topic {} with size {} ({}) with chksm {}", topic_name, received_size, message_size,
+        // msg.checksum);
 
         topic_receive(topic_name, message);
     }

@@ -3,11 +3,11 @@
 //
 
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #include "glfw_extended.h"
 
 #include "illixr/error_util.hpp"
+
+#include <GLFW/glfw3.h>
 
 void glfw_extended::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) {
     this->vk_instance = vk_instance;
@@ -15,7 +15,7 @@ void glfw_extended::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_ph
 
 VkSurfaceKHR glfw_extended::create_surface() {
     VkSurfaceKHR surface;
-    auto ret = glfwCreateWindowSurface(vk_instance, (GLFWwindow*) window, nullptr, &surface);
+    auto         ret = glfwCreateWindowSurface(vk_instance, (GLFWwindow*) window, nullptr, &surface);
     if (ret != VK_SUCCESS) {
         // get the error code
         auto err = glfwGetError(nullptr);
@@ -46,7 +46,7 @@ void glfw_extended::cleanup() {
 }
 
 std::set<const char*> glfw_extended::get_required_instance_extensions() {
-    uint32_t glfwExtensionCount = 0;
+    uint32_t     glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     std::set<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
@@ -61,10 +61,10 @@ glfw_extended::glfw_extended() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
-                              "ILLIXR Eyebuffer Window (Vulkan)", glfwGetPrimaryMonitor(), nullptr);
-//    window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
-//                              "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
+    window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels, "ILLIXR Eyebuffer Window (Vulkan)",
+                              glfwGetPrimaryMonitor(), nullptr);
+    // window = glfwCreateWindow(display_params::width_pixels, display_params::height_pixels,
+    //                           "ILLIXR Eyebuffer Window (Vulkan)", nullptr, nullptr);
 }
 
 std::set<const char*> glfw_extended::get_required_device_extensions() {

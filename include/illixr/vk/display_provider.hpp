@@ -25,9 +25,9 @@ public:
 
     // required by timewarp_vk as a service
 
-    VkInstance                                                               vk_instance        = VK_NULL_HANDLE;
-    VkPhysicalDevice                                                         vk_physical_device = VK_NULL_HANDLE;
-    VkDevice                                                                 vk_device          = VK_NULL_HANDLE;
+    VkInstance                                   vk_instance        = VK_NULL_HANDLE;
+    VkPhysicalDevice                             vk_physical_device = VK_NULL_HANDLE;
+    VkDevice                                     vk_device          = VK_NULL_HANDLE;
     std::unordered_map<queue::queue_type, queue> queues;
 
     /**
@@ -42,12 +42,12 @@ public:
      */
     virtual void recreate_swapchain(){};
 
-    VkSurfaceKHR              vk_surface   = VK_NULL_HANDLE;
-    VkSwapchainKHR            vk_swapchain = VK_NULL_HANDLE;
-    VkSurfaceFormatKHR        swapchain_image_format;
-    std::vector<VkImage>      swapchain_images;
-    std::vector<VkImageView>  swapchain_image_views;
-    VkExtent2D                swapchain_extent = {display_params::width_pixels, display_params::height_pixels};
+    VkSurfaceKHR             vk_surface   = VK_NULL_HANDLE;
+    VkSwapchainKHR           vk_swapchain = VK_NULL_HANDLE;
+    VkSurfaceFormatKHR       swapchain_image_format;
+    std::vector<VkImage>     swapchain_images;
+    std::vector<VkImageView> swapchain_image_views;
+    VkExtent2D               swapchain_extent = {display_params::width_pixels, display_params::height_pixels};
 
     // optional
     VmaAllocator vma_allocator;

@@ -127,7 +127,7 @@ public:
     class event {
     public:
         template<typename Archive>
-        void serialize(Archive & ar, const unsigned int version) {}
+        void serialize(Archive& ar, const unsigned int version) { }
 
         virtual ~event() = default;
     };
@@ -431,12 +431,11 @@ private:
             if (config.serialization_method == topic_config::SerializationMethod::BOOST) {
                 // TODO: Need to differentiate and support protobuf deserialization
                 boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
-                boost::archive::binary_iarchive ia{stream};
-                ptr<event> this_event;
+                boost::archive::binary_iarchive                          ia{stream};
+                ptr<event>                                               this_event;
                 ia >> this_event;
                 put(std::move(this_event));
-            }
-            else {
+            } else {
                 ptr<event> message = std::make_shared<event_wrapper<std::string>>((std::string(buffer.begin(), buffer.end())));
                 put(std::move(message));
             }
@@ -616,10 +615,13 @@ public:
     class network_writer : public writer<serializable_event> {
     private:
         ptr<network_backend> _m_backend;
-        topic_config _m_config;
+        topic_config         _m_config;
+
     public:
         network_writer(topic& topic_, ptr<network_backend> backend_ = nullptr, const topic_config& config = {})
-            : writer<serializable_event>{topic_}, _m_backend{backend_}, _m_config{config} { }
+            : writer<serializable_event>{topic_}
+            , _m_backend{backend_}
+            , _m_config{config} { }
 
         void put(ptr<serializable_event>&& this_specific_event) override {
             if (_m_backend->is_topic_networked(this->_m_topic.name())) {
@@ -627,18 +629,18 @@ public:
                     auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
                     assert(base_event && "Event is not derived from switchboard::event");
                     // Default serialization method - Boost
-                    std::vector<char> buffer;
-                    boost::iostreams::back_insert_device<std::vector<char>> inserter{buffer};
+                    std::vector<char>                                                                        buffer;
+                    boost::iostreams::back_insert_device<std::vector<char>>                                  inserter{buffer};
                     boost::iostreams::stream_buffer<boost::iostreams::back_insert_device<std::vector<char>>> stream{inserter};
-                    boost::archive::binary_oarchive oa{stream};
+                    boost::archive::binary_oarchive                                                          oa{stream};
                     oa << base_event;
                     // flush
                     stream.pubsync();
                     _m_backend->topic_send(this->_m_topic.name(), std::move(std::string(buffer.begin(), buffer.end())));
                 } else {
                     // PROTOBUF - this_specific_event will be a string
-                    auto message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
-                    std::string message = **message_ptr;
+                    auto        message_ptr = std::dynamic_pointer_cast<event_wrapper<std::string>>(this_specific_event);
+                    std::string message     = **message_ptr;
                     _m_backend->topic_send(this->_m_topic.name(), std::move(message));
                 }
             } else {
@@ -684,7 +686,8 @@ public:
      * If @p pb is null, then logging is disabled.
      */
     switchboard(const phonebook* pb)
-        : _m_pb{pb}, _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
+        : _m_pb{pb}
+        , _m_record_logger{pb ? pb->lookup_impl<record_logger>() : nullptr} { }
 
     bool topic_exists(const std::string& topic_name) {
         const std::shared_lock lock{_m_registry_lock};

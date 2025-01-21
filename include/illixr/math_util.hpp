@@ -36,7 +36,7 @@ namespace math_util {
 
     /// Calculates a projection matrix with the given tangent angles and clip planes, with reversed depth
     void projection_reverse_z(Eigen::Matrix4f* result, const float tan_left, const float tan_right, const float tan_up,
-                    float const tan_down, const float near_z, const float far_z) {
+                              float const tan_down, const float near_z, const float far_z) {
         const float tan_width  = tan_right - tan_left;
         const float tan_height = tan_up - tan_down;
 
@@ -62,7 +62,6 @@ namespace math_util {
         (*result)(3, 3) = 0;
     }
 
-
     /// Calculates a projection matrix with the given FoVs and clip planes
     void projection_fov(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
                         const float fov_down, const float near_z, const float far_z, bool reverse_z = false) {
@@ -80,15 +79,15 @@ namespace math_util {
     }
 
     // Expects FoVs in radians
-    void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right,
-                                                    const float fov_up, const float fov_down) {
+    void unreal_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
+                           const float fov_down) {
         // Unreal uses a far plane at infinity and a near plane of 10 centimeters (0.1 meters)
         constexpr float near_z = 0.1;
 
-        const float angle_left = tanf(static_cast<float>(fov_left));
+        const float angle_left  = tanf(static_cast<float>(fov_left));
         const float angle_right = tanf(static_cast<float>(fov_right));
-        const float angle_up = tanf(static_cast<float>(fov_up));
-        const float angle_down = tanf(static_cast<float>(fov_down));
+        const float angle_up    = tanf(static_cast<float>(fov_up));
+        const float angle_down  = tanf(static_cast<float>(fov_down));
 
         const float sum_rl = angle_left + angle_right;
         const float sum_tb = angle_up + angle_down;
@@ -117,21 +116,21 @@ namespace math_util {
     }
 
     // TODO: this is just a complicated version to achieve reverse Z with a finite far plane.
-    void godot_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right,
-                                                   const float fov_up, const float fov_down) {
+    void godot_projection(Eigen::Matrix4f* result, const float fov_left, const float fov_right, const float fov_up,
+                          const float fov_down) {
         // Godot's default far and near planes are 4000m and 0.05m respectively.
         // https://github.com/godotengine/godot/blob/e96ad5af98547df71b50c4c4695ac348638113e0/modules/openxr/openxr_util.cpp#L97
         // The Vulkan implementation passes in GRAPHICS_OPENGL for some reason..
-        constexpr float near_z = 0.05;
-        constexpr float far_z = 4000;
+        constexpr float near_z   = 0.05;
+        constexpr float far_z    = 4000;
         constexpr float offset_z = near_z;
 
-        const float angle_left = tanf(static_cast<float>(fov_left));
+        const float angle_left  = tanf(static_cast<float>(fov_left));
         const float angle_right = tanf(static_cast<float>(fov_right));
-        const float angle_up = tanf(static_cast<float>(fov_up));
-        const float angle_down = tanf(static_cast<float>(fov_down));
+        const float angle_up    = tanf(static_cast<float>(fov_up));
+        const float angle_down  = tanf(static_cast<float>(fov_down));
 
-        const float angle_width = angle_right - angle_left;
+        const float angle_width  = angle_right - angle_left;
         const float angle_height = angle_up - angle_down;
 
         Eigen::Matrix4f openxr_matrix;
@@ -156,7 +155,7 @@ namespace math_util {
         openxr_matrix(3, 2) = -1;
         openxr_matrix(3, 3) = 0;
 
-        // Godot then remaps the matrix... 
+        // Godot then remaps the matrix...
         // https://github.com/Khasehemwy/godot/blob/d950f5f83819240771aebb602bfdd4875363edce/core/math/projection.cpp#L722
         Eigen::Matrix4f remap_z;
 

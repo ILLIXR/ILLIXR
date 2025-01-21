@@ -31,12 +31,12 @@ public:
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
      * previously supplied to the app pass.
      */
-    virtual void update_uniforms(const pose_type& render_pose) {};
+    virtual void update_uniforms(const pose_type& render_pose){};
 
     /**
      * @brief Destroy the render pass and free all Vulkan resources.
      */
-    virtual void destroy() {};
+    virtual void destroy(){};
 
     virtual bool is_external() = 0;
 
@@ -56,8 +56,7 @@ public:
      * @param buffer_pool The buffer pool to use.
      * @param input_texture_vulkan_coordinates Whether the input texture is in Vulkan coordinates.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool,
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool,
                        bool input_texture_vulkan_coordinates) = 0;
 };
 
@@ -70,6 +69,7 @@ public:
      * @param render_pass The render pass to use.
      * @param subpass The subpass to use.
      */
-    virtual void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool) = 0;
+    virtual void setup(VkRenderPass render_pass, uint32_t subpass,
+                       std::shared_ptr<buffer_pool<fast_pose_type>> buffer_pool) = 0;
 };
 } // namespace ILLIXR::vulkan

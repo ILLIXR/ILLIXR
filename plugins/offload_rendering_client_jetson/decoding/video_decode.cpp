@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2019, The Board of Trustees of the University of Illinois. All rights reserved.
  * Copyright (c) 2016-2023, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -419,7 +420,7 @@ void mmapi_decoder::query_and_set_capture() {
     if (!ctx.disable_rendering) {
         /* Destroy the old instance of renderer as resolution might have changed. */
         if (ctx.vkRendering) {
-//            delete ctx.vkRenderer;
+            // delete ctx.vkRenderer;
         } else {
             delete ctx.eglRenderer;
         }
@@ -452,14 +453,14 @@ void mmapi_decoder::query_and_set_capture() {
             }
             ctx.eglRenderer->setFPS(ctx.fps);
         } else {
-//            ctx.vkRenderer =
-//                NvVulkanRenderer::createVulkanRenderer("renderer0", window_width, window_height, ctx.window_x, ctx.window_y);
-//            TEST_ERROR(!ctx.vkRenderer,
-//                       "Error in setting up of vulkan renderer. "
-//                       "Check if X is running or run with --disable-rendering",
-//                       error);
-//            ctx.vkRenderer->setSize(window_width, window_height);
-//            ctx.vkRenderer->initVulkan();
+            // ctx.vkRenderer =
+            //     NvVulkanRenderer::createVulkanRenderer("renderer0", window_width, window_height, ctx.window_x, ctx.window_y);
+            // TEST_ERROR(!ctx.vkRenderer,
+            //            "Error in setting up of vulkan renderer. "
+            //            "Check if X is running or run with --disable-rendering",
+            //            error);
+            // ctx.vkRenderer->setSize(window_width, window_height);
+            // ctx.vkRenderer->initVulkan();
         }
     }
 
@@ -494,42 +495,6 @@ void mmapi_decoder::query_and_set_capture() {
             dec->capture_plane.setupPlane(V4L2_MEMORY_MMAP, min_dec_capture_buffers + ctx.extra_cap_plane_buffer, false, false);
         TEST_ERROR(ret < 0, "Error in decoder capture plane setup", error);
     } else if (ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF) {
-        /* Set colorformats for relevant colorspaces. */
-//        switch (format.fmt.pix_mp.colorspace) {
-//        case V4L2_COLORSPACE_SMPTE170M:
-//            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
-//                cout << "Decoder colorspace ITU-R BT.601 with standard range luma (16-235)" << endl;
-//                pix_format = NVBUF_COLOR_FORMAT_NV12;
-//            } else {
-//                cout << "Decoder colorspace ITU-R BT.601 with extended range luma (0-255)" << endl;
-//                pix_format = NVBUF_COLOR_FORMAT_NV12_ER;
-//            }
-//            break;
-//        case V4L2_COLORSPACE_REC709:
-//            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
-//                cout << "Decoder colorspace ITU-R BT.709 with standard range luma (16-235)" << endl;
-//                pix_format = NVBUF_COLOR_FORMAT_NV12_709;
-//            } else {
-//                cout << "Decoder colorspace ITU-R BT.709 with extended range luma (0-255)" << endl;
-//                pix_format = NVBUF_COLOR_FORMAT_NV12_709_ER;
-//            }
-//            break;
-//        case V4L2_COLORSPACE_BT2020: {
-//            cout << "Decoder colorspace ITU-R BT.2020" << endl;
-//            pix_format = NVBUF_COLOR_FORMAT_NV12_2020;
-//        } break;
-//        default:
-//            cout << "supported colorspace details not available, use default" << endl;
-//            if (format.fmt.pix_mp.quantization == V4L2_QUANTIZATION_DEFAULT) {
-//                cout << "Decoder colorspace ITU-R BT.601 with standard range luma (16-235)" << endl;
-//                pix_format = NVBUF_COLOR_FORMAT_NV12;
-//            } else {
-//                cout << "Decoder colorspace ITU-R BT.601 with extended range luma (0-255)" << endl;
-//                pix_format = NVBUF_COLOR_FORMAT_NV12_ER;
-//            }
-//            break;
-//        }
-
         cout << "Decoder colorspace ITU-R BT.709 with extended range luma (0-255)" << endl;
         pix_format = NVBUF_COLOR_FORMAT_NV12_709_ER;
 
@@ -728,7 +693,7 @@ int mmapi_decoder::dec_capture(int dst_fd) {
         if (ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF)
             dec_buffer->planes[0].fd = ctx.dmabuff_fd[v4l2_buf.index];
         /* Perform Blocklinear to PitchLinear conversion. */
-//        std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
+        // std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
         ret = NvBufSurf::NvTransform(&transform_params, dec_buffer->planes[0].fd, dst_fd);
         if (ret == -1) {
             cerr << "Transform failed" << endl;
@@ -747,9 +712,6 @@ int mmapi_decoder::dec_capture(int dst_fd) {
 
         if (!ctx.stats && !ctx.disable_rendering) {
             if (ctx.vkRendering) {
-//                f(ctx.dst_dma_fd);
-//                f(dec_buffer->planes[0].fd);
-//                 ctx.vkRenderer->render(ctx.dst_dma_fd);
             } else {
                 ctx.eglRenderer->render(ctx.dst_dma_fd);
             }
@@ -868,19 +830,11 @@ int mmapi_decoder::decoder_init() {
     /* Create NvVideoDecoder object for blocking or non-blocking I/O mode. */
     cout << "Creating decoder in blocking mode \n";
     // random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device              rd;
+    std::mt19937                    gen(rd());
     std::uniform_int_distribution<> dis(0, 1000);
     ctx.dec = NvVideoDecoder::createVideoDecoder(std::to_string(dis(gen)).c_str());
-//    ctx.dec = NvVideoDecoder::createVideoDecoder("dec");
     TEST_ERROR(!ctx.dec, "Could not create decoder", cleanup);
-
-    /* Open the input file. */
-    // ctx.in_file = (std::ifstream**) malloc(sizeof(std::ifstream*) * ctx.file_count);
-    // for (uint32_t i = 0; i < ctx.file_count; i++) {
-    //     ctx.in_file[i] = new ifstream(ctx.in_file_path[i]);
-    //     TEST_ERROR(!ctx.in_file[i]->is_open(), "Error opening input file", cleanup);
-    // }
 
     /* Open the output file. */
     if (ctx.out_file_path) {
@@ -986,99 +940,6 @@ int mmapi_decoder::decoder_init() {
 
     // Print out number of capture plane buffers
     cout << "Number of output plane buffers: " << ctx.dec->output_plane.getNumBuffers() << endl;
-
-    /* Read encoded data and enqueue all the output plane buffers.
-       Exit loop in case file read is complete. */
-    // i            = 0;
-    // current_loop = 1;
-    // while (!eos && !ctx.got_error && !ctx.dec->isInError() && i < ctx.dec->output_plane.getNumBuffers()) {
-    //     struct v4l2_buffer v4l2_buf;
-    //     struct v4l2_plane  planes[MAX_PLANES];
-    //     NvBuffer*          buffer;
-    //
-    //     memset(&v4l2_buf, 0, sizeof(v4l2_buf));
-    //     memset(planes, 0, sizeof(planes));
-    //
-    //     buffer = ctx.dec->output_plane.getNthBuffer(i);
-    //     if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_H264) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_H265) ||
-    //         (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG2) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG4)) {
-    //         if (ctx.input_nalu) {
-    //             /* read the input nal unit. */
-    //             read_decoder_input_nalu(ctx.in_file[current_file], buffer, nalu_parse_buffer, CHUNK_SIZE, &ctx);
-    //         } else {
-    //             /* read the input chunks. */
-    //             read_decoder_input_chunk(ctx.in_file[current_file], buffer);
-    //         }
-    //     }
-    //
-    //     if (ctx.decoder_pixfmt == V4L2_PIX_FMT_MJPEG) {
-    //         read_mjpeg_decoder_input(ctx.in_file[current_file], buffer);
-    //     }
-    //     if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_VP9) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_VP8) ||
-    //         (ctx.decoder_pixfmt == V4L2_PIX_FMT_AV1)) {
-    //         /* read the input chunks. */
-    //         ret = read_vpx_decoder_input_chunk(&ctx, buffer);
-    //         if (ret != 0)
-    //             cerr << "Couldn't read chunk" << endl;
-    //     }
-    //
-    //     v4l2_buf.index                 = i;
-    //     v4l2_buf.m.planes              = planes;
-    //     v4l2_buf.m.planes[0].bytesused = buffer->planes[0].bytesused;
-    //
-    //     if (ctx.input_nalu && ctx.copy_timestamp) {
-    //         /* Update the timestamp. */
-    //         v4l2_buf.flags |= V4L2_BUF_FLAG_TIMESTAMP_COPY;
-    //         if (ctx.flag_copyts)
-    //             ctx.timestamp += ctx.timestampincr;
-    //         v4l2_buf.timestamp.tv_sec  = ctx.timestamp / (MICROSECOND_UNIT);
-    //         v4l2_buf.timestamp.tv_usec = ctx.timestamp % (MICROSECOND_UNIT);
-    //     }
-    //
-    //     if (ctx.copy_timestamp && ctx.input_nalu && ctx.stats) {
-    //         cout << "[" << v4l2_buf.index
-    //              << "]"
-    //                 "dec output plane qB timestamp ["
-    //              << v4l2_buf.timestamp.tv_sec << "s" << v4l2_buf.timestamp.tv_usec << "us]" << endl;
-    //     }
-    //
-    //     if (v4l2_buf.m.planes[0].bytesused == 0) {
-    //         if (ctx.bQueue) {
-    //             current_file++;
-    //             if (current_file != ctx.file_count) {
-    //                 continue;
-    //             }
-    //         }
-    //         if (ctx.bLoop) {
-    //             current_file = current_file % ctx.file_count;
-    //             if (ctx.loop_count == 0 || current_loop < ctx.loop_count) {
-    //                 current_loop++;
-    //                 continue;
-    //             }
-    //         }
-    //     }
-    //     /* It is necessary to queue an empty buffer to signal EOS to the decoder
-    //        i.e. set v4l2_buf.m.planes[0].bytesused = 0 and queue the buffer. */
-    //     ret = ctx.dec->output_plane.qBuffer(v4l2_buf, NULL);
-    //     if (ret < 0) {
-    //         cerr << "Error Qing buffer at output plane" << endl;
-    //         abort();
-    //         break;
-    //     }
-    //     if (v4l2_buf.m.planes[0].bytesused == 0) {
-    //         eos = true;
-    //         cout << "Input file read complete" << endl;
-    //         break;
-    //     }
-    //     i++;
-    // }
-
-    /* Create threads for decoder output */
-    // pthread_create(&ctx.dec_capture_loop, NULL, dec_capture_loop_fcn, &ctx);
-    /* Set thread name for decoder Capture Plane thread. */
-    // pthread_setname_np(ctx.dec_capture_loop, "DecCapPlane");
-
-    // eos = decoder_proc_blocking(ctx, eos, current_file, current_loop, nalu_parse_buffer);
     return 0;
 cleanup:
     decoder_destroy();
@@ -1159,7 +1020,6 @@ cleanup:
     delete ctx.dec;
     /* Similarly, Renderer destructor does all the cleanup. */
     if (ctx.vkRendering) {
-//        delete ctx.vkRenderer;
     } else {
         delete ctx.eglRenderer;
     }
@@ -1235,24 +1095,12 @@ bool mmapi_decoder::dec_internal(std::istream& istream) {
     if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_H264) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_H265) ||
         (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG2) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG4)) {
         if (ctx.input_nalu) {
-            /* read the input nal unit. */
-//            read_decoder_input_nalu(istream, buffer, nalu_parse_buffer, CHUNK_SIZE, &ctx);
         } else {
             /* read the input chunks. */
-             read_decoder_input_chunk(&istream, buffer);
+            read_decoder_input_chunk(&istream, buffer);
         }
     }
 
-    // if (ctx.decoder_pixfmt == V4L2_PIX_FMT_MJPEG) {
-    //     read_mjpeg_decoder_input(ctx.in_file[current_file], buffer);
-    // }
-    // if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_VP9) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_VP8) ||
-    //     (ctx.decoder_pixfmt == V4L2_PIX_FMT_AV1)) {
-    //     /* read the input chunks. */
-    //     ret = read_vpx_decoder_input_chunk(&ctx, buffer);
-    //     if (ret != 0)
-    //         cerr << "Couldn't read chunk" << endl;
-    // }
     v4l2_buf.m.planes[0].bytesused = buffer->planes[0].bytesused;
 
     if (ctx.input_nalu && ctx.copy_timestamp) {
@@ -1289,7 +1137,6 @@ bool mmapi_decoder::dec_internal(std::istream& istream) {
     if (v4l2_buf.m.planes[0].bytesused == 0) {
         eos = true;
         cout << "Input file read complete" << endl;
-//        throw std::runtime_error("Input file read complete");
     }
     return eos;
 }

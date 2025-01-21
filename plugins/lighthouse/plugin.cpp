@@ -68,7 +68,8 @@ protected:
     //     auto quat = Eigen::Quaterniond{pose->Rot[0], pose->Rot[1], pose->Rot[2], pose->Rot[3]}.cast<float>();
     //
     //     lighthouse_instance->_m_fast_pose.put(lighthouse_instance->_m_fast_pose.allocate(
-    //         pose_type {lighthouse_instance->_m_clock->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[1], pose->Pos[2]}.cast<float>(),
+    //         pose_type {lighthouse_instance->_m_clock->now(), Eigen::Vector3d{pose->Pos[0], pose->Pos[1],
+    //         pose->Pos[2]}.cast<float>(),
     //          quat},
     //         lighthouse_instance->_m_clock->now(), lighthouse_instance->_m_clock->now()));
     //
@@ -87,13 +88,13 @@ protected:
         survive_poll(ctx);
 
         auto now = std::chrono::high_resolution_clock::now();
-        auto dt = now - last_time;
+        auto dt  = now - last_time;
         if (dt > std::chrono::seconds(1)) {
             log->info("slow pose rate: {} Hz", slow_pose_count);
             log->info("fast pose rate: {} Hz", fast_pose_count);
             slow_pose_count = 0;
             fast_pose_count = 0;
-            last_time = now;
+            last_time       = now;
         }
     }
 
@@ -110,8 +111,8 @@ private:
     SurviveContext*                            ctx;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> last_time;
-    int slow_pose_count = 0;
-    int fast_pose_count = 0;
+    int                                                         slow_pose_count = 0;
+    int                                                         fast_pose_count = 0;
 };
 
 // This line makes the plugin importable by Spindle

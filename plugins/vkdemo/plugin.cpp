@@ -146,8 +146,8 @@ public:
         VkDeviceSize offsets[]       = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[!left], 0,
-                                nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[!left],
+                                0, nullptr);
 
         for (auto& model : models) {
             ModelPushConstant push_constant{};
@@ -884,7 +884,7 @@ private:
             0,                                                        // logicOpEnable
             {},                                                       // logicOp
             2,                                                        // attachmentCount
-            blend_attachments,                                  // pAttachments
+            blend_attachments,                                        // pAttachments
             {0.f, 0.f, 0.f, 0.f}                                      // blendConstants
         };
 
@@ -907,18 +907,18 @@ private:
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout))
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil{
-            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, // sType
-            nullptr,                                                    // pNext
-            0,                                                          // flags
-            VK_TRUE,                                                    // depthTestEnable
-            VK_TRUE,                                                    // depthWriteEnable
+            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,                                 // sType
+            nullptr,                                                                                    // pNext
+            0,                                                                                          // flags
+            VK_TRUE,                                                                                    // depthTestEnable
+            VK_TRUE,                                                                                    // depthWriteEnable
             rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL, // depthCompareOp
-            VK_FALSE,                                                   // depthBoundsTestEnable
-            VK_FALSE,                                                   // stencilTestEnable
-            {},                                                         // front
-            {},                                                         // back
-            0.0f,                                                       // minDepthBounds
-            1.0f                                                        // maxDepthBounds
+            VK_FALSE,                                                                                   // depthBoundsTestEnable
+            VK_FALSE,                                                                                   // stencilTestEnable
+            {},                                                                                         // front
+            {},                                                                                         // back
+            0.0f,                                                                                       // minDepthBounds
+            1.0f                                                                                        // maxDepthBounds
         };
 
         VkGraphicsPipelineCreateInfo pipeline_info{

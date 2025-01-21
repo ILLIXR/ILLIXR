@@ -31,9 +31,15 @@ void x11_direct::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physi
         std::cout << "\t[" << index++ << "] " << display.displayName << std::endl;
     }
 
-    auto display_select_str = std::getenv("ILLIXR_DIRECT_MODE");
-    assert(display_select_str != nullptr);
-    int display_select = std::stoi(display_select_str);
+    auto display_select_str = std::getenv("ILLIXR_DIRECT_MODE_DISPLAY");
+    if (display_select_str == nullptr) {
+        std::cout << "ILLIXR_DIRECT_MODE_DISPLAY not set, defaulting to the first display ("
+                  << display_properties[0].displayName << ")" << std::endl;
+        display_select = 0;
+    } else {
+        display_select = std::stoi(display_select_str);
+    }
+
     if (display_select >= display_count) {
         ILLIXR::abort("Invalid display selection");
         return;

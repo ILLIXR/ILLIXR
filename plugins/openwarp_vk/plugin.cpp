@@ -15,8 +15,8 @@
 #include "utils/hmd.hpp"
 
 #include <algorithm>
-#include <future>
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <mutex>
 #include <stack>
@@ -125,7 +125,7 @@ public:
             throw std::runtime_error("Please define ILLIXR_OPENWARP_WIDTH and ILLIXR_OPENWARP_HEIGHT");
         }
 
-        openwarp_width = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
+        openwarp_width  = std::stoi(std::getenv("ILLIXR_OPENWARP_WIDTH"));
         openwarp_height = std::stoi(std::getenv("ILLIXR_OPENWARP_HEIGHT"));
 
         using_godot = std::getenv("ILLIXR_USING_GODOT") != nullptr && std::stoi(std::getenv("ILLIXR_USING_GODOT"));
@@ -140,15 +140,13 @@ public:
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator =
-                vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
-        command_pool = vulkan::create_command_pool(
-            ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
         command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
@@ -159,19 +157,18 @@ public:
         create_texture_sampler();
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass,
-                       std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
-                       bool input_texture_vulkan_coordinates) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
+               bool input_texture_vulkan_coordinates) override {
         std::lock_guard<std::mutex> lock{m_setup};
 
         ds = pb->lookup_impl<vulkan::display_provider>();
 
-        swapchain_width = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_width  = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
         swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
 
-        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height,
-                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
-                               display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height, display_params::width_meters, display_params::height_meters,
+                               display_params::lens_separation, display_params::meters_per_tan_angle,
+                               display_params::aberration, hmd_info);
 
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates;
         if (!initialized) {
@@ -205,10 +202,10 @@ public:
             std::cout << "Reading file from " << pose_filename << std::endl;
 
             std::ifstream pose_file(pose_filename);
-            std::string line;
+            std::string   line;
             while (std::getline(pose_file, line)) {
-                float p_x, p_y, p_z;
-                float q_x, q_y, q_z, q_w;
+                float             p_x, p_y, p_z;
+                float             q_x, q_y, q_z, q_w;
                 std::stringstream ss(line);
                 ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
 
@@ -236,7 +233,7 @@ public:
 
         vkDestroyPipelineLayout(ds->vk_device, ow_pipeline_layout, nullptr);
         ow_pipeline_layout = VK_NULL_HANDLE;
-        
+
         vkDestroyPipeline(ds->vk_device, pipeline, nullptr);
         pipeline = VK_NULL_HANDLE;
 
@@ -250,22 +247,23 @@ public:
     void update_uniforms(const pose_type& render_pose) override {
         num_update_uniforms_calls++;
 
-
-        pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        pose_type latest_pose = disable_warp ? render_pose : pp->get_fast_pose().pose;
         if (compare_images) {
             // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
             // (this should be reflected in the screenshot layer)
             int pose_index = std::clamp(static_cast<int>(frame_count - 150) / 100, 0, static_cast<int>(fixed_poses.size()) - 1);
-            latest_pose = fixed_poses[pose_index];
+            latest_pose    = fixed_poses[pose_index];
 
-            std::cout << "Using pose:" << latest_pose.position.x() << " " << latest_pose.position.y() << " " << latest_pose.position.z() << std::endl;
+            std::cout << "Using pose:" << latest_pose.position.x() << " " << latest_pose.position.y() << " "
+                      << latest_pose.position.z() << std::endl;
         }
 
         for (int eye = 0; eye < 2; eye++) {
             Eigen::Matrix4f renderedCameraMatrix = create_camera_matrix(render_pose, eye);
-            Eigen::Matrix4f currentCameraMatrix = create_camera_matrix(latest_pose, eye);
+            Eigen::Matrix4f currentCameraMatrix  = create_camera_matrix(latest_pose, eye);
 
-            Eigen::Matrix4f warpVP = basicProjection[eye] * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
+            Eigen::Matrix4f warpVP =
+                basicProjection[eye] * currentCameraMatrix.inverse(); // inverse of camera matrix is view matrix
 
             auto* ow_ubo = (WarpMatrices*) ow_matrices_uniform_alloc_info.pMappedData;
             memcpy(&ow_ubo->render_inv_projection[eye], invProjection[eye].data(), sizeof(Eigen::Matrix4f));
@@ -277,7 +275,8 @@ public:
     void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
-        if (left) frame_count++;
+        if (left)
+            frame_count++;
 
         VkDeviceSize offsets = 0;
         VkClearValue clear_colors[2];
@@ -288,35 +287,35 @@ public:
 
         // First render OpenWarp offscreen for a distortion correction pass later
         VkRenderPassBeginInfo ow_render_pass_info{};
-        ow_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        ow_render_pass_info.renderPass = openwarp_render_pass;
-        ow_render_pass_info.renderArea.offset.x = 0;
-        ow_render_pass_info.renderArea.offset.y = 0;
-        ow_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        ow_render_pass_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        ow_render_pass_info.renderPass               = openwarp_render_pass;
+        ow_render_pass_info.renderArea.offset.x      = 0;
+        ow_render_pass_info.renderArea.offset.y      = 0;
+        ow_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
         ow_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
-        ow_render_pass_info.framebuffer = offscreen_framebuffers[left ? 0 : 1];
-        ow_render_pass_info.clearValueCount = 2;
-        ow_render_pass_info.pClearValues = clear_colors;
+        ow_render_pass_info.framebuffer              = offscreen_framebuffers[left ? 0 : 1];
+        ow_render_pass_info.clearValueCount          = 2;
+        ow_render_pass_info.pClearValues             = clear_colors;
 
         VkViewport ow_viewport{};
-        ow_viewport.x = 0;
-	    ow_viewport.y = 0;
-	    ow_viewport.width = static_cast<uint32_t>(swapchain_width / 2);
-	    ow_viewport.height = static_cast<uint32_t>(swapchain_height);
-	    ow_viewport.minDepth = 0.0f;
-	    ow_viewport.maxDepth = 1.0f;
+        ow_viewport.x        = 0;
+        ow_viewport.y        = 0;
+        ow_viewport.width    = static_cast<uint32_t>(swapchain_width / 2);
+        ow_viewport.height   = static_cast<uint32_t>(swapchain_height);
+        ow_viewport.minDepth = 0.0f;
+        ow_viewport.maxDepth = 1.0f;
 
         VkRect2D ow_scissor{};
-        ow_scissor.offset.x = 0;
-        ow_scissor.offset.y = 0; 
-        ow_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        ow_scissor.offset.x      = 0;
+        ow_scissor.offset.y      = 0;
+        ow_scissor.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
         ow_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
 
         uint32_t eye = static_cast<uint32_t>(left ? 0 : 1);
 
         vkCmdBeginRenderPass(commandBuffer, &ow_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-	    vkCmdSetViewport(commandBuffer, 0, 1, &ow_viewport);
-	    vkCmdSetScissor(commandBuffer, 0, 1, &ow_scissor);
+        vkCmdSetViewport(commandBuffer, 0, 1, &ow_viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &ow_scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, openwarp_pipeline);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ow_vertex_buffer, &offsets);
@@ -326,39 +325,39 @@ public:
         vkCmdBindIndexBuffer(commandBuffer, ow_index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_openwarp_indices, 1, 0, 0, 0);
         vkCmdEndRenderPass(commandBuffer);
-        
+
         // Then perform distortion correction to the framebuffer expected by Monado
         VkClearValue clear_color;
         clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
 
         VkRenderPassBeginInfo dc_render_pass_info{};
-        dc_render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        dc_render_pass_info.renderPass = distortion_correction_render_pass;
-        dc_render_pass_info.renderArea.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        dc_render_pass_info.renderArea.offset.y = 0;
-        dc_render_pass_info.renderArea.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        dc_render_pass_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        dc_render_pass_info.renderPass               = distortion_correction_render_pass;
+        dc_render_pass_info.renderArea.offset.x      = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        dc_render_pass_info.renderArea.offset.y      = 0;
+        dc_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
         dc_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
-        dc_render_pass_info.framebuffer = framebuffer;
-        dc_render_pass_info.clearValueCount = 1;
-        dc_render_pass_info.pClearValues = &clear_color;
+        dc_render_pass_info.framebuffer              = framebuffer;
+        dc_render_pass_info.clearValueCount          = 1;
+        dc_render_pass_info.pClearValues             = &clear_color;
 
         VkViewport dc_viewport{};
-        dc_viewport.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-	    dc_viewport.y = 0;
-	    dc_viewport.width = static_cast<uint32_t>(swapchain_width / 2);
-	    dc_viewport.height = static_cast<uint32_t>(swapchain_height);
-	    dc_viewport.minDepth = 0.0f;
-	    dc_viewport.maxDepth = 1.0f;
+        dc_viewport.x        = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        dc_viewport.y        = 0;
+        dc_viewport.width    = static_cast<uint32_t>(swapchain_width / 2);
+        dc_viewport.height   = static_cast<uint32_t>(swapchain_height);
+        dc_viewport.minDepth = 0.0f;
+        dc_viewport.maxDepth = 1.0f;
 
         VkRect2D dc_scissor{};
-        dc_scissor.offset.x = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
-        dc_scissor.offset.y = 0; 
-        dc_scissor.extent.width = static_cast<uint32_t>(swapchain_width / 2);
+        dc_scissor.offset.x      = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        dc_scissor.offset.y      = 0;
+        dc_scissor.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
         dc_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
 
         vkCmdBeginRenderPass(commandBuffer, &dc_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdSetViewport(commandBuffer, 0, 1, &dc_viewport);
-	    vkCmdSetScissor(commandBuffer, 0, 1, &dc_scissor);
+        vkCmdSetScissor(commandBuffer, 0, 1, &dc_scissor);
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &dc_vertex_buffer, &offsets);
@@ -385,89 +384,91 @@ public:
 private:
     void create_offscreen_images() {
         for (int eye = 0; eye < 2; eye++) {
-            VkImageCreateInfo image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
-            image_info.imageType = VK_IMAGE_TYPE_2D;
-            image_info.extent.width = swapchain_width / 2;
-            image_info.extent.height = swapchain_height;
-            image_info.extent.depth = 1;
-            image_info.mipLevels = 1;
-            image_info.arrayLayers = 1;
-            image_info.format = VK_FORMAT_R8G8B8A8_UNORM;
-            image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-            image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            image_info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-            image_info.samples = VK_SAMPLE_COUNT_1_BIT;
-            
+            VkImageCreateInfo image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+            image_info.imageType         = VK_IMAGE_TYPE_2D;
+            image_info.extent.width      = swapchain_width / 2;
+            image_info.extent.height     = swapchain_height;
+            image_info.extent.depth      = 1;
+            image_info.mipLevels         = 1;
+            image_info.arrayLayers       = 1;
+            image_info.format            = VK_FORMAT_R8G8B8A8_UNORM;
+            image_info.tiling            = VK_IMAGE_TILING_OPTIMAL;
+            image_info.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
+            image_info.usage             = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+            image_info.samples           = VK_SAMPLE_COUNT_1_BIT;
+
             VmaAllocationCreateInfo create_info = {};
-            create_info.usage = VMA_MEMORY_USAGE_AUTO;
-            create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
-            create_info.priority = 1.0f;
+            create_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+            create_info.flags                   = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+            create_info.priority                = 1.0f;
 
-            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_images[eye], &offscreen_image_allocs[eye], nullptr));
+            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &image_info, &create_info, &offscreen_images[eye],
+                                             &offscreen_image_allocs[eye], nullptr));
 
-            VkImageViewCreateInfo view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-            view_info.image = offscreen_images[eye];
-            view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            view_info.format = VK_FORMAT_R8G8B8A8_UNORM;
-            view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-            view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-            view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-            view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            view_info.subresourceRange.baseMipLevel = 0;
-            view_info.subresourceRange.levelCount = 1;
+            VkImageViewCreateInfo view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+            view_info.image                           = offscreen_images[eye];
+            view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
+            view_info.format                          = VK_FORMAT_R8G8B8A8_UNORM;
+            view_info.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.components.a                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+            view_info.subresourceRange.baseMipLevel   = 0;
+            view_info.subresourceRange.levelCount     = 1;
             view_info.subresourceRange.baseArrayLayer = 0;
-            view_info.subresourceRange.layerCount = 1;
-        
+            view_info.subresourceRange.layerCount     = 1;
+
             VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &offscreen_image_views[eye]));
 
-            VkImageCreateInfo depth_image_info = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
-            depth_image_info.imageType = VK_IMAGE_TYPE_2D;
-            depth_image_info.extent.width = swapchain_width / 2;
-            depth_image_info.extent.height = swapchain_height;
-            depth_image_info.extent.depth = 1;
-            depth_image_info.mipLevels = 1;
-            depth_image_info.arrayLayers = 1;
-            depth_image_info.format = VK_FORMAT_D16_UNORM;
-            depth_image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-            depth_image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            depth_image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-            depth_image_info.samples = VK_SAMPLE_COUNT_1_BIT;
-            
+            VkImageCreateInfo depth_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+            depth_image_info.imageType         = VK_IMAGE_TYPE_2D;
+            depth_image_info.extent.width      = swapchain_width / 2;
+            depth_image_info.extent.height     = swapchain_height;
+            depth_image_info.extent.depth      = 1;
+            depth_image_info.mipLevels         = 1;
+            depth_image_info.arrayLayers       = 1;
+            depth_image_info.format            = VK_FORMAT_D16_UNORM;
+            depth_image_info.tiling            = VK_IMAGE_TILING_OPTIMAL;
+            depth_image_info.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
+            depth_image_info.usage             = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+            depth_image_info.samples           = VK_SAMPLE_COUNT_1_BIT;
+
             VmaAllocationCreateInfo depth_create_info = {};
-            depth_create_info.usage = VMA_MEMORY_USAGE_AUTO;
-            depth_create_info.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
-            depth_create_info.priority = 1.0f;
+            depth_create_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+            depth_create_info.flags                   = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+            depth_create_info.priority                = 1.0f;
 
-            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &depth_image_info, &depth_create_info, &offscreen_depths[eye], &offscreen_depth_allocs[eye], nullptr));
+            VK_ASSERT_SUCCESS(vmaCreateImage(vma_allocator, &depth_image_info, &depth_create_info, &offscreen_depths[eye],
+                                             &offscreen_depth_allocs[eye], nullptr));
 
-            VkImageViewCreateInfo depth_view_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
-            depth_view_info.image = offscreen_depths[eye];
-            depth_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            depth_view_info.format = VK_FORMAT_D16_UNORM;
-            depth_view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-            depth_view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-            depth_view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            depth_view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-            depth_view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-            depth_view_info.subresourceRange.baseMipLevel = 0;
-            depth_view_info.subresourceRange.levelCount = 1;
+            VkImageViewCreateInfo depth_view_info           = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+            depth_view_info.image                           = offscreen_depths[eye];
+            depth_view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
+            depth_view_info.format                          = VK_FORMAT_D16_UNORM;
+            depth_view_info.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.components.a                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+            depth_view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT;
+            depth_view_info.subresourceRange.baseMipLevel   = 0;
+            depth_view_info.subresourceRange.levelCount     = 1;
             depth_view_info.subresourceRange.baseArrayLayer = 0;
-            depth_view_info.subresourceRange.layerCount = 1;
-        
+            depth_view_info.subresourceRange.layerCount     = 1;
+
             VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &depth_view_info, nullptr, &offscreen_depth_views[eye]));
 
             VkImageView attachments[2] = {offscreen_image_views[eye], offscreen_depth_views[eye]};
 
             // Need a framebuffer to render to
             VkFramebufferCreateInfo framebuffer_info = {
-                .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-                .renderPass = openwarp_render_pass,
+                .sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                .renderPass      = openwarp_render_pass,
                 .attachmentCount = 2,
-                .pAttachments = attachments,
-                .width = swapchain_width / 2,
-                .height = swapchain_height,
-                .layers = 1,
+                .pAttachments    = attachments,
+                .width           = swapchain_width / 2,
+                .height          = swapchain_height,
+                .layers          = 1,
             };
 
             VK_ASSERT_SUCCESS(vkCreateFramebuffer(ds->vk_device, &framebuffer_info, nullptr, &offscreen_framebuffers[eye]));
@@ -527,9 +528,8 @@ private:
         VkBufferCopy    ow_copy_region          = {};
         ow_copy_region.size                     = sizeof(OpenWarpVertex) * num_openwarp_vertices;
         vkCmdCopyBuffer(ow_command_buffer_local, ow_staging_buffer, ow_vertex_buffer, 1, &ow_copy_region);
-        vulkan::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
-                                                   ow_command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     ow_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, ow_staging_buffer, ow_staging_alloc);
 
@@ -582,16 +582,16 @@ private:
 
         void* dc_mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, dc_staging_alloc, &dc_mapped_data))
-        memcpy(dc_mapped_data, distortion_vertices.data(), sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES);
+        memcpy(dc_mapped_data, distortion_vertices.data(),
+               sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, dc_staging_alloc);
 
         VkCommandBuffer dc_command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    dc_copy_region          = {};
         dc_copy_region.size                     = sizeof(DistortionCorrectionVertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_vertex_buffer, 1, &dc_copy_region);
-        vulkan::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
-                                                   dc_command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     dc_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, dc_staging_buffer, dc_staging_alloc);
 
@@ -621,8 +621,8 @@ private:
 
         VkBuffer      ow_staging_buffer;
         VmaAllocation ow_staging_alloc;
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &ow_staging_buffer_info, &ow_staging_alloc_info, &ow_staging_buffer, &ow_staging_alloc, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &ow_staging_buffer_info, &ow_staging_alloc_info, &ow_staging_buffer,
+                                          &ow_staging_alloc, nullptr))
 
         VkBufferCreateInfo ow_buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -641,7 +641,8 @@ private:
         ow_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation ow_index_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &ow_buffer_info, &ow_alloc_info, &ow_index_buffer, &ow_index_alloc, nullptr))
+        VK_ASSERT_SUCCESS(
+            vmaCreateBuffer(vma_allocator, &ow_buffer_info, &ow_alloc_info, &ow_index_buffer, &ow_index_alloc, nullptr))
 
         void* ow_mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, ow_staging_alloc, &ow_mapped_data))
@@ -652,9 +653,8 @@ private:
         VkBufferCopy    ow_copy_region          = {};
         ow_copy_region.size                     = sizeof(uint32_t) * num_openwarp_indices;
         vkCmdCopyBuffer(ow_command_buffer_local, ow_staging_buffer, ow_index_buffer, 1, &ow_copy_region);
-        vulkan::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
-                                                   ow_command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     ow_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, ow_staging_buffer, ow_staging_alloc);
 
@@ -682,8 +682,8 @@ private:
 
         VkBuffer      dc_staging_buffer;
         VmaAllocation dc_staging_alloc;
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &dc_staging_buffer_info, &dc_staging_alloc_info, &dc_staging_buffer, &dc_staging_alloc, nullptr))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &dc_staging_buffer_info, &dc_staging_alloc_info, &dc_staging_buffer,
+                                          &dc_staging_alloc, nullptr))
 
         VkBufferCreateInfo dc_buffer_info = {
             VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, // sType
@@ -702,7 +702,8 @@ private:
         dc_alloc_info.usage                   = VMA_MEMORY_USAGE_GPU_ONLY;
 
         VmaAllocation dc_index_alloc;
-        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &dc_buffer_info, &dc_alloc_info, &dc_index_buffer, &dc_index_alloc, nullptr))
+        VK_ASSERT_SUCCESS(
+            vmaCreateBuffer(vma_allocator, &dc_buffer_info, &dc_alloc_info, &dc_index_buffer, &dc_index_alloc, nullptr))
 
         void* dc_mapped_data;
         VK_ASSERT_SUCCESS(vmaMapMemory(vma_allocator, dc_staging_alloc, &dc_mapped_data))
@@ -713,9 +714,8 @@ private:
         VkBufferCopy    dc_copy_region          = {};
         dc_copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(dc_command_buffer_local, dc_staging_buffer, dc_index_buffer, 1, &dc_copy_region);
-        vulkan::end_one_time_command(ds->vk_device, command_pool,
-                                                   ds->queues[vulkan::queue::queue_type::GRAPHICS],
-                                                   dc_command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     dc_command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, dc_staging_buffer, dc_staging_alloc);
 
@@ -764,44 +764,46 @@ private:
         distortion_vertices.resize(num_elems_pos_uv);
 
         // Construct perspective projection matrix
-//        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-//                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-//                                  rendering_params::far_z, rendering_params::reverse_z);
-//        invProjection = basicProjection.inverse();
+        // math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
+        //                           display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
+        //                           rendering_params::far_z, rendering_params::reverse_z);
+        // invProjection = basicProjection.inverse();
 
         float near_z = rendering_params::near_z;
-        float far_z = rendering_params::far_z;
+        float far_z  = rendering_params::far_z;
 
         // Hacked in projection matrix from Unreal and hardcoded values
         for (int eye = 0; eye < 2; eye++) {
-            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                         index_params::fov_up[eye], index_params::fov_down[eye]);
 
             float scale = 1.0f;
             if (std::getenv("ILLIXR_OVERSCAN") != nullptr) {
                 scale = std::stof(std::getenv("ILLIXR_OVERSCAN"));
             }
-            float tan_left = server_params::fov_left[eye];
+            float tan_left  = server_params::fov_left[eye];
             float tan_right = server_params::fov_right[eye];
-            float tan_up = server_params::fov_up[eye];
-            float tan_down = server_params::fov_down[eye];
-            float fov_left = std::atan(tan_left);
+            float tan_up    = server_params::fov_up[eye];
+            float tan_down  = server_params::fov_down[eye];
+            float fov_left  = std::atan(tan_left);
             float fov_right = std::atan(tan_right);
-            float fov_up = std::atan(tan_up);
-            float fov_down = std::atan(tan_down);
-            tan_left = std::tan(fov_left * scale);
-            tan_right = std::tan(fov_right * scale);
-            tan_up = std::tan(fov_up * scale);
-            tan_down = std::tan(fov_down * scale);
+            float fov_up    = std::atan(tan_up);
+            float fov_down  = std::atan(tan_down);
+            tan_left        = std::tan(fov_left * scale);
+            tan_right       = std::tan(fov_right * scale);
+            tan_up          = std::tan(fov_up * scale);
+            tan_down        = std::tan(fov_down * scale);
 
             // The server can render at a larger FoV, so the inverse should account for that.
             // The FOVs provided to the server should match the ones provided to Monado.
             Eigen::Matrix4f server_fov;
             if (using_godot) {
-                math_util::godot_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+                math_util::godot_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                            index_params::fov_up[eye], index_params::fov_down[eye]);
                 math_util::godot_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
-            }
-            else {
-                math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye], index_params::fov_up[eye], index_params::fov_down[eye]);
+            } else {
+                math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                             index_params::fov_up[eye], index_params::fov_down[eye]);
                 math_util::unreal_projection(&server_fov, tan_left, tan_right, tan_up, tan_down);
             }
 
@@ -959,7 +961,8 @@ private:
         matrixUboLayoutBinding.descriptorCount              = 1;
         matrixUboLayoutBinding.stageFlags                   = VK_SHADER_STAGE_VERTEX_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 3> ow_bindings   = {imageLayoutBinding, depthLayoutBinding, matrixUboLayoutBinding};
+        std::array<VkDescriptorSetLayoutBinding, 3> ow_bindings    = {imageLayoutBinding, depthLayoutBinding,
+                                                                      matrixUboLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             ow_layout_info = {};
         ow_layout_info.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         ow_layout_info.bindingCount                                = static_cast<uint32_t>(ow_bindings.size());
@@ -977,7 +980,7 @@ private:
         offscreenImageLayoutBinding.descriptorCount              = 1;
         offscreenImageLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; // shader stages that can access the descriptor
 
-        std::array<VkDescriptorSetLayoutBinding, 1> dc_bindings   = {offscreenImageLayoutBinding};
+        std::array<VkDescriptorSetLayoutBinding, 1> dc_bindings    = {offscreenImageLayoutBinding};
         VkDescriptorSetLayoutCreateInfo             dc_layout_info = {};
         dc_layout_info.sType                                       = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         dc_layout_info.bindingCount                                = static_cast<uint32_t>(dc_bindings.size());
@@ -1009,8 +1012,8 @@ private:
         createInfo.flags         = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
         createInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-        VK_ASSERT_SUCCESS(
-            vmaCreateBuffer(vma_allocator, &matrixBufferInfo, &createInfo, &ow_matrices_uniform_buffer, &ow_matrices_uniform_alloc, &ow_matrices_uniform_alloc_info))
+        VK_ASSERT_SUCCESS(vmaCreateBuffer(vma_allocator, &matrixBufferInfo, &createInfo, &ow_matrices_uniform_buffer,
+                                          &ow_matrices_uniform_alloc, &ow_matrices_uniform_alloc_info))
         deletion_queue.emplace([=]() {
             vmaDestroyBuffer(vma_allocator, ow_matrices_uniform_buffer, ow_matrices_uniform_alloc);
         });
@@ -1019,10 +1022,10 @@ private:
     void create_descriptor_pool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         std::cout << buffer_pool->image_pool.size() << std::endl;
-        poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount                  = buffer_pool->image_pool.size() * 2;
-        poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = (2 * buffer_pool->image_pool.size() + 1) * 2;
+        poolSizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[0].descriptorCount = buffer_pool->image_pool.size() * 2;
+        poolSizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        poolSizes[1].descriptorCount = (2 * buffer_pool->image_pool.size() + 1) * 2;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -1044,7 +1047,7 @@ private:
             // OpenWarp descriptor sets
             std::cout << eye << std::endl;
             std::vector<VkDescriptorSetLayout> ow_layout = {buffer_pool->image_pool.size(), ow_descriptor_set_layout};
-            VkDescriptorSetAllocateInfo ow_alloc_info {
+            VkDescriptorSetAllocateInfo        ow_alloc_info{
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
                 {},                                             // descriptorPool
@@ -1104,18 +1107,18 @@ private:
                 owDescriptorWrites[2].descriptorCount = 1;
                 owDescriptorWrites[2].pBufferInfo     = &bufferInfo;
 
-                vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(owDescriptorWrites.size()), owDescriptorWrites.data(),
-                                        0, nullptr);
+                vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(owDescriptorWrites.size()),
+                                       owDescriptorWrites.data(), 0, nullptr);
             }
 
             // Distortion correction descriptor sets
-            std::vector<VkDescriptorSetLayout> dc_layout   = {dc_descriptor_set_layout};
+            std::vector<VkDescriptorSetLayout> dc_layout     = {dc_descriptor_set_layout};
             VkDescriptorSetAllocateInfo        dc_alloc_info = {
-                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-                nullptr,                                        // pNext
-                {},                                             // descriptorPool
-                0,                                              // descriptorSetCount
-                nullptr                                         // pSetLayouts
+                       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+                       nullptr,                                        // pNext
+                       {},                                             // descriptorPool
+                       0,                                              // descriptorSetCount
+                       nullptr                                         // pSetLayouts
             };
             dc_alloc_info.descriptorPool     = descriptor_pool;
             dc_alloc_info.descriptorSetCount = 1;
@@ -1140,7 +1143,7 @@ private:
             dcDescriptorWrites[0].pImageInfo      = &offscreenImageInfo;
 
             vkUpdateDescriptorSets(ds->vk_device, static_cast<uint32_t>(dcDescriptorWrites.size()), dcDescriptorWrites.data(),
-                                    0, nullptr);
+                                   0, nullptr);
         }
     }
 
@@ -1148,57 +1151,57 @@ private:
         std::cout << "Creating openwarp renderpass" << std::endl;
         // A renderpass also has to be created
         VkAttachmentDescription color_attachment{};
-        color_attachment.format = VK_FORMAT_R8G8B8A8_UNORM; // this should match the offscreen image
-        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        color_attachment.format         = VK_FORMAT_R8G8B8A8_UNORM; // this should match the offscreen image
+        color_attachment.samples        = VK_SAMPLE_COUNT_1_BIT;
+        color_attachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        color_attachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
+        color_attachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        color_attachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
+        color_attachment.finalLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         VkAttachmentReference color_attachment_ref{};
         color_attachment_ref.attachment = 0;
-        color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        color_attachment_ref.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkAttachmentDescription depth_attachment{};
-        depth_attachment.format = VK_FORMAT_D16_UNORM; // this should match the offscreen image
-        depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depth_attachment.format         = VK_FORMAT_D16_UNORM; // this should match the offscreen image
+        depth_attachment.samples        = VK_SAMPLE_COUNT_1_BIT;
+        depth_attachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        depth_attachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
+        depth_attachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        depth_attachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
+        depth_attachment.finalLayout    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkAttachmentReference depth_attachment_ref{};
         depth_attachment_ref.attachment = 1;
-        depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        depth_attachment_ref.layout     = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkSubpassDescription subpass{};
-        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &color_attachment_ref;
+        subpass.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount    = 1;
+        subpass.pColorAttachments       = &color_attachment_ref;
         subpass.pDepthStencilAttachment = &depth_attachment_ref;
 
         std::array<VkAttachmentDescription, 2> all_attachments = {color_attachment, depth_attachment};
 
-	    VkSubpassDependency dependency{};
-        dependency.srcSubpass = 0;
-        dependency.dstSubpass = VK_SUBPASS_EXTERNAL;
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        VkSubpassDependency dependency{};
+        dependency.srcSubpass    = 0;
+        dependency.dstSubpass    = VK_SUBPASS_EXTERNAL;
+        dependency.srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstStageMask  = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         dependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
         VkRenderPassCreateInfo render_pass_info{};
-        render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        render_pass_info.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         render_pass_info.attachmentCount = static_cast<uint32_t>(all_attachments.size());
-        render_pass_info.pAttachments = all_attachments.data();
-        render_pass_info.subpassCount = 1;
-        render_pass_info.pSubpasses = &subpass;
+        render_pass_info.pAttachments    = all_attachments.data();
+        render_pass_info.subpassCount    = 1;
+        render_pass_info.pSubpasses      = &subpass;
         render_pass_info.dependencyCount = 1;
-        render_pass_info.pDependencies = &dependency;
+        render_pass_info.pDependencies   = &dependency;
 
         VK_ASSERT_SUCCESS(vkCreateRenderPass(ds->vk_device, &render_pass_info, nullptr, &openwarp_render_pass));
 
@@ -1211,10 +1214,8 @@ private:
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan::create_shader_module(
-            device, vulkan::read_file(folder + "/openwarp_mesh.vert.spv"));
-        VkShaderModule frag = vulkan::create_shader_module(
-            device, vulkan::read_file(folder + "/openwarp_mesh.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/openwarp_mesh.vert.spv"));
+        VkShaderModule frag   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/openwarp_mesh.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1278,7 +1279,8 @@ private:
         depthStencil.depthWriteEnable                      = VK_TRUE;
         depthStencil.minDepthBounds                        = 0.0f;
         depthStencil.maxDepthBounds                        = 1.0f;
-        depthStencil.depthCompareOp                        = rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
+        depthStencil.depthCompareOp =
+            rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
 
         // use dynamic state instead of a fixed viewport
         std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
@@ -1299,12 +1301,12 @@ private:
         pipelineLayoutInfo.pSetLayouts                = &ow_descriptor_set_layout;
 
         VkPushConstantRange push_constant = {};
-        push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        push_constant.offset = 0;
-        push_constant.size = sizeof(uint32_t);
+        push_constant.stageFlags          = VK_SHADER_STAGE_VERTEX_BIT;
+        push_constant.offset              = 0;
+        push_constant.size                = sizeof(uint32_t);
 
         pipelineLayoutInfo.pushConstantRangeCount = 1;
-        pipelineLayoutInfo.pPushConstantRanges = &push_constant;
+        pipelineLayoutInfo.pPushConstantRanges    = &push_constant;
 
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &ow_pipeline_layout))
 
@@ -1325,7 +1327,8 @@ private:
         pipelineInfo.renderPass = openwarp_render_pass;
         pipelineInfo.subpass    = 0;
 
-        VK_ASSERT_SUCCESS(vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &openwarp_pipeline))
+        VK_ASSERT_SUCCESS(
+            vkCreateGraphicsPipelines(ds->vk_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &openwarp_pipeline))
 
         vkDestroyShaderModule(device, vert, nullptr);
         vkDestroyShaderModule(device, frag, nullptr);
@@ -1450,10 +1453,10 @@ private:
 
     /* Compute a view matrix with rotation and position */
     static Eigen::Matrix4f create_camera_matrix(const pose_type& pose, int eye) {
-        Eigen::Matrix4f cameraMatrix = Eigen::Matrix4f::Identity();
-        auto ipd = display_params::ipd / 2.0f;
-        cameraMatrix.block<3,1>(0,3) = pose.position + pose.orientation * Eigen::Vector3f(eye == 0 ? -ipd : ipd, 0, 0);
-        cameraMatrix.block<3,3>(0,0) = pose.orientation.toRotationMatrix();
+        Eigen::Matrix4f cameraMatrix   = Eigen::Matrix4f::Identity();
+        auto            ipd            = display_params::ipd / 2.0f;
+        cameraMatrix.block<3, 1>(0, 3) = pose.position + pose.orientation * Eigen::Vector3f(eye == 0 ? -ipd : ipd, 0, 0);
+        cameraMatrix.block<3, 3>(0, 0) = pose.orientation.toRotationMatrix();
         return cameraMatrix;
     }
 
@@ -1462,11 +1465,9 @@ private:
         // However, the (i,j) accessors are row-major (i.e, the first argument
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f texCoordProjection;
-        texCoordProjection <<
-            0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f,
-            0.0f, -0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f,
-            0.0f, 0.0f, -1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f;
+        texCoordProjection << 0.5f * projection_matrix(0, 0), 0.0f, 0.5f * projection_matrix(0, 2) - 0.5f, 0.0f, 0.0f,
+            -0.5f * projection_matrix(1, 1), 0.5f * projection_matrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f;
 
         return texCoordProjection;
     }
@@ -1483,9 +1484,9 @@ private:
 
     bool using_godot = false;
 
-    bool compare_images = false;
+    bool                   compare_images = false;
     std::vector<pose_type> fixed_poses;
-    uint64_t frame_count = 0;
+    uint64_t               frame_count = 0;
 
     // Vulkan resources
     std::stack<std::function<void()>> deletion_queue;
@@ -1493,42 +1494,42 @@ private:
 
     // Note that each frame occupies 2 elements in the buffer pool:
     // i for the image itself, and i + 1 for the depth image.
-    size_t                                  swapchain_width;
-    size_t                                  swapchain_height;
+    size_t                                               swapchain_width;
+    size_t                                               swapchain_height;
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
-    VkSampler                               fb_sampler{};
+    VkSampler                                            fb_sampler{};
 
     VkDescriptorPool descriptor_pool{};
     VkCommandPool    command_pool{};
     VkCommandBuffer  command_buffer{};
 
     // offscreen image used as an intermediate render target
-    std::array<VkImage, 2> offscreen_images{};
-    std::array<VkImageView, 2> offscreen_image_views{};
+    std::array<VkImage, 2>       offscreen_images{};
+    std::array<VkImageView, 2>   offscreen_image_views{};
     std::array<VmaAllocation, 2> offscreen_image_allocs{};
 
-    std::array<VkImage, 2> offscreen_depths{};
-    std::array<VkImageView, 2> offscreen_depth_views{};
+    std::array<VkImage, 2>       offscreen_depths{};
+    std::array<VkImageView, 2>   offscreen_depth_views{};
     std::array<VmaAllocation, 2> offscreen_depth_allocs{};
 
     std::array<VkFramebuffer, 2> offscreen_framebuffers{};
 
     // openwarp mesh
-    VkPipelineLayout  ow_pipeline_layout{};
+    VkPipelineLayout ow_pipeline_layout{};
 
     VkBuffer          ow_matrices_uniform_buffer{};
     VmaAllocation     ow_matrices_uniform_alloc{};
     VmaAllocationInfo ow_matrices_uniform_alloc_info{};
-    
+
     VkDescriptorSetLayout                       ow_descriptor_set_layout{};
     std::array<std::vector<VkDescriptorSet>, 2> ow_descriptor_sets;
 
-    uint32_t                         num_openwarp_vertices;
-    uint32_t                         num_openwarp_indices;
-    std::vector<OpenWarpVertex>      openwarp_vertices;
-    std::vector<uint32_t>            openwarp_indices;
-    size_t openwarp_width = 0;
-    size_t openwarp_height = 0;
+    uint32_t                    num_openwarp_vertices;
+    uint32_t                    num_openwarp_indices;
+    std::vector<OpenWarpVertex> openwarp_vertices;
+    std::vector<uint32_t>       openwarp_indices;
+    size_t                      openwarp_width  = 0;
+    size_t                      openwarp_height = 0;
 
     VkBuffer ow_vertex_buffer{};
     VkBuffer ow_index_buffer{};
@@ -1555,8 +1556,8 @@ private:
     std::vector<uint32_t>                   distortion_indices;
 
     VkRenderPass distortion_correction_render_pass;
-    VkBuffer dc_vertex_buffer{};
-    VkBuffer dc_index_buffer{};
+    VkBuffer     dc_vertex_buffer{};
+    VkBuffer     dc_index_buffer{};
 
     // metrics
     std::atomic<uint32_t> num_record_calls{0};

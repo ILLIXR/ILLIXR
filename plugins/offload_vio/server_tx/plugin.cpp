@@ -20,10 +20,10 @@ public:
         : plugin{std::move(name_), pb_}
         , sb{pb->lookup_impl<switchboard>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-        , _m_vio_pose_writer{sb->get_network_writer<switchboard::event_wrapper<std::string>>("vio_pose", topic_config{.serialization_method=topic_config::SerializationMethod::PROTOBUF})}
-        {
-            spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        }
+        , _m_vio_pose_writer{sb->get_network_writer<switchboard::event_wrapper<std::string>>(
+              "vio_pose", topic_config{.serialization_method = topic_config::SerializationMethod::PROTOBUF})} {
+        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+    }
 
     // This schedule function cant go in the constructor because there seems to be an issue with
     // the callbeing being triggered before any data is written to slow_pose. This needs debugging.
@@ -111,8 +111,7 @@ public:
         vio_output_params->set_allocated_imu_int_input(protobuf_imu_int_input);
 
         unsigned long long end_pose_time =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
-                .count();
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         vio_output_params->set_end_server_timestamp(end_pose_time);
 
         // Prepare data delivery
@@ -122,12 +121,11 @@ public:
         _m_vio_pose_writer.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimitter));
 
         delete vio_output_params;
-        
     }
 
 private:
-    const std::shared_ptr<switchboard>        sb;
-    switchboard::reader<imu_integrator_input> _m_imu_int_input;
+    const std::shared_ptr<switchboard>                                   sb;
+    switchboard::reader<imu_integrator_input>                            _m_imu_int_input;
     switchboard::network_writer<switchboard::event_wrapper<std::string>> _m_vio_pose_writer;
 };
 
