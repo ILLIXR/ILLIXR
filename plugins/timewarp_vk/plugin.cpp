@@ -1,9 +1,6 @@
-#include <future>
-#include <iostream>
-#include <mutex>
-#include <stack>
-
-#define VMA_IMPLEMENTATION
+#if defined(ILLIXR_MONADO)
+    #define VMA_IMPLEMENTATION
+#endif
 
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
@@ -12,12 +9,18 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/render_pass.hpp"
-#include "illixr/vk_util/vulkan_utils.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 #include "utils/hmd.hpp"
 
-#include <vulkan/vulkan_core.h>
+#include <algorithm>
+#include <fstream>
+#include <future>
+#include <iostream>
+#include <mutex>
+#include <stack>
+#include <vulkan/vulkan.h>
 
 using namespace ILLIXR;
 
@@ -69,46 +72,52 @@ struct Vertex {
 };
 
 struct UniformBufferObject {
-    glm::mat4 timewarp_start_transform;
-    glm::mat4 timewarp_end_transform;
+    glm::mat4 timewarp_start_transform[2];
+    glm::mat4 timewarp_end_transform[2];
 };
 
-class timewarp_vk : public timewarp {
+class timewarp_vk : public vulkan::timewarp {
 public:
     explicit timewarp_vk(const phonebook* const pb)
         : pb{pb}
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
+        , _m_vsync{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , disable_warp{ILLIXR::str_to_bool(ILLIXR::getenv_or("ILLIXR_TIMEWARP_DISABLE", "False"))} { }
 
     void initialize() {
-        ds = pb->lookup_impl<display_sink>();
-
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
             deletion_queue.emplace([=]() {
                 vmaDestroyAllocator(vma_allocator);
             });
         }
 
-        generate_distortion_data();
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::queue_type::GRAPHICS].family);
+        command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
         deletion_queue.emplace([=]() {
             vkDestroyCommandPool(ds->vk_device, command_pool, nullptr);
         });
-        create_vertex_buffer();
-        create_index_buffer();
+
         create_descriptor_set_layout();
         create_uniform_buffer();
         create_texture_sampler();
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass, std::array<std::vector<VkImageView>, 2> buffer_pool_in,
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool,
                bool input_texture_vulkan_coordinates_in) override {
         std::lock_guard<std::mutex> lock{m_setup};
+
+        ds = pb->lookup_impl<vulkan::display_provider>();
+
+        swapchain_width  = ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width;
+        swapchain_height = ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height;
+
+        HMD::GetDefaultHmdInfo(swapchain_width, swapchain_height, display_params::width_meters, display_params::height_meters,
+                               display_params::lens_separation, display_params::meters_per_tan_angle,
+                               display_params::aberration, hmd_info);
 
         this->input_texture_vulkan_coordinates = input_texture_vulkan_coordinates_in;
         if (!initialized) {
@@ -118,14 +127,42 @@ public:
             partial_destroy();
         }
 
-        if (buffer_pool_in[0].size() != buffer_pool_in[1].size()) {
-            throw std::runtime_error("timewarp_vk: buffer_pool[0].size() != buffer_pool[1].size()");
-        }
-        this->buffer_pool = buffer_pool_in;
+        generate_distortion_data();
+
+        create_vertex_buffer();
+        create_index_buffer();
+
+        this->buffer_pool = std::move(buffer_pool);
 
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline(render_pass, subpass);
+        timewarp_render_pass = render_pass;
+
+        clamp_edge =
+            std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE") != nullptr && std::stoi(std::getenv("ILLIXR_TIMEWARP_CLAMP_EDGE"));
+        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
+        if (compare_images) {
+            // Note that the Quaternion constructor takes the w component first.
+            assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
+            std::string pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
+            std::cout << "Reading file from " << pose_filename << std::endl;
+
+            std::ifstream pose_file(pose_filename);
+            std::string   line;
+            while (std::getline(pose_file, line)) {
+                float             p_x, p_y, p_z;
+                float             q_x, q_y, q_z, q_w;
+                std::stringstream ss(line);
+                ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
+
+                fixed_poses.emplace_back(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
+            }
+
+            std::cout << "Read " << fixed_poses.size() << "poses" << std::endl;
+
+            pose_file.close();
+        }
     }
 
     void partial_destroy() {
@@ -154,43 +191,104 @@ public:
         Eigen::Matrix4f viewMatrixBegin = Eigen::Matrix4f::Identity();
         Eigen::Matrix4f viewMatrixEnd   = Eigen::Matrix4f::Identity();
 
-        const pose_type latest_pose       = disable_warp ? render_pose : pp->get_fast_pose().pose;
+        auto      next_vsync  = _m_vsync.get_ro_nullable();
+        pose_type latest_pose = disable_warp
+            ? render_pose
+            : (next_vsync == nullptr ? pp->get_fast_pose().pose : pp->get_fast_pose(*next_vsync).pose);
+        if (compare_images) {
+            // To be safe, start capturing at 200 frames and wait for 100 frames before trying the next pose.
+            // (this should be reflected in the screenshot layer)
+            int pose_index = std::clamp(static_cast<int>(frame_count - 150) / 100, 0, static_cast<int>(fixed_poses.size()) - 1);
+            latest_pose    = fixed_poses[pose_index];
+
+            std::cout << "At frame " << frame_count << std::endl;
+            std::cout << "Using pose " << latest_pose.position.x() << " " << latest_pose.position.y() << " "
+                      << latest_pose.position.z();
+        }
+
         viewMatrixBegin.block(0, 0, 3, 3) = latest_pose.orientation.toRotationMatrix();
 
         // TODO: We set the "end" pose to the same as the beginning pose, but this really should be the pose for
         // `display_period` later
         viewMatrixEnd = viewMatrixBegin;
 
-        // Calculate the timewarp transformation matrices. These are a product
-        // of the last-known-good view matrix and the predictive transforms.
-        Eigen::Matrix4f timeWarpStartTransform4x4;
-        Eigen::Matrix4f timeWarpEndTransform4x4;
-
-        // Calculate timewarp transforms using predictive view transforms
-        calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection, viewMatrix, viewMatrixBegin);
-        calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection, viewMatrix, viewMatrixEnd);
-
         auto* ubo = (UniformBufferObject*) uniform_alloc_info.pMappedData;
-        memcpy(&ubo->timewarp_start_transform, timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
-        memcpy(&ubo->timewarp_end_transform, timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
+        for (int eye = 0; eye < 2; eye++) {
+            // Calculate the timewarp transformation matrices. These are a product
+            // of the last-known-good view matrix and the predictive transforms.
+            Eigen::Matrix4f timeWarpStartTransform4x4;
+            Eigen::Matrix4f timeWarpEndTransform4x4;
+
+            // Calculate timewarp transforms using predictive view transforms
+            calculate_timewarp_transform(timeWarpStartTransform4x4, basicProjection[eye], viewMatrix, viewMatrixBegin);
+            calculate_timewarp_transform(timeWarpEndTransform4x4, basicProjection[eye], viewMatrix, viewMatrixEnd);
+
+            memcpy(&ubo->timewarp_start_transform[eye], timeWarpStartTransform4x4.data(), sizeof(glm::mat4));
+            memcpy(&ubo->timewarp_end_transform[eye], timeWarpEndTransform4x4.data(), sizeof(glm::mat4));
+        }
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int buffer_ind, bool left) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         num_record_calls++;
 
+        VkDeviceSize offsets = 0;
+
+        if (left)
+            frame_count++;
+
+        VkClearValue clear_color;
+        clear_color.color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        // Timewarp handles distortion correction at the same time
+        VkRenderPassBeginInfo tw_render_pass_info{};
+        tw_render_pass_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        tw_render_pass_info.renderPass               = timewarp_render_pass;
+        tw_render_pass_info.renderArea.offset.x      = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        tw_render_pass_info.renderArea.offset.y      = 0;
+        tw_render_pass_info.renderArea.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
+        tw_render_pass_info.renderArea.extent.height = static_cast<uint32_t>(swapchain_height);
+        tw_render_pass_info.framebuffer              = framebuffer;
+        tw_render_pass_info.clearValueCount          = 1;
+        tw_render_pass_info.pClearValues             = &clear_color;
+
+        VkViewport tw_viewport{};
+        tw_viewport.x        = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        tw_viewport.y        = 0;
+        tw_viewport.width    = static_cast<uint32_t>(swapchain_width / 2);
+        tw_viewport.height   = static_cast<uint32_t>(swapchain_height);
+        tw_viewport.minDepth = 0.0f;
+        tw_viewport.maxDepth = 1.0f;
+
+        VkRect2D tw_scissor{};
+        tw_scissor.offset.x      = left ? 0 : static_cast<uint32_t>(swapchain_width / 2);
+        tw_scissor.offset.y      = 0;
+        tw_scissor.extent.width  = static_cast<uint32_t>(swapchain_width / 2);
+        tw_scissor.extent.height = static_cast<uint32_t>(swapchain_height);
+
+        vkCmdBeginRenderPass(commandBuffer, &tw_render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdSetViewport(commandBuffer, 0, 1, &tw_viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &tw_scissor);
+
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertex_buffer, &offsets);
         // for (int eye = 0; eye < HMD::NUM_EYES; eye++) {
         //     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
         //     &descriptor_sets[eye][buffer_ind], 0, nullptr); vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0,
         //     VK_INDEX_TYPE_UINT32); vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, num_distortion_vertices *
         //     eye, 0);
         // }
+        uint32_t eye = static_cast<uint32_t>(left ? 0 : 1);
+        vkCmdPushConstants(commandBuffer, pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(uint32_t), &eye);
+
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1,
                                 &descriptor_sets[!left][buffer_ind], 0, nullptr);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, num_distortion_indices, 1, 0, static_cast<int>(num_distortion_vertices * !left), 0);
+        vkCmdEndRenderPass(commandBuffer);
+    }
+
+    bool is_external() override {
+        return false;
     }
 
     void destroy() override {
@@ -259,11 +357,12 @@ private:
         memcpy(mapped_data, vertices.data(), sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(Vertex) * num_distortion_vertices * HMD::NUM_EYES;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -319,11 +418,12 @@ private:
         memcpy(mapped_data, distortion_indices.data(), sizeof(uint32_t) * num_distortion_indices);
         vmaUnmapMemory(vma_allocator, staging_alloc);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region          = {};
         copy_region.size                     = sizeof(uint32_t) * num_distortion_indices;
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::queue_type::GRAPHICS],
+                                     command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_alloc);
 
@@ -334,8 +434,9 @@ private:
 
     void generate_distortion_data() {
         // Generate reference HMD and physical body dimensions
-        HMD::GetDefaultHmdInfo(display_params::width_pixels, display_params::height_pixels, display_params::width_meters,
-                               display_params::height_meters, display_params::lens_separation,
+        HMD::GetDefaultHmdInfo(ds->swapchain_extent.width == 0 ? display_params::width_pixels : ds->swapchain_extent.width,
+                               ds->swapchain_extent.height == 0 ? display_params::height_pixels : ds->swapchain_extent.height,
+                               display_params::width_meters, display_params::height_meters, display_params::lens_separation,
                                display_params::meters_per_tan_angle, display_params::aberration, hmd_info);
 
         // Construct timewarp meshes and other data
@@ -366,9 +467,11 @@ private:
         samplerInfo.magFilter = VK_FILTER_LINEAR; // how to interpolate texels that are magnified on screen
         samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        VkSamplerAddressMode sampler_addressing =
+            clamp_edge ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeU = sampler_addressing;
+        samplerInfo.addressModeV = sampler_addressing;
+        samplerInfo.addressModeW = sampler_addressing;
         samplerInfo.borderColor  = VK_BORDER_COLOR_INT_OPAQUE_BLACK; // black outside the texture
 
         samplerInfo.anisotropyEnable        = VK_FALSE;
@@ -442,9 +545,9 @@ private:
     void create_descriptor_pool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes = {};
         poolSizes[0].type                             = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount                  = 2;
+        poolSizes[0].descriptorCount                  = buffer_pool->image_pool.size() * 2;
         poolSizes[1].type                             = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount                  = 2;
+        poolSizes[1].descriptorCount                  = buffer_pool->image_pool.size() * 2;
 
         VkDescriptorPoolCreateInfo poolInfo = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, // sType
@@ -456,7 +559,7 @@ private:
         };
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes    = poolSizes.data();
-        poolInfo.maxSets       = buffer_pool[0].size() * 2;
+        poolInfo.maxSets       = buffer_pool->image_pool.size() * 2;
 
         VK_ASSERT_SUCCESS(vkCreateDescriptorPool(ds->vk_device, &poolInfo, nullptr, &descriptor_pool))
     }
@@ -464,7 +567,7 @@ private:
     void create_descriptor_sets() {
         // single frame in flight for now
         for (int eye = 0; eye < 2; eye++) {
-            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool[0].size(), descriptor_set_layout};
+            std::vector<VkDescriptorSetLayout> layouts   = {buffer_pool->image_pool.size(), descriptor_set_layout};
             VkDescriptorSetAllocateInfo        allocInfo = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
@@ -473,13 +576,13 @@ private:
                 nullptr                                         // pSetLayouts
             };
             allocInfo.descriptorPool     = descriptor_pool;
-            allocInfo.descriptorSetCount = buffer_pool[0].size();
+            allocInfo.descriptorSetCount = buffer_pool->image_pool.size();
             allocInfo.pSetLayouts        = layouts.data();
 
-            descriptor_sets[eye].resize(buffer_pool[0].size());
+            descriptor_sets[eye].resize(buffer_pool->image_pool.size());
             VK_ASSERT_SUCCESS(vkAllocateDescriptorSets(ds->vk_device, &allocInfo, descriptor_sets[eye].data()))
 
-            for (size_t i = 0; i < buffer_pool[0].size(); i++) {
+            for (size_t i = 0; i < buffer_pool->image_pool.size(); i++) {
                 VkDescriptorBufferInfo bufferInfo = {};
                 bufferInfo.buffer                 = uniform_buffer;
                 bufferInfo.offset                 = 0;
@@ -487,8 +590,9 @@ private:
 
                 VkDescriptorImageInfo imageInfo = {};
                 imageInfo.imageLayout           = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView             = buffer_pool[eye][i];
-                imageInfo.sampler               = fb_sampler;
+                imageInfo.imageView =
+                    eye == 0 ? buffer_pool->image_pool[i][0].image_view : buffer_pool->image_pool[i][1].image_view;
+                imageInfo.sampler = fb_sampler;
 
                 std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
@@ -522,8 +626,8 @@ private:
         VkDevice device = ds->vk_device;
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.vert.spv"));
-        VkShaderModule frag   = vulkan_utils::create_shader_module(device, vulkan_utils::read_file(folder + "/tw.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.vert.spv"));
+        VkShaderModule frag   = vulkan::create_shader_module(device, vulkan::read_file(folder + "/tw.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vertStageInfo = {};
         vertStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -622,6 +726,14 @@ private:
         pipelineLayoutInfo.setLayoutCount             = 1;
         pipelineLayoutInfo.pSetLayouts                = &descriptor_set_layout;
 
+        VkPushConstantRange push_constant = {};
+        push_constant.stageFlags          = VK_SHADER_STAGE_VERTEX_BIT;
+        push_constant.offset              = 0;
+        push_constant.size                = sizeof(uint32_t);
+
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges    = &push_constant;
+
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline_layout))
 
         VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -700,7 +812,7 @@ private:
                     // distortion_positions[eye * num_distortion_vertices + index].x = (-1.0f + eye + ((float) x /
                     // hmdInfo.eyeTilesWide));
                     distortion_positions[eye * num_distortion_vertices + index].x =
-                        (-1.0f + (static_cast<float>(x) / static_cast<float>(hmdInfo.eyeTilesWide)));
+                        (-1.0f + 2 * (static_cast<float>(x) / static_cast<float>(hmd_info.eyeTilesWide)));
 
                     // flip the y coordinates for Vulkan texture
                     distortion_positions[eye * num_distortion_vertices + index].y =
@@ -720,12 +832,11 @@ private:
                     distortion_uv2[eye * num_distortion_vertices + index].v = distort_coords[eye][2][index].y;
                 }
             }
-        }
 
-        // Construct perspective projection matrix
-        math_util::projection_fov(&basicProjection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
-                                  display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
+            // Construct perspective projection matrix according to Unreal -- different FOVs not supported here.
+            math_util::unreal_projection(&basicProjection[eye], index_params::fov_left[eye], index_params::fov_right[eye],
+                                         index_params::fov_up[eye], index_params::fov_down[eye]);
+        }
     }
 
     /* Calculate timewarm transform from projection matrix, view matrix, etc */
@@ -736,7 +847,7 @@ private:
         // is which row, and the second argument is which column.)
         Eigen::Matrix4f texCoordProjection;
         texCoordProjection << 0.5f * renderProjectionMatrix(0, 0), 0.0f, 0.5f * renderProjectionMatrix(0, 2) - 0.5f, 0.0f, 0.0f,
-            0.5f * renderProjectionMatrix(1, 1), 0.5f * renderProjectionMatrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+            -0.5f * renderProjectionMatrix(1, 1), 0.5f * renderProjectionMatrix(1, 2) - 0.5f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f;
 
         // Calculate the delta between the view matrix used for rendering and
@@ -753,12 +864,13 @@ private:
         transform = texCoordProjection * deltaViewMatrix;
     }
 
-    const phonebook* const                 pb;
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<pose_prediction> pp;
-    bool                                   disable_warp = false;
-    std::shared_ptr<display_sink>          ds           = nullptr;
-    std::mutex                             m_setup;
+    const phonebook* const                                      pb;
+    const std::shared_ptr<switchboard>                          sb;
+    const std::shared_ptr<pose_prediction>                      pp;
+    switchboard::reader<switchboard::event_wrapper<time_point>> _m_vsync;
+    bool                                                        disable_warp = false;
+    std::shared_ptr<vulkan::display_provider>                   ds           = nullptr;
+    std::mutex                                                  m_setup;
 
     bool initialized                      = false;
     bool input_texture_vulkan_coordinates = true;
@@ -767,12 +879,21 @@ private:
     std::stack<std::function<void()>> deletion_queue;
     VmaAllocator                      vma_allocator{};
 
-    std::array<std::vector<VkImageView>, 2> buffer_pool;
-    VkSampler                               fb_sampler{};
+    bool                   compare_images = false;
+    std::vector<pose_type> fixed_poses;
+    uint64_t               frame_count = 0;
+
+    size_t                                               swapchain_width;
+    size_t                                               swapchain_height;
+    std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
+    VkSampler                                            fb_sampler{};
+    bool                                                 clamp_edge = false;
 
     VkDescriptorPool                            descriptor_pool{};
     VkDescriptorSetLayout                       descriptor_set_layout{};
     std::array<std::vector<VkDescriptorSet>, 2> descriptor_sets;
+
+    VkRenderPass timewarp_render_pass;
 
     VkPipelineLayout  pipeline_layout{};
     VkBuffer          uniform_buffer{};
@@ -790,7 +911,7 @@ private:
 
     uint32_t                         num_distortion_vertices{};
     uint32_t                         num_distortion_indices{};
-    Eigen::Matrix4f                  basicProjection;
+    Eigen::Matrix4f                  basicProjection[2];
     std::vector<HMD::mesh_coord3d_t> distortion_positions;
     std::vector<HMD::uv_coord_t>     distortion_uv0;
     std::vector<HMD::uv_coord_t>     distortion_uv1;
@@ -810,7 +931,7 @@ public:
     timewarp_vk_plugin(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , tw{std::make_shared<timewarp_vk>(pb)} {
-        pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
+        pb->register_impl<vulkan::timewarp>(std::static_pointer_cast<vulkan::timewarp>(tw));
     }
 
     void _p_one_iteration() override {
@@ -835,8 +956,8 @@ public:
     }
 
 private:
-    std::shared_ptr<timewarp_vk>  tw;
-    std::shared_ptr<display_sink> ds;
+    std::shared_ptr<timewarp_vk>              tw;
+    std::shared_ptr<vulkan::display_provider> ds;
 
     int64_t last_print = 0;
 };

@@ -46,7 +46,6 @@ public:
         return *this;
     }
 
-private:
     duration _m_time_since_epoch;
 };
 

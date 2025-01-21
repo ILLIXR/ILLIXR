@@ -3,13 +3,18 @@
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
+#ifdef ILLIXR_VULKAN
+    #include "illixr/vk/vk_extension_request.h"
+    #include "vulkan_display.hpp"
+#endif
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/record_logger.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
-#include "sqlite_record_logger.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "noop_record_logger.hpp"
 
 #include <algorithm>
 #include <GL/glx.h>
@@ -42,15 +47,21 @@ class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
-        pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
+        pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
+        pb.register_impl<record_logger>(std::make_shared<noop_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
         pb.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
 #endif
+#if /**!defined(ILLIXR_MONADO) && **/ defined(ILLIXR_VULKAN)
+        // get env var ILLIXR_DISPLAY_MODE
+        std::string display_mode = std::getenv("ILLIXR_DISPLAY_MODE") ? std::getenv("ILLIXR_DISPLAY_MODE") : "glfw";
+        if (display_mode != "none")
+            pb.register_impl<vulkan::display_provider>(std::make_shared<display_vk>(&pb));
+#endif
         pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
-        pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
     }
 
     void load_so(const std::vector<std::string>& so_paths) override {
@@ -73,8 +84,30 @@ public:
         std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins),
                        [this](const auto& plugin_factory) {
                            RAC_ERRNO_MSG("runtime_impl before building the plugin");
-                           return std::unique_ptr<plugin>{plugin_factory(&pb)};
+                           return std::shared_ptr<plugin>{plugin_factory(&pb)};
                        });
+
+#if /**!defined(ILLIXR_MONADO) && **/ defined(ILLIXR_VULKAN)
+        const std::string display_mode = std::getenv("ILLIXR_DISPLAY_MODE") ? std::getenv("ILLIXR_DISPLAY_MODE") : "glfw";
+        if (display_mode != "none") {
+            std::set<const char*> instance_extensions;
+            std::set<const char*> device_extensions;
+
+            std::for_each(plugins.cbegin(), plugins.cend(), [&](const auto& plugin) {
+                auto requester = std::dynamic_pointer_cast<ILLIXR::vulkan::vk_extension_request>(plugin);
+                if (requester != nullptr) {
+                    auto requested_instance_extensions = requester->get_required_instance_extensions();
+                    instance_extensions.insert(requested_instance_extensions.begin(), requested_instance_extensions.end());
+
+                    auto requested_device_extensions = requester->get_required_devices_extensions();
+                    device_extensions.insert(requested_device_extensions.begin(), requested_device_extensions.end());
+                }
+            });
+
+            auto display = std::static_pointer_cast<display_vk>(pb.lookup_impl<vulkan::display_provider>());
+            display->start(instance_extensions, device_extensions);
+        }
+#endif
 
         std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
             // Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
@@ -112,7 +145,7 @@ public:
         pb.lookup_impl<switchboard>()->stop();
         // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
-        for (const std::unique_ptr<plugin>& plugin : plugins) {
+        for (const std::shared_ptr<plugin>& plugin : plugins) {
             plugin->stop();
             // Each plugin gets joined in its stop
         }
@@ -145,7 +178,7 @@ private:
     // I have to keep the dynamic libs in scope until the program is dead
     std::vector<dynamic_lib>             libs;
     phonebook                            pb;
-    std::vector<std::unique_ptr<plugin>> plugins;
+    std::vector<std::shared_ptr<plugin>> plugins;
 };
 
 extern "C" runtime* runtime_factory() {
