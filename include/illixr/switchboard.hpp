@@ -717,14 +717,14 @@ public:
      * @brief Get the boolean value of the given environment variable
      */
     bool get_env_bool(const std::string& var, const std::string& def = "false") {
-        std::string                    val = get_env(var, def);
+        std::string val = get_env(var, def);
         // see if we are dealing with an int value
         try {
             const int i_val = std::stoi(val);
             if (i_val <= 0)
                 return false;
             return true;
-        } catch(...) {}
+        } catch (...) { }
 
         const std::vector<std::string> affirmative{"yes", "y", "true", "on"};
         for (auto s : affirmative) {
