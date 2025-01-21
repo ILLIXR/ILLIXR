@@ -225,7 +225,7 @@ void serialize(Archive& ar, ILLIXR::time_point& tp, const unsigned int version) 
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::pose_type& pose, const unsigned int version) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar& pose.sensor_time;
+    ar & pose.sensor_time;
     ar& boost::serialization::make_array(pose.position.derived().data(), pose.position.size());
     ar& boost::serialization::make_array(pose.orientation.coeffs().data(), pose.orientation.coeffs().size());
 }
@@ -233,9 +233,9 @@ void serialize(Archive& ar, ILLIXR::pose_type& pose, const unsigned int version)
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int version) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar& pose.pose;
-    ar& pose.predict_computed_time;
-    ar& pose.predict_target_time;
+    ar & pose.pose;
+    ar & pose.predict_computed_time;
+    ar & pose.predict_target_time;
 }
 } // namespace boost::serialization
 

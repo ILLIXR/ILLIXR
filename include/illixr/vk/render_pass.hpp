@@ -31,12 +31,12 @@ public:
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
      * previously supplied to the app pass.
      */
-    virtual void update_uniforms(const pose_type& render_pose){};
+    virtual void update_uniforms(const pose_type& render_pose) { };
 
     /**
      * @brief Destroy the render pass and free all Vulkan resources.
      */
-    virtual void destroy(){};
+    virtual void destroy() { };
 
     virtual bool is_external() = 0;
 

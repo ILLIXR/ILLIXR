@@ -35,8 +35,8 @@ public:
         , _m_imu_cam_reader{sb->get_buffered_reader<switchboard::event_wrapper<std::string>>("compressed_imu_cam")}
         , buffer_str("")
         , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
-            log->info("Camera Time,Uplink Time(ms)");
-        }
+        log->info("Camera Time,Uplink Time(ms)");
+    }
 
     virtual skip_option _p_should_skip() override {
         return skip_option::run;

@@ -23,9 +23,9 @@ struct message_t {
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
-        ar& topic_name;
-        ar& message;
-        ar& checksum;
+        ar & topic_name;
+        ar & message;
+        ar & checksum;
         ar& boost::serialization::make_binary_object(&timestamp, sizeof(timestamp));
     }
 };

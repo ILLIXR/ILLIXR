@@ -19,7 +19,7 @@ private:
 public:
     x11_direct(std::shared_ptr<RelativeClock> _rc, switchboard::writer<switchboard::event_wrapper<time_point>> _vsync_topic)
         : rc{std::move(_rc)}
-        , vsync_topic{_vsync_topic} {};
+        , vsync_topic{_vsync_topic} { };
     void                       setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physical_device) override;
     VkSurfaceKHR               create_surface() override;
     void                       cleanup() override;

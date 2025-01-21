@@ -632,13 +632,12 @@ private:
                 if (!av_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg frame for color image"};
                 }
-                av_frame->format        = AV_PIX_FMT_VULKAN;
-                av_frame->width         = buffer_pool->image_pool[i][eye].image_info.extent.width;
-                av_frame->height        = buffer_pool->image_pool[i][eye].image_info.extent.height;
-                av_frame->hw_frames_ctx = av_buffer_ref(frame_ctx);
-                av_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_frame);
-                av_frame->buf[0]        = av_buffer_create(
-                           av_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
+                av_frame->format                = AV_PIX_FMT_VULKAN;
+                av_frame->width                 = buffer_pool->image_pool[i][eye].image_info.extent.width;
+                av_frame->height                = buffer_pool->image_pool[i][eye].image_info.extent.height;
+                av_frame->hw_frames_ctx         = av_buffer_ref(frame_ctx);
+                av_frame->data[0]               = reinterpret_cast<uint8_t*>(vk_frame);
+                av_frame->buf[0]                = av_buffer_create(av_frame->data[0], 0, [](void*, uint8_t*) { }, nullptr, 0);
                 av_frame->pts                   = 0;
                 avvk_color_frames[i][eye].frame = av_frame;
 
@@ -673,9 +672,8 @@ private:
                     av_depth_frame->height        = buffer_pool->depth_image_pool[i][eye].image_info.extent.height;
                     av_depth_frame->hw_frames_ctx = av_buffer_ref(frame_ctx);
                     av_depth_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_depth_frame);
-                    av_depth_frame->buf[0]        = av_buffer_create(
-                               av_depth_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
-                    av_depth_frame->pts             = 0;
+                    av_depth_frame->buf[0] = av_buffer_create(av_depth_frame->data[0], 0, [](void*, uint8_t*) { }, nullptr, 0);
+                    av_depth_frame->pts    = 0;
                     avvk_depth_frames[i][eye].frame = av_depth_frame;
                 }
             }

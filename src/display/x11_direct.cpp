@@ -161,7 +161,7 @@ bool x11_direct::register_display_timings_event(VkDevice vk_device) {
         return false;
     }
 
-    auto display_event_info = (VkDisplayEventInfoEXT){
+    auto display_event_info = (VkDisplayEventInfoEXT) {
         .sType        = VK_STRUCTURE_TYPE_DISPLAY_EVENT_INFO_EXT,
         .pNext        = nullptr,
         .displayEvent = VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT,

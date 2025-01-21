@@ -1050,7 +1050,7 @@ private:
             VkDescriptorSetAllocateInfo        ow_alloc_info{
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
                 nullptr,                                        // pNext
-                {},                                             // descriptorPool
+                       {},                                             // descriptorPool
                 0,                                              // descriptorSetCount
                 nullptr                                         // pSetLayouts
             };
@@ -1114,11 +1114,11 @@ private:
             // Distortion correction descriptor sets
             std::vector<VkDescriptorSetLayout> dc_layout     = {dc_descriptor_set_layout};
             VkDescriptorSetAllocateInfo        dc_alloc_info = {
-                       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-                       nullptr,                                        // pNext
-                       {},                                             // descriptorPool
-                       0,                                              // descriptorSetCount
-                       nullptr                                         // pSetLayouts
+                VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+                nullptr,                                        // pNext
+                {},                                             // descriptorPool
+                0,                                              // descriptorSetCount
+                nullptr                                         // pSetLayouts
             };
             dc_alloc_info.descriptorPool     = descriptor_pool;
             dc_alloc_info.descriptorSetCount = 1;
