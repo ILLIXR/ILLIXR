@@ -763,17 +763,17 @@
         "pkg": {
           "Ubuntu": {
             "20": {
-              "pkg": "libopenxr-dev libopenxr1-monado",
+              "pkg": "libopenxr-dev",
               "postnotes": "",
-              "notes": "Ubuntu 20 does not have a system supplied package for OpenXR, but it can be installed from the vendor by adding the following repo to your system:<div class=\"code-box-copy\">\n<button class=\"code-box-copy__btn\" data-clipboard-target=\"#openU20\" title=\"Copy\"></button><pre class=\"language-shell\" id=\"openU20\">sudo apt-get -y install wget software-properties-common\nsudo apt-get update\nsudo add-apt-repository ppa:monado-xr/monado -y -u\nsudo wget -nv https://monado.freedesktop.org/keys/monado-ci.asc -O /etc/apt/trusted.gpg.d/monado-ci.asc\necho 'deb https://monado.pages.freedesktop.org/monado/apt focal main' | sudo tee /etc/apt/sources.list.d/monado-ci.list\nsudo apt update</pre></div>"
+              "notes": "Ubuntu 20 does not have a system supplied package for the OpenXR libraries. You can download and install them from <a href=\"https://github.com/KhronosGroup/OpenXR-SDK\">github.com/KhronosGroup/OpenXR-SDK</a>. Specifically, you will need to build and install the OpenXR loader library."
             },
             "22": {
-              "pkg": "libopenxr-dev libopenxr1-monado",
+              "pkg": "libopenxr-dev",
               "postnotes": "",
               "notes": ""
             },
             "24": {
-              "pkg": "libopenxr-dev libopenxr1-monado",
+              "pkg": "libopenxr-dev",
               "postnotes": "",
               "notes": ""
             }
