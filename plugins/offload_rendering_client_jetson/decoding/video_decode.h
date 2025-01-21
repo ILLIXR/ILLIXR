@@ -31,12 +31,12 @@
 #include "NvVideoDecoder.h"
 //#include "NvVulkanRenderer.h"
 
+#include <chrono>
 #include <fstream>
+#include <functional>
 #include <pthread.h>
 #include <queue>
 #include <semaphore.h>
-#include <chrono>
-#include <functional>
 
 #define MAX_BUFFERS 32
 
@@ -44,9 +44,9 @@ typedef struct {
     NvVideoDecoder* dec;
     uint32_t        decoder_pixfmt;
 
-    NvEglRenderer*    eglRenderer;
-//    NvVulkanRenderer* vkRenderer;
-    bool              vkRendering;
+    NvEglRenderer* eglRenderer;
+    // NvVulkanRenderer* vkRenderer;
+    bool vkRendering;
 
     char**          in_file_path;
     std::ifstream** in_file;
@@ -134,9 +134,9 @@ public:
 
 private:
     context_t ctx;
-    char*      nalu_parse_buffer         = NULL;
-    int        i_output_plane_buf_filled = 0;
-    bool       dec_internal(std::istream& istream);
+    char*     nalu_parse_buffer         = NULL;
+    int       i_output_plane_buf_filled = 0;
+    bool      dec_internal(std::istream& istream);
 
     int                                                         outputQ         = 0;
     int                                                         captureDQ       = 0;

@@ -1,7 +1,7 @@
 /**
  * @file plugin.cpp
  * @brief ILLIXR Offload Rendering Client Plugin for Jetson
- * 
+ *
  * This plugin implements the client-side functionality for offloaded rendering on Jetson devices.
  * It handles video decoding, pose synchronization, and Vulkan-based display integration.
  */
@@ -29,7 +29,7 @@ using namespace ILLIXR;
 /**
  * @class offload_rendering_client
  * @brief Main class implementing the offload rendering client functionality
- * 
+ *
  * This class handles:
  * - Video decoding of received frames using hardware acceleration
  * - Pose synchronization with the server
@@ -107,7 +107,7 @@ public:
                 VkCommandBufferAllocateInfo allocInfo{};
                 allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
                 allocInfo.commandPool        = command_pool;
-                allocInfo.level             = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+                allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
                 allocInfo.commandBufferCount = 1;
 
                 VK_ASSERT_SUCCESS(vkAllocateCommandBuffers(dp->vk_device, &allocInfo, &blit_color_cb[i][eye]));
@@ -124,25 +124,25 @@ public:
      */
     void mmapi_import_dmabuf(vulkan::vk_image& eye) {
         // Setup NVIDIA buffer surface parameters
-        NvBufSurfaceMapParams params {};
-        params.num_planes = 1;
-        params.gpuId = 0;
-        params.fd = eye.fd;
-        params.totalSize = eye.allocation_info.size;
-        params.memType = NVBUF_MEM_SURFACE_ARRAY;
-        params.layout = NVBUF_LAYOUT_BLOCK_LINEAR;
-        params.scanformat = NVBUF_DISPLAYSCANFORMAT_PROGRESSIVE;
-        params.colorFormat = NVBUF_COLOR_FORMAT_BGRA;
-        params.planes[0].width = eye.image_info.extent.width;
-        params.planes[0].height = eye.image_info.extent.height;
-        params.planes[0].pitch = eye.image_info.extent.width * 4;
-        params.planes[0].offset = 0;
-        params.planes[0].psize = eye.allocation_info.size;
+        NvBufSurfaceMapParams params{};
+        params.num_planes                  = 1;
+        params.gpuId                       = 0;
+        params.fd                          = eye.fd;
+        params.totalSize                   = eye.allocation_info.size;
+        params.memType                     = NVBUF_MEM_SURFACE_ARRAY;
+        params.layout                      = NVBUF_LAYOUT_BLOCK_LINEAR;
+        params.scanformat                  = NVBUF_DISPLAYSCANFORMAT_PROGRESSIVE;
+        params.colorFormat                 = NVBUF_COLOR_FORMAT_BGRA;
+        params.planes[0].width             = eye.image_info.extent.width;
+        params.planes[0].height            = eye.image_info.extent.height;
+        params.planes[0].pitch             = eye.image_info.extent.width * 4;
+        params.planes[0].offset            = 0;
+        params.planes[0].psize             = eye.allocation_info.size;
         params.planes[0].secondfieldoffset = 0;
-        params.planes[0].blockheightlog2 = 4;
+        params.planes[0].blockheightlog2   = 4;
 
         NvBufSurface* surface;
-        auto ret = NvBufSurfaceImport(&surface, &params);
+        auto          ret  = NvBufSurfaceImport(&surface, &params);
         surface->numFilled = 1;
         assert(ret == 0);
     }
@@ -152,20 +152,20 @@ public:
      * Initializes resources and prepares for frame processing
      */
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
-                      std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override {
+                       std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override {
         this->buffer_pool = buffer_pool;
         vk_resources_init();
 
         // Import DMA buffers for all images
-        for (auto &image : buffer_pool->image_pool) {
-            for (auto &eye : image) {
+        for (auto& image : buffer_pool->image_pool) {
+            for (auto& eye : image) {
                 mmapi_import_dmabuf(eye);
             }
         }
 
         if (use_depth) {
-            for (auto &image : buffer_pool->depth_image_pool) {
-                for (auto &eye : image) {
+            for (auto& image : buffer_pool->depth_image_pool) {
+                for (auto& eye : image) {
                     mmapi_import_dmabuf(eye);
                 }
             }
@@ -337,7 +337,7 @@ public:
         vkCmdPipelineBarrier(cmd_buf, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
-    std::array<VkImage, 2> importedImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+    std::array<VkImage, 2> importedImages      = {VK_NULL_HANDLE, VK_NULL_HANDLE};
     std::array<VkImage, 2> importedDepthImages = {VK_NULL_HANDLE, VK_NULL_HANDLE};
 
     /**
@@ -348,10 +348,10 @@ public:
      * @param depth Whether this is a depth buffer
      */
     void blitTo(uint8_t ind, uint8_t eye, int fd, bool depth) {
-        VkImage vkImage = VK_NULL_HANDLE;
-        uint32_t width  = buffer_pool->image_pool[ind][eye].image_info.extent.width;
-        uint32_t height = buffer_pool->image_pool[ind][eye].image_info.extent.height;
-        auto     blitCB = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
+        VkImage  vkImage = VK_NULL_HANDLE;
+        uint32_t width   = buffer_pool->image_pool[ind][eye].image_info.extent.width;
+        uint32_t height  = buffer_pool->image_pool[ind][eye].image_info.extent.height;
+        auto     blitCB  = depth ? blit_depth_cb[ind][eye] : blit_color_cb[ind][eye];
 
         // Create and set up the Vulkan image for the decoded frame
         if (vkImage == VK_NULL_HANDLE) {
@@ -360,21 +360,21 @@ public:
             dmaBufExternalMemoryImageCreateInfo.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
 
             VkImageCreateInfo dmaBufImageCreateInfo{};
-            dmaBufImageCreateInfo.sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-            dmaBufImageCreateInfo.pNext                 = &dmaBufExternalMemoryImageCreateInfo;
-            dmaBufImageCreateInfo.imageType             = VK_IMAGE_TYPE_2D;
-            dmaBufImageCreateInfo.format                = buffer_pool->image_pool[ind][eye].image_info.format;
-            dmaBufImageCreateInfo.extent                = {width, height, 1};
-            dmaBufImageCreateInfo.mipLevels             = 1;
-            dmaBufImageCreateInfo.arrayLayers           = 1;
-            dmaBufImageCreateInfo.samples               = VK_SAMPLE_COUNT_1_BIT;
-            dmaBufImageCreateInfo.tiling                = buffer_pool->image_pool[ind][eye].image_info.tiling;
-            dmaBufImageCreateInfo.usage                 = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-            dmaBufImageCreateInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
+            dmaBufImageCreateInfo.sType       = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+            dmaBufImageCreateInfo.pNext       = &dmaBufExternalMemoryImageCreateInfo;
+            dmaBufImageCreateInfo.imageType   = VK_IMAGE_TYPE_2D;
+            dmaBufImageCreateInfo.format      = buffer_pool->image_pool[ind][eye].image_info.format;
+            dmaBufImageCreateInfo.extent      = {width, height, 1};
+            dmaBufImageCreateInfo.mipLevels   = 1;
+            dmaBufImageCreateInfo.arrayLayers = 1;
+            dmaBufImageCreateInfo.samples     = VK_SAMPLE_COUNT_1_BIT;
+            dmaBufImageCreateInfo.tiling      = buffer_pool->image_pool[ind][eye].image_info.tiling;
+            dmaBufImageCreateInfo.usage       = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+            dmaBufImageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
             VK_ASSERT_SUCCESS(vkCreateImage(dp->vk_device, &dmaBufImageCreateInfo, nullptr, &vkImage));
 
             // Import the DMA-buf memory
-            const int duppedFd = dup(fd);
+            const int            duppedFd = dup(fd);
             VkMemoryRequirements imageMemoryRequirements{};
             vkGetImageMemoryRequirements(dp->vk_device, vkImage, &imageMemoryRequirements);
 
@@ -425,11 +425,8 @@ public:
         vkEndCommandBuffer(blitCB);
 
         // Submit all command buffers in sequence
-        std::vector<VkCommandBuffer> cmd_bufs = {
-            layout_transition_start_cmd_bufs[ind][eye],
-            blitCB,
-            layout_transition_end_cmd_bufs[ind][eye]
-        };
+        std::vector<VkCommandBuffer> cmd_bufs = {layout_transition_start_cmd_bufs[ind][eye], blitCB,
+                                                 layout_transition_end_cmd_bufs[ind][eye]};
 
         VkSubmitInfo submitInfo{VK_STRUCTURE_TYPE_SUBMIT_INFO};
         submitInfo.commandBufferCount = static_cast<uint32_t>(cmd_bufs.size());
@@ -469,7 +466,7 @@ public:
             return;
         }
 
-        auto ind = buffer_pool->src_acquire_image();
+        auto ind        = buffer_pool->src_acquire_image();
         auto decode_end = std::chrono::high_resolution_clock::now();
 
         // Decode color and depth frames in parallel
@@ -497,7 +494,7 @@ public:
         }
         color.join();
 
-        auto transfer_end = std::chrono::high_resolution_clock::now();
+        auto           transfer_end = std::chrono::high_resolution_clock::now();
         fast_pose_type decoded_frame_pose;
         {
             std::lock_guard<std::mutex> lock(pose_queue_mutex);
@@ -507,7 +504,8 @@ public:
         buffer_pool->src_release_image(ind, std::move(decoded_frame_pose));
 
         // Calculate and track latency metrics
-        auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        auto now =
+            time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
         auto pipeline_latency = now - decoded_frame_pose.predict_target_time;
 
         metrics["capture"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - decode_end).count();
@@ -540,8 +538,9 @@ public:
             current_pose.pose = fixed_pose;
         }
 
-        auto now = time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
-        current_pose.predict_target_time = now;
+        auto now =
+            time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        current_pose.predict_target_time   = now;
         current_pose.predict_computed_time = now;
         pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
     }
@@ -556,9 +555,10 @@ public:
             return false;
         }
 
-        uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-        auto pose = received_frame->pose;
+        uint64_t timestamp =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
+                .count();
+        auto pose            = received_frame->pose;
         long network_latency = (long) timestamp - (long) received_frame->sent_time;
         metrics["network"] += network_latency / 1000000;
         pose.predict_target_time = time_point{std::chrono::duration<long, std::nano>{timestamp}};
@@ -587,18 +587,18 @@ private:
     std::shared_ptr<RelativeClock>                 clock;
 
     // State flags
-    std::atomic<bool>                              ready{false};
-    std::atomic<bool>                              running{true};
-    bool                                           use_depth{false};
-    bool                                           compare_images{false};
-    bool                                           resolutionRequeue{false};
+    std::atomic<bool> ready{false};
+    std::atomic<bool> running{true};
+    bool              use_depth{false};
+    bool              compare_images{false};
+    bool              resolutionRequeue{false};
 
     // Buffer management
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
-    std::vector<std::array<VkCommandBuffer, 2>> blit_color_cb;
-    std::vector<std::array<VkCommandBuffer, 2>> blit_depth_cb;
-    std::vector<std::array<VkCommandBuffer, 2>> layout_transition_start_cmd_bufs;
-    std::vector<std::array<VkCommandBuffer, 2>> layout_transition_end_cmd_bufs;
+    std::vector<std::array<VkCommandBuffer, 2>>          blit_color_cb;
+    std::vector<std::array<VkCommandBuffer, 2>>          blit_depth_cb;
+    std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
+    std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_end_cmd_bufs;
 
     // Decoders
     mmapi_decoder color_decoder;
@@ -606,20 +606,20 @@ private:
 
     // Frame and pose management
     std::shared_ptr<const compressed_frame> received_frame;
-    std::queue<fast_pose_type>             pose_queue;
-    std::mutex                             pose_queue_mutex;
-    pose_type                              fixed_pose;
+    std::queue<fast_pose_type>              pose_queue;
+    std::mutex                              pose_queue_mutex;
+    pose_type                               fixed_pose;
 
     // Vulkan resources
-    VkCommandPool command_pool{};
-    VkFence       blitFence;
+    VkCommandPool          command_pool{};
+    VkFence                blitFence;
     std::array<VkImage, 2> importedImages{VK_NULL_HANDLE, VK_NULL_HANDLE};
     std::array<VkImage, 2> importedDepthImages{VK_NULL_HANDLE, VK_NULL_HANDLE};
 
     // Performance metrics
     uint16_t                                       fps_counter{0};
     std::chrono::high_resolution_clock::time_point fps_start_time{std::chrono::high_resolution_clock::now()};
-    std::map<std::string, uint32_t>               metrics;
+    std::map<std::string, uint32_t>                metrics;
     uint64_t                                       frame_count{0};
 
     struct MemoryTypeResult {
@@ -663,7 +663,7 @@ private:
 /**
  * @class offload_rendering_client_loader
  * @brief Plugin loader class for the offload rendering client
- * 
+ *
  * Handles plugin registration and Vulkan extension setup
  */
 class offload_rendering_client_loader
@@ -677,21 +677,14 @@ public:
     }
 
     std::vector<const char*> get_required_instance_extensions() override {
-        return {
-            VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
-            VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
-        };
+        return {VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
+                VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
     }
 
     std::vector<const char*> get_required_devices_extensions() override {
-        return {
-            VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
-            VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME
-        };
+        return {VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
+                VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
+                VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME};
     }
 
     void start() override {

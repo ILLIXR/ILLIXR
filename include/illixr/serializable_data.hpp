@@ -24,9 +24,9 @@ extern "C" {
 namespace ILLIXR {
 struct compressed_frame : public switchboard::event {
     bool  nalu_only;
-    char* left_color_nalu = nullptr;
+    char* left_color_nalu  = nullptr;
     char* right_color_nalu = nullptr;
-    char* left_depth_nalu = nullptr;
+    char* left_depth_nalu  = nullptr;
     char* right_depth_nalu = nullptr;
     int   left_color_nalu_size;
     int   right_color_nalu_size;
@@ -44,7 +44,7 @@ struct compressed_frame : public switchboard::event {
 
     fast_pose_type pose;
     uint64_t       sent_time;
-    long magic = 0;
+    long           magic = 0;
 
     friend class boost::serialization::access;
 
@@ -189,8 +189,7 @@ struct compressed_frame : public switchboard::event {
         , pose(pose)
         , sent_time(sent_time)
         , nalu_only(nalu_only)
-        , magic(0xdeadbeef)
-        { }
+        , magic(0xdeadbeef) { }
 
     compressed_frame(AVPacket* left_color, AVPacket* right_color, AVPacket* left_depth, AVPacket* right_depth,
                      const fast_pose_type& pose, uint64_t sent_time, bool nalu_only = false)
@@ -202,8 +201,7 @@ struct compressed_frame : public switchboard::event {
         , pose(pose)
         , sent_time(sent_time)
         , nalu_only(nalu_only)
-        , magic(0xdeadbeef)
-        { }
+        , magic(0xdeadbeef) { }
 #endif
     ~compressed_frame() {
         if (nalu_only && left_color_nalu != nullptr && right_color_nalu != nullptr) {
@@ -227,7 +225,7 @@ void serialize(Archive& ar, ILLIXR::time_point& tp, const unsigned int version) 
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::pose_type& pose, const unsigned int version) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar & pose.sensor_time;
+    ar& pose.sensor_time;
     ar& boost::serialization::make_array(pose.position.derived().data(), pose.position.size());
     ar& boost::serialization::make_array(pose.orientation.coeffs().data(), pose.orientation.coeffs().size());
 }
@@ -235,9 +233,9 @@ void serialize(Archive& ar, ILLIXR::pose_type& pose, const unsigned int version)
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int version) {
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar & pose.pose;
-    ar & pose.predict_computed_time;
-    ar & pose.predict_target_time;
+    ar& pose.pose;
+    ar& pose.predict_computed_time;
+    ar& pose.predict_target_time;
 }
 } // namespace boost::serialization
 

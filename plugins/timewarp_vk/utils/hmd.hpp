@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
-#include <vector>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 #ifdef USE_GL
     #include <GL/gl.h>

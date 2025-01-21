@@ -1,6 +1,7 @@
 #ifndef ILLIXR_VULKAN_OBJECTS_HPP
 #define ILLIXR_VULKAN_OBJECTS_HPP
 #include "illixr/vk/third_party/vk_mem_alloc.h"
+
 #include <vulkan/vulkan.h>
 
 namespace ILLIXR::vulkan {
@@ -8,29 +9,25 @@ namespace ILLIXR::vulkan {
 typedef int8_t image_index_t;
 
 struct vk_image {
-    VkImageCreateInfo image_info;
+    VkImageCreateInfo               image_info;
     VkExternalMemoryImageCreateInfo export_image_info;
-    VkImage image;
-    VkImageView image_view;
-    VmaAllocation allocation;
-    VmaAllocationInfo allocation_info;
-    int fd;
+    VkImage                         image;
+    VkImageView                     image_view;
+    VmaAllocation                   allocation;
+    VmaAllocationInfo               allocation_info;
+    int                             fd;
 };
 
-template <typename T>
+template<typename T>
 struct buffer_pool {
-    enum image_state {
-        FREE,
-        SRC_IN_FLIGHT,
-        AVAILABLE,
-        POST_PROCESSING_IN_FLIGHT };
+    enum image_state { FREE, SRC_IN_FLIGHT, AVAILABLE, POST_PROCESSING_IN_FLIGHT };
 
     std::vector<std::array<vk_image, 2>> image_pool;
     std::vector<std::array<vk_image, 2>> depth_image_pool;
 
     std::vector<image_state> image_states;
-    std::vector<T> image_data;
-    std::mutex image_state_mutex;
+    std::vector<T>           image_data;
+    std::mutex               image_state_mutex;
 
     image_index_t latest_decoded_image = -1;
 
@@ -64,9 +61,9 @@ struct buffer_pool {
             }
         }
         assert(image_states[image_index] == SRC_IN_FLIGHT);
-        image_states[image_index] = AVAILABLE;
+        image_states[image_index]     = AVAILABLE;
         this->image_data[image_index] = std::move(data);
-        latest_decoded_image = image_index;
+        latest_decoded_image          = image_index;
 
         // std::cout << "Src release image " << (int) image_index << std::endl;
     }
@@ -108,6 +105,6 @@ struct buffer_pool {
     }
 };
 
-}
+} // namespace ILLIXR::vulkan
 
 #endif // ILLIXR_VULKAN_OBJECTS_HPP

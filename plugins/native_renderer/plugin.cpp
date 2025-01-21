@@ -183,7 +183,7 @@ public:
         // TODO: for DRM, get vsync estimate
         auto next_swap = nullptr; // _m_vsync.get_ro_nullable();
         if (next_swap == nullptr) {
-//            std::this_thread::sleep_for(display_params::period / 5.0);
+            // std::this_thread::sleep_for(display_params::period / 5.0);
             // printf("WARNING!!! no vsync estimate\n");
         } /*else {
             // convert next_swap_time to std::chrono::time_point
@@ -470,7 +470,7 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            } // subresourceRange
+            }                              // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &depth_image.image_view))
@@ -550,13 +550,13 @@ private:
             VK_IMAGE_TYPE_2D,                                                               // imageType
             VK_FORMAT_B8G8R8A8_UNORM,                                                       // format
             {
-                server_width,                                              // width
-                server_height,                                             // height
-                1                                                          // depth
-            },                                                             // extent
-            1,                                                             // mipLevels
-            1,                                                             // arrayLayers
-            VK_SAMPLE_COUNT_1_BIT,                                         // samples
+                server_width,                                               // width
+                server_height,                                              // height
+                1                                                           // depth
+            },                                                              // extent
+            1,                                                              // mipLevels
+            1,                                                              // arrayLayers
+            VK_SAMPLE_COUNT_1_BIT,                                          // samples
             DMA_EXPORT ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_OPTIMAL, // tiling
             static_cast<VkImageUsageFlags>(
                 (VK_IMAGE_USAGE_TRANSFER_DST_BIT | (DMA_EXPORT ? 0 : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) |
@@ -592,7 +592,7 @@ private:
                 1,                         // levelCount
                 0,                         // baseArrayLayer
                 1                          // layerCount
-            } // subresourceRange
+            }                              // subresourceRange
         };
 
         VK_ASSERT_SUCCESS(vkCreateImageView(ds->vk_device, &view_info, nullptr, &image.image_view))

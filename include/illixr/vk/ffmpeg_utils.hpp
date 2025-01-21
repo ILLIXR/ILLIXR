@@ -80,7 +80,7 @@ void AV_ASSERT_SUCCESS(int ret) {
 }
 
 struct ffmpeg_vk_frame {
-    AVFrame*   frame = nullptr;
+    AVFrame*   frame    = nullptr;
     AVVkFrame* vk_frame = nullptr;
 };
 } // namespace ILLIXR::vulkan::ffmpeg_utils

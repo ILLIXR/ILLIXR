@@ -1,4 +1,5 @@
 #include "illixr/data_format.hpp"
+#include "illixr/network/file_descriptor.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/network_backend.hpp"
 #include "illixr/network/socket.hpp"
@@ -6,7 +7,6 @@
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/network/file_descriptor.hpp"
 
 #include <map>
 
@@ -21,7 +21,6 @@ public:
     explicit tcp_network_backend(std::string name_, phonebook* pb_)
         : plugin(name_, pb_)
         , sb{pb->lookup_impl<switchboard>()} {
-
         // read environment variables
         if (std::getenv("ILLIXR_TCP_HOST_IP")) {
             self_ip = std::getenv("ILLIXR_TCP_HOST_IP");
@@ -41,7 +40,9 @@ public:
 
         if (peer_port != 0) {
             client = true;
-            std::thread([this]() { start_client(); }).detach();
+            std::thread([this]() {
+                start_client();
+            }).detach();
 
             // wait till we are connected
             while (!ready) {
@@ -51,7 +52,9 @@ public:
 
         if (self_port != 0) {
             client = false;
-            std::thread([this]() { start_server(); }).detach();
+            std::thread([this]() {
+                start_server();
+            }).detach();
 
             // The "ready" will be true anyway once the client is started
             while (!ready) {
@@ -75,7 +78,8 @@ public:
                 std::cout << "Connected to server" << std::endl;
                 success = true;
             } catch (unix_error& e) {
-                std::cout << "Connection failed to " + peer_ip + ", " + std::to_string(peer_port) + ", retrying in 1 second" << std::endl;
+                std::cout << "Connection failed to " + peer_ip + ", " + std::to_string(peer_port) + ", retrying in 1 second"
+                          << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
@@ -114,8 +118,8 @@ public:
             while (buffer.size() >= 8) {
                 uint32_t total_length = *reinterpret_cast<uint32_t*>(buffer.data());
                 if (buffer.size() >= total_length) {
-                    uint32_t topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
-                    std::string topic_name(buffer.data() + 8, topic_name_length);
+                    uint32_t          topic_name_length = *reinterpret_cast<uint32_t*>(buffer.data() + 4);
+                    std::string       topic_name(buffer.data() + 8, topic_name_length);
                     std::vector<char> message(buffer.begin() + 8 + topic_name_length, buffer.begin() + total_length);
                     topic_receive(topic_name, message);
                     buffer.erase(buffer.begin(), buffer.begin() + total_length);
@@ -138,7 +142,7 @@ public:
         std::string message = "create_topic" + topic_name + delimiter + serializaiton;
         send_to_peer("illixr_control", std::move(message));
     }
- 
+
     bool is_topic_networked(std::string topic_name) override {
         return std::find(networked_topics.begin(), networked_topics.end(), topic_name) != networked_topics.end();
     }
@@ -161,8 +165,8 @@ public:
             if (message_str.find("create_topic") == 0) {
                 size_t d_pos = message_str.find(delimiter);
                 assert(d_pos != std::string::npos);
-                std::string topic_name = message_str.substr(12, d_pos-12);
-                std::string serialization = message_str.substr(d_pos+1);
+                std::string topic_name    = message_str.substr(12, d_pos - 12);
+                std::string serialization = message_str.substr(d_pos + 1);
                 networked_topics.push_back(topic_name);
                 topic_config config;
                 if (serialization == "BOOST") {
@@ -188,17 +192,17 @@ public:
     }
 
 private:
-    std::shared_ptr<switchboard>            sb;
-    std::atomic<bool> running = true;
-    std::atomic<bool> ready  = false;
-    TCPSocket* peer_socket;
+    std::shared_ptr<switchboard> sb;
+    std::atomic<bool>            running = true;
+    std::atomic<bool>            ready   = false;
+    TCPSocket*                   peer_socket;
 
     std::string self_ip   = "0.0.0.0";
     int         self_port = 22222;
     std::string peer_ip;
     int         peer_port = 22222;
 
-    std::vector<std::string> networked_topics;
+    std::vector<std::string>                      networked_topics;
     std::unordered_map<std::string, topic_config> networked_topics_configs;
 
     // To delimit the topic_name and the serialization method when creating a topic
@@ -207,7 +211,7 @@ private:
     void send_to_peer(std::string topic_name, std::string&& message) {
         // packet are in the format
         // total_length:4bytes|topic_name_length:4bytes|topic_name|message
-        uint32_t total_length = 8 + topic_name.size() + message.size();
+        uint32_t    total_length = 8 + topic_name.size() + message.size();
         std::string packet;
         packet.append(reinterpret_cast<char*>(&total_length), 4);
         uint32_t topic_name_length = topic_name.size();

@@ -18,13 +18,12 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vio_pose_reader{sb->get_buffered_reader<switchboard::event_wrapper<std::string>>("vio_pose")}
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
-        , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")}
-        {
-            spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-            pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
-            switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
-            _m_pose.put(std::move(datum_pose));
-        }
+        , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")} {
+        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+        pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
+        switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
+        _m_pose.put(std::move(datum_pose));
+    }
 
     skip_option _p_should_skip() override {
         return skip_option::run;
@@ -32,12 +31,12 @@ public:
 
     void _p_one_iteration() override {
         if (_m_vio_pose_reader.size() > 0) {
-            auto buffer_ptr = _m_vio_pose_reader.dequeue();
-            std::string buffer_str = **buffer_ptr;
+            auto                   buffer_ptr   = _m_vio_pose_reader.dequeue();
+            std::string            buffer_str   = **buffer_ptr;
             std::string::size_type end_position = buffer_str.find(delimitter);
             // process the data
             vio_output_proto::VIOOutput vio_output;
-            bool success = vio_output.ParseFromString(buffer_str.substr(0, end_position));
+            bool                        success = vio_output.ParseFromString(buffer_str.substr(0, end_position));
             if (success) {
                 ReceiveVioOutput(vio_output);
             } else {
@@ -92,11 +91,11 @@ private:
         _m_imu_integrator_input.put(std::move(datum_imu_int));
     }
 
-    const std::shared_ptr<switchboard>        sb;
-    const std::shared_ptr<RelativeClock>      _m_clock;
+    const std::shared_ptr<switchboard>                                    sb;
+    const std::shared_ptr<RelativeClock>                                  _m_clock;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> _m_vio_pose_reader;
-    switchboard::writer<pose_type>            _m_pose;
-    switchboard::writer<imu_integrator_input> _m_imu_integrator_input;
+    switchboard::writer<pose_type>                                        _m_pose;
+    switchboard::writer<imu_integrator_input>                             _m_imu_integrator_input;
 
     std::string delimitter = "END!";
     std::string buffer_str;

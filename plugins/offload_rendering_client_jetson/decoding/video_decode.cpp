@@ -420,7 +420,7 @@ void mmapi_decoder::query_and_set_capture() {
     if (!ctx.disable_rendering) {
         /* Destroy the old instance of renderer as resolution might have changed. */
         if (ctx.vkRendering) {
-//            delete ctx.vkRenderer;
+            // delete ctx.vkRenderer;
         } else {
             delete ctx.eglRenderer;
         }
@@ -453,14 +453,14 @@ void mmapi_decoder::query_and_set_capture() {
             }
             ctx.eglRenderer->setFPS(ctx.fps);
         } else {
-//            ctx.vkRenderer =
-//                NvVulkanRenderer::createVulkanRenderer("renderer0", window_width, window_height, ctx.window_x, ctx.window_y);
-//            TEST_ERROR(!ctx.vkRenderer,
-//                       "Error in setting up of vulkan renderer. "
-//                       "Check if X is running or run with --disable-rendering",
-//                       error);
-//            ctx.vkRenderer->setSize(window_width, window_height);
-//            ctx.vkRenderer->initVulkan();
+            // ctx.vkRenderer =
+            //     NvVulkanRenderer::createVulkanRenderer("renderer0", window_width, window_height, ctx.window_x, ctx.window_y);
+            // TEST_ERROR(!ctx.vkRenderer,
+            //            "Error in setting up of vulkan renderer. "
+            //            "Check if X is running or run with --disable-rendering",
+            //            error);
+            // ctx.vkRenderer->setSize(window_width, window_height);
+            // ctx.vkRenderer->initVulkan();
         }
     }
 
@@ -693,7 +693,7 @@ int mmapi_decoder::dec_capture(int dst_fd) {
         if (ctx.capture_plane_mem_type == V4L2_MEMORY_DMABUF)
             dec_buffer->planes[0].fd = ctx.dmabuff_fd[v4l2_buf.index];
         /* Perform Blocklinear to PitchLinear conversion. */
-//        std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
+        // std::cout << "plane fd" << dec_buffer->planes[0].fd << std::endl;
         ret = NvBufSurf::NvTransform(&transform_params, dec_buffer->planes[0].fd, dst_fd);
         if (ret == -1) {
             cerr << "Transform failed" << endl;
@@ -712,7 +712,6 @@ int mmapi_decoder::dec_capture(int dst_fd) {
 
         if (!ctx.stats && !ctx.disable_rendering) {
             if (ctx.vkRendering) {
-                
             } else {
                 ctx.eglRenderer->render(ctx.dst_dma_fd);
             }
@@ -831,8 +830,8 @@ int mmapi_decoder::decoder_init() {
     /* Create NvVideoDecoder object for blocking or non-blocking I/O mode. */
     cout << "Creating decoder in blocking mode \n";
     // random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device              rd;
+    std::mt19937                    gen(rd());
     std::uniform_int_distribution<> dis(0, 1000);
     ctx.dec = NvVideoDecoder::createVideoDecoder(std::to_string(dis(gen)).c_str());
     TEST_ERROR(!ctx.dec, "Could not create decoder", cleanup);
@@ -1021,7 +1020,6 @@ cleanup:
     delete ctx.dec;
     /* Similarly, Renderer destructor does all the cleanup. */
     if (ctx.vkRendering) {
-        
     } else {
         delete ctx.eglRenderer;
     }
@@ -1097,10 +1095,9 @@ bool mmapi_decoder::dec_internal(std::istream& istream) {
     if ((ctx.decoder_pixfmt == V4L2_PIX_FMT_H264) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_H265) ||
         (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG2) || (ctx.decoder_pixfmt == V4L2_PIX_FMT_MPEG4)) {
         if (ctx.input_nalu) {
-            
         } else {
             /* read the input chunks. */
-             read_decoder_input_chunk(&istream, buffer);
+            read_decoder_input_chunk(&istream, buffer);
         }
     }
 

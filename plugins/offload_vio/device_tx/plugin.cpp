@@ -5,10 +5,10 @@
 #include "illixr/network/topic_config.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
+#include "illixr/serializable_data.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/serializable_data.hpp"
 #include "video_encoder.h"
 #include "vio_input.pb.h"
 
@@ -39,11 +39,11 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
         , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
-        , _m_imu_cam_writer{sb->get_network_writer<switchboard::event_wrapper<std::string>>("compressed_imu_cam", topic_config{.serialization_method=topic_config::SerializationMethod::PROTOBUF})}
-        , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL")))
-        {
-            std::srand(std::time(0));
-        }
+        , _m_imu_cam_writer{sb->get_network_writer<switchboard::event_wrapper<std::string>>(
+              "compressed_imu_cam", topic_config{.serialization_method = topic_config::SerializationMethod::PROTOBUF})}
+        , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
+        std::srand(std::time(0));
+    }
 
     void start() override {
         threadloop::start();
@@ -88,7 +88,8 @@ public:
         std::string data_to_be_sent = data_buffer->SerializeAsString();
         std::string delimitter      = "EEND!";
 
-        log->info("{},{}", cam_time.value().time_since_epoch().count(), (_m_clock->now().time_since_epoch().count()-cam_time.value().time_since_epoch().count()) / 1e6);
+        log->info("{},{}", cam_time.value().time_since_epoch().count(),
+                  (_m_clock->now().time_since_epoch().count() - cam_time.value().time_since_epoch().count()) / 1e6);
         // socket.write(data_to_be_sent + delimitter);
         _m_imu_cam_writer.put(std::make_shared<switchboard::event_wrapper<std::string>>(data_to_be_sent + delimitter));
 
@@ -192,15 +193,15 @@ public:
     }
 
 private:
-    std::unique_ptr<video_encoder>         encoder = nullptr;
-    std::optional<time_point>              latest_imu_time;
-    std::optional<time_point>              latest_cam_time;
-    int                                    frame_id    = 0;
-    vio_input_proto::IMUCamVec*            data_buffer = new vio_input_proto::IMUCamVec();
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<RelativeClock>   _m_clock;
-    const std::shared_ptr<Stoplight>       _m_stoplight;
-    switchboard::buffered_reader<cam_type> _m_cam;
+    std::unique_ptr<video_encoder>                                       encoder = nullptr;
+    std::optional<time_point>                                            latest_imu_time;
+    std::optional<time_point>                                            latest_cam_time;
+    int                                                                  frame_id    = 0;
+    vio_input_proto::IMUCamVec*                                          data_buffer = new vio_input_proto::IMUCamVec();
+    const std::shared_ptr<switchboard>                                   sb;
+    const std::shared_ptr<RelativeClock>                                 _m_clock;
+    const std::shared_ptr<Stoplight>                                     _m_stoplight;
+    switchboard::buffered_reader<cam_type>                               _m_cam;
     switchboard::network_writer<switchboard::event_wrapper<std::string>> _m_imu_cam_writer;
 };
 

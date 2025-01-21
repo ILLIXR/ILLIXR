@@ -4,8 +4,8 @@
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
 #ifdef ILLIXR_VULKAN
-    #include "vulkan_display.hpp"
     #include "illixr/vk/vk_extension_request.h"
+    #include "vulkan_display.hpp"
 #endif
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
@@ -55,7 +55,7 @@ public:
         pb.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
 #endif
-#if /**!defined(ILLIXR_MONADO) && **/defined(ILLIXR_VULKAN)
+#if /**!defined(ILLIXR_MONADO) && **/ defined(ILLIXR_VULKAN)
         // get env var ILLIXR_DISPLAY_MODE
         std::string display_mode = std::getenv("ILLIXR_DISPLAY_MODE") ? std::getenv("ILLIXR_DISPLAY_MODE") : "glfw";
         if (display_mode != "none")
@@ -97,8 +97,7 @@ public:
                 auto requester = std::dynamic_pointer_cast<ILLIXR::vulkan::vk_extension_request>(plugin);
                 if (requester != nullptr) {
                     auto requested_instance_extensions = requester->get_required_instance_extensions();
-                    instance_extensions.insert(requested_instance_extensions.begin(),
-                                               requested_instance_extensions.end());
+                    instance_extensions.insert(requested_instance_extensions.begin(), requested_instance_extensions.end());
 
                     auto requested_device_extensions = requester->get_required_devices_extensions();
                     device_extensions.insert(requested_device_extensions.begin(), requested_device_extensions.end());

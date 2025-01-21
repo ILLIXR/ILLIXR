@@ -17,17 +17,13 @@
 
 using namespace ILLIXR;
 
-
 class display_vk : public vulkan::display_provider {
-    std::vector<const char*> required_device_extensions = {
-        VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME
-    };
+    std::vector<const char*> required_device_extensions = {VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME};
 
 public:
     explicit display_vk(const phonebook* const pb)
-        : sb{pb->lookup_impl<switchboard>()}, rc {pb->lookup_impl<RelativeClock>()} {
-
-    }
+        : sb{pb->lookup_impl<switchboard>()}
+        , rc{pb->lookup_impl<RelativeClock>()} { }
 
     ~display_vk() override {
         running = false;
@@ -39,7 +35,7 @@ public:
 
     void start(std::set<const char*> instance_extensions, std::set<const char*> device_extensions) {
         auto manual_device_selection = std::getenv("ILLIXR_VULKAN_SELECT_GPU");
-        selected_gpu = manual_device_selection ? std::stoi(manual_device_selection) : -1;
+        selected_gpu                 = manual_device_selection ? std::stoi(manual_device_selection) : -1;
 
         char* env_var = std::getenv("ILLIXR_DISPLAY_MODE");
         if (!strcmp(env_var, "glfw")) {
@@ -51,7 +47,7 @@ public:
         } else if (!strcmp(env_var, "x11_direct")) {
             std::cout << "Using X11 direct mode" << std::endl;
             backend_type = display_backend::X11_DIRECT;
-            direct_mode = true;
+            direct_mode  = true;
         } else {
             std::cout << "Defaulting to GLFW for display backend" << std::endl;
             backend_type = display_backend::GLFW;
@@ -75,7 +71,8 @@ public:
         if (backend_type == display_backend::GLFW) {
             backend = std::make_shared<glfw_extended>();
         } else if (backend_type == display_backend::X11_DIRECT) {
-            backend = std::make_shared<x11_direct>(rc, sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate"));
+            backend =
+                std::make_shared<x11_direct>(rc, sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate"));
         } else {
             backend = std::make_shared<headless>();
         }
@@ -115,8 +112,8 @@ public:
         uint32_t width, height;
         if (!direct_mode) {
             auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
-            width  = std::clamp(fb_size.first, swapchain_extent.width, swapchain_extent.width);
-            height = std::clamp(fb_size.second, swapchain_extent.height, swapchain_extent.height);
+            width        = std::clamp(fb_size.first, swapchain_extent.width, swapchain_extent.width);
+            height       = std::clamp(fb_size.second, swapchain_extent.height, swapchain_extent.height);
         } else {
             width  = swapchain_extent.width;
             height = swapchain_extent.height;
@@ -137,10 +134,10 @@ public:
     }
 
 private:
-
     void create_vk_instance(std::set<const char*> instance_extensions) {
         // Enable validation layers if ILLIXR_VULKAN_VALIDATION_LAYERS is set to 1
-        bool enable_validation_layers = std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr && std::stoi(std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS"));
+        bool enable_validation_layers = std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr &&
+            std::stoi(std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS"));
 
         VkApplicationInfo app_info{VK_STRUCTURE_TYPE_APPLICATION_INFO};
         app_info.pApplicationName   = "ILLIXR Vulkan Display";
@@ -149,8 +146,9 @@ private:
         app_info.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
         app_info.apiVersion         = VK_API_VERSION_1_2;
 
-        auto backend_required_instance_extensions = backend->get_required_instance_extensions();
-        std::vector<const char*> backend_required_instance_extensions_vec(backend_required_instance_extensions.begin(), backend_required_instance_extensions.end());
+        auto                     backend_required_instance_extensions = backend->get_required_instance_extensions();
+        std::vector<const char*> backend_required_instance_extensions_vec(backend_required_instance_extensions.begin(),
+                                                                          backend_required_instance_extensions.end());
         if (enable_validation_layers) {
             backend_required_instance_extensions_vec.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
@@ -171,11 +169,9 @@ private:
         }
 
         // enable validation layers
-        std::vector<const char*> validation_layers = {
-            "VK_LAYER_KHRONOS_validation"
-        };
+        std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 
-        if (std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"))) 
+        if (std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES")))
             validation_layers.push_back("VK_LAYER_LUNARG_screenshot");
 
         if (enable_validation_layers) {
@@ -183,12 +179,15 @@ private:
             create_info.ppEnabledLayerNames = validation_layers.data();
 
             // debug messenger
-            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info{VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
-            debug_messenger_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-            debug_messenger_create_info.messageType     = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-            debug_messenger_create_info.pfnUserCallback = [](VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
-                                                             VkDebugUtilsMessageTypeFlagsEXT             messageType,
-                                                             const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
+            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info{
+                VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
+            debug_messenger_create_info.messageSeverity =
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+            debug_messenger_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+            debug_messenger_create_info.pfnUserCallback =
+                [](VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType,
+                   const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
                 // convert severity flag to string
                 const char* severity = "???";
                 if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
@@ -243,7 +242,6 @@ private:
             unmet_extensions.erase(extension.extensionName);
         }
 
-
         if (!unmet_extensions.empty()) {
             return false;
         }
@@ -285,7 +283,8 @@ private:
         for (const auto& device : suitable_devices) {
             VkPhysicalDeviceProperties device_properties;
             vkGetPhysicalDeviceProperties(device, &device_properties);
-            std::cout << "\t" << "[" << index << "] " << device_properties.deviceName << std::endl;
+            std::cout << "\t"
+                      << "[" << index << "] " << device_properties.deviceName << std::endl;
             index++;
         }
         if (unsuitable_devices.size() > 0) {
@@ -311,10 +310,11 @@ private:
     }
 
     void create_logical_device(std::set<const char*> device_extensions) {
-        vulkan::queue_families indices = vulkan::find_queue_families(vk_physical_device, vk_surface, backend_type == display_backend::HEADLESS);
+        vulkan::queue_families indices =
+            vulkan::find_queue_families(vk_physical_device, vk_surface, backend_type == display_backend::HEADLESS);
 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-        std::set<uint32_t> unique_queue_families = {indices.graphics_family.value()};
+        std::set<uint32_t>                   unique_queue_families = {indices.graphics_family.value()};
 
         if (indices.present_family.has_value()) {
             unique_queue_families.insert(indices.present_family.value());
@@ -346,19 +346,17 @@ private:
         VkPhysicalDeviceFeatures device_features{};
         device_features.samplerAnisotropy = VK_TRUE;
 
-        VkPhysicalDeviceSynchronization2FeaturesKHR synchronization_2_features = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES, nullptr, true};
+        VkPhysicalDeviceSynchronization2FeaturesKHR synchronization_2_features = {
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES, nullptr, true};
 
         VkPhysicalDeviceTimelineSemaphoreFeatures timeline_semaphore_features{
             VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
             &synchronization_2_features, // pNext
-            VK_TRUE  // timelineSemaphore
+            VK_TRUE                      // timelineSemaphore
         };
 
-        features = VkPhysicalDeviceFeatures2 {
-            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-            &timeline_semaphore_features,
-            device_features
-        };
+        features = VkPhysicalDeviceFeatures2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &timeline_semaphore_features,
+                                             device_features};
 
         required_device_extensions.insert(required_device_extensions.end(), device_extensions.begin(), device_extensions.end());
 
@@ -381,51 +379,51 @@ private:
 
         vulkan::queue graphics_queue{};
         vkGetDeviceQueue(vk_device, indices.graphics_family.value(), 0, &graphics_queue.vk_queue);
-        graphics_queue.family = indices.graphics_family.value();
-        graphics_queue.type   = vulkan::queue::GRAPHICS;
-        graphics_queue.mutex = std::make_shared<std::mutex>();
+        graphics_queue.family       = indices.graphics_family.value();
+        graphics_queue.type         = vulkan::queue::GRAPHICS;
+        graphics_queue.mutex        = std::make_shared<std::mutex>();
         queues[graphics_queue.type] = graphics_queue;
 
         if (indices.present_family.has_value()) {
             vulkan::queue present_queue{};
             vkGetDeviceQueue(vk_device, indices.present_family.value(), 0, &present_queue.vk_queue);
-            present_queue.family = indices.present_family.value();
-            present_queue.type   = vulkan::queue::PRESENT;
-            present_queue.mutex = std::make_shared<std::mutex>();
+            present_queue.family       = indices.present_family.value();
+            present_queue.type         = vulkan::queue::PRESENT;
+            present_queue.mutex        = std::make_shared<std::mutex>();
             queues[present_queue.type] = present_queue;
         }
 
         if (indices.has_compression()) {
             vulkan::queue encode_queue{};
             vkGetDeviceQueue(vk_device, indices.encode_family.value(), 0, &encode_queue.vk_queue);
-            encode_queue.family = indices.encode_family.value();
-            encode_queue.type   = vulkan::queue::ENCODE;
-            encode_queue.mutex = std::make_shared<std::mutex>();
+            encode_queue.family       = indices.encode_family.value();
+            encode_queue.type         = vulkan::queue::ENCODE;
+            encode_queue.mutex        = std::make_shared<std::mutex>();
             queues[encode_queue.type] = encode_queue;
 
             vulkan::queue decode_queue{};
             vkGetDeviceQueue(vk_device, indices.decode_family.value(), 0, &decode_queue.vk_queue);
-            decode_queue.family = indices.decode_family.value();
-            decode_queue.type   = vulkan::queue::DECODE;
-            decode_queue.mutex = std::make_shared<std::mutex>();
+            decode_queue.family       = indices.decode_family.value();
+            decode_queue.type         = vulkan::queue::DECODE;
+            decode_queue.mutex        = std::make_shared<std::mutex>();
             queues[decode_queue.type] = decode_queue;
         }
 
         if (indices.compute_family.has_value()) {
             vulkan::queue compute_queue{};
             vkGetDeviceQueue(vk_device, indices.compute_family.value(), 0, &compute_queue.vk_queue);
-            compute_queue.family = indices.compute_family.value();
-            compute_queue.type   = vulkan::queue::COMPUTE;
-            compute_queue.mutex = std::make_shared<std::mutex>();
+            compute_queue.family       = indices.compute_family.value();
+            compute_queue.type         = vulkan::queue::COMPUTE;
+            compute_queue.mutex        = std::make_shared<std::mutex>();
             queues[compute_queue.type] = compute_queue;
         }
 
         if (indices.dedicated_transfer.has_value()) {
             vulkan::queue transfer_queue{};
             vkGetDeviceQueue(vk_device, indices.dedicated_transfer.value(), 0, &transfer_queue.vk_queue);
-            transfer_queue.family = indices.dedicated_transfer.value();
-            transfer_queue.type   = vulkan::queue::DEDICATED_TRANSFER;
-            transfer_queue.mutex = std::make_shared<std::mutex>();
+            transfer_queue.family       = indices.dedicated_transfer.value();
+            transfer_queue.type         = vulkan::queue::DEDICATED_TRANSFER;
+            transfer_queue.mutex        = std::make_shared<std::mutex>();
             queues[transfer_queue.type] = transfer_queue;
         }
 
@@ -452,7 +450,7 @@ private:
                 swapchain_image_format = available_format;
                 break;
             } else if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM &&
-                                                                            available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                       available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
                 std::cout << "Using VK_FORMAT_B8G8R8A8_UNORM (direct mode)" << std::endl;
                 swapchain_image_format = available_format;
                 break;
@@ -472,9 +470,11 @@ private:
         if (swapchain_details.capabilities.currentExtent.width != UINT32_MAX) {
             swapchain_extent = swapchain_details.capabilities.currentExtent;
         } else if (std::dynamic_pointer_cast<glfw_extended>(backend) != nullptr) {
-            auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
-            swapchain_extent.width  = std::clamp(fb_size.first, swapchain_details.capabilities.minImageExtent.width, swapchain_details.capabilities.maxImageExtent.width);
-            swapchain_extent.height = std::clamp(fb_size.second, swapchain_details.capabilities.minImageExtent.height, swapchain_details.capabilities.maxImageExtent.height);
+            auto fb_size            = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
+            swapchain_extent.width  = std::clamp(fb_size.first, swapchain_details.capabilities.minImageExtent.width,
+                                                 swapchain_details.capabilities.maxImageExtent.width);
+            swapchain_extent.height = std::clamp(fb_size.second, swapchain_details.capabilities.minImageExtent.height,
+                                                 swapchain_details.capabilities.maxImageExtent.height);
         }
 
         uint32_t image_count = std::max(swapchain_details.capabilities.minImageCount, 2u); // double buffering
@@ -491,8 +491,8 @@ private:
         create_info.imageArrayLayers = 1;
         create_info.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        vulkan::queue_families indices = vulkan::find_queue_families(vk_physical_device, vk_surface);
-        uint32_t queue_family_indices[] = {indices.graphics_family.value(), indices.present_family.value()};
+        vulkan::queue_families indices                = vulkan::find_queue_families(vk_physical_device, vk_surface);
+        uint32_t               queue_family_indices[] = {indices.graphics_family.value(), indices.present_family.value()};
 
         if (indices.graphics_family != indices.present_family) {
             create_info.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
@@ -506,11 +506,12 @@ private:
 
         create_info.preTransform   = swapchain_details.capabilities.currentTransform;
         create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        create_info.presentMode   = swapchain_present_mode;
-        create_info.clipped       = VK_TRUE;
-        create_info.oldSwapchain  = VK_NULL_HANDLE;
+        create_info.presentMode    = swapchain_present_mode;
+        create_info.clipped        = VK_TRUE;
+        create_info.oldSwapchain   = VK_NULL_HANDLE;
 
-        auto create_shared_swapchains = (PFN_vkCreateSharedSwapchainsKHR)vkGetInstanceProcAddr(vk_instance, "vkCreateSharedSwapchainsKHR");
+        auto create_shared_swapchains =
+            (PFN_vkCreateSharedSwapchainsKHR) vkGetInstanceProcAddr(vk_instance, "vkCreateSharedSwapchainsKHR");
 
         if (vkCreateSwapchainKHR(vk_device, &create_info, nullptr, &vk_swapchain) != VK_SUCCESS) {
             ILLIXR::abort("Failed to create Vulkan swapchain!");
@@ -523,7 +524,8 @@ private:
 
         swapchain_image_views.resize(swapchain_images.size());
         for (size_t i = 0; i < swapchain_images.size(); i++) {
-            swapchain_image_views[i] = vulkan::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format, VK_IMAGE_ASPECT_COLOR_BIT);
+            swapchain_image_views[i] = vulkan::create_image_view(vk_device, swapchain_images[i], swapchain_image_format.format,
+                                                                 VK_IMAGE_ASPECT_COLOR_BIT);
         }
     }
 
@@ -571,15 +573,14 @@ private:
         }
     }
 
-
 private:
-    std::thread                 main_thread;
-    std::atomic<bool>           ready{false};
-    std::atomic<bool>           running{true};
+    std::thread       main_thread;
+    std::atomic<bool> ready{false};
+    std::atomic<bool> running{true};
 
     display_backend::display_backend_type backend_type;
-    bool direct_mode{false};
-    int selected_gpu{-1};
+    bool                                  direct_mode{false};
+    int                                   selected_gpu{-1};
 
     std::shared_ptr<display_backend> backend;
 
@@ -589,5 +590,4 @@ private:
 
     friend class display_vk_runner;
     std::shared_ptr<RelativeClock> rc;
-
 };

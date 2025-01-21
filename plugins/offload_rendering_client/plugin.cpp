@@ -1,19 +1,19 @@
 /**
  * @file plugin.cpp
  * @brief Offload Rendering Client Plugin Implementation
- * 
+ *
  * This plugin implements the client-side component of ILLIXR's offload rendering system.
  * It receives encoded frames from a remote server, decodes them using hardware-accelerated
  * HEVC decoding, and displays them in VR. The system supports both color and depth frame
  * reception and decoding.
- * 
+ *
  * Key features:
  * - Hardware-accelerated HEVC decoding using FFmpeg/CUDA
  * - Support for stereo (left/right eye) rendering
  * - Optional depth frame reception and decoding
  * - Image comparison mode for testing/debugging
  * - Performance metrics tracking
- * 
+ *
  * Dependencies:
  * - FFmpeg with CUDA support
  * - NVIDIA Video Codec SDK
@@ -24,18 +24,18 @@
 /**
  * @class offload_rendering_client
  * @brief Main client implementation for offload rendering
- * 
+ *
  * This class handles:
  * 1. Reception of encoded frames from the server
  * 2. Hardware-accelerated HEVC decoding using FFmpeg/CUDA
  * 3. Color space conversion (NV12 to RGBA)
  * 4. Vulkan image management and synchronization
  * 5. Pose synchronization with the server
- * 
+ *
  * The client supports two modes:
  * - Realtime mode: Receives and displays frames with real-time pose updates
  * - Comparison mode: Uses a fixed pose for image quality comparison
- * 
+ *
  * Configuration is controlled through environment variables:
  * - ILLIXR_USE_DEPTH_IMAGES: Enable depth frame reception/decoding
  * - ILLIXR_COMPARE_IMAGES: Enable image comparison mode
@@ -45,10 +45,10 @@
 // ILLIXR core headers
 #include "illixr/data_format.hpp"
 #include "illixr/phonebook.hpp"
-#include "illixr/switchboard.hpp"
-#include "illixr/threadloop.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/serializable_data.hpp"
+#include "illixr/switchboard.hpp"
+#include "illixr/threadloop.hpp"
 
 // ILLIXR Vulkan headers
 #include "illixr/vk/display_provider.hpp"
@@ -67,11 +67,11 @@ extern "C" {
 // NVIDIA nppi headers
 #include "nppi.h"
 
+#include <chrono>
 #include <cstdlib>
 #include <fstream>
-#include <set>
-#include <chrono>
 #include <map>
+#include <set>
 
 /**
  * @brief Name of the FFmpeg decoder to use (HEVC/H.265)
@@ -84,18 +84,18 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
 /**
  * @class offload_rendering_client
  * @brief Main client implementation for offload rendering
- * 
+ *
  * This class handles:
  * 1. Reception of encoded frames from the server
  * 2. Hardware-accelerated HEVC decoding using FFmpeg/CUDA
  * 3. Color space conversion (NV12 to RGBA)
  * 4. Vulkan image management and synchronization
  * 5. Pose synchronization with the server
- * 
+ *
  * The client supports two modes:
  * - Realtime mode: Receives and displays frames with real-time pose updates
  * - Comparison mode: Uses a fixed pose for image quality comparison
- * 
+ *
  * Configuration is controlled through environment variables:
  * - ILLIXR_USE_DEPTH_IMAGES: Enable depth frame reception/decoding
  * - ILLIXR_COMPARE_IMAGES: Enable image comparison mode
@@ -133,14 +133,14 @@ public:
             // The client always provides a constant 0 ms pose for the server to render,
             // And timewarp / openwarp will try to warp it back in different increments.
             assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
-            std::string pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
+            std::string   pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
             std::ifstream pose_file(pose_filename);
 
             std::string line;
             std::getline(pose_file, line);
 
-            float p_x, p_y, p_z;
-            float q_x, q_y, q_z, q_w;
+            float             p_x, p_y, p_z;
+            float             q_x, q_y, q_z, q_w;
             std::stringstream ss(line);
             ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
             fixed_pose = pose_type(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
@@ -169,8 +169,8 @@ public:
     virtual void setup(VkRenderPass render_pass, uint32_t subpass,
                        std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool) override {
         this->buffer_pool = buffer_pool;
-        command_pool = vulkan::create_command_pool(dp->vk_device, dp->queues[vulkan::queue::GRAPHICS].family);
-        
+        command_pool      = vulkan::create_command_pool(dp->vk_device, dp->queues[vulkan::queue::GRAPHICS].family);
+
         // Initialize FFmpeg and frame resources
         ffmpeg_init_frame_ctx();
         ffmpeg_init_cuda_frame_ctx();
@@ -238,12 +238,12 @@ public:
     /**
      * @brief Record command buffer (no-op in this implementation)
      */
-    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {}
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override { }
 
     /**
      * @brief Update uniforms (no-op in this implementation)
      */
-    void update_uniforms(const pose_type& render_pose) override {}
+    void update_uniforms(const pose_type& render_pose) override { }
 
     /**
      * @brief Indicates this is an external renderer
@@ -416,7 +416,7 @@ protected:
 
     /**
      * @brief Main processing loop for frame decoding and display
-     * 
+     *
      * This method:
      * 1. Sends the latest pose to the server
      * 2. Receives and decodes encoded frames
@@ -439,7 +439,7 @@ protected:
 
         // Track frame timing
         auto timestamp = std::chrono::high_resolution_clock::now();
-        auto diff = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
+        auto diff      = timestamp - decoded_frame_pose.predict_target_time._m_time_since_epoch;
 
         // Decode frames
         auto decode_start = std::chrono::high_resolution_clock::now();
@@ -455,7 +455,8 @@ protected:
             if (use_depth) {
                 ret = avcodec_send_packet(codec_depth_ctx, decode_src_depth_packets[eye]);
                 if (ret == AVERROR(EAGAIN)) {
-                    throw std::runtime_error{"FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
+                    throw std::runtime_error{
+                        "FFmpeg encoder returned EAGAIN. Internal buffer full? Try using a higher-end GPU."};
                 }
                 AV_ASSERT_SUCCESS(ret);
             }
@@ -478,9 +479,9 @@ protected:
         // Perform color space conversion
         for (auto eye = 0; eye < 2; eye++) {
             // Convert NV12 to YUV420
-            NppiSize roi = {static_cast<int>(decode_out_color_frames[eye]->width), 
-                           static_cast<int>(decode_out_color_frames[eye]->height)};
-            Npp8u* pSrc[2];
+            NppiSize roi = {static_cast<int>(decode_out_color_frames[eye]->width),
+                            static_cast<int>(decode_out_color_frames[eye]->height)};
+            Npp8u*   pSrc[2];
             pSrc[0] = reinterpret_cast<Npp8u*>(decode_out_color_frames[eye]->data[0]);
             pSrc[1] = reinterpret_cast<Npp8u*>(decode_out_color_frames[eye]->data[1]);
             Npp8u* pDst[3];
@@ -492,29 +493,27 @@ protected:
             dst_linesizes[1] = u_step;
             dst_linesizes[2] = v_step;
 
-            auto ret = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_color_frames[eye]->linesize[0], 
-                                                pDst, dst_linesizes, roi);
+            auto ret = nppiNV12ToYUV420_8u_P2P3R(pSrc, decode_out_color_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
             assert(ret == NPP_SUCCESS);
 
             // Convert YUV420 to BGRA
             auto dst = reinterpret_cast<Npp8u*>(decode_converted_color_frames[eye]->data[0]);
-            ret = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst, 
-                                          decode_converted_color_frames[eye]->linesize[0], roi);
+            ret      = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst, decode_converted_color_frames[eye]->linesize[0], roi);
             assert(ret == NPP_SUCCESS);
 
             // Process depth frames if enabled
             if (use_depth) {
                 NppiSize roi_depth = {static_cast<int>(decode_out_depth_frames[eye]->width),
-                                    static_cast<int>(decode_out_depth_frames[eye]->height)};
-                Npp8u* pSrc_depth[2];
+                                      static_cast<int>(decode_out_depth_frames[eye]->height)};
+                Npp8u*   pSrc_depth[2];
                 pSrc_depth[0] = reinterpret_cast<Npp8u*>(decode_out_depth_frames[eye]->data[0]);
                 pSrc_depth[1] = reinterpret_cast<Npp8u*>(decode_out_depth_frames[eye]->data[1]);
-                ret = nppiNV12ToYUV420_8u_P2P3R(pSrc_depth, decode_out_depth_frames[eye]->linesize[0],
-                                               pDst, dst_linesizes, roi);
+                ret =
+                    nppiNV12ToYUV420_8u_P2P3R(pSrc_depth, decode_out_depth_frames[eye]->linesize[0], pDst, dst_linesizes, roi);
                 assert(ret == NPP_SUCCESS);
                 auto dst_depth = reinterpret_cast<Npp8u*>(decode_converted_depth_frames[eye]->data[0]);
-                ret = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst_depth,
-                                              decode_converted_depth_frames[eye]->linesize[0], roi);
+                ret = nppiYUV420ToBGR_8u_P3C4R(pDst, dst_linesizes, dst_depth, decode_converted_depth_frames[eye]->linesize[0],
+                                               roi);
                 assert(ret == NPP_SUCCESS);
             }
             cudaDeviceSynchronize();
@@ -522,11 +521,11 @@ protected:
         auto conversion_end = std::chrono::high_resolution_clock::now();
 
         // Update display buffers
-        auto ind = buffer_pool->src_acquire_image();
+        auto ind            = buffer_pool->src_acquire_image();
         auto transfer_start = std::chrono::high_resolution_clock::now();
 
         auto* frames = reinterpret_cast<AVHWFramesContext*>(frame_ctx->data);
-        auto* vk = static_cast<AVVulkanFramesContext*>(frames->hwctx);
+        auto* vk     = static_cast<AVVulkanFramesContext*>(frames->hwctx);
 
         // Transfer frames to display buffers
         for (auto eye = 0; eye < 2; eye++) {
@@ -538,14 +537,14 @@ protected:
             vkResetFences(dp->vk_device, 1, &fence);
 
             // Set up synchronization
-            std::vector<VkSemaphore> timelines = {avvk_color_frames[ind][eye].vk_frame->sem[0]};
+            std::vector<VkSemaphore>          timelines   = {avvk_color_frames[ind][eye].vk_frame->sem[0]};
             std::vector<VkPipelineStageFlags> wait_stages = {VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT};
             if (use_depth) {
                 timelines.push_back(avvk_depth_frames[ind][eye].vk_frame->sem[0]);
                 wait_stages.push_back(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
             }
 
-            std::vector<uint64_t> start_wait_values = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
+            std::vector<uint64_t> start_wait_values   = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
             std::vector<uint64_t> start_signal_values = {++avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
             if (use_depth) {
                 start_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
@@ -554,24 +553,24 @@ protected:
 
             // Submit layout transition commands
             VkTimelineSemaphoreSubmitInfo transition_start_timeline = {
-                .sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
-                .pNext = nullptr,
-                .waitSemaphoreValueCount = static_cast<uint16_t>(start_wait_values.size()),
-                .pWaitSemaphoreValues = start_wait_values.data(),
+                .sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+                .pNext                     = nullptr,
+                .waitSemaphoreValueCount   = static_cast<uint16_t>(start_wait_values.size()),
+                .pWaitSemaphoreValues      = start_wait_values.data(),
                 .signalSemaphoreValueCount = static_cast<uint16_t>(start_signal_values.size()),
-                .pSignalSemaphoreValues = start_signal_values.data(),
+                .pSignalSemaphoreValues    = start_signal_values.data(),
             };
 
             VkSubmitInfo transition_start_submit = {
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .pNext = &transition_start_timeline,
-                .waitSemaphoreCount = static_cast<uint16_t>(timelines.size()),
-                .pWaitSemaphores = timelines.data(),
-                .pWaitDstStageMask = wait_stages.data(),
-                .commandBufferCount = 1,
-                .pCommandBuffers = &layout_transition_start_cmd_bufs[ind][eye],
+                .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                .pNext                = &transition_start_timeline,
+                .waitSemaphoreCount   = static_cast<uint16_t>(timelines.size()),
+                .pWaitSemaphores      = timelines.data(),
+                .pWaitDstStageMask    = wait_stages.data(),
+                .commandBufferCount   = 1,
+                .pCommandBuffers      = &layout_transition_start_cmd_bufs[ind][eye],
                 .signalSemaphoreCount = static_cast<uint16_t>(timelines.size()),
-                .pSignalSemaphores = timelines.data(),
+                .pSignalSemaphores    = timelines.data(),
             };
             vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_start_submit, nullptr);
 
@@ -585,7 +584,7 @@ protected:
             }
 
             // Submit end transition commands
-            std::vector<uint64_t> end_wait_values = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
+            std::vector<uint64_t> end_wait_values   = {avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
             std::vector<uint64_t> end_signal_values = {++avvk_color_frames[ind][eye].vk_frame->sem_value[0]};
             if (use_depth) {
                 end_wait_values.push_back(avvk_depth_frames[ind][eye].vk_frame->sem_value[0]);
@@ -593,24 +592,24 @@ protected:
             }
 
             VkTimelineSemaphoreSubmitInfo transition_end_timeline = {
-                .sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
-                .pNext = nullptr,
-                .waitSemaphoreValueCount = static_cast<uint16_t>(end_wait_values.size()),
-                .pWaitSemaphoreValues = end_wait_values.data(),
+                .sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+                .pNext                     = nullptr,
+                .waitSemaphoreValueCount   = static_cast<uint16_t>(end_wait_values.size()),
+                .pWaitSemaphoreValues      = end_wait_values.data(),
                 .signalSemaphoreValueCount = static_cast<uint16_t>(end_signal_values.size()),
-                .pSignalSemaphoreValues = end_signal_values.data(),
+                .pSignalSemaphoreValues    = end_signal_values.data(),
             };
 
             VkSubmitInfo transition_end_submit = {
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .pNext = &transition_end_timeline,
-                .waitSemaphoreCount = static_cast<uint16_t>(timelines.size()),
-                .pWaitSemaphores = timelines.data(),
-                .pWaitDstStageMask = wait_stages.data(),
-                .commandBufferCount = 1,
-                .pCommandBuffers = &layout_transition_end_cmd_bufs[ind][eye],
+                .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                .pNext                = &transition_end_timeline,
+                .waitSemaphoreCount   = static_cast<uint16_t>(timelines.size()),
+                .pWaitSemaphores      = timelines.data(),
+                .pWaitDstStageMask    = wait_stages.data(),
+                .commandBufferCount   = 1,
+                .pCommandBuffers      = &layout_transition_end_cmd_bufs[ind][eye],
                 .signalSemaphoreCount = static_cast<uint16_t>(timelines.size()),
-                .pSignalSemaphores = timelines.data(),
+                .pSignalSemaphores    = timelines.data(),
             };
             vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &transition_end_submit, fence);
             vkWaitForFences(dp->vk_device, 1, &fence, VK_TRUE, UINT64_MAX);
@@ -620,19 +619,19 @@ protected:
                 decode_out_color_frames[eye]->pts = frame_count++;
                 decode_out_depth_frames[eye]->pts = frame_count++;
 
-                vulkan::wait_timeline_semaphores(dp->vk_device, {
-                    {avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]},
-                    {avvk_depth_frames[ind][eye].vk_frame->sem[0], avvk_depth_frames[ind][eye].vk_frame->sem_value[0]}
-                });
+                vulkan::wait_timeline_semaphores(
+                    dp->vk_device,
+                    {{avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]},
+                     {avvk_depth_frames[ind][eye].vk_frame->sem[0], avvk_depth_frames[ind][eye].vk_frame->sem_value[0]}});
 
                 vk->unlock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
                 vk->unlock_frame(frames, avvk_depth_frames[ind][eye].vk_frame);
             } else {
                 decode_out_color_frames[eye]->pts = frame_count++;
 
-                vulkan::wait_timeline_semaphores(dp->vk_device, {
-                    {avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]}
-                });
+                vulkan::wait_timeline_semaphores(
+                    dp->vk_device,
+                    {{avvk_color_frames[ind][eye].vk_frame->sem[0], avvk_color_frames[ind][eye].vk_frame->sem_value[0]}});
 
                 vk->unlock_frame(frames, avvk_color_frames[ind][eye].vk_frame);
             }
@@ -647,7 +646,8 @@ protected:
         metrics["transfer"] += std::chrono::duration_cast<std::chrono::microseconds>(transfer_end - transfer_start).count();
 
         // Log performance metrics every second
-        if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time).count() >= 1) {
+        if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - fps_start_time)
+                .count() >= 1) {
             log->info("Decoder FPS: {}", fps_counter);
             fps_start_time = std::chrono::high_resolution_clock::now();
 
@@ -672,10 +672,9 @@ private:
             current_pose.pose = fixed_pose;
         }
 
-        auto now = time_point{std::chrono::duration<long, std::nano>{
-            std::chrono::high_resolution_clock::now().time_since_epoch()
-        }};
-        current_pose.predict_target_time = now;
+        auto now =
+            time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
+        current_pose.predict_target_time   = now;
         current_pose.predict_computed_time = now;
         pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
     }
@@ -714,9 +713,9 @@ private:
         }
 
         // Track frame timing
-        uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::high_resolution_clock::now().time_since_epoch()
-        ).count();
+        uint64_t timestamp =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
+                .count();
         auto diff_ns = timestamp - frame->sent_time;
         log->info("Network latency (ms): {}", diff_ns / 1000000.0);
 
@@ -733,9 +732,9 @@ private:
     std::atomic<bool>                              ready = false;
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
-    bool use_depth = false;
-    bool compare_images = false;
-    pose_type fixed_pose;
+    bool                                                 use_depth      = false;
+    bool                                                 compare_images = false;
+    pose_type                                            fixed_pose;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_color_frames;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_depth_frames;
     std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
@@ -772,10 +771,9 @@ private:
 
     uint16_t                                       fps_counter    = 0;
     std::chrono::high_resolution_clock::time_point fps_start_time = std::chrono::high_resolution_clock::now();
-    std::map<std::string, uint32_t> metrics;
+    std::map<std::string, uint32_t>                metrics;
 
     void submit_command_buffer(VkCommandBuffer vk_command_buffer) {
-
         VkSubmitInfo submitInfo{
             VK_STRUCTURE_TYPE_SUBMIT_INFO, // sType
             nullptr,                       // pNext
@@ -819,63 +817,64 @@ private:
                 av_packet_free(&decode_src_depth_packets[1]);
             }
         }
-        auto frame            = frames_reader.dequeue();
+        auto frame = frames_reader.dequeue();
         if (frame == nullptr) {
             return false;
         }
         decode_src_color_packets[0] = frame->left_color;
         decode_src_color_packets[1] = frame->right_color;
 
-//        // save bytestream to file
-//        if (left_eye_stream == nullptr) {
-//            left_eye_stream = fopen("left_eye.h264", "wb");
-//            right_eye_stream = fopen("right_eye.h264", "wb");
-//        }
-//        fwrite(frame->left_color->data, 1, frame->left_color->size, left_eye_stream);
-//        fwrite(frame->right_color->data, 1, frame->right_color->size, right_eye_stream);
+        // // save bytestream to file
+        // if (left_eye_stream == nullptr) {
+        //     left_eye_stream = fopen("left_eye.h264", "wb");
+        //     right_eye_stream = fopen("right_eye.h264", "wb");
+        // }
+        // fwrite(frame->left_color->data, 1, frame->left_color->size, left_eye_stream);
+        // fwrite(frame->right_color->data, 1, frame->right_color->size, right_eye_stream);
 
         if (use_depth) {
             decode_src_depth_packets[0] = frame->left_depth;
             decode_src_depth_packets[1] = frame->right_depth;
         }
         // log->info("Received frame {}", frame_count);
-        uint64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        uint64_t timestamp =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
+                .count();
         auto diff_ns = timestamp - frame->sent_time;
         log->info("diff (ms): {}", diff_ns / 1000000.0);
         decoded_frame_pose = frame->pose;
         return true;
     }
 
-
     /**
-    * @brief Initialize FFmpeg Vulkan device context
-    * 
-    * Sets up the FFmpeg Vulkan device context with the appropriate queues,
-    * features, and extensions required for hardware-accelerated decoding.
-    */
+     * @brief Initialize FFmpeg Vulkan device context
+     *
+     * Sets up the FFmpeg Vulkan device context with the appropriate queues,
+     * features, and extensions required for hardware-accelerated decoding.
+     */
     void ffmpeg_init_device() {
-        this->device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
-        auto hwdev_ctx = reinterpret_cast<AVHWDeviceContext*>(device_ctx->data);
+        this->device_ctx      = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VULKAN);
+        auto hwdev_ctx        = reinterpret_cast<AVHWDeviceContext*>(device_ctx->data);
         auto vulkan_hwdev_ctx = reinterpret_cast<AVVulkanDeviceContext*>(hwdev_ctx->hwctx);
 
         // Configure Vulkan device context
-        vulkan_hwdev_ctx->inst = dp->vk_instance;
-        vulkan_hwdev_ctx->phys_dev = dp->vk_physical_device;
-        vulkan_hwdev_ctx->act_dev = dp->vk_device;
+        vulkan_hwdev_ctx->inst            = dp->vk_instance;
+        vulkan_hwdev_ctx->phys_dev        = dp->vk_physical_device;
+        vulkan_hwdev_ctx->act_dev         = dp->vk_device;
         vulkan_hwdev_ctx->device_features = dp->features;
 
         // Set up queue families
         for (auto& queue : dp->queues) {
             switch (queue.first) {
             case vulkan::queue::GRAPHICS:
-                vulkan_hwdev_ctx->queue_family_index = queue.second.family;
-                vulkan_hwdev_ctx->nb_graphics_queues = 1;
+                vulkan_hwdev_ctx->queue_family_index    = queue.second.family;
+                vulkan_hwdev_ctx->nb_graphics_queues    = 1;
                 vulkan_hwdev_ctx->queue_family_tx_index = queue.second.family;
-                vulkan_hwdev_ctx->nb_tx_queues = 1;
+                vulkan_hwdev_ctx->nb_tx_queues          = 1;
                 break;
             case vulkan::queue::COMPUTE:
                 vulkan_hwdev_ctx->queue_family_comp_index = queue.second.family;
-                vulkan_hwdev_ctx->nb_comp_queues = 1;
+                vulkan_hwdev_ctx->nb_comp_queues          = 1;
             default:
                 break;
             }
@@ -884,24 +883,24 @@ private:
         // Configure dedicated transfer queue if available
         if (dp->queues.find(vulkan::queue::DEDICATED_TRANSFER) != dp->queues.end()) {
             vulkan_hwdev_ctx->queue_family_tx_index = dp->queues[vulkan::queue::DEDICATED_TRANSFER].family;
-            vulkan_hwdev_ctx->nb_tx_queues = 1;
+            vulkan_hwdev_ctx->nb_tx_queues          = 1;
         }
 
         // Vulkan Video not used in this implementation
-        vulkan_hwdev_ctx->nb_encode_queues = 0;
-        vulkan_hwdev_ctx->nb_decode_queues = 0;
+        vulkan_hwdev_ctx->nb_encode_queues          = 0;
+        vulkan_hwdev_ctx->nb_decode_queues          = 0;
         vulkan_hwdev_ctx->queue_family_encode_index = -1;
         vulkan_hwdev_ctx->queue_family_decode_index = -1;
 
         // Set up extensions and callbacks
-        vulkan_hwdev_ctx->alloc = nullptr;
-        vulkan_hwdev_ctx->get_proc_addr = vkGetInstanceProcAddr;
-        vulkan_hwdev_ctx->enabled_inst_extensions = dp->enabled_instance_extensions.data();
+        vulkan_hwdev_ctx->alloc                      = nullptr;
+        vulkan_hwdev_ctx->get_proc_addr              = vkGetInstanceProcAddr;
+        vulkan_hwdev_ctx->enabled_inst_extensions    = dp->enabled_instance_extensions.data();
         vulkan_hwdev_ctx->nb_enabled_inst_extensions = dp->enabled_instance_extensions.size();
-        vulkan_hwdev_ctx->enabled_dev_extensions = dp->enabled_device_extensions.data();
-        vulkan_hwdev_ctx->nb_enabled_dev_extensions = dp->enabled_device_extensions.size();
-        vulkan_hwdev_ctx->lock_queue = &ffmpeg_lock_queue;
-        vulkan_hwdev_ctx->unlock_queue = &ffmpeg_unlock_queue;
+        vulkan_hwdev_ctx->enabled_dev_extensions     = dp->enabled_device_extensions.data();
+        vulkan_hwdev_ctx->nb_enabled_dev_extensions  = dp->enabled_device_extensions.size();
+        vulkan_hwdev_ctx->lock_queue                 = &ffmpeg_lock_queue;
+        vulkan_hwdev_ctx->unlock_queue               = &ffmpeg_unlock_queue;
 
         AV_ASSERT_SUCCESS(av_hwdevice_ctx_init(device_ctx));
         log->info("FFmpeg Vulkan hwdevice context initialized");
@@ -909,7 +908,7 @@ private:
 
     /**
      * @brief Initialize FFmpeg CUDA device context
-     * 
+     *
      * Creates and initializes the CUDA hardware device context for FFmpeg.
      */
     void ffmpeg_init_cuda_device() {
@@ -923,7 +922,7 @@ private:
 
     /**
      * @brief Initialize FFmpeg frame context for Vulkan
-     * 
+     *
      * Sets up the frame context for Vulkan image handling, configuring
      * the pixel format and dimensions based on the buffer pool settings.
      */
@@ -934,18 +933,18 @@ private:
             throw std::runtime_error{"Failed to create FFmpeg Vulkan hwframe context"};
         }
 
-        auto hwframe_ctx = reinterpret_cast<AVHWFramesContext*>(frame_ctx->data);
+        auto hwframe_ctx    = reinterpret_cast<AVHWFramesContext*>(frame_ctx->data);
         hwframe_ctx->format = AV_PIX_FMT_VULKAN;
         auto pix_format = vulkan::ffmpeg_utils::get_pix_format_from_vk_format(buffer_pool->image_pool[0][0].image_info.format);
         if (!pix_format) {
             throw std::runtime_error{"Unsupported Vulkan image format when creating FFmpeg Vulkan hwframe context"};
         }
         assert(pix_format == AV_PIX_FMT_BGRA);
-        hwframe_ctx->sw_format = AV_PIX_FMT_BGRA;
-        hwframe_ctx->width = buffer_pool->image_pool[0][0].image_info.extent.width;
-        hwframe_ctx->height = buffer_pool->image_pool[0][0].image_info.extent.height;
+        hwframe_ctx->sw_format         = AV_PIX_FMT_BGRA;
+        hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
+        hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
         hwframe_ctx->initial_pool_size = 0;
-        auto ret = av_hwframe_ctx_init(frame_ctx);
+        auto ret                       = av_hwframe_ctx_init(frame_ctx);
         AV_ASSERT_SUCCESS(ret);
     }
 
@@ -959,13 +958,13 @@ private:
         if (!cuda_frame_ref) {
             throw std::runtime_error{"Failed to create FFmpeg CUDA hwframe context"};
         }
-        auto cuda_hwframe_ctx = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
-        cuda_hwframe_ctx->format = AV_PIX_FMT_CUDA;
-        cuda_hwframe_ctx->sw_format = fmt;
-        cuda_hwframe_ctx->width = buffer_pool->image_pool[0][0].image_info.extent.width;
-        cuda_hwframe_ctx->height = buffer_pool->image_pool[0][0].image_info.extent.height;
+        auto cuda_hwframe_ctx               = reinterpret_cast<AVHWFramesContext*>(cuda_frame_ref->data);
+        cuda_hwframe_ctx->format            = AV_PIX_FMT_CUDA;
+        cuda_hwframe_ctx->sw_format         = fmt;
+        cuda_hwframe_ctx->width             = buffer_pool->image_pool[0][0].image_info.extent.width;
+        cuda_hwframe_ctx->height            = buffer_pool->image_pool[0][0].image_info.extent.height;
         cuda_hwframe_ctx->initial_pool_size = 0;
-        auto ret = av_hwframe_ctx_init(cuda_frame_ref);
+        auto ret                            = av_hwframe_ctx_init(cuda_frame_ref);
         AV_ASSERT_SUCCESS(ret);
         return cuda_frame_ref;
     }
@@ -981,7 +980,7 @@ private:
 
     /**
      * @brief Initialize FFmpeg buffer pool and frame resources
-     * 
+     *
      * Sets up the buffer pool for both color and depth frames, including:
      * - AVVkFrame creation and configuration
      * - AVFrame allocation and setup
@@ -1003,19 +1002,17 @@ private:
                 if (!vk_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                 }
-                vk_frame->img[0] = buffer_pool->image_pool[i][eye].image;
-                vk_frame->tiling = buffer_pool->image_pool[i][eye].image_info.tiling;
-                vk_frame->mem[0] = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
-                vk_frame->size[0] = buffer_pool->image_pool[i][eye].allocation_info.size;
-                vk_frame->offset[0] = buffer_pool->image_pool[i][eye].allocation_info.offset;
+                vk_frame->img[0]          = buffer_pool->image_pool[i][eye].image;
+                vk_frame->tiling          = buffer_pool->image_pool[i][eye].image_info.tiling;
+                vk_frame->mem[0]          = buffer_pool->image_pool[i][eye].allocation_info.deviceMemory;
+                vk_frame->size[0]         = buffer_pool->image_pool[i][eye].allocation_info.size;
+                vk_frame->offset[0]       = buffer_pool->image_pool[i][eye].allocation_info.offset;
                 vk_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                 // Create timeline semaphore for synchronization
                 VkExportSemaphoreCreateInfo export_semaphore_create_info{
-                    VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, 
-                    VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT
-                };
-                vk_frame->sem[0] = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
+                    VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO, nullptr, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT};
+                vk_frame->sem[0]       = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
                 vk_frame->sem_value[0] = 0;
 
                 avvk_color_frames[i][eye].vk_frame = vk_frame;
@@ -1025,13 +1022,14 @@ private:
                 if (!av_frame) {
                     throw std::runtime_error{"Failed to allocate FFmpeg frame"};
                 }
-                av_frame->format = AV_PIX_FMT_VULKAN;
-                av_frame->width = buffer_pool->image_pool[i][eye].image_info.extent.width;
-                av_frame->height = buffer_pool->image_pool[i][eye].image_info.extent.height;
+                av_frame->format        = AV_PIX_FMT_VULKAN;
+                av_frame->width         = buffer_pool->image_pool[i][eye].image_info.extent.width;
+                av_frame->height        = buffer_pool->image_pool[i][eye].image_info.extent.height;
                 av_frame->hw_frames_ctx = av_buffer_ref(frame_ctx);
-                av_frame->data[0] = reinterpret_cast<uint8_t*>(vk_frame);
-                av_frame->buf[0] = av_buffer_create(av_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
-                av_frame->pts = 0;
+                av_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_frame);
+                av_frame->buf[0]        = av_buffer_create(
+                           av_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
+                av_frame->pts                   = 0;
                 avvk_color_frames[i][eye].frame = av_frame;
 
                 // Create and configure depth frames if enabled
@@ -1040,11 +1038,11 @@ private:
                     if (!vk_depth_frame) {
                         throw std::runtime_error{"Failed to allocate FFmpeg Vulkan frame"};
                     }
-                    vk_depth_frame->img[0] = buffer_pool->depth_image_pool[i][eye].image;
-                    vk_depth_frame->tiling = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
-                    vk_depth_frame->mem[0] = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
-                    vk_depth_frame->size[0] = buffer_pool->depth_image_pool[i][eye].allocation_info.size;
-                    vk_depth_frame->offset[0] = buffer_pool->depth_image_pool[i][eye].allocation_info.offset;
+                    vk_depth_frame->img[0]          = buffer_pool->depth_image_pool[i][eye].image;
+                    vk_depth_frame->tiling          = buffer_pool->depth_image_pool[i][eye].image_info.tiling;
+                    vk_depth_frame->mem[0]          = buffer_pool->depth_image_pool[i][eye].allocation_info.deviceMemory;
+                    vk_depth_frame->size[0]         = buffer_pool->depth_image_pool[i][eye].allocation_info.size;
+                    vk_depth_frame->offset[0]       = buffer_pool->depth_image_pool[i][eye].allocation_info.offset;
                     vk_depth_frame->queue_family[0] = dp->queues[vulkan::queue::GRAPHICS].family;
 
                     vk_depth_frame->sem[0] = vulkan::create_timeline_semaphore(dp->vk_device, 0, &export_semaphore_create_info);
@@ -1056,13 +1054,14 @@ private:
                     if (!av_depth_frame) {
                         throw std::runtime_error{"Failed to allocate FFmpeg frame"};
                     }
-                    av_depth_frame->format = AV_PIX_FMT_VULKAN;
-                    av_depth_frame->width = buffer_pool->depth_image_pool[i][eye].image_info.extent.width;
-                    av_depth_frame->height = buffer_pool->depth_image_pool[i][eye].image_info.extent.height;
+                    av_depth_frame->format        = AV_PIX_FMT_VULKAN;
+                    av_depth_frame->width         = buffer_pool->depth_image_pool[i][eye].image_info.extent.width;
+                    av_depth_frame->height        = buffer_pool->depth_image_pool[i][eye].image_info.extent.height;
                     av_depth_frame->hw_frames_ctx = av_buffer_ref(frame_ctx);
-                    av_depth_frame->data[0] = reinterpret_cast<uint8_t*>(vk_depth_frame);
-                    av_depth_frame->buf[0] = av_buffer_create(av_depth_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
-                    av_depth_frame->pts = 0;
+                    av_depth_frame->data[0]       = reinterpret_cast<uint8_t*>(vk_depth_frame);
+                    av_depth_frame->buf[0]        = av_buffer_create(
+                               av_depth_frame->data[0], 0, [](void*, uint8_t*) {}, nullptr, 0);
+                    av_depth_frame->pts             = 0;
                     avvk_depth_frames[i][eye].frame = av_depth_frame;
                 }
             }
@@ -1071,45 +1070,45 @@ private:
         // Initialize decode frames
         for (size_t eye = 0; eye < 2; eye++) {
             // Initialize color decode frames
-            decode_out_color_frames[eye] = av_frame_alloc();
-            decode_out_color_frames[eye]->format = AV_PIX_FMT_CUDA;
+            decode_out_color_frames[eye]                = av_frame_alloc();
+            decode_out_color_frames[eye]->format        = AV_PIX_FMT_CUDA;
             decode_out_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
-            decode_out_color_frames[eye]->width = buffer_pool->image_pool[0][0].image_info.extent.width;
-            decode_out_color_frames[eye]->height = buffer_pool->image_pool[0][0].image_info.extent.height;
+            decode_out_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+            decode_out_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
             auto ret = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_color_frames[eye], 0);
-            decode_out_color_frames[eye]->color_range = AVCOL_RANGE_JPEG;
-            decode_out_color_frames[eye]->colorspace = AVCOL_SPC_BT709;
-            decode_out_color_frames[eye]->color_trc = AVCOL_TRC_BT709;
+            decode_out_color_frames[eye]->color_range     = AVCOL_RANGE_JPEG;
+            decode_out_color_frames[eye]->colorspace      = AVCOL_SPC_BT709;
+            decode_out_color_frames[eye]->color_trc       = AVCOL_TRC_BT709;
             decode_out_color_frames[eye]->color_primaries = AVCOL_PRI_BT709;
             AV_ASSERT_SUCCESS(ret);
 
             // Initialize color conversion frames
-            decode_converted_color_frames[eye] = av_frame_alloc();
-            decode_converted_color_frames[eye]->format = AV_PIX_FMT_CUDA;
+            decode_converted_color_frames[eye]                = av_frame_alloc();
+            decode_converted_color_frames[eye]->format        = AV_PIX_FMT_CUDA;
             decode_converted_color_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_bgra_frame_ctx);
-            decode_converted_color_frames[eye]->width = buffer_pool->image_pool[0][0].image_info.extent.width;
-            decode_converted_color_frames[eye]->height = buffer_pool->image_pool[0][0].image_info.extent.height;
+            decode_converted_color_frames[eye]->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+            decode_converted_color_frames[eye]->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
             ret = av_hwframe_get_buffer(cuda_bgra_frame_ctx, decode_converted_color_frames[eye], 0);
             AV_ASSERT_SUCCESS(ret);
 
             // Initialize depth frames if enabled
             if (use_depth) {
-                decode_out_depth_frames[eye] = av_frame_alloc();
-                decode_out_depth_frames[eye]->format = AV_PIX_FMT_CUDA;
-                decode_out_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
-                decode_out_depth_frames[eye]->width = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
-                decode_out_depth_frames[eye]->height = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
-                decode_out_depth_frames[eye]->color_range = AVCOL_RANGE_JPEG;
-                decode_out_depth_frames[eye]->colorspace = AVCOL_SPC_BT709;
-                decode_out_depth_frames[eye]->color_trc = AVCOL_TRC_BT709;
+                decode_out_depth_frames[eye]                  = av_frame_alloc();
+                decode_out_depth_frames[eye]->format          = AV_PIX_FMT_CUDA;
+                decode_out_depth_frames[eye]->hw_frames_ctx   = av_buffer_ref(cuda_nv12_frame_ctx);
+                decode_out_depth_frames[eye]->width           = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
+                decode_out_depth_frames[eye]->height          = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
+                decode_out_depth_frames[eye]->color_range     = AVCOL_RANGE_JPEG;
+                decode_out_depth_frames[eye]->colorspace      = AVCOL_SPC_BT709;
+                decode_out_depth_frames[eye]->color_trc       = AVCOL_TRC_BT709;
                 decode_out_depth_frames[eye]->color_primaries = AVCOL_PRI_BT709;
                 ret = av_hwframe_get_buffer(cuda_nv12_frame_ctx, decode_out_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
 
-                decode_converted_depth_frames[eye] = av_frame_alloc();
-                decode_converted_depth_frames[eye]->format = AV_PIX_FMT_CUDA;
+                decode_converted_depth_frames[eye]                = av_frame_alloc();
+                decode_converted_depth_frames[eye]->format        = AV_PIX_FMT_CUDA;
                 decode_converted_depth_frames[eye]->hw_frames_ctx = av_buffer_ref(cuda_bgra_frame_ctx);
-                decode_converted_depth_frames[eye]->width = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
+                decode_converted_depth_frames[eye]->width         = buffer_pool->depth_image_pool[0][0].image_info.extent.width;
                 decode_converted_depth_frames[eye]->height = buffer_pool->depth_image_pool[0][0].image_info.extent.height;
                 ret = av_hwframe_get_buffer(cuda_bgra_frame_ctx, decode_converted_depth_frames[eye], 0);
                 AV_ASSERT_SUCCESS(ret);
@@ -1118,16 +1117,16 @@ private:
 
         // Allocate NPP buffers for color space conversion
         yuv420_u_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width / 2,
-                                         buffer_pool->image_pool[0][0].image_info.extent.height / 2, &u_step);
+                                          buffer_pool->image_pool[0][0].image_info.extent.height / 2, &u_step);
         yuv420_v_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width / 2,
-                                         buffer_pool->image_pool[0][0].image_info.extent.height / 2, &v_step);
+                                          buffer_pool->image_pool[0][0].image_info.extent.height / 2, &v_step);
         yuv420_y_plane = nppiMalloc_8u_C1(buffer_pool->image_pool[0][0].image_info.extent.width,
-                                         buffer_pool->image_pool[0][0].image_info.extent.height, &y_step);
+                                          buffer_pool->image_pool[0][0].image_info.extent.height, &y_step);
     }
 
     /**
      * @brief Initialize FFmpeg decoder
-     * 
+     *
      * Sets up the HEVC decoder with CUDA hardware acceleration for both color
      * and depth frames (if enabled). Configures decoder parameters for optimal
      * low-latency decoding.
@@ -1145,19 +1144,19 @@ private:
         }
 
         // Configure decoder parameters
-        codec_color_ctx->thread_count = 0; // auto
-        codec_color_ctx->thread_type = FF_THREAD_SLICE;
-        codec_color_ctx->pix_fmt = AV_PIX_FMT_CUDA;
-        codec_color_ctx->sw_pix_fmt = AV_PIX_FMT_NV12;
+        codec_color_ctx->thread_count  = 0; // auto
+        codec_color_ctx->thread_type   = FF_THREAD_SLICE;
+        codec_color_ctx->pix_fmt       = AV_PIX_FMT_CUDA;
+        codec_color_ctx->sw_pix_fmt    = AV_PIX_FMT_NV12;
         codec_color_ctx->hw_device_ctx = av_buffer_ref(cuda_device_ctx);
         codec_color_ctx->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
-        codec_color_ctx->width = buffer_pool->image_pool[0][0].image_info.extent.width;
-        codec_color_ctx->height = buffer_pool->image_pool[0][0].image_info.extent.height;
-        codec_color_ctx->framerate = {0, 1};
+        codec_color_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+        codec_color_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+        codec_color_ctx->framerate     = {0, 1};
         codec_color_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
-        codec_color_ctx->color_range = AVCOL_RANGE_JPEG;
-        codec_color_ctx->colorspace = AVCOL_SPC_BT709;
-        codec_color_ctx->color_trc = AVCOL_TRC_BT709;
+        codec_color_ctx->color_range     = AVCOL_RANGE_JPEG;
+        codec_color_ctx->colorspace      = AVCOL_SPC_BT709;
+        codec_color_ctx->color_trc       = AVCOL_TRC_BT709;
         codec_color_ctx->color_primaries = AVCOL_PRI_BT709;
 
         // Set zero latency mode
@@ -1176,19 +1175,19 @@ private:
             }
 
             // Configure depth decoder parameters (same as color)
-            codec_depth_ctx->thread_count = 0;
-            codec_depth_ctx->thread_type = FF_THREAD_SLICE;
-            codec_depth_ctx->pix_fmt = AV_PIX_FMT_CUDA;
-            codec_depth_ctx->sw_pix_fmt = AV_PIX_FMT_NV12;
+            codec_depth_ctx->thread_count  = 0;
+            codec_depth_ctx->thread_type   = FF_THREAD_SLICE;
+            codec_depth_ctx->pix_fmt       = AV_PIX_FMT_CUDA;
+            codec_depth_ctx->sw_pix_fmt    = AV_PIX_FMT_NV12;
             codec_depth_ctx->hw_device_ctx = av_buffer_ref(cuda_device_ctx);
             codec_depth_ctx->hw_frames_ctx = av_buffer_ref(cuda_nv12_frame_ctx);
-            codec_depth_ctx->width = buffer_pool->image_pool[0][0].image_info.extent.width;
-            codec_depth_ctx->height = buffer_pool->image_pool[0][0].image_info.extent.height;
-            codec_depth_ctx->framerate = {0, 1};
+            codec_depth_ctx->width         = buffer_pool->image_pool[0][0].image_info.extent.width;
+            codec_depth_ctx->height        = buffer_pool->image_pool[0][0].image_info.extent.height;
+            codec_depth_ctx->framerate     = {0, 1};
             codec_depth_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
-            codec_depth_ctx->color_range = AVCOL_RANGE_JPEG;
-            codec_depth_ctx->colorspace = AVCOL_SPC_BT709;
-            codec_depth_ctx->color_trc = AVCOL_TRC_BT709;
+            codec_depth_ctx->color_range     = AVCOL_RANGE_JPEG;
+            codec_depth_ctx->colorspace      = AVCOL_SPC_BT709;
+            codec_depth_ctx->color_trc       = AVCOL_TRC_BT709;
             codec_depth_ctx->color_primaries = AVCOL_PRI_BT709;
 
             av_opt_set_int(codec_depth_ctx->priv_data, "zerolatency", 1, 0);
@@ -1208,7 +1207,7 @@ private:
 /**
  * @class offload_rendering_client_loader
  * @brief Plugin loader for the offload rendering client
- * 
+ *
  * Handles plugin registration and Vulkan extension requirements.
  */
 class offload_rendering_client_loader
@@ -1231,11 +1230,8 @@ public:
      * @return Vector of required extension names
      */
     std::vector<const char*> get_required_instance_extensions() override {
-        return {
-            VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
-            VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
-        };
+        return {VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
+                VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
     }
 
     /**
@@ -1243,13 +1239,9 @@ public:
      * @return Vector of required extension names
      */
     std::vector<const char*> get_required_devices_extensions() override {
-        return {
-            VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
-            VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
-            VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME
-        };
+        return {VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
+                VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME, VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
+                VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME};
     }
 
     /**
