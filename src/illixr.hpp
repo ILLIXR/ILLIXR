@@ -12,7 +12,7 @@
 #define GET_STRING(NAME, ENV)                                \
     if (options.count(#NAME)) {                              \
         sb->set_env(#ENV, options[#NAME].as<std::string>()); \
-    } else if (config[#NAME]) {                              \
+    } else if (config["env_vars"][#NAME]) {                              \
         sb->set_env(#ENV, config[#NAME].as<std::string>());  \
     }
 
@@ -22,7 +22,7 @@
         if (options.count(#NAME)) {              \
             val = options[#NAME].as<bool>();     \
         } else {                                 \
-            val = config[#NAME].as<bool>();      \
+            val = config["env_vars"][#NAME].as<bool>();      \
         }                                        \
         if (val) {                               \
             sb->set_env(#ENV, "True");           \
@@ -35,7 +35,7 @@
 #define GET_LONG(NAME, ENV)                                           \
     if (options.count(#NAME)) {                                       \
         sb->set_env(#ENV, std::to_string(options[#NAME].as<long>())); \
-    } else if (config[#NAME]) {                                       \
+    } else if (config["env_vars"][#NAME]) {                                       \
         sb->set_env(#ENV, std::to_string(config[#NAME].as<long>()));  \
     }
 

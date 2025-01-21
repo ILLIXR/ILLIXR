@@ -179,7 +179,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         }
 
         // set env vars from config file first, as command line args will override
-        for (const auto& item : config) {
+        for (const auto& item : config["env_vars"]) {
             const auto val = item.first.as<std::string>();
             if (std::find(ignore_vars.begin(), ignore_vars.end(), val) == ignore_vars.end())
                 sb->set_env(val, item.second.as<std::string>());
@@ -213,7 +213,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         if (options.count("duration")) {
             run_duration = std::chrono::seconds{options["duration"].as<long>()};
-        } else if (config["duration"]) {
+        } else if (config["env_vars"]["duration"]) {
             run_duration = std::chrono::seconds{config["duration"].as<long>()};
         } else {
             run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
