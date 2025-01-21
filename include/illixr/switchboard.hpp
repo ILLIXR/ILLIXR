@@ -23,45 +23,11 @@ namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
 
-const std::vector<std::string> ignore_vars = {
-    "plugins",         "data", "demo_data", "install_prefix", "enable_offload", "enable_alignment", "enable_verbose_errors",
-    "enable_pre_sleep"};
-const std::vector<std::string> ENV_VARS = {"DEBUGVIEW_LOG_LEVEL",
-                                           "DEPTHAI_LOG_LEVEL",
-                                           "FAUXPOSE_AMPLITUDE",
-                                           "FAUXPOSE_CENTER",
-                                           "FAUXPOSE_PERIOD",
-                                           "GLDEMO_LOG_LEVEL",
-                                           "GROUND_TRUTH_SLAM_LOG_LEVEL",
-                                           "GTSAM_INTEGRATOR_LOG_LEVEL",
-                                           "HT_INPUT",
-                                           "HT_INPUT_TYPE",
-                                           "ILLIXR_ALIGNMENT_ENABLE",
-                                           "ILLIXR_ALIGNMENT_FILE",
-                                           "ILLIXR_BITRATE",
-                                           "ILLIXR_DATA",
-                                           "ILLIXR_DEMO_DATA",
-                                           "ILLIXR_ENABLE_PRE_SLEEP",
+const std::vector<std::string> ignore_vars = {"plugins"};
+const std::vector<std::string> ENV_VARS = {"ILLIXR_ENABLE_PRE_SLEEP",
                                            "ILLIXR_LOG_LEVEL",
-                                           "ILLIXR_OFFLOAD_ENABLE",
-                                           "ILLIXR_OFFLOAD_PATH",
                                            "ILLIXR_RUN_DURATION",
-                                           "ILLIXR_TIMEWARP_DISABLE",
-                                           "INPUT_VIDEO",
-                                           "NATIVE_RENDERER_LOG_LEVEL",
-                                           "OFFLINE_CAM_LOG_LEVEL",
-                                           "OFFLOAD_DATA_LOG_LEVEL",
-                                           "OFFLOAD_VIO_LOG_LEVEL",
-                                           "OPENNI_LOG_LEVEL",
-                                           "REALSENSE_CAM",
-                                           "REALSENSE_LOG_LEVEL",
-                                           "TIMEWARP_GL_LOG_LEVEL",
-                                           "ILLIXR_STDOUT_METRICS",
-                                           "ILLIXR_ENABLE_VERBOSE_ERRORS",
-                                           "USE_WCS",
-                                           "WCS_ORIGIN",
-                                           "ZED_RESOLUTION",
-                                           "ZED_DEPTH_TYPE"};
+                                           };
 
 /**
  * @Should be private to Switchboard.
