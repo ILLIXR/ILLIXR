@@ -1,6 +1,6 @@
 #include "illixr/data_format.hpp"
 #include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
@@ -19,11 +19,11 @@ public:
         , _m_vio_pose_reader{sb->get_buffered_reader<switchboard::event_wrapper<std::string>>("vio_pose")}
         , _m_pose{sb->get_writer<pose_type>("slow_pose")}
         , _m_imu_integrator_input{sb->get_writer<imu_integrator_input>("imu_integrator_input")} {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
-        pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
-        switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
-        _m_pose.put(std::move(datum_pose));
-    }
+            spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+            pose_type                   datum_pose_tmp{time_point{}, Eigen::Vector3f{0, 0, 0}, Eigen::Quaternionf{1, 0, 0, 0}};
+            switchboard::ptr<pose_type> datum_pose = _m_pose.allocate<pose_type>(std::move(datum_pose_tmp));
+            _m_pose.put(std::move(datum_pose));
+        }
 
     skip_option _p_should_skip() override {
         return skip_option::run;

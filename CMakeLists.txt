@@ -203,8 +203,11 @@ find_package(Eigen3 REQUIRED)
 #############
 
 find_package(Git REQUIRED)
-
-find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+if (CMAKE_VERSION VERSION_LESS "3.30.0")
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+else()
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization CONFIG)
+endif()
 
 find_package(spdlog REQUIRED)
 
@@ -264,15 +267,35 @@ include(cmake/ConfigurationSummary.cmake)
 # set up to install profile files
 if(ILLIXR_PROFILE_NAMES)
     foreach(GRP IN LISTS ILLIXR_PROFILE_NAMES)
-        install(FILES "profiles/${GRP}.yaml"
+        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
                 DESTINATION $ENV{HOME}/.illixr/profiles)
-        install(FILES "profiles/${GRP}.yaml"
+        install(FILES "${CMAKE_SOURCE_DIR}/profiles/${GRP}.yaml"
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
     endforeach()
 endif()
 
 # reset this, so it is clean for subsequent runs of cmake
 set(VISUALIZER "" CACHE STRING "")
+
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_FOUND)
+    add_custom_target(depmaker ALL
+                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    if(USE_AUDIO_PIPELINE)
+        add_dependencies(depmaker "Audio_Pipeline")
+    endif()
+    if(USE_OPENVINS)
+        add_dependencies(depmaker "OpenVINS")
+    endif()
+
+endif()
+install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+        DESTINATION $ENV{HOME}/.illixr/profiles)
+install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/illixr/profiles)
 
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})

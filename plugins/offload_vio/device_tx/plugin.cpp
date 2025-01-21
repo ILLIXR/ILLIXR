@@ -1,7 +1,4 @@
 #include "illixr/data_format.hpp"
-#include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
-#include "illixr/network/timestamp.hpp"
 #include "illixr/network/topic_config.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"

@@ -1,7 +1,5 @@
 #include "illixr/data_format.hpp"
-#include "illixr/network/net_config.hpp"
-#include "illixr/network/socket.hpp"
-#include "illixr/network/timestamp.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -37,8 +35,8 @@ public:
         , _m_imu_cam_reader{sb->get_buffered_reader<switchboard::event_wrapper<std::string>>("compressed_imu_cam")}
         , buffer_str("")
         , log(spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"))) {
-        log->info("Camera Time,Uplink Time(ms)");
-    }
+            log->info("Camera Time,Uplink Time(ms)");
+        }
 
     virtual skip_option _p_should_skip() override {
         return skip_option::run;
@@ -58,10 +56,6 @@ public:
                 ReceiveVioInput(vio_input);
             }
         }
-    }
-
-    ~server_reader() {
-        delete read_socket;
     }
 
     void start() override {
@@ -156,9 +150,6 @@ private:
     switchboard::writer<cam_type>                                         _m_cam;
     switchboard::buffered_reader<switchboard::event_wrapper<std::string>> _m_imu_cam_reader;
 
-    TCPSocket   socket;
-    TCPSocket*  read_socket = NULL;
-    Address     server_addr;
     std::string buffer_str;
     std::string delimitter = "EEND!";
 };
