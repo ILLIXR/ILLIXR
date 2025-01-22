@@ -74,9 +74,17 @@ Use the following to install the dependencies for the selected plugins:
 
 #### Build command
 
-Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`. 
-If you want the default install path then do not add the option to the command line. 
+Use the following to build and install ILLIXR. You can specify the install location by giving the path to `CMAKE_INSTALL_PREFIX`.
+If you want the default install path then do not add the option to the command line.
 Note that if your install prefix requires sudo privileges then you will need to run both the build and install under sudo (this is due to the way cmake builds and installs some of the pre-packaged dependencies during the build phase).
+
+Some ILLIXR plugins rely on code that falls under the <a href="https://opensource.org/license/gpl-3-0">GNU General Public License (GPL) v3.0</a>
+or <a href="https://opensource.org/license/lgpl-2-1">GNU Lesser General Public License (LGPL) v2.1</a>. If you do not wish to build
+these codes you can select to exclude them below (or add `-DNO_GPL=ON` or `-DNO_LGPL=ON` to your cmake command line, NO_LGPL=ON implies
+the same for NO_GPL).
+
+<input type="checkbox" onclick="updateGPL();" id="no_gpl">No GPL code<br>
+<input type="checkbox" onclick="updateLGPL();" id="no_lgpl">No LGPL code
 
 <div id="cmake" class="code-box-copy">
     <button class="code-box-copy__btn" data-clipboard-target="#cmakeoutput" title="Copy"></button>
@@ -85,7 +93,7 @@ Note that if your install prefix requires sudo privileges then you will need to 
 
 Common CMake command line arguments (always prepend with a `-D`):
 
--  ***CMAKE_INSTALL_PREFIX*** 
+-  ***CMAKE_INSTALL_PREFIX***
    The root path to install the libraries and binary to. This defaults to `/usr/local`.
 -  ***CMAKE_BUILD_TYPE***
    The build type to do: Debug, Release, RelWithDebInfo
@@ -344,9 +352,29 @@ If you want to add your own plugin, see [Writing Your Plugin][11].
                 }
             }
         }
+        if(document.getElementById("no_gpl").checked) {
+            cmakeLine += " -DNO_GPL=ON";
+            if(document.getElementById("no_lgpl").checked) {
+                cmakeLine += " -DNO_LGPL=ON";
+            }
+        }
         cmakeLine += "\ncmake --build . -j4\ncmake --build . -t docs   # if you want to build the documentation\ncmake --install .";
         document.getElementById("cmake").innerHTML = makeCopyable(cmakeLine, "cmakeC");
         $('.code-box-copy').codeBoxCopy();
+    }
+
+    function updateGPL() {
+        if(!document.getElementById("no_gpl").checked) {
+            document.getElementById("no_lgpl").checked = false;
+        }
+        updateSudo();
+    }
+
+    function updateLGPL() {
+        if(document.getElementById("no_lgpl").checked) {
+            document.getElementById("no_gpl").checked = true;
+        }
+        updateSudo();
     }
 
     function updateOS(os_str) {
