@@ -16,6 +16,8 @@ if(NOT GTSAM_FOUND)
     set(GTSAM_EXTERNAL Yes)      # Mark that this module is being built
     set(GTSAM_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
     set(GTSAM_DEP_STR "GTSAM_EXT")   # Dependency string for other modules that depend on this one
+else()
+    set(GTSAM_VERSION ${GTSAM_VERSION} PARENT_SCOPE)
 endif()
 
 set(GTSAM_LIBRARIES gtsam;gtsam_unstable)
