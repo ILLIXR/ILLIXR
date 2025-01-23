@@ -82,6 +82,23 @@ set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vico
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(NO_GPL "Do not build any code licensed under GPL. This will affect any generated profile files as well." OFF)
+option(NO_LGPL "Do not build any code licensed under LGPL or GPL. This will affect any generated profile files as well." OFF)
+
+set(LAST_NO_GPL "$CACHE{NO_GPL_CACHE}")
+set(LAST_NO_LGPL "$CACHE{NO_LGPL_CACHE}")
+
+if(NO_LGPL)
+    set(NO_GPL ON)
+endif()
+string(LENGTH "${LAST_NO_GPL}" GPL_LEN)
+string(LENGTH "${LAST_NO_LGPL}" LGPL_LEN)
+if((GPL_LEN EQUAL 0) OR (LGPL_LEN EQUAL 0) OR (NOT NO_GPL STREQUAL LAST_NO_GPL) OR (NOT NO_LGPL STREQUAL LAST_NO_LGPL))
+    set(FORCE_REGEN ON)
+endif()
+
+set(NO_GPL_CACHE ${NO_GPL} CACHE INTERNAL "")
+set(NO_LGPL_CACHE ${NO_LGPL} CACHE INTERNAL "")
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")
