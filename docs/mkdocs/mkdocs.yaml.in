@@ -2,6 +2,9 @@ site_name: ILLIXR Docs
 theme: readthedocs
 site_dir: @MKDOCS_BUILD_DIR@
 site_url: https://illixr.github.io/ILLIXR/docs
+markdown_extensions:
+  - footnotes
+  - admonition
 extra_css:
     - css/code-box-copy.css
     - css/prism.min.css
@@ -16,6 +19,7 @@ nav:
         - 'Getting Started': getting_started.md
         - 'Using ILLIXR with Cameras': using_cameras.md
         - 'ILLIXR Debugging Tips': debugging_illixr.md
+        - 'ILLIXR Docker': docker.md
         - 'ILLIXR Under Virtualization': virtualization.md
         - 'ILLIXR Plugin Overview': illixr_plugins.md
         - 'Modifying a Plugin': modifying_a_plugin.md
