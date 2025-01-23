@@ -259,18 +259,18 @@ set(VISUALIZER "" CACHE STRING "")
 
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
-    set(dependencies "")
+    add_custom_target(depmaker ALL
+                      BYPRODUCTS "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
+                      COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
+                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
     if(USE_AUDIO_PIPELINE)
-        set(dependencies "audio_pipeline ")
+        add_dependencies(depmaker "Audio_Pipeline")
     endif()
     if(USE_OPENVINS)
-        set(dependencies "${dependencies} OpenVINS")
+        add_dependencies(depmaker "OpenVINS")
     endif()
-    add_custom_command(
-            OUTPUT "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
-            DEPENDS ${dependencies}
-            COMMAND ${CMAKE_SOURCE_DIR}/dep_mapper.py ${CMAKE_BINARY_DIR}
-    )
+
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/plugins/plugin_deps.yaml"
         DESTINATION $ENV{HOME}/.illixr/profiles)
