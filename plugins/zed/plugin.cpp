@@ -40,8 +40,8 @@ std::shared_ptr<zed_camera> zed_imu_thread::start_camera() {
     // Open the camera
     sl::ERROR_CODE err = zed_cam->open(init_params);
     if (err != sl::ERROR_CODE::SUCCESS) {
-        spdlog::get("illixr")->info("[zed] {}", toString(err).c_str());
-        zed_cam->close();
+        spdlog::get("illixr")->error("[zed] {}", toString(err).c_str());
+        throw std::runtime_error("ZED camera could not be initialized");
     }
     zed_cam->setCameraSettings(sl::VIDEO_SETTINGS::EXPOSURE, EXPOSURE_TIME_PERCENT);
     return zed_cam;
