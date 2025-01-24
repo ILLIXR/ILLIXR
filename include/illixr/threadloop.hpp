@@ -69,8 +69,9 @@ public:
      */
     void stop() override {
         assert(_m_stoplight->check_should_stop());
-        assert(_m_thread.joinable());
-        _m_thread.join();
+        // only join if it has been started
+        if (_m_thread.joinable())
+            _m_thread.join();
     }
 
     /**

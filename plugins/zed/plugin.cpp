@@ -64,7 +64,6 @@ zed_imu_thread::zed_imu_thread(const std::string& name_, phonebook* pb_)
     , rgb_depth_{switchboard_->get_writer<rgb_depth_type>("rgb_depth")}
     , cam_conf_pub_{switchboard_->get_writer<camera_data>("cam_data")}
     , it_log_{record_logger_} {
-    camera_thread_.start();
 }
 
 // destructor
@@ -73,6 +72,7 @@ zed_imu_thread::~zed_imu_thread() {
 }
 
 void zed_imu_thread::start() {
+    camera_thread_.start();
     threadloop::start();
     cam_conf_pub_.put(cam_conf_pub_.allocate<camera_data>(camera_data{zed_cam_->get_config()}));
 }
