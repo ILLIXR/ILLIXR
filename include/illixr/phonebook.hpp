@@ -6,11 +6,12 @@
 #include <shared_mutex>
 #include <typeindex>
 #include <unordered_map>
+#include <stdexcept>
+
 
 #ifndef NDEBUG
     #include <iostream>
     #include <spdlog/spdlog.h>
-    #include <stdexcept>
 #endif
 
 namespace ILLIXR {

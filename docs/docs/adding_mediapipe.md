@@ -1044,6 +1044,7 @@ public:
     ~MyPublisher() override;
     
     void set_poller(mediapipe::OutputStreamPoller* plr) {_poller = plr;}
+    void stop() override;
 protected:
     skip_option _p_should_skip() override;
     void _p_one_iterarion() override;
@@ -1102,15 +1103,11 @@ void MyInput::start() {
     // start the plugin
     plugin::start();
     // read the environment variable which holds the graph configuration file name
-    std::string calculator_graph_config_contents;
-    const char* cfile = std::getenv("CALCULATOR_CONFIG_FILE");
-
-    // read the config file
-    auto status = mediapipe::file::GetContents(cfile, &calculator_graph_config_contents);
-    if (!status.ok())
-        throw std::runtime_error("Failed to get config contents");
+    const std::string calculator_graph_config_contents =
+#include "mediapipe/hand_tracking_desktop_live.pbtxt"
+            ;  // NOLINT(whitespace/semicolon)
     auto config = mediapipe::ParseTextProtoOrDie<mediapipe::CalculatorGraphConfig>(calculator_graph_config_contents);
-
+    absl::Status status;
     // initialize the graph
     status = _graph.Initialize(config);
     if (!status.ok())
@@ -1138,12 +1135,59 @@ void MyInput::start() {
     // start the publisher thread
     _publisher.start();
 ```
+
+Note the way `calculator_graph_config_contents` is constructed. This takes the needed config file, which in mediapipe was specified as an environment variable, and changes it to be hard coded, as the plugin will have a specific purpose, it should not need to change. To be sure the included file is properly specified, the following will need to be done.
+
+1. edit the original config file to escape all existing quotation marks
+   ```
+   input_stream: "image_data"
+   ```
+
+   becomes
+
+   ```
+   input_stream: \"image_data\"
+   ```
+2. edit the original config file to enclose every line in quotation marks, adding a newline character to the end
+   ```
+   # mediapipe/examples/desktop/hand_tracking:hand_tracking_cpu.
+
+   # CPU image. (ImageFrame)
+   input_stream: \"input_video\"
+   input_stream: \"image_data\"
+   # CPU image. (ImageFrame)
+   output_stream: \"illixr_data\"
+   
+   ```
+   
+   becomes
+
+   ```
+   "# mediapipe/examples/desktop/hand_tracking:hand_tracking_cpu.\n"
+   "\n"
+   "# CPU image. (ImageFrame)\n"
+   "input_stream: \"input_video\"\n"
+   "input_stream: \"image_data\"\n"
+   "# CPU image. (ImageFrame)\n"
+   "output_stream: \"illixr_data\"\n"
+   "\n"
+   ```
+3. modify the `mediapipe/graphs/<pipeline>/build.cmake` to copy the file to the build directory
+   ```cmake
+   file(COPY ${CMAKE_CURRENT_LIST_DIR}/hand_tracking_desktop_live.pbtxt
+        DESTINATION ${CMAKE_BINARY_DIR}/mediapipe
+   )
+   ```
+
 * * *
 
-The `stop` function should also sop the publisher thread.
+The `stop` function should also stop the publisher thread.
 
 ```C++
 void MyInput::stop() {
+    // Close any open mediapipe::CalculatorGraph instances
+    // with CloseAllPacketSources();
+    // and delete if necessary
     _publisher.stop();
     plugin::stop();
 }
@@ -1185,10 +1229,19 @@ MyPublisher::MyPublisher(const std::string& name_ phonebook* pb_)
 Here `my_data` is the data type being written out and `data` is the name of the topic doing the writing.
 * * * 
 
+The stop function should clean up any poller instances
+``` C++
+void MyPublisher::stop() {
+    delete _poller;
+    _poller = nullptr;
+}
+```
+* * *
+
 The destructor should at least get rid of the poller.
 ```C++
 MyPublisher::~MyPublisher() {
-    delete _poller;
+    delete _poller;  // ok to delete even if nullptr
 }
 ```
 * * *
