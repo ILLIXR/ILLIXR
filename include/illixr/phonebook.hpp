@@ -4,10 +4,9 @@
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
+#include <stdexcept>
 #include <typeindex>
 #include <unordered_map>
-#include <stdexcept>
-
 
 #ifndef NDEBUG
     #include <iostream>

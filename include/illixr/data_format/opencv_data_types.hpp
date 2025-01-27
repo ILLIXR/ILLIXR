@@ -11,6 +11,7 @@
 namespace ILLIXR::data_format {
 namespace image {
     enum image_type { LEFT_EYE, RIGHT_EYE, RGB, DEPTH, LEFT_EYE_PROCESSED, RIGHT_EYE_PROCESSED, RGB_PROCESSED, CONFIDENCE };
+
     const std::map<image_type, const std::string> image_type_map = {{LEFT_EYE, "LEFT_EYE"},
                                                                     {RIGHT_EYE, "RIGHT_EYE"},
                                                                     {RGB, "RGB"},
@@ -19,7 +20,7 @@ namespace image {
                                                                     {RIGHT_EYE_PROCESSED, "RIGHT_EYE_PROCESSED"},
                                                                     {RGB_PROCESSED, "RGB_PROCESSED"},
                                                                     {CONFIDENCE, "CONFIDENCE"}};
-}
+} // namespace image
 
 namespace camera {
     enum cam_type { BINOCULAR, MONOCULAR, RGB_DEPTH, DEPTH, ZED };

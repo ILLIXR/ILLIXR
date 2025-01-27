@@ -14,6 +14,7 @@ class zed_camera_thread : public threadloop {
 public:
     zed_camera_thread(const std::string& name, phonebook* pb, std::shared_ptr<zed_camera> zed_cam);
     void stop() override;
+
 protected:
     skip_option _p_should_skip() override;
     void        _p_one_iteration() override;
