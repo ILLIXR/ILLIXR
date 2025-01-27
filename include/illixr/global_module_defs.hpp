@@ -67,18 +67,11 @@ struct rendering_params {
 inline bool str_to_bool(const std::string& var) {
     std::string temp = var;
     std::transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
+    if (temp.empty())
+        temp = "FALSE";
     return (temp == "TRUE") ? true
         : (temp == "FALSE") ? false
                             : throw std::runtime_error("Invalid conversion from std::string to bool");
-}
-
-/// Temporary environment variable getter. Not needed once #198 is merged.
-inline std::string getenv_or(const std::string& var, std::string default_) {
-    if (std::getenv(var.c_str())) {
-        return {std::getenv(var.c_str())};
-    } else {
-        return default_;
-    }
 }
 
 } // namespace ILLIXR

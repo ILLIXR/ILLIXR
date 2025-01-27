@@ -1,6 +1,6 @@
 #pragma once
 
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
 #include "illixr/record_logger.hpp"
 
 #include <chrono>

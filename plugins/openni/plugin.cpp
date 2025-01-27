@@ -1,4 +1,4 @@
-#include "illixr/opencv_data_types.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
@@ -13,6 +13,7 @@
 #define DEPTH_MODE 0
 
 using namespace ILLIXR;
+using namespace ILLIXR::data_format;
 
 class openni_plugin : public ILLIXR::threadloop {
 public:
@@ -21,7 +22,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} {
-        spdlogger(std::getenv("OPENNI_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OPENNI_LOG_LEVEL"));
         if (!camera_initialize()) {
             spdlog::get(name)->error("Initialization failed");
             exit(0);

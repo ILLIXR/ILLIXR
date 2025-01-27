@@ -194,6 +194,8 @@ The external libraries and softwares included in ILLIXR each have their own lice
 
 -   [moodycamel::ConcurrentQueue][31] \ [Simplified BSD License][32]
 
+-   [mediapipe][51] \ [Apache License 2.0][52]
+
 -   [Open-VINS][12] \ [GNU General Public License v3.0][13]
 
 -   [RITnet][16] \ [MIT License][17]
@@ -265,3 +267,5 @@ You can join
 [48]:   mailto:lists@lists.cs.illinois.edu?subject=sub%20illixr-community
 [49]:   mailto:illixr@cs.illinois.edu
 [50]:   https://illixr.org/open_meetings
+[51]:   https://github.com/google-ai-edge/mediapipe
+[52]:   https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE

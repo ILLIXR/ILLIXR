@@ -20,6 +20,7 @@ nav:
         - 'ILLIXR Plugin Overview': illixr_plugins.md
         - 'Modifying a Plugin': modifying_a_plugin.md
         - 'Writing Your Plugin': writing_your_plugin.md
+        - 'Mediapipe based plugins': adding_mediapipe.md
         - 'Plugin Details':
             - 'Debugview': plugin_README/README_debugview.md
             - 'Display_VK': plugin_README/README_display_vk.md

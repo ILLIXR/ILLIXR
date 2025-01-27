@@ -1,7 +1,7 @@
-#include "illixr/data_format.hpp"
+#include "illixr/data_format/misc.hpp"
+#include "illixr/data_format/opencv_data_types.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/tcpsocket.hpp"
-#include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/stoplight.hpp"
 #include "illixr/switchboard.hpp"
@@ -34,10 +34,10 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_stoplight{pb->lookup_impl<Stoplight>()}
-        , _m_cam{sb->get_buffered_reader<cam_type>("cam")}
+        , _m_cam{sb->get_buffered_reader<binocular_cam_type>("cam")}
         , server_ip(SERVER_IP)
         , server_port(SERVER_PORT_1) {
-        spdlogger(std::getenv("OFFLOAD_VIO_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OFFLOAD_VIO_LOG_LEVEL"));
         socket.socket_set_reuseaddr();
         socket.socket_bind(CLIENT_IP, CLIENT_PORT_1);
         socket.enable_no_delay();
@@ -134,13 +134,13 @@ public:
             send_imu_cam_data(latest_cam_time);
         }
 
-        switchboard::ptr<const cam_type> cam;
+        switchboard::ptr<const binocular_cam_type> cam;
 
         if (_m_cam.size() != 0 && !latest_cam_time) {
             cam = _m_cam.dequeue();
 
-            cv::Mat cam_img0 = (cam->img0).clone();
-            cv::Mat cam_img1 = (cam->img1).clone();
+            cv::Mat cam_img0 = (cam->at(image::LEFT)).clone();
+            cv::Mat cam_img1 = (cam->at(image::RIGHT)).clone();
 
             // size of img0 before compression
             double cam_img0_size = cam_img0.total() * cam_img0.elemSize();
@@ -198,15 +198,15 @@ public:
     }
 
 private:
-    std::unique_ptr<video_encoder>         encoder = nullptr;
-    std::optional<time_point>              latest_imu_time;
-    std::optional<time_point>              latest_cam_time;
-    int                                    frame_id    = 0;
-    vio_input_proto::IMUCamVec*            data_buffer = new vio_input_proto::IMUCamVec();
-    const std::shared_ptr<switchboard>     sb;
-    const std::shared_ptr<RelativeClock>   _m_clock;
-    const std::shared_ptr<Stoplight>       _m_stoplight;
-    switchboard::buffered_reader<cam_type> _m_cam;
+    std::unique_ptr<video_encoder>                   encoder = nullptr;
+    std::optional<time_point>                        latest_imu_time;
+    std::optional<time_point>                        latest_cam_time;
+    int                                              frame_id    = 0;
+    vio_input_proto::IMUCamVec*                      data_buffer = new vio_input_proto::IMUCamVec();
+    const std::shared_ptr<switchboard>               sb;
+    const std::shared_ptr<RelativeClock>             _m_clock;
+    const std::shared_ptr<Stoplight>                 _m_stoplight;
+    switchboard::buffered_reader<binocular_cam_type> _m_cam;
 
     TCPSocket   socket;
     std::string server_ip;

@@ -27,3 +27,7 @@ illixr_monado_*.sh
 openxr_launch.csh
 openxr_launch.sh
 
+
+scripts/__pycache__/
+
+profiles/all.yaml

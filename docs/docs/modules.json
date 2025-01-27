@@ -86,6 +86,31 @@
       ]
     },
     {
+      "name": "hand_tracking",
+      "cmake_flag": "USE_HAND_TRACKING=ON",
+      "dependencies": [
+        "git",
+        "libcpuinfo",
+        "libgles",
+        "fp16"
+      ]
+    },
+    {
+      "name": "hand_tracking.viewer",
+      "cmake_flag": "USE_HAND_TRACKING.VIEWER=ON",
+      "dependencies": [
+        "OpenCV",
+        "glfw3"
+      ]
+    },
+    {
+      "name": "webcam",
+      "cmake_flag": "WEBCAM=ON",
+      "dependencies": [
+        "OpenCV"
+      ]
+    },
+    {
       "name": "native_renderer",
       "cmake_flag": "USE_NATIVE_RENDERER=ON",
       "dependencies": [
@@ -316,6 +341,14 @@
         "OpenCV",
         "zed_SDK"
       ]
+    },
+    {
+      "name": "zed.data_injection",
+      "cmake_flag": "USE_ZED.DATA_INJECTION=ON",
+      "dependencies": [
+        "OpenCV",
+        "zed_SDK"
+      ]
     }
   ],
   "dependencies": [
@@ -430,6 +463,44 @@
         }
       }
     },
+    {
+      "fp16": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libfp16-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libfp16-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "Fedora": {
+            "37": {
+              "pkg": "FP16-devel",
+              "postnotes": "",
+              "notes": ""
+            },
+            "38": {
+              "pkg": "FP16-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          },
+          "CentOS": {
+            "9": {
+              "pkg": "FP16-devel",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        }
+      }
+    },
+
     {
       "gflags": {
         "pkg": {
@@ -763,6 +834,81 @@
         }
       }
     },
+    {
+      "libcpuinfo": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libcpuinfo-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libcpuinfo-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        },
+        "Fedora": {
+          "37": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          },
+          "38": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        },
+        "CentOS": {
+          "9": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+    {
+      "libgles": {
+        "pkg": {
+          "Ubuntu": {
+            "20": {
+              "pkg": "libgles-dev",
+              "postnotes": "",
+              "notes": ""
+            },
+            "22": {
+              "pkg": "libgles-dev",
+              "postnotes": "",
+              "notes": ""
+            }
+          }
+        },
+        "Fedora": {
+          "37": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          },
+          "38": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        },
+        "CentOS": {
+          "9": {
+            "pkg": "",
+            "postnotes": "",
+            "notes": ""
+          }
+        }
+      }
+    },
+
     {
       "libopenni2": {
         "pkg": {

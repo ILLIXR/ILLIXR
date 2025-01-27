@@ -1,23 +1,26 @@
 add_executable(main${ILLIXR_BUILD_SUFFIX}.exe
-        src/main.cpp
-        src/illixr.hpp
-        src/cxxopts.hpp
-        ../include/illixr/runtime.hpp
-        ../include/illixr/phonebook.hpp
-        )
+               src/main.cpp
+               src/illixr.hpp
+               src/cxxopts.hpp
+               ../include/illixr/runtime.hpp
+               ../include/illixr/phonebook.hpp
+)
 add_library(plugin.main${ILLIXR_BUILD_SUFFIX} SHARED
-        src/plugin.cpp
-        src/runtime_impl.cpp
-        src/illixr.hpp
-        src/cxxopts.hpp
-        ../include/illixr/runtime.hpp
-        ../include/illixr/phonebook.hpp
-        )
+            src/plugin.cpp
+            src/runtime_impl.cpp
+            src/illixr.hpp
+            src/cxxopts.hpp
+            ../include/illixr/runtime.hpp
+            ../include/illixr/phonebook.hpp
+)
 
 ##############
 # yaml parser
 ##############
-
+if (BUILD_OXR_INTERFACE)
+    target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC -DOXR_INTERFACE)
+endif()
+message("plugin.main${ILLIXR_BUILD_SUFFIX}")
 get_external(Yamlcpp)
 
 target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VISUALIZERS='${VIS_NAMES}'")
