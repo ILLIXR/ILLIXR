@@ -62,7 +62,7 @@ public:
     }
 
     void start_client() {
-        TCPSocket* socket     = new TCPSocket();
+        TCPSocket* socket = new TCPSocket();
         socket->socket_set_reuseaddr();
         socket->enable_no_delay();
         peer_socket = socket;
