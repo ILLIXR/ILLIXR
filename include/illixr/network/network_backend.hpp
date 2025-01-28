@@ -1,5 +1,4 @@
-#ifndef ILLIXR_NETWORK_BACKEND_HPP
-#define ILLIXR_NETWORK_BACKEND_HPP
+#pragma once
 
 #include "illixr/plugin.hpp"
 #include "topic_config.hpp"
@@ -39,5 +38,3 @@ public:
     virtual void topic_send(std::string topic_name, std::string&& message) = 0;
 };
 } // namespace ILLIXR
-
-#endif

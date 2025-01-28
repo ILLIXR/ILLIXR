@@ -1,5 +1,4 @@
-#ifndef ILLIXR_TOPIC_CONFIG_HPP
-#define ILLIXR_TOPIC_CONFIG_HPP
+#pragma once
 
 #include <chrono>
 #include <optional>
@@ -17,5 +16,3 @@ struct topic_config {
 
     enum SerializationMethod { BOOST, PROTOBUF } serialization_method;
 };
-
-#endif // ILLIXR_TOPIC_CONFIG_HPP

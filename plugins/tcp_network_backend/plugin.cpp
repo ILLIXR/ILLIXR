@@ -1,8 +1,7 @@
 #include "illixr/data_format.hpp"
-#include "illixr/network/file_descriptor.hpp"
 #include "illixr/network/net_config.hpp"
 #include "illixr/network/network_backend.hpp"
-#include "illixr/network/socket.hpp"
+#include "illixr/network/tcpsocket.hpp"
 #include "illixr/network/topic_config.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/switchboard.hpp"
@@ -56,7 +55,6 @@ public:
                 start_server();
             }).detach();
 
-            // The "ready" will be true anyway once the client is started
             while (!ready) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
@@ -64,42 +62,28 @@ public:
     }
 
     void start_client() {
-        Address    other_addr = Address(peer_ip, peer_port);
         TCPSocket* socket     = new TCPSocket();
-        socket->set_reuseaddr();
+        socket->socket_set_reuseaddr();
         socket->enable_no_delay();
         peer_socket = socket;
 
-        bool success = false;
-        while (!success) {
-            try {
-                std::cout << "Connecting to " + peer_ip + " at port " + std::to_string(peer_port) << std::endl;
-                socket->connect(other_addr);
-                std::cout << "Connected to server" << std::endl;
-                success = true;
-            } catch (unix_error& e) {
-                std::cout << "Connection failed to " + peer_ip + ", " + std::to_string(peer_port) + ", retrying in 1 second"
-                          << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-            }
-        }
-
-        std::cout << "Connected to peer: " << peer_ip << ":" << peer_port << std::endl;
+        std::cout << "Connecting to " + peer_ip + " at port " + std::to_string(peer_port) << std::endl;
+        socket->socket_connect(peer_ip, peer_port);
+        std::cout << "Connected to server" << std::endl;
 
         ready = true;
         read_loop(socket);
     }
 
     void start_server() {
-        Address   self_addr = Address(self_ip, self_port);
         TCPSocket server_socket;
-        server_socket.set_reuseaddr();
-        server_socket.bind(self_addr);
+        server_socket.socket_set_reuseaddr();
+        server_socket.socket_bind(self_ip, self_port);
         server_socket.enable_no_delay();
-        server_socket.listen();
+        server_socket.socket_listen();
 
-        TCPSocket client_socket = server_socket.accept();
-        std::cout << "Accepted connection from peer: " << client_socket.peer_address().str(":") << std::endl;
+        TCPSocket client_socket = server_socket.socket_accept();
+        std::cout << "Accepted connection from peer: " << client_socket.peer_address() << std::endl;
         peer_socket = &client_socket;
         ready       = true;
         read_loop(&client_socket);
@@ -111,7 +95,7 @@ public:
             // read from socket
             // packet are in the format
             // total_length:4bytes|topic_name_length:4bytes|topic_name|message
-            std::string packet = socket->read();
+            std::string packet = socket->read_data();
             buffer += packet;
 
             // check if we have a complete packet
@@ -218,7 +202,7 @@ private:
         packet.append(reinterpret_cast<char*>(&topic_name_length), 4);
         packet.append(topic_name);
         packet.append(message.begin(), message.end());
-        peer_socket->write(packet);
+        peer_socket->write_data(packet);
     }
 };
 
