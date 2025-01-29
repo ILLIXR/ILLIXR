@@ -1,0 +1,9 @@
+# This file was auto generated, take caution if manually editing.
+plugins: gtsam_integrator,pose_prediction,zed,display_vk,timewarp_vk,rgb_passthrough,native_renderer,debugview
+build_flags: -DILLIXR_VULKAN
+build_type: Release
+visualizers: openvins
+enable_offload: false
+enable_alignment: false
+enable_verbose_errors: false
+enable_pre_sleep: false
