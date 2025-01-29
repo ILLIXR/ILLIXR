@@ -223,6 +223,17 @@ struct [[maybe_unused]] points_with_units {
     points_with_units(const points_with_units& points_)
         : points_with_units(points_.points) { }
 
+    points_with_units& operator=(const points_with_units& other) {
+        if (this == &other)
+            return *this;
+        this->points.resize(other.points.size());
+        for (size_t i = 0; i < other.points.size(); i++)
+            this->points[i] = other.points[i];
+        this->unit = other.unit;
+        this->valid = other.valid;
+        this->fixed = other.fixed;
+        return *this;
+    }
     explicit points_with_units(std::vector<point_with_validity>& points_, units::measurement_unit unit_ = units::UNSET)
         : unit{unit_} {
         points.resize(points_.size());
