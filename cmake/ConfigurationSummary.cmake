@@ -303,9 +303,6 @@ foreach(ITEM IN LISTS EXTERNAL_LIBRARIES)
         report_value("${ITEM}" "${COLOR_GREEN}Found version ${${ITEM}_VERSION}${RESET_FORMAT}")
     endif()
 endforeach()
-if(BUILDING_OPENCV)
-    report_value("OpenCV" "${COLOR_CYAN}Download and Install${RESET_FORMAT}")
-endif()
 
 # ------------------------- Plugins --------------------------------------------
 message("${COLOR_BLUE_BOLD}Build Plugins${RESET_FORMAT}")

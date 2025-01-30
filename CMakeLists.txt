@@ -33,17 +33,7 @@ set(PACKAGE_VERSION_MINOR "2")
 set(PACKAGE_VERSION_PATCH "0")
 set(PACKAGE_VERSION_LABEL "")
 
-# determine the Linux vendor, if it is CentOS then we must rebuild OpenCV to include all the needed components
-if(UNIX)
-    execute_process(COMMAND bash -c "awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '\n' | tr -d '\"'" OUTPUT_VARIABLE OS_FLAVOR)
-    message("Found OS: ${OS_FLAVOR}")
-    string(TOLOWER "${OS_FLAVOR}" OS_LOWER)
-    if(OS_LOWER STREQUAL "centos")
-        set(HAVE_CENTOS Yes)
-    else()
-        set(HAVE_CENTOS No)
-    endif()
-elseif(WIN32)
+if(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
     message(FATAL_ERROR "MacOS is currently not supported")
@@ -160,28 +150,7 @@ add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
 set(EXTERNAL_LIBRARIES "")
 
-##############
-# opencv
-#
-# If building on centos system, opencv must be built from scratch to get the viz module
-# which is not supplied by the centos repos
-##############
-set(BUILDING_OPENCV No)
-set(OpenCV_DEP_STR "")
-if(HAVE_CENTOS)
-    set(INTERNAL_OPENCV ${CMAKE_INSTALL_PREFIX}/lib/cmake/opencv4)
-    # see if it has been built yet
-    find_package(OpenCV QUIET PATHS ${INTERNAL_OPENCV} NO_DEFAULT_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH NO_CMAKE_SYSTEM_PACKAGE_REGISTRY)
-    if(NOT OpenCV_FOUND OR NOT OPENCV_VIZ_FOUND)
-	    message("Building OpenCV")
-        include(cmake/GetOpenCV_Viz.cmake)
-        set(OpenCV_DEP_STR OpenCV_Viz)
-        set(INTERNAL_OPENCV ${OpenCV_DIR})
-        set(BUILD_OPENCV Yes)
-    endif()
-else()
-    find_package(OpenCV 4 REQUIRED)
-endif()
+find_package(OpenCV 4 REQUIRED)
 
 find_package(GLEW REQUIRED)
 
