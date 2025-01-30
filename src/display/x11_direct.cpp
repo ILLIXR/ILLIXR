@@ -32,10 +32,10 @@ void x11_direct::setup_display(VkInstance vk_instance, VkPhysicalDevice vk_physi
     }
 
     auto display_select_str = std::getenv("ILLIXR_DIRECT_MODE_DISPLAY");
+    int display_select = 0;
     if (display_select_str == nullptr) {
         std::cout << "ILLIXR_DIRECT_MODE_DISPLAY not set, defaulting to the first display ("
                   << display_properties[0].displayName << ")" << std::endl;
-        display_select = 0;
     } else {
         display_select = std::stoi(display_select_str);
     }

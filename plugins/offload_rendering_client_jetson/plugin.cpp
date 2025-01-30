@@ -27,7 +27,7 @@
 using namespace ILLIXR;
 
 /**
- * @class offload_rendering_client
+ * @class offload_rendering_client_jetson
  * @brief Main class implementing the offload rendering client functionality
  *
  * This class handles:
@@ -36,17 +36,17 @@ using namespace ILLIXR;
  * - Integration with Vulkan display system
  * - DMA-buf based zero-copy frame transfer
  */
-class offload_rendering_client
+class offload_rendering_client_jetson
     : public threadloop
     , public vulkan::app
-    , public std::enable_shared_from_this<offload_rendering_client> {
+    , public std::enable_shared_from_this<offload_rendering_client_jetson> {
 public:
     /**
      * @brief Constructor initializing the client components
      * @param name Plugin name
      * @param pb Phonebook for component lookup
      */
-    offload_rendering_client(const std::string& name, phonebook* pb)
+    offload_rendering_client_jetson(const std::string& name, phonebook* pb)
         : threadloop{name, pb}
         , sb{pb->lookup_impl<switchboard>()}
         , log{spdlogger("debug")}
@@ -661,19 +661,19 @@ private:
 };
 
 /**
- * @class offload_rendering_client_loader
+ * @class offload_rendering_client_jetson_loader
  * @brief Plugin loader class for the offload rendering client
  *
  * Handles plugin registration and Vulkan extension setup
  */
-class offload_rendering_client_loader
+class offload_rendering_client_jetson_loader
     : public plugin
     , public vulkan::vk_extension_request {
 public:
-    offload_rendering_client_loader(const std::string& name, phonebook* pb)
+    offload_rendering_client_jetson_loader(const std::string& name, phonebook* pb)
         : plugin(name, pb)
-        , offload_rendering_client_plugin{std::make_shared<offload_rendering_client>(name, pb)} {
-        pb->register_impl<vulkan::app>(offload_rendering_client_plugin);
+        , offload_rendering_client_jetson_plugin{std::make_shared<offload_rendering_client_jetson>(name, pb)} {
+        pb->register_impl<vulkan::app>(offload_rendering_client_jetson_plugin);
     }
 
     std::vector<const char*> get_required_instance_extensions() override {
@@ -688,15 +688,15 @@ public:
     }
 
     void start() override {
-        offload_rendering_client_plugin->start();
+        offload_rendering_client_jetson_plugin->start();
     }
 
     void stop() override {
-        offload_rendering_client_plugin->stop();
+        offload_rendering_client_jetson_plugin->stop();
     }
 
 private:
-    std::shared_ptr<offload_rendering_client> offload_rendering_client_plugin;
+    std::shared_ptr<offload_rendering_client_jetson> offload_rendering_client_jetson_plugin;
 };
 
-PLUGIN_MAIN(offload_rendering_client_loader)
+PLUGIN_MAIN(offload_rendering_client_jetson_loader)
