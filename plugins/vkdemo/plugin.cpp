@@ -1,11 +1,3 @@
-#include <array>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-
-#define VMA_IMPLEMENTATION
 #include "illixr/data_format.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/math_util.hpp"
@@ -13,16 +5,25 @@
 #include "illixr/pose_prediction.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
-#include "illixr/vk_util/display_sink.hpp"
-#include "illixr/vk_util/render_pass.hpp"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
 
-#include <vulkan/vulkan_core.h>
+#include <array>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+#include <vulkan/vulkan.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "illixr/gl_util/lib/tiny_obj_loader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "illixr/gl_util/lib/stb_image.h"
+#include "illixr/vk/display_provider.hpp"
+#include "illixr/vk/render_pass.hpp"
+#include "illixr/vk/vulkan_utils.hpp"
 
 #include <unordered_map>
 
@@ -94,22 +95,23 @@ struct UniformBufferObject {
     glm::mat4 proj;
 };
 
-class vkdemo : public app {
+class vkdemo : public vulkan::app {
 public:
     explicit vkdemo(const phonebook* const pb)
         : sb{pb->lookup_impl<switchboard>()}
-        , ds{pb->lookup_impl<display_sink>()}
+        , ds{pb->lookup_impl<vulkan::display_provider>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()} { }
 
     void initialize() {
         if (ds->vma_allocator) {
             this->vma_allocator = ds->vma_allocator;
         } else {
-            this->vma_allocator = vulkan_utils::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
+            this->vma_allocator = vulkan::create_vma_allocator(ds->vk_instance, ds->vk_physical_device, ds->vk_device);
         }
 
-        command_pool   = vulkan_utils::create_command_pool(ds->vk_device, ds->graphics_queue_family);
-        command_buffer = vulkan_utils::create_command_buffer(ds->vk_device, command_pool);
+        command_pool   = vulkan::create_command_pool(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS].family);
+        command_buffer = vulkan::create_command_buffer(ds->vk_device, command_pool);
+
         load_model();
         bake_models();
         create_texture_sampler();
@@ -119,16 +121,17 @@ public:
         create_descriptor_set();
         create_vertex_buffer();
         create_index_buffer();
+
         vertices.clear();
         indices.clear();
 
         // Construct perspective projection matrix
         math_util::projection_fov(&basic_projection, display_params::fov_x / 2.0f, display_params::fov_x / 2.0f,
                                   display_params::fov_y / 2.0f, display_params::fov_y / 2.0f, rendering_params::near_z,
-                                  rendering_params::far_z);
+                                  rendering_params::far_z, rendering_params::reverse_z);
     }
 
-    void setup(VkRenderPass render_pass, uint32_t subpass) override {
+    void setup(VkRenderPass render_pass, uint32_t subpass, std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> _) override {
         create_pipeline(render_pass, subpass);
     }
 
@@ -137,14 +140,14 @@ public:
         update_uniform(fp, 1);
     }
 
-    void record_command_buffer(VkCommandBuffer commandBuffer, int eye) override {
+    void record_command_buffer(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int buffer_ind, bool left) override {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         VkBuffer     vertexBuffers[] = {vertex_buffer};
         VkDeviceSize offsets[]       = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, index_buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[eye], 0,
-                                nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, 1, &descriptor_sets[!left],
+                                0, nullptr);
 
         for (auto& model : models) {
             ModelPushConstant push_constant{};
@@ -153,6 +156,10 @@ public:
                                &push_constant);
             vkCmdDrawIndexed(commandBuffer, model.index_count, 1, model.index_offset, 0, 0);
         }
+    }
+
+    bool is_external() override {
+        return false;
     }
 
     void destroy() override { }
@@ -489,8 +496,8 @@ private:
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        vulkan_utils::copy_buffer_to_image(ds->vk_device, ds->graphics_queue, command_pool, staging_buffer, textures[i].image,
-                                           width, height);
+        vulkan::copy_buffer_to_image(ds->vk_device, ds->queues[vulkan::queue::GRAPHICS], command_pool, staging_buffer,
+                                     textures[i].image, width, height);
 
         image_layout_transition(textures[i].image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -519,7 +526,7 @@ private:
 
     void image_layout_transition(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout old_layout,
                                  VkImageLayout new_layout) {
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
 
         VkImageMemoryBarrier barrier{
             VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, // sType
@@ -569,7 +576,7 @@ private:
 
         vkCmdPipelineBarrier(command_buffer_local, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS], command_buffer_local);
     }
 
     void load_model() {
@@ -671,14 +678,14 @@ private:
         memcpy(mapped_data, vertices.data(), sizeof(vertices[0]) * vertices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region{
             0,                                    // srcOffset
             0,                                    // dstOffset
             sizeof(vertices[0]) * vertices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, vertex_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS], command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -726,14 +733,14 @@ private:
         memcpy(mapped_data, indices.data(), sizeof(indices[0]) * indices.size());
         vmaUnmapMemory(vma_allocator, staging_buffer_allocation);
 
-        VkCommandBuffer command_buffer_local = vulkan_utils::begin_one_time_command(ds->vk_device, command_pool);
+        VkCommandBuffer command_buffer_local = vulkan::begin_one_time_command(ds->vk_device, command_pool);
         VkBufferCopy    copy_region{
             0,                                  // srcOffset
             0,                                  // dstOffset
             sizeof(indices[0]) * indices.size() // size
         };
         vkCmdCopyBuffer(command_buffer_local, staging_buffer, index_buffer, 1, &copy_region);
-        vulkan_utils::end_one_time_command(ds->vk_device, command_pool, ds->graphics_queue, command_buffer_local);
+        vulkan::end_one_time_command(ds->vk_device, command_pool, ds->queues[vulkan::queue::GRAPHICS], command_buffer_local);
 
         vmaDestroyBuffer(vma_allocator, staging_buffer, staging_buffer_allocation);
     }
@@ -744,10 +751,8 @@ private:
         }
 
         auto           folder = std::string(SHADER_FOLDER);
-        VkShaderModule vert =
-            vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.vert.spv"));
-        VkShaderModule frag =
-            vulkan_utils::create_shader_module(ds->vk_device, vulkan_utils::read_file(folder + "/demo.frag.spv"));
+        VkShaderModule vert   = vulkan::create_shader_module(ds->vk_device, vulkan::read_file(folder + "/demo.vert.spv"));
+        VkShaderModule frag   = vulkan::create_shader_module(ds->vk_device, vulkan::read_file(folder + "/demo.frag.spv"));
 
         VkPipelineShaderStageCreateInfo vert_shader_stage_info{
             VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO, // sType
@@ -792,18 +797,20 @@ private:
             VK_FALSE                                                     // primitiveRestartEnable
         };
 
+        auto per_eye_extent = VkExtent2D{ds->swapchain_extent.width / 2, ds->swapchain_extent.height};
+
         VkViewport viewport{
-            0.0f,                                            // x
-            0.0f,                                            // y
-            static_cast<float>(ds->swapchain_extent.width),  // width
-            static_cast<float>(ds->swapchain_extent.height), // height
-            0.0f,                                            // minDepth
-            1.0f                                             // maxDepth
+            0.0f,                                      // x
+            0.0f,                                      // y
+            static_cast<float>(per_eye_extent.width),  // width
+            static_cast<float>(per_eye_extent.height), // height
+            0.0f,                                      // minDepth
+            1.0f                                       // maxDepth
         };
 
         VkRect2D scissor{
-            {0, 0},              // offset
-            ds->swapchain_extent // extent
+            {0, 0},        // offset
+            per_eye_extent // extent
         };
 
         VkPipelineViewportStateCreateInfo viewport_state{
@@ -855,14 +862,29 @@ private:
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
                 VK_COLOR_COMPONENT_A_BIT // colorWriteMask
         };
+
+        VkPipelineColorBlendAttachmentState depth_blend_attachment{
+            VK_FALSE, // blendEnable
+            {},       // srcColorBlendFactor
+            {},       // dstColorBlendFactor
+            {},       // colorBlendOp
+            {},       // srcAlphaBlendFactor
+            {},       // dstAlphaBlendFactor
+            {},       // alphaBlendOp
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+                VK_COLOR_COMPONENT_A_BIT // colorWriteMask
+        };
+
+        VkPipelineColorBlendAttachmentState blend_attachments[2] = {color_blend_attachment, depth_blend_attachment};
+
         VkPipelineColorBlendStateCreateInfo color_blending{
             VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, // sType
             nullptr,                                                  // pNext
             0,                                                        // flags
             0,                                                        // logicOpEnable
             {},                                                       // logicOp
-            1,                                                        // attachmentCount
-            &color_blend_attachment,                                  // pAttachments
+            2,                                                        // attachmentCount
+            blend_attachments,                                        // pAttachments
             {0.f, 0.f, 0.f, 0.f}                                      // blendConstants
         };
 
@@ -885,18 +907,18 @@ private:
         VK_ASSERT_SUCCESS(vkCreatePipelineLayout(ds->vk_device, &pipeline_layout_info, nullptr, &pipeline_layout))
 
         VkPipelineDepthStencilStateCreateInfo depth_stencil{
-            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, // sType
-            nullptr,                                                    // pNext
-            0,                                                          // flags
-            VK_TRUE,                                                    // depthTestEnable
-            VK_TRUE,                                                    // depthWriteEnable
-            VK_COMPARE_OP_LESS,                                         // depthCompareOp
-            VK_FALSE,                                                   // depthBoundsTestEnable
-            VK_FALSE,                                                   // stencilTestEnable
-            {},                                                         // front
-            {},                                                         // back
-            0.0f,                                                       // minDepthBounds
-            1.0f                                                        // maxDepthBounds
+            VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,                                 // sType
+            nullptr,                                                                                    // pNext
+            0,                                                                                          // flags
+            VK_TRUE,                                                                                    // depthTestEnable
+            VK_TRUE,                                                                                    // depthWriteEnable
+            rendering_params::reverse_z ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL, // depthCompareOp
+            VK_FALSE,                                                                                   // depthBoundsTestEnable
+            VK_FALSE,                                                                                   // stencilTestEnable
+            {},                                                                                         // front
+            {},                                                                                         // back
+            0.0f,                                                                                       // minDepthBounds
+            1.0f                                                                                        // maxDepthBounds
         };
 
         VkGraphicsPipelineCreateInfo pipeline_info{
@@ -927,10 +949,10 @@ private:
         vkDestroyShaderModule(ds->vk_device, frag, nullptr);
     }
 
-    const std::shared_ptr<switchboard>         sb;
-    const std::shared_ptr<pose_prediction>     pp;
-    const std::shared_ptr<display_sink>        ds = nullptr;
-    const std::shared_ptr<const RelativeClock> _m_clock;
+    const std::shared_ptr<switchboard>              sb;
+    const std::shared_ptr<pose_prediction>          pp;
+    const std::shared_ptr<vulkan::display_provider> ds = nullptr;
+    const std::shared_ptr<const RelativeClock>      _m_clock;
 
     Eigen::Matrix4f       basic_projection;
     std::vector<Model>    models;
@@ -967,7 +989,7 @@ public:
     vkdemo_plugin(const std::string& name, phonebook* pb)
         : plugin{name, pb}
         , vkd{std::make_shared<vkdemo>(pb)} {
-        pb->register_impl<app>(std::static_pointer_cast<vkdemo>(vkd));
+        pb->register_impl<vulkan::app>(std::static_pointer_cast<vkdemo>(vkd));
     }
 
     void start() override {

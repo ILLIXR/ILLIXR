@@ -1,0 +1,9 @@
+plugins: tcp_network_backend,offline_imu,offline_cam,gtsam_integrator,pose_prediction,offload_rendering_client_jetson,timewarp_vk,native_renderer
+visualizers: openvins
+data: /home/illixr/ssd_storage/Steven/ILLIXR/data/mav0
+demo_data: /home/illixr/ssd_storage/Steven/ILLIXR/demo_data
+install_prefix: /home/illixr/ssd_storage/Steven/ILLIXR/cmake-build-debug/install
+enable_offload: False
+enable_alignment: False
+enable_verbose_errors: False
+enable_pre_sleep: False

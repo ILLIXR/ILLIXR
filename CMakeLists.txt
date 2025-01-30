@@ -43,6 +43,9 @@ if(UNIX)
     else()
         set(HAVE_CENTOS No)
     endif()
+
+    find_package(ECM REQUIRED NO_MODULE)
+    set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 elseif(WIN32)
     message(FATAL_ERROR "Windows is currently not supported")
 elseif(APPLE)
@@ -64,6 +67,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
 
+# Vulkan flags
+add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
+
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-ggdb -O3 -Wall -Wextra -Wno-attributes -Wno-unknown-pragmas -fPIC")
@@ -75,13 +81,26 @@ set(OPENXR_RUNTIME "")
 set(OPENXR_PLUGINS "")
 
 # set the CMake search path to include the local files
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 option(COLOR_OUTPUT "Produce color output to the screen" ON)
 option(DATA_FILE "The data file to get" ON)
 set(DATA_FILE "http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/vicon_room1/V1_02_medium/V1_02_medium.zip")
 
 option(BUILD_DOCS "Build documentation" OFF)
 option(USE_MONADO "Build for monado use" OFF)
+option(BUILD_PARALLEL_LEVEL "Number of parallel build jobs")
+if(NOT BUILD_PARALLEL_LEVEL)
+    include(ProcessorCount)
+    ProcessorCount(N)
+    if(N GREATER 8)
+        set(BUILD_PARALLEL_LEVEL 4)
+    elseif(N GREATER 4)
+        set(BUILD_PARALLEL_LEVEL 2)
+    else()
+        set(BUILD_PARALLEL_LEVEL 1)
+    endif()
+endif()
+
 include(cmake/HelperFunctions.cmake)
 
 set(VISUALIZER "" CACHE STRING "")
@@ -122,7 +141,8 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
 
-set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake ${CMAKE_INSTALL_PREFIX}/lib64/cmake")
+set(Vulkan_GLSLANG_VALIDATOR_EXECUTABLE "")
+set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake ${CMAKE_INSTALL_PREFIX}/lib64/cmake /usr/lib/x86_64-linux-gnu/cmake /usr/lib/x86_64-linux-gnu/")
 
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 
@@ -135,7 +155,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source build prohibited.")
 endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake;${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake)
 
 add_definitions(-DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX})
 ##############
