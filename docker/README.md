@@ -14,21 +14,10 @@ docker build -t illixrubuntu:20 -f ubuntu/20/Dockerfile .
 docker build -t illixrubuntu:22 -f ubuntu/22/Dockerfile .
 ```
 
-**Fedora 37**
-```bash
-docker build -t illixrfedora:37 -f fedora/37/Dockerfile .
-```
-
 **Fedora 38**
 ```bash
 docker build -t illixrfedora:38 -f fedora/38/Dockerfile .
 ```
-
-**CentOS stream9**
-```bash
-docker build -t illixrcentos:9 -f centos/9/Dockerfile .
-```
-
 To run a container
 ```bash
 docker run -ti -p 8181:8181 <image>
@@ -38,7 +27,5 @@ where image is one of
 ```bash
 illixrubuntu:20
 illixrubuntu:22
-illixrfedora:37
 illixrfedora:38
-illixrcentos:9
 ```

@@ -17,11 +17,6 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../../include/illixr/switchboard.hpp
         )
 
-# if building on CentOS make sure we use the correct OpenCV
-if(BUILD_OPENCV)
-    add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
-endif()
-
 set(protobuf_files
         ${CMAKE_CURRENT_SOURCE_DIR}/../proto/vio_input.proto
 )

@@ -27,10 +27,6 @@ set(HDR_FILES include/zed_opencv.hpp
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 add_library(${PLUGIN_NAME} SHARED ${HDR_FILES} ${SRC_FILES})
 
-if(BUILD_OPENCV)
-	add_dependencies(${PLUGIN_NAME} OpenCV_Viz)
-endif()
-
 target_include_directories(${PLUGIN_NAME} PUBLIC ${CUDA_INCLUDE_DIRS} ${ZED_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${Eigen3_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${PLUGIN_NAME} ${ZED_LIBS} ${OpenCV_LIBRARIES} ${Eigen3_LIBRARIES} Threads::Threads spdlog::spdlog)
