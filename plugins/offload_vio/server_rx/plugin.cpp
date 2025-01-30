@@ -49,13 +49,9 @@ public:
         if (read_socket == NULL) {
             _conn_signal.put(_conn_signal.allocate<connection_signal>(connection_signal{true}));
             socket.socket_listen();
-#ifndef NDEBUG
             spdlog::get(name)->debug("[offload_vio.server_rx]: Waiting for connection!");
-#endif
             read_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
-#ifndef NDEBUG
             spdlog::get(name)->debug("[offload_vio.server_rx]: Connection is established with {}", read_socket->peer_address());
-#endif
         } else {
             std::string delimitter = "EEND!";
             std::string recv_data  = read_socket->read_data(); /* Blocking operation, wait for the data to come */

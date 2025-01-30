@@ -534,9 +534,7 @@ public:
         glBindVertexArray(demo_vao);
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
-#ifndef NDEBUG
         spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
-#endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");
         vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");

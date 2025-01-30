@@ -178,7 +178,6 @@ public:
             VK_ASSERT_SUCCESS(ret)
         }
 
-        // #ifndef NDEBUG
         // Print the FPS
         if (_m_clock->now() - last_fps_update > std::chrono::milliseconds(1000)) {
             // std::cout << "FPS: " << fps << std::endl;
@@ -187,7 +186,6 @@ public:
         } else {
             fps++;
         }
-        // #endif
     }
 
 private:

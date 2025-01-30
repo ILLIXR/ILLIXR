@@ -17,7 +17,6 @@ static constexpr std::size_t GL_MAX_LOG_LENGTH = 4096U;
 static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id,
                                        [[maybe_unused]] GLenum severity, [[maybe_unused]] GLsizei length,
                                        [[maybe_unused]] const GLchar* message, [[maybe_unused]] const void* userParam) {
-#ifndef NDEBUG
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
         /// Don't show message if severity level is notification. Non-fatal.
         return;
@@ -30,7 +29,6 @@ static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_u
         /// Fatal error if severity level is high.
         ILLIXR::abort();
     } /// else => severity level low and medium are non-fatal.
-#endif
 }
 
 static GLuint init_and_link(const char* vertex_shader, const char* fragment_shader) {

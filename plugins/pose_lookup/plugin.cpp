@@ -142,18 +142,14 @@ public:
         auto nearest_row = _m_sensor_data.upper_bound(lookup_time);
 
         if (nearest_row == _m_sensor_data.cend()) {
-#ifndef NDEBUG
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) after last datum {}", lookup_time,
                                          std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
                                          _m_sensor_data.rbegin()->first);
-#endif
             nearest_row--;
         } else if (nearest_row == _m_sensor_data.cbegin()) {
-#ifndef NDEBUG
             spdlog::get("illixr")->debug("[pose_lookup] Time {} ({} + {}) before first datum {}", lookup_time,
                                          std::chrono::nanoseconds(time.time_since_epoch()).count(), dataset_first_time,
                                          _m_sensor_data.cbegin()->first);
-#endif
         } else {
             // "std::map::upper_bound" returns an iterator to the first pair whose key is GREATER than the argument.
             // I already know we aren't at the begin()

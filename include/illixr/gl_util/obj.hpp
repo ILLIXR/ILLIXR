@@ -84,10 +84,7 @@ public:
         // any material (.mtl) files associated with the .obj in the same directory.
         bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, obj_file.c_str(), obj_dir_term.c_str());
         if (!warn.empty()) {
-#ifndef NDEBUG
-
             spdlog::get("illixr")->warn("[obj] {}", warn);
-#endif
         }
         if (!err.empty()) {
             spdlog::get("illixr")->error("[obj] {}", err);
@@ -103,10 +100,8 @@ public:
 
             for (size_t mat_idx = 0; mat_idx < materials.size(); mat_idx++) {
                 tinyobj::material_t* mp = &materials[mat_idx];
-#ifndef NDEBUG
                 spdlog::get("illixr")->debug("[obj] Loading material named: {}", materials[mat_idx].name);
                 spdlog::get("illixr")->debug("[obj] Material texture name: {}", materials[mat_idx].diffuse_texname);
-#endif
                 if (mp->diffuse_texname.length() > 0) {
                     // If we haven't loaded the texture yet...
                     if (textures.find(mp->diffuse_texname) == textures.end()) {
@@ -116,14 +111,10 @@ public:
                         unsigned char* texture_data = stbi_load(filename.c_str(), &x, &y, &n, 0);
 
                         if (texture_data == nullptr) {
-#ifndef NDEBUG
                             spdlog::get("illixr")->warn("[obj TEXTURE] Loading of {} failed.", filename);
-#endif
                             successfully_loaded_texture = false;
                         } else {
-#ifndef NDEBUG
                             spdlog::get("illixr")->debug("[obj TEXTURE] Loaded  {}: Resolution ({}, {})", filename, x, y);
-#endif
                             GLuint texture_handle;
 
                             // Create and bind OpenGL resource.
@@ -159,10 +150,8 @@ public:
             // Process mesh data.
             // Iterate over "shapes" (objects in .obj file)
             for (size_t shape_idx = 0; shape_idx < shapes.size(); shape_idx++) {
-#ifndef NDEBUG
                 spdlog::get("illixr")->debug("[obj] Num verts in shape: {}", shapes[shape_idx].mesh.indices.size());
                 spdlog::get("illixr")->debug("[obj] Num tris in shape: {}", shapes[shape_idx].mesh.indices.size() / 3);
-#endif
                 // Unified buffer for pos + uv. Interleaving vertex data (good practice!)
                 std::vector<vertex_t> buffer;
                 // Iterate over triangles

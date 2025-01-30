@@ -162,10 +162,8 @@ private:
         swapchain_image_format = vkb_swapchain.image_format;
         swapchain_extent       = vkb_swapchain.extent;
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[display_vk] present_mode: {}", vkb_swapchain.present_mode);
         spdlog::get("illixr")->debug("[display_vk] swapchain_extent: {} {}", swapchain_extent.width, swapchain_extent.height);
-#endif
         vma_allocator = vulkan_utils::create_vma_allocator(vk_instance, vk_physical_device, vk_device);
     }
 

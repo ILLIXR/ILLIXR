@@ -57,21 +57,17 @@ public:
         ullong rounded_time = datum->time.time_since_epoch().count() + _m_dataset_first_time;
         auto   it           = _m_sensor_data.find(rounded_time);
         if (it == _m_sensor_data.end()) {
-#ifndef NDEBUG
             spdlog::get(name)->debug("True pose not found at timestamp: {}", rounded_time);
-#endif
             return;
         }
 
         switchboard::ptr<pose_type> true_pose =
             _m_true_pose.allocate<pose_type>(pose_type{time_point{datum->time}, it->second.position, it->second.orientation});
 
-#ifndef NDEBUG
         spdlog::get(name)->debug("Ground truth pose was found at T: {} | Pos: ({}, {}, {}) | Quat: ({}, {}, {}, {})",
                                  rounded_time, true_pose->position[0], true_pose->position[1], true_pose->position[2],
                                  true_pose->orientation.w(), true_pose->orientation.x(), true_pose->orientation.y(),
                                  true_pose->orientation.z());
-#endif
 
         /// Ground truth position offset is the first ground truth position
         if (_m_first_time) {

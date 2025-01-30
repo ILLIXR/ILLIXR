@@ -6,12 +6,9 @@
 #include <shared_mutex>
 #include <typeindex>
 #include <unordered_map>
-
-#ifndef NDEBUG
-    #include <iostream>
-    #include <spdlog/spdlog.h>
-    #include <stdexcept>
-#endif
+#include <iostream>
+#include <spdlog/spdlog.h>
+#include <stdexcept>
 
 namespace ILLIXR {
 
@@ -102,9 +99,7 @@ public:
         const std::unique_lock<std::shared_mutex> lock{_m_mutex};
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[phonebook] Register {}", type_index.name());
-#endif
         assert(_m_registry.count(type_index) == 0);
         _m_registry.try_emplace(type_index, impl);
     }
@@ -124,12 +119,10 @@ public:
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
 
-#ifndef NDEBUG
         // if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
         if (_m_registry.count(type_index) != 1) {
             throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
         }
-#endif
 
         std::shared_ptr<service> this_service = _m_registry.at(type_index);
         assert(this_service);

@@ -177,13 +177,9 @@ private:
         for (rs2::device device : devices) {
             if (device.supports(RS2_CAMERA_INFO_PRODUCT_LINE)) {
                 std::string product_line = device.get_info(RS2_CAMERA_INFO_PRODUCT_LINE);
-#ifndef NDEBUG
                 spdlog::get(name)->debug("Found Product Line: {}", product_line);
-#endif
                 if (product_line == "D400") {
-#ifndef NDEBUG
                     spdlog::get(name)->debug("Checking for supported streams");
-#endif
                     std::vector<rs2::sensor> sensors = device.query_sensors();
                     for (const rs2::sensor& sensor : sensors) {
                         std::vector<rs2::stream_profile> stream_profiles = sensor.get_stream_profiles();
@@ -200,23 +196,16 @@ private:
                     }
                     if (accel_found && gyro_found) {
                         D4XXI_found = true;
-#ifndef NDEBUG
                         spdlog::get(name)->debug("Supported D4XX found!");
-#endif
                     }
                 } else if (product_line == "T200") {
                     T26X_found = true;
-#ifndef NDEBUG
                     spdlog::get(name)->debug("T26X found!");
-#endif
                 }
             }
         }
-        if (!T26X_found && !D4XXI_found) {
-#ifndef NDEBUG
+        if (!T26X_found && !D4XXI_found)
             spdlog::get(name)->warn("No supported Realsense device detected!");
-#endif
-        }
     }
 
     void configure_camera() {
@@ -228,25 +217,17 @@ private:
         if (realsense_cam == "auto") {
             if (D4XXI_found) {
                 cam_select = D4XXI;
-#ifndef NDEBUG
                 spdlog::get(name)->debug("Setting cam_select: D4XX");
-#endif
             } else if (T26X_found) {
                 cam_select = T26X;
-#ifndef NDEBUG
                 spdlog::get(name)->debug("Setting cam_select: T26X");
-#endif
             }
         } else if ((realsense_cam == "D4XX") && D4XXI_found) {
             cam_select = D4XXI;
-#ifndef NDEBUG
             spdlog::get(name)->debug("Setting cam_select: D4XX");
-#endif
         } else if ((realsense_cam == "T26X") && T26X_found) {
             cam_select = T26X;
-#ifndef NDEBUG
             spdlog::get(name)->debug("Setting cam_select: T26X");
-#endif
         }
         if (cam_select == UNSUPPORTED) {
             ILLIXR::abort("Supported Realsense device NOT found!");

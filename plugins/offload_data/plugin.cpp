@@ -36,9 +36,7 @@ public:
     }
 
     void callback(const switchboard::ptr<const texture_pose>& datum) {
-#ifndef NDEBUG
         spdlog::get(name)->debug("Image index: {}", img_idx++);
-#endif
         /// A texture pose is present. Store it back to our container.
         _offload_data_container.push_back(datum);
     }

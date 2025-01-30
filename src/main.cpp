@@ -3,30 +3,6 @@
 #include <csignal>
 #include <iostream>
 
-#ifndef NDEBUG
-/**
- * @brief A signal handler for SIGILL.
- *
- * Forward SIGILL from illegal instructions to catchsegv in `ci.yaml`.
- * Provides additional debugging information via `-rdynamic`.
- */
-static void sigill_handler(int sig) {
-    assert(sig == SIGILL && "sigill_handler is for SIGILL");
-    std::raise(SIGSEGV);
-}
-
-/**
- * @brief A signal handler for SIGABRT.
- *
- * Forward SIGABRT from `std::abort` and `assert` to catchsegv in `ci.yaml`.
- * Provides additional debugging information via `-rdynamic`.
- */
-static void sigabrt_handler(int sig) {
-    assert(sig == SIGABRT && "sigabrt_handler is for SIGABRT");
-    std::raise(SIGSEGV);
-}
-#endif /// NDEBUG
-
 /**
  * @brief A signal handler for SIGINT.
  *
@@ -62,12 +38,6 @@ int main(int argc, const char* argv[]) {
         std::cout << options.help() << std::endl;
         return EXIT_SUCCESS;
     }
-
-#ifndef NDEBUG
-    /// When debugging, register the SIGILL and SIGABRT handlers for capturing more info
-    std::signal(SIGILL, sigill_handler);
-    std::signal(SIGABRT, sigabrt_handler);
-#endif /// NDEBUG
 
     /// Shutting down method 1: Ctrl+C
     std::signal(SIGINT, sigint_handler);

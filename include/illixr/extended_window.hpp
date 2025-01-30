@@ -7,9 +7,7 @@
 #include <cassert>
 #include <cerrno>
 #include <GL/glx.h>
-#ifndef NDEBUG
-    #include <spdlog/spdlog.h>
-#endif
+#include <spdlog/spdlog.h>
 
 // GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
@@ -29,9 +27,7 @@ public:
         width  = _width;
         height = _height;
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Opening display");
-#endif
         RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
 
         dpy = XOpenDisplay(nullptr);
@@ -72,9 +68,7 @@ public:
                                        True,
                                        None};
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Getting matching framebuffer configs");
-#endif
         RAC_ERRNO_MSG("extended_window before glXChooseFBConfig");
 
         int          fbcount = 0;
@@ -84,12 +78,10 @@ public:
             ILLIXR::abort("Failed to retrieve a framebuffer config");
         }
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Found {} matching FB configs", fbcount);
 
         // Pick the FB config/visual with the most samples per pixel
         spdlog::get("illixr")->debug("[extended_window] Getting XVisualInfos");
-#endif
         int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
         int i;
         for (i = 0; i < fbcount; ++i) {
@@ -98,11 +90,9 @@ public:
                 int samp_buf, samples;
                 glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf);
                 glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLES, &samples);
-#ifndef NDEBUG
                 spdlog::get("illixr")->debug(
                     "[extended_window] Matching fbconfig {}, visual ID {:x}: SAMPLE_BUFFERS = {}, SAMPLES = {}", i,
                     vi->visualid, samp_buf, samples);
-#endif
                 if (best_fbc < 0 || (samp_buf && samples > best_num_samp)) {
                     best_fbc = i, best_num_samp = samples;
                 }
@@ -121,15 +111,11 @@ public:
 
         // Get a visual
         XVisualInfo* vi = glXGetVisualFromFBConfig(dpy, bestFbc);
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Chose visual ID = {:x}", vi->visualid);
         spdlog::get("illixr")->debug("[extended_window] Creating colormap");
-#endif
         _m_cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating window");
-#endif
         XSetWindowAttributes attributes;
         attributes.colormap         = _m_cmap;
         attributes.background_pixel = 0;
@@ -146,9 +132,7 @@ public:
         // Done with visual info
         XFree(vi);
 
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating context");
-#endif
         auto glXCreateContextAttribsARB =
             (glXCreateContextAttribsARBProc) glXGetProcAddressARB((const GLubyte*) "glXCreateContextAttribsARB");
         int context_attribs[] = {GLX_CONTEXT_MAJOR_VERSION_ARB, 3, GLX_CONTEXT_MINOR_VERSION_ARB, 3, None};

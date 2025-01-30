@@ -75,7 +75,9 @@ private:
 
     // std::vector<pose_type> filtered_poses;
 
-    [[maybe_unused]] time_point last_cam_time{};
+#ifndef NDEBUG
+    time_point last_cam_time{};
+#endif
     duration                    last_imu_offset{};
 
     /**

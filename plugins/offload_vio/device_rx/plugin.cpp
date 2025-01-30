@@ -33,13 +33,9 @@ public:
 
     skip_option _p_should_skip() override {
         if (!is_socket_connected) {
-#ifndef NDEBUG
             spdlog::get(name)->debug("[offload_vio.device_rx]: Connecting to {}:{}", server_ip, server_port);
-#endif
             socket.socket_connect(server_ip, server_port);
-#ifndef NDEBUG
             spdlog::get(name)->debug("[offload_vio.device_rx]: Connected to {}:{}", server_ip, server_port);
-#endif
             is_socket_connected = true;
         }
         return skip_option::run;

@@ -60,12 +60,9 @@ public:
             return;
         }
 
-#ifndef NDEBUG
-        if (log_count > LOG_PERIOD) {
-            double vsync_in = duration2double<std::milli>(**next_vsync - now);
-            spdlog::get(name)->debug("First vsync is in {} ms", vsync_in);
-        }
-#endif
+        if (log_count > LOG_PERIOD)
+            spdlog::get(name)->debug("First vsync is in {} ms", duration2double<std::milli>(**next_vsync - now));
+
 
         bool hasRenderedThisInterval = (now - lastTime) < display_params::period;
 
@@ -81,22 +78,16 @@ public:
                 wait_time += display_params::period;
             }
 
-#ifndef NDEBUG
-            if (log_count > LOG_PERIOD) {
-                double wait_in = duration2double<std::milli>(wait_time - now);
-                spdlog::get(name)->debug("Waiting until next vsync, in {} ms", wait_in);
-            }
-#endif
+            if (log_count > LOG_PERIOD)
+                spdlog::get(name)->debug("Waiting until next vsync, in {} ms", duration2double<std::milli>(wait_time - now));
+
             // Perform the sleep.
             // TODO: Consider using Monado-style sleeping, where we nanosleep for
             // most of the wait, and then spin-wait for the rest?
             std::this_thread::sleep_for(wait_time - now);
         } else {
-#ifndef NDEBUG
-            if (log_count > LOG_PERIOD) {
+            if (log_count > LOG_PERIOD)
                 spdlog::get(name)->debug("We haven't rendered yet, rendering immediately");
-            }
-#endif
         }
     }
 
@@ -173,15 +164,11 @@ public:
 
         glFinish();
 
-#ifndef NDEBUG
-        const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
-        const double fps              = 1.0 / frame_duration_s;
-
         if (log_count > LOG_PERIOD) {
+            const double frame_duration_s = duration2double(_m_clock->now() - lastTime);
             spdlog::get(name)->debug("Submitting frame to buffer {}, frametime: {}, FPS: {}", which_buffer, frame_duration_s,
-                                     fps);
+                                     1.0 / frame_duration_s);
         }
-#endif
         lastTime = _m_clock->now();
 
         /// Publish our submitted frame handle to Switchboard!
@@ -322,9 +309,7 @@ public:
         glBindVertexArray(demo_vao);
 
         demoShaderProgram = init_and_link(demo_vertex_shader, demo_fragment_shader);
-#ifndef NDEBUG
         spdlog::get(name)->debug("Demo app shader program is program {}", demoShaderProgram);
-#endif
 
         vertexPosAttr    = glGetAttribLocation(demoShaderProgram, "vertexPosition");
         vertexNormalAttr = glGetAttribLocation(demoShaderProgram, "vertexNormal");

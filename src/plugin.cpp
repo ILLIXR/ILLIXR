@@ -148,9 +148,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     try {
         r = ILLIXR::runtime_factory();
 
-#ifndef NDEBUG
-        /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
-        /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
+        /// Activate sleeping at application start for attaching gdb or waiting for another program (openXR application, etc) to start.
+        /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable
         const bool enable_pre_sleep = ILLIXR::str_to_bool(getenv_or("ILLIXR_ENABLE_PRE_SLEEP", "False"));
         if (enable_pre_sleep) {
             const pid_t pid = getpid();
@@ -160,7 +159,6 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             sleep(ILLIXR_PRE_SLEEP_DURATION);
             spdlog::get("illixr")->info("[main] Resuming...");
         }
-#endif /// NDEBUG
        // read in yaml config file
         YAML::Node  config;
         std::string exec_path = get_exec_path();
@@ -218,10 +216,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
                 for (const auto& node : plugin_deps["dep_map"])
                     dep_map.push_back(node.as<ILLIXR::Dependency>());
             } catch (YAML::BadFile&) {
-#ifndef NDEBUG
                 spdlog::get("illixr")->info(
                     "Could not load plugin dependency map file (plugin_deps.yaml), cannot verify plugin dependencies.");
-#endif
             }
         }
         bool have_plugins = false;

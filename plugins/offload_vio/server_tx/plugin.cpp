@@ -44,13 +44,9 @@ public:
 
     void start_accepting_connection(switchboard::ptr<const connection_signal> datum) {
         socket.socket_listen();
-#ifndef NDEBUG
         spdlog::get(name)->debug("[offload_vio.server_tx]: Waiting for connection!");
-#endif
         write_socket = new TCPSocket(socket.socket_accept()); /* Blocking operation, waiting for client to connect */
-#ifndef NDEBUG
         spdlog::get(name)->debug("[offload_vio.server_tx]: Connection is established with {}", write_socket->peer_address());
-#endif
     }
 
     void send_vio_output(const switchboard::ptr<const pose_type>& datum) {

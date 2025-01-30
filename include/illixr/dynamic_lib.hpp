@@ -43,11 +43,9 @@ public:
     }
 
     ~dynamic_lib() {
-#ifndef NDEBUG
         if (!_m_lib_path.empty()) {
             spdlog::get("illixr")->debug("[dynamic_lib] Destructing library : {}", _m_lib_path);
         }
-#endif /// NDEBUG
     }
 
     static dynamic_lib create(const std::string& path) {

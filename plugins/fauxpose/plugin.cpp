@@ -53,20 +53,14 @@ public:
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} {
         char* env_input; /* pointer to environment variable input */
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Starting Service");
-#endif
 
         // Store the initial time
         if (_m_clock->is_started()) {
             sim_start_time = _m_clock->now();
-#ifndef NDEBUG
             spdlog::get("illixr")->debug("[fauxpose] Starting Service");
-#endif
         } else {
-#ifndef NDEBUG
             spdlog::get("illixr")->debug("[fauxpose] Warning: the clock isn't started yet");
-#endif
         }
 
         // Set default faux-pose parameters
@@ -86,19 +80,15 @@ public:
             center_location[1] = std::strtof(strchrnul(env_input, ',') + 1, nullptr);
             center_location[2] = std::strtof(strchrnul(strchrnul(env_input, ',') + 1, ',') + 1, nullptr);
         }
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Period is {}", period);
         spdlog::get("illixr")->debug("[fauxpose] Amplitude is {}", amplitude);
         spdlog::get("illixr")->debug("[fauxpose] Center is {}, {}, {}", center_location[0], center_location[1],
                                      center_location[2]);
-#endif
     }
 
     // ********************************************************************
     ~faux_pose_impl() override {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Ending Service");
-#endif
     }
 
     // ********************************************************************
@@ -118,9 +108,7 @@ public:
 
     // ********************************************************************
     pose_type correct_pose([[maybe_unused]] const pose_type& pose) const override {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Returning (passthru) pose");
-#endif
         return pose;
     }
 
@@ -173,9 +161,7 @@ public:
         simulated_pose.orientation = Eigen::Quaternionf(0.707, 0.0, 0.707, 0.0); // (W,X,Y,Z) Facing forward (90deg about Y)
 
         // Return the new pose
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Returning pose");
-#endif
         return fast_pose_type{.pose = simulated_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = time};
     }
 
@@ -208,16 +194,12 @@ public:
         // "pose_prediction" is a class inheriting from "phonebook::service"
         //   It is described in "pose_prediction.hpp"
         pb->register_impl<pose_prediction>(std::static_pointer_cast<pose_prediction>(std::make_shared<faux_pose_impl>(pb)));
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Starting Plugin");
-#endif
     }
 
     // ********************************************************************
     ~faux_pose() override {
-#ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Ending Plugin");
-#endif
     }
 };
 

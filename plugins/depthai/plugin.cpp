@@ -31,9 +31,7 @@ public:
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} // Initialize DepthAI pipeline and device
         , device{createCameraPipeline()} {
         spdlogger(std::getenv("DEPTHAI_LOG_LEVEL"));
-#ifndef NDEBUG
         spdlog::get(name)->debug("pipeline started");
-#endif
         colorQueue                             = device.getOutputQueue("preview", 1, false);
         depthQueue                             = device.getOutputQueue("depth", 1, false);
         rectifLeftQueue                        = device.getOutputQueue("rectified_left", 1, false);
@@ -202,9 +200,7 @@ private:
     std::optional<time_point> _m_first_real_time_cam;
 
     dai::Pipeline createCameraPipeline() const {
-#ifndef NDEBUG
         spdlog::get(name)->debug("creating pipeline");
-#endif
         dai::Pipeline p;
 
         // IMU

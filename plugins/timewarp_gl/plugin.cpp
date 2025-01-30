@@ -308,10 +308,7 @@ private:
         // Record the image collection time
         offload_duration = _m_clock->now() - startGetTexTime;
 
-#ifndef NDEBUG
-        double time = duration2double<std::milli>(offload_duration);
-        spdlog::get(name)->debug("Texture image collecting time: {} ms", time);
-#endif
+        spdlog::get(name)->debug("Texture image collecting time: {} ms", duration2double<std::milli>(offload_duration));
 
         return pixels;
     }
