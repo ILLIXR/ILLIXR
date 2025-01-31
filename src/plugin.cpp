@@ -214,7 +214,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         if (options.count("duration")) {
             run_duration = std::chrono::seconds{options["duration"].as<long>()};
         } else if (config["env_vars"]["duration"]) {
-            run_duration = std::chrono::seconds{config["duration"].as<long>()};
+            run_duration = std::chrono::seconds{config["env_vars"]["duration"].as<long>()};
         } else {
             run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
                 ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
