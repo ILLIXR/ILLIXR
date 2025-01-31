@@ -21,7 +21,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_rgb_depth{sb->get_writer<rgb_depth_type>("rgb_depth")} {
-        spdlogger(std::getenv("OPENNI_LOG_LEVEL"));
+        spdlogger(sb->get_env_char("OPENNI_LOG_LEVEL"));
         if (!camera_initialize()) {
             spdlog::get(name)->error("Initialization failed");
             exit(0);
