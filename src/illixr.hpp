@@ -9,11 +9,11 @@
 #include <thread>
 #include <vector>
 
-#define GET_STRING(NAME, ENV)                                \
-    if (options.count(#NAME)) {                              \
-        sb->set_env(#ENV, options[#NAME].as<std::string>()); \
-    } else if (config["env_vars"][#NAME]) {                  \
-        sb->set_env(#ENV, config["env_vars"][#NAME].as<std::string>());  \
+#define GET_STRING(NAME, ENV)                                           \
+    if (options.count(#NAME)) {                                         \
+        sb->set_env(#ENV, options[#NAME].as<std::string>());            \
+    } else if (config["env_vars"][#NAME]) {                             \
+        sb->set_env(#ENV, config["env_vars"][#NAME].as<std::string>()); \
     }
 
 #define GET_BOOL(NAME, ENV)                             \
@@ -32,11 +32,11 @@
     }
 #define _STR(y)      #y
 #define STRINGIZE(x) _STR(x)
-#define GET_LONG(NAME, ENV)                                           \
-    if (options.count(#NAME)) {                                       \
-        sb->set_env(#ENV, std::to_string(options[#NAME].as<long>())); \
-    } else if (config["env_vars"][#NAME]) {                           \
-        sb->set_env(#ENV, std::to_string(config["env_vars"][#NAME].as<long>()));  \
+#define GET_LONG(NAME, ENV)                                                      \
+    if (options.count(#NAME)) {                                                  \
+        sb->set_env(#ENV, std::to_string(options[#NAME].as<long>()));            \
+    } else if (config["env_vars"][#NAME]) {                                      \
+        sb->set_env(#ENV, std::to_string(config["env_vars"][#NAME].as<long>())); \
     }
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
