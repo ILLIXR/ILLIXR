@@ -788,64 +788,6 @@ private:
         vulkan::locked_queue_submit(dp->queues[vulkan::queue::GRAPHICS], 1, &submitInfo, nullptr);
     }
 
-    void push_pose() {
-        // Send an identity pose if comparing images
-        auto current_pose = pp->get_fast_pose();
-        if (compare_images) {
-            current_pose.pose = fixed_pose;
-        }
-
-        auto now =
-            time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
-        // Are these right?
-        current_pose.predict_target_time   = now;
-        current_pose.predict_computed_time = now;
-        pose_writer.put(std::make_shared<fast_pose_type>(current_pose));
-        log->info("Pushed one pose over the network");
-    }
-
-    bool network_receive() {
-        if (decode_src_color_packets[0] != nullptr) {
-            av_packet_free_side_data(decode_src_color_packets[0]);
-            av_packet_free_side_data(decode_src_color_packets[1]);
-            av_packet_free(&decode_src_color_packets[0]);
-            av_packet_free(&decode_src_color_packets[1]);
-            if (use_depth) {
-                av_packet_free_side_data(decode_src_depth_packets[0]);
-                av_packet_free_side_data(decode_src_depth_packets[1]);
-                av_packet_free(&decode_src_depth_packets[0]);
-                av_packet_free(&decode_src_depth_packets[1]);
-            }
-        }
-        auto frame = frames_reader.dequeue();
-        if (frame == nullptr) {
-            return false;
-        }
-        decode_src_color_packets[0] = frame->left_color;
-        decode_src_color_packets[1] = frame->right_color;
-
-        // // save bytestream to file
-        // if (left_eye_stream == nullptr) {
-        //     left_eye_stream = fopen("left_eye.h264", "wb");
-        //     right_eye_stream = fopen("right_eye.h264", "wb");
-        // }
-        // fwrite(frame->left_color->data, 1, frame->left_color->size, left_eye_stream);
-        // fwrite(frame->right_color->data, 1, frame->right_color->size, right_eye_stream);
-
-        if (use_depth) {
-            decode_src_depth_packets[0] = frame->left_depth;
-            decode_src_depth_packets[1] = frame->right_depth;
-        }
-        // log->info("Received frame {}", frame_count);
-        uint64_t timestamp =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch())
-                .count();
-        auto diff_ns = timestamp - frame->sent_time;
-        log->info("diff (ms): {}", diff_ns / 1000000.0);
-        decoded_frame_pose = frame->pose;
-        return true;
-    }
-
     /**
      * @brief Initialize FFmpeg Vulkan device context
      *
