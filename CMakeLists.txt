@@ -141,9 +141,6 @@ elseif(lower_type MATCHES "relwithdebinfo")
     set(ILLIXR_BUILD_SUFFIX ".optdbg")
 endif()
 
-set(Vulkan_GLSLANG_VALIDATOR_EXECUTABLE "")
-set(CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}/lib/cmake ${CMAKE_INSTALL_PREFIX}/lib64/cmake /usr/lib/x86_64-linux-gnu/cmake /usr/lib/x86_64-linux-gnu/")
-
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/lib64/pkgconfig")
 
 link_directories(BEFORE ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib64)
