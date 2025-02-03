@@ -2,9 +2,6 @@
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer
 build_flags: -DILLIXR_VULKAN
 visualizers: openvins
-# vulkan: true
-data: /home/qinjunj/Research/ILLIXR3.2/ILLIXR_offload_PR/data/mav0
-demo_data: /home/qinjunj/Research/ILLIXR3.2/ILLIXR_offload_PR/demo_data
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false

@@ -1,8 +1,7 @@
 # This file was auto generated, take caution if manually editing.
 plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
 build_flags: -DILLIXR_VULKAN
-visualizers: ""
-vulkan: true
+visualizers: openvins
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false

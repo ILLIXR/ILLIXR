@@ -2,11 +2,7 @@
 plugins: tcp_network_backend,offload_rendering_server,offload_vio.server_rx,offload_vio.server_tx
 use_monado: true
 build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
-vulkan: true
-duration: 90
 visualizers: openvins
-data: /home/qinjunj/Research/ILLIXR3.2/ILLIXR_offload_PR_server/data/mav0
-demo_data: /home/qinjunj/Research/ILLIXR3.2/ILLIXR_offload_PR_server/demo_data
 enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false

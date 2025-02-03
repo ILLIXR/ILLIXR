@@ -20,8 +20,51 @@ profile:
   enable_verbose_errors: False
   enable_pre_sleep: False
 
+# Looked-up poses with native GL/VK or Monado.
+
 profile:
-  name: monado_gl
+  name: native_gl_lookup
+  plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: native_vk_lookup
+  plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
+  build_flags: -DILLIXR_VULKAN
+  vulkan: true
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: monado_vk_lookup
+  plugins: pose_lookup,timewarp_vk
+  use_monado: true
+  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+# Procedurally genereated movement with native GL.
+
+profile:
+  name: fauxpose
+  plugins: fauxpose,gldemo,debugview,audio_pipeline
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+# Monado with TimeWarp/OpenWarp GL/VK.
+# Defaults to offline datasets and OpenVINS for VIO.
+
+profile:
+  name: monado_timewarp_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
   visualizers: openvins
   build_flags: -DILLIXR_MONADO
@@ -36,8 +79,7 @@ profile:
   plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk
   visualizers: openvins
   use_monado: true
-  build_flags: -DILLIXR_MONADO,-DILLIXR_VULKAN
-  build_type: Release
+  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
@@ -48,15 +90,17 @@ profile:
   plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,openwarp_vk
   visualizers: openvins
   use_monado: true
-  build_flags: -DILLIXR_MONADO,-DILLIXR_VULKAN
-  build_type: Release
+  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
   enable_pre_sleep: False
 
+# Native TimeWarp/OpenWarp GL/VK.
+# Defaults to offline datasets and OpenVINS.
+
 profile:
-  name: native_gl
+  name: native_timewarp_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,timewarp_gl,debugview,offload_data,audio_pipeline
   visualizers: openvins
   enable_offload: false
@@ -69,7 +113,6 @@ profile:
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
   visualizers: openvins
   build_flags: -DILLIXR_VULKAN
-  build_type: Release
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -80,35 +123,49 @@ profile:
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
   visualizers: openvins
   build_flags: -DILLIXR_VULKAN
-  build_type: Release
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
   enable_pre_sleep: false
 
-profile:
-  name: native_lookup
-  plugins: pose_lookup,gldemo,debugview,offload_data,audio_pipeline
-  visualizers: openvins
-  enable_offload: false
-  enable_alignment: false
-  enable_verbose_errors: false
-  enable_pre_sleep: false
+# Offload VIO Device/Server.
+# Defaults to offline datasets, native GL, and OpenVINS, besides the Monado version.
 
 profile:
-  name: offload_device
+  name: offload_vio_device
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,ground_truth_slam,gldemo,debugview,timewarp_gl,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
-  duration: 85
+  visualizers: openvins
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
   enable_pre_sleep: False
 
 profile:
-  name: offload_monado_vk
+  name: offload_vio_server
+  plugins: offload_vio.server_rx,offload_vio.server_tx
+  enable_offload: False
+  enable_alignment: False
+  enable_verbose_errors: False
+  enable_pre_sleep: False
+
+profile:
+  name: offload_vio_device_monado
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
-  visualizers: openvins
   use_monado: true
+  build_flags: -DILLIXR_VULKAN
+  visualizers: openvins
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+# Offload rendering Client/Server.
+# Defaults to ZED for the Jetson, otherwise the offline dataset.
+
+profile:
+  name: offload_rendering_client
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer
+  visualizers: openvins
   build_flags: -DILLIXR_VULKAN
   enable_offload: false
   enable_alignment: false
@@ -116,17 +173,46 @@ profile:
   enable_pre_sleep: false
 
 profile:
-  name: offload_server
-  plugins: offload_vio.server_rx,offload_vio.server_tx
-  duration: 90
+  name: offload_rendering_server
+  plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk,openwarp_vk,vkdemo,native_renderer,tcp_network_backend
+  build_flags: -DILLIXR_VULKAN
+  vulkan: true
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: offload_rendering_client_jetson
+  plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,pose_lookup,vkdemo,zed
+  use_monado: false
+  build_flags: -DILLIXR_VULKAN
+  visualizers: openvins
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
   enable_pre_sleep: False
+  vulkan: true
+
+# Offload rendering + VIO Client/Server.
 
 profile:
-  name: fauxpose
-  plugins: fauxpose,gldemo,debugview,audio_pipeline
+  name: offload_rendering_vio_client
+  plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,offload_vio.device_rx,offload_vio.device_tx
+  build_flags: -DILLIXR_VULKAN
+  vulkan: true
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
+
+profile:
+  name: offload_rendering_vio_server
+  plugins: tcp_network_backend,offload_rendering_server,offload_vio.server_rx,offload_vio.server_tx
+  use_monado: true
+  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
+  vulkan: true
+  visualizers: openvins
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false

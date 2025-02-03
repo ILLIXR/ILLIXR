@@ -1,9 +1,0 @@
-# This file was auto generated, take caution if manually editing.
-plugins: tcp_network_backend,pose_lookup,display_vk,timewarp_vk,vkdemo,native_renderer
-build_flags: -DILLIXR_VULKAN
-build_type: Release
-visualizers: ""
-enable_offload: false
-enable_alignment: false
-enable_verbose_errors: false
-enable_pre_sleep: false

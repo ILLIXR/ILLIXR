@@ -1,0 +1,89 @@
+dep_map:
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: debugview
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: gldemo
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  - needs: vulkan::app
+    provided_by:
+    - vkdemo
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  - needs: vulkan::timewarp
+    provided_by:
+    - openwarp_vk
+    - timewarp_vk
+  plugin: native_renderer
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  plugin: offload_rendering_client
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  plugin: offload_rendering_client_jetson
+- dependencies:
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  plugin: offload_rendering_server
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  plugin: openwarp_vk
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  plugin: timewarp_gl
+- dependencies:
+  - needs: pose_prediction
+    provided_by:
+    - faux_pose
+    - pose_lookup
+    - pose_prediction
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  plugin: timewarp_vk
+- dependencies:
+  - needs: vulkan::display_provider
+    provided_by:
+    - display_vk
+  plugin: vkdemo
