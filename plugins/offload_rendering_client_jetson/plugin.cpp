@@ -62,16 +62,6 @@ public:
         } else {
             log->debug("Not encoding depth images for the client");
         }
-
-        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
-        if (compare_images) {
-            log->debug("Sending constant pose to compare images");
-            // Fixed pose for image comparison testing
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(-0.912881, 0.729179, -0.527451),
-                                   Eigen::Quaternionf(0.994709, 0.0463598, -0.0647321, 0.0649133));
-        } else {
-            log->debug("Client sending normal poses (not comparing images)");
-        }
     }
 
     void start() override {
@@ -534,9 +524,6 @@ public:
      */
     void push_pose() {
         auto current_pose = pp->get_fast_pose();
-        if (compare_images) {
-            current_pose.pose = fixed_pose;
-        }
 
         auto now =
             time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
@@ -590,7 +577,6 @@ private:
     std::atomic<bool> ready{false};
     std::atomic<bool> running{true};
     bool              use_depth{false};
-    bool              compare_images{false};
     bool              resolutionRequeue{false};
 
     // Buffer management

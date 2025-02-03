@@ -38,8 +38,6 @@
  *
  * Configuration is controlled through environment variables:
  * - ILLIXR_USE_DEPTH_IMAGES: Enable depth frame reception/decoding
- * - ILLIXR_COMPARE_IMAGES: Enable image comparison mode
- * - ILLIXR_POSE_FILE: Path to pose file (required for comparison mode)
  */
 
 // ILLIXR core headers
@@ -98,8 +96,6 @@ using namespace ILLIXR::vulkan::ffmpeg_utils;
  *
  * Configuration is controlled through environment variables:
  * - ILLIXR_USE_DEPTH_IMAGES: Enable depth frame reception/decoding
- * - ILLIXR_COMPARE_IMAGES: Enable image comparison mode
- * - ILLIXR_POSE_FILE: Path to pose file (required for comparison mode)
  */
 class offload_rendering_client
     : public threadloop
@@ -124,31 +120,6 @@ public:
         // Configure depth frame handling
         use_depth = std::getenv("ILLIXR_USE_DEPTH_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_USE_DEPTH_IMAGES"));
         log->debug(use_depth ? "Encoding depth images for the client" : "Not encoding depth images for the client");
-
-        // Configure image comparison mode
-        compare_images = std::getenv("ILLIXR_COMPARE_IMAGES") != nullptr && std::stoi(std::getenv("ILLIXR_COMPARE_IMAGES"));
-        if (compare_images) {
-            log->debug("Sending constant pose to compare images");
-
-            // The client always provides a constant 0 ms pose for the server to render,
-            // And timewarp / openwarp will try to warp it back in different increments.
-            assert(std::getenv("ILLIXR_POSE_FILE") != nullptr);
-            std::string   pose_filename = std::string(std::getenv("ILLIXR_POSE_FILE"));
-            std::ifstream pose_file(pose_filename);
-
-            std::string line;
-            std::getline(pose_file, line);
-
-            float             p_x, p_y, p_z;
-            float             q_x, q_y, q_z, q_w;
-            std::stringstream ss(line);
-            ss >> p_x >> p_y >> p_z >> q_x >> q_y >> q_z >> q_w;
-            fixed_pose = pose_type(time_point(), Eigen::Vector3f(p_x, p_y, p_z), Eigen::Quaternion(q_w, q_x, q_y, q_z));
-
-            pose_file.close();
-        } else {
-            log->debug("Client sending normal poses (not comparing images)");
-        }
     }
 
     /**
@@ -668,9 +639,6 @@ private:
      */
     void push_pose() {
         auto current_pose = pp->get_fast_pose();
-        if (compare_images) {
-            current_pose.pose = fixed_pose;
-        }
 
         auto now =
             time_point{std::chrono::duration<long, std::nano>{std::chrono::high_resolution_clock::now().time_since_epoch()}};
@@ -733,8 +701,6 @@ private:
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
     bool                                                 use_depth      = false;
-    bool                                                 compare_images = false;
-    pose_type                                            fixed_pose;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_color_frames;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_depth_frames;
     std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
