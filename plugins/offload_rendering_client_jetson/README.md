@@ -1,3 +1,4 @@
-# display_vk
+# offload_rendering_client_jetson
+
 ## Summary
-`display_vk` implements the service interface `display_provider`, which sets up a windowing backend (using GLFW in this case), initializes Vulkan, and creates a swapchain. If available, Vulkan validation layers are enabled. This plugin is only required when running the native target. For Monado, the `display_provider` service is provided by the Monado compositor.
+`offload_rendering_client_jetson` receives encoded frames from the network, and uses the Jetson's Multimedia API to decode frames before updating the buffer pool.

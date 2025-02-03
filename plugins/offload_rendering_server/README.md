@@ -1,3 +1,4 @@
-# display_vk
+# offload_rendering_server
+
 ## Summary
-`display_vk` implements the service interface `display_provider`, which sets up a windowing backend (using GLFW in this case), initializes Vulkan, and creates a swapchain. If available, Vulkan validation layers are enabled. This plugin is only required when running the native target. For Monado, the `display_provider` service is provided by the Monado compositor.
+`offload_rendering_server` encodes frames using FFMPEG and transmits them to the client with the ``network_backend`` from ``switchboard``. In addition to the frame, some additional information is also transmitted, e.g., the pose used for the rendered frame so that the client can reprojected the decoded frame accordingly.
