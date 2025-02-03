@@ -4,7 +4,7 @@ find_package(PkgConfig REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/share/cmake;${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib/cmake;${CMAKE_INSTALL_PREFIX}/lib64/cmake;${CMAKE_PREFIX_PATH})
 
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/share/pkgconfig")
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_PREFIX}/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig")
 
 get_external(Vulkan)
 
@@ -16,12 +16,19 @@ pkg_check_modules(libswscale_illixr libswscale_illixr)
 
 set(FINALIZE_INSTALL "#!/usr/bin/env sh
 
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libavcodec_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libavcodec ${CMAKE_INSTALL_PREFIX}/include/libavcodec_illixr
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libavdevice_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libavdevice ${CMAKE_INSTALL_PREFIX}/include/libavdevice_illixr
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libavfilter_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libavfilter ${CMAKE_INSTALL_PREFIX}/include/libavfilter_illixr
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libavformat_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libavformat ${CMAKE_INSTALL_PREFIX}/include/libavformat_illixr
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libavutil_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libavutil ${CMAKE_INSTALL_PREFIX}/include/libavutil_illixr
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libswresample_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libswresample ${CMAKE_INSTALL_PREFIX}/include/libswresample_illixr
+rm -rf ${CMAKE_INSTALL_PREFIX}/include/libswscale_illixr/
 mv ${CMAKE_INSTALL_PREFIX}/include/libswscale ${CMAKE_INSTALL_PREFIX}/include/libswscale_illixr
 find ${CMAKE_INSTALL_PREFIX}/include -type f -exec sed -i 's/\\\"libavcodec\\//\\\"libavcodec_illixr\\//g' {} \\\;
 find ${CMAKE_INSTALL_PREFIX}/include -type f -exec sed -i 's/\\\"libavformat\\//\\\"libavformat_illixr\\//g' {} \\\;
@@ -40,7 +47,7 @@ if(NOT (libavcodec_illixr_FOUND AND libavdevice_illixr_FOUND AND
     message("FFMPEG NOT FOUND, will build from source")
     EXTERNALPROJECT_ADD(ILLIXR_FFmpeg_ext
                         GIT_REPOSITORY https://github.com/ILLIXR/FFmpeg.git
-                        GIT_TAG 7e18f65898e2aa790add059c4906482a10aee3bb
+                        GIT_TAG 107a9c0854be971e80313c3779d0422f5c807292
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/ffmpeg
                         DEPENDS ${Vulkan_DEP_STR}
                         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
