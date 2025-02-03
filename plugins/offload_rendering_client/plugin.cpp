@@ -700,7 +700,7 @@ private:
     std::atomic<bool>                              ready = false;
 
     std::shared_ptr<vulkan::buffer_pool<fast_pose_type>> buffer_pool;
-    bool                                                 use_depth      = false;
+    bool                                                 use_depth = false;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_color_frames;
     std::vector<std::array<ffmpeg_vk_frame, 2>>          avvk_depth_frames;
     std::vector<std::array<VkCommandBuffer, 2>>          layout_transition_start_cmd_bufs;
