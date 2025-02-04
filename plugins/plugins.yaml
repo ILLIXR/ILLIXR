@@ -50,7 +50,7 @@ profile:
   enable_verbose_errors: False
   enable_pre_sleep: False
 
-# Procedurally genereated movement with native GL.
+# Procedurally generated movement with native GL.
 
 profile:
   name: fauxpose
@@ -175,6 +175,7 @@ profile:
 profile:
   name: offload_rendering_server
   plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk,openwarp_vk,vkdemo,native_renderer,tcp_network_backend
+  use_monado: true
   build_flags: -DILLIXR_VULKAN
   vulkan: true
   enable_offload: false

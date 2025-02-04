@@ -2,6 +2,7 @@
 plugins: tcp_network_backend,offload_rendering_server,offload_vio.server_rx,offload_vio.server_tx
 use_monado: true
 build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
+vulkan: true
 visualizers: openvins
 enable_offload: false
 enable_alignment: false
