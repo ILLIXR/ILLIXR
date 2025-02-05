@@ -189,7 +189,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
             bool                                   matched = false;
             cxxopts::values::parser_tool::ArguDesc ad      = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
 
-            if (!sb->get_env(ad.arg_name, "").empty()) {
+            if (sb->get_env(ad.arg_name, "").empty()) {
                 if (!ad.set_value)
                     ad.value = "True";
                 sb->set_env(ad.arg_name, ad.value);
