@@ -1,7 +1,6 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
-use_monado: true
-build_flags: -DILLIXR_VULKAN
+build_flags: ENABLE_MONADO
 visualizers: openvins
 enable_offload: false
 enable_alignment: false

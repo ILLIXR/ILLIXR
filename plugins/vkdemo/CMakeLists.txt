@@ -8,9 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 get_external_for_plugin(Vulkan)
-if(USE_MONADO)
-    get_external_for_plugin(Monado_vk)
-endif()
 file(GLOB_RECURSE GLSL_SOURCE_FILES
         "shaders/*.frag"
         "shaders/*.vert"

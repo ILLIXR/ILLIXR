@@ -50,7 +50,7 @@ const record_header mtp_record{"mtp_record",
                                    {"render_to_display", typeid(std::chrono::nanoseconds)},
                                }};
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
 typedef plugin timewarp_type;
 #else
 typedef threadloop timewarp_type;
@@ -67,7 +67,7 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , pp{pb->lookup_impl<pose_prediction>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
         , _m_eyebuffer{sb->get_reader<rendered_frame>("eyebuffer")}
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
@@ -85,7 +85,7 @@ public:
         , timewarp_gpu_logger{record_logger_}
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")} {
         spdlogger(std::getenv("TIMEWARP_GL_LOG_LEVEL"));
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
         const std::shared_ptr<xlib_gl_extended_window> xwin = pb->lookup_impl<xlib_gl_extended_window>();
         dpy                                                 = xwin->dpy;
         root                                                = xwin->win;
@@ -122,7 +122,7 @@ public:
 
         sb->schedule<image_handle>(id, "image_handle", [this](switchboard::ptr<const image_handle> handle, std::size_t) {
         // only 2 swapchains (for the left and right eye) are supported for now.
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
             static bool left_output_ready = false, right_output_ready = false;
 #else
             static bool left_output_ready = true, right_output_ready = true;
@@ -139,7 +139,7 @@ public:
                 this->_m_eye_swapchains_size[1] = handle->num_images;
                 break;
             }
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
             case swapchain_usage::LEFT_RENDER: {
                 this->_m_eye_output_handles[0] = *handle;
                 left_output_ready              = true;
@@ -172,7 +172,7 @@ public:
 
         this->_setup();
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
         sb->schedule<rendered_frame>(id, "eyebuffer", [this](switchboard::ptr<const rendered_frame> datum, std::size_t) {
             this->warp(datum);
         });
@@ -203,7 +203,7 @@ private:
     std::array<GLuint, 2> _m_eye_output_textures;
     std::array<GLuint, 2> _m_eye_framebuffers;
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
     std::array<image_handle, 2> _m_eye_output_handles;
 
     // Synchronization helper for Monado
@@ -482,7 +482,7 @@ private:
         transform = texCoordProjection * deltaViewMatrix;
     }
 
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
     // Get the estimated time of the next swap/next Vsync.
     // This is an estimate, used to wait until *just* before vsync.
     time_point GetNextSwapTimeEstimate() {
@@ -645,7 +645,7 @@ public:
             // If we're using Monado, we need to import the eye output textures to render to.
             // Otherwise with native, we can directly create the textures.
             for (int eye = 0; eye < 2; eye++) {
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
                 image_handle image = _m_eye_output_handles[eye];
                 ImportVulkanImage(image.vk_handle, image.usage);
 #else
@@ -786,7 +786,7 @@ public:
         glFinish();
         glEndQuery(GL_TIME_ELAPSED);
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
         // signal quad layer in Monado
         _m_signal_quad.put(_m_signal_quad.allocate<signal_to_quad>(++_signal_quad_seq));
 #else
@@ -883,7 +883,7 @@ public:
                                            {std::chrono::nanoseconds(elapsed_time)},
                                        }});
 
-#ifdef ILLIXR_MONADO
+#ifdef ENABLE_MONADO
         // Manually increment the iteration number if timewarp is running as a plugin
         ++iteration_no;
 #endif
@@ -900,7 +900,7 @@ public:
 #endif
     }
 
-#ifndef ILLIXR_MONADO
+#ifndef ENABLE_MONADO
     virtual skip_option _p_should_skip() override {
         using namespace std::chrono_literals;
         // Sleep for approximately 90% of the time until the next vsync.

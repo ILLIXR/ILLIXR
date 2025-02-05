@@ -67,8 +67,7 @@ profile:
   name: monado_timewarp_gl
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_gl,audio_pipeline
   visualizers: openvins
-  build_flags: -DILLIXR_MONADO
-  use_monado: true
+  build_flags: ENABLE_MONADO
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -78,8 +77,7 @@ profile:
   name: monado_timewarp_vk
   plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,timewarp_vk
   visualizers: openvins
-  use_monado: true
-  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
+  build_flags: ENABLE_MONADO
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
@@ -89,8 +87,7 @@ profile:
   name: monado_openwarp_vk
   plugins: gtsam_integrator,offline_cam,offline_imu,pose_prediction,openwarp_vk
   visualizers: openvins
-  use_monado: true
-  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
+  build_flags: ENABLE_MONADO
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
@@ -151,8 +148,7 @@ profile:
 profile:
   name: offload_vio_device_monado
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,offload_vio.device_rx,offload_vio.device_tx,audio_pipeline
-  use_monado: true
-  build_flags: -DILLIXR_VULKAN
+  build_flags: ENABLE_MONADO
   visualizers: openvins
   enable_offload: false
   enable_alignment: false
@@ -175,7 +171,7 @@ profile:
 profile:
   name: offload_rendering_server
   plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk,openwarp_vk,vkdemo,native_renderer,tcp_network_backend
-  use_monado: true
+  build_flags: ENABLE_MONADO
   build_flags: -DILLIXR_VULKAN
   vulkan: true
   enable_offload: false
@@ -186,7 +182,6 @@ profile:
 profile:
   name: offload_rendering_client_jetson
   plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,pose_lookup,vkdemo,zed
-  use_monado: false
   build_flags: -DILLIXR_VULKAN
   visualizers: openvins
   enable_offload: False

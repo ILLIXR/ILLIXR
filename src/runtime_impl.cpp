@@ -3,7 +3,7 @@
 #include "illixr/dynamic_lib.hpp"
 #include "illixr/error_util.hpp"
 #include "illixr/extended_window.hpp"
-#ifdef ILLIXR_VULKAN
+#ifdef ENABLE_VULKAN
     #include "illixr/vk/vk_extension_request.h"
     #include "vulkan_display.hpp"
 #endif
@@ -51,11 +51,11 @@ public:
         pb.register_impl<record_logger>(std::make_shared<noop_record_logger>());
         pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
         pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
-#if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
+#if !defined(ENABLE_MONADO) && !defined(ENABLE_VULKAN) // the extended window is only needed for our native OpenGL backend
         pb.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
 #endif
-#if /**!defined(ILLIXR_MONADO) && **/ defined(ILLIXR_VULKAN)
+#if /**!defined(ENABLE_MONADO) && **/ defined(ENABLE_VULKAN)
         // get env var ILLIXR_DISPLAY_MODE
         std::string display_mode = std::getenv("ILLIXR_DISPLAY_MODE") ? std::getenv("ILLIXR_DISPLAY_MODE") : "glfw";
         if (display_mode != "none")
@@ -87,7 +87,7 @@ public:
                            return std::shared_ptr<plugin>{plugin_factory(&pb)};
                        });
 
-#if /**!defined(ILLIXR_MONADO) && **/ defined(ILLIXR_VULKAN)
+#if /**!defined(ENABLE_MONADO) && **/ defined(ENABLE_VULKAN)
         const std::string display_mode = std::getenv("ILLIXR_DISPLAY_MODE") ? std::getenv("ILLIXR_DISPLAY_MODE") : "glfw";
         if (display_mode != "none") {
             std::set<const char*> instance_extensions;

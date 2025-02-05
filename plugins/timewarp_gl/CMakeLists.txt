@@ -1,7 +1,4 @@
 # module to build and install the timewarp_gl ILLIXR plugin
-if(USE_MONADO)
-    get_external_for_plugin(Monado_gl)
-endif()
 if(NOT DEFINED BUILDING_ILLIXR)
     message(ERROR "The timewarp_gl plugin cannot be built outside of the main ILLIXR build")
 endif()
@@ -24,6 +21,11 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/switchboard.hpp
         ../../include/illixr/threadloop.hpp
         )
+
+if(ENABLE_MONADO)
+    get_external_for_plugin(Monado_gl)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC ENABLE_MONADO)
+endif()
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${X11_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLU_INCLUDE_DIR} ${gl_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${Eigen3_INCLUDE_DIRS})
 target_link_libraries(${PLUGIN_NAME} ${X11_LIBRARIES} ${GLEW_LIBRARIES} ${glu_LDFLAGS} ${gl_LIBRARIES} ${Eigen3_LIBRARIES} spdlog::spdlog)

@@ -1,4 +1,4 @@
-#if defined(ILLIXR_MONADO)
+#if defined(ENABLE_MONADO)
     #define VMA_IMPLEMENTATION
 #endif
 

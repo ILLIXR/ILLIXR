@@ -5,3 +5,4 @@ enable_offload: false
 enable_alignment: false
 enable_verbose_errors: false
 enable_pre_sleep: false
+build_flags: ENABLE_MONADO

@@ -8,9 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 get_external_for_plugin(Vulkan)
-if(USE_MONADO)
-    get_external_for_plugin(Monado_vk)
-endif()
 find_package(glm REQUIRED)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
@@ -49,6 +46,11 @@ add_library(${PLUGIN_NAME} SHARED plugin.cpp
         ../../include/illixr/vk/render_pass.hpp
         ../../include/illixr/vk/vulkan_utils.hpp
         )
+
+if(ENABLE_MONADO)
+    get_external_for_plugin(Monado_vk)
+    target_compile_definitions(${PLUGIN_NAME} PUBLIC ENABLE_MONADO)
+endif()
 
 add_dependencies(${PLUGIN_NAME} OpenWarp_VK_Shaders)
 

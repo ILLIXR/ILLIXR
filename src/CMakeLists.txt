@@ -1,4 +1,4 @@
-if(ILLIXR_VULKAN)
+if(ENABLE_VULKAN)
     message("Vulkan enabled")
     get_external(Vulkan)
     find_package(glfw3 3.3 REQUIRED)
@@ -44,13 +44,12 @@ get_external(Yamlcpp)
 
 target_compile_definitions(plugin.main${ILLIXR_BUILD_SUFFIX} PRIVATE "ILLIXR_VISUALIZERS='${VIS_NAMES}'")
 
-if (ILLIXR_VULKAN)
+if (ENABLE_VULKAN)
     if(Vulkan_DEP_STR)
         add_dependencies(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_DEP_STR})
     endif()
-    target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} glfw)
-    target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} ${Vulkan_LIBRARIES})
-    target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Vulkan_INCLUDE_DIRS} ${ILLIXR_SOURCE_DIR}/include ${LIBDRM_INCLUDE_DIRS})
+    target_link_libraries(plugin.main${ILLIXR_BUILD_SUFFIX} glfw ${Vulkan_LIBRARIES})
+    target_include_directories(plugin.main${ILLIXR_BUILD_SUFFIX} PUBLIC ${Vulkan_INCLUDE_DIRS})
 endif ()
 
 target_include_directories(main${ILLIXR_BUILD_SUFFIX}.exe PUBLIC ${CMAKE_SOURCE_DIR}/include)
