@@ -109,16 +109,6 @@ public:
             throw std::runtime_error("Cannot recreate swapchain in headless mode!");
         }
 
-        uint32_t width, height;
-        if (!direct_mode) {
-            auto fb_size = std::dynamic_pointer_cast<glfw_extended>(backend)->get_framebuffer_size();
-            width        = std::clamp(fb_size.first, swapchain_extent.width, swapchain_extent.width);
-            height       = std::clamp(fb_size.second, swapchain_extent.height, swapchain_extent.height);
-        } else {
-            width  = swapchain_extent.width;
-            height = swapchain_extent.height;
-        }
-
         vkDeviceWaitIdle(vk_device);
 
         destroy_swapchain();
@@ -139,7 +129,8 @@ private:
         bool enable_validation_layers = std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS") != nullptr &&
             std::stoi(std::getenv("ILLIXR_VULKAN_VALIDATION_LAYERS"));
 
-        VkApplicationInfo app_info{VK_STRUCTURE_TYPE_APPLICATION_INFO};
+        VkApplicationInfo app_info;
+        app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         app_info.pApplicationName   = "ILLIXR Vulkan Display";
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         app_info.pEngineName        = "ILLIXR";
@@ -157,7 +148,8 @@ private:
 
         this->enabled_instance_extensions = backend_required_instance_extensions_vec;
 
-        VkInstanceCreateInfo create_info{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
+        VkInstanceCreateInfo create_info;
+        create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         create_info.pApplicationInfo        = &app_info;
         create_info.enabledExtensionCount   = static_cast<uint32_t>(backend_required_instance_extensions_vec.size());
         create_info.ppEnabledExtensionNames = backend_required_instance_extensions_vec.data();
@@ -179,8 +171,8 @@ private:
             create_info.ppEnabledLayerNames = validation_layers.data();
 
             // debug messenger
-            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info{
-                VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
+            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info;
+            debug_messenger_create_info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
             debug_messenger_create_info.messageSeverity =
                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
             debug_messenger_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
@@ -188,6 +180,7 @@ private:
             debug_messenger_create_info.pfnUserCallback =
                 [](VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType,
                    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
+                (void)pUserData;
                 // convert severity flag to string
                 const char* severity = "???";
                 if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
@@ -362,7 +355,8 @@ private:
 
         this->enabled_device_extensions = required_device_extensions;
 
-        VkDeviceCreateInfo create_info{VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO};
+        VkDeviceCreateInfo create_info;
+        create_info.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         create_info.pQueueCreateInfos       = queue_create_infos.data();
         create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
         create_info.enabledExtensionCount   = static_cast<uint32_t>(required_device_extensions.size());
@@ -482,7 +476,8 @@ private:
             image_count = swapchain_details.capabilities.maxImageCount;
         }
 
-        VkSwapchainCreateInfoKHR create_info{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
+        VkSwapchainCreateInfoKHR create_info;//{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
+        create_info.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         create_info.surface          = vk_surface;
         create_info.minImageCount    = image_count;
         create_info.imageFormat      = swapchain_image_format.format;
@@ -588,6 +583,5 @@ private:
 
     std::atomic<bool> should_poll{true};
 
-    friend class display_vk_runner;
     std::shared_ptr<RelativeClock> rc;
 };
