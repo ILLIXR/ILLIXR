@@ -8,14 +8,17 @@ set(PLUGIN_NAME plugin.lighthouse${ILLIXR_BUILD_SUFFIX})
 
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
-find_package(PkgConfig)
-pkg_check_modules(survive REQUIRED survive)
+get_external_for_plugin(LibSurvive)
 
 set(SRC_FILES plugin.cpp)
 
 add_library(${PLUGIN_NAME} SHARED ${SRC_FILES})
 
 target_include_directories(${PLUGIN_NAME} PUBLIC ${Eigen3_INCLUDE_DIRS} ${survive_INCLUDE_DIRS})
+
+if (LibSurvive_EXTERNAL)
+    add_dependencies(${PLUGIN_NAME} LibSurvive_ext)
+endif()
 
 target_link_libraries(${PLUGIN_NAME} ${Eigen3_LIBRARIES} spdlog::spdlog Threads::Threads ${survive_LIBRARIES})
 target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_17)
