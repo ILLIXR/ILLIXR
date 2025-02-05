@@ -1,8 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,pose_lookup,vkdemo,zed
-use_monado: false
-build_flags: -DILLIXR_VULKAN
-vulkan: true
 visualizers: openvins
 enable_offload: False
 enable_alignment: False

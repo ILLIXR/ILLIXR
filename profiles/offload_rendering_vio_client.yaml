@@ -1,7 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,offload_vio.device_rx,offload_vio.device_tx
-build_flags: -DILLIXR_VULKAN
-vulkan: true
 visualizers: openvins
 enable_offload: false
 enable_alignment: false

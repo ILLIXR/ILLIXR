@@ -33,8 +33,6 @@ profile:
 profile:
   name: native_vk_lookup
   plugins: pose_lookup,timewarp_vk,vkdemo,native_renderer
-  build_flags: -DILLIXR_VULKAN
-  vulkan: true
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -43,8 +41,7 @@ profile:
 profile:
   name: monado_vk_lookup
   plugins: pose_lookup,timewarp_vk
-  use_monado: true
-  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
+  build_flags: ENABLE_MONADO
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
@@ -109,7 +106,6 @@ profile:
   name: native_timewarp_vk
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,timewarp_vk,vkdemo,native_renderer,debugview
   visualizers: openvins
-  build_flags: -DILLIXR_VULKAN
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -119,7 +115,6 @@ profile:
   name: native_openwarp_vk
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
   visualizers: openvins
-  build_flags: -DILLIXR_VULKAN
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -162,7 +157,6 @@ profile:
   name: offload_rendering_client
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer
   visualizers: openvins
-  build_flags: -DILLIXR_VULKAN
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -172,8 +166,6 @@ profile:
   name: offload_rendering_server
   plugins: pose_lookup,offload_rendering_server,offload_rendering_client,timewarp_vk,openwarp_vk,vkdemo,native_renderer,tcp_network_backend
   build_flags: ENABLE_MONADO
-  build_flags: -DILLIXR_VULKAN
-  vulkan: true
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -182,21 +174,17 @@ profile:
 profile:
   name: offload_rendering_client_jetson
   plugins: offload_rendering_client_jetson,native_renderer,tcp_network_backend,timewarp_vk,openwarp_vk,offline_imu,offline_cam,gtsam_integrator,pose_prediction,pose_lookup,vkdemo,zed
-  build_flags: -DILLIXR_VULKAN
   visualizers: openvins
   enable_offload: False
   enable_alignment: False
   enable_verbose_errors: False
   enable_pre_sleep: False
-  vulkan: true
 
 # Offload rendering + VIO Client/Server.
 
 profile:
   name: offload_rendering_vio_client
   plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,tcp_network_backend,offload_rendering_client,timewarp_vk,native_renderer,offload_vio.device_rx,offload_vio.device_tx
-  build_flags: -DILLIXR_VULKAN
-  vulkan: true
   enable_offload: false
   enable_alignment: false
   enable_verbose_errors: false
@@ -205,9 +193,7 @@ profile:
 profile:
   name: offload_rendering_vio_server
   plugins: tcp_network_backend,offload_rendering_server,offload_vio.server_rx,offload_vio.server_tx
-  use_monado: true
-  build_flags: -DILLIXR_MONADO-DILLIXR_VULKAN
-  vulkan: true
+  build_flags: ENABLE_MONADO
   visualizers: openvins
   enable_offload: false
   enable_alignment: false

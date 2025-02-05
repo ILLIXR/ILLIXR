@@ -1,6 +1,5 @@
 # This file was auto generated, take caution if manually editing.
 plugins: offline_imu,offline_cam,gtsam_integrator,pose_prediction,openwarp_vk,vkdemo,native_renderer,debugview
-build_flags: -DILLIXR_VULKAN
 visualizers: openvins
 enable_offload: false
 enable_alignment: false
