@@ -14,9 +14,9 @@ endif()
 find_package(glm REQUIRED)
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
-        "shaders/*.frag"
-        "shaders/*.vert"
-        )
+     "shaders/*.frag"
+     "shaders/*.vert"
+)
 
 foreach (GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
@@ -36,19 +36,20 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        utils/hmd.cpp
-        utils/hmd.hpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/global_module_defs.hpp
-        ../../include/illixr/math_util.hpp
-        ../../include/illixr/phonebook.hpp
-        ../../include/illixr/plugin.hpp
-        ../../include/illixr/pose_prediction.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/vk_util/display_sink.hpp
-        ../../include/illixr/vk_util/render_pass.hpp
-        ../../include/illixr/vk_util/vulkan_utils.hpp
-        )
+            plugin.hpp
+            utils/hmd.cpp
+            utils/hmd.hpp
+            ../../include/illixr/data_format.hpp
+            ../../include/illixr/global_module_defs.hpp
+            ../../include/illixr/math_util.hpp
+            ../../include/illixr/phonebook.hpp
+            ../../include/illixr/plugin.hpp
+            ../../include/illixr/pose_prediction.hpp
+            ../../include/illixr/switchboard.hpp
+            ../../include/illixr/vk_util/display_sink.hpp
+            ../../include/illixr/vk_util/render_pass.hpp
+            ../../include/illixr/vk_util/vulkan_utils.hpp
+)
 
 add_dependencies(${PLUGIN_NAME} Timewarp_VK_Shaders)
 

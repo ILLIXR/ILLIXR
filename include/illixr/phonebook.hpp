@@ -18,7 +18,7 @@ namespace ILLIXR {
 /**
  * @brief A [service locator][1] for ILLIXR.
  *
- * This will be explained through an exmaple: Suppose one dynamically-loaded plugin, `A_plugin`,
+ * This will be explained through an example: Suppose one dynamically-loaded plugin, `A_plugin`,
  * needs a service, `B_service`, provided by another, `B_plugin`. `A_plugin` cannot statically
  * construct a `B_service`, because the implementation `B_plugin` is dynamically
  * loaded. However, `B_plugin` can register an implementation of `B_service` when it is loaded,
@@ -97,20 +97,20 @@ public:
      *
      * The implementation will be owned by phonebook (phonebook calls `delete`).
      */
-    template<typename specific_service>
-    void register_impl(std::shared_ptr<specific_service> impl) {
-        const std::unique_lock<std::shared_mutex> lock{_m_mutex};
+    template<typename Specific_service>
+    void register_impl(std::shared_ptr<Specific_service> impl) {
+        const std::unique_lock<std::shared_mutex> lock{mutex_};
 
-        const std::type_index type_index = std::type_index(typeid(specific_service));
+        const std::type_index type_index = std::type_index(typeid(Specific_service));
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[phonebook] Register {}", type_index.name());
 #endif
-        assert(_m_registry.count(type_index) == 0);
-        _m_registry.try_emplace(type_index, impl);
+        assert(registry_.count(type_index) == 0);
+        registry_.try_emplace(type_index, impl);
     }
 
     /**
-     * @brief Look up an implementation of @p specific_service, which should be registered first.
+     * @brief Look up an implementation of @p Specific_service, which should be registered first.
      *
      * Safe to be called from any thread.
      *
@@ -118,30 +118,30 @@ public:
      *
      * @throws if an implementation is not already registered.
      */
-    template<typename specific_service>
-    std::shared_ptr<specific_service> lookup_impl() const {
-        const std::shared_lock<std::shared_mutex> lock{_m_mutex};
+    template<typename Specific_service>
+    std::shared_ptr<Specific_service> lookup_impl() const {
+        const std::shared_lock<std::shared_mutex> lock{mutex_};
 
-        const std::type_index type_index = std::type_index(typeid(specific_service));
+        const std::type_index type_index = std::type_index(typeid(Specific_service));
 
 #ifndef NDEBUG
         // if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
-        if (_m_registry.count(type_index) != 1) {
+        if (registry_.count(type_index) != 1) {
             throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
         }
 #endif
 
-        std::shared_ptr<service> this_service = _m_registry.at(type_index);
+        std::shared_ptr<service> this_service = registry_.at(type_index);
         assert(this_service);
 
-        std::shared_ptr<specific_service> this_specific_service = std::dynamic_pointer_cast<specific_service>(this_service);
+        std::shared_ptr<Specific_service> this_specific_service = std::dynamic_pointer_cast<Specific_service>(this_service);
         assert(this_specific_service);
 
         return this_specific_service;
     }
 
 private:
-    std::unordered_map<std::type_index, const std::shared_ptr<service>> _m_registry;
-    mutable std::shared_mutex                                           _m_mutex;
+    std::unordered_map<std::type_index, const std::shared_ptr<service>> registry_;
+    mutable std::shared_mutex                                           mutex_;
 };
 } // namespace ILLIXR
