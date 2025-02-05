@@ -61,6 +61,7 @@ static std::map<ullong, sensor_types> load_data() {
         Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
         Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
         data[t].imu0 = {av, la};
+        std::cout << "Load IMU at " << t << std::endl;
     }
 
     const std::string cam0_subpath = "/cam0/data.csv";
@@ -73,6 +74,7 @@ static std::map<ullong, sensor_types> load_data() {
     for (CSVIterator row{cam0_file, 1}; row != CSVIterator{}; ++row) {
         ullong t     = std::stoull(row[0]);
         data[t].cam0 = {illixr_data + "/cam0/data/" + row[1]};
+        std::cout << "Load CAM0 at " << t << std::endl;
     }
 
     const std::string cam1_subpath = "/cam1/data.csv";
@@ -86,6 +88,7 @@ static std::map<ullong, sensor_types> load_data() {
         ullong      t     = std::stoull(row[0]);
         std::string fname = row[1];
         data[t].cam1      = {illixr_data + "/cam1/data/" + row[1]};
+        std::cout << "Load CAM1 at " << t << std::endl;
     }
 
     return data;

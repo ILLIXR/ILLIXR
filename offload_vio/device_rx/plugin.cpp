@@ -85,11 +85,11 @@ private:
         unsigned long long curr_time =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-        double sec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e9;
-        pose_transfer_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans_pose * 1e3 << std::endl;
+        double msec_to_trans_pose = (curr_time - vio_output.end_server_timestamp()) / 1e6;
+        pose_transfer_csv << frame_id << "," << slow_pose.timestamp() << "," << msec_to_trans_pose << std::endl;
 
-        double sec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e9;
-        roundtrip_csv << frame_id << "," << slow_pose.timestamp() << "," << sec_to_trans * 1e3 << std::endl;
+        double msec_to_trans = (_m_clock->now().time_since_epoch().count() - slow_pose.timestamp()) / 1e6;
+        roundtrip_csv << frame_id << "," << slow_pose.timestamp() << "," << msec_to_trans << std::endl;
 
         pose_type datum_pose_tmp{
             time_point{std::chrono::nanoseconds{slow_pose.timestamp()}},

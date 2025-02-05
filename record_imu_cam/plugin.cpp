@@ -60,9 +60,13 @@ public:
         // write cam0 and cam1
         switchboard::ptr<const cam_type> cam;
         cam                  = _m_cam.size() == 0 ? nullptr : _m_cam.dequeue();
-        std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
-        std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
         if (cam != nullptr) {
+            long cam_timestamp = cam->time.time_since_epoch().count();
+            // std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(cam_timestamp) + ".png";
+            // std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(cam_timestamp) + ".png";
+            std::string cam0_img = cam0_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
+            std::string cam1_img = cam1_data_dir.string() + "/" + std::to_string(timestamp) + ".png";
+        
             cam0_wt_file << timestamp << "," << timestamp << ".png " << std::endl;
             cv::imwrite(cam0_img, cam->img0);
             cam1_wt_file << timestamp << "," << timestamp << ".png " << std::endl;

@@ -26,6 +26,7 @@ struct display_params {
 
     // Separation between lens centers in meters
     static constexpr float lens_separation = width_meters / 2.0f;
+    // static constexpr float lens_separation = 0.05f;
 
     // Vertical position of the lens in meters
     static constexpr float lens_vertical_position = height_meters / 2.0f;
@@ -43,7 +44,7 @@ struct display_params {
     static constexpr float ipd = 0.064f;
 
     // Display refresh rate in Hz
-    static constexpr float frequency = 120.0f;
+    static constexpr float frequency = 144.0f;
 
     // Display period in nanoseconds
     static constexpr duration period = freq2period(frequency);

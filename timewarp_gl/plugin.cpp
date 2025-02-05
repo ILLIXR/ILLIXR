@@ -27,22 +27,22 @@ using namespace ILLIXR;
 
 typedef void (*glXSwapIntervalEXTProc)(Display* dpy, GLXDrawable drawable, int interval);
 
-const record_header timewarp_gpu_record{"timewarp_gpu",
-                                        {
-                                            {"iteration_no", typeid(std::size_t)},
-                                            {"wall_time_start", typeid(time_point)},
-                                            {"wall_time_stop", typeid(time_point)},
-                                            {"gpu_time_duration", typeid(std::chrono::nanoseconds)},
-                                        }};
+// const record_header timewarp_gpu_record{"timewarp_gpu",
+//                                         {
+//                                             {"iteration_no", typeid(std::size_t)},
+//                                             {"wall_time_start", typeid(time_point)},
+//                                             {"wall_time_stop", typeid(time_point)},
+//                                             {"gpu_time_duration", typeid(std::chrono::nanoseconds)},
+//                                         }};
 
-const record_header mtp_record{"mtp_record",
-                               {
-                                   {"iteration_no", typeid(std::size_t)},
-                                   {"vsync", typeid(time_point)},
-                                   {"imu_to_display", typeid(std::chrono::nanoseconds)},
-                                   {"predict_to_display", typeid(std::chrono::nanoseconds)},
-                                   {"render_to_display", typeid(std::chrono::nanoseconds)},
-                               }};
+// const record_header mtp_record{"mtp_record",
+//                                {
+//                                    {"iteration_no", typeid(std::size_t)},
+//                                    {"vsync", typeid(time_point)},
+//                                    {"imu_to_display", typeid(std::chrono::nanoseconds)},
+//                                    {"predict_to_display", typeid(std::chrono::nanoseconds)},
+//                                    {"render_to_display", typeid(std::chrono::nanoseconds)},
+//                                }};
 
 class timewarp_gl : public threadloop {
 public:
@@ -60,8 +60,8 @@ public:
         , _m_hologram{sb->get_writer<hologram_input>("hologram_in")}
         , _m_vsync_estimate{sb->get_writer<switchboard::event_wrapper<time_point>>("vsync_estimate")}
         , _m_offload_data{sb->get_writer<texture_pose>("texture_pose")}
-        , timewarp_gpu_logger{record_logger_}
-        , mtp_logger{record_logger_}
+        // , timewarp_gpu_logger{record_logger_}
+        // , mtp_logger{record_logger_}
         // TODO: Use #198 to configure this. Delete getenv_or.
         // This is useful for experiments which seek to evaluate the end-effect of timewarp vs no-timewarp.
         // Timewarp poses a "second channel" by which pose data can correct the video stream,
@@ -101,8 +101,8 @@ private:
     // Switchboard plug for publishing offloaded data
     switchboard::writer<texture_pose> _m_offload_data;
 
-    record_coalescer timewarp_gpu_logger;
-    record_coalescer mtp_logger;
+    // record_coalescer timewarp_gpu_logger;
+    // record_coalescer mtp_logger;
 
     GLuint timewarpShaderProgram;
 
@@ -635,14 +635,14 @@ public:
         std::chrono::nanoseconds predict_to_display = time_last_swap - latest_pose.predict_computed_time;
         std::chrono::nanoseconds render_to_display  = time_last_swap - most_recent_frame->render_time;
 
-        mtp_logger.log(record{mtp_record,
-                              {
-                                  {iteration_no},
-                                  {time_last_swap},
-                                  {imu_to_display},
-                                  {predict_to_display},
-                                  {render_to_display},
-                              }});
+        // mtp_logger.log(record{mtp_record,
+        //                       {
+        //                           {iteration_no},
+        //                           {time_last_swap},
+        //                           {imu_to_display},
+        //                           {predict_to_display},
+        //                           {render_to_display},
+        //                       }});
 
         if (enable_offload) {
             // Read texture image from texture buffer
@@ -684,13 +684,13 @@ public:
         // get the query result
         glGetQueryObjectui64v(query, GL_QUERY_RESULT, &elapsed_time);
 
-        timewarp_gpu_logger.log(record{timewarp_gpu_record,
-                                       {
-                                           {iteration_no},
-                                           {gpu_start_wall_time},
-                                           {_m_clock->now()},
-                                           {std::chrono::nanoseconds(elapsed_time)},
-                                       }});
+        // timewarp_gpu_logger.log(record{timewarp_gpu_record,
+        //                                {
+        //                                    {iteration_no},
+        //                                    {gpu_start_wall_time},
+        //                                    {_m_clock->now()},
+        //                                    {std::chrono::nanoseconds(elapsed_time)},
+        //                                }});
 
 #ifndef NDEBUG
         if (log_count > LOG_PERIOD) {

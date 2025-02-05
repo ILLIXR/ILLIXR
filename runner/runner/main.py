@@ -105,7 +105,9 @@ def build_runtime(
 
 def load_native(config: Mapping[str, Any]) -> None:
     runtime_exe_path = build_runtime(config, "exe")
-    data_path = pathify(config["data"], root_dir, root_dir / "test1/", True, True)
+    # data_path = pathify(config["data"], root_dir, root_dir / "EuRoc/fast2", True, True)
+    data_path = pathify(config["data"], root_dir, root_dir / "EuRoc/V1_02/mav0", True, True)
+    # data_path = pathify(config["data"], root_dir, std::getenv("ILLIXR_DATASET"), True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
@@ -119,13 +121,16 @@ def load_native(config: Mapping[str, Any]) -> None:
     illixr_cmd_list = [str(runtime_exe_path), *map(str, plugin_paths)]
     env_override = dict(
         ILLIXR_DATA=str(data_path),
+        # ILLIXR_DATA=str(os.getenv("ILLIXR_DATASET")),
         ILLIXR_DEMO_DATA=str(demo_data_path),
         ILLIXR_OFFLOAD_ENABLE=str(enable_offload_flag),
         ILLIXR_ALIGNMENT_ENABLE=str(enable_alignment_flag),
         ILLIXR_ENABLE_VERBOSE_ERRORS=str(config["enable_verbose_errors"]),
-        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 600)),
+        ILLIXR_RUN_DURATION=str(config["action"].get("ILLIXR_RUN_DURATION", 700)),
         ILLIXR_ENABLE_PRE_SLEEP=str(config["enable_pre_sleep"]),
         KIMERA_ROOT=config["action"]["kimera_path"],
+        # OPENVINS_ROOT=config["action"]["openvins_path"],
+        # OPENVINS_SENSOR=config["action"]["openvins_sensor"],
         AUDIO_ROOT=config["action"]["audio_path"],
         REALSENSE_CAM=str(realsense_cam_string),
         **env_gpu,
@@ -150,6 +155,9 @@ def load_native(config: Mapping[str, Any]) -> None:
             )
         )
     )
+    print(env_list)
+    print(actual_cmd_list)
+    print(illixr_cmd_list)
     log_stdout_str = config["action"].get("log_stdout", None)
     log_stdout_ctx = cast(
         ContextManager[Optional[BinaryIO]],
@@ -213,11 +221,12 @@ def load_monado(config: Mapping[str, Any]) -> None:
     runtime_path = pathify(config["runtime"]["path"], root_dir, cache_path, True, True)
     monado_config = config["action"]["monado"].get("config", {})
     monado_path = pathify(config["action"]["monado"]["path"], root_dir, cache_path, True, True)
-    data_path = pathify(config["data"], root_dir, root_dir / "EuRoc/V2_01/mav0", True, True)
+    data_path = pathify(config["data"], root_dir, root_dir / "EuRoc/Monado_beatsaber/mav0", True, True)
     demo_data_path = pathify(config["demo_data"], root_dir, cache_path, True, True)
     enable_offload_flag = config["enable_offload"]
     enable_alignment_flag = config["enable_alignment"]
     realsense_cam_string = config["realsense_cam"]
+    print(data_path)
 
     is_vulkan: bool = bool(config["action"]["is_vulkan"])
     build_runtime(config, "so", is_vulkan = True)
@@ -237,11 +246,12 @@ def load_monado(config: Mapping[str, Any]) -> None:
         ILLIXR_DATA=str(data_path),
         ILLIXR_PATH=str(runtime_path / f"plugin.{profile}.so"),
         ILLIXR_COMP=plugin_paths_comp_arg,
-        XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado_vk-dev.json")),
+        XR_RUNTIME_JSON=str(os.path.abspath(monado_path / "build" / "openxr_monado-dev.json")),
         XRT_TRACING="true",
         KIMERA_ROOT=config["action"]["kimera_path"],
         AUDIO_ROOT=config["action"]["audio_path"],
     )
+    print(str(os.path.abspath(monado_path / "build" / "openxr_monado-dev.json")))
 
     ## For CMake
     monado_build_opts: Mapping[str, str] = dict(
@@ -301,6 +311,8 @@ def load_monado(config: Mapping[str, Any]) -> None:
     ## Remove the socket file from unclean exit
     if os.path.exists("/run/user/1000/monado_comp_ipc"):
         os.remove("/run/user/1000/monado_comp_ipc")
+
+    print("Before opening Monado service\n")
     ## Open the Monado service application
     actual_cmd_str = config["action"].get("command", "$cmd")
     illixr_cmd_list = [str(monado_target_path), *map(str, plugin_paths)]
@@ -334,12 +346,16 @@ def load_monado(config: Mapping[str, Any]) -> None:
             )
         )
     )
+    print(actual_cmd_list)
+    # print(env_override)
 
     ## Launch the Monado service before any OpenXR apps are opened
     monado_service_proc = subprocess.Popen(actual_cmd_list, env=env_override)
+    print("After the call to open monado service\n")
 
     ## Give the Monado service some time to boot up and the user some time to initialize VIO
-    time.sleep(5)
+    time.sleep(10)
+    print("After sleeping\n")
 
     # Launch all OpenXR apps after the service is launched
     for openxr_app_bin_path in openxr_app_bin_paths:

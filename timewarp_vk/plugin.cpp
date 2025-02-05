@@ -736,9 +736,10 @@ class timewarp_vk_plugin : public plugin {
 public:
     timewarp_vk_plugin(const std::string& name, phonebook* pb)
         : plugin{name, pb}
-        , tw{std::make_shared<timewarp_vk>(pb)} {
-        pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
-    }
+        , tw{std::make_shared<timewarp_vk>(pb)}
+        {
+            pb->register_impl<timewarp>(std::static_pointer_cast<timewarp>(tw));
+        }
 
     virtual void start() override {
         // tw->initialize();

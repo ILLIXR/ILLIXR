@@ -45,7 +45,10 @@ public:
         raw_csv.open(data_path + "/imu_raw.csv");
         filtered_csv.open(data_path + "/imu_filtered.csv");
         int_info_csv.open(data_path + "/int_info.csv");
-        int_info_csv << "IMU time," << "#IMU integrated" << std::endl;
+        int_info_csv << "IMU time," << "#IMU integrated, " << "Start time, " << "End time, " << std::endl;
+        jitter_csv.open(data_path + "/jitter.csv");
+        imu_bias_csv.open(data_path + "/imu_bias.csv");
+        corrected_imu_int_csv.open(data_path + "/corrected_imu_int.csv");
 
         const double frequency = 200;
         const double mincutoff = 10;
@@ -53,9 +56,11 @@ public:
         const double dcutoff   = 10;
 
         for (int i = 0; i < 8; ++i) {
-            filters.emplace_back(frequency, Eigen::Array<double, 3, 1>{mincutoff, mincutoff, mincutoff},
+            filters.emplace_back(frequency, 
+                                 Eigen::Array<double, 3, 1>{mincutoff, mincutoff, mincutoff},
                                  Eigen::Array<double, 3, 1>{beta, beta, beta},
-                                 Eigen::Array<double, 3, 1>{dcutoff, dcutoff, dcutoff}, Eigen::Array<double, 3, 1>::Zero(),
+                                 Eigen::Array<double, 3, 1>{dcutoff, dcutoff, dcutoff}, 
+                                 Eigen::Array<double, 3, 1>::Zero(),
                                  Eigen::Array<double, 3, 1>::Ones(), [](auto& in) {
                                      return in.abs();
                                  });
@@ -66,7 +71,9 @@ public:
         _imu_vec.emplace_back(datum->time, datum->angular_v.cast<double>(), datum->linear_a.cast<double>());
 
         clean_imu_vec(datum->time);
+        // time_point start_propagate = _m_clock->now();
         propagate_imu_values(datum->time);
+        // std::cout << "IMU integration takes " << (_m_clock->now() - start_propagate).count() / 1e6 << std::endl;
 
         RAC_ERRNO_MSG("gtsam_integrator");
     }
@@ -76,6 +83,9 @@ private:
     std::ofstream     raw_csv;
     std::ofstream     filtered_csv;
     std::ofstream     int_info_csv;
+    std::ofstream     jitter_csv;
+    std::ofstream     imu_bias_csv;
+    std::ofstream     corrected_imu_int_csv;
     std::vector<one_euro_filter<Eigen::Array<double, 3, 1>, double>> filters;
     bool                                                             has_prev = false;
     Eigen::Matrix<double, 3, 1>                                      prev_euler_angles;
@@ -134,6 +144,9 @@ private:
             assert(_pim != nullptr && "_pim should not be null");
 
             _imu_bias = bias_t{imu_int_input.biasAcc, imu_int_input.biasGyro};
+            // Eigen::Vector3d biasAcc = {0., 0., 0.};
+            // Eigen::Vector3d biasGyro = {0., 0., 0.};
+            // _imu_bias = bias_t{biasAcc, biasGyro};
             _pim->resetIntegrationAndSetBias(_imu_bias);
 
             _navstate_lkf =
@@ -184,6 +197,27 @@ private:
         }
     }
 
+    virtual pose_type correct_pose(const pose_type pose) const {
+        pose_type swapped_pose;
+
+        // Make any changes to the axes direction below
+        // This is a mapping between the coordinate system of the current
+        // SLAM (OpenVINS) we are using and the OpenGL system.
+        swapped_pose.position.x() = -pose.position.y();
+        swapped_pose.position.y() = pose.position.z();
+        swapped_pose.position.z() = -pose.position.x();
+
+        // Make any chanes to orientation of the output below
+        // For the dataset were currently using (EuRoC), the output orientation acts as though
+        // the "top of the head" is the forward direction, and the "eye direction" is the up direction.
+        Eigen::Quaternionf raw_o(pose.orientation.w(), -pose.orientation.y(), pose.orientation.z(), -pose.orientation.x());
+
+        swapped_pose.orientation = raw_o;
+        swapped_pose.sensor_time = pose.sensor_time;
+
+        return swapped_pose;
+    }
+
     // Timestamp we are propagating the biases to (new IMU reading time)
     void propagate_imu_values(time_point real_time) {
         auto input_values = _m_imu_integrator_input.get_ro_nullable();
@@ -193,10 +227,10 @@ private:
         }
 
 #ifndef NDEBUG
-        if (input_values->last_cam_integration_time > last_cam_time) {
-            std::cout << "New slow pose has arrived!\n";
-            last_cam_time = input_values->last_cam_integration_time;
-        }
+        // if (input_values->last_cam_integration_time > last_cam_time) {
+        //     std::cout << "New slow pose has arrived!\n";
+        //     last_cam_time = input_values->last_cam_integration_time;
+        // }
 #endif
 
         if (_pim_obj == nullptr) {
@@ -232,11 +266,14 @@ private:
 #ifndef NDEBUG
         std::cout << "Integrating over " << prop_data.size() << " IMU samples\n";
 #endif
-        int_info_csv << real_time.time_since_epoch().count() << "," << prop_data.size() << std::endl;
+        int_info_csv << real_time.time_since_epoch().count() << "," << prop_data.size() << ","
+                     << time_begin.time_since_epoch().count() << "," << time_end.time_since_epoch().count()
+                     << std::endl;
 
         for (std::size_t i = 0; i < prop_data.size() - 1; i++) {
             _pim_obj->integrateMeasurement(prop_data[i], prop_data[i + 1]);
 
+            // Why doing this to the biases here?
             prev_bias = bias;
             bias      = _pim_obj->biasHat();
         }
@@ -253,10 +290,32 @@ private:
 
         auto seconds_since_epoch = std::chrono::duration<double>(real_time.time_since_epoch()).count();
 
-        raw_csv << std::fixed << real_time.time_since_epoch().count() << "," << out_pose.x() << "," << out_pose.y() << ","
+        if (input_values->last_cam_integration_time > last_cam_time) {
+            jitter_csv << std::fixed << real_time.time_since_epoch().count() << "," << out_pose.x() << "," << out_pose.y() << ","
                 << out_pose.z() << "," << out_pose.rotation().toQuaternion().w() << ","
                 << out_pose.rotation().toQuaternion().x() << "," << out_pose.rotation().toQuaternion().y() << ","
                 << out_pose.rotation().toQuaternion().z() << std::endl;
+            last_cam_time = input_values->last_cam_integration_time;
+        }
+
+        raw_csv << std::fixed << real_time.time_since_epoch().count() << "," << out_pose.x() << "," << out_pose.y() << ","
+                << out_pose.z() << "," << out_pose.rotation().toQuaternion().w() << ","
+                << out_pose.rotation().toQuaternion().x() << "," << out_pose.rotation().toQuaternion().y() << ","
+                << out_pose.rotation().toQuaternion().z() 
+                << std::endl;
+        imu_bias_csv << std::fixed << bias.accelerometer().x() << "," << bias.accelerometer().y() << "," << bias.accelerometer().z() << ","
+                     << bias.gyroscope().x() << "," << bias.gyroscope().y() << "," << bias.gyroscope().z() << std::endl;
+        // _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
+        //     imu_raw_type{
+        //         prev_bias.gyroscope(),
+        //         prev_bias.accelerometer(),
+        //         bias.gyroscope(),
+        //         bias.accelerometer(),
+        //         out_pose.translation(), // Position
+        //         navstate_k.velocity(), // Velocity
+        //         out_pose.rotation().toQuaternion(), // Eigen Quat
+        //         real_time
+		// }));
 
         auto                        original_quaternion = out_pose.rotation().toQuaternion();
         Eigen::Matrix<double, 3, 1> rotation_angles =
@@ -292,6 +351,26 @@ private:
         filtered_csv << std::fixed << real_time.time_since_epoch().count() << "," << filtered_pos.x() << "," << filtered_pos.y()
                      << "," << filtered_pos.z() << "," << new_quaternion.w() << "," << new_quaternion.x() << ","
                      << new_quaternion.y() << "," << new_quaternion.z() << std::endl;
+        
+        pose_type before_correction;
+        before_correction.sensor_time = real_time;
+        before_correction.position.x() = filtered_pos.x();
+        before_correction.position.y() = filtered_pos.y();
+        before_correction.position.z() = filtered_pos.z();
+        before_correction.orientation.w() = new_quaternion.w();
+        before_correction.orientation.x() = new_quaternion.x();
+        before_correction.orientation.y() = new_quaternion.y();
+        before_correction.orientation.z() = new_quaternion.z();
+
+        pose_type after_correction = correct_pose(before_correction);
+        corrected_imu_int_csv << std::fixed << after_correction.sensor_time.time_since_epoch().count() << ","
+                              << after_correction.position.x() << ","
+                              << after_correction.position.y() << ","
+                              << after_correction.position.z() << ","
+                              << after_correction.orientation.w() << ","
+                              << after_correction.orientation.x() << ","
+                              << after_correction.orientation.y() << ","
+                              << after_correction.orientation.z() << std::endl;
 
         _m_imu_raw.put(_m_imu_raw.allocate<imu_raw_type>(
             imu_raw_type{prev_bias.gyroscope(), prev_bias.accelerometer(), bias.gyroscope(), bias.accelerometer(),

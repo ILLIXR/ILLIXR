@@ -21,7 +21,6 @@ public:
         , _m_imu{_m_sb->get_writer<imu_type>("imu")}
         , dataset_first_time{_m_sensor_data_it->first}
         , dataset_now{0}
-        , imu_cam_log{record_logger_}
         , _m_rtc{pb->lookup_impl<RelativeClock>()} { }
 
 protected:
@@ -47,6 +46,7 @@ protected:
         const sensor_types& sensor_datum = _m_sensor_data_it->second;
 
         _m_imu.put(_m_imu.allocate<imu_type>(imu_type{real_now, (sensor_datum.imu0.angular_v), (sensor_datum.imu0.linear_a)}));
+        std::cout << "published one IMU at " << real_now.time_since_epoch().count() << "\n";
         ++_m_sensor_data_it;
     }
 
@@ -60,8 +60,6 @@ private:
     ullong dataset_first_time;
     // Current IMU timestamp
     ullong dataset_now;
-
-    record_coalescer imu_cam_log;
 
     std::shared_ptr<RelativeClock> _m_rtc;
 };

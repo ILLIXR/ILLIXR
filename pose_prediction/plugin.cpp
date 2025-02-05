@@ -11,6 +11,7 @@
 #include <shared_mutex>
 
 using namespace ILLIXR;
+// #define USE_LIGHTHOUSE
 
 class pose_prediction_impl : public pose_prediction {
 public:
@@ -21,7 +22,14 @@ public:
         , _m_imu_raw{sb->get_reader<imu_raw_type>("imu_raw")}
         , _m_true_pose{sb->get_reader<pose_type>("true_pose")}
         , _m_ground_truth_offset{sb->get_reader<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { }
+        , _m_vsync_estimate{sb->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")} { 
+            if (!std::filesystem::exists(data_path)) {
+                if (!std::filesystem::create_directory(data_path)) {
+                    std::cerr << "Failed to create data directory.";
+                }
+            }
+            pred_pose_csv.open(data_path + "/pred_pose.csv");
+        }
 
     // No parameter get_fast_pose() should just predict to the next vsync
     // However, we don't have vsync estimation yet.
@@ -101,6 +109,17 @@ public:
                                           static_cast<float>(state_plus(6))},
                           Eigen::Quaternionf{static_cast<float>(state_plus(3)), static_cast<float>(state_plus(0)),
                                              static_cast<float>(state_plus(1)), static_cast<float>(state_plus(2))}});
+        if (future_timestamp > last_pose_time) {
+            // std::unique_lock lock{print_mutex};
+            pred_pose_csv << future_timestamp.time_since_epoch().count() << ","
+                << predicted_pose.position.x() << ","
+                << predicted_pose.position.y() << ","
+                << predicted_pose.position.z() << ","
+                << predicted_pose.orientation.w() << ","
+                << predicted_pose.orientation.x() << ","
+                << predicted_pose.orientation.y() << ","
+                << predicted_pose.orientation.z() << std::endl;
+        }
         last_pose      = state_plus;
         last_pose_time = future_timestamp;
 
@@ -174,7 +193,7 @@ public:
     // current Dataset we are using (EuRoC)
     virtual pose_type correct_pose(const pose_type pose) const override {
         pose_type swapped_pose;
-
+#ifndef USE_LIGHTHOUSE
         // Make any changes to the axes direction below
         // This is a mapping between the coordinate system of the current
         // SLAM (OpenVINS) we are using and the OpenGL system.
@@ -189,7 +208,9 @@ public:
 
         swapped_pose.orientation = apply_offset(raw_o);
         swapped_pose.sensor_time = pose.sensor_time;
-
+#else
+        swapped_pose = pose;
+#endif
         return swapped_pose;
     }
 
@@ -204,8 +225,12 @@ private:
     switchboard::reader<switchboard::event_wrapper<time_point>>      _m_vsync_estimate;
     mutable Eigen::Quaternionf                                       offset{Eigen::Quaternionf::Identity()};
     mutable std::shared_mutex                                        offset_mutex;
+    mutable std::shared_mutex                                        print_mutex;
     mutable Eigen::Matrix<double, 13, 1>                             last_pose;
     mutable time_point                                               last_pose_time;
+
+    const std::string data_path = std::filesystem::current_path().string() + "/recorded_data";
+    mutable std::ofstream     pred_pose_csv;
 
     // Slightly modified copy of OpenVINS method found in propagator.cpp
     // Returns a pair of the predictor state_plus and the time associated with the
