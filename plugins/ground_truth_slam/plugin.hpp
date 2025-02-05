@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data_loading.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/switchboard.hpp"
@@ -13,6 +13,8 @@ namespace ILLIXR {
 #define ViconRoom2Easy      1413393212225760512
 #define ViconRoom2Medium    1413393885975760384
 #define ViconRoom2Hard      1413394881555760384
+
+typedef pose_type sensor_types;
 
 class ground_truth_slam : public plugin {
 public:

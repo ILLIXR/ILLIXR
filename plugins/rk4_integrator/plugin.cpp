@@ -3,6 +3,8 @@
 
 #include "plugin.hpp"
 
+#include "illixr/runge-kutta.hpp"
+
 #include <chrono>
 #include <eigen3/Eigen/Dense>
 #include <iomanip>
@@ -56,10 +58,10 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
         has_last_offset_ = true;
     }
 
-    Eigen::Matrix<double, 4, 1> curr_quat = Eigen::Matrix<double, 4, 1>{input_values->quat.x(), input_values->quat.y(),
-                                                                        input_values->quat.z(), input_values->quat.w()};
-    Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
-    Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
+        proper_quaterniond          curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
+                                                 input_values->quat.z()};
+        Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
+        Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
 
     // Uncomment this for some helpful prints
     // total_imu_++;
@@ -99,20 +101,17 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
             w_hat2 = prop_data[i + 1].angular_v - input_values->bias_gyro;
             a_hat2 = prop_data[i + 1].linear_a - input_values->bias_acc;
 
-            // Compute the new state mean value
-            Eigen::Vector4d new_quat;
-            Eigen::Vector3d new_vel, new_pos;
-            predict_mean_rk4(curr_quat, curr_pos, curr_vel, dt, w_hat, a_hat, w_hat2, a_hat2, new_quat, new_vel, new_pos);
+                // Compute the new state mean value
+                state_plus sp = ::ILLIXR::predict_mean_rk4(dt, state_plus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
 
-            curr_quat = new_quat;
-            curr_pos  = new_pos;
-            curr_vel  = new_vel;
+                curr_quat = sp.orientation;
+                curr_pos  = sp.position;
+                curr_vel  = sp.velocity;
+            }
         }
-    }
 
-    imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel,
-                                   Eigen::Quaterniond{curr_quat(3), curr_quat(0), curr_quat(1), curr_quat(2)}, real_time));
-}
+        imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
+    }
 
 // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
 std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
@@ -163,179 +162,5 @@ imu_type rk4_integrator::interpolate_imu(const imu_type& imu_1, const imu_type& 
                     (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
 }
 
-void rk4_integrator::predict_mean_rk4(const Eigen::Vector4d& quat, const Eigen::Vector3d& pos, const Eigen::Vector3d& vel,
-                                      double dt, const Eigen::Vector3d& w_hat1, const Eigen::Vector3d& a_hat1,
-                                      const Eigen::Vector3d& w_hat2, const Eigen::Vector3d& a_hat2, Eigen::Vector4d& new_q,
-                                      Eigen::Vector3d& new_v, Eigen::Vector3d& new_p) {
-    Eigen::Matrix<double, 3, 1> gravity_vec = Eigen::Matrix<double, 3, 1>(0.0, 0.0, 9.81);
-
-    // Pre-compute things
-    Eigen::Vector3d w_hat   = w_hat1;
-    Eigen::Vector3d a_hat   = a_hat1;
-    Eigen::Vector3d w_alpha = (w_hat2 - w_hat1) / dt;
-    Eigen::Vector3d a_jerk  = (a_hat2 - a_hat1) / dt;
-
-    // k1 ================
-    Eigen::Vector4d dq_0   = {0, 0, 0, 1};
-    Eigen::Vector4d q0_dot = 0.5 * Omega(w_hat) * dq_0;
-    Eigen::Matrix3d R_Gto0 = quat_2_Rot(quat_multiply(dq_0, quat));
-    Eigen::Vector3d v0_dot = R_Gto0.transpose() * a_hat - gravity_vec;
-
-    Eigen::Vector4d k1_q = q0_dot * dt;
-    Eigen::Vector3d k1_p = vel * dt;
-    Eigen::Vector3d k1_v = v0_dot * dt;
-
-    // k2 ================
-    w_hat += 0.5 * w_alpha * dt;
-    a_hat += 0.5 * a_jerk * dt;
-
-    Eigen::Vector4d dq_1 = quatnorm(dq_0 + 0.5 * k1_q);
-    // Eigen::Vector3d p_1 = pos+0.5*k1_p;
-    Eigen::Vector3d v_1 = vel + 0.5 * k1_v;
-
-    Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
-    Eigen::Matrix3d R_Gto1 = quat_2_Rot(quat_multiply(dq_1, quat));
-    Eigen::Vector3d v1_dot = R_Gto1.transpose() * a_hat - gravity_vec;
-
-    Eigen::Vector4d k2_q = q1_dot * dt;
-    Eigen::Vector3d k2_p = v_1 * dt;
-    Eigen::Vector3d k2_v = v1_dot * dt;
-
-    // k3 ================
-    Eigen::Vector4d dq_2 = quatnorm(dq_0 + 0.5 * k2_q);
-    // Eigen::Vector3d p_2 = pos+0.5*k2_p;
-    Eigen::Vector3d v_2 = vel + 0.5 * k2_v;
-
-    Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
-    Eigen::Matrix3d R_Gto2 = quat_2_Rot(quat_multiply(dq_2, quat));
-    Eigen::Vector3d v2_dot = R_Gto2.transpose() * a_hat - gravity_vec;
-
-    Eigen::Vector4d k3_q = q2_dot * dt;
-    Eigen::Vector3d k3_p = v_2 * dt;
-    Eigen::Vector3d k3_v = v2_dot * dt;
-
-    // k4 ================
-    w_hat += 0.5 * w_alpha * dt;
-    a_hat += 0.5 * a_jerk * dt;
-
-    Eigen::Vector4d dq_3 = quatnorm(dq_0 + k3_q);
-    // Eigen::Vector3d p_3 = pos+k3_p;
-    Eigen::Vector3d v_3 = vel + k3_v;
-
-    Eigen::Vector4d q3_dot = 0.5 * Omega(w_hat) * dq_3;
-    Eigen::Matrix3d R_Gto3 = quat_2_Rot(quat_multiply(dq_3, quat));
-    Eigen::Vector3d v3_dot = R_Gto3.transpose() * a_hat - gravity_vec;
-
-    Eigen::Vector4d k4_q = q3_dot * dt;
-    Eigen::Vector3d k4_p = v_3 * dt;
-    Eigen::Vector3d k4_v = v3_dot * dt;
-
-    // y+dt ================
-    Eigen::Vector4d dq = quatnorm(dq_0 + (1.0 / 6.0) * k1_q + (1.0 / 3.0) * k2_q + (1.0 / 3.0) * k3_q + (1.0 / 6.0) * k4_q);
-    new_q              = quat_multiply(dq, quat);
-    new_p              = pos + (1.0 / 6.0) * k1_p + (1.0 / 3.0) * k2_p + (1.0 / 3.0) * k3_p + (1.0 / 6.0) * k4_p;
-    new_v              = vel + (1.0 / 6.0) * k1_v + (1.0 / 3.0) * k2_v + (1.0 / 3.0) * k3_v + (1.0 / 6.0) * k4_v;
-}
-
-/**
- * @brief Integrated quaternion from angular velocity
- *
- * See equation (48) of trawny tech report [Indirect Kalman Filter for 3D Attitude
- * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf).
- *
- */
-inline Eigen::Matrix<double, 4, 4> rk4_integrator::Omega(Eigen::Matrix<double, 3, 1> w) {
-    Eigen::Matrix<double, 4, 4> mat;
-    mat.block(0, 0, 3, 3) = -skew_x(w);
-    mat.block(3, 0, 1, 3) = -w.transpose();
-    mat.block(0, 3, 3, 1) = w;
-    mat(3, 3)             = 0;
-    return mat;
-}
-
-/**
- * @brief Normalizes a quaternion to make sure it is unit norm
- * @param q_t Quaternion to normalized
- * @return Normalized quaterion
- */
-inline Eigen::Matrix<double, 4, 1> rk4_integrator::quatnorm(Eigen::Matrix<double, 4, 1> q_t) {
-    if (q_t(3, 0) < 0) {
-        q_t *= -1;
-    }
-    return q_t / q_t.norm();
-}
-
-/**
- * @brief Skew-symmetric matrix from a given 3x1 vector
- *
- * This is based on equation 6 in [Indirect Kalman Filter for 3D Attitude
- * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf): \f{align*}{ \lfloor\mathbf{v}\times\rfloor =
- *  \begin{bmatrix}
- *  0 & -v_3 & v_2 \\ v_3 & 0 & -v_1 \\ -v_2 & v_1 & 0
- *  \end{bmatrix}
- * @f}
- *
- * @param[in] w 3x1 vector to be made a skew-symmetric
- * @return 3x3 skew-symmetric matrix
- */
-inline Eigen::Matrix<double, 3, 3> rk4_integrator::skew_x(const Eigen::Matrix<double, 3, 1>& w) {
-    Eigen::Matrix<double, 3, 3> w_x;
-    w_x << 0, -w(2), w(1), w(2), 0, -w(0), -w(1), w(0), 0;
-    return w_x;
-}
-
-/**
- * @brief Converts JPL quaterion to SO(3) rotation matrix
- *
- * This is based on equation 62 in [Indirect Kalman Filter for 3D Attitude
- * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf): \f{align*}{ \mathbf{R} =
- * (2q_4^2-1)\mathbf{I}_3-2q_4\lfloor\mathbf{q}\times\rfloor+2\mathbf{q}^\top\mathbf{q}
- * @f}
- *
- * @param[in] q JPL quaternion
- * @return 3x3 SO(3) rotation matrix
- */
-inline Eigen::Matrix<double, 3, 3> rk4_integrator::quat_2_Rot(const Eigen::Matrix<double, 4, 1>& q) {
-    Eigen::Matrix<double, 3, 3> q_x = skew_x(q.block(0, 0, 3, 1));
-    Eigen::MatrixXd             Rot = (2 * std::pow(q(3, 0), 2) - 1) * Eigen::MatrixXd::Identity(3, 3) - 2 * q(3, 0) * q_x +
-        2 * q.block(0, 0, 3, 1) * (q.block(0, 0, 3, 1).transpose());
-    return Rot;
-}
-
-/**
- * @brief Multiply two JPL quaternions
- *
- * This is based on equation 9 in [Indirect Kalman Filter for 3D Attitude
- * Estimation](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf). We also enforce that the quaternion is unique by having q_4
- * be greater than zero. \f{align*}{ \bar{q}\otimes\bar{p}= \mathcal{L}(\bar{q})\bar{p}= \begin{bmatrix}
- *  q_4\mathbf{I}_3+\lfloor\mathbf{q}\times\rfloor & \mathbf{q} \\
- *  -\mathbf{q}^\top & q_4
- *  \end{bmatrix}
- *  \begin{bmatrix}
- *  \mathbf{p} \\ p_4
- *  \end{bmatrix}
- * @f}
- *
- * @param[in] q First JPL quaternion
- * @param[in] p Second JPL quaternion
- * @return 4x1 resulting p*q quaternion
- */
-inline Eigen::Matrix<double, 4, 1> rk4_integrator::quat_multiply(const Eigen::Matrix<double, 4, 1>& q,
-                                                                 const Eigen::Matrix<double, 4, 1>& p) {
-    Eigen::Matrix<double, 4, 1> q_t;
-    Eigen::Matrix<double, 4, 4> Qm;
-    // create big L matrix
-    Qm.block(0, 0, 3, 3) = q(3, 0) * Eigen::MatrixXd::Identity(3, 3) - skew_x(q.block(0, 0, 3, 1));
-    Qm.block(0, 3, 3, 1) = q.block(0, 0, 3, 1);
-    Qm.block(3, 0, 1, 3) = -q.block(0, 0, 3, 1).transpose();
-    Qm(3, 3)             = q(3, 0);
-    q_t                  = Qm * p;
-    // ensure unique by forcing q_4 to be >0
-    if (q_t(3, 0) < 0) {
-        q_t *= -1;
-    }
-    // normalize and return
-    return q_t / q_t.norm();
-}
 
 PLUGIN_MAIN(rk4_integrator)

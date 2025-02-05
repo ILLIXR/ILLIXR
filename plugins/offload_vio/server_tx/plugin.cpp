@@ -53,7 +53,7 @@ void server_writer::start_accepting_connection(const switchboard::ptr<const conn
 
 void server_writer::send_vio_output(const switchboard::ptr<const pose_type>& datum) {
     // Check if a socket connection has been established
-    if (write_socket != nullptr) {
+    if (write_socket_ != nullptr) {
         // Construct slow pose for output
         auto* protobuf_slow_pose = new vio_output_proto::SlowPose();
         protobuf_slow_pose->set_timestamp(datum->sensor_time.time_since_epoch().count());

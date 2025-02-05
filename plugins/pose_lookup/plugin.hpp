@@ -1,12 +1,15 @@
 #pragma once
 
-#include "data_loading.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/global_module_defs.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/plugin.hpp"
 #include "illixr/pose_prediction.hpp"
 
 namespace ILLIXR {
+
+typedef pose_type sensor_types;
+
 class pose_lookup_impl : public pose_prediction {
 public:
     explicit pose_lookup_impl(const phonebook* const pb);

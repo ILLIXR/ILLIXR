@@ -5,7 +5,7 @@ set(PLUGIN_NAME plugin.offline_cam${ILLIXR_BUILD_SUFFIX})
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            data_loading.hpp
+            ../../include/illixr/data_loading.hpp
             ../../include/illixr/plugin.hpp
             ../../include/illixr/opencv_data_types.hpp
             ../../include/illixr/phonebook.hpp

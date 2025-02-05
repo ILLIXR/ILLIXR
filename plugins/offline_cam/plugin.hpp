@@ -1,12 +1,53 @@
 #pragma once
 
-#include "data_loading.hpp"
+#include "illixr/data_loading.hpp"
 #include "illixr/opencv_data_types.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/threadloop.hpp"
 
+#include <opencv2/imgcodecs.hpp>
+
 namespace ILLIXR {
+
+/*
+ * Uncommenting this preprocessor macro makes the offline_cam load each data from the disk as it is needed.
+ * Otherwise, we load all of them at the beginning, hold them in memory, and drop them in the queue as needed.
+ * Lazy loading has an artificial negative impact on performance which is absent from an online-sensor system.
+ * Eager loading deteriorates the startup time and uses more memory.
+ */
+// #define LAZY
+
+class lazy_load_image {
+public:
+    lazy_load_image() { }
+
+    lazy_load_image(std::string path)
+        : _m_path(std::move(path)) {
+#ifndef LAZY
+        _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+#endif
+    }
+
+    [[nodiscard]] cv::Mat load() const {
+#ifdef LAZY
+        cv::Mat _m_mat = cv::imread(_m_path, cv::IMREAD_GRAYSCALE);
+    #error "Linux scheduler cannot interrupt IO work, so lazy-loading is unadvisable."
+#endif
+        assert(!_m_mat.empty());
+        return _m_mat;
+    }
+
+private:
+    std::string _m_path;
+    cv::Mat     _m_mat;
+};
+
+typedef struct {
+    lazy_load_image cam0;
+    lazy_load_image cam1;
+} sensor_types;
+
 class offline_cam : public threadloop {
 public:
     [[maybe_unused]] offline_cam(const std::string& name, phonebook* pb);

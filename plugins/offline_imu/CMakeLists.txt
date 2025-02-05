@@ -5,7 +5,7 @@ set(PLUGIN_NAME plugin.offline_imu${ILLIXR_BUILD_SUFFIX})
 # source files, listed individually so that any changes will trigger a rebuild
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
-            data_loading.hpp
+            ../../include/illixr/data_loading.hpp
             ../../include/illixr/data_format.hpp
             ../../include/illixr/managed_thread.hpp
             ../../include/illixr/relative_clock.hpp

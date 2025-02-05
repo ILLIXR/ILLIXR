@@ -1,6 +1,5 @@
 #pragma once
 
-#include "data_loading.hpp"
 #include "illixr/data_format.hpp"
 #include "illixr/managed_thread.hpp"
 #include "illixr/phonebook.hpp"
@@ -8,7 +7,19 @@
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 
+#include <map>
+
 namespace ILLIXR {
+
+typedef struct {
+    Eigen::Vector3d angular_v;
+    Eigen::Vector3d linear_a;
+} raw_imu_type;
+
+typedef struct {
+    raw_imu_type imu0;
+} sensor_types;
+
 class offline_imu : public threadloop {
 public:
     [[maybe_unused]] offline_imu(const std::string& name, phonebook* pb);

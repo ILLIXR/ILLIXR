@@ -1,15 +1,31 @@
 #include "plugin.hpp"
 
+#include "illixr/data_loading.hpp"
+
 #include <utility>
 
 using namespace ILLIXR;
+
+
+
+inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, pose_type> data;
+
+    for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
+        ullong             t = std::stoull(row[0]);
+        Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
+        Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
+        data[t] = {{}, av, la};
+    }
+    return data;
+}
 
 [[maybe_unused]] ground_truth_slam::ground_truth_slam(const std::string& name, phonebook* pb)
     : plugin{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , true_pose_{switchboard_->get_writer<pose_type>("true_pose")}
     , ground_truth_offset_{switchboard_->get_writer<switchboard::event_wrapper<Eigen::Vector3f>>("ground_truth_offset")}
-    , sensor_data_{load_data()}
+    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "ground_truth_slam", &read_data)}
     // The relative-clock timestamp of each IMU is the difference between its dataset time and the IMU dataset_first_time.
     // Therefore we need the IMU dataset_first_time to reproduce the real dataset time.
     // TODO: Change the hardcoded number to be read from some configuration variables in the yaml file.

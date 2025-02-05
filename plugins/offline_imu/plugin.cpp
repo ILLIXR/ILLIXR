@@ -1,12 +1,26 @@
 #include "plugin.hpp"
 
+#include "illixr/data_loading.hpp"
+
 #include <chrono>
 
 using namespace ILLIXR;
 
+inline std::map<ullong, sensor_types> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, sensor_types> data;
+
+    for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
+        ullong          t = std::stoull(row[0]);
+        Eigen::Vector3d av{std::stod(row[1]), std::stod(row[2]), std::stod(row[3])};
+        Eigen::Vector3d la{std::stod(row[4]), std::stod(row[5]), std::stod(row[6])};
+        data[t].imu0 = {av, la};
+    }
+    return data;
+}
+
 [[maybe_unused]] offline_imu::offline_imu(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
-    , sensor_data_{load_data()}
+    , sensor_data_{load_data<sensor_types>("imu0", "offline_imu", &read_data)}
     , sensor_data_it_{sensor_data_.cbegin()}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , imu_{switchboard_->get_writer<imu_type>("imu")}

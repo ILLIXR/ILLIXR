@@ -32,12 +32,6 @@
     }
 #define STR(y)       #y
 #define STRINGIZE(x) STR(x)
-//#define GET_LONG(NAME, ENV)                                                    \
-//    if (options.count(#NAME)) {                                                \
-//        setenv(#ENV, std::to_string(options[#NAME].as<long>()).c_str(), true); \
-//    } else if (config[#NAME]) {                                                \
-//        setenv(#ENV, std::to_string(config[#NAME].as<long>()).c_str(), true);  \
-//    }
 
 constexpr std::chrono::seconds          ILLIXR_RUN_DURATION_DEFAULT{60};
 [[maybe_unused]] constexpr unsigned int ILLIXR_PRE_SLEEP_DURATION{10};

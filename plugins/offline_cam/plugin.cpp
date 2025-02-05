@@ -1,15 +1,43 @@
 #include "plugin.hpp"
 
+#include "illixr/data_loading.hpp"
+
 #include <chrono>
+#include <regex>
 #include <thread>
 
 using namespace ILLIXR;
+
+// combine two maps into one
+std::map<ullong, sensor_types> make_map(const std::map<ullong, lazy_load_image>& cam0,
+                                        const std::map<ullong, lazy_load_image>& cam1) {
+    std::map<ullong, sensor_types> data;
+    for (auto& it : cam0) {
+        data[it.first].cam0 = it.second;
+    }
+    for (auto& it : cam1) {
+        data[it.first].cam1 = it.second;
+    }
+    return data;
+}
+
+inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, lazy_load_image> data;
+    auto                              name = std::regex_replace(file_name, std::regex("\\.csv"), "/");
+    for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
+        ullong t = std::stoull(row[0]);
+        data[t]  = {name + row[1]};
+    }
+    return data;
+}
+
 
 [[maybe_unused]] offline_cam::offline_cam(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
     , cam_publisher_{switchboard_->get_writer<cam_type>("cam")}
-    , sensor_data_{load_data()}
+    , sensor_data_{make_map(load_data<lazy_load_image>("cam0", "offline_cam", &read_data),
+                            load_data<lazy_load_image>("cam1", "offline_cam", &read_data))}
     , dataset_first_time_{sensor_data_.cbegin()->first}
     , last_timestamp_{0}
     , clock_{phonebook_->lookup_impl<relative_clock>()}

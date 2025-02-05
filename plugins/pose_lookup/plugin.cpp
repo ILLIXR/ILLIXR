@@ -7,10 +7,22 @@
 
 using namespace ILLIXR;
 
+inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
+    std::map<ullong, pose_type> data;
+
+    for (csv_iterator row{gt_file, 1}; row != csv_iterator{}; ++row) {
+        ullong             t = std::stoull(row[0]);
+        Eigen::Vector3f    av{std::stof(row[1]), std::stof(row[2]), std::stof(row[3])};
+        Eigen::Quaternionf la{std::stof(row[4]), std::stof(row[5]), std::stof(row[6]), std::stof(row[7])};
+        data[t] = {{}, av, la};
+    }
+    return data;
+}
+
 pose_lookup_impl::pose_lookup_impl(const phonebook* const pb)
     : switchboard_{pb->lookup_impl<switchboard>()}
     , clock_{pb->lookup_impl<relative_clock>()}
-    , sensor_data_{load_data()}
+    , sensor_data_{load_data<pose_type>("state_groundtruth_estimate0", "pose_lookup", &read_data)}
     , sensor_data_it_{sensor_data_.cbegin()}
     , dataset_first_time_{sensor_data_it_->first}
     , vsync_estimate_{switchboard_->get_reader<switchboard::event_wrapper<time_point>>("vsync_estimate")}

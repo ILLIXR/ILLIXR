@@ -8,6 +8,7 @@
 #include "gst/gst.h"
 
 #include <condition_variable>
+#include <functional>
 #include <opencv2/core/mat.hpp>
 #include <queue>
 #include <utility>

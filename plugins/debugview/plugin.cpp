@@ -440,7 +440,7 @@ void debugview::start() {
     // Init and verify GLEW
     const GLenum glew_err = glewInit();
     if (glew_err != GLEW_OK) {
-        spdlog::get(name_)->error("GLEW Error: {}", (void*) glewGetErrorString(glew_err));
+        spdlog::get(name_)->error("GLEW Error: {}", reinterpret_cast<const char*>(glewGetErrorString(glew_err)));
         glfwDestroyWindow(gui_window_);
         ILLIXR::abort("[debugview] Failed to initialize GLEW");
     }
