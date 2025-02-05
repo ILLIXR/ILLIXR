@@ -55,7 +55,7 @@ public:
         const switchboard::ptr<const switchboard::event_wrapper<time_point>> estimated_vsync =
             _m_vsync_estimate.get_ro_nullable();
         if (estimated_vsync == nullptr) {
-            spdlog::get("illixr")->warn("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
+            spdlog::get("illixr")->trace("[pose_lookup] Vsync estimation not valid yet, returning fast_pose for now()");
             return get_fast_pose(_m_clock->now());
         } else {
             return get_fast_pose(**estimated_vsync);
@@ -163,8 +163,7 @@ public:
 
         auto looked_up_pose        = nearest_row->second;
         looked_up_pose.sensor_time = time_point{std::chrono::nanoseconds{nearest_row->first - dataset_first_time}};
-        return fast_pose_type{
-            .pose = correct_pose(looked_up_pose), .predict_computed_time = _m_clock->now(), .predict_target_time = time};
+        return fast_pose_type{correct_pose(looked_up_pose), _m_clock->now(), time};
     }
 
 private:

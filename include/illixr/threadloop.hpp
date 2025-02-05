@@ -71,6 +71,7 @@ public:
         assert(_m_stoplight->check_should_stop());
         assert(_m_thread.joinable());
         _m_thread.join();
+        plugin::stop();
     }
 
     /**

@@ -28,8 +28,10 @@ public:
         , sb{pb->lookup_impl<switchboard>()}
         , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_integrator_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
-        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")} {
-        spdlogger(std::getenv("GTSAM_INTEGRATOR_LOG_LEVEL"));
+        , _m_imu_raw{sb->get_writer<imu_raw_type>("imu_raw")}
+        , log(spdlogger(nullptr)) {
+        // spdlogger(std::getenv("GTSAM_INTEGRATOR_LOG_LEVEL"));
+        // spd_add_file_sink("gtsam", "csv", "debug");
         sb->schedule<imu_type>(id, "imu", [&](const switchboard::ptr<const imu_type>& datum, size_t) {
             callback(datum);
         });
@@ -77,6 +79,8 @@ private:
 
     [[maybe_unused]] time_point last_cam_time{};
     duration                    last_imu_offset{};
+
+    std::shared_ptr<spdlog::logger> log;
 
     /**
      * @brief Wrapper object protecting the lifetime of IMU integration inputs and biases
@@ -175,7 +179,8 @@ private:
 
 #ifndef NDEBUG
         if (input_values->last_cam_integration_time > last_cam_time) {
-            spdlog::get(name)->debug("New slow pose has arrived!");
+            // spdlog::get(name)->debug("New slow pose has arrived!");
+            log->debug("New slow pose has arrived!");
             last_cam_time = input_values->last_cam_integration_time;
         }
 #endif
@@ -211,7 +216,8 @@ private:
         ImuBias bias      = _pim_obj->biasHat();
 
 #ifndef NDEBUG
-        spdlog::get(name)->debug("Integrating over {} IMU samples", prop_data.size());
+        // spdlog::get(name)->debug("Integrating over {} IMU samples", prop_data.size());
+        log->info("Integrating over {} IMU samples", prop_data.size());
 #endif
 
         for (std::size_t i = 0; i < prop_data.size() - 1; i++) {

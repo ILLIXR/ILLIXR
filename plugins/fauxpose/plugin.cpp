@@ -176,7 +176,7 @@ public:
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[fauxpose] Returning pose");
 #endif
-        return fast_pose_type{.pose = simulated_pose, .predict_computed_time = _m_clock->now(), .predict_target_time = time};
+        return fast_pose_type{simulated_pose, _m_clock->now(), time};
     }
 
     // ---------------------------------------------------------------------

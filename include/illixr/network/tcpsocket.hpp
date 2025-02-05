@@ -1,5 +1,4 @@
-#ifndef TCPSOCKET_HPP
-#define TCPSOCKET_HPP
+#pragma once
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -111,5 +110,3 @@ public:
         return string(peer_ip) + ":" + to_string(peer_port);
     }
 };
-
-#endif /* TCPSOCKET_HPP */
