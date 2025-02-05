@@ -18,6 +18,7 @@ public:
     server_writer(std::string name_, phonebook* pb_)
         : plugin{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu_int_input{sb->get_reader<imu_integrator_input>("imu_integrator_input")}
         , client_addr(CLIENT_IP, CLIENT_PORT_2) {
         if (!filesystem::exists(data_path)) {
@@ -25,6 +26,8 @@ public:
                 std::cerr << "Failed to create data directory.";
             }
         }
+        response_time_csv.open(data_path + "/response_time.csv");
+        response_time_csv << "Response Timestamp (ns)" << std::endl;
 
         socket.set_reuseaddr();
         socket.bind(Address(SERVER_IP, SERVER_PORT_2));
@@ -139,6 +142,7 @@ public:
             string data_to_be_sent = vio_output_params->SerializeAsString();
             string delimitter      = "END!";
 
+            response_time_csv << _m_clock->now().time_since_epoch().count() << std::endl;
             write_socket->write(data_to_be_sent + delimitter);
 
             delete vio_output_params;
@@ -149,6 +153,7 @@ public:
 
 private:
     const std::shared_ptr<switchboard>        sb;
+    const std::shared_ptr<RelativeClock>   _m_clock;
     switchboard::reader<imu_integrator_input> _m_imu_int_input;
 
     TCPSocket  socket;
@@ -157,6 +162,7 @@ private:
     bool       is_client_connected;
 
     const string data_path = filesystem::current_path().string() + "/recorded_data";
+    std::ofstream response_time_csv;
 };
 
 PLUGIN_MAIN(server_writer)

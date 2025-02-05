@@ -30,6 +30,7 @@ public:
     server_reader(std::string name_, phonebook* pb_)
         : threadloop{name_, pb_}
         , sb{pb->lookup_impl<switchboard>()}
+        , _m_clock{pb->lookup_impl<RelativeClock>()}
         , _m_imu{sb->get_writer<imu_type>("imu")}
         , _m_cam{sb->get_writer<cam_type>("cam")}
         , _conn_signal{sb->get_writer<connection_signal>("connection_signal")}
@@ -40,6 +41,8 @@ public:
                 std::cerr << "Failed to create data directory.";
             }
         }
+        uplink_time_csv.open(data_path + "/uplink_time.csv");
+        decompression_time_csv.open(data_path + "/decompression_time.csv");
 
         socket.set_reuseaddr();
         socket.bind(server_addr);
@@ -110,10 +113,11 @@ public:
 
 private:
     void ReceiveVioInput(const vio_input_proto::IMUCamVec& vio_input) {
+        // std::cout << "Received one VIO input\n";
         // Logging the transmitting time
         unsigned long long curr_time =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        double sec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e9;
+        double msec_to_trans = (curr_time - vio_input.real_timestamp()) / 1e6;
 
         // Loop through and publish all IMU values first
         for (int i = 0; i < vio_input.imu_data_size() - 1; i++) {
@@ -130,8 +134,10 @@ private:
         // Must do a deep copy of the received data (in the form of a string of bytes)
         auto img0_copy = std::string(cam_data.img0_data());
         auto img1_copy = std::string(cam_data.img1_data());
+        uplink_time_csv << cam_data.timestamp() << "," << msec_to_trans << std::endl;
 
 #ifdef USE_COMPRESSION
+        time_point start_decompression = _m_clock->now();
         // With compression
         uint64_t curr =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -147,6 +153,7 @@ private:
         cv::Mat img1(img1_dst.clone());
 
         lock.unlock();
+        decompression_time_csv << cam_data.timestamp() << "," << (_m_clock->now() - start_decompression).count() << std::endl;
         // With compression end
 #else
         // Without compression
@@ -172,6 +179,7 @@ private:
 
 private:
     const std::shared_ptr<switchboard>     sb;
+    const std::shared_ptr<RelativeClock>   _m_clock;
     switchboard::writer<imu_type>          _m_imu;
     switchboard::writer<cam_type>          _m_cam;
     switchboard::writer<connection_signal> _conn_signal;
@@ -182,6 +190,8 @@ private:
     string     buffer_str;
 
     const std::string data_path = filesystem::current_path().string() + "/recorded_data";
+    std::ofstream uplink_time_csv;
+    std::ofstream decompression_time_csv;
 };
 
 PLUGIN_MAIN(server_reader)
