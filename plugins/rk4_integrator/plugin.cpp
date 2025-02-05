@@ -58,10 +58,10 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
         has_last_offset_ = true;
     }
 
-        proper_quaterniond          curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
-                                                 input_values->quat.z()};
-        Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
-        Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
+    proper_quaterniond          curr_quat = {input_values->quat.w(), input_values->quat.x(), input_values->quat.y(),
+                                             input_values->quat.z()};
+    Eigen::Matrix<double, 3, 1> curr_pos  = input_values->position;
+    Eigen::Matrix<double, 3, 1> curr_vel  = input_values->velocity;
 
     // Uncomment this for some helpful prints
     // total_imu_++;
@@ -101,17 +101,18 @@ void rk4_integrator::propagate_imu_values(time_point real_time) {
             w_hat2 = prop_data[i + 1].angular_v - input_values->bias_gyro;
             a_hat2 = prop_data[i + 1].linear_a - input_values->bias_acc;
 
-                // Compute the new state mean value
-                state_plus sp = ::ILLIXR::predict_mean_rk4(dt, state_plus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
+            // Compute the new state mean value
+            state_plus sp =
+                ::ILLIXR::predict_mean_rk4(dt, state_plus(curr_quat, curr_vel, curr_pos), w_hat, a_hat, w_hat2, a_hat2);
 
-                curr_quat = sp.orientation;
-                curr_pos  = sp.position;
-                curr_vel  = sp.velocity;
-            }
+            curr_quat = sp.orientation;
+            curr_pos  = sp.position;
+            curr_vel  = sp.velocity;
         }
-
-        imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
     }
+
+    imu_raw_.put(imu_raw_.allocate(w_hat, a_hat, w_hat2, a_hat2, curr_pos, curr_vel, curr_quat, real_time));
+}
 
 // Select IMU readings based on timestamp similar to how OpenVINS selects IMU values to propagate
 std::vector<imu_type> rk4_integrator::select_imu_readings(const std::vector<imu_type>& imu_data, time_point time_begin,
@@ -161,6 +162,5 @@ imu_type rk4_integrator::interpolate_imu(const imu_type& imu_1, const imu_type& 
     return imu_type{timestamp, (1 - lambda) * imu_1.linear_a + lambda * imu_2.linear_a,
                     (1 - lambda) * imu_1.angular_v + lambda * imu_2.angular_v};
 }
-
 
 PLUGIN_MAIN(rk4_integrator)

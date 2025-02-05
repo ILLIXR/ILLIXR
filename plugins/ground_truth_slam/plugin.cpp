@@ -6,8 +6,6 @@
 
 using namespace ILLIXR;
 
-
-
 inline std::map<ullong, pose_type> read_data(std::ifstream& gt_file, const std::string& file_name) {
     std::map<ullong, pose_type> data;
 

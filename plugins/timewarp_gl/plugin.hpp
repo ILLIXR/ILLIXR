@@ -1,13 +1,12 @@
 #pragma once
 
+#include "illixr/extended_window.hpp"
 #include "illixr/phonebook.hpp"
 #include "illixr/pose_prediction.hpp"
 #include "illixr/relative_clock.hpp"
 #include "illixr/switchboard.hpp"
 #include "illixr/threadloop.hpp"
 #include "utils/hmd.hpp"
-
-#include "illixr/extended_window.hpp"
 
 namespace ILLIXR {
 

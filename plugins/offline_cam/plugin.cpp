@@ -31,7 +31,6 @@ inline std::map<ullong, lazy_load_image> read_data(std::ifstream& gt_file, const
     return data;
 }
 
-
 [[maybe_unused]] offline_cam::offline_cam(const std::string& name, phonebook* pb)
     : threadloop{name, pb}
     , switchboard_{phonebook_->lookup_impl<switchboard>()}
