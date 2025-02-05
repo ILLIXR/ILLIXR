@@ -25,10 +25,7 @@ static std::chrono::nanoseconds thread_cpu_time() {
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
-#include <boost/serialization/export.hpp>
-#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/shared_ptr.hpp>
-#include <boost/serialization/vector.hpp>
 
 namespace ILLIXR {
 
@@ -127,7 +124,7 @@ public:
     class event {
     public:
         template<typename Archive>
-        void serialize(Archive& ar, const unsigned int version) { }
+        void serialize(Archive& ar, const unsigned int version) { (void)ar; (void)version; }
 
         virtual ~event() = default;
     };
