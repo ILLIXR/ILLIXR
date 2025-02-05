@@ -10,6 +10,10 @@ The `gldemo` plugin serves as a stand-in for an actual application when ILLIXR i
 
 `gldemo` publishes the rendered eyebuffers to the Switchboard system as well, using whichever eyebuffer format has been selected with the `USE_ALT_EYE_FORMAT` compile-time macro. The alternative eye format is more similar to the format used by Monado/OpenXR, and is more fully explained by the code comments.
 
+## Environment Variables
+
+**GLDEMO_LOG_LEVEL**: logging level for this plugin, values can be "trace", "debug", "info", "warning", "error", "critical", or "off"
+
 ## Notes
 
 `gldemo` does not pretend to be an OpenXR application; it does not use the OpenXR API, nor does it follow typical OpenXR patterns. It hooks directly into the Switchboard system and is intended as a debug/visualization tool. For more accurate and representative testing, consider running ILLIXR with an actual OpenXR application.

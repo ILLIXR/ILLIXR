@@ -161,7 +161,31 @@ Where the entries are defined as (* indicates required field):
 : The root path to where the compiled libraries and binaries should be installed. (e.g. specifying /home/user will install libraries in /home/user/lib and binaries in /home/user/bin). **Note**: The prefix is also used for installing any packages that were downloaded and build from external repositories (e.g. DBoW2, GTSAM, etc). At runtime this path is added to *LD_LIBRARY_PATH* to aid in finding the plugin libraries.
 
 - env_vars
-: environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution. Common examples are:
+: environment variables to use, any environment variable ILLIXR uses can be set here and will be valid during program execution.
+
+
+In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
+
+## Environment Variables
+
+ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However, in ILLIXR the switchboard acts as an interface to these functions with `get_env` (returns std::string), `get_env_bool` (returns bool), `get_env_char` (returns char*), and `set_env`. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the switchboard interface wherever possible. Any items given on the command line which do not match expected command line arguments are considered to be environment variables. For example:
+
+```bash
+main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
+```
+
+This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
+
+```yaml
+plugins: fauxpose,gldemo,debugview,audio_pipeline
+enable_offload: false
+DATA_SOURCE: /home/my/data
+PROCESS_DATA: true
+```
+
+Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
+
+### Common Environment Variables
 
 - duration
 : The duration to run ILLIXR for in seconds.
@@ -184,26 +208,7 @@ Where the entries are defined as (* indicates required field):
 - enable_pre_sleep
 : Force ILLIXR to sleep for the given number of seconds before starting the plugins (this is useful for attaching a debugger), Default is 0, indicating no sleeping.
 
-In general, you should not edit a [profile][23] file directly. The exception to this is when you are testing things on your own machine. [Profile][23] files are generated automatically from the master `profiles/plugins.yaml` during the cmake configuration stage. This is done so that any changes to a [profile][23] or the addition or removal of a [plugin][22] can be managed from a single file. The build system will generate an *illixr.yaml* file which contains entries from the command line and any input profile file and can be freely edited (it is generated every time `cmake` is called).
-
-## Environment Variables
-
-ILLIXR and several of its dependencies use environment variables to steer processing and define quasi-constant values. Traditionally, one would use std::getenv and std::setenv to get and set these items. However, in ILLIXR the switchboard acts as an interface to these functions with `get_env` (returns std::string), `get_env_bool` (returns bool), `get_env_char` (returns char*), and `set_env`. Using the switchboard interfaces allows for environment variables to be set from the command line and/or yaml file. It is strongly encouraged to the switchboard interface wherever possible. Any items given on the command line which do not match expected command line arguments are considered to be environment variables. For example:
-
-```bash
-main.dbg.exe --yaml=my.yaml --DATA_SOURCE=/home/my/data --PROCESS_DATA
-```
-
-This will set env environment variables `DATA_SOURCE` to `/home/my/data` and `PROCESS_DATA` to `True`. For yaml files, any items not in the expected set will be considered to be environment variables. For example:
-
-```yaml
-plugins: fauxpose,gldemo,debugview,audio_pipeline
-enable_offload: false
-DATA_SOURCE: /home/my/data
-PROCESS_DATA: true
-```
-
-Here, the keywords `plugins` and `enable_offload` are ignored, as they are expected options. The `DATA_SOURCE` and `PROCESS_DATA` entries will cause environment variables to be set to the respective values. *Note:* the names and values of the environment variables are case sensitive. *Note:* the `get_env_bool` considers any of 'y', 'yes', 'true', and 'on' (case-insensitive) to be `true`.
+Each plugin can define environment variables to use. See the documentation of each plugin for details.
 
 ## ILLIXR Graphics Backends
 

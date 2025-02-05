@@ -12,6 +12,10 @@
 * `update_uniforms(const pose_type render_pose)` calculates the reprojection matrix given the current pose and the pose used to render the frame, and updates the uniform buffer with the reprojection matrix. This must be called before `record_command_buffer` is called
 * `record_command_buffer(VkCommandBuffer commandBuffer, int left)` records the commands into a given command buffer that would perform the reprojection for one eye, for which 1 is left and 0 is right
 
+## Environment Variables
+
+**ILLIXR_TIMEWARP_DISABLE**: whether to disable the warping, values can be "True" or "False"(default)
+
 ## Notes
 
 The rotational reprojection algorithm implemented in this plugin is a re-implementation of the algorithm used by the late Jan Paul van Waveren. His invaluable, priceless work in the area of AR/VR has made our project possible. View his codebase [here.](https://github.com/KhronosGroup/Vulkan-Samples-Deprecated/tree/master/samples/apps/atw)
