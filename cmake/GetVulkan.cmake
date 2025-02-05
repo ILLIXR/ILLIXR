@@ -15,12 +15,11 @@ function(clearVars)
 endfunction()
 
 
-message(STATUS "Checking for module 'vulkan' > 1.3.255")
-find_package(Vulkan 1.3.255 QUIET)
-
+message(STATUS "Checking for module 'vulkan' > 1.3.268")
+find_package(Vulkan 1.3.268 QUIET)
 if(NOT Vulkan_FOUND)
     clearVars()
-    pkg_check_modules(Vulkan QUIET vulkan>=1.3.255)
+    pkg_check_modules(Vulkan QUIET vulkan>=1.3.268)
     if(Vulkan_FOUND AND Vulkan_LIBRARY_DIRS)
         set(Vulkan_LIBRARIES "${Vulkan_LIBRARY_DIRS}/lib${Vulkan_LIBRARIES}.so" CACHE INTERNAL "" FORCE)
     endif()
@@ -57,7 +56,7 @@ if (NOT Vulkan_FOUND)
     message(STATUS "Building VULKAN from source")
     EXTERNALPROJECT_ADD(Vulkan_ext
                         GIT_REPOSITORY https://github.com/ILLIXR/ILLIXR-vulkan.git
-                        GIT_TAG ca2e256f2ef5bcdd0ffd05f7712bd03897d9c991
+                        GIT_TAG c46c15fdda8047c7451d2fc7935c3a83bf83847d
                         PREFIX ${CMAKE_BINARY_DIR}/_deps/vulkan
                         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release -DBUILD_PARALLEL_LEVEL=${BUILD_PARALLEL_LEVEL}
                         BUILD_COMMAND cmake --build . --parallel ${BUILD_PARALLEL_LEVEL}
@@ -65,7 +64,7 @@ if (NOT Vulkan_FOUND)
                         )
     set(Vulkan_DEP_STR Vulkan_ext)
     set(Vulkan_EXTERNAL Yes)
-    set(Vulkan_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
-    set(Vulkan_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/libvulkan.so)
+    set(Vulkan_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include CACHE PATH "" FORCE)
+    set(Vulkan_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/libvulkan.so CACHE PATH "" FORCE)
     set(Vulkan_GLSLANG_VALIDATOR_EXECUTABLE ${CMAKE_INSTALL_PREFIX}/bin/glslangValidator CACHE INTERNAL "" FORCE)
 endif()

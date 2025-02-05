@@ -73,6 +73,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DGLSL_VERSION="330")
 
 # Vulkan flags
+# do we only need this if compile with vulkan?  TODO: XYZ
 add_compile_definitions(VK_ENABLE_BETA_EXTENSIONS)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -Wall -Wextra -rdynamic -Wno-attributes -Wno-unknown-pragmas -fPIC")
@@ -100,7 +101,7 @@ if(NOT BUILD_PARALLEL_LEVEL)
     ProcessorCount(N)
     if(N GREATER 8)
         set(BUILD_PARALLEL_LEVEL 4)
-    elseif(N GREATER 4)
+    elseif(N GREATER 6)
         set(BUILD_PARALLEL_LEVEL 2)
     else()
         set(BUILD_PARALLEL_LEVEL 1)

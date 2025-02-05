@@ -27,6 +27,7 @@
       "name": "audio_pipeline",
       "cmake_flag": "USE_AUDIO_PIPELINE=ON",
       "dependencies": [
+        "boost",
         "git"
       ]
     },
@@ -68,6 +69,11 @@
         "xkbcommon",
         "SDL2"
       ]
+    },
+    {
+      "name": "fauxpose",
+      "cmake_flag": "USE_FAUXPOSE=ON",
+      "dependencies": []
     },
     {
       "name": "gldemo",
@@ -263,16 +269,6 @@
       "cmake_flag": "USE_OPENVINS=ON",
       "dependencies": [
         "boost"
-      ]
-    },
-    {
-      "name": "orb_slam",
-      "cmake_flag": "USE_ORB_SLAM=ON",
-      "dependencies": [
-        "git",
-        "boost",
-        "fmt",
-        "patch"
       ]
     },
     {
@@ -546,43 +542,6 @@
           "CentOS": {
             "9": {
               "pkg": "graphviz hdf5-devel libcurl-devel qwt-qt5-devel qt5-qtbase-devel libyaml-devel zlib-devel openssl-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          }
-        }
-      }
-    },
-    {
-      "fmt": {
-        "pkg": {
-          "Ubuntu": {
-            "20": {
-              "pkg": "libfmt-dev",
-              "postnotes": "",
-              "notes": ""
-            },
-            "22": {
-              "pkg": "libfmt-dev",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "Fedora": {
-            "37": {
-              "pkg": "fmt-devel",
-              "postnotes": "",
-              "notes": ""
-            },
-            "38": {
-              "pkg": "fmt-devel",
-              "postnotes": "",
-              "notes": ""
-            }
-          },
-          "CentOS": {
-            "9": {
-              "pkg": "fmt-devel",
               "postnotes": "",
               "notes": ""
             }
