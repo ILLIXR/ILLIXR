@@ -211,9 +211,9 @@ find_package(Eigen3 REQUIRED)
 
 find_package(Git REQUIRED)
 if (CMAKE_VERSION VERSION_LESS "3.30.0")
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization)
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams)
 else()
-    find_package(Boost REQUIRED COMPONENTS filesystem serialization CONFIG)
+    find_package(Boost REQUIRED COMPONENTS filesystem serialization iostreams CONFIG)
 endif()
 
 find_package(spdlog REQUIRED)
