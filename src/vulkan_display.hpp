@@ -172,7 +172,7 @@ private:
 
             // debug messenger
             VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info;
-            debug_messenger_create_info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+            debug_messenger_create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
             debug_messenger_create_info.messageSeverity =
                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
             debug_messenger_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
@@ -180,7 +180,7 @@ private:
             debug_messenger_create_info.pfnUserCallback =
                 [](VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType,
                    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) -> VkBool32 {
-                (void)pUserData;
+                (void) pUserData;
                 // convert severity flag to string
                 const char* severity = "???";
                 if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
@@ -476,7 +476,7 @@ private:
             image_count = swapchain_details.capabilities.maxImageCount;
         }
 
-        VkSwapchainCreateInfoKHR create_info;//{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
+        VkSwapchainCreateInfoKHR create_info; //{VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
         create_info.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         create_info.surface          = vk_surface;
         create_info.minImageCount    = image_count;

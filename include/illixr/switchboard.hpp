@@ -124,7 +124,10 @@ public:
     class event {
     public:
         template<typename Archive>
-        void serialize(Archive& ar, const unsigned int version) { (void)ar; (void)version; }
+        void serialize(Archive& ar, const unsigned int version) {
+            (void) ar;
+            (void) version;
+        }
 
         virtual ~event() = default;
     };
