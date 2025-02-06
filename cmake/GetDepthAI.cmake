@@ -34,3 +34,9 @@ else()
     set(DepthAI_LIBRARIES depthai-core;depthai-opencv)
     add_dependencies(cleanup_depthai_spdlog DepthAI_ext)
 endif()
+
+add_custom_target(cleanup_depthai_spdlog
+                  COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/lib/cmake/depthai/dependencies/include/spdlog
+)
+
+add_dependencies(cleanup_depthai_spdlog DepthAI_ext)
