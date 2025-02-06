@@ -45,7 +45,7 @@ namespace math_util {
     }
 
     /*
-     * Rotation matrix to convert a point from one coordinate reference frame to another, e.g. left hand y up to right hand y up
+     * Rotation matrix to convert a point from one coordinate system to another, e.g. left hand y up to right hand y up
      *
      */
     inline Eigen::Matrix3f rotation(const float alpha, const float beta, const float gamma) {
