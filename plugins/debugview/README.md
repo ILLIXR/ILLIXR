@@ -10,6 +10,10 @@
 - In the future, `debugview` will also query for the most up-to-date predicted pose through an RPC-like query system. This is not currently in our release version; but is in development and will be added soon. The "fast pose" referenced in this plugin just samples the `slow_pose` instead.
 - `debugview` also is synchronously dependent on the `imu_cam` topic, as the stereoscopic camera views are displayed in the debug window. In ILLIXR, "synchronous dependencies" are implemented as scheduled "handlers" that are executed from a shared thread pool; this handler is executed every time a fresh "packet" is available from the `imu_cam` topic. Given that this is a separate thread from the main graphics thread, this `imu_cam` packet must be saved/cached for later, when the grahpics thread renders the next frame. This is a good example to follow when writing your own multithreaded components that use both synchronous and asynchronous dependencies, and need to share information across dependency boundaries.
 
+## Environment Variables
+
+**DEBUGVIEW_LOG_LEVEL**: logging level for this plugin, values can be "trace", "debug", "info", "warning", "error", "critical", or "off"
+
 ## Notes
 
 `debugview` will be under heavy development in the near-term. Pull requests may or may not be accepted, due to the frequency of rapid internal changes.

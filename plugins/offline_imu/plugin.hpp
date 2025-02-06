@@ -29,9 +29,9 @@ protected:
     void        _p_one_iteration() override;
 
 private:
+    const std::shared_ptr<switchboard>             switchboard_;
     const std::map<ullong, sensor_types>           sensor_data_;
     std::map<ullong, sensor_types>::const_iterator sensor_data_it_;
-    const std::shared_ptr<switchboard>             switchboard_;
     switchboard::writer<imu_type>                  imu_;
 
     // Timestamp of the first IMU value from the dataset

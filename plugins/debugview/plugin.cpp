@@ -48,7 +48,7 @@ static void glfw_error_callback(int error, const char* description) {
     //, glfw_context{pb->lookup_impl<global_config>()->glfw_context}
     , rgb_depth_reader_(switchboard_->get_reader<rgb_depth_type>("rgb_depth"))
     , cam_reader_{switchboard_->get_buffered_reader<cam_type>("cam")} {
-    spdlogger(std::getenv("DEBUGVIEW_LOG_LEVEL"));
+    spdlogger(switchboard_->get_env_char("DEBUGVIEW_LOG_LEVEL"));
 }
 
 void debugview::draw_GUI() {
@@ -474,13 +474,13 @@ void debugview::start() {
     RAC_ERRNO_MSG("debugview after glGetUniformLocation");
 
     // Load/initialize the demo scene.
-    char* obj_dir = std::getenv("ILLIXR_DEMO_DATA");
-    if (obj_dir == nullptr) {
+    const std::string obj_dir = switchboard_->get_env("ILLIXR_DEMO_DATA");
+    if (obj_dir.empty()) {
         ILLIXR::abort("Please define ILLIXR_DEMO_DATA.");
     }
 
-    demo_scene_ = ObjScene(std::string(obj_dir), "scene.obj");
-    headset_    = ObjScene(std::string(obj_dir), "headset.obj");
+    demo_scene_ = ObjScene(obj_dir, "scene.obj");
+    headset_    = ObjScene(obj_dir, "headset.obj");
 
     // Generate fun test pattern for missing camera images.
     for (unsigned x = 0; x < TEST_PATTERN_WIDTH; x++) {

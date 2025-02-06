@@ -40,7 +40,7 @@ void spdlogger(const std::string& name, const char* log_level) {
 class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
-        spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL"));
+        spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
         phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
         phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
         phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
@@ -138,6 +138,10 @@ public:
 
           [1] https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
          */
+    }
+
+    std::shared_ptr<switchboard> get_switchboard() override {
+        return phonebook_.lookup_impl<switchboard>();
     }
 
 private:
