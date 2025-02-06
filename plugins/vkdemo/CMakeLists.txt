@@ -35,17 +35,18 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/global_module_defs.hpp
-        ../../include/illixr/math_util.hpp
-        ../../include/illixr/pose_prediction.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/threadloop.hpp
-        ../../include/illixr/vk/display_provider.hpp
-        ../../include/illixr/vk/render_pass.hpp
-        ../../include/illixr/gl_util/lib/tiny_obj_loader.h
-        ../../include/illixr/gl_util/lib/stb_image.h
-        )
+            plugin.hpp
+            ../../include/illixr/data_format.hpp
+            ../../include/illixr/global_module_defs.hpp
+            ../../include/illixr/math_util.hpp
+            ../../include/illixr/pose_prediction.hpp
+            ../../include/illixr/switchboard.hpp
+            ../../include/illixr/threadloop.hpp
+            ../../include/illixr/vk/display_provider.hpp
+            ../../include/illixr/vk/render_pass.hpp
+            ../../include/illixr/gl_util/lib/tiny_obj_loader.h
+            ../../include/illixr/gl_util/lib/stb_image.h
+)
 if(Vulkan_EXTERNAL)
     add_dependencies(${PLUGIN_NAME} ${Vulkan_DEP_STR})
 endif()

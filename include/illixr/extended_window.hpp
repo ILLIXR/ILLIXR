@@ -14,31 +14,25 @@
 // GLX context magics
 #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
 #define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
-typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+typedef GLXContext (*glX_create_context_attribs_ARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
 namespace ILLIXR {
 class xlib_gl_extended_window : public phonebook::service {
 public:
-    int        width;
-    int        height;
-    Display*   dpy;
-    Window     win;
-    GLXContext glc;
-
-    xlib_gl_extended_window(int _width, int _height, GLXContext _shared_gl_context) {
-        width  = _width;
-        height = _height;
+    xlib_gl_extended_window(int width, int height, GLXContext shared_gl_context) {
+        width_  = width;
+        height_ = height;
 
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Opening display");
 #endif
         RAC_ERRNO_MSG("extended_window at start of xlib_gl_extended_window constructor");
 
-        dpy = XOpenDisplay(nullptr);
-        if (dpy == nullptr) {
+        display_ = XOpenDisplay(nullptr);
+        if (display_ == nullptr) {
             ILLIXR::abort("Cannot connect to X server");
         } else {
-            // Apparently, XOpenDisplay's _true_ error indication is whether dpy is nullptr.
+            // Apparently, XOpenDisplay's _true_ error indication is whether display_ is nullptr.
             // https://cboard.cprogramming.com/linux-programming/119957-xlib-perversity.html
             // if (errno != 0) {
             // 	std::cerr << "XOpenDisplay succeeded, but errno = " << errno << "; This is benign, so I'm clearing it now.\n";
@@ -46,7 +40,7 @@ public:
             errno = 0;
         }
 
-        Window root = DefaultRootWindow(dpy);
+        Window root = DefaultRootWindow(display_);
         // Get a matching FB config
         static int visual_attribs[] = {GLX_X_RENDERABLE,
                                        True,
@@ -77,31 +71,31 @@ public:
 #endif
         RAC_ERRNO_MSG("extended_window before glXChooseFBConfig");
 
-        int          fbcount = 0;
-        int          screen  = DefaultScreen(dpy);
-        GLXFBConfig* fbc     = glXChooseFBConfig(dpy, screen, visual_attribs, &fbcount);
-        if (!fbc) {
+        int          fb_count  = 0;
+        int          screen    = DefaultScreen(display_);
+        GLXFBConfig* fb_config = glXChooseFBConfig(display_, screen, visual_attribs, &fb_count);
+        if (!fb_config) {
             ILLIXR::abort("Failed to retrieve a framebuffer config");
         }
 
 #ifndef NDEBUG
-        spdlog::get("illixr")->debug("[extended_window] Found {} matching FB configs", fbcount);
+        spdlog::get("illixr")->debug("[extended_window] Found {} matching FB configs", fb_count);
 
         // Pick the FB config/visual with the most samples per pixel
         spdlog::get("illixr")->debug("[extended_window] Getting XVisualInfos");
 #endif
         int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
         int i;
-        for (i = 0; i < fbcount; ++i) {
-            XVisualInfo* vi = glXGetVisualFromFBConfig(dpy, fbc[i]);
-            if (vi) {
+        for (i = 0; i < fb_count; ++i) {
+            XVisualInfo* vis_info = glXGetVisualFromFBConfig(display_, fb_config[i]);
+            if (vis_info) {
                 int samp_buf, samples;
-                glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf);
-                glXGetFBConfigAttrib(dpy, fbc[i], GLX_SAMPLES, &samples);
+                glXGetFBConfigAttrib(display_, fb_config[i], GLX_SAMPLE_BUFFERS, &samp_buf);
+                glXGetFBConfigAttrib(display_, fb_config[i], GLX_SAMPLES, &samples);
 #ifndef NDEBUG
                 spdlog::get("illixr")->debug(
-                    "[extended_window] Matching fbconfig {}, visual ID {:x}: SAMPLE_BUFFERS = {}, SAMPLES = {}", i,
-                    vi->visualid, samp_buf, samples);
+                    "[extended_window] Matching fb_config {}, visual ID {:x}: SAMPLE_BUFFERS = {}, SAMPLES = {}", i,
+                    vis_info->visualid, samp_buf, samples);
 #endif
                 if (best_fbc < 0 || (samp_buf && samples > best_num_samp)) {
                     best_fbc = i, best_num_samp = samples;
@@ -110,54 +104,54 @@ public:
                     worst_fbc = i, worst_num_samp = samples;
                 }
             }
-            XFree(vi);
+            XFree(vis_info);
         }
 
-        assert(0 <= best_fbc && best_fbc < fbcount);
-        GLXFBConfig bestFbc = fbc[best_fbc];
+        assert(0 <= best_fbc && best_fbc < fb_count);
+        GLXFBConfig g_best_fbc = fb_config[best_fbc];
 
         // Free the FBConfig list allocated by glXChooseFBConfig()
-        XFree(fbc);
+        XFree(fb_config);
 
         // Get a visual
-        XVisualInfo* vi = glXGetVisualFromFBConfig(dpy, bestFbc);
+        XVisualInfo* vis_info = glXGetVisualFromFBConfig(display_, g_best_fbc);
 #ifndef NDEBUG
-        spdlog::get("illixr")->debug("[extended_window] Chose visual ID = {:x}", vi->visualid);
+        spdlog::get("illixr")->debug("[extended_window] Chose visual ID = {:x}", vis_info->visualid);
         spdlog::get("illixr")->debug("[extended_window] Creating colormap");
 #endif
-        _m_cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+        color_map_ = XCreateColormap(display_, root, vis_info->visual, AllocNone);
 
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating window");
 #endif
         XSetWindowAttributes attributes;
-        attributes.colormap         = _m_cmap;
+        attributes.colormap         = color_map_;
         attributes.background_pixel = 0;
         attributes.border_pixel     = 0;
         attributes.event_mask       = ExposureMask | KeyPressMask;
-        win                         = XCreateWindow(dpy, root, 0, 0, width, height, 0, vi->depth, InputOutput, vi->visual,
-                                                    CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
-        if (!win) {
+        window_ = XCreateWindow(display_, root, 0, 0, width_, height_, 0, vis_info->depth, InputOutput, vis_info->visual,
+                                CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &attributes);
+        if (!window_) {
             ILLIXR::abort("Failed to create window");
         }
-        XStoreName(dpy, win, "ILLIXR Extended Window");
-        XMapWindow(dpy, win);
+        XStoreName(display_, window_, "ILLIXR Extended Window");
+        XMapWindow(display_, window_);
 
         // Done with visual info
-        XFree(vi);
+        XFree(vis_info);
 
 #ifndef NDEBUG
         spdlog::get("illixr")->debug("[extended_window] Creating context");
 #endif
-        auto glXCreateContextAttribsARB =
-            (glXCreateContextAttribsARBProc) glXGetProcAddressARB((const GLubyte*) "glXCreateContextAttribsARB");
+        auto glX_create_context_attribs_ARB =
+            (glX_create_context_attribs_ARBProc) glXGetProcAddressARB((const GLubyte*) "glX_create_context_attribs_ARB");
         int context_attribs[] = {GLX_CONTEXT_MAJOR_VERSION_ARB, 3, GLX_CONTEXT_MINOR_VERSION_ARB, 3, None};
 
-        glc = glXCreateContextAttribsARB(dpy, bestFbc, _shared_gl_context, True, context_attribs);
+        context_ = glX_create_context_attribs_ARB(display_, g_best_fbc, shared_gl_context, True, context_attribs);
 
         // Sync to process errors
         RAC_ERRNO_MSG("extended_window before XSync");
-        XSync(dpy, false);
+        XSync(display_, false);
         RAC_ERRNO_MSG("extended_window after XSync");
 
 #ifndef NDEBUG
@@ -171,15 +165,15 @@ public:
         // this is just for debugging and does not affect any functionality.
 
         /*
-        const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(dpy, win, glc));
+        const bool gl_result_0 = static_cast<bool>(glXMakeCurrent(display_, window_, context_));
         int major = 0, minor = 0;
         glGetIntegerv(GL_MAJOR_VERSION, &major);
         glGetIntegerv(GL_MINOR_VERSION, &minor);
         std::cout << "OpenGL context created" << std::endl
                   << "Version " << major << "." << minor << std::endl
-                  << "Vender " << glGetString(GL_VENDOR) << std::endl
+                  << "Vendor " << glGetString(GL_VENDOR) << std::endl
                   << "Renderer " << glGetString(GL_RENDERER) << std::endl;
-        const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
+        const bool gl_result_1 = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
         */
 #endif
     }
@@ -187,23 +181,29 @@ public:
     ~xlib_gl_extended_window() override {
         RAC_ERRNO_MSG("xlib_gl_extended_window at start of destructor");
 
-        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(dpy, None, nullptr));
+        [[maybe_unused]] const bool gl_result = static_cast<bool>(glXMakeCurrent(display_, None, nullptr));
         assert(gl_result && "glXMakeCurrent should not fail");
 
-        glXDestroyContext(dpy, glc);
-        XDestroyWindow(dpy, win);
-        Window root = DefaultRootWindow(dpy);
-        XDestroyWindow(dpy, root);
-        XFreeColormap(dpy, _m_cmap);
+        glXDestroyContext(display_, context_);
+        XDestroyWindow(display_, window_);
+        Window root = DefaultRootWindow(display_);
+        XDestroyWindow(display_, root);
+        XFreeColormap(display_, color_map_);
 
         /// See [documentation](https://tronche.com/gui/x/xlib/display/XCloseDisplay.html)
         /// See [example](https://www.khronos.org/opengl/wiki/Programming_OpenGL_in_Linux:_GLX_and_Xlib)
-        XCloseDisplay(dpy);
+        XCloseDisplay(display_);
 
         RAC_ERRNO_MSG("xlib_gl_extended_window at end of destructor");
     }
 
+    int        width_;
+    int        height_;
+    Display*   display_;
+    Window     window_;
+    GLXContext context_;
+
 private:
-    Colormap _m_cmap;
+    Colormap color_map_;
 };
 } // namespace ILLIXR

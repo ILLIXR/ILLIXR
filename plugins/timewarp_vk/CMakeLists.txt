@@ -39,19 +39,20 @@ add_custom_target(
 )
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
-        utils/hmd.cpp
-        utils/hmd.hpp
-        ../../include/illixr/data_format.hpp
-        ../../include/illixr/global_module_defs.hpp
-        ../../include/illixr/math_util.hpp
-        ../../include/illixr/phonebook.hpp
-        ../../include/illixr/plugin.hpp
-        ../../include/illixr/pose_prediction.hpp
-        ../../include/illixr/switchboard.hpp
-        ../../include/illixr/vk/display_provider.hpp
-        ../../include/illixr/vk/render_pass.hpp
-        ../../include/illixr/vk/vulkan_utils.hpp
-        )
+            plugin.hpp
+            utils/hmd.cpp
+            utils/hmd.hpp
+            ../../include/illixr/data_format.hpp
+            ../../include/illixr/global_module_defs.hpp
+            ../../include/illixr/math_util.hpp
+            ../../include/illixr/phonebook.hpp
+            ../../include/illixr/plugin.hpp
+            ../../include/illixr/pose_prediction.hpp
+            ../../include/illixr/switchboard.hpp
+            ../../include/illixr/vk/display_provider.hpp
+            ../../include/illixr/vk/render_pass.hpp
+            ../../include/illixr/vk/vulkan_utils.hpp
+)
 
 if(ENABLE_MONADO)
     get_external_for_plugin(Monado_vk)

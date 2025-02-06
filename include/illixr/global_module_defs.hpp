@@ -28,7 +28,7 @@ struct display_params {
     static constexpr float lens_separation = 0.05;
 
     // Vertical position of the lens in meters
-    static constexpr float lens_vertical_position = height_meters / 2.0f;
+    [[maybe_unused]] static constexpr float lens_vertical_position = height_meters / 2.0f;
 
     // Display horizontal field-of-view in degrees
     static constexpr float fov_x = 108.06f;
@@ -46,7 +46,7 @@ struct display_params {
     static constexpr float frequency = 144.0f;
 
     // Display period in nanoseconds
-    static constexpr duration period = freq2period(frequency);
+    static constexpr duration period = freq_to_period(frequency);
 
     // Chromatic aberration constants
     static constexpr float aberration[4] = {-0.016f, 0.0f, 0.024f, 0.0f};
