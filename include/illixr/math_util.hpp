@@ -65,21 +65,15 @@ namespace math_util {
     const Eigen::Matrix3f invert_z = (Eigen::Matrix3f() << 1., 0., 0., 0., 1., 0., 0., 0., -1.).finished();
     const Eigen::Matrix3f identity = Eigen::Matrix3f::Identity();
 
-    // from:      IM                                LHYU                               RHYU                               RHZU
-    // LHZU                                RHZUXF                                             to:
+    // from:      IM (image)                        LHYU (left hand y up)              RHYU (right hand y up)             RHZU (right hand z up
+    // LHZU (left hand z up)               RHZUXF (right hand z up x forward)                 to:
     const Eigen::Matrix3f conversion[6][6] = {
-        {identity, invert_y, rotation(180., 0., 0.), rotation(-90., 0., 0.), rotation(-90., 0., 90.) * invert_z,
-         rotation(-90., 0., -90.)}, // IM
-        {invert_y, identity, invert_z, rotation(-90., 0., 0.) * invert_y, rotation(90., 0., 90.),
-         rotation(-90., 0., -90.) * invert_y}, // LHYU
-        {rotation(180., 0., 0.), invert_z, identity, rotation(90., 0., 0.), rotation(90., 0., 90.) * invert_z,
-         rotation(-90., 0., 90.) * invert_x* invert_y}, // RHYU
-        {rotation(90., 0., 0.), invert_y* rotation(90., 0., 0.), rotation(-90., 0., 0.), identity,
-         rotation(0., 0., 90.) * invert_y, rotation(0., 0., -90.)}, // RHZU
-        {rotation(90., -90., 0.) * invert_y, rotation(-90., -90., 0.), rotation(0., 90., 90.) * invert_y,
-         invert_x* rotation(0, 0., 90), identity, invert_y}, // LHZU
-        {rotation(90., -90., 0.), rotation(-90., -90., 0.) * invert_y, rotation(0., 90., 90.), rotation(0, 0., 90), invert_y,
-         identity}}; // RHZUXF
+        {identity, invert_y, rotation(180., 0., 0.), rotation(-90., 0., 0.), rotation(-90., 0., 90.) * invert_z, rotation(-90., 0., -90.)}, // IM
+        {invert_y, identity, invert_z, rotation(-90., 0., 0.) * invert_y, rotation(90., 0., 90.), rotation(-90., 0., -90.) * invert_y}, // LHYU
+        {rotation(180., 0., 0.), invert_z, identity, rotation(90., 0., 0.), rotation(90., 0., 90.) * invert_z, rotation(-90., 0., 90.) * invert_x* invert_y}, // RHYU
+        {rotation(90., 0., 0.), invert_y* rotation(90., 0., 0.), rotation(-90., 0., 0.), identity, rotation(0., 0., 90.) * invert_y, rotation(0., 0., -90.)}, // RHZU
+        {rotation(90., -90., 0.) * invert_y, rotation(-90., -90., 0.), rotation(0., 90., 90.) * invert_y, invert_x* rotation(0, 0., 90), identity, invert_y}, // LHZU
+        {rotation(90., -90., 0.), rotation(-90., -90., 0.) * invert_y, rotation(0., 90., 90.), rotation(0, 0., 90), invert_y, identity}}; // RHZUXF
 
 } // namespace math_util
 } // namespace ILLIXR
