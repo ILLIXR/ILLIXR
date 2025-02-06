@@ -769,7 +769,7 @@ as above, only name). Thus using the two name scheme allows you to change the ac
 files, without having to change the C++ code, which uses the first name reference.
 
 For a more complete guide on the graph file format see this [guide][14]. You can also visualize and error check graphs 
-with this hany online [tool][16]
+with this useful online [tool][16]
 
 ### Sending Data To the Tool
 
