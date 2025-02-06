@@ -21,14 +21,6 @@ units::measurement_unit viewer::base_unit_      = units::UNSET;
 std::ofstream out_data("/home/friedel/devel/ILLIXR/points.dat", std::ios_base::out | std::ios_base::trunc);
 int           count = 0;
 #endif
-// mm,           cm,           m,                   ft,                    in
-constexpr float convert[5][5] = {
-    {1., 0.1, 0.001, (1. / (12. * 25.4)), (1. / 25.4)},         // mm
-    {10., 1., 0.01, (1. / (12 * 2.54)), (1. / 2.54)},           // cm
-    {1000., 100., 1., (100. / (2.54 * 12.)), (100. / 2.54)},    // m
-    {(25.4 * 12.), (2.54 * 12.), (2.54 * 12. / 100.), 1., 12.}, // ft
-    {25.4, 2.54, 0.0254, (1. / 12.), 1.}                        // in
-};
 
 /**
  * @brief Callback function to handle glfw errors
@@ -277,7 +269,7 @@ void viewer::make_position_table() const {
                     for (int i = 0; i < 3; i++) {
                         ImGui::TableSetColumnIndex(i + 1);
                         if (pnt.valid) {
-                            ImGui::Text("%.3f", pnt[i] * convert[points.unit][requested_unit_]);
+                            ImGui::Text("%.3f", pnt[i] * units::conversion_factor[points.unit][requested_unit_]);
                             // ImGui::TableSetColumnIndex(i + 1 + 4);
                             // ImGui::Text("%.3f", thp.at(row)[i] * convert[points.unit][requested_unit_]);
                         } else {
