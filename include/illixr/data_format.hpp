@@ -5,8 +5,11 @@
 
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
-#include <GL/gl.h>
+// clang-format off
 #include <GL/glew.h> // must come first
+#include <GL/gl.h>
+// clang-format on
+
 #include <utility>
 // #undef Complex // For 'Complex' conflict
 
