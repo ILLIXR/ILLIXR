@@ -19,14 +19,11 @@ This is how you can modify an existing ILLIXR plugin. This example uses the Audi
     get_external(SpatialAudio)
 
     set(AUDIO_PIPELINE_CMAKE_ARGS "")
-    if(HAVE_CENTOS)
-        set(AUDIO_PIPELINE_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")
-    endif()
     ExternalProject_Add(Audio_Pipeline
         GIT_REPOSITORY https://github.com/ILLIXR/audio_pipeline.git
         GIT_TAG 714c3541378ece7b481804e4a504e23b49c2bdbe
         PREFIX ${CMAKE_BINARY_DIR}/_deps/audio_pipeline
-        DEPENDS ${PortAudio_DEP_STR} ${SpatialAudio_DEP_STR} ${OpenCV_DEP_STR}
+        DEPENDS ${PortAudio_DEP_STR} ${SpatialAudio_DEP_STR}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS=-L${CMAKE_INSTALL_PREFIX}/lib\ -L${CMAKE_INSTALL_PREFIX}/lib64 -DILLIXR_ROOT=${PROJECT_SOURCE_DIR}/include -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} ${AUDIO_PIPELINE_CMAKE_ARGS}
      )
     ```
@@ -36,13 +33,10 @@ This is how you can modify an existing ILLIXR plugin. This example uses the Audi
     get_external(SpatialAudio)
 
     set(AUDIO_PIPELINE_CMAKE_ARGS "")
-    if(HAVE_CENTOS)
-        set(AUDIO_PIPELINE_CMAKE_ARGS "-DINTERNAL_OPENCV=${OpenCV_DIR}")
-    endif()
     ExternalProject_Add(Audio_Pipeline
         GIT_REPOSITORY https://github.com/<YOUR_USER_NAME>/audio_pipeline.git
         PREFIX ${CMAKE_BINARY_DIR}/_deps/myaudio_pipeline
-        DEPENDS ${PortAudio_DEP_STR} ${SpatialAudio_DEP_STR} ${OpenCV_DEP_STR}
+        DEPENDS ${PortAudio_DEP_STR} ${SpatialAudio_DEP_STR}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_FLAGS=-L${CMAKE_INSTALL_PREFIX}/lib\ -L${CMAKE_INSTALL_PREFIX}/lib64 -DILLIXR_ROOT=${PROJECT_SOURCE_DIR}/include -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_LIBDIR=lib -DILLIXR_BUILD_SUFFIX=${ILLIXR_BUILD_SUFFIX} ${AUDIO_PIPELINE_CMAKE_ARGS}
      )
     ```
