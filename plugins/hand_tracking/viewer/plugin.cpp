@@ -6,10 +6,6 @@
 #include "illixr/imgui/backends/imgui_impl_opengl3.h"
 #include "illixr/shader_util.hpp"
 
-#ifdef VIEW_DUMP
-    #include <fstream>
-    #include <iostream>
-#endif
 #include <opencv2/opencv.hpp>
 
 using namespace ILLIXR;
@@ -17,10 +13,6 @@ using namespace ILLIXR::data_format;
 
 int                     viewer::requested_unit_ = -1;
 units::measurement_unit viewer::base_unit_      = units::UNSET;
-#ifdef VIEW_DUMP
-std::ofstream out_data("/home/friedel/devel/ILLIXR/points.dat", std::ios_base::out | std::ios_base::trunc);
-int           count = 0;
-#endif
 
 /**
  * @brief Callback function to handle glfw errors
@@ -29,67 +21,7 @@ static void glfw_error_callback(int error, const char* description) {
     spdlog::get("illixr")->error("|| glfw error_callback: {}\n|> {}", error, description);
     ILLIXR::abort();
 }
-#ifdef VIEW_DUMP
-void write(std::ostringstream& line) {
-    out_data << line.str();
-    line.str("");
-    line.clear();
-}
 
-void dump_pose(const pose_data& pd) {
-    std::ostringstream oss;
-    oss << "---------------------------------------------" << std::endl;
-    oss << "Pose " << std::fixed << std::showpoint << std::setprecision(2) << pd.position.x() << ", " << pd.position.y() << ", "
-        << pd.position.z() << ": " << pd.orientation.w() << ", " << pd.orientation.x() << ", " << pd.orientation.y() << ", "
-        << pd.orientation.z() << std::endl;
-    write(oss);
-}
-
-void dump_points(const ht::hand_points& hp) {
-    std::ostringstream oss;
-    oss << std::endl << "----------------------------------------------------------------------------------" << std::endl;
-    // if (count %3 == 0)
-    //     oss << "----------------------------------------------------------------------------------" << std::endl;
-
-    for (size_t i = 0; i < hp.size(); i++) {
-        const auto& pnt = hp.at(i);
-        oss << i << "  " << std::fixed << std::showpoint << std::setprecision(2) << pnt.x() << ", " << std::setprecision(2)
-            << pnt.y() << ",  " << std::setprecision(2) << pnt.z() << "  " << pnt.unit << "  " << ((pnt.valid) ? "Y" : "N")
-            << std::endl;
-        write(oss);
-    }
-    count++;
-}
-
-void dump_frame(const ht::ht_frame* frm) {
-    std::ostringstream oss;
-    oss << std::endl << "----------------------------------------------------------------------------------" << std::endl;
-    write(oss);
-    oss << "Time: " << frm->time.time_since_epoch().count() << std::endl << std::endl;
-    write(oss);
-    /*oss << "  Detections:" << std::endl;
-    write(oss);
-    oss << "Right Hand " << ((frm->detections.at(units::LEFT_EYE).points.at(ht::RIGHT_HAND).valid) ? "Y" : "N") << std::endl;
-    write(oss);
-    for (size_t i = 0; i < frm->detections.at(units::LEFT_EYE).points.at(ht::RIGHT_HAND).size(); i++) {
-        const auto& pnt = frm->detections.at(units::LEFT_EYE).points.at(ht::RIGHT_HAND).at(i);
-        oss << i << "  " << std::fixed << std::showpoint << std::setprecision(2) << pnt.x() << ", " << std::setprecision(2) <<
-    pnt.y() << ",  " << std::setprecision(2) << pnt.z()
-            << "  " << pnt.unit << "  " << ((pnt.valid) ? "Y" : "N") << std::endl;
-        write(oss);
-    }
-    oss << std::endl << "  Points: " << ((frm->hand_positions.at(ht::RIGHT_HAND).valid) ? "Y" : "N") << std::endl;
-    write(oss);
-    for (size_t i = 0; i < frm->hand_positions.at(ht::RIGHT_HAND).size(); i++) {
-        const auto& pnt = frm->hand_positions.at(ht::RIGHT_HAND).at(i);
-        oss << i << "  " << std::fixed << std::showpoint << std::setprecision(2) << pnt.x() << ", " << std::setprecision(2) <<
-    pnt.y() << ",  " << std::setprecision(2) << pnt.z()
-            << "  " << pnt.unit << "  " << std::setprecision(2) << pnt.confidence << "  " << ((pnt.valid) ? "Y" : "N")
-            << std::endl;
-        write(oss);
-    }*/
-}
-#endif
 /**
  * @brief Callback function to handle glfw errors
  */
@@ -117,9 +49,6 @@ viewer::viewer(const std::string& name_, phonebook* pb_)
     , _clock{pb->lookup_impl<RelativeClock>()}
     , _switchboard{pb_->lookup_impl<switchboard>()}
     , _pose{_switchboard->root_coordinates.position(), _switchboard->root_coordinates.orientation()}
-#ifdef VIEW_DUMP
-    , _true_hand_positions{{ht::LEFT_HAND, ht::hand_points()}, {ht::RIGHT_HAND, ht::hand_points()}}
-#endif
     , current_frame(nullptr) {
 }
 
@@ -254,9 +183,6 @@ void viewer::make_position_table() const {
                 // ImGui::TableSetupColumn("Wz");
                 ImGui::TableHeadersRow();
                 auto points = current_frame->hand_positions.at(static_cast<ht::hand>(idx));
-#ifdef VIEW_DUMP
-                auto thp = _true_hand_positions.at(static_cast<ht::hand>(idx));
-#endif
                 bool skip = points.points.empty();
                 for (int row = ht::WRIST; row < ht::PINKY_TIP; row++) {
                     ImGui::TableNextRow();
@@ -525,22 +451,6 @@ void viewer::make_gui(const switchboard::ptr<const ht::ht_frame>& frame) {
                 make_detection_table(units::RIGHT_EYE, 1, "Right Eye Raw");
             }
             if (ImGui::BeginTabItem("True Position")) {
-#ifdef VIEW_DUMP
-                const Eigen::Matrix3f rot = current_frame->offset_pose.orientation.toRotationMatrix();
-                dump_pose(current_frame->offset_pose);
-                // for (auto h : ht::hand_map) {
-                //     for (int i = ht::WRIST; i <= ht::PINKY_TIP; i++) {
-                //         _true_hand_positions[h][i].set(rot * current_frame->hand_positions_raw.at(h).at(i));
-                //         _true_hand_positions[h][i] += current_frame->offset_pose.position;
-                //         _true_hand_positions[h][i].valid = true;
-                //     }
-                // }
-
-                // dump_points(current_frame->hand_positions_raw.at(ht::RIGHT_HAND)); // raw
-                dump_points(current_frame->hand_positions.at(ht::RIGHT_HAND)); // fixed
-                // dump_points(_true_hand_positions[ht::RIGHT_HAND]);                 // ofixed
-                dump_frame(current_frame);
-#endif
                 make_position_table();
                 ImGui::EndTabItem();
             }
