@@ -522,7 +522,8 @@ void vkdemo::load_model() {
     std::string                      warn, err;
 
     auto path = switchboard_->get_env("ILLIXR_DEMO_DATA") + "/scene.obj";
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), switchboard_->get_env_char("ILLIXR_DEMO_DATA"))) {
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(),
+                          switchboard_->get_env_char("ILLIXR_DEMO_DATA"))) {
         throw std::runtime_error(warn + err);
     }
 
