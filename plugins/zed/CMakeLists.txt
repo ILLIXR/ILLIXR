@@ -20,9 +20,11 @@ find_package(CUDA ${ZED_CUDA_VERSION} EXACT REQUIRED)
 
 
 set(SRC_FILES plugin.cpp)
-set(HDR_FILES include/zed_opencv.hpp
-		../../include/illixr/opencv_data_types.hpp
-		)
+set(HDR_FILES
+	plugin.hpp
+	include/zed_opencv.hpp
+	../../include/illixr/opencv_data_types.hpp
+)
 
 SET(ZED_LIBS ${ZED_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 add_library(${PLUGIN_NAME} SHARED ${HDR_FILES} ${SRC_FILES})

@@ -12,7 +12,6 @@
 #include "sqlite_record_logger.hpp"
 
 #include <algorithm>
-#include <GL/glx.h>
 #include <memory>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -42,21 +41,21 @@ class runtime_impl : public runtime {
 public:
     explicit runtime_impl() {
         spdlogger("illixr", std::getenv("ILLIXR_LOG_LEVEL")); // can't use switchboard interface here
-        pb.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
-        pb.register_impl<gen_guid>(std::make_shared<gen_guid>());
-        pb.register_impl<switchboard>(std::make_shared<switchboard>(&pb));
+        phonebook_.register_impl<record_logger>(std::make_shared<sqlite_record_logger>());
+        phonebook_.register_impl<gen_guid>(std::make_shared<gen_guid>());
+        phonebook_.register_impl<switchboard>(std::make_shared<switchboard>(&phonebook_));
 #if !defined(ILLIXR_MONADO) && !defined(ILLIXR_VULKAN) // the extended window is only needed for our native OpenGL backend
-        pb.register_impl<xlib_gl_extended_window>(
+        phonebook_.register_impl<xlib_gl_extended_window>(
             std::make_shared<xlib_gl_extended_window>(display_params::width_pixels, display_params::height_pixels, nullptr));
 #endif
-        pb.register_impl<Stoplight>(std::make_shared<Stoplight>());
-        pb.register_impl<RelativeClock>(std::make_shared<RelativeClock>());
+        phonebook_.register_impl<stoplight>(std::make_shared<stoplight>());
+        phonebook_.register_impl<relative_clock>(std::make_shared<relative_clock>());
     }
 
     void load_so(const std::vector<std::string>& so_paths) override {
         RAC_ERRNO_MSG("runtime_impl before creating any dynamic library");
 
-        std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libs), [](const auto& so_path) {
+        std::transform(so_paths.cbegin(), so_paths.cend(), std::back_inserter(libraries_), [](const auto& so_path) {
             RAC_ERRNO_MSG("runtime_impl before creating the dynamic library");
             return dynamic_lib::create(so_path);
         });
@@ -64,65 +63,65 @@ public:
         RAC_ERRNO_MSG("runtime_impl after creating the dynamic libraries");
 
         std::vector<plugin_factory> plugin_factories;
-        std::transform(libs.cbegin(), libs.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
+        std::transform(libraries_.cbegin(), libraries_.cend(), std::back_inserter(plugin_factories), [](const auto& lib) {
             return lib.template get<plugin* (*) (phonebook*)>("this_plugin_factory");
         });
 
         RAC_ERRNO_MSG("runtime_impl after generating plugin factories");
 
-        std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins),
+        std::transform(plugin_factories.cbegin(), plugin_factories.cend(), std::back_inserter(plugins_),
                        [this](const auto& plugin_factory) {
                            RAC_ERRNO_MSG("runtime_impl before building the plugin");
-                           return std::unique_ptr<plugin>{plugin_factory(&pb)};
+                           return std::unique_ptr<plugin>{plugin_factory(&phonebook_)};
                        });
 
-        std::for_each(plugins.cbegin(), plugins.cend(), [](const auto& plugin) {
-            // Well-behaved plugins (any derived from threadloop) start there threads here, and then wait on the Stoplight.
+        std::for_each(plugins_.cbegin(), plugins_.cend(), [](const auto& plugin) {
+            // Well-behaved plugins_ (any derived from threadloop) start there threads here, and then wait on the Stoplight.
             plugin->start();
         });
 
-        // This actually kicks off the plugins
-        pb.lookup_impl<RelativeClock>()->start();
-        pb.lookup_impl<Stoplight>()->signal_ready();
+        // This actually kicks off the plugins_
+        phonebook_.lookup_impl<relative_clock>()->start();
+        phonebook_.lookup_impl<stoplight>()->signal_ready();
     }
 
     void load_so(const std::string_view& so) override {
         auto lib                 = dynamic_lib::create(so);
         auto this_plugin_factory = lib.get<plugin* (*) (phonebook*)>("this_plugin_factory");
         load_plugin_factory(this_plugin_factory);
-        libs.push_back(std::move(lib));
+        libraries_.push_back(std::move(lib));
     }
 
     void load_plugin_factory(plugin_factory plugin_main) override {
-        plugins.emplace_back(plugin_main(&pb));
-        plugins.back()->start();
+        plugins_.emplace_back(plugin_main(&phonebook_));
+        plugins_.back()->start();
     }
 
     void wait() override {
         // We don't want wait() returning before all the plugin threads have been joined.
         // That would cause a nasty race-condition if the client tried to delete the runtime right after wait() returned.
-        pb.lookup_impl<Stoplight>()->wait_for_shutdown_complete();
+        phonebook_.lookup_impl<stoplight>()->wait_for_shutdown_complete();
     }
 
-    void stop() override {
-        pb.lookup_impl<Stoplight>()->signal_should_stop();
+    void _stop() override {
+        phonebook_.lookup_impl<stoplight>()->signal_should_stop();
         // After this point, threads may exit their main loops
         // They still have destructors and still have to be joined.
 
-        pb.lookup_impl<switchboard>()->stop();
+        phonebook_.lookup_impl<switchboard>()->stop();
         // After this point, Switchboard's internal thread-workers which power synchronous callbacks are stopped and joined.
 
-        for (const std::unique_ptr<plugin>& plugin : plugins) {
+        for (const std::unique_ptr<plugin>& plugin : plugins_) {
             plugin->stop();
             // Each plugin gets joined in its stop
         }
 
         // Tell runtime::wait() that it can return
-        pb.lookup_impl<Stoplight>()->signal_shutdown_complete();
+        phonebook_.lookup_impl<stoplight>()->signal_shutdown_complete();
     }
 
     ~runtime_impl() override {
-        if (!pb.lookup_impl<Stoplight>()->check_shutdown_complete()) {
+        if (!phonebook_.lookup_impl<stoplight>()->check_shutdown_complete()) {
             stop();
         }
         // This will be re-enabled in #225
@@ -142,17 +141,17 @@ public:
     }
 
     std::shared_ptr<switchboard> get_switchboard() override {
-        return pb.lookup_impl<switchboard>();
+        return phonebook_.lookup_impl<switchboard>();
     }
 
 private:
-    // I have to keep the dynamic libs in scope until the program is dead
-    std::vector<dynamic_lib>             libs;
-    phonebook                            pb;
-    std::vector<std::unique_ptr<plugin>> plugins;
+    // I have to keep the dynamic libraries_ in scope until the program is dead
+    std::vector<dynamic_lib>             libraries_;
+    phonebook                            phonebook_;
+    std::vector<std::unique_ptr<plugin>> plugins_;
 };
 
-extern "C" runtime* runtime_factory() {
+extern "C" [[maybe_unused]] runtime* runtime_factory() {
     RAC_ERRNO_MSG("runtime_impl before creating the runtime");
     return new runtime_impl{};
 }

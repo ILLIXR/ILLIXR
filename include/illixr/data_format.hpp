@@ -1,13 +1,14 @@
 #pragma once
 
+#include "relative_clock.hpp"
+#include "switchboard.hpp"
+
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
+#include <GL/glew.h> // must come first
 #include <GL/gl.h>
 #include <utility>
 // #undef Complex // For 'Complex' conflict
-
-#include "relative_clock.hpp"
-#include "switchboard.hpp"
 
 // Tell gldemo and timewarp_gl to use two texture handle for left and right eye
 #define USE_ALT_EYE_FORMAT
@@ -29,7 +30,7 @@ struct imu_type : switchboard::event {
 struct connection_signal : public switchboard::event {
     bool start;
 
-    connection_signal(bool start_)
+    explicit connection_signal(bool start_)
         : start{start_} { }
 };
 
@@ -50,20 +51,20 @@ struct imu_integrator_input : public switchboard::event {
     duration   t_offset;
     imu_params params;
 
-    Eigen::Vector3d             biasAcc;
-    Eigen::Vector3d             biasGyro;
+    Eigen::Vector3d             bias_acc;
+    Eigen::Vector3d             bias_gyro;
     Eigen::Matrix<double, 3, 1> position;
     Eigen::Matrix<double, 3, 1> velocity;
     Eigen::Quaterniond          quat;
 
     imu_integrator_input(time_point last_cam_integration_time_, duration t_offset_, imu_params params_,
-                         Eigen::Vector3d biasAcc_, Eigen::Vector3d biasGyro_, Eigen::Matrix<double, 3, 1> position_,
+                         Eigen::Vector3d bias_acc_, Eigen::Vector3d bias_gyro_, Eigen::Matrix<double, 3, 1> position_,
                          Eigen::Matrix<double, 3, 1> velocity_, Eigen::Quaterniond quat_)
         : last_cam_integration_time{last_cam_integration_time_}
         , t_offset{t_offset_}
         , params{std::move(params_)}
-        , biasAcc{std::move(biasAcc_)}
-        , biasGyro{std::move(biasGyro_)}
+        , bias_acc{std::move(bias_acc_)}
+        , bias_gyro{std::move(bias_gyro_)}
         , position{std::move(position_)}
         , velocity{std::move(velocity_)}
         , quat{std::move(quat_)} { }
@@ -177,11 +178,11 @@ struct image_handle : public switchboard::event {
 // Array of left eyes, array of right eyes
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
-    std::array<GLuint, 2> swapchain_indices{}; // Does not change between swaps in swapchain
-    std::array<GLuint, 2> swap_indices{};      // Which element of the swapchain
-    fast_pose_type        render_pose;         // The pose used when rendering this frame.
-    time_point            sample_time{};
-    time_point            render_time{};
+    std::array<GLuint, 2>       swapchain_indices{}; // Does not change between swaps in swapchain
+    std::array<GLuint, 2>       swap_indices{};      // Which element of the swapchain
+    fast_pose_type              render_pose;         // The pose used when rendering this frame.
+    [[maybe_unused]] time_point sample_time{};
+    time_point                  render_time{};
 
     rendered_frame() = default;
 
@@ -195,7 +196,7 @@ struct rendered_frame : public switchboard::event {
 };
 
 struct hologram_input : public switchboard::event {
-    uint seq{};
+    [[maybe_unused]] uint seq{};
 
     hologram_input() = default;
 
@@ -204,27 +205,27 @@ struct hologram_input : public switchboard::event {
 };
 
 struct signal_to_quad : public switchboard::event {
-    ullong seq;
+    [[maybe_unused]] ullong seq;
 
-    signal_to_quad(ullong seq_)
+    explicit signal_to_quad(ullong seq_)
         : seq{seq_} { }
 };
 
 // High-level HMD specification, timewarp plugin
 // may/will calculate additional HMD info based on these specifications
-struct hmd_physical_info {
+/*struct hmd_physical_info {
     float ipd;
-    int   displayPixelsWide;
-    int   displayPixelsHigh;
-    float chromaticAberration[4];
+    int   display_pixels_wide;
+    int   display_pixels_high;
+    float chromatic_aberration[4];
     float K[11];
-    int   visiblePixelsWide;
-    int   visiblePixelsHigh;
-    float visibleMetersWide;
-    float visibleMetersHigh;
-    float lensSeparationInMeters;
-    float metersPerTanAngleAtCenter;
-};
+    int   visible_pixels_wide;
+    int   visible_pixels_high;
+    float visible_meters_wide;
+    float visible_meters_high;
+    float lens_separation_in_meters;
+    float meters_per_tan_angle_at_center;
+};*/
 
 struct texture_pose : public switchboard::event {
     duration           offload_duration{};

@@ -67,7 +67,7 @@ struct convert<ILLIXR::Dependency> {
 };
 } // namespace YAML
 
-ILLIXR::runtime* r = nullptr;
+ILLIXR::runtime* runtime_ = nullptr;
 
 using namespace ILLIXR;
 
@@ -147,10 +147,10 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
     std::chrono::seconds     run_duration;
     std::vector<std::string> plugins;
     try {
-        r = ILLIXR::runtime_factory();
+        runtime_ = ILLIXR::runtime_factory();
 
         // set internal env_vars
-        const std::shared_ptr<switchboard> sb = r->get_switchboard();
+        const std::shared_ptr<switchboard> switchboard_ = runtime_->get_switchboard();
 
         // read in yaml config file
         YAML::Node  config;
@@ -182,17 +182,17 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         for (const auto& item : config["env_vars"]) {
             const auto val = item.first.as<std::string>();
             if (std::find(ignore_vars.begin(), ignore_vars.end(), val) == ignore_vars.end())
-                sb->set_env(val, item.second.as<std::string>());
+                switchboard_->set_env(val, item.second.as<std::string>());
         }
         // command line specified env_vars
         for (auto& item : options.unmatched()) {
             bool                                   matched = false;
             cxxopts::values::parser_tool::ArguDesc ad      = cxxopts::values::parser_tool::ParseArgument(item.c_str(), matched);
 
-            if (sb->get_env(ad.arg_name, "").empty()) {
+            if (switchboard_->get_env(ad.arg_name, "").empty()) {
                 if (!ad.set_value)
                     ad.value = "True";
-                sb->set_env(ad.arg_name, ad.value);
+                switchboard_->set_env(ad.arg_name, ad.value);
                 setenv(ad.arg_name.c_str(), ad.value.c_str(), 1); // env vars from command line take precedence
             }
         }
@@ -200,7 +200,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 #ifndef NDEBUG
         /// Activate sleeping at application start for attaching gdb. Disables 'catchsegv'.
         /// Enable using the ILLIXR_ENABLE_PRE_SLEEP environment variable (see 'runner/runner/main.py:load_tests')
-        const bool enable_pre_sleep = sb->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
+        const bool enable_pre_sleep = switchboard_->get_env_bool("ILLIXR_ENABLE_PRE_SLEEP", "False");
         if (enable_pre_sleep) {
             const pid_t pid = getpid();
             spdlog::get("illixr")->info("[main] Pre-sleep enabled.");
@@ -216,8 +216,8 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         } else if (config["env_vars"]["duration"]) {
             run_duration = std::chrono::seconds{config["env_vars"]["duration"].as<long>()};
         } else {
-            run_duration = (!sb->get_env("ILLIXR_RUN_DURATION").empty())
-                ? std::chrono::seconds{std::stol(std::string{sb->get_env("ILLIXR_RUN_DURATION")})}
+            run_duration = (!switchboard_->get_env("ILLIXR_RUN_DURATION").empty())
+                ? std::chrono::seconds{std::stol(std::string{switchboard_->get_env("ILLIXR_RUN_DURATION")})}
                 : ILLIXR_RUN_DURATION_DEFAULT;
         }
         GET_STRING(data, ILLIXR_DATA)
@@ -287,7 +287,7 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
 
         check_plugins(plugins, dep_map);
         if (config["install_prefix"]) {
-            std::string temp_path(sb->get_env("LD_LIBRARY_PATH"));
+            std::string temp_path(switchboard_->get_env("LD_LIBRARY_PATH"));
             temp_path = config["install_prefix"].as<std::string>() + ":" + temp_path;
             setenv("LD_LIBRARY_PATH", temp_path.c_str(), true);
         }
@@ -300,22 +300,23 @@ int ILLIXR::run(const cxxopts::ParseResult& options) {
         });
 
         RAC_ERRNO_MSG("main before loading dynamic libraries");
-        r->load_so(lib_paths);
+        runtime_->load_so(lib_paths);
 
         cancellable_sleep cs;
         std::thread       th{[&] {
             cs.sleep(run_duration);
-            r->stop();
+            runtime_->stop();
         }};
 
-        r->wait(); // blocks until shutdown is r->stop()
+        runtime_->wait(); // blocks until shutdown is runtime_->stop()
 
         // cancel our sleep, so we can join the other thread
         cs.cancel();
         th.join();
-        delete r;
+
+        delete runtime_;
     } catch (...) {
-        delete r;
+        delete runtime_;
     }
     return 0;
 }

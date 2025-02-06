@@ -13,12 +13,7 @@ namespace ILLIXR {
  *
  * Inspired by https://docs.python.org/3/library/threading.html#event-objects
  */
-class Event {
-private:
-    mutable std::mutex              _m_mutex;
-    mutable std::condition_variable _m_cv;
-    std::atomic<bool>               _m_value = false;
-
+class event {
 public:
     /**
      * @brief Sets the condition-variable to new_value.
@@ -27,11 +22,11 @@ public:
      */
     void set(bool new_value = true) {
         {
-            std::lock_guard lock{_m_mutex};
-            _m_value = new_value;
+            std::lock_guard lock{mutex_};
+            value_ = new_value;
         }
         if (new_value) {
-            _m_cv.notify_all();
+            cv_.notify_all();
         }
     }
 
@@ -46,20 +41,20 @@ public:
      * @brief Test if is set without blocking.
      */
     bool is_set() const {
-        return _m_value;
+        return value_;
     }
 
     /**
      * @brief Wait indefinitely for the event to be set.
      */
     void wait() const {
-        std::unique_lock<std::mutex> lock{_m_mutex};
+        std::unique_lock<std::mutex> lock{mutex_};
         // Check if we even need to wait
-        if (_m_value) {
+        if (value_) {
             return;
         }
-        _m_cv.wait(lock, [this] {
-            return _m_value.load();
+        cv_.wait(lock, [this] {
+            return value_.load();
         });
     }
 
@@ -69,26 +64,31 @@ public:
      * Returns whether the event was actually set.
      */
     template<class Clock, class Rep, class Period>
-    bool wait_timeout(const std::chrono::duration<Rep, Period>& duration) const {
+    [[maybe_unused]] bool wait_timeout(const std::chrono::duration<Rep, Period>& duration) const {
         auto timeout_time = Clock::now() + duration;
-        if (_m_value) {
+        if (value_) {
             return true;
         }
-        std::unique_lock<std::mutex> lock{_m_mutex};
-        while (_m_cv.wait_until(lock, timeout_time) != std::cv_status::timeout) {
-            if (_m_value) {
+        std::unique_lock<std::mutex> lock{mutex_};
+        while (cv_.wait_until(lock, timeout_time) != std::cv_status::timeout) {
+            if (value_) {
                 return true;
             }
         }
         return false;
     }
+
+private:
+    mutable std::mutex              mutex_;
+    mutable std::condition_variable cv_;
+    std::atomic<bool>               value_ = false;
 };
 
 /**
  * @brief Start/stop synchronization for the whole application.
  *
  * Threads should:
- * 1. Do intiailization actions.
+ * 1. Do initialization actions.
  * 2. Wait for ready()
  * 3. Do their main work in a loop until should_stop().
  * 4. Do their shutdown actions.
@@ -103,40 +103,40 @@ public:
  * 2. stop() and destruct each plugin and destruct each service.
  * 3. Set shutdown_complete().
  */
-class Stoplight : public phonebook::service {
+class stoplight : public phonebook::service {
 public:
     void wait_for_ready() const {
-        _m_ready.wait();
+        ready_.wait();
     }
 
     void signal_ready() {
-        _m_ready.set();
+        ready_.set();
     }
 
     bool check_should_stop() const {
-        return _m_should_stop.is_set();
+        return should_stop_.is_set();
     }
 
     void signal_should_stop() {
-        _m_should_stop.set();
+        should_stop_.set();
     }
 
     void wait_for_shutdown_complete() const {
-        _m_shutdown_complete.wait();
+        shutdown_complete_.wait();
     }
 
     bool check_shutdown_complete() const {
-        return _m_shutdown_complete.is_set();
+        return shutdown_complete_.is_set();
     }
 
     void signal_shutdown_complete() {
-        _m_shutdown_complete.set();
+        shutdown_complete_.set();
     }
 
 private:
-    Event _m_ready;
-    Event _m_should_stop;
-    Event _m_shutdown_complete;
+    event ready_;
+    event should_stop_;
+    event shutdown_complete_;
 };
 
 } // namespace ILLIXR
