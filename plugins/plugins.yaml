@@ -117,3 +117,11 @@ profile:
   enable_alignment: false
   enable_verbose_errors: false
   enable_pre_sleep: false
+
+profile:
+  name: test_hand_tracking
+  plugins: zed.data_injection,hand_tracking,hand_tracking.viewer
+  enable_offload: false
+  enable_alignment: false
+  enable_verbose_errors: false
+  enable_pre_sleep: false
