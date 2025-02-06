@@ -28,12 +28,12 @@ public:
     };
 
     [[nodiscard]] Eigen::Vector3f get_translation() const {
-        const auto temp = initial_position_.getTranslation();
+        auto temp = initial_position_.getTranslation();
         return {temp[0], temp[1], temp[2]};
     }
 
     [[nodiscard]] Eigen::Quaternionf get_orientation() const {
-        const auto temp = initial_position_.getOrientation();
+        auto temp = initial_position_.getOrientation();
         return {temp[0], temp[1], temp[2], temp[3]};
     }
 
