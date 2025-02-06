@@ -182,7 +182,7 @@ To add your own functionality via the plugin interface:
       [`sb->schedule(...)`][14].
 			
     - If you spin your own threads, they **must** wait for
-          `pb->lookup_impl<Stoplight>()->wait_for_ready()` the first time they
+          `pb->lookup_impl<stoplight>()->wait_for_ready()` the first time they
           run. This allows the start of all threads in ILLIXR to be
           synchronized.
 
