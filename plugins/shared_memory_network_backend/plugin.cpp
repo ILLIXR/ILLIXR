@@ -85,6 +85,7 @@ public:
 
     void topic_create(std::string topic_name, topic_config config) override {
         networked_topics[topic_name] = config.priority;
+        networked_topics_configs[topic_name] = config;
     }
 
     bool is_topic_networked(std::string topic_name) override {
@@ -115,12 +116,12 @@ public:
     }
 
     // Helper function to queue a received message into the corresponding topic
-    void topic_receive(std::string topic_name, std::vector<char>& message) {
+    void topic_receive(std::string topic_name, std::string& message) {
         if (!sb->topic_exists(topic_name)) {
             return;
         }
 
-        sb->get_topic(topic_name).deserialize_and_put(message);
+        sb->get_topic(topic_name).deserialize_and_put(message, networked_topics_configs[topic_name]);
     }
 
     void stop() override {
@@ -177,6 +178,7 @@ private:
     std::shared_ptr<message_queue> mq_rx;
 
     std::map<std::string, topic_config::priority_type> networked_topics;
+    std::unordered_map<std::string, topic_config> networked_topics_configs;
     std::shared_ptr<spdlog::logger>                    log;
 };
 
