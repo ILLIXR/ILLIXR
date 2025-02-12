@@ -17,7 +17,7 @@ using namespace boost::interprocess;
 
 struct message_t {
     std::string                                    topic_name;
-    std::vector<char>                              message;
+    std::string                                    message;
     int                                            checksum;
     std::chrono::high_resolution_clock::time_point timestamp;
 
@@ -30,7 +30,7 @@ struct message_t {
     }
 };
 
-int calculate_checksum(const std::vector<char>& message) {
+int calculate_checksum(const std::string& message) {
     // use boost::hash to calculate checksum
     std::size_t seed = 0;
     boost::hash_combine(seed, message);
@@ -91,13 +91,13 @@ public:
         return networked_topics.find(topic_name) != networked_topics.end();
     }
 
-    void topic_send(std::string topic_name, std::vector<char> message) override {
+    void topic_send(std::string topic_name, std::string&& message) override {
         // log->debug("Sending message on topic {}", topic_name);
 
         if (!is_topic_networked(topic_name)) {
             throw std::runtime_error("Topic " + topic_name + " is not networked");
         }
-        message_t msg{topic_name, message, calculate_checksum(message), std::chrono::high_resolution_clock::now()};
+        message_t msg{topic_name, std::move(message), calculate_checksum(message), std::chrono::high_resolution_clock::now()};
 
         std::vector<char> full_message;
         // serialize using Boost
