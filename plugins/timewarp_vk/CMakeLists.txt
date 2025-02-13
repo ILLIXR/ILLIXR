@@ -40,6 +40,8 @@ add_custom_target(
 
 add_library(${PLUGIN_NAME} SHARED plugin.cpp
             plugin.hpp
+            timewarp_vk.cpp
+            timewarp_vk.hpp
             $<TARGET_OBJECTS:illixr_hmd>
             ../../include/illixr/data_format.hpp
             ../../include/illixr/global_module_defs.hpp
