@@ -3,6 +3,8 @@
 #include <chrono>
 #include <optional>
 
+namespace ILLIXR::network {
+
 struct topic_config {
     enum priority_type { LOWEST, LOW, MEDIUM, HIGH, HIGHEST };
 
@@ -16,3 +18,5 @@ struct topic_config {
 
     enum SerializationMethod { BOOST, PROTOBUF } serialization_method;
 };
+
+}

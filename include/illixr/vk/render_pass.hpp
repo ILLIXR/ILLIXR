@@ -2,8 +2,8 @@
 
 #include <vector>
 #define GLFW_INCLUDE_VULKAN
-#include "../data_format.hpp"
-#include "../phonebook.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
 #include "vulkan_objects.hpp"
 
 #include <GLFW/glfw3.h>
@@ -31,7 +31,7 @@ public:
      * @param render_pose For an app pass, this is the pose to use for rendering. For a timewarp pass, this is the pose
      * previously supplied to the app pass.
      */
-    virtual void update_uniforms(const pose_type& render_pose) { };
+    virtual void update_uniforms(const pose_type& render_pose) { (void)render_pose; };
 
     /**
      * @brief Destroy the render pass and free all Vulkan resources.
@@ -42,7 +42,7 @@ public:
 
     ~render_pass() override = default;
 
-    VkPipeline pipeline = VK_NULL_HANDLE;
+    VkPipeline pipeline_ = VK_NULL_HANDLE;
 };
 
 // timewarp defines the interface for a warping render pass as a service.

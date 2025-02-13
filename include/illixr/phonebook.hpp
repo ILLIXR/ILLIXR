@@ -158,7 +158,7 @@ public:
         const std::type_index type_index = std::type_index(typeid(Specific_service));
 
 #ifndef NDEBUG
-        // if this assert fails, and there are no duplicate base classes, ensure the hash_code's are unique.
+        // if this fails, and there are no duplicate base classes, ensure the hash_code's are unique.
         if (registry_.count(type_index) != 1) {
             throw std::runtime_error{"Attempted to lookup an unregistered implementation " + std::string{type_index.name()}};
         }
@@ -174,12 +174,12 @@ public:
     }
 
     template<typename specific_service>
-    bool has_impl() const {
-        const std::shared_lock<std::shared_mutex> lock{_m_mutex};
+    [[maybe_unused]] bool has_impl() const {
+        const std::shared_lock<std::shared_mutex> lock{mutex_};
 
         const std::type_index type_index = std::type_index(typeid(specific_service));
 
-        return _m_registry.count(type_index) == 1;
+        return registry_.count(type_index) == 1;
     }
 
 private:

@@ -1,5 +1,5 @@
-#ifndef ILLIXR_VULKAN_OBJECTS_HPP
-#define ILLIXR_VULKAN_OBJECTS_HPP
+#pragma once
+
 #include "illixr/vk/third_party/vk_mem_alloc.h"
 
 #include <vulkan/vulkan.h>
@@ -25,11 +25,19 @@ struct buffer_pool {
     std::vector<std::array<vk_image, 2>> image_pool;
     std::vector<std::array<vk_image, 2>> depth_image_pool;
 
-    std::vector<image_state> image_states;
-    std::vector<T>           image_data;
-    std::mutex               image_state_mutex;
+    std::vector<image_state> image_states{};
+    std::vector<T>           image_data{};
+    std::mutex               image_state_mutex{};
 
     image_index_t latest_decoded_image = -1;
+
+    explicit buffer_pool(const std::vector<std::array<vk_image, 2>>& image_pool,
+                         const std::vector<std::array<vk_image, 2>>& depth_image_pool)
+        : image_pool(image_pool)
+        , depth_image_pool(depth_image_pool) {
+        image_states.resize(image_pool.size());
+        image_data.resize(image_pool.size());
+    }
 
     image_index_t src_acquire_image() {
         std::lock_guard<std::mutex> lock(image_state_mutex);
@@ -95,16 +103,6 @@ struct buffer_pool {
 
         // std::cout << "Post processing release image " << (int) image_index << std::endl;
     }
-
-    buffer_pool(const std::vector<std::array<vk_image, 2>>& image_pool,
-                const std::vector<std::array<vk_image, 2>>& depth_image_pool)
-        : image_pool(image_pool)
-        , depth_image_pool(depth_image_pool) {
-        image_states.resize(image_pool.size());
-        image_data.resize(image_pool.size());
-    }
 };
 
 } // namespace ILLIXR::vulkan
-
-#endif // ILLIXR_VULKAN_OBJECTS_HPP

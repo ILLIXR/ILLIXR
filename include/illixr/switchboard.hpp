@@ -24,13 +24,13 @@ static std::chrono::nanoseconds thread_cpu_time() {
     return {};
 }
 #endif
-//**********
+
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/serialization/shared_ptr.hpp>
-//**********
+
 namespace ILLIXR {
 
 using plugin_id_t = std::size_t;
@@ -420,8 +420,8 @@ private:
             // this_event->use_count() << " (= 1 + len(sub)) \n";
         }
 
-        [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, topic_config& config) {
-            if (config.serialization_method == topic_config::SerializationMethod::BOOST) {
+        [[maybe_unused]] void deserialize_and_put(std::vector<char>& buffer, network::topic_config& config) {
+            if (config.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                 // TODO: Need to differentiate and support protobuf deserialization
                 boost::iostreams::stream<boost::iostreams::array_source> stream{buffer.data(), buffer.size()};
                 boost::archive::binary_iarchive                          ia{stream};
@@ -619,14 +619,14 @@ public:
     template<typename serializable_event>
     class network_writer : public writer<serializable_event> {
     public:
-        explicit network_writer(topic& topic, ptr<network_backend> backend = nullptr, const topic_config& config = {})
+        explicit network_writer(topic& topic, ptr<network::network_backend> backend = nullptr, const network::topic_config& config = {})
             : writer<serializable_event>{topic}
             , backend_{std::move(backend)}
             , config_{config} { }
 
         void put(ptr<serializable_event>&& this_specific_event) override {
             if (backend_->is_topic_networked(this->topic_.name())) {
-                if (config_.serialization_method == topic_config::SerializationMethod::BOOST) {
+                if (config_.serialization_method == network::topic_config::SerializationMethod::BOOST) {
                     auto base_event = std::dynamic_pointer_cast<event>(std::move(this_specific_event));
                     assert(base_event && "Event is not derived from switchboard::event");
                     // Default serialization method - Boost
@@ -650,8 +650,8 @@ public:
         }
 
     private:
-        ptr<network_backend> backend_;
-        topic_config         config_;
+        ptr<network::network_backend> backend_;
+        network::topic_config         config_;
     };
 
 public:
@@ -713,8 +713,8 @@ public:
     }
 
     template<typename Specific_event>
-    network_writer<Specific_event> get_network_writer(const std::string& topic_name, topic_config config = {}) {
-        auto backend = phonebook_->lookup_impl<network_backend>();
+    network_writer<Specific_event> get_network_writer(const std::string& topic_name, network::topic_config config = {}) {
+        auto backend = phonebook_->lookup_impl<network::network_backend>();
         if (registry_.find(topic_name) == registry_.end()) {
             backend->topic_create(topic_name, config);
         }

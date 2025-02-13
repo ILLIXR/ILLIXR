@@ -122,4 +122,5 @@ protected:
         auto* obj = new PLUGIN_CLASS{#PLUGIN_CLASS, pb};    \
         return obj;                                         \
     }
+
 } // namespace ILLIXR

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../data_format.hpp"
-#include "../phonebook.hpp"
+#include "illixr/data_format.hpp"
+#include "illixr/phonebook.hpp"
 #include "vulkan_utils.hpp"
 
 #include <cstdint>
@@ -25,10 +25,10 @@ public:
 
     // required by timewarp_vk as a service
 
-    VkInstance                                   vk_instance        = VK_NULL_HANDLE;
-    VkPhysicalDevice                             vk_physical_device = VK_NULL_HANDLE;
-    VkDevice                                     vk_device          = VK_NULL_HANDLE;
-    std::unordered_map<queue::queue_type, queue> queues;
+    VkInstance                                   vk_instance_        = VK_NULL_HANDLE;
+    VkPhysicalDevice                             vk_physical_device_ = VK_NULL_HANDLE;
+    VkDevice                                     vk_device_          = VK_NULL_HANDLE;
+    std::unordered_map<queue::queue_type, queue> queues_;
 
     /**
      * @brief Polls window events using whatever the windowing backend is.
@@ -42,19 +42,19 @@ public:
      */
     virtual void recreate_swapchain() { };
 
-    VkSurfaceKHR             vk_surface   = VK_NULL_HANDLE;
-    VkSwapchainKHR           vk_swapchain = VK_NULL_HANDLE;
-    VkSurfaceFormatKHR       swapchain_image_format;
-    std::vector<VkImage>     swapchain_images;
-    std::vector<VkImageView> swapchain_image_views;
-    VkExtent2D               swapchain_extent = {display_params::width_pixels, display_params::height_pixels};
+    VkSurfaceKHR             vk_surface_   = VK_NULL_HANDLE;
+    VkSwapchainKHR           vk_swapchain_ = VK_NULL_HANDLE;
+    VkSurfaceFormatKHR       swapchain_image_format_;
+    std::vector<VkImage>     swapchain_images_;
+    std::vector<VkImageView> swapchain_image_views_;
+    VkExtent2D               swapchain_extent_ = {display_params::width_pixels, display_params::height_pixels};
 
     // optional
-    VmaAllocator vma_allocator;
+    VmaAllocator vma_allocator_;
 
     // for ffmpeg
-    VkPhysicalDeviceFeatures2 features;
-    std::vector<const char*>  enabled_instance_extensions;
-    std::vector<const char*>  enabled_device_extensions;
+    VkPhysicalDeviceFeatures2 features_;
+    std::vector<const char*>  enabled_instance_extensions_;
+    std::vector<const char*>  enabled_device_extensions_;
 };
 } // namespace ILLIXR::vulkan

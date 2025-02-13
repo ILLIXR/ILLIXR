@@ -1,12 +1,15 @@
 #pragma once
 
+// clang-format off
+#include <GL/glew.h> // must come first
+#include <GL/gl.h>
+//clang-format on
+
 #include "relative_clock.hpp"
 #include "switchboard.hpp"
 
 #undef Success // For 'Success' conflict
 #include <eigen3/Eigen/Dense>
-#include <GL/gl.h>
-#include <GL/glew.h> // must come first
 #include <utility>
 // #undef Complex // For 'Complex' conflict
 
@@ -27,10 +30,10 @@ struct imu_type : switchboard::event {
         , linear_a{std::move(linear_a_)} { }
 };
 
-struct connection_signal : public switchboard::event {
+struct  [[maybe_unused]] connection_signal : public switchboard::event {
     bool start;
 
-    explicit connection_signal(bool start_)
+     [[maybe_unused]] explicit connection_signal(bool start_)
         : start{start_} { }
 };
 
@@ -189,7 +192,7 @@ struct image_handle : public switchboard::event {
 // This more closely matches the format used by Monado
 struct rendered_frame : public switchboard::event {
     std::array<GLuint, 2>       swapchain_indices{}; // Does not change between swaps in swapchain
-    std::array<GLuint, 2>       swap_indices{};      // Which element of the swapchain
+     [[maybe_unused]] std::array<GLuint, 2>       swap_indices{};      // Which element of the swapchain
     fast_pose_type              render_pose;         // The pose used when rendering this frame.
     [[maybe_unused]] time_point sample_time{};
     time_point                  render_time{};

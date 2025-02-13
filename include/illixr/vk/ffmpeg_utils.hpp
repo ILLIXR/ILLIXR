@@ -1,9 +1,4 @@
-//
-// Created by steven on 10/22/23.
-//
-
-#ifndef ILLIXR_FFMPEG_UTILS_HPP
-#define ILLIXR_FFMPEG_UTILS_HPP
+#pragma once
 
 #include "vulkan/vulkan.h"
 
@@ -25,10 +20,12 @@ namespace ILLIXR::vulkan::ffmpeg_utils {
 
 static std::weak_ptr<vulkan::display_provider> display_provider_ffmpeg;
 
-void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
+static void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
+    (void)ctx;
+    (void)index;
     if (auto dp = display_provider_ffmpeg.lock()) {
         std::optional<vulkan::queue> queue;
-        for (auto& q : dp->queues) {
+        for (auto& q : dp->queues_) {
             if (q.second.family == queue_family) {
                 queue = q.second;
                 break;
@@ -43,10 +40,12 @@ void ffmpeg_lock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uin
     }
 }
 
-void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
+static void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, uint32_t index) {
+    (void)ctx;
+    (void)index;
     if (auto dp = display_provider_ffmpeg.lock()) {
         std::optional<vulkan::queue> queue;
-        for (auto& q : dp->queues) {
+        for (auto& q : dp->queues_) {
             if (q.second.family == queue_family) {
                 queue = q.second;
                 break;
@@ -61,7 +60,7 @@ void ffmpeg_unlock_queue(struct AVHWDeviceContext* ctx, uint32_t queue_family, u
     }
 }
 
-std::optional<AVPixelFormat> get_pix_format_from_vk_format(VkFormat format) {
+static std::optional<AVPixelFormat> get_pix_format_from_vk_format(VkFormat format) {
     for (int fmt = AV_PIX_FMT_NONE; fmt < AV_PIX_FMT_NB; fmt++) {
         auto vk_fmt = av_vkfmt_from_pixfmt(static_cast<AVPixelFormat>(fmt));
         if (vk_fmt && *vk_fmt == format) {
@@ -71,7 +70,7 @@ std::optional<AVPixelFormat> get_pix_format_from_vk_format(VkFormat format) {
     return std::nullopt;
 }
 
-void AV_ASSERT_SUCCESS(int ret) {
+static void AV_ASSERT_SUCCESS(int ret) {
     if (ret < 0) {
         char errbuf[AV_ERROR_MAX_STRING_SIZE];
         av_strerror(ret, errbuf, AV_ERROR_MAX_STRING_SIZE);
@@ -84,5 +83,3 @@ struct ffmpeg_vk_frame {
     AVVkFrame* vk_frame = nullptr;
 };
 } // namespace ILLIXR::vulkan::ffmpeg_utils
-
-#endif // ILLIXR_FFMPEG_UTILS_HPP

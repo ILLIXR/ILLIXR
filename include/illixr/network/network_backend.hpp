@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-namespace ILLIXR {
+namespace ILLIXR::network {
 class network_backend : public phonebook::service {
 public:
     /**

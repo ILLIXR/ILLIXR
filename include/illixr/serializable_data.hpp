@@ -1,9 +1,4 @@
-//
-// Created by steven on 11/5/23.
-//
-
-#ifndef ILLIXR_SERIALIZABLE_DATA_HPP
-#define ILLIXR_SERIALIZABLE_DATA_HPP
+#pragma once
 
 #include "data_format.hpp"
 #include "switchboard.hpp"
@@ -96,6 +91,7 @@ struct compressed_frame : public switchboard::event {
 
     template<class Archive>
     void save(Archive& ar, const unsigned int version) const {
+        (void)version;
         ar << boost::serialization::base_object<switchboard::event>(*this);
         ar << nalu_only;
         ar << use_depth;
@@ -130,6 +126,7 @@ struct compressed_frame : public switchboard::event {
 
     template<class Archive>
     void load(Archive& ar, const unsigned int version) {
+        (void)version;
         ar >> boost::serialization::base_object<switchboard::event>(*this);
         ar >> nalu_only;
         ar >> use_depth;
@@ -218,24 +215,27 @@ struct compressed_frame : public switchboard::event {
 
 namespace boost::serialization {
 template<class Archive>
-void serialize(Archive& ar, ILLIXR::time_point& tp, const unsigned int version) {
-    ar& boost::serialization::make_binary_object(&tp._m_time_since_epoch, sizeof(tp._m_time_since_epoch));
+[[maybe_unused]] void serialize(Archive& ar, ILLIXR::time_point& tp, const unsigned int version) {
+    (void)version;
+    ar& boost::serialization::make_binary_object(&tp.time_since_epoch_, sizeof(tp.time_since_epoch_));
 }
 
 template<class Archive>
 void serialize(Archive& ar, ILLIXR::pose_type& pose, const unsigned int version) {
+    (void)version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar & pose.sensor_time;
+    ar& pose.sensor_time;
     ar& boost::serialization::make_array(pose.position.derived().data(), pose.position.size());
     ar& boost::serialization::make_array(pose.orientation.coeffs().data(), pose.orientation.coeffs().size());
 }
 
 template<class Archive>
-void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int version) {
+ [[maybe_unused]] void serialize(Archive& ar, ILLIXR::fast_pose_type& pose, const unsigned int version) {
+    (void)version;
     ar& boost::serialization::base_object<ILLIXR::switchboard::event>(pose);
-    ar & pose.pose;
-    ar & pose.predict_computed_time;
-    ar & pose.predict_target_time;
+    ar& pose.pose;
+    ar& pose.predict_computed_time;
+    ar& pose.predict_target_time;
 }
 } // namespace boost::serialization
 
@@ -243,4 +243,3 @@ BOOST_CLASS_EXPORT_KEY(ILLIXR::switchboard::event)
 BOOST_CLASS_EXPORT_KEY(ILLIXR::compressed_frame)
 BOOST_CLASS_EXPORT_KEY(ILLIXR::pose_type)
 BOOST_CLASS_EXPORT_KEY(ILLIXR::fast_pose_type)
-#endif // ILLIXR_SERIALIZABLE_DATA_HPP
