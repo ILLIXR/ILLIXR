@@ -48,29 +48,6 @@
       ]
     },
     {
-      "name": "display_vk",
-      "cmake_flag": "USE_DISPLAY_VK=ON",
-      "dependencies": [
-        "OpenCV",
-        "Vulkan",
-        "glfw3",
-        "glm",
-        "OpenXR",
-        "libusb",
-        "libuvc",
-        "udev",
-        "JPEG",
-        "PNG",
-        "TIFF",
-        "wayland-server",
-        "x11-xcb",
-        "xcb-glx",
-        "xcb-randr",
-        "xkbcommon",
-        "SDL2"
-      ]
-    },
-    {
       "name": "fauxpose",
       "cmake_flag": "USE_FAUXPOSE=ON",
       "dependencies": []

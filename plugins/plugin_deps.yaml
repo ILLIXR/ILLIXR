@@ -22,9 +22,6 @@ dep_map:
   - needs: vulkan::app
     provided_by:
     - vkdemo
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
   - needs: vulkan::timewarp
     provided_by:
     - openwarp_vk
@@ -36,9 +33,6 @@ dep_map:
     - faux_pose
     - pose_lookup
     - pose_prediction
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
   plugin: offload_rendering_client
 - dependencies:
   - needs: pose_prediction
@@ -46,24 +40,13 @@ dep_map:
     - faux_pose
     - pose_lookup
     - pose_prediction
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
   plugin: offload_rendering_client_jetson
-- dependencies:
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
-  plugin: offload_rendering_server
 - dependencies:
   - needs: pose_prediction
     provided_by:
     - faux_pose
     - pose_lookup
     - pose_prediction
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
   plugin: openwarp_vk
 - dependencies:
   - needs: pose_prediction
@@ -78,12 +61,4 @@ dep_map:
     - faux_pose
     - pose_lookup
     - pose_prediction
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
   plugin: timewarp_vk
-- dependencies:
-  - needs: vulkan::display_provider
-    provided_by:
-    - display_vk
-  plugin: vkdemo
